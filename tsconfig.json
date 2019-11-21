@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib/",
+    "sourceMap": false,
+    "module": "commonjs",
+    "target": "es2018",
+    "removeComments": true,
+    "noImplicitAny": true,
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "types": [
+      "node",
+      "webdriverio/webdriverio-v6",
+      "@types/jest"
+    ]
+  },
+  "include": [
+    "./src/**/*.ts"
+  ]
+}

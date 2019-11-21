@@ -1,0 +1,3 @@
+/**
+ * stub for jasmine types
+ */
