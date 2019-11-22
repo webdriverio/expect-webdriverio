@@ -1,12 +1,12 @@
 import { waitUntil, enhanceError, getSelectors, isNotText } from '../utils'
 
-export function $toBeDisplayed(el: WebdriverIO.Element, options = {}) {
+export function $toBeDisplayed(el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
     const isNot = this.isNot
 
     return browser.call(async () => {
         el = await el
         const pass = await waitUntil(async () => el.isDisplayed(), isNot, options)
-        const message = enhanceError(`Element "${getSelectors(el)}" is ${isNotText(pass, 'not')}displayed.`, options)
+        const message = enhanceError(`Element "${getSelectors(el)}" is ${isNotText(pass, 'not ')}displayed.`, options)
 
         return {
             pass,
@@ -14,3 +14,5 @@ export function $toBeDisplayed(el: WebdriverIO.Element, options = {}) {
         }
     })
 }
+
+export const $toBeVisible = $toBeDisplayed

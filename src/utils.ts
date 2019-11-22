@@ -6,14 +6,15 @@ const options = getDefaultOptions()
  *
  * @param condition function
  * @param isNot     https://jestjs.io/docs/en/expect#thisisnot
- * @param options   wait and interval
+ * @param options   wait, interval, etc
  */
 export const waitUntil = async (condition: () => Promise<any>, isNot = false, {
+    now = false,
     wait = options.wait,
     interval = options.interval } = {},
 ) => {
     // single attempt
-    if (wait === 0) {
+    if (now || wait === 0) {
         return await condition()
     }
 
@@ -52,6 +53,6 @@ export const getSelectors = (el: WebdriverIO.Element) => {
     return selectors.reverse().join('.')
 }
 
-export const isNotText = (pass: boolean, text: string) => {
-    return pass ? '' : `${text} `
+export const isNotText = (pass: boolean, failText: string, passText = '') => {
+    return pass ? passText : failText
 }

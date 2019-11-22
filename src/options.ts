@@ -1,5 +1,5 @@
 const DEFAULT_OPTIONS = {
-    wait: 0,
+    wait: 2000,
     interval: 100,
     suppressDefaultMessage: false,
 }
