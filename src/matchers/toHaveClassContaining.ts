@@ -1,7 +1,7 @@
-import { toHaveClass } from './toHaveClass'
+import { toHaveAttribute } from './toHaveAttribute'
 
-export function toHaveClassContaining(el: WebdriverIO.Element, className: string, value: string, options: ExpectWebdriverIO.StringOptions = {}) {
-    return toHaveClass(el, className, {
+export function toHaveClassContaining(el: WebdriverIO.Element, className: string, options: ExpectWebdriverIO.StringOptions = {}) {
+    return toHaveAttribute(el, 'class', className, {
         ...options,
         containing: true
     })

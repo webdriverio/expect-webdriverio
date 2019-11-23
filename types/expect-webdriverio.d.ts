@@ -52,6 +52,18 @@ declare namespace ExpectWebdriverIO {
          */
         asString?: boolean
     }
+
+    interface NumberOptions extends CommandOptions {
+        /**
+         * less than or equals
+         */
+        lte?: number
+
+        /**
+         * greater than or equals
+         */
+        gte?: number
+    }
 }
 
 declare namespace jest {
@@ -77,6 +89,11 @@ declare namespace jest {
          * `WebdriverIO.Element` -> `isExisting`
          */
         toBeExisting(options?: ExpectWebdriverIO.CommandOptions): R
+
+        /**
+         * `WebdriverIO.Element` -> `isExisting`
+         */
+        toBeFocused(options?: ExpectWebdriverIO.CommandOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
@@ -122,6 +139,86 @@ declare namespace jest {
          * Element's value includes the value.
          */
         toHaveValueContaining(value: string, options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `isClickable`
+        */
+        toBeClickable(options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `!isEnabled`
+        */
+        toBeDisabled(options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `isDisplayedInViewport`
+        */
+        toBeDisplayedInViewport(options?: ExpectWebdriverIO.StringOptions): R
+        /**
+        * `WebdriverIO.Element` -> `isDisplayedInViewport`
+        */
+        toBeVisibleInViewport(options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `isEnabled`
+        */
+        toBeEnabled(options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `isFocused`
+        */
+        toBeFocused(options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `isSelected`
+        */
+        toBeSelected(options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `isSelected`
+        */
+        toBeChecked(options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `$$('./*').length`
+        * supports less / greater then or equals to be passed in options
+        */
+        toHaveChildren(options?: ExpectWebdriverIO.NumberOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `getAttribute` href
+        */
+        toHaveHref(href: string, options?: ExpectWebdriverIO.StringOptions): R
+        /**
+        * `WebdriverIO.Element` -> `getAttribute` href
+        */
+        toHaveLink(href: string, options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `getAttribute` href
+        * Element's href includes the value provided
+        */
+        toHaveHrefContaining(href: string, options?: ExpectWebdriverIO.StringOptions): R
+        /**
+        * `WebdriverIO.Element` -> `getAttribute` href
+        * Element's href includes the value provided
+        */
+        toHaveLinkContaining(href: string, options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+        * `WebdriverIO.Element` -> `getProperty` value
+        */
+        toHaveId(id: string, options?: ExpectWebdriverIO.StringOptions): R
+
+        /**
+         * `WebdriverIO.Element` -> `getText`
+         */
+        toHaveText(text: string, options?: ExpectWebdriverIO.StringOptions): R
+        /**
+        * `WebdriverIO.Element` -> `getText`
+        * Element's text includes the text provided
+        */
+        toHaveTextContaining(text: string, options?: ExpectWebdriverIO.StringOptions): R
     }
 }
 

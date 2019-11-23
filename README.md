@@ -15,6 +15,8 @@
 1. `npm install expect`
 2. `npm install expect-webdriverio`
 
+NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) v5 or higher is required.
+
 ## Usage
 
 In your `wdio.conf.js`
@@ -51,6 +53,14 @@ describe('suite', () => {
         // Simply invert assertions
         expect(myInput).not.toHaveProperty('height', 0)
     })
+
+    it('async mode', async () => {
+        const el = await $('el')
+        await expect(el).toBePresent()
+
+        // or
+        await expect($('el')).toBePresent()
+    })
 })
 ``` 
 
@@ -79,13 +89,11 @@ Error messages are informative out of the box and contain:
 - full element selector
 - property type to be verified
 - actual and expected values
+- highlight the difference (texts assertions)
 
 Examples
 ```
 Element "$(`body`).$$(`div`)[2].$(`not-visible`)" is not displayed
-Element's "$(`.box`)" property hidden: is missing
-Element's "$(`.box`)" property hidden: "false" != "true"
-Element's "$(`input`)" attribute data: "some content" !~ "test"
 ```
 
 ## What's next?
@@ -96,24 +104,20 @@ New features and improvements, of course!
 
 ### Almost there
 
-- text
-- focused
-- clickable
-- selected
-- checked
-- id
-- enabled / disabled
-- href
-- children
+- better error messages
+- `$$` support
 - browser url
 - window title
 
 ### Coming soon...
 
 - css
-- more options
-- `$$` support
+- cookie / localStorage ?
+- more default options
 - better docs
 - boilerplate projects
-- jasmine support
+
+### Also planned
 - advanced matchers with regex
+- jasmine support
+- better multiremote support (if requested)
