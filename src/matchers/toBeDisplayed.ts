@@ -1,6 +1,6 @@
 import { waitUntil, enhanceError, getSelectors, isNotText } from '../utils'
 
-export function $toBeDisplayed(el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
+export function toBeDisplayed(el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
     const isNot = this.isNot
 
     return browser.call(async () => {
@@ -15,4 +15,4 @@ export function $toBeDisplayed(el: WebdriverIO.Element, options: ExpectWebdriver
     })
 }
 
-export const $toBeVisible = $toBeDisplayed
+export const toBeVisible = toBeDisplayed

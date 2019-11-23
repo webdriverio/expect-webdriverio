@@ -1,6 +1,6 @@
 import { waitUntil, enhanceError, getSelectors, isNotText } from '../utils'
 
-export function $toHaveAttribute(el: WebdriverIO.Element, attribute: string, value?: string, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHaveAttribute(el: WebdriverIO.Element, attribute: string, value?: string, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
 
     const { ignoreCase = false, trim = false, containing = false } = options
@@ -41,4 +41,4 @@ export function $toHaveAttribute(el: WebdriverIO.Element, attribute: string, val
     })
 }
 
-export const $toHaveAttr = $toHaveAttribute
+export const toHaveAttr = toHaveAttribute

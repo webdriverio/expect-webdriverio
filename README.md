@@ -32,24 +32,24 @@ In your test
 describe('suite', () => {
     it('be visible', () => {
         const notVisible = $('body').$$('div')[2].$("not-visible")
-        expect(notVisible).$toExist() // aliases $toBeExisting or $toBePresent
-        expect(notVisible).$toBeVisible({ wait: 0 }) // alias $toBeDisplayed
+        expect(notVisible).toExist() // aliases toBeExisting or toBePresent
+        expect(notVisible).toBeVisible({ wait: 0 }) // alias toBeDisplayed
         // fails with error
         // Element "$(`body`).$$(`div`)[2].$(`not-visible`)" is not displayed.
     })
     it('advanced', () => {
         const myInput = $('input')
-        expect(myInput).$toBeEnabled({ now: true }) // same as { wait: 0 }
+        expect(myInput).toBeEnabled({ now: true }) // same as { wait: 0 }
 
-        expect(myInput).$toHaveClass('form-control', { message: 'Not a form control!', })
-        expect(myInput).$toHaveAttribute('class', 'form-control') // alias $toHaveAttr
+        expect(myInput).toHaveClass('form-control', { message: 'Not a form control!', })
+        expect(myInput).toHaveAttribute('class', 'form-control') // alias toHaveAttr
         
-        expect(myInput).$toHaveValueContaining('USER')
+        expect(myInput).toHaveValueContaining('USER')
         // or pass `containing` as an option
-        expect(myInput).$toHaveValue('value', 'user', { containing: true, ignoreCase: true })
+        expect(myInput).toHaveValue('value', 'user', { containing: true, ignoreCase: true })
 
         // Simply invert assertions
-        expect(myInput).not.$toHaveProperty('height', 0)
+        expect(myInput).not.toHaveProperty('height', 0)
     })
 })
 ``` 

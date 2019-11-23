@@ -1,6 +1,6 @@
 import { waitUntil, enhanceError, getSelectors, isNotText } from '../utils'
 
-export function $toExist(el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
+export function toExist(el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
     const isNot = this.isNot
 
     return browser.call(async () => {
@@ -15,5 +15,5 @@ export function $toExist(el: WebdriverIO.Element, options: ExpectWebdriverIO.Com
     })
 }
 
-export const $toBeExisting = $toExist
-export const $toBePresent = $toExist
+export const toBeExisting = toExist
+export const toBePresent = toExist

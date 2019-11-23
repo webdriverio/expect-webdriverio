@@ -59,69 +59,69 @@ declare namespace jest {
         /**
          * `WebdriverIO.Element` -> `isDisplayed`
          */
-        $toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions): R
+        toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions): R
         /**
          * `WebdriverIO.Element` -> `isDisplayed`
          */
-        $toBeVisible(options?: ExpectWebdriverIO.CommandOptions): R
+        toBeVisible(options?: ExpectWebdriverIO.CommandOptions): R
 
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        $toExist(options?: ExpectWebdriverIO.CommandOptions): R
+        toExist(options?: ExpectWebdriverIO.CommandOptions): R
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        $toBePresent(options?: ExpectWebdriverIO.CommandOptions): R
+        toBePresent(options?: ExpectWebdriverIO.CommandOptions): R
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        $toBeExisting(options?: ExpectWebdriverIO.CommandOptions): R
+        toBeExisting(options?: ExpectWebdriverIO.CommandOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        $toHaveAttribute(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttribute(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        $toHaveAttr(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttr(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          * Element's attribute includes the value.
          */
-        $toHaveAttributeContaining(attribute: string, contains: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttributeContaining(attribute: string, contains: string, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          * Element's attribute includes the value.
          */
-        $toHaveAttrContaining(attribute: string, contains: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttrContaining(attribute: string, contains: string, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          */
-        $toHaveClass(className: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveClass(className: string, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * Element's class includes the className.
          */
-        $toHaveClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getProperty`
          */
-        $toHaveProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
         * `WebdriverIO.Element` -> `getProperty` value
         */
-        $toHaveValue(value: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveValue(value: string, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          * Element's value includes the value.
          */
-        $toHaveValueContaining(value: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveValueContaining(value: string, options?: ExpectWebdriverIO.StringOptions): R
     }
 }
 
