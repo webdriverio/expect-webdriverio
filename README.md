@@ -1,6 +1,6 @@
 # expect-webdriverio
 
-> assert like a boss with [expect](https://www.npmjs.com/package/expect) and [WebdriverIO](https://webdriver.io/)
+> [WebdriverIO](https://webdriver.io/) Assertion library inspired by [expect](https://www.npmjs.com/package/expect)
 
 ## Key Features
 
