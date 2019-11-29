@@ -4,9 +4,9 @@
 
 ## Key Features
 
-- human readable syntax
-- waits for expectation to succeed
-- adopted and customizable error messages
+- automatically waits for expectation to succeed
+- see full element selector in error
+- add your own messages
 - works in Mocha, Cucumber, Jest
 - builtin types for TypeScript and JS autocompletion
 
@@ -32,13 +32,26 @@ beforeSession () {
 In your test
 ```js
 describe('suite', () => {
+    before(() => {
+        browser.url('https://github.com/mgrybyk/expect-webdriverio')
+        
+        expect(browser).toHaveUrl('https://github.com/mgrybyk/expect-webdriverio')
+        expect(browser).toHaveTitle('expect-webdriverio', { containing: true })
+    })
+
     it('be visible', () => {
         const notVisible = $('body').$$('div')[2].$("not-visible")
-        expect(notVisible).toExist() // aliases toBeExisting or toBePresent
-        expect(notVisible).toBeVisible({ wait: 0 }) // alias toBeDisplayed
+        
+        // override default wait timeout for expectation to succeed
+        expect(notVisible).toExist({ wait: 3000 })
+        
+        expect(notVisible).toBeVisible({ wait: 0 })
+        // same as
+        expect(notVisible).toBeDisplayed({ now: true })
         // fails with error
         // Element "$(`body`).$$(`div`)[2].$(`not-visible`)" is not displayed.
     })
+
     it('advanced', () => {
         const myInput = $('input')
         expect(myInput).toBeEnabled({ now: true }) // same as { wait: 0 }
@@ -56,7 +69,7 @@ describe('suite', () => {
 
     it('async mode', async () => {
         const el = await $('el')
-        await expect(el).toBePresent()
+        await expect(el).toBePresent() // aliases toBeExisting or toExist
 
         // or
         await expect($('el')).toBePresent()
