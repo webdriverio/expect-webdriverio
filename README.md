@@ -42,9 +42,10 @@ describe('suite', () => {
     it('be visible', () => {
         const notVisible = $('body').$$('div')[2].$("not-visible")
         
-        // override default wait timeout for expectation to succeed
-        expect(notVisible).toExist({ wait: 3000 })
-        
+        // wait for 2000ms for expectation to succeed by default
+        expect(notVisible).toExist()
+
+        // override default wait timeout        
         expect(notVisible).toBeVisible({ wait: 0 })
         // same as
         expect(notVisible).toBeDisplayed({ now: true })
