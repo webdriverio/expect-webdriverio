@@ -91,15 +91,7 @@ Error messages are informative out of the box and contain:
 - highlight the difference (texts assertions)
 
 Examples
-```
-Expect $(`.box`) to have class
-
-- Expected
-+ Received
-
-- boox
-+ box
-```
+![toHaveClass](/docs/img/errors/toHaveClass.png?raw=true "toHaveClass")
 
 ## What's next?
 
