@@ -1,7 +1,6 @@
 const DEFAULT_OPTIONS = {
     wait: 2000,
     interval: 100,
-    suppressDefaultMessage: false,
 }
 
 if (!global.expect._expectWebdriverioOptions) {

@@ -1,7 +1,8 @@
-import { waitUntil, enhanceError, getSelectors, isNotText } from '../utils'
+import { waitUntil, enhanceError } from '../../utils'
 
 export function toHaveClass(el: WebdriverIO.Element, className: string, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
+    const { expectation = 'class', verb = 'have' } = this
 
     let attribute = 'class'
     let value = className
@@ -12,7 +13,7 @@ export function toHaveClass(el: WebdriverIO.Element, className: string, options:
         let attr
         const pass = await waitUntil(async () => {
             attr = await el.getAttribute(attribute)
-            if (attr === null) {
+            if (typeof attr !== 'string') {
                 return false
             }
 
@@ -31,9 +32,8 @@ export function toHaveClass(el: WebdriverIO.Element, className: string, options:
 
             return classes.includes(value)
         }, isNot, options)
-        const missing = typeof value === 'string' ? '' : `is ${isNotText(pass, 'is missing', 'exists')}`
-        const matching = `"${attr}" ${isNotText(pass, '!')}~ "${value}"`
-        const message = enhanceError(`Element's "${getSelectors(el)}" attribute ${attribute}: ${missing || matching}`, options)
+
+        const message = enhanceError(el, value, attr || '', isNot, verb, expectation, '', options)
 
         return {
             pass,

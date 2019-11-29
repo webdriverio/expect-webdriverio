@@ -78,7 +78,6 @@ Options will be extended soon to provide more flexibility!
 {
     wait: 2000, // ms to wait for expectation to succeed
     interval: 100, // interval between attempts
-    suppressDefaultMessage: false, // hide default error messages by default
 }
 ```
 
@@ -93,7 +92,13 @@ Error messages are informative out of the box and contain:
 
 Examples
 ```
-Element "$(`body`).$$(`div`)[2].$(`not-visible`)" is not displayed
+Expect $(`.box`) to have class
+
+- Expected
++ Received
+
+- boox
++ box
 ```
 
 ## What's next?
@@ -104,17 +109,14 @@ New features and improvements, of course!
 
 ### Almost there
 
-- better error messages
 - `$$` support
-- browser url
-- window title
 
 ### Coming soon...
 
+- better text comparison error messages
 - css
 - cookie / localStorage ?
-- more default options
-- better docs
+- docs
 - boilerplate projects
 
 ### Also planned

@@ -10,7 +10,6 @@ declare namespace jest {
             wait?: number
             interval?: number
             message?: string
-            suppressDefaultMessage?: boolean
         }
     }
 }

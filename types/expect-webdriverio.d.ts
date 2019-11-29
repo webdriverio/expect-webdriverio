@@ -11,11 +11,6 @@ declare namespace ExpectWebdriverIO {
          * interval between attempts. Default: 100
          */
         interval?: number
-
-        /**
-         * suppress default assertion error, print only user message if it was provided
-         */
-        suppressDefaultMessage?: boolean
     }
 
     interface CommandOptions extends DefaultOptions {
@@ -54,6 +49,10 @@ declare namespace ExpectWebdriverIO {
     }
 
     interface NumberOptions extends CommandOptions {
+        /**
+         * equals
+         */
+        eq?: number
         /**
          * less than or equals
          */
@@ -219,6 +218,16 @@ declare namespace jest {
         * Element's text includes the text provided
         */
         toHaveTextContaining(text: string, options?: ExpectWebdriverIO.StringOptions): R
+
+
+        /**
+         * `WebdriverIO.Browser` -> `getUrl`
+         */
+        toHaveUrl(url: string, options?: ExpectWebdriverIO.StringOptions): R
+        /**
+         * `WebdriverIO.Browser` -> `getTitle`
+         */
+        toHaveTitle(title: string, options?: ExpectWebdriverIO.StringOptions): R
     }
 }
 

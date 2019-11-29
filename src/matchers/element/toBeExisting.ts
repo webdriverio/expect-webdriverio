@@ -1,12 +1,13 @@
-import { waitUntil, enhanceError, getSelectors, isNotText } from '../utils'
+import { waitUntil, enhanceErrorBe } from '../../utils'
 
 export function toExist(el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
     const isNot = this.isNot
+    const { expectation = 'exist', verb = '' } = this
 
     return browser.call(async () => {
         el = await el
         const pass = await waitUntil(async () => el.isExisting(), isNot, options)
-        const message = enhanceError(`Element "${getSelectors(el)}" ${isNotText(pass, "doesn't ")}exist.`, options)
+        const message = enhanceErrorBe(el, pass, isNot, verb, expectation, options)
 
         return {
             pass,
