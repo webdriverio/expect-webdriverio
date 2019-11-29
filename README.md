@@ -79,7 +79,7 @@ describe('suite', () => {
 
 ## API
 
-See available [Matchers](https://github.com/mgrybyk/expect-webdriverio/blob/master/types/expect-webdriverio.d.ts)
+See available [Matchers](https://github.com/mgrybyk/expect-webdriverio/blob/master/types/expect-webdriverio.d.ts#L69)
 
 Besides of `expect-webdriverio` assertions you can use builtin [expect assertions](https://jestjs.io/docs/en/expect).
 
