@@ -104,7 +104,7 @@ Error messages are informative out of the box and contain:
 - actual and expected values
 - highlight the difference (texts assertions)
 
-Examples
+#### Examples
 ![toHaveClass](/docs/img/errors/toHaveClass.png?raw=true "toHaveClass")
 
 ## What's next?
