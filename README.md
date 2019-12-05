@@ -42,9 +42,10 @@ describe('suite', () => {
     it('be visible', () => {
         const notVisible = $('body').$$('div')[2].$("not-visible")
         
-        // override default wait timeout for expectation to succeed
-        expect(notVisible).toExist({ wait: 3000 })
-        
+        // wait for 2000ms for expectation to succeed by default
+        expect(notVisible).toExist()
+
+        // override default wait timeout        
         expect(notVisible).toBeVisible({ wait: 0 })
         // fails with error
         // Element "$(`body`).$$(`div`)[2].$(`not-visible`)" is not displayed.
@@ -115,7 +116,7 @@ Error messages are informative out of the box and contain:
 - actual and expected values
 - highlight the difference (texts assertions)
 
-Examples
+#### Examples
 ![toHaveClass](/docs/img/errors/toHaveClass.png?raw=true "toHaveClass")
 
 ## What's next?
