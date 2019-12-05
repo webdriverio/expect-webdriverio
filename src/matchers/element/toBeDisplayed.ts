@@ -1,22 +1,15 @@
-import { waitUntil, enhanceErrorBe } from '../../utils'
+import { executeCommandBe } from '../../utils'
 
-export function toBeDisplayed(el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
-    const isNot = this.isNot
-    const { expectation = 'displayed', verb = 'be' } = this
+export function toBeDisplayed(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+    this.expectation = this.expectation || 'displayed'
 
     return browser.call(async () => {
-        el = await el
-        const pass = await waitUntil(async () => el.isDisplayed(), isNot, options)
-        const message = enhanceErrorBe(el, pass, isNot, verb, expectation, options)
-
-        return {
-            pass,
-            message: () => message
-        }
+        const result = await executeCommandBe.call(this, received, el => el.isDisplayed().catch(() => false), options)
+        return result
     })
 }
 
 export function toBeVisible (el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'visible'
-    return toBeDisplayed(el, options)
+    return toBeDisplayed.call(this, el, options)
 }

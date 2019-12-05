@@ -4,6 +4,8 @@
     "sourceMap": false,
     "module": "commonjs",
     "target": "es2018",
+    "lib": ["ES2018"],
+    "strictBindCallApply": true,
     "removeComments": true,
     "noImplicitAny": true,
     "strictPropertyInitialization": true,

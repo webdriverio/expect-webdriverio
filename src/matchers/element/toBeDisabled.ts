@@ -1,17 +1,10 @@
-import { waitUntil, enhanceErrorBe } from '../../utils'
+import { executeCommandBe } from '../../utils'
 
-export function toBeDisabled(el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
-    const isNot = this.isNot
-    const { expectation = 'disabled', verb = 'be' } = this
+export function toBeDisabled(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+    this.expectation = this.expectation || 'disabled'
 
     return browser.call(async () => {
-        el = await el
-        const pass = await waitUntil(async () => !await el.isEnabled(), isNot, options)
-        const message = enhanceErrorBe(el, pass, isNot, verb, expectation, options)
-
-        return {
-            pass,
-            message: () => message
-        }
+        const result = await executeCommandBe.call(this, received, async el => !await el.isEnabled(), options)
+        return result
     })
 }

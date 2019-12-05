@@ -12,7 +12,7 @@ export function toHaveUrl(browser: WebdriverIO.BrowserObject, url: string, optio
             return compareText(actual, url, options)
         }, isNot, options)
 
-        const message = enhanceError('url', url, actual, isNot, verb, expectation, '', options)
+        const message = enhanceError('url', url, actual, this, verb, expectation, '', options)
 
         return {
             pass,

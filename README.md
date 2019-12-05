@@ -15,7 +15,7 @@
 1. `npm install expect`
 2. `npm install expect-webdriverio`
 
-NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) v5 or higher is required.
+NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v5.16.11` or higher is required!
 
 ## Usage
 
@@ -46,15 +46,27 @@ describe('suite', () => {
         expect(notVisible).toExist({ wait: 3000 })
         
         expect(notVisible).toBeVisible({ wait: 0 })
-        // same as
-        expect(notVisible).toBeDisplayed({ now: true })
         // fails with error
         // Element "$(`body`).$$(`div`)[2].$(`not-visible`)" is not displayed.
     })
 
+    it('find elements', () => {
+        const formInputs = $$('form input')
+
+        // make sure every form element is enabled
+        // waits automatically for formInputs to have at least one element
+        expect(formInputs).toBeEnabled({ wait: 5000 })
+
+        const selectOptions = $$('form select>option')
+
+        // make sure there is at least one option in select
+        expect(selectOptions).toBeElementsArrayOfSize({ gte: 1 })
+        // exact match
+        expect($$('button')).toBeElementsArrayOfSize(3)
+    })
+
     it('advanced', () => {
         const myInput = $('input')
-        expect(myInput).toBeEnabled({ now: true }) // same as { wait: 0 }
 
         expect(myInput).toHaveClass('form-control', { message: 'Not a form control!', })
         expect(myInput).toHaveAttribute('class', 'form-control') // alias toHaveAttr
@@ -79,7 +91,7 @@ describe('suite', () => {
 
 ## API
 
-See available [Matchers](https://github.com/mgrybyk/expect-webdriverio/blob/master/types/expect-webdriverio.d.ts#L69)
+See available [Matchers](https://github.com/mgrybyk/expect-webdriverio/blob/master/types/expect-webdriverio.d.ts#L64)
 
 Besides of `expect-webdriverio` assertions you can use builtin [expect assertions](https://jestjs.io/docs/en/expect).
 
@@ -114,17 +126,17 @@ New features and improvements, of course!
 
 ### Almost there
 
-- `$$` support
+- boilerplate projects
 
 ### Coming soon...
 
-- better text comparison error messages
 - css
 - cookie / localStorage ?
 - docs
-- boilerplate projects
 
 ### Also planned
-- advanced matchers with regex
+
+- more matchers
 - jasmine support
-- better multiremote support (if requested)
+- advanced matchers with regex
+- multiremote support (if requested)

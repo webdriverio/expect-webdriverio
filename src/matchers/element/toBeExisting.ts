@@ -1,18 +1,12 @@
-import { waitUntil, enhanceErrorBe } from '../../utils'
+import { executeCommandBe } from '../../utils'
 
-export function toExist(el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
-    const isNot = this.isNot
-    const { expectation = 'exist', verb = '' } = this
+export function toExist(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+    this.expectation = this.expectation || 'exist'
+    this.verb = this.verb || ''
 
     return browser.call(async () => {
-        el = await el
-        const pass = await waitUntil(async () => el.isExisting(), isNot, options)
-        const message = enhanceErrorBe(el, pass, isNot, verb, expectation, options)
-
-        return {
-            pass,
-            message: () => message
-        }
+        const result = await executeCommandBe.call(this, received, el => el.isExisting().catch(() => false), options)
+        return result
     })
 }
 

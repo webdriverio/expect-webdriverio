@@ -1,28 +1,29 @@
-import { waitUntil, enhanceError, compareText } from '../../utils'
+import { waitUntil, enhanceError, compareText, executeCommand, getExpected, updateElementsArray } from '../../utils'
 
-export function toHaveAttribute(el: WebdriverIO.Element, attribute: string, value?: string, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHaveAttribute(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string, value?: string, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
     return browser.call(async () => {
-        el = await el
+        let el = await received
         let attr
         const pass = await waitUntil(async () => {
-            attr = await el.getAttribute(attribute)
-            if (typeof attr !== 'string') {
-                return false
-            }
+            const result = await executeCommand(el, condition, options, [attribute, value, options])
+            el = result.el
+            attr = result.values
 
-            if (typeof value !== 'string') {
-                return true
-            }
-
-            return compareText(attr, value, options)
+            return result.success
         }, isNot, options)
 
-        const message = typeof value === 'string' ?
-            enhanceError(el, value, attr || '', isNot, verb, expectation, attribute, options) :
-            enhanceError(el, !isNot, pass, isNot, verb, expectation, attribute, options)
+        updateElementsArray(pass, received, el)
+
+        let message: string
+        if (typeof value === 'string') {
+            const expected = getExpected(el, attr, value)
+            message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
+        } else {
+            message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, options)
+        }
 
         return {
             pass,
@@ -32,3 +33,19 @@ export function toHaveAttribute(el: WebdriverIO.Element, attribute: string, valu
 }
 
 export const toHaveAttr = toHaveAttribute
+
+async function condition(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions) {
+    let attr = await el.getAttribute(attribute)
+    if (typeof attr !== 'string') {
+        return { result: false, value: attr }
+    }
+
+    if (typeof value !== 'string') {
+        return { result: true, value: attr }
+    }
+
+    return {
+        result: compareText(attr, value, options),
+        value: attr
+    }
+}

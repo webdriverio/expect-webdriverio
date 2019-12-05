@@ -1,5 +1,5 @@
 export default {
-    // element
+    // Element $ or ElementArray $$
     ...require('./matchers/element/toBeClickable'),
     ...require('./matchers/element/toBeDisabled'),
     ...require('./matchers/element/toBeDisplayed'),
@@ -25,4 +25,7 @@ export default {
     // browser
     ...require('./matchers/browser/toHaveTitle'),
     ...require('./matchers/browser/toHaveUrl'),
+
+    // ElementArray $$
+    ...require('./matchers/elements/toBeElementsArrayOfSize'),
 }

@@ -1,43 +1,60 @@
-import { waitUntil, enhanceError } from '../../utils'
+import { waitUntil, enhanceError, executeCommand, getExpected, updateElementsArray } from '../../utils'
 
-export function toHaveClass(el: WebdriverIO.Element, className: string, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
-    let attribute = 'class'
-    let value = className
-    const { ignoreCase = false, trim = false, containing = false } = options
+    const attribute = 'class'
 
     return browser.call(async () => {
-        el = await el
+        let el = await received
         let attr
+
         const pass = await waitUntil(async () => {
-            attr = await el.getAttribute(attribute)
-            if (typeof attr !== 'string') {
-                return false
-            }
+            const result = await executeCommand(el, condition, options, [attribute, className, options])
+            el = result.el
+            attr = result.values
 
-            if (trim) {
-                attr = attr.trim()
-            }
-            if (ignoreCase) {
-                attr = attr.toLowerCase()
-                value = value.toLowerCase()
-            }
-            if (containing) {
-                return attr.includes(value)
-            }
-
-            const classes = attr.split(' ')
-
-            return classes.includes(value)
+            return result.success
         }, isNot, options)
 
-        const message = enhanceError(el, value, attr || '', isNot, verb, expectation, '', options)
+        updateElementsArray(pass, received, el)
+
+        const message = enhanceError(el, getExpected(el, attr, className), attr, this, verb, expectation, '', options)
 
         return {
             pass,
             message: () => message
         }
     })
+}
+
+async function condition(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions) {
+    const { ignoreCase = false, trim = false, containing = false } = options
+
+    let attr = await el.getAttribute(attribute)
+    if (typeof attr !== 'string') {
+        return { result: false }
+    }
+
+    if (trim) {
+        attr = attr.trim()
+    }
+    if (ignoreCase) {
+        attr = attr.toLowerCase()
+        value = value.toLowerCase()
+    }
+    if (containing) {
+        return {
+            result: attr.includes(value),
+            value: attr
+        }
+    }
+
+    const classes = attr.split(' ')
+
+    return {
+        result: classes.includes(value),
+        value: attr
+    }
 }

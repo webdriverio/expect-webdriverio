@@ -12,7 +12,7 @@ export function toHaveTitle(browser: WebdriverIO.BrowserObject, title: string, o
             return compareText(actual, title, options)
         }, isNot, options)
 
-        const message = enhanceError('title', title, actual, isNot, verb, expectation, '', options)
+        const message = enhanceError('title', title, actual, this, verb, expectation, '', options)
 
         return {
             pass,

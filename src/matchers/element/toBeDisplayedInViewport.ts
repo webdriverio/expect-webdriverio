@@ -1,18 +1,11 @@
-import { waitUntil, enhanceErrorBe } from '../../utils'
+import { executeCommandBe } from '../../utils'
 
-export function toBeDisplayedInViewport(el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
-    const isNot = this.isNot
-    const { expectation = 'displayed in viewport', verb = 'be' } = this
+export function toBeDisplayedInViewport(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+    this.expectation = this.expectation || 'displayed in viewport'
 
     return browser.call(async () => {
-        el = await el
-        const pass = await waitUntil(async () => el.isDisplayedInViewport(), isNot, options)
-        const message = enhanceErrorBe(el, pass, isNot, verb, expectation, options)
-
-        return {
-            pass,
-            message: () => message
-        }
+        const result = await executeCommandBe.call(this, received, el => el.isDisplayedInViewport().catch(() => false), options)
+        return result
     })
 }
 

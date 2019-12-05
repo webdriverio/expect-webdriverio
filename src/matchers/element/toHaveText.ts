@@ -1,23 +1,37 @@
-import { waitUntil, enhanceError, compareText } from '../../utils'
+import { waitUntil, enhanceError, compareText, executeCommand, getExpected, updateElementsArray } from '../../utils'
 
-export function toHaveText(el: WebdriverIO.Element, text: string, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHaveText(received: WebdriverIO.Element | WebdriverIO.ElementArray, text: string, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'text', verb = 'have' } = this
 
     return browser.call(async () => {
-        el = await el
+        let el = await received
         let actualText
-        const pass = await waitUntil(async () => {
-            actualText = await el.getText()
 
-            return compareText(actualText, text, options)
+        const pass = await waitUntil(async () => {
+            const result = await executeCommand(el, condition, options, [text, options])
+            el = result.el
+            actualText = result.values
+
+            return result.success
         }, isNot, options)
 
-        const message = enhanceError(el, text, actualText, isNot, verb, expectation, '', options)
+        updateElementsArray(pass, received, el)
+
+        const message = enhanceError(el, getExpected(el, actualText, text), actualText, this, verb, expectation, '', options)
 
         return {
             pass,
             message: () => message
         }
     })
+}
+
+async function condition(el: WebdriverIO.Element, text: string, options: ExpectWebdriverIO.StringOptions) {
+    let actualText = await el.getText()
+
+    return {
+        result: compareText(actualText, text, options),
+        value: actualText
+    }
 }

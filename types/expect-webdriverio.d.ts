@@ -18,11 +18,6 @@ declare namespace ExpectWebdriverIO {
          * user message to prepend before assertion error
          */
         message?: string
-
-        /**
-         * same as `{ wait: 0 }`, do not wait for expectation to succeed
-         */
-        now?: boolean
     }
 
     interface StringOptions extends CommandOptions {
@@ -67,6 +62,7 @@ declare namespace ExpectWebdriverIO {
 
 declare namespace jest {
     interface Matchers<R, T> {
+        // ===== $ or $$ =====
         /**
          * `WebdriverIO.Element` -> `isDisplayed`
          */
@@ -220,6 +216,7 @@ declare namespace jest {
         toHaveTextContaining(text: string, options?: ExpectWebdriverIO.StringOptions): R
 
 
+        // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getUrl`
          */
@@ -228,6 +225,13 @@ declare namespace jest {
          * `WebdriverIO.Browser` -> `getTitle`
          */
         toHaveTitle(title: string, options?: ExpectWebdriverIO.StringOptions): R
+
+        // ===== $$ only =====
+        /**
+        * `WebdriverIO.ElementArray` -> `$$('...').length`
+        * supports less / greater then or equals to be passed in options
+        */
+        toBeElementsArrayOfSize(size: number | ExpectWebdriverIO.NumberOptions, options?: ExpectWebdriverIO.NumberOptions): R
     }
 }
 
