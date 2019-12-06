@@ -40,5 +40,8 @@
     "hooks": {
       "pre-commit": "run-s compile"
     }
+  },
+  "dependencies": {
+    "jest-matcher-utils": "^24.9.0"
   }
 }

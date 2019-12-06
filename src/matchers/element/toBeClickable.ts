@@ -5,7 +5,13 @@ export function toBeClickable(received: WebdriverIO.Element | WebdriverIO.Elemen
     this.expectation = this.expectation || 'clickable'
 
     return browser.call(async () => {
-        const result = await executeCommandBe.call(this, received, el => el.isClickable().catch(() => false), options)
+        const result = await executeCommandBe.call(this, received, async el => {
+            try {
+                return el.isClickable()
+            } catch {
+                return false
+            }
+        }, options)
         return result
     })
 }

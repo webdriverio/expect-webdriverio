@@ -4,7 +4,13 @@ export function toBeDisplayed(received: WebdriverIO.Element | WebdriverIO.Elemen
     this.expectation = this.expectation || 'displayed'
 
     return browser.call(async () => {
-        const result = await executeCommandBe.call(this, received, el => el.isDisplayed().catch(() => false), options)
+        const result = await executeCommandBe.call(this, received, async el => {
+            try {
+                return el.isDisplayed()
+            } catch {
+                return false
+            }
+        }, options)
         return result
     })
 }

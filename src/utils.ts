@@ -1,11 +1,47 @@
-import { getDefaultOptions } from './options'
+import { printExpected, printReceived, printDiffOrStringify } from 'jest-matcher-utils';
 
-const defaultOptions = getDefaultOptions()
+import { getConfig } from './options'
+
+const config = getConfig()
+const { options: DEFAULT_OPTIONS, mode: MODE } = config
 
 const EXPECTED_LABEL = 'Expected';
 const RECEIVED_LABEL = 'Received';
 const NOT_SUFFIX = ' [not]'
 const NOT_EXPECTED_LABEL = EXPECTED_LABEL + NOT_SUFFIX
+
+function runJestExpect(fn: Function, args: IArguments) {
+    return fn.apply(this, args)
+}
+
+function runJasmineExpect(fn: Function) {
+    // 2nd and 3rd args are `util` and `customEqualityTesters` that are not used
+    return {
+        compare(...args: any[]) {
+            const result = fn.apply({ isNot: false }, args)
+            return jestResultToJasmine(result, false)
+        },
+        negativeCompare(...args: any[]) {
+            const result = fn.apply({ isNot: true }, args)
+            return jestResultToJasmine(result, true)
+        }
+    }
+}
+
+export const runExpect = MODE === 'jasmine' ? runJasmineExpect : runJestExpect
+
+export const jestResultToJasmine = (result: JestExpectationResult | Promise<JestExpectationResult>, isNot: boolean) => {
+    if (result instanceof Promise) {
+        return result.then(jestStyleResult => buildJasmineFromJestResult(jestStyleResult, isNot))
+    }
+    return buildJasmineFromJestResult(result, isNot)
+}
+export const buildJasmineFromJestResult = (result: JestExpectationResult, isNot: boolean) => {
+    return {
+        pass: result.pass !== isNot,
+        message: result.message()
+    }
+}
 
 /**
  *
@@ -14,8 +50,8 @@ const NOT_EXPECTED_LABEL = EXPECTED_LABEL + NOT_SUFFIX
  * @param options   wait, interval, etc
  */
 export const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
-    wait = defaultOptions.wait,
-    interval = defaultOptions.interval } = {},
+    wait = DEFAULT_OPTIONS.wait,
+    interval = DEFAULT_OPTIONS.interval } = {},
 ) => {
     // single attempt
     if (wait === 0) {
@@ -49,15 +85,14 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
     expected: any,
     actual: any,
-    context: { isNot: boolean, utils: any },
+    context: { isNot: boolean },
     verb: string,
     expectation: string,
     arg2 = '', {
         message = '',
         containing = false
     }) => {
-    const { isNot, utils } = context
-    const { printExpected, printReceived, printDiffOrStringify } = utils
+    const { isNot } = context
 
     subject = typeof subject === 'string' ? subject : getSelectors(subject)
 
@@ -75,6 +110,7 @@ export const enhanceError = (
         diffString = `${EXPECTED_LABEL}: ${printExpected(expected)}\n` +
             `${RECEIVED_LABEL}: ${printReceived(actual)}`
     } else {
+        // TODO this.extend should be configurable! The last param that is always true
         diffString = printDiffOrStringify(expected, actual, EXPECTED_LABEL, RECEIVED_LABEL, true)
     }
     if (isNot) {
@@ -162,7 +198,7 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
  * refetch elements array
  * @param elements WebdriverIO.ElementArray
  */
-export const refetchElements = async (elements: WebdriverIO.ElementArray, wait = defaultOptions.wait, full = false) => {
+export const refetchElements = async (elements: WebdriverIO.ElementArray, wait = DEFAULT_OPTIONS.wait, full = false) => {
     if (elements) {
         if (wait! > 0 && (elements.length === 0 || full)) {
             // @ts-ignore
