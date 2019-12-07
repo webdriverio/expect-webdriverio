@@ -12,9 +12,11 @@ declare namespace NodeJS {
 }
 
 interface SomeExpectLib {
+    extend?: Function
+
     addMatchers?: Function
     addAsyncMatchers?: Function
-    extend?: Function
+    getEnv?: Function
 
     _expectWebdriverio: {
         options: {

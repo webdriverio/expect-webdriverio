@@ -37,15 +37,18 @@ const extend = () => {
     expectLib = global.jasmine!
 
     // Jasmine's (as for 3.5) expect doesn't work with Promises :(
-    if (isWdioSyncInstalled()) {
-        return expectLib.addMatchers!({ ...matchers })
+    let addMatchersFn: 'addAsyncMatchers' | 'addMatchers' = 'addMatchers'
+    if (!isWdioSyncInstalled()) {
+        addMatchersFn = 'addAsyncMatchers'
     }
 
-    return expectLib.addAsyncMatchers!({ ...matchers })
+    return expectLib.getEnv!().beforeAll(function addExpectWebdriverIOMatchers() {
+        expectLib[addMatchersFn]!({ ...matchers })
+    })
 }
 
 const isJasmine = () => {
-    return global.jasmine && global.expect && global.expectAsync && global.jasmine.addMatchers && global.jasmine.addAsyncMatchers
+    return global.jasmine && global.expect && global.expectAsync && global.jasmine.getEnv && global.jasmine.addMatchers && global.jasmine.addAsyncMatchers
 }
 
 const loadExpect = () => {
