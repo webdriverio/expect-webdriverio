@@ -107,6 +107,13 @@ Options will be extended soon to provide more flexibility!
 }
 ```
 
+## TypeScript
+
+Add expect-webdriverio to `types` in the `tsconfig.json`
+- `"expect-webdriverio"` for everyone except of Jasmine/Jest users.
+- `"expect-webdriverio/jasmine"` Jasmine
+- `"expect-webdriverio/jest"` Jest
+
 ## Error messages
 
 Error messages are informative out of the box and contain:
