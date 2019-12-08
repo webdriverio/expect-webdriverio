@@ -1,4 +1,4 @@
-export default {
+const matchers = {
     // Element $ or ElementArray $$
     ...require('./matchers/element/toBeClickable'),
     ...require('./matchers/element/toBeDisabled'),
@@ -29,3 +29,12 @@ export default {
     // ElementArray $$
     ...require('./matchers/elements/toBeElementsArrayOfSize'),
 }
+
+// avoid exporting internal functions
+Object.keys(matchers).forEach(key => {
+    if (key.endsWith('Fn')) {
+        delete matchers[key]
+    }
+})
+
+export default matchers

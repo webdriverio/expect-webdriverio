@@ -1,6 +1,6 @@
 {
   "name": "expect-webdriverio",
-  "version": "0.0.1-alpha.3",
+  "version": "0.1.0-beta.4",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -35,10 +35,13 @@
     "typescript": "^3.7.3",
     "webdriverio": "^5.16.11"
   },
-  "types": "types/expect.d.ts",
+  "types": "types/jest-global.d.ts",
   "husky": {
     "hooks": {
       "pre-commit": "run-s compile"
     }
+  },
+  "dependencies": {
+    "jest-matcher-utils": "^24.9.0"
   }
 }

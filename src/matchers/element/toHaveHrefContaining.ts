@@ -1,7 +1,12 @@
-import { toHaveHref } from './toHaveHref'
+import { runExpect } from '../../util/expectAdapter'
+import { toHaveHrefFn } from './toHaveHref'
 
 export function toHaveHrefContaining(el: WebdriverIO.Element, href: string, options: ExpectWebdriverIO.StringOptions = {}) {
-    return toHaveHref(el, href, {
+    return runExpect.call(this, toHaveHrefContainingFn, arguments)
+}
+
+function toHaveHrefContainingFn(el: WebdriverIO.Element, href: string, options: ExpectWebdriverIO.StringOptions = {}) {
+    return toHaveHrefFn.call(this, el, href, {
         ...options,
         containing: true
     })

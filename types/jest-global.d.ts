@@ -1,5 +1,5 @@
 /// <reference types="expect-webdriverio/types/jest-expect-clone/jest-expect"/>
-/// <reference types="expect-webdriverio/types/expect-webdriverio"/>
+/// <reference types="expect-webdriverio/types/jest"/>
 
 declare const expect: jest.Expect
 
