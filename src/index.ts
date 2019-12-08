@@ -36,14 +36,9 @@ const extend = () => {
     // JASMINE
     expectLib = global.jasmine!
 
-    // Jasmine's (as for 3.5) expect doesn't work with Promises :(
-    let addMatchersFn: 'addAsyncMatchers' | 'addMatchers' = 'addMatchers'
-    if (!isWdioSyncInstalled()) {
-        addMatchersFn = 'addAsyncMatchers'
-    }
-
     return expectLib.getEnv!().beforeAll(function addExpectWebdriverIOMatchers() {
-        expectLib[addMatchersFn]!({ ...matchers })
+        expectLib.addMatchers!({ ...matchers })
+        expectLib.addAsyncMatchers!({ ...matchers })
     })
 }
 
@@ -56,15 +51,6 @@ const loadExpect = () => {
         return expectLib = require('expect')
     } catch (err) {
         return console.error('Failed to load expect package. Make sure it has been installed: npm i expect')
-    }
-}
-
-const isWdioSyncInstalled = () => {
-    try {
-        require('@wdio/sync/package.json').version
-        return true
-    } catch {
-        return false
     }
 }
 

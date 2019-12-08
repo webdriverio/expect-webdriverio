@@ -82,6 +82,8 @@ describe('suite', () => {
 
     it('async mode', async () => {
         const el = await $('el')
+
+        // Jasmine users should use expectAsync instead of expect!!
         await expect(el).toBePresent() // aliases toBeExisting or toExist
 
         // or
