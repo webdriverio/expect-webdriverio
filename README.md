@@ -7,12 +7,12 @@
 - automatically waits for expectation to succeed
 - see full element selector in error
 - add your own messages
-- works in Mocha, Cucumber, Jest
+- works in Mocha, Cucumber, Jest, Jasmine
 - builtin types for TypeScript and JS autocompletion
 
 ## Installation
 
-1. `npm install expect`
+1. `npm install expect` (**Jasmine** and **Jest** users should skip this step)
 2. `npm install expect-webdriverio`
 
 NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v5.16.11` or higher is required!
@@ -21,11 +21,11 @@ NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v5.16.11` or hi
 
 In your `wdio.conf.js`
 ```js
-beforeSession () {
+beforeSession () { // before hook works as well
     // with default options
     require('expect-webdriverio')
     // If you like to override default options
-    require('expect-webdriverio').setOptions({ wait: 9000 })
+    // require('expect-webdriverio').setOptions({ wait: 9000 })
 },
 ```
 
@@ -132,12 +132,12 @@ New features and improvements, of course!
 ### Coming soon...
 
 - css
+- size
 - cookie / localStorage ?
 - docs
 
 ### Also planned
 
 - more matchers
-- jasmine support
 - advanced matchers with regex
 - multiremote support (if requested)

@@ -1,6 +1,12 @@
-import { waitUntil, enhanceError, refetchElements, compareNumbers, numberError, updateElementsArray } from '../../utils'
+import { waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils'
+import { refetchElements } from '../../util/refetchElements'
+import { runExpect } from '../../util/expectAdapter'
 
 export function toBeElementsArrayOfSize(received: WebdriverIO.ElementArray, size: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.NumberOptions = {}) {
+    return runExpect.call(this, toBeElementsArrayOfSizeFn, arguments)
+}
+
+function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, size: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.NumberOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'elements array of size', verb = 'be' } = this
 

@@ -1,6 +1,11 @@
-import { waitUntil, enhanceError, compareNumbers, numberError, executeCommand, getExpected, updateElementsArray } from '../../utils'
+import { waitUntil, enhanceError, compareNumbers, numberError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
+import { runExpect } from '../../util/expectAdapter'
 
 export function toHaveChildren(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.NumberOptions = {}) {
+    return runExpect.call(this, toHaveChildrenFn, arguments)
+}
+
+function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.NumberOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'children', verb = 'have' } = this
 
@@ -12,7 +17,7 @@ export function toHaveChildren(received: WebdriverIO.Element | WebdriverIO.Eleme
         let el = await received
         let children
         const pass = await waitUntil(async () => {
-            const result = await executeCommand(el, condition, options, [gte, lte, eq])
+            const result = await executeCommand.call(this, el, condition, options, [gte, lte, eq])
             el = result.el
             children = result.values
 
@@ -22,7 +27,7 @@ export function toHaveChildren(received: WebdriverIO.Element | WebdriverIO.Eleme
         updateElementsArray(pass, received, el)
 
         const error = numberError(gte, lte, eq)
-        const message = enhanceError(el, error, getExpected(el, children, error), this, verb, expectation, '', options)
+        const message = enhanceError(el, error, wrapExpectedWithArray(el, children, error), this, verb, expectation, '', options)
 
         return {
             pass,

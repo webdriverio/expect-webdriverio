@@ -1,10 +1,11 @@
-import { executeCommandBe, runExpect } from '../../utils'
+import { executeCommandBe } from '../../utils'
+import { runExpect } from '../../util/expectAdapter'
 
 export function toExist(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
     return runExpect.call(this, toExistFn, arguments)
 }
 
-export function toExistFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+function toExistFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'exist'
     this.verb = this.verb || ''
 

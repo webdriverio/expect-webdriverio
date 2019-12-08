@@ -1,6 +1,11 @@
-import { waitUntil, enhanceError, compareText, executeCommand, getExpected, updateElementsArray } from '../../utils'
+import { waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
+import { runExpect } from '../../util/expectAdapter'
 
 export function toHaveProperty(received: WebdriverIO.Element | WebdriverIO.ElementArray, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}) {
+    return runExpect.call(this, toHavePropertyFn, arguments)
+}
+
+export function toHavePropertyFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
 
@@ -8,7 +13,7 @@ export function toHaveProperty(received: WebdriverIO.Element | WebdriverIO.Eleme
         let el = await received
         let prop: any
         const pass = await waitUntil(async () => {
-            const result = await executeCommand(el, condition, options, [property, value])
+            const result = await executeCommand.call(this, el, condition, options, [property, value])
             el = result.el
             prop = result.values
 
@@ -21,7 +26,7 @@ export function toHaveProperty(received: WebdriverIO.Element | WebdriverIO.Eleme
         if (value === undefined) {
             message = enhanceError(el, !isNot, pass, this, verb, expectation, property, options)
         } else {
-            const expected = getExpected(el, prop, value)
+            const expected = wrapExpectedWithArray(el, prop, value)
             message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
         }
 
@@ -50,8 +55,5 @@ async function condition(el: WebdriverIO.Element, property: string, value?: any,
 
     prop = prop.toString()
 
-    return {
-        result: compareText(prop, value, options),
-        value: prop
-    }
+    return compareText(prop, value, options)
 }

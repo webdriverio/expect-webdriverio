@@ -1,6 +1,11 @@
-import { waitUntil, enhanceError, executeCommand, getExpected, updateElementsArray } from '../../utils'
+import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
+import { runExpect } from '../../util/expectAdapter'
 
 export function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string, options: ExpectWebdriverIO.StringOptions = {}) {
+    return runExpect.call(this, toHaveClassFn, arguments)
+}
+
+function toHaveClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
@@ -11,7 +16,7 @@ export function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementA
         let attr
 
         const pass = await waitUntil(async () => {
-            const result = await executeCommand(el, condition, options, [attribute, className, options])
+            const result = await executeCommand.call(this, el, condition, options, [attribute, className, options])
             el = result.el
             attr = result.values
 
@@ -20,7 +25,7 @@ export function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementA
 
         updateElementsArray(pass, received, el)
 
-        const message = enhanceError(el, getExpected(el, attr, className), attr, this, verb, expectation, '', options)
+        const message = enhanceError(el, wrapExpectedWithArray(el, attr, className), attr, this, verb, expectation, '', options)
 
         return {
             pass,
