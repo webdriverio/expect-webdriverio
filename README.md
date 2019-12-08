@@ -136,7 +136,7 @@ Error messages are informative out of the box and contain:
 WebdriverIO test runner
 - Mocha https://github.com/mgrybyk/webdriverio-devtools
 - Cucumber https://gitlab.com/bar_foo/wdio-cucumber-typescript
-- Jasmine _coming soon_
+- Jasmine https://github.com/mgrybyk/wdio-jasmine-boilerplate
 
 Standalone
 - Jest https://github.com/erwinheitzman/jest-webdriverio-standalone-boilerplate
