@@ -7,7 +7,7 @@ declare namespace NodeJS {
         expect?: SomeExpectLib
         jasmine?: SomeExpectLib
         expectAsync?: {}
-        ExpectWebdriverIO: SomeExpectLib
+        expectWdio: SomeExpectLib
     }
 }
 

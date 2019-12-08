@@ -6,9 +6,9 @@ const DEFAULT_OPTIONS = {
 let mode: 'jasmine' | 'jest' = 'jest'
 
 let expectLib: SomeExpectLib
-if (global.ExpectWebdriverIO) {
-    expectLib = global.ExpectWebdriverIO
-} else if (global.jasmine) {
+if (global.expectWdio) {
+    expectLib = global.expectWdio
+} else if (global.jasmine && !global.expect!.extend) {
     expectLib = global.jasmine
     mode = 'jasmine'
 } else {

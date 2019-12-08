@@ -18,10 +18,10 @@ const extend = () => {
     if (!global.expect.extend && !isJasmine()) {
         // otherwise allow expect-webdriverio to be used together with some other expect lib
         if (!loadExpect()) { return }
-        global.ExpectWebdriverIO = expectLib
+        global.expectWdio = expectLib
         console.warn('Warning! Unsupported expect lib is used.\n' +
             "Only Jasmine >= 3.3.0 and Jest's expect are supported.\n" +
-            "expect-webdriverio is assigned to global.ExpectWebdriverIO")
+            "expect-webdriverio is assigned to global.expectWdio")
     }
 
     // matchers relies on options

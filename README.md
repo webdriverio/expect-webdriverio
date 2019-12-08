@@ -113,6 +113,7 @@ Add expect-webdriverio to `types` in the `tsconfig.json`
 - `"expect-webdriverio"` for everyone except of Jasmine/Jest users.
 - `"expect-webdriverio/jasmine"` Jasmine
 - `"expect-webdriverio/jest"` Jest
+- `"expect-webdriverio/types/standalone-global"` to use as an additional expectation lib (not recommended)
 
 ## Error messages
 
