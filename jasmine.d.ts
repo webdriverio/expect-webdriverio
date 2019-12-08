@@ -2,5 +2,5 @@
 
 declare module jasmine {
     interface Matchers<T> extends ExpectWebdriverIO.Matchers {}
-    interface AsyncMatchers<T> extends ExpectWebdriverIO.Matchers {}
+    interface AsyncMatchers<T, U> extends ExpectWebdriverIO.Matchers {}
 }

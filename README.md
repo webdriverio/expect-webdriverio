@@ -127,17 +127,27 @@ Error messages are informative out of the box and contain:
 - highlight the difference (texts assertions)
 
 #### Examples
-![toHaveClass](/docs/img/errors/toHaveClass.png?raw=true "toHaveClass")
+![toHaveText](/docs/img/errors/text.png?raw=true "toHaveText")
+![toHaveClass](/docs/img/errors/class.png?raw=true "toHaveClass")
+![not.toBeVisible](/docs/img/errors/not-visible.png?raw=true "not.toBeVisible")
+
+## Boilerplate Projects
+
+WebdriverIO test runner
+- Mocha https://github.com/mgrybyk/webdriverio-devtools
+- Cucumber https://gitlab.com/bar_foo/wdio-cucumber-typescript
+- Jasmine _coming soon_
+
+Standalone
+- Jest https://github.com/erwinheitzman/jest-webdriverio-standalone-boilerplate
+
+more boilerplate projects coming soon, feel free to propose yours!
 
 ## What's next?
 
 First of all, **feel free to raise an issue with your suggestions or help with PR!**
 
 New features and improvements, of course!
-
-### Almost there
-
-- boilerplate projects
 
 ### Coming soon...
 
