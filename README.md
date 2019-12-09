@@ -1,5 +1,7 @@
 # expect-webdriverio
 
+[![Build Status](https://travis-ci.org/mgrybyk/expect-webdriverio.svg?branch=master)](https://travis-ci.org/mgrybyk/expect-webdriverio)
+
 ###### [TypeScript / JS Autocomplete](/docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](/docs/Extend.md)
 
 > [WebdriverIO](https://webdriver.io/) Assertion library inspired by [expect](https://www.npmjs.com/package/expect)
