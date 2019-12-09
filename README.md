@@ -1,14 +1,15 @@
 # expect-webdriverio
 
+###### [TypeScript / JS Autocomplete](/docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](/docs/Extend.md)
+
 > [WebdriverIO](https://webdriver.io/) Assertion library inspired by [expect](https://www.npmjs.com/package/expect)
 
 ## Key Features
 
-- automatically waits for expectation to succeed
-- see full element selector in error
-- add your own messages
+- [waits](#default-options) for expectation to succeed
+- detailed [error messages](#error-messages)
 - works in Mocha, Cucumber, Jest, Jasmine
-- builtin types for TypeScript and JS autocompletion
+- builtin [types](docs/Types.md) for TypeScript and JS autocompletion
 
 ## Installation
 
@@ -22,75 +23,17 @@ NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v5.16.11` or hi
 In your `wdio.conf.js`
 ```js
 beforeSession () { // before hook works as well
-    // with default options
     require('expect-webdriverio')
-    // If you like to override default options
-    // require('expect-webdriverio').setOptions({ wait: 9000 })
 },
 ```
 
 In your test
 ```js
-describe('suite', () => {
-    before(() => {
-        browser.url('https://github.com/mgrybyk/expect-webdriverio')
-        
-        expect(browser).toHaveUrl('https://github.com/mgrybyk/expect-webdriverio')
-        expect(browser).toHaveTitle('expect-webdriverio', { containing: true })
-    })
+const $button = $('button')
+expect($button).toBeDisplayed()
+```
 
-    it('be visible', () => {
-        const notVisible = $('body').$$('div')[2].$("not-visible")
-        
-        // wait for 2000ms for expectation to succeed by default
-        expect(notVisible).toExist()
-
-        // override default wait timeout        
-        expect(notVisible).toBeVisible({ wait: 0 })
-        // fails with error
-        // Element "$(`body`).$$(`div`)[2].$(`not-visible`)" is not displayed.
-    })
-
-    it('find elements', () => {
-        const formInputs = $$('form input')
-
-        // make sure every form element is enabled
-        // waits automatically for formInputs to have at least one element
-        expect(formInputs).toBeEnabled({ wait: 5000 })
-
-        const selectOptions = $$('form select>option')
-
-        // make sure there is at least one option in select
-        expect(selectOptions).toBeElementsArrayOfSize({ gte: 1 })
-        // exact match
-        expect($$('button')).toBeElementsArrayOfSize(3)
-    })
-
-    it('advanced', () => {
-        const myInput = $('input')
-
-        expect(myInput).toHaveClass('form-control', { message: 'Not a form control!', })
-        expect(myInput).toHaveAttribute('class', 'form-control') // alias toHaveAttr
-        
-        expect(myInput).toHaveValueContaining('USER')
-        // or pass `containing` as an option
-        expect(myInput).toHaveValue('value', 'user', { containing: true, ignoreCase: true })
-
-        // Simply invert assertions
-        expect(myInput).not.toHaveProperty('height', 0)
-    })
-
-    it('async mode', async () => {
-        const el = await $('el')
-
-        // Jasmine users should use expectAsync instead of expect!!
-        await expect(el).toBePresent() // aliases toBeExisting or toExist
-
-        // or
-        await expect($('el')).toBePresent()
-    })
-})
-``` 
+See more [Examples](docs/Examples.md)
 
 ## API
 
@@ -100,8 +43,6 @@ Besides of the `expect-webdriverio` matchers you can use builtin Jest's [expect]
 
 ## Default Options
 
-Options will be extended soon to provide more flexibility!
-
 ```js
 {
     wait: 2000, // ms to wait for expectation to succeed
@@ -109,55 +50,33 @@ Options will be extended soon to provide more flexibility!
 }
 ```
 
-## TypeScript
-
-Add expect-webdriverio to `types` in the `tsconfig.json`
-- `"expect-webdriverio"` for everyone except of Jasmine/Jest users.
-- `"expect-webdriverio/jasmine"` Jasmine
-- `"expect-webdriverio/jest"` Jest
-- `"expect-webdriverio/types/standalone-global"` to use as an additional expectation lib (not recommended)
+Set options like this:
+```js
+beforeSession () { // before hook works as well
+    require('expect-webdriverio').setOptions({ wait: 5000 })
+},
+```
 
 ## Error messages
 
 Error messages are informative out of the box and contain:
 
-- full element selector
-- property type to be verified
+- full element selector, like `$('form').$('input')`
 - actual and expected values
 - highlight the difference (texts assertions)
 
-#### Examples
 ![toHaveText](/docs/img/errors/text.png?raw=true "toHaveText")
 ![toHaveClass](/docs/img/errors/class.png?raw=true "toHaveClass")
 ![not.toBeVisible](/docs/img/errors/not-visible.png?raw=true "not.toBeVisible")
-
-## Boilerplate Projects
-
-WebdriverIO test runner
-- Mocha https://github.com/mgrybyk/webdriverio-devtools
-- Cucumber https://gitlab.com/bar_foo/wdio-cucumber-typescript
-- Jasmine https://github.com/mgrybyk/wdio-jasmine-boilerplate
-
-Standalone
-- Jest https://github.com/erwinheitzman/jest-webdriverio-standalone-boilerplate
-
-more boilerplate projects coming soon, feel free to propose yours!
 
 ## What's next?
 
 First of all, **feel free to raise an issue with your suggestions or help with PR!**
 
-New features and improvements, of course!
+### Planned
 
-### Coming soon...
-
-- css
-- size
-- cookie / localStorage ?
-- docs
-
-### Also planned
-
-- more matchers
-- advanced matchers with regex
+- css matcher
+- size matcher
+- cookie / localStorage matchers?
+- text regex matchers
 - multiremote support (if requested)
