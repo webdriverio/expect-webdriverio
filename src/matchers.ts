@@ -1,4 +1,11 @@
 const matchers = {
+    // browser
+    ...require('./matchers/browser/toHaveTitle'),
+    ...require('./matchers/browser/toHaveUrl'),
+
+    // ElementArray $$
+    ...require('./matchers/elements/toBeElementsArrayOfSize'),
+
     // Element $ or ElementArray $$
     ...require('./matchers/element/toBeClickable'),
     ...require('./matchers/element/toBeDisabled'),
@@ -21,13 +28,6 @@ const matchers = {
     ...require('./matchers/element/toHaveTextContaining'),
     ...require('./matchers/element/toHaveValue'),
     ...require('./matchers/element/toHaveValueContaining'),
-
-    // browser
-    ...require('./matchers/browser/toHaveTitle'),
-    ...require('./matchers/browser/toHaveUrl'),
-
-    // ElementArray $$
-    ...require('./matchers/elements/toBeElementsArrayOfSize'),
 }
 
 // avoid exporting internal functions

@@ -11,6 +11,12 @@ declare namespace NodeJS {
     }
 }
 
+declare namespace jest {
+    interface Expect {
+        _expectWebdriverio?: any
+    }
+}
+
 interface SomeExpectLib {
     extend?: Function
 
