@@ -1,6 +1,6 @@
 # expect-webdriverio
 
-[![Build Status](https://travis-ci.org/mgrybyk/expect-webdriverio.svg?branch=master)](https://travis-ci.org/mgrybyk/expect-webdriverio)
+[![Build Status](https://travis-ci.org/mgrybyk/expect-webdriverio.svg?branch=master)](https://travis-ci.org/mgrybyk/expect-webdriverio) [![codecov](https://codecov.io/gh/mgrybyk/expect-webdriverio/branch/master/graph/badge.svg)](https://codecov.io/gh/mgrybyk/expect-webdriverio)
 
 ###### [TypeScript / JS Autocomplete](/docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](/docs/Extend.md)
 
