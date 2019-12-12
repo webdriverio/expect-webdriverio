@@ -17,5 +17,6 @@ module.exports = {
         }
     },
     testEnvironment: "node",
+    coveragePathIgnorePatterns: ["/__fixtures__/"],
     testPathIgnorePatterns: ["/__fixtures__/"],
 }
