@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "clean": "rimraf ./lib",
-    "compile": "tsc",
+    "compile": "tsc --build tsconfig.build.json",
     "build": "run-s clean compile"
   },
   "repository": {

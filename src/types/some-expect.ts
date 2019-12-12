@@ -38,3 +38,17 @@ interface JestExpectationResult {
     pass: boolean
     message: () => string
 }
+
+type WdioElementMaybePromise =
+    WebdriverIO.Element | WebdriverIO.ElementArray |
+    Promise<WebdriverIO.Element> | Promise<WebdriverIO.ElementArray>
+
+
+// wdio stub
+
+declare namespace WebdriverIO {
+    interface Element {
+        _value: () => boolean
+        _attempts: number
+    }
+}

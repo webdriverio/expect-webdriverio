@@ -1,15 +1,5 @@
 import Matchers from '../src/matchers'
 
-jest.mock('../src/options', () => ({
-    getConfig: jest.fn().mockImplementation(() => ({
-        options: {
-            wait: 2000,
-            interval: 100,
-        },
-        mode: 'jest'
-    }))
-}))
-
 test('matchers', () => {
     expect(Object.keys(Matchers)).toEqual([
         // browser

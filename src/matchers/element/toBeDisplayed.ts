@@ -1,11 +1,11 @@
 import { executeCommandBe } from '../../utils'
 import { runExpect, getContext } from '../../util/expectAdapter'
 
-export function toBeDisplayed(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+export function toBeDisplayed(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}) {
     return runExpect.call(this, toBeDisplayedFn, arguments)
 }
 
-function toBeDisplayedFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+function toBeDisplayedFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'displayed'
 
     return browser.call(async () => {
@@ -20,7 +20,7 @@ function toBeDisplayedFn(received: WebdriverIO.Element | WebdriverIO.ElementArra
     })
 }
 
-export function toBeVisible (el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions) {
+export function toBeVisible (el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
     const context = getContext(this)
     context.expectation = 'visible'
     return toBeDisplayed.call(context, el, options)
