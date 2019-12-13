@@ -1,4 +1,4 @@
-import { executeCommandBe } from '../../utils'
+import { executeCommandBe, aliasFn } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
 export function toBeDisplayedInViewport(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
@@ -20,4 +20,6 @@ function toBeDisplayedInViewportFn(received: WebdriverIO.Element | WebdriverIO.E
     })
 }
 
-export const toBeVisibleInViewport = toBeDisplayedInViewport
+export function toBeVisibleInViewport(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
+    return aliasFn.call(this, toBeDisplayedInViewport, { expectation: 'visible in viewport' }, el, options)
+}

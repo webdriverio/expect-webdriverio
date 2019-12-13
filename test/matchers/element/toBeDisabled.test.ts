@@ -1,27 +1,23 @@
-import { toBeDisplayed, toBeVisible } from '../../../src/matchers/element/toBeDisplayed'
+import { getExpectMessage, getReceived, matcherNameToString } from '../../__fixtures__/utils';
+import { toBeDisabled } from '../../../src/matchers/element/toBeDisabled'
 
-// TODO how to import it once for every matcher?
-require('../../__fixtures__/wdio.js')
-
-describe('toBeDisplayed', () => {
-    // TODO need to have global beforeAll hook
-    beforeAll(() => {
-        expect._expectWebdriverio.options.wait = 50
-        expect._expectWebdriverio.options.interval = 10
-    })
-
+describe('toBeDisabled', () => {
+    /**
+     * result is inverted for toBeDisplayed because it inverts isEnabled result
+     * `!await el.isEnabled()`
+     */
     test('wait for success', async () => {
         const el = await $('sel')
         el._attempts = 2
         el._value = function () {
             if (this._attempts > 0) {
                 this._attempts--
-                return false
+                return true
             }
-            return true
+            return false
         }
 
-        const result = await toBeDisplayed(el)
+        const result = await toBeDisabled(el)
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
     })
@@ -32,7 +28,7 @@ describe('toBeDisplayed', () => {
             throw new Error('some error')
         }
 
-        const result = await toBeDisplayed(el)
+        const result = await toBeDisabled(el)
         expect(result.pass).toBe(false)
     })
 
@@ -41,10 +37,10 @@ describe('toBeDisplayed', () => {
         el._attempts = 0
         el._value = function () {
             this._attempts++
-            return true
+            return false
         }
 
-        const result = await toBeDisplayed(el)
+        const result = await toBeDisabled(el)
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -54,10 +50,10 @@ describe('toBeDisplayed', () => {
         el._attempts = 0
         el._value = function () {
             this._attempts++
-            return false
+            return true
         }
 
-        const result = await toBeDisplayed(el, { wait: 0 })
+        const result = await toBeDisabled(el, { wait: 0 })
         expect(result.pass).toBe(false)
         expect(el._attempts).toBe(1)
     })
@@ -67,16 +63,20 @@ describe('toBeDisplayed', () => {
         el._attempts = 0
         el._value = function () {
             this._attempts++
-            return true
+            return false
         }
 
-        const result = await toBeDisplayed(el, { wait: 0 })
+        const result = await toBeDisabled(el, { wait: 0 })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
 
     test('not - failure', async () => {
-        const result = await toBeDisplayed.call({ isNot: true }, $('sel'), { wait: 0 })
+        const el = await $('sel')
+        el._value = function () {
+            return false
+        }
+        const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
         const received = getReceived(result.message())
 
         expect(received).not.toContain('not')
@@ -86,9 +86,9 @@ describe('toBeDisplayed', () => {
     test('not - success', async () => {
         const el = await $('sel')
         el._value = function () {
-            return false
+            return true
         }
-        const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 0 })
+        const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
         const received = getReceived(result.message())
 
         expect(received).toContain('not')
@@ -96,28 +96,11 @@ describe('toBeDisplayed', () => {
     })
 
     test('message', async () => {
-        const result = await toBeDisplayed($('sel'))
-        expect(getExpectMessage(result.message())).toContain('to be displayed')
-    })
-
-    test('alias message', async () => {
-        const result = await toBeVisible($('sel'))
-        expect(getExpectMessage(result.message())).toContain('to be visible')
+        const el = await $('sel')
+        el._value = function () {
+            return false
+        }
+        const result = await toBeDisabled(el)
+        expect(getExpectMessage(result.message())).toContain('to be disabled')
     })
 })
-
-function getExpectMessage(msg: string) {
-    return msg.split('\n')[0]
-}
-
-function getExpected(msg: string) {
-    return getReceivedOrExpected(msg, 'Expected')
-}
-
-function getReceived(msg: string) {
-    return getReceivedOrExpected(msg, 'Received')
-}
-
-function getReceivedOrExpected(msg: string, type: string) {
-    return msg.split('\n').find((line, idx) => idx > 1 && line.startsWith(type))
-}

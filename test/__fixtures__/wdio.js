@@ -1,11 +1,23 @@
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
+function beFn() {
+    return this._value ? this._value() : true
+}
+
+function strFn() {
+    return this._value ? this._value() : ' Valid Text '
+}
+
 const element = {
     $,
     $$,
-    isDisplayed() {
-        return this._value ? this._value() : true
-    }
+    isDisplayed: beFn,
+    isDisplayedInViewport: beFn,
+    isExisting: beFn,
+    isSelected: beFn,
+    isClickable: beFn,
+    isFocused: beFn,
+    isEnabled: beFn,
 }
 
 function $(selector, ...args) {
@@ -48,6 +60,8 @@ const browser = {
     $,
     $$,
     waitUntil,
+    getUrl: strFn,
+    getTitle: strFn,
     call(fn) { return fn() },
 }
 

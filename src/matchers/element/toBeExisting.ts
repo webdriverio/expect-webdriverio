@@ -1,11 +1,11 @@
-import { executeCommandBe } from '../../utils'
+import { executeCommandBe, aliasFn } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-export function toExist(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+export function toExist(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}) {
     return runExpect.call(this, toExistFn, arguments)
 }
 
-function toExistFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+function toExistFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'exist'
     this.verb = this.verb || ''
 
@@ -21,5 +21,9 @@ function toExistFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, opt
     })
 }
 
-export const toBeExisting = toExist
-export const toBePresent = toExist
+export function toBeExisting(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
+    return aliasFn.call(this, toExist, { verb: 'be', expectation: 'existing' }, el, options)
+}
+export function toBePresent(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
+    return aliasFn.call(this, toExist, { verb: 'be', expectation: 'present' }, el, options)
+}

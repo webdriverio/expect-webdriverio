@@ -3,12 +3,14 @@ const options = {
     interval: 100,
 }
 
+const optionsModule = '../src/options'
+
 describe('options', () => {
     describe('getConfig', () => {
         test('expectWdio', () => {
             // @ts-ignore
             global.expectWdio = {}
-            const { getConfig } = require('../src/options')
+            const { getConfig } = require(optionsModule)
 
             expect(getConfig()).toEqual({ options, mode: 'jest' })
 
@@ -17,14 +19,14 @@ describe('options', () => {
     })
 
     describe('setDefaultOptions', () => {
-        const { getConfig, setDefaultOptions } = require('../src/options')
-
         test('bar', () => {
+            const { getConfig, setDefaultOptions } = require(optionsModule)
 
         })
     })
 
-    afterEach(() => {
+    beforeEach(() => {
+        delete require.cache[require.resolve(optionsModule)]
         delete expect._expectWebdriverio
     })
 })

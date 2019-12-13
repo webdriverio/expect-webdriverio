@@ -3,6 +3,7 @@ import { getConfig } from './options'
 import { executeCommand } from './util/executeCommand'
 import { wrapExpectedWithArray, updateElementsArray } from './util/elementsUtil'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage'
+import { getContext } from './util/expectAdapter'
 
 const config = getConfig()
 const { options: DEFAULT_OPTIONS } = config
@@ -110,6 +111,13 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
     }
 }
 
+function aliasFn(fn: Function, { verb, expectation }: { verb?: string, expectation?: string } = {}, ...args: any[]) {
+    const context = getContext(this)
+    context.verb = verb
+    context.expectation = expectation
+    return fn.apply(context, args)
+}
+
 export {
     updateElementsArray,
     wrapExpectedWithArray,
@@ -118,5 +126,6 @@ export {
     executeCommand,
     executeCommandBe,
     waitUntil,
-    compareNumbers
+    compareNumbers,
+    aliasFn,
 }

@@ -1,0 +1,104 @@
+import { getExpectMessage, getReceived, matcherNameToString, getExpected } from '../__fixtures__/utils';
+import Matchers from '../../src/matchers'
+
+const browserMatchers = ['toHaveUrl', 'toHaveTitle']
+
+const validText = ' Valid Text '
+const wrongText = ' Wrong Text '
+
+describe('be* matchers', () => {
+    browserMatchers.forEach((name) => {
+        const fn = Matchers[name]
+
+        describe(name, () => {
+            test('wait for success', async () => {
+                browser._attempts = 2
+                browser._value = function () {
+                    if (this._attempts > 0) {
+                        this._attempts--
+                        return wrongText
+                    }
+                    return validText
+                }
+
+                const result = await fn.call({}, browser, validText)
+                expect(result.pass).toBe(true)
+                expect(browser._attempts).toBe(0)
+            })
+
+            test('wait but failure', async () => {
+                browser._value = function () {
+                    throw new Error('some error')
+                }
+
+                const result = await fn.call({}, browser, validText)
+                expect(result.pass).toBe(false)
+            })
+
+            test('success on the first attempt', async () => {
+                browser._attempts = 0
+                browser._value = function () {
+                    this._attempts++
+                    return validText
+                }
+
+                const result = await fn.call({}, browser, validText)
+                expect(result.pass).toBe(true)
+                expect(browser._attempts).toBe(1)
+            })
+
+            test('no wait - failure', async () => {
+                browser._attempts = 0
+                browser._value = function () {
+                    this._attempts++
+                    return wrongText
+                }
+
+                const result = await fn.call({}, browser, validText, { wait: 0 })
+                expect(result.pass).toBe(false)
+                expect(browser._attempts).toBe(1)
+            })
+
+            test('no wait - success', async () => {
+                browser._attempts = 0
+                browser._value = function () {
+                    this._attempts++
+                    return validText
+                }
+
+                const result = await fn.call({}, browser, validText, { wait: 0 })
+
+                expect(result.pass).toBe(true)
+                expect(browser._attempts).toBe(1)
+            })
+
+            test('not - failure', async () => {
+                const result = await fn.call({ isNot: true }, browser, validText, { wait: 0 })
+
+                expect(getExpectMessage(result.message())).toContain('not')
+                expect(getExpected(result.message())).toContain('not')
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('not - success', async () => {
+                browser._value = function () {
+                    return wrongText
+                }
+                const result = await fn.call({ isNot: true }, browser, validText, { wait: 0 })
+
+                expect(getExpectMessage(result.message())).toContain('not')
+                expect(getExpected(result.message())).toContain('Valid')
+                expect(getReceived(result.message())).toContain('Wrong')
+
+                expect(result.pass).toBe(false)
+            })
+
+            test('message', async () => {
+                const result = await fn.call({}, browser)
+                expect(getExpectMessage(result.message())).toContain(matcherNameToString(name))
+            })
+        })
+    })
+})
+

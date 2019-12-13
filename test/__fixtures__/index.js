@@ -1,0 +1,2 @@
+require('./beforeAll')
+require('./wdio')

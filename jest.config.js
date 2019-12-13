@@ -1,12 +1,12 @@
 module.exports = {
     roots: [
-        "<rootDir>/test"
+        '<rootDir>/test'
     ],
     testMatch: [
-        "**/?(*.)+(spec|test).+(ts|tsx|js)"
+        '**/?(*.)+(spec|test).+(ts|tsx|js)'
     ],
     preset: 'ts-jest',
-    coverageDirectory: "./coverage/",
+    coverageDirectory: './coverage/',
     collectCoverage: true,
     coverageThreshold: {
         global: {
@@ -16,7 +16,8 @@ module.exports = {
             statements: 1
         }
     },
-    testEnvironment: "node",
-    coveragePathIgnorePatterns: ["/__fixtures__/"],
-    testPathIgnorePatterns: ["/__fixtures__/"],
+    testEnvironment: 'node',
+    coveragePathIgnorePatterns: ['/__fixtures__/'],
+    testPathIgnorePatterns: ['/__fixtures__/'],
+    setupFilesAfterEnv: ['./test/__fixtures__/index.js']
 }
