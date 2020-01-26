@@ -3,19 +3,19 @@
 ```js
 describe('suite', () => {
     before(() => {
-        browser.url('https://github.com/mgrybyk/expect-webdriverio')
-        
-        expect(browser).toHaveUrl('https://github.com/mgrybyk/expect-webdriverio')
+        browser.url('https://github.com/webdriverio/expect-webdriverio')
+
+        expect(browser).toHaveUrl('https://github.com/webdriverio/expect-webdriverio')
         expect(browser).toHaveTitle('expect-webdriverio', { containing: true })
     })
 
     it('be visible', () => {
         const notVisible = $('body').$$('div')[2].$("not-visible")
-        
+
         // wait for 2000ms for expectation to succeed by default
         expect(notVisible).toExist()
 
-        // override default wait timeout        
+        // override default wait timeout
         expect(notVisible).toBeVisible({ wait: 0 })
         // fails with error
         // Element "$(`body`).$$(`div`)[2].$(`not-visible`)" is not displayed.
@@ -41,7 +41,7 @@ describe('suite', () => {
 
         expect(myInput).toHaveClass('form-control', { message: 'Not a form control!', })
         expect(myInput).toHaveAttribute('class', 'form-control') // alias toHaveAttr
-        
+
         expect(myInput).toHaveValueContaining('USER')
         // or pass `containing` as an option
         expect(myInput).toHaveValue('value', 'user', { containing: true, ignoreCase: true })
@@ -60,7 +60,7 @@ describe('suite', () => {
         await expect($('el')).toBePresent()
     })
 })
-``` 
+```
 
 ## Boilerplate Projects
 
