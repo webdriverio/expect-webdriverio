@@ -78,7 +78,7 @@ This options can be applied in addition to the command options when strings are 
 | Name | Type | Details |
 | ---- | ---- | ------- |
 | <code><var>ignoreCase</var></code> | boolean | apply `toLowerCase` to both actual and expected values |
-| <code><var>trim</var></code> | boolean | apply `trim` to actual value` |
+| <code><var>trim</var></code> | boolean | apply `trim` to actual value |
 | <code><var>containing</var></code> | boolean | expect actual value to contain expected value, otherwise strict equal. |
 | <code><var>asString</var></code> | boolean | might be helpful to force converting property value to string |
 
