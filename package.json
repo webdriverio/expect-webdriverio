@@ -44,6 +44,6 @@
     }
   },
   "dependencies": {
-    "jest-matcher-utils": "^24.9.0"
+    "jest-matcher-utils": "^25.1.0"
   }
 }
