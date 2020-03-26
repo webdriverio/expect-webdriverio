@@ -34,7 +34,10 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
                 error = err
                 return false
             }
-        }, wait, undefined, interval)
+        }, {
+            timeout: wait,
+            interval
+        })
 
         if (error) {
             throw error

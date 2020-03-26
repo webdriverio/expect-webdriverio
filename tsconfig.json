@@ -12,7 +12,7 @@
     "strictNullChecks": true,
     "types": [
       "node",
-      "webdriverio/webdriverio-v6",
+      "webdriverio",
       "@types/jest"
     ]
   },

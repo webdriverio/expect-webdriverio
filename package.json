@@ -26,16 +26,16 @@
   },
   "homepage": "https://github.com/webdriverio/expect-webdriverio#readme",
   "devDependencies": {
-    "@types/jest": "^24.0.25",
-    "@types/node": "^12.12.24",
-    "codecov": "^3.6.1",
-    "husky": "^4.0.7",
-    "jest": "^24.9.0",
+    "@types/jest": "^25.1.4",
+    "@types/node": "^12.12.31",
+    "codecov": "^3.6.5",
+    "husky": "^4.2.3",
+    "jest": "^25.2.2",
     "npm-run-all": "^4.1.5",
-    "rimraf": "^3.0.0",
-    "ts-jest": "^24.3.0",
-    "typescript": "^3.7.4",
-    "webdriverio": "^5.18.5"
+    "rimraf": "^3.0.2",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.3",
+    "webdriverio": "^6.0.2"
   },
   "types": "types/jest-global.d.ts",
   "husky": {
