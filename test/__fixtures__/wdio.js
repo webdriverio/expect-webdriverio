@@ -38,11 +38,11 @@ function $$(selector, ...args) {
     })
 }
 
-async function waitUntil(condition, wait, m, interval) {
-    if (!Number.isInteger(wait) || wait < 1) {
+async function waitUntil(condition, { timeout, m, interval }) {
+    if (!Number.isInteger(timeout) || timeout < 1) {
         throw new Error('wrong args passed to waitUntil fixture')
     }
-    let attemptsLeft = wait/interval
+    let attemptsLeft = timeout / interval
     while (attemptsLeft > 0) {
         try {
             const result = await condition()
@@ -53,7 +53,7 @@ async function waitUntil(condition, wait, m, interval) {
         attemptsLeft --
         sleep(interval)
     }
-    throw new Error('waitUntil: timeout after ' + wait)
+    throw new Error('waitUntil: timeout after ' + timeout)
 }
 
 const browser = {
