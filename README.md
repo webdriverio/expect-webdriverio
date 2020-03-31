@@ -281,7 +281,7 @@ Checks if an input element contains a certain value.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveValue('us')
+expect(myInput).toHaveValueContaining('us')
 ```
 
 ### toBeClickable
