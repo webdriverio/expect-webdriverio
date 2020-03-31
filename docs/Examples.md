@@ -36,6 +36,14 @@ describe('suite', () => {
         expect($$('button')).toBeElementsArrayOfSize(3)
     })
 
+    it('checks text values', () => {
+        // assert certain text accurate
+        const repoTitle = $('expect-webdriverio')
+        expect(repoTitle).toHaveText('expect-webdriverio')
+        // or ignore the case and only check that a substring is present
+        expect(repoTitle).toHaveTextContaining('webdriverio', { ignoreCase: true })
+    })
+
     it('advanced', () => {
         const myInput = $('input')
 
