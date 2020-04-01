@@ -1,4 +1,4 @@
-import { getExpectMessage, getReceived, matcherNameToString } from '../../__fixtures__/utils';
+import { getExpectMessage, getReceived } from '../../__fixtures__/utils';
 import { toBeDisabled } from '../../../src/matchers/element/toBeDisabled'
 
 describe('toBeDisabled', () => {

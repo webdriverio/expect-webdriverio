@@ -48,7 +48,7 @@ type WdioElementMaybePromise =
 
 declare namespace WebdriverIO {
     interface Element {
-        _value: () => boolean
+        _value: () => boolean | string
         _attempts: number
     }
     interface Browser {

@@ -16,7 +16,7 @@ export const enhanceError = (
         message = '',
         containing = false
     }) => {
-    const { isNot } = context
+    const { isNot = false } = context
 
     subject = typeof subject === 'string' ? subject : getSelectors(subject)
 
