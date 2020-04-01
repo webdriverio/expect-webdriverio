@@ -8,6 +8,10 @@ function strFn() {
     return this._value ? this._value() : ' Valid Text '
 }
 
+function getPropertyFn(propName) {
+    return this._value ? this._value(propName) : undefined
+}
+
 const element = {
     $,
     $$,
@@ -18,6 +22,7 @@ const element = {
     isClickable: beFn,
     isFocused: beFn,
     isEnabled: beFn,
+    getProperty: getPropertyFn
 }
 
 function $(selector, ...args) {

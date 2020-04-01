@@ -15,7 +15,7 @@ export async function executeCommand(
     params: any[] = [],
     fullRefetch = false
 ) {
-    const { isNot } = this
+    const { isNot = false } = this
     let elements
 
     if (Array.isArray(el)) {
@@ -35,7 +35,7 @@ export async function executeCommand(
     const results: { result: boolean, value?: any }[] = []
 
     for (const element of elements) {
-        results.push(await condition(element, ...params))
+        results.push(await condition(element, ...params, options))
     }
 
     const values = [...new Set(results.filter(result => result.result === isNot).map(result => result.value))]
