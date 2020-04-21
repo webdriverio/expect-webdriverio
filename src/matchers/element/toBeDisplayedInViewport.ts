@@ -1,11 +1,7 @@
 import { executeCommandBe, aliasFn } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-export function toBeDisplayedInViewport(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
-    return runExpect.call(this, toBeDisplayedInViewportFn, arguments)
-}
-
-function toBeDisplayedInViewportFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+function toBeDisplayedInViewportFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
     this.expectation = this.expectation || 'displayed in viewport'
 
     return browser.call(async () => {
@@ -20,6 +16,10 @@ function toBeDisplayedInViewportFn(received: WebdriverIO.Element | WebdriverIO.E
     })
 }
 
-export function toBeVisibleInViewport(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
+export function toBeDisplayedInViewport(...args: any): any {
+    return runExpect.call(this, toBeDisplayedInViewportFn, args)
+}
+
+export function toBeVisibleInViewport(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions): any {
     return aliasFn.call(this, toBeDisplayedInViewport, { expectation: 'visible in viewport' }, el, options)
 }

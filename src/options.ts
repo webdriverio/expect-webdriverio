@@ -19,9 +19,9 @@ if (!expectLib._expectWebdriverio) {
     expectLib._expectWebdriverio = { options: { ...DEFAULT_OPTIONS }, mode }
 }
 
-export const getConfig = () => expectLib._expectWebdriverio
+export const getConfig = (): any => expectLib._expectWebdriverio
 
-export const setDefaultOptions = (options = {}) => {
+export const setDefaultOptions = (options = {}): void => {
     Object.entries(options).forEach(([key, value]) => {
         if (key in DEFAULT_OPTIONS) {
             // @ts-ignore

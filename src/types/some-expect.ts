@@ -4,39 +4,39 @@
 
 declare namespace NodeJS {
     interface Global {
-        expect?: SomeExpectLib
-        jasmine?: SomeExpectLib
-        expectAsync?: {}
-        expectWdio: SomeExpectLib
+        expect?: SomeExpectLib;
+        jasmine?: SomeExpectLib;
+        expectAsync?: {};
+        expectWdio: SomeExpectLib;
     }
 }
 
 declare namespace jest {
     interface Expect {
-        _expectWebdriverio?: any
+        _expectWebdriverio?: any;
     }
 }
 
 interface SomeExpectLib {
-    extend?: Function
+    extend?: Function;
 
-    addMatchers?: Function
-    addAsyncMatchers?: Function
-    getEnv?: Function
+    addMatchers?: Function;
+    addAsyncMatchers?: Function;
+    getEnv?: Function;
 
     _expectWebdriverio: {
         options: {
-            wait?: number
-            interval?: number
-            message?: string
-        }
-        mode: 'jest' | 'jasmine'
-    }
+            wait?: number;
+            interval?: number;
+            message?: string;
+        };
+        mode: 'jest' | 'jasmine';
+    };
 }
 
 interface JestExpectationResult {
-    pass: boolean
-    message: () => string
+    pass: boolean;
+    message: () => string;
 }
 
 type WdioElementMaybePromise =
@@ -48,11 +48,11 @@ type WdioElementMaybePromise =
 
 declare namespace WebdriverIO {
     interface Element {
-        _value: () => boolean | string
-        _attempts: number
+        _value: () => boolean | string;
+        _attempts: number;
     }
     interface Browser {
-        _value: () => string
-        _attempts: number
+        _value: () => string;
+        _attempts: number;
     }
 }

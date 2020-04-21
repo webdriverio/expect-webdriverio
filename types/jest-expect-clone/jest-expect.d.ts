@@ -22,15 +22,15 @@ type JestMatchersShape<TNonPromise extends {} = {}, TPromise extends {} = {}> = 
      * Use resolves to unwrap the value of a fulfilled promise so any other
      * matcher can be chained. If the promise is rejected the assertion fails.
      */
-    resolves: AndNot<TPromise>,
+    resolves: AndNot<TPromise>;
     /**
      * Unwraps the reason of a rejected promise so any other matcher can be chained.
      * If the promise is fulfilled the assertion fails.
      */
-    rejects: AndNot<TPromise>
+    rejects: AndNot<TPromise>;
 } & AndNot<TNonPromise>;
 type AndNot<T> = T & {
-    not: T
+    not: T;
 };
 
 declare namespace jest {

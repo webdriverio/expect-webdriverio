@@ -114,7 +114,14 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
     }
 }
 
-function aliasFn(fn: Function, { verb, expectation }: { verb?: string, expectation?: string } = {}, ...args: any[]) {
+function aliasFn(
+    fn: Function,
+    { verb, expectation }: {
+        verb?: string;
+        expectation?: string;
+    } = {},
+    ...args: any[]
+): any {
     const context = getContext(this)
     context.verb = verb
     context.expectation = expectation

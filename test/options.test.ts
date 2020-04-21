@@ -21,7 +21,8 @@ describe('options', () => {
     describe('setDefaultOptions', () => {
         test('bar', () => {
             const { getConfig, setDefaultOptions } = require(optionsModule)
-
+            expect(typeof getConfig).toBe('function')
+            expect(typeof setDefaultOptions).toBe('function')
         })
     })
 

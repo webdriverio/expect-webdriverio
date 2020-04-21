@@ -13,7 +13,7 @@ describe('be* matchers', () => {
         describe(name, () => {
             test('wait for success', async () => {
                 browser._attempts = 2
-                browser._value = function () {
+                browser._value = function (): string {
                     if (this._attempts > 0) {
                         this._attempts--
                         return wrongText
@@ -27,7 +27,7 @@ describe('be* matchers', () => {
             })
 
             test('wait but failure', async () => {
-                browser._value = function () {
+                browser._value = function (): string {
                     throw new Error('some error')
                 }
 
@@ -37,7 +37,7 @@ describe('be* matchers', () => {
 
             test('success on the first attempt', async () => {
                 browser._attempts = 0
-                browser._value = function () {
+                browser._value = function (): string {
                     this._attempts++
                     return validText
                 }
@@ -49,7 +49,7 @@ describe('be* matchers', () => {
 
             test('no wait - failure', async () => {
                 browser._attempts = 0
-                browser._value = function () {
+                browser._value = function (): string {
                     this._attempts++
                     return wrongText
                 }
@@ -61,7 +61,7 @@ describe('be* matchers', () => {
 
             test('no wait - success', async () => {
                 browser._attempts = 0
-                browser._value = function () {
+                browser._value = function (): string {
                     this._attempts++
                     return validText
                 }
@@ -82,7 +82,7 @@ describe('be* matchers', () => {
             })
 
             test('not - success', async () => {
-                browser._value = function () {
+                browser._value = function (): string {
                     return wrongText
                 }
                 const result = await fn.call({ isNot: true }, browser, validText, { wait: 0 })

@@ -2,11 +2,7 @@
 import { executeCommandBe } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-export function toBeClickable(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
-    return runExpect.call(this, toBeClickableFn, arguments)
-}
-
-function toBeClickableFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+function toBeClickableFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
     this.expectation = this.expectation || 'clickable'
 
     return browser.call(async () => {
@@ -19,4 +15,8 @@ function toBeClickableFn(received: WebdriverIO.Element | WebdriverIO.ElementArra
         }, options)
         return result
     })
+}
+
+export function toBeClickable(...args: any) {
+    return runExpect.call(this, toBeClickableFn, args)
 }

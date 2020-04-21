@@ -1,6 +1,18 @@
 let expectLib: SomeExpectLib
 
-export const addMatchers = () => {
+export const isJasmine = (): boolean => {
+    return Boolean(global.jasmine && global.expect && global.expectAsync && global.jasmine.getEnv && global.jasmine.addMatchers && global.jasmine.addAsyncMatchers)
+}
+
+export const loadExpect = (): any => {
+    try {
+        return expectLib = require('expect')
+    } catch (err) {
+        return console.error('Failed to load expect package. Make sure it has been installed: npm i expect')
+    }
+}
+
+export const addMatchers = (): any => {
     if (global.expect === undefined) {
         // WebdriverIO Test Runner + Mocha/Cucumber (but not Jasmine)
         //
@@ -35,22 +47,10 @@ export const addMatchers = () => {
     // JASMINE
     expectLib = global.jasmine!
 
-    return expectLib.getEnv!().beforeAll(function addExpectWebdriverIOMatchers() {
+    return expectLib.getEnv!().beforeAll(function addExpectWebdriverIOMatchers(): void {
         expectLib.addMatchers!({ ...matchers })
         expectLib.addAsyncMatchers!({ ...matchers })
     })
-}
-
-export const isJasmine = () => {
-    return global.jasmine && global.expect && global.expectAsync && global.jasmine.getEnv && global.jasmine.addMatchers && global.jasmine.addAsyncMatchers
-}
-
-export const loadExpect = () => {
-    try {
-        return expectLib = require('expect')
-    } catch (err) {
-        return console.error('Failed to load expect package. Make sure it has been installed: npm i expect')
-    }
 }
 
 

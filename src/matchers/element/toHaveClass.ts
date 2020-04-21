@@ -1,11 +1,37 @@
 import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-export function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string, options: ExpectWebdriverIO.StringOptions = {}) {
-    return runExpect.call(this, toHaveClassFn, arguments)
+async function condition(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions): Promise<any> {
+    const { ignoreCase = false, trim = false, containing = false } = options
+
+    let attr = await el.getAttribute(attribute)
+    if (typeof attr !== 'string') {
+        return { result: false }
+    }
+
+    if (trim) {
+        attr = attr.trim()
+    }
+    if (ignoreCase) {
+        attr = attr.toLowerCase()
+        value = value.toLowerCase()
+    }
+    if (containing) {
+        return {
+            result: attr.includes(value),
+            value: attr
+        }
+    }
+
+    const classes = attr.split(' ')
+
+    return {
+        result: classes.includes(value),
+        value: attr
+    }
 }
 
-function toHaveClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string, options: ExpectWebdriverIO.StringOptions = {}) {
+function toHaveClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
@@ -34,32 +60,6 @@ function toHaveClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray,
     })
 }
 
-async function condition(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions) {
-    const { ignoreCase = false, trim = false, containing = false } = options
-
-    let attr = await el.getAttribute(attribute)
-    if (typeof attr !== 'string') {
-        return { result: false }
-    }
-
-    if (trim) {
-        attr = attr.trim()
-    }
-    if (ignoreCase) {
-        attr = attr.toLowerCase()
-        value = value.toLowerCase()
-    }
-    if (containing) {
-        return {
-            result: attr.includes(value),
-            value: attr
-        }
-    }
-
-    const classes = attr.split(' ')
-
-    return {
-        result: classes.includes(value),
-        value: attr
-    }
+export function toHaveClass(...args: any): any {
+    return runExpect.call(this, toHaveClassFn, args)
 }

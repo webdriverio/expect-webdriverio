@@ -2,11 +2,7 @@ import { waitUntil, enhanceError, compareNumbers, numberError, updateElementsArr
 import { refetchElements } from '../../util/refetchElements'
 import { runExpect } from '../../util/expectAdapter'
 
-export function toBeElementsArrayOfSize(received: WebdriverIO.ElementArray, size: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.NumberOptions = {}) {
-    return runExpect.call(this, toBeElementsArrayOfSizeFn, arguments)
-}
-
-function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, size: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.NumberOptions = {}) {
+function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, size: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.NumberOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'elements array of size', verb = 'be' } = this
 
@@ -25,7 +21,7 @@ function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, size: num
 
     return browser.call(async () => {
         let elements = await received
-        let arrLength = elements.length
+        const arrLength = elements.length
 
         const pass = await waitUntil(async () => {
             elements = await refetchElements(elements, options.wait, true)
@@ -39,7 +35,11 @@ function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, size: num
 
         return {
             pass,
-            message: () => message
+            message: (): string => message
         }
     })
+}
+
+export function toBeElementsArrayOfSize(...args: any): any {
+    return runExpect.call(this, toBeElementsArrayOfSizeFn, args)
 }

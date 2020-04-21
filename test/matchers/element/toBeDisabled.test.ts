@@ -9,7 +9,7 @@ describe('toBeDisabled', () => {
     test('wait for success', async () => {
         const el = await $('sel')
         el._attempts = 2
-        el._value = function () {
+        el._value = function (): boolean {
             if (this._attempts > 0) {
                 this._attempts--
                 return true
@@ -24,7 +24,7 @@ describe('toBeDisabled', () => {
 
     test('wait but failure', async () => {
         const el = await $('sel')
-        el._value = function () {
+        el._value = function (): boolean {
             throw new Error('some error')
         }
 
@@ -35,7 +35,7 @@ describe('toBeDisabled', () => {
     test('success on the first attempt', async () => {
         const el = await $('sel')
         el._attempts = 0
-        el._value = function () {
+        el._value = function (): boolean {
             this._attempts++
             return false
         }
@@ -48,7 +48,7 @@ describe('toBeDisabled', () => {
     test('no wait - failure', async () => {
         const el = await $('sel')
         el._attempts = 0
-        el._value = function () {
+        el._value = function (): boolean {
             this._attempts++
             return true
         }
@@ -61,7 +61,7 @@ describe('toBeDisabled', () => {
     test('no wait - success', async () => {
         const el = await $('sel')
         el._attempts = 0
-        el._value = function () {
+        el._value = function (): boolean {
             this._attempts++
             return false
         }
@@ -73,7 +73,7 @@ describe('toBeDisabled', () => {
 
     test('not - failure', async () => {
         const el = await $('sel')
-        el._value = function () {
+        el._value = function (): boolean {
             return false
         }
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
@@ -85,7 +85,7 @@ describe('toBeDisabled', () => {
 
     test('not - success', async () => {
         const el = await $('sel')
-        el._value = function () {
+        el._value = function (): boolean {
             return true
         }
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
@@ -97,7 +97,7 @@ describe('toBeDisabled', () => {
 
     test('message', async () => {
         const el = await $('sel')
-        el._value = function () {
+        el._value = function (): boolean {
             return false
         }
         const result = await toBeDisabled(el)

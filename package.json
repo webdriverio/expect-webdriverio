@@ -11,7 +11,10 @@
     "release:patch": "np patch",
     "release:minor": "np minor",
     "release:major": "np major",
-    "test": "jest"
+    "test": "run-s test:*",
+    "test:lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "test:unit": "jest",
+    "watch": "npm run compile -- --watch"
   },
   "repository": {
     "type": "git",
@@ -32,7 +35,10 @@
   "devDependencies": {
     "@types/jest": "^25.1.4",
     "@types/node": "^13.9.5",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
     "codecov": "^3.6.5",
+    "eslint": "^6.8.0",
     "husky": "^4.2.3",
     "jest": "^25.2.2",
     "np": "^6.2.0",

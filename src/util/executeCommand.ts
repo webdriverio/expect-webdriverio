@@ -8,8 +8,8 @@ import { refetchElements } from './refetchElements'
 export async function executeCommand(
     el: WebdriverIO.Element | WebdriverIO.ElementArray,
     condition: (el: WebdriverIO.Element, ...params: any[]) => Promise<{
-        result: boolean,
-        value?: any
+        result: boolean;
+        value?: any;
     }>,
     options: ExpectWebdriverIO.DefaultOptions = {},
     params: any[] = [],
@@ -32,7 +32,10 @@ export async function executeCommand(
         }
     }
 
-    const results: { result: boolean, value?: any }[] = []
+    const results: {
+        result: boolean;
+        value?: any;
+    }[] = []
 
     for (const element of elements) {
         results.push(await condition(element, ...params, options))

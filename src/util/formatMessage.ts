@@ -5,6 +5,41 @@ const RECEIVED_LABEL = 'Received';
 const NOT_SUFFIX = ' [not]'
 const NOT_EXPECTED_LABEL = EXPECTED_LABEL + NOT_SUFFIX
 
+export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray): any => {
+    let result = typeof el.selector === 'string' ? el.selector : '<fn>'
+    if (Array.isArray(el) && el.props.length > 0) {
+        // todo handle custom$ selector
+        result += ', <props>'
+    }
+    return result
+}
+
+export const getSelectors = (el: WebdriverIO.Element | WebdriverIO.ElementArray): any => {
+    const selectors = []
+    let parent: WebdriverIO.Element | WebdriverIO.BrowserObject | undefined
+
+    if (Array.isArray(el)) {
+        selectors.push(`${el.foundWith}(\`${getSelector(el)}\`)`)
+        parent = el.parent
+    } else {
+        parent = el
+    }
+
+    while (parent && 'selector' in parent) {
+        const selector = getSelector(parent)
+        const index = parent.index ? `[${parent.index}]` : ''
+        selectors.push(`${parent.index ? '$' : ''}$(\`${selector}\`)${index}`)
+
+        parent = parent.parent
+    }
+
+    return selectors.reverse().join('.')
+}
+
+export const not = (isNot: boolean): string => {
+    return `${isNot ? 'not ' : ''}`
+}
+
 export const enhanceError = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
     expected: any,
@@ -15,7 +50,7 @@ export const enhanceError = (
     arg2 = '', {
         message = '',
         containing = false
-    }) => {
+    }): any => {
     const { isNot = false } = context
 
     subject = typeof subject === 'string' ? subject : getSelectors(subject)
@@ -61,46 +96,11 @@ export const enhanceErrorBe = (
     context: any,
     verb: string,
     expectation: string,
-    options: ExpectWebdriverIO.CommandOptions) => {
+    options: ExpectWebdriverIO.CommandOptions): any => {
     return enhanceError(subject, not(context.isNot) + expectation, not(!pass) + expectation, context, verb, expectation, '', options)
 }
 
-export const getSelectors = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
-    const selectors = []
-    let parent: WebdriverIO.Element | WebdriverIO.BrowserObject | undefined
-
-    if (Array.isArray(el)) {
-        selectors.push(`${el.foundWith}(\`${getSelector(el)}\`)`)
-        parent = el.parent
-    } else {
-        parent = el
-    }
-
-    while (parent && 'selector' in parent) {
-        const selector = getSelector(parent)
-        const index = parent.index ? `[${parent.index}]` : ''
-        selectors.push(`${parent.index ? '$' : ''}$(\`${selector}\`)${index}`)
-
-        parent = parent.parent
-    }
-
-    return selectors.reverse().join('.')
-}
-
-export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
-    let result = typeof el.selector === 'string' ? el.selector : '<fn>'
-    if (Array.isArray(el) && el.props.length > 0) {
-        // todo handle custom$ selector
-        result += ', <props>'
-    }
-    return result
-}
-
-export const not = (isNot: boolean) => {
-    return `${isNot ? 'not ' : ''}`
-}
-
-export const numberError = (gte: number, lte: number, eq?: number) => {
+export const numberError = (gte: number, lte: number, eq?: number): any => {
     if (typeof eq === 'number') {
         return eq
     }

@@ -4,6 +4,6 @@ declare const expect: jest.Expect
 
 declare namespace NodeJS {
     interface Global {
-        expect: jest.Expect
+        expect: jest.Expect;
     }
 }

@@ -1,11 +1,15 @@
 import { waitUntil, enhanceError, compareNumbers, numberError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-export function toHaveChildren(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.NumberOptions = {}) {
-    return runExpect.call(this, toHaveChildrenFn, arguments)
+async function condition(el: WebdriverIO.Element, gte: number, lte: number, eq?: number): Promise<any> {
+    const children = await el.$$('./*')
+    return {
+        result: compareNumbers(children.length, gte, lte, eq),
+        value: children.length
+    }
 }
 
-function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.NumberOptions = {}) {
+function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.NumberOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'children', verb = 'have' } = this
 
@@ -31,15 +35,11 @@ function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArr
 
         return {
             pass,
-            message: () => message
+            message: (): string => message
         }
     })
 }
 
-async function condition(el: WebdriverIO.Element, gte: number, lte: number, eq?: number) {
-    let children = await el.$$('./*')
-    return {
-        result: compareNumbers(children.length, gte, lte, eq),
-        value: children.length
-    }
+export function toHaveChildren(...args: any): any {
+    return runExpect.call(this, toHaveChildrenFn, args)
 }

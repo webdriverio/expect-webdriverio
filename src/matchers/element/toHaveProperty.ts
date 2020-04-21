@@ -1,11 +1,28 @@
 import { waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-export function toHaveProperty(received: WebdriverIO.Element | WebdriverIO.ElementArray, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}) {
-    return runExpect.call(this, toHavePropertyFn, arguments)
+async function condition(el: WebdriverIO.Element, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}): Promise<any> {
+    const { asString = false } = options
+
+    let prop = await el.getProperty(property)
+    if (prop === null || prop === undefined) {
+        return { result: false, value: prop }
+    }
+
+    if (value === null) {
+        return { result: true, value: prop }
+    }
+
+    if (typeof value !== 'string' || (typeof prop !== 'string' && !asString)) {
+        return { result: prop === value, value: prop }
+    }
+
+    prop = prop.toString()
+
+    return compareText(prop, value, options)
 }
 
-export function toHavePropertyFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHavePropertyFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
 
@@ -32,28 +49,11 @@ export function toHavePropertyFn(received: WebdriverIO.Element | WebdriverIO.Ele
 
         return {
             pass,
-            message: () => message
+            message: (): string => message
         }
     })
 }
 
-async function condition(el: WebdriverIO.Element, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}) {
-    const { asString = false } = options
-
-    let prop = await el.getProperty(property)
-    if (prop === null || prop === undefined) {
-        return { result: false, value: prop }
-    }
-
-    if (value === null) {
-        return { result: true, value: prop }
-    }
-
-    if (typeof value !== 'string' || (typeof prop !== 'string' && !asString)) {
-        return { result: prop === value, value: prop }
-    }
-
-    prop = prop.toString()
-
-    return compareText(prop, value, options)
+export function toHaveProperty(...args: any): any {
+    return runExpect.call(this, toHavePropertyFn, args)
 }

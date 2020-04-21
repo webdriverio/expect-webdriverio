@@ -15,7 +15,7 @@ describe('be* matchers', () => {
             test('wait for success', async () => {
                 const el = await $('sel')
                 el._attempts = 2
-                el._value = function () {
+                el._value = function (): boolean {
                     if (this._attempts > 0) {
                         this._attempts--
                         return false
@@ -30,7 +30,7 @@ describe('be* matchers', () => {
 
             test('wait but failure', async () => {
                 const el = await $('sel')
-                el._value = function () {
+                el._value = function (): boolean {
                     throw new Error('some error')
                 }
 
@@ -41,7 +41,7 @@ describe('be* matchers', () => {
             test('success on the first attempt', async () => {
                 const el = await $('sel')
                 el._attempts = 0
-                el._value = function () {
+                el._value = function (): boolean {
                     this._attempts++
                     return true
                 }
@@ -54,7 +54,7 @@ describe('be* matchers', () => {
             test('no wait - failure', async () => {
                 const el = await $('sel')
                 el._attempts = 0
-                el._value = function () {
+                el._value = function (): boolean {
                     this._attempts++
                     return false
                 }
@@ -67,7 +67,7 @@ describe('be* matchers', () => {
             test('no wait - success', async () => {
                 const el = await $('sel')
                 el._attempts = 0
-                el._value = function () {
+                el._value = function (): boolean {
                     this._attempts++
                     return true
                 }
@@ -87,7 +87,7 @@ describe('be* matchers', () => {
 
             test('not - success', async () => {
                 const el = await $('sel')
-                el._value = function () {
+                el._value = function (): boolean {
                     return false
                 }
                 const result = await fn.call({ isNot: true }, el, { wait: 0 })
@@ -99,7 +99,8 @@ describe('be* matchers', () => {
 
             test('message', async () => {
                 const result = await fn.call({}, $('sel'))
-                expect(getExpectMessage(result.message())).toContain(matcherNameToString(name))
+                expect(getExpectMessage(result.message()))
+                    .toContain(matcherNameToString(name))
             })
         })
     })

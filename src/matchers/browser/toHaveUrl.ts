@@ -1,11 +1,7 @@
 import { runExpect } from '../../util/expectAdapter'
 import { waitUntil, enhanceError, compareText } from '../../utils'
 
-export function toHaveUrl(browser: WebdriverIO.BrowserObject, url: string, options: ExpectWebdriverIO.StringOptions = {}) {
-    return runExpect.call(this, toHaveUrlFn, arguments)
-}
-
-function toHaveUrlFn(browser: WebdriverIO.BrowserObject, url: string, options: ExpectWebdriverIO.StringOptions = {}) {
+function toHaveUrlFn(browser: WebdriverIO.BrowserObject, url: string, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'url', verb = 'have' } = this
 
@@ -21,7 +17,11 @@ function toHaveUrlFn(browser: WebdriverIO.BrowserObject, url: string, options: E
 
         return {
             pass,
-            message: () => message
+            message: (): string => message
         }
     })
+}
+
+export function toHaveUrl(...args: any): any {
+    return runExpect.call(this, toHaveUrlFn, args)
 }
