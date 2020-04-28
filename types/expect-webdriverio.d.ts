@@ -59,172 +59,172 @@ declare namespace ExpectWebdriverIO {
         gte?: number;
     }
 
-    interface Matchers {
+    interface Matchers<R> {
         // ===== $ or $$ =====
         /**
          * `WebdriverIO.Element` -> `isDisplayed`
          */
-        toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions): undefined;
+        toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions): R;
         /**
          * `WebdriverIO.Element` -> `isDisplayed`
          */
-        toBeVisible(options?: ExpectWebdriverIO.CommandOptions): undefined;
+        toBeVisible(options?: ExpectWebdriverIO.CommandOptions): R;
 
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        toExist(options?: ExpectWebdriverIO.CommandOptions): undefined;
+        toExist(options?: ExpectWebdriverIO.CommandOptions): R;
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        toBePresent(options?: ExpectWebdriverIO.CommandOptions): undefined;
+        toBePresent(options?: ExpectWebdriverIO.CommandOptions): R;
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        toBeExisting(options?: ExpectWebdriverIO.CommandOptions): undefined;
+        toBeExisting(options?: ExpectWebdriverIO.CommandOptions): R;
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        toHaveAttribute(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveAttribute(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): R;
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        toHaveAttr(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveAttr(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          * Element's attribute includes the value.
          */
-        toHaveAttributeContaining(attribute: string, contains: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveAttributeContaining(attribute: string, contains: string, options?: ExpectWebdriverIO.StringOptions): R;
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          * Element's attribute includes the value.
          */
-        toHaveAttrContaining(attribute: string, contains: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveAttrContaining(attribute: string, contains: string, options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          */
-        toHaveClass(className: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveClass(className: string, options?: ExpectWebdriverIO.StringOptions): R;
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * Element's class includes the className.
          */
-        toHaveClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
          * `WebdriverIO.Element` -> `getProperty`
          */
-        toHaveProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `getProperty` value
         */
-        toHaveValue(value: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveValue(value: string, options?: ExpectWebdriverIO.StringOptions): R;
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          * Element's value includes the value.
          */
-        toHaveValueContaining(value: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveValueContaining(value: string, options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `isClickable`
         */
-        toBeClickable(options?: ExpectWebdriverIO.StringOptions): undefined;
+        toBeClickable(options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `!isEnabled`
         */
-        toBeDisabled(options?: ExpectWebdriverIO.StringOptions): undefined;
+        toBeDisabled(options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `isDisplayedInViewport`
         */
-        toBeDisplayedInViewport(options?: ExpectWebdriverIO.StringOptions): undefined;
+        toBeDisplayedInViewport(options?: ExpectWebdriverIO.StringOptions): R;
         /**
         * `WebdriverIO.Element` -> `isDisplayedInViewport`
         */
-        toBeVisibleInViewport(options?: ExpectWebdriverIO.StringOptions): undefined;
+        toBeVisibleInViewport(options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `isEnabled`
         */
-        toBeEnabled(options?: ExpectWebdriverIO.StringOptions): undefined;
+        toBeEnabled(options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `isFocused`
         */
-        toBeFocused(options?: ExpectWebdriverIO.StringOptions): undefined;
+        toBeFocused(options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `isSelected`
         */
-        toBeSelected(options?: ExpectWebdriverIO.StringOptions): undefined;
+        toBeSelected(options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `isSelected`
         */
-        toBeChecked(options?: ExpectWebdriverIO.StringOptions): undefined;
+        toBeChecked(options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `$$('./*').length`
         * supports less / greater then or equals to be passed in options
         */
-        toHaveChildren(options?: ExpectWebdriverIO.NumberOptions): undefined;
+        toHaveChildren(options?: ExpectWebdriverIO.NumberOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `getAttribute` href
         */
-        toHaveHref(href: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveHref(href: string, options?: ExpectWebdriverIO.StringOptions): R;
         /**
         * `WebdriverIO.Element` -> `getAttribute` href
         */
-        toHaveLink(href: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveLink(href: string, options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `getAttribute` href
         * Element's href includes the value provided
         */
-        toHaveHrefContaining(href: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveHrefContaining(href: string, options?: ExpectWebdriverIO.StringOptions): R;
         /**
         * `WebdriverIO.Element` -> `getAttribute` href
         * Element's href includes the value provided
         */
-        toHaveLinkContaining(href: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveLinkContaining(href: string, options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `getProperty` value
         */
-        toHaveId(id: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveId(id: string, options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
          * `WebdriverIO.Element` -> `getText`
          */
-        toHaveText(text: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveText(text: string, options?: ExpectWebdriverIO.StringOptions): R;
         /**
         * `WebdriverIO.Element` -> `getText`
         * Element's text includes the text provided
         */
-        toHaveTextContaining(text: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveTextContaining(text: string, options?: ExpectWebdriverIO.StringOptions): R;
 
 
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getUrl`
          */
-        toHaveUrl(url: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveUrl(url: string, options?: ExpectWebdriverIO.StringOptions): R;
         /**
          * `WebdriverIO.Browser` -> `getTitle`
          */
-        toHaveTitle(title: string, options?: ExpectWebdriverIO.StringOptions): undefined;
+        toHaveTitle(title: string, options?: ExpectWebdriverIO.StringOptions): R;
 
         // ===== $$ only =====
         /**
         * `WebdriverIO.ElementArray` -> `$$('...').length`
         * supports less / greater then or equals to be passed in options
         */
-        toBeElementsArrayOfSize(size: number | ExpectWebdriverIO.NumberOptions, options?: ExpectWebdriverIO.NumberOptions): undefined;
+        toBeElementsArrayOfSize(size: number | ExpectWebdriverIO.NumberOptions, options?: ExpectWebdriverIO.NumberOptions): R;
     }
 }
 

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Copied this one from `@jest/types`
  * Need to think how to deal with it better.
