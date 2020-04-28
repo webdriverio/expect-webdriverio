@@ -59,7 +59,7 @@ declare namespace ExpectWebdriverIO {
         gte?: number;
     }
 
-    interface Matchers<R> {
+    interface Matchers<R, T> {
         // ===== $ or $$ =====
         /**
          * `WebdriverIO.Element` -> `isDisplayed`
