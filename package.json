@@ -56,6 +56,6 @@
   },
   "dependencies": {
     "expect": "^26.0.1",
-    "jest-matcher-utils": "^25.1.0"
+    "jest-matcher-utils": "^26.0.1"
   }
 }
