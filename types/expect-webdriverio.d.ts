@@ -217,7 +217,7 @@ declare namespace ExpectWebdriverIO {
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getUrl`
-         * Browser's title includes the provided text
+         * Browser's url includes the provided text
          */
         toHaveUrlContaining(url: string, options?: ExpectWebdriverIO.StringOptions): R;
 
@@ -229,6 +229,7 @@ declare namespace ExpectWebdriverIO {
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getTitle`
+         * Browser's title includes the provided text
          */
         toHaveTitleContaining(title: string, options?: ExpectWebdriverIO.StringOptions): R;
 
