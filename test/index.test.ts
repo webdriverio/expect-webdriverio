@@ -1,5 +1,5 @@
 import { addMatchers } from '../src/addMatchers'
-import { setOptions } from '../src/index'
+import { setOptions } from '../src'
 
 jest.mock('../src/addMatchers', () => ({
     addMatchers: jest.fn()

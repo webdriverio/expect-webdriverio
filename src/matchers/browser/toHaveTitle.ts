@@ -1,7 +1,7 @@
 import { runExpect } from '../../util/expectAdapter'
 import { waitUntil, enhanceError, compareText } from '../../utils'
 
-function toHaveTitleFn(browser: WebdriverIO.BrowserObject, title: string, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveTitleFn(browser: WebdriverIO.BrowserObject, title: string, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'title', verb = 'have' } = this
 

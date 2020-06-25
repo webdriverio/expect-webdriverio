@@ -1,7 +1,9 @@
 const matchers = {
     // browser
     ...require('./matchers/browser/toHaveTitle'),
+    ...require('./matchers/browser/toHaveTitleContaining'),
     ...require('./matchers/browser/toHaveUrl'),
+    ...require('./matchers/browser/toHaveUrlContaining'),
 
     // ElementArray $$
     ...require('./matchers/elements/toBeElementsArrayOfSize'),

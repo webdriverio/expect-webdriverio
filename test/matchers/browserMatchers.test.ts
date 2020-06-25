@@ -1,12 +1,12 @@
 import { getExpectMessage, getReceived, matcherNameToString, getExpected } from '../__fixtures__/utils';
 import Matchers from '../../src/matchers'
 
-const browserMatchers = ['toHaveUrl', 'toHaveTitle']
+const browserMatchers = ['toHaveUrl', 'toHaveTitle', 'toHaveTitleContaining', 'toHaveUrlContaining']
 
 const validText = ' Valid Text '
 const wrongText = ' Wrong Text '
 
-describe('be* matchers', () => {
+describe('browser matchers', () => {
     browserMatchers.forEach((name) => {
         const fn = Matchers[name]
 

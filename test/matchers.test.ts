@@ -4,7 +4,9 @@ test('matchers', () => {
     expect(Object.keys(Matchers)).toEqual([
         // browser
         'toHaveTitle',
+        'toHaveTitleContaining',
         'toHaveUrl',
+        'toHaveUrlContaining',
 
         // elements
         'toBeElementsArrayOfSize',
