@@ -96,13 +96,24 @@ This options can be applied in addition to the command options when numbers are 
 
 ### toHaveUrl
 
-Checks if browser is on a specifc page.
+Checks if browser is on a specific page.
 
 ##### Usage
 
 ```js
 browser.url('https://webdriver.io/')
 expect(browser).toHaveUrl('https://webdriver.io')
+```
+
+### toHaveUrlContaining
+
+Checks if browser is on a specific page and contains the given value in URL.
+
+##### Usage
+
+```js
+browser.url('https://webdriver.io/')
+expect(browser).toHaveUrlContaining('webdriver.io')
 ```
 
 ### toHaveTitle
@@ -113,7 +124,18 @@ Checks if website has a specific title.
 
 ```js
 browser.url('https://webdriver.io/')
-expect(browser).toHaveTitle('WebdriverIO · Next-gen WebDriver test framework for Node.js')
+expect(browser).toHaveTitle('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js')
+```
+
+### toHaveTitleContaining
+
+Checks if website has a specific title that contains the given value.
+
+##### Usage
+
+```js
+browser.url('https://webdriver.io/')
+expect(browser).toHaveTitleContaining('Next-gen browser and mobile automation test framework')
 ```
 
 ## Element Matchers
@@ -407,7 +429,7 @@ Checks if element has a specific text.
 ```js
 browser.url('https://webdriver.io/')
 const elem = $('.tagline')
-expect(elem).toHaveText('Next-gen WebDriver test framework for Node.js')
+expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
 ```
 
 ### toHaveTextContaining
@@ -419,7 +441,7 @@ Checks if element contains a specific text.
 ```js
 browser.url('https://webdriver.io/')
 const elem = $('.tagline')
-expect(elem).toHaveTextContaining('WebDriver test framework')
+expect(elem).toHaveTextContaining('browser and mobile automation test framework')
 ```
 
 ### toBeDisplayedInViewport
