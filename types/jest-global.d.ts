@@ -1,4 +1,4 @@
-/// <reference types="./standalone"/>
+/// <reference types="expect-webdriverio/types/standalone"/>
 
 declare const expect: jest.Expect
 
