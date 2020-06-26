@@ -208,16 +208,30 @@ declare namespace ExpectWebdriverIO {
         */
         toHaveTextContaining(text: string, options?: ExpectWebdriverIO.StringOptions): R;
 
-
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getUrl`
          */
         toHaveUrl(url: string, options?: ExpectWebdriverIO.StringOptions): R;
+
+        // ===== browser only =====
+        /**
+         * `WebdriverIO.Browser` -> `getUrl`
+         * Browser's url includes the provided text
+         */
+        toHaveUrlContaining(url: string, options?: ExpectWebdriverIO.StringOptions): R;
+
         /**
          * `WebdriverIO.Browser` -> `getTitle`
          */
         toHaveTitle(title: string, options?: ExpectWebdriverIO.StringOptions): R;
+
+        // ===== browser only =====
+        /**
+         * `WebdriverIO.Browser` -> `getTitle`
+         * Browser's title includes the provided text
+         */
+        toHaveTitleContaining(title: string, options?: ExpectWebdriverIO.StringOptions): R;
 
         // ===== $$ only =====
         /**
