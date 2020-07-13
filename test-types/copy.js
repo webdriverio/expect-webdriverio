@@ -3,7 +3,7 @@ const path = require('path')
 const { promisify } = require('util')
 
 const { ln, mkdir, cp } = require('shelljs')
-const rimraf = require('rimraf')
+const rimraf = promisify(require('rimraf'))
 
 const ROOT = path.resolve(__dirname, '..')
 
@@ -59,7 +59,7 @@ async function copy() {
  */
 Promise.all(
     artifactDirs.map((dir) =>
-        Promise.all(outDirs.map((testDir) => promisify(rimraf)(path.join(__dirname, testDir, dir))))
+        Promise.all(outDirs.map((testDir) => rimraf(path.join(__dirname, testDir, dir))))
     )
 ).then(
     /**
