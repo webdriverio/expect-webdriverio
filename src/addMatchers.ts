@@ -45,11 +45,11 @@ export const addMatchers = (): any => {
     }
 
     // JASMINE
-    expectLib = global.jasmine!
+    expectLib = global.jasmine
 
-    return expectLib.getEnv!().beforeAll(function addExpectWebdriverIOMatchers(): void {
-        expectLib.addMatchers!({ ...matchers })
-        expectLib.addAsyncMatchers!({ ...matchers })
+    return expectLib.getEnv().beforeAll(function addExpectWebdriverIOMatchers(): void {
+        expectLib.addMatchers({ ...matchers })
+        expectLib.addAsyncMatchers({ ...matchers })
     })
 }
 

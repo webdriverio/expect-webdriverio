@@ -54,10 +54,11 @@
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.4",
     "ts-jest": "^26.1.2",
-    "typescript": "^3.9.6",
+    "typescript": "^3.8.3",
     "webdriverio": "^6.2.0"
   },
   "types": "types/jest-global.d.ts",
+  "typeScriptVersion": "3.8.3",
   "husky": {
     "hooks": {
       "pre-commit": "run-s compile"

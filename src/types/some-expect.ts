@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 /**
  * INTERNAL USAGE ONLY
  */
@@ -6,7 +7,7 @@ declare namespace NodeJS {
     interface Global {
         expect?: SomeExpectLib;
         jasmine?: SomeExpectLib;
-        expectAsync?: {};
+        expectAsync?: Record<string, unknown>;
         expectWdio: SomeExpectLib;
     }
 }
@@ -18,15 +19,17 @@ declare namespace jest {
 }
 
 interface SomeExpectLib {
-    extend?: Function;
+    // jasmine
+    extend: Function;
 
-    addMatchers?: Function;
-    addAsyncMatchers?: Function;
-    getEnv?: Function;
+    // jest
+    addMatchers: Function;
+    addAsyncMatchers: Function;
+    getEnv: Function;
 
     _expectWebdriverio: {
         options: {
-            wait?: number;
+            wait: number;
             interval?: number;
             message?: string;
         };
