@@ -1,9 +1,9 @@
 /// <reference types="expect-webdriverio/types/standalone"/>
 
-declare const expect: jest.Expect
+declare const expect: ExpectWebdriverIO.Expect
 
 declare namespace NodeJS {
     interface Global {
-        expect: jest.Expect;
+        expect: ExpectWebdriverIO.Expect;
     }
 }
