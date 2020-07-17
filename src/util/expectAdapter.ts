@@ -12,7 +12,7 @@ const { mode: MODE } = config
  */
 export const getContext = (context?: any): any => global === context ? {} : context || {}
 
-function runJestExpect(fn: Function, args: IArguments): any {
+function runJestExpect(fn: (...args: any) => any, args: IArguments): any {
     return fn.apply(this, args)
 }
 

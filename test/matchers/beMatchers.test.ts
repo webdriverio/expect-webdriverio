@@ -1,7 +1,7 @@
 import { getExpectMessage, getReceived, matcherNameToString } from '../__fixtures__/utils';
 import Matchers from '../../src/matchers'
 
-const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeDisabled']
+const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeDisabled', 'toBeCalledTimes']
 const beMatchers = [
     ...Object.keys(Matchers).filter(name => name.startsWith('toBe') && !ignoredMatchers.includes(name)),
     'toExist'
