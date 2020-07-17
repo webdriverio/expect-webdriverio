@@ -32,6 +32,7 @@ const matchers = {
     ...require('./matchers/element/toHaveValueContaining'),
 
     // Mock
+    ...require('./matchers/mock/toBeCalled'),
     ...require('./matchers/mock/toBeCalledTimes'),
     ...require('./matchers/mock/toBeCalledWithResponse'),
 }

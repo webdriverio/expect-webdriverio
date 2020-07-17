@@ -44,6 +44,7 @@ test('matchers', () => {
         'toHaveValueContaining',
 
         // mock
+        'toBeCalled',
         'toBeCalledTimes'
     ])
 })

@@ -1,6 +1,5 @@
 import { waitUntil, enhanceError } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
-import { LOADIPHLPAPI } from 'dns'
 
 function toBeCalledTimesFn(received: WebdriverIO.Mock, times: number, options: ExpectWebdriverIO.CommandOptions = {}): any {
     const isNot = this.isNot || false
