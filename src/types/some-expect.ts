@@ -18,6 +18,8 @@ declare namespace jest {
     }
 }
 
+type anyFunction = (...args: any) => any
+
 interface SomeExpectLib {
     // jasmine
     extend: Function;

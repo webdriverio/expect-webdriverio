@@ -30,7 +30,7 @@ export const jestResultToJasmine = (result: JestExpectationResult | Promise<Jest
     return buildJasmineFromJestResult(result, isNot)
 }
 
-function runJasmineExpect(fn: Function): any {
+function runJasmineExpect(fn: (...args: any) => any): any {
     // 2nd and 3rd args are `util` and `customEqualityTesters` that are not used
     const context = getContext(this)
     return {
