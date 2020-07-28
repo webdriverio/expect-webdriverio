@@ -45,6 +45,7 @@ test('matchers', () => {
 
         // mock
         'toBeCalled',
-        'toBeCalledTimes'
+        'toBeCalledTimes',
+        'toBeCalledWithResponse'
     ])
 })

@@ -1,7 +1,8 @@
 import { toBeCalledTimes } from '../../../src/matchers/mock/toBeCalledTimes'
+import { Matches } from 'webdriverio'
 
 class TestMock {
-    _calls: any[]
+    _calls: Matches[]
 
     constructor () {
         this._calls = []
@@ -17,12 +18,21 @@ class TestMock {
     restore () { return Promise.resolve() }
 }
 
+const mockMatch: Matches = {
+    body: 'foo',
+    url: '/foo/bar',
+    method: 'POST',
+    headers: {},
+    initialPriority: 'Low',
+    referrerPolicy: 'origin'
+}
+
 describe('toBeCalledTimes', () => {
     test('wait for success', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
 
         setTimeout(() => {
-            mock.calls.push('foo')
+            mock.calls.push(mockMatch)
         }, 10)
 
         const result = await toBeCalledTimes(mock, 1)
@@ -35,8 +45,8 @@ describe('toBeCalledTimes', () => {
         expect(result.pass).toBe(false)
 
         setTimeout(() => {
-            mock.calls.push('foo')
-            mock.calls.push('foo')
+            mock.calls.push(mockMatch)
+            mock.calls.push(mockMatch)
         }, 10)
 
         const result2 = await toBeCalledTimes(mock, 1)
@@ -56,7 +66,7 @@ describe('toBeCalledTimes', () => {
         const result2 = await toBeCalledTimes.call({ isNot: true }, mock, 1)
         expect(result2.pass).toBe(true)
 
-        mock.calls.push('foo')
+        mock.calls.push(mockMatch)
 
         // expect(mock).not.toBeCalledTimes(0) should pass
         const result3 = await toBeCalledTimes.call({ isNot: true }, mock, 0)

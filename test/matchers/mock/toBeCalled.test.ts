@@ -1,4 +1,5 @@
 import { toBeCalled } from '../../../src/matchers/mock/toBeCalled'
+import { Matches } from 'webdriverio'
 
 class TestMock {
     _calls: any[]
@@ -17,6 +18,15 @@ class TestMock {
     restore () { return Promise.resolve() }
 }
 
+const mockMatch: Matches = {
+    body: 'foo',
+    url: '/foo/bar',
+    method: 'POST',
+    headers: {},
+    initialPriority: 'Low',
+    referrerPolicy: 'origin'
+}
+
 describe('toBeCalled', () => {
     test('wait for success', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
@@ -24,8 +34,8 @@ describe('toBeCalled', () => {
         expect(result.pass).toBe(false)
 
         setTimeout(() => {
-            mock.calls.push('foo')
-            mock.calls.push('foo')
+            mock.calls.push(mockMatch)
+            mock.calls.push(mockMatch)
         }, 10)
 
         const result2 = await toBeCalled(mock)
@@ -39,7 +49,7 @@ describe('toBeCalled', () => {
         const result = await toBeCalled.call({ isNot: true }, mock)
         expect(result.pass).toBe(true)
 
-        mock.calls.push('foo')
+        mock.calls.push(mockMatch)
 
         // expect(mock).not.toBeCalled() should fail
         const result4 = await toBeCalled.call({ isNot: true }, mock)
