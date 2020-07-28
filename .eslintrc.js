@@ -22,5 +22,11 @@ module.exports = {
             },
         ],
         '@typescript-eslint/ban-ts-comment': 0,
+        '@typescript-eslint/no-empty-interface': [
+            'error',
+            {
+                allowSingleExtends: true,
+            },
+        ],
     },
 }
