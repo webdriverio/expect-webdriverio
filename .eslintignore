@@ -7,5 +7,7 @@ coverage
 # test fixtures
 test/__fixtures__
 
+test-types
+
 /*.js
 /*.ts

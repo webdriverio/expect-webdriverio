@@ -1,0 +1,4 @@
+**/*.js
+/**/types.ts
+!/types.ts
+!copy.js
