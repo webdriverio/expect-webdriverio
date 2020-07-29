@@ -1,4 +1,4 @@
-import { toBeCalled } from '../../../src/matchers/mock/toBeCalled'
+import { toBeRequested } from '../../../src/matchers/mock/toBeRequested'
 import { Matches } from 'webdriverio'
 
 class TestMock {
@@ -27,10 +27,10 @@ const mockMatch: Matches = {
     referrerPolicy: 'origin'
 }
 
-describe('toBeCalled', () => {
+describe('toBeRequested', () => {
     test('wait for success', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
-        const result = await toBeCalled(mock)
+        const result = await toBeRequested(mock)
         expect(result.pass).toBe(false)
 
         setTimeout(() => {
@@ -38,31 +38,31 @@ describe('toBeCalled', () => {
             mock.calls.push(mockMatch)
         }, 10)
 
-        const result2 = await toBeCalled(mock)
+        const result2 = await toBeRequested(mock)
         expect(result2.pass).toBe(true)
     })
 
     test('not to be called', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
 
-        // expect(mock).not.toBeCalled() should pass
-        const result = await toBeCalled.call({ isNot: true }, mock)
+        // expect(mock).not.toBeRequested() should pass
+        const result = await toBeRequested.call({ isNot: true }, mock)
         expect(result.pass).toBe(true)
 
         mock.calls.push(mockMatch)
 
-        // expect(mock).not.toBeCalled() should fail
-        const result4 = await toBeCalled.call({ isNot: true }, mock)
+        // expect(mock).not.toBeRequested() should fail
+        const result4 = await toBeRequested.call({ isNot: true }, mock)
         expect(result4.pass).toBe(false)
     })
 
     test('message', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
 
-        const result = await toBeCalled(mock)
+        const result = await toBeRequested(mock)
         expect(result.message()).toContain('Expect mock to be called')
 
-        const result2 = await toBeCalled.call({ isNot: true }, mock)
+        const result2 = await toBeRequested.call({ isNot: true }, mock)
         expect(result2.message()).toContain('Expect mock not to be called')
     })
 })

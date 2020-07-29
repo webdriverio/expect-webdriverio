@@ -2,7 +2,7 @@ import { waitUntil, enhanceError } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 import { equals } from '../../jasmineUtils'
 
-function toBeCalledWithResponseFn(received: WebdriverIO.Mock, response: any, options: ExpectWebdriverIO.CommandOptions = {}): any {
+function toBeRequestedWithResponseFn(received: WebdriverIO.Mock, response: any, options: ExpectWebdriverIO.CommandOptions = {}): any {
     const isNot = this.isNot || false
     const { expectation = 'called', verb = 'be' } = this
 
@@ -34,7 +34,7 @@ function toBeCalledWithResponseFn(received: WebdriverIO.Mock, response: any, opt
     })
 }
 
-export function toBeCalledWithResponse(...args: any): any {
-    return runExpect.call(this, toBeCalledWithResponseFn, args)
+export function toBeRequestedWithResponse(...args: any): any {
+    return runExpect.call(this, toBeRequestedWithResponseFn, args)
 }
 

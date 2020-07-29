@@ -1,7 +1,7 @@
 import { waitUntil, enhanceError } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-function toBeCalledFn(received: WebdriverIO.Mock, options: ExpectWebdriverIO.CommandOptions = {}): any {
+function toBeRequestedFn(received: WebdriverIO.Mock, options: ExpectWebdriverIO.CommandOptions = {}): any {
     const isNot = this.isNot || false
     const { expectation = `called`, verb = 'be' } = this
 
@@ -22,7 +22,7 @@ function toBeCalledFn(received: WebdriverIO.Mock, options: ExpectWebdriverIO.Com
     })
 }
 
-export function toBeCalled(...args: any): any {
-    return runExpect.call(this, toBeCalledFn, args)
+export function toBeRequested(...args: any): any {
+    return runExpect.call(this, toBeRequestedFn, args)
 }
 
