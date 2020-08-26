@@ -39,6 +39,19 @@ describe('toBeRequestedTimes', () => {
         expect(result.pass).toBe(true)
     })
 
+    test('wait for success using number options', async () => {
+        const mock: WebdriverIO.Mock = new TestMock()
+
+        setTimeout(() => {
+            mock.calls.push(mockMatch)
+        }, 10)
+
+        const result = await toBeRequestedTimes(mock, { gte: 1 })
+        expect(result.pass).toBe(true)
+        const result2 = await toBeRequestedTimes(mock, { eq: 1 })
+        expect(result2.pass).toBe(true)
+    })
+
     test('wait but failure', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
         const result = await toBeRequestedTimes(mock, 1)
@@ -53,6 +66,12 @@ describe('toBeRequestedTimes', () => {
         expect(result2.pass).toBe(false)
         const result3 = await toBeRequestedTimes(mock, 2)
         expect(result3.pass).toBe(true)
+        const result4 = await toBeRequestedTimes(mock, { gte: 2 })
+        expect(result4.pass).toBe(true)
+        const result5 = await toBeRequestedTimes(mock, { lte: 2 })
+        expect(result5.pass).toBe(true)
+        const result6 = await toBeRequestedTimes(mock, { lte: 3 })
+        expect(result6.pass).toBe(true)
     })
 
     test('not to be called', async () => {
@@ -88,5 +107,10 @@ describe('toBeRequestedTimes', () => {
 
         const result3 = await toBeRequestedTimes(mock, 2)
         expect(result3.message()).toContain('Expect mock to be called 2 times')
+
+        const result4 = await toBeRequestedTimes(mock, { gte: 3 })
+        expect(result4.message()).toContain('Expect mock to be called times')
+        expect(result4.message()).toContain('Expected: ">= 3"')
+        expect(result4.message()).toContain('Received: 0')
     })
 })

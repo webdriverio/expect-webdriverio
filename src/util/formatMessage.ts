@@ -96,7 +96,8 @@ export const enhanceErrorBe = (
     context: any,
     verb: string,
     expectation: string,
-    options: ExpectWebdriverIO.CommandOptions): any => {
+    options: ExpectWebdriverIO.CommandOptions
+): any => {
     return enhanceError(subject, not(context.isNot) + expectation, not(!pass) + expectation, context, verb, expectation, '', options)
 }
 
