@@ -56,7 +56,7 @@ async function waitUntil(condition, { timeout, m, interval }) {
             }
         } catch { }
         attemptsLeft --
-        sleep(interval)
+        await sleep(interval)
     }
     throw new Error('waitUntil: timeout after ' + timeout)
 }

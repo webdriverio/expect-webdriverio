@@ -30,6 +30,11 @@ const matchers = {
     ...require('./matchers/element/toHaveTextContaining'),
     ...require('./matchers/element/toHaveValue'),
     ...require('./matchers/element/toHaveValueContaining'),
+
+    // Mock
+    ...require('./matchers/mock/toBeRequested'),
+    ...require('./matchers/mock/toBeRequestedTimes'),
+    ...require('./matchers/mock/toBeRequestedWithResponse'),
 }
 
 // avoid exporting internal functions

@@ -42,5 +42,10 @@ test('matchers', () => {
         'toHaveTextContaining',
         'toHaveValue',
         'toHaveValueContaining',
+
+        // mock
+        'toBeRequested',
+        'toBeRequestedTimes',
+        'toBeRequestedWithResponse'
     ])
 })

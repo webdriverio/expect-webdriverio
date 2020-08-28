@@ -17,7 +17,7 @@ const { options: DEFAULT_OPTIONS } = config
 const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
     wait = DEFAULT_OPTIONS.wait,
     interval = DEFAULT_OPTIONS.interval } = {},
-) => {
+): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
         return await condition()
@@ -26,10 +26,10 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
     // wait for condition to be truthy
     try {
         let error
-        await browser.waitUntil(async () => {
+        const result = await browser.waitUntil(async () => {
             error = undefined
             try {
-                return isNot !== await condition()
+                return Boolean(await condition())
             } catch (err) {
                 error = err
                 return false
@@ -43,9 +43,9 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
             throw error
         }
 
-        return !isNot
+        return result !== isNot
     } catch (err) {
-        return isNot
+        return false !== isNot
     }
 }
 
@@ -53,7 +53,10 @@ async function executeCommandBe(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
-) {
+): Promise<{
+    pass: boolean,
+    message: () => string
+}> {
     const { isNot, expectation, verb = 'be' } = this
 
     let el = await received
@@ -75,7 +78,7 @@ async function executeCommandBe(
     }
 }
 
-const compareNumbers = (actual: number, gte: number, lte: number, eq?: number) => {
+const compareNumbers = (actual: number, gte: number, lte: number, eq?: number): boolean => {
     if (typeof eq === 'number') {
         return actual === eq
     }
@@ -115,7 +118,7 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
 }
 
 function aliasFn(
-    fn: Function,
+    fn: (...args: any) => void,
     { verb, expectation }: {
         verb?: string;
         expectation?: string;
