@@ -94,6 +94,28 @@ describe('browser matchers', () => {
                 expect(result.pass).toBe(false)
             })
 
+            test('not - failure (with wait)', async () => {
+                const result = await fn.call({ isNot: true }, browser, validText, { wait: 1 })
+
+                expect(getExpectMessage(result.message())).toContain('not')
+                expect(getExpected(result.message())).toContain('not')
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('not - success (with wait)', async () => {
+                browser._value = function (): string {
+                    return wrongText
+                }
+                const result = await fn.call({ isNot: true }, browser, validText, { wait: 1 })
+
+                expect(getExpectMessage(result.message())).toContain('not')
+                expect(getExpected(result.message())).toContain('Valid')
+                expect(getReceived(result.message())).toContain('Wrong')
+
+                expect(result.pass).toBe(false)
+            })
+
             test('message', async () => {
                 const result = await fn.call({}, browser)
                 expect(getExpectMessage(result.message())).toContain(matcherNameToString(name))

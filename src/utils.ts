@@ -26,10 +26,10 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
     // wait for condition to be truthy
     try {
         let error
-        const result = await browser.waitUntil(async () => {
+        await browser.waitUntil(async () => {
             error = undefined
             try {
-                return Boolean(await condition())
+                return isNot !== await condition()
             } catch (err) {
                 error = err
                 return false
@@ -43,9 +43,9 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
             throw error
         }
 
-        return result !== isNot
+        return !isNot
     } catch (err) {
-        return false !== isNot
+        return isNot
     }
 }
 
