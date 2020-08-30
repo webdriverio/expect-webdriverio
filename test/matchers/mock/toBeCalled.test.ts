@@ -42,19 +42,18 @@ describe('toBeRequested', () => {
         expect(result2.pass).toBe(true)
     })
 
-    // todo fix #169
-    test.skip('not to be called', async () => {
+    test('not to be called', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
 
         // expect(mock).not.toBeRequested() should pass
         const result = await toBeRequested.call({ isNot: true }, mock)
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(false)
 
         mock.calls.push(mockMatch)
 
         // expect(mock).not.toBeRequested() should fail
         const result4 = await toBeRequested.call({ isNot: true }, mock)
-        expect(result4.pass).toBe(false)
+        expect(result4.pass).toBe(true)
     })
 
     test('message', async () => {
