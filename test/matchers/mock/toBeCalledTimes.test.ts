@@ -74,7 +74,8 @@ describe('toBeRequestedTimes', () => {
         expect(result6.pass).toBe(true)
     })
 
-    test('not to be called', async () => {
+    // todo fix #169
+    test.skip('not to be called', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
 
         // expect(mock).not.toBeRequestedTimes(0) should fail
@@ -96,7 +97,8 @@ describe('toBeRequestedTimes', () => {
         expect(result4.pass).toBe(false)
     })
 
-    test('message', async () => {
+    // todo fix #169
+    test.skip('message', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
 
         const result = await toBeRequestedTimes(mock, 0)
