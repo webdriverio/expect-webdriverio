@@ -22,7 +22,7 @@ async function condition(el: WebdriverIO.Element, property: string, value?: any,
     return compareText(prop, value, options)
 }
 
-export function toHavePropertyFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveElementPropertyFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
 
@@ -54,6 +54,15 @@ export function toHavePropertyFn(received: WebdriverIO.Element | WebdriverIO.Ele
     })
 }
 
+export function toHaveElementProperty(...args: any): any {
+    return runExpect.call(this, toHaveElementPropertyFn, args)
+}
+
+/**
+ * toHaveProperty conflicts with Jest's https://jestjs.io/docs/en/expect#tohavepropertykeypath-value matcher
+ * and will be removed from expect-webdriverio in favor of `toHaveElementProperty`
+ */
 export function toHaveProperty(...args: any): any {
-    return runExpect.call(this, toHavePropertyFn, args)
+    console.warn('expect(...).toHaveProperty is deprecated. Use toHaveElementProperty instead.')
+    return runExpect.call(this, toHaveElementPropertyFn, args)
 }

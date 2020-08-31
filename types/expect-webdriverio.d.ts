@@ -5,7 +5,7 @@ declare namespace ExpectWebdriverIO {
         /**
          * time in ms to wait for expectation to succeed. Default: 3000
          */
-        wait?: number;
+        wait?: number
 
         /**
          * interval between attempts. Default: 100
@@ -105,18 +105,38 @@ declare namespace ExpectWebdriverIO {
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
+         * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
          */
         toHaveClass(className: string, options?: ExpectWebdriverIO.StringOptions): R;
+
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
+         */
+        toHaveElementClass(className: string, options?: ExpectWebdriverIO.StringOptions): R;
+
+        /**
+         * `WebdriverIO.Element` -> `getAttribute` class
+         * @deprecated since v1.3.1 - use `toHaveElementClassContaining` instead.
          * Element's class includes the className.
          */
         toHaveClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
+         * `WebdriverIO.Element` -> `getAttribute` class
+         * Element's class includes the className.
+         */
+        toHaveElementClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions): R;
+
+        /**
          * `WebdriverIO.Element` -> `getProperty`
+         * @deprecated since v1.3.1 - use `toHaveElementProperty` instead.
          */
         toHaveProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions): R;
+
+        /**
+         * `WebdriverIO.Element` -> `getProperty`
+         */
+        toHaveElementProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `getProperty` value

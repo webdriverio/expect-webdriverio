@@ -250,7 +250,7 @@ const myInput = $('input')
 expect(myInput).toHaveAttrContaining('class', 'form')
 ```
 
-### toHaveClass
+### toHaveElementClass
 
 Checks if an element has a certain class name.
 
@@ -258,10 +258,10 @@ Checks if an element has a certain class name.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveClass('form-control', { message: 'Not a form control!', })
+expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
 ```
 
-### toHaveClassContaining
+### toHaveElementClassContaining
 
 Checks if an element has a certain class name that contains provided value.
 
@@ -269,10 +269,10 @@ Checks if an element has a certain class name that contains provided value.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveClassContaining('form')
+expect(myInput).toHaveElementClassContaining('form')
 ```
 
-### toHaveProperty
+### toHaveElementProperty
 
 Checks if an element has a certain property.
 
@@ -280,8 +280,8 @@ Checks if an element has a certain property.
 
 ```js
 const elem = $('#elem')
-expect(elem).toHaveProperty('height', 23)
-expect(elem).not.toHaveProperty('height', 0)
+expect(elem).toHaveElementProperty('height', 23)
+expect(elem).not.toHaveElementProperty('height', 0)
 ```
 
 ### toHaveValue
@@ -507,7 +507,7 @@ Error messages are informative out of the box and contain:
 - highlight the difference (texts assertions)
 
 ![toHaveText](/docs/img/errors/text.png?raw=true "toHaveText")
-![toHaveClass](/docs/img/errors/class.png?raw=true "toHaveClass")
+![toHaveElementClass](/docs/img/errors/class.png?raw=true "toHaveElementClass")
 ![not.toBeVisible](/docs/img/errors/not-visible.png?raw=true "not.toBeVisible")
 
 ## What's next?

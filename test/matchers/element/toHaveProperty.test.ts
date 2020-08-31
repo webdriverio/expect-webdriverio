@@ -1,6 +1,6 @@
-import { toHaveProperty } from '../../../src/matchers/element/toHaveProperty'
+import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty'
 
-describe('toHaveProperty', () => {
+describe('toHaveElementProperty', () => {
     test('ignore case of stringified value', async () => {
         const el = await $('sel')
         el._attempts = 0
@@ -9,7 +9,7 @@ describe('toHaveProperty', () => {
             return 'iphone'
         }
 
-        const result = await toHaveProperty(
+        const result = await toHaveElementProperty(
             el, 'value', 'iPhone',
             { wait: 0, ignoreCase: true })
         expect(result.pass).toBe(true)
