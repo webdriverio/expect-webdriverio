@@ -171,7 +171,7 @@ declare namespace ExpectWebdriverIO {
         * `WebdriverIO.Element` -> `$$('./*').length`
         * supports less / greater then or equals to be passed in options
         */
-        toHaveChildren(options?: ExpectWebdriverIO.NumberOptions): R;
+        toHaveChildren(size?: number | ExpectWebdriverIO.NumberOptions, options?: ExpectWebdriverIO.NumberOptions): R;
 
         /**
         * `WebdriverIO.Element` -> `getAttribute` href

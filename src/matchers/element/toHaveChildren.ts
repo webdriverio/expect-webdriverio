@@ -9,9 +9,16 @@ async function condition(el: WebdriverIO.Element, gte: number, lte: number, eq?:
     }
 }
 
-function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.NumberOptions = {}): any {
+function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, size?: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.NumberOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'children', verb = 'have' } = this
+
+    // type check
+    if (typeof size === 'number') {
+        options.eq = size
+    } else if (typeof size === 'object') {
+        options = { ...options, ...size }
+    }
 
     const eq = options.eq
     const gte = options.gte || 1
@@ -31,7 +38,8 @@ function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArr
         updateElementsArray(pass, received, el)
 
         const error = numberError(gte, lte, eq)
-        const message = enhanceError(el, error, wrapExpectedWithArray(el, children, error), this, verb, expectation, '', options)
+        const expected = wrapExpectedWithArray(el, children, error)
+        const message = enhanceError(el, expected, children, this, verb, expectation, '', options)
 
         return {
             pass,

@@ -367,7 +367,7 @@ expect(elem).toBeChecked()
 
 ### toHaveHref
 
-Checks if link element has a specifc link target.
+Checks if link element has a specific link target.
 
 ##### Usage
 
@@ -389,7 +389,7 @@ expect(link).toHaveLink('https://webdriver.io')
 
 ### toHaveHrefContaining
 
-Checks if link element contains a specifc link target.
+Checks if link element contains a specific link target.
 
 ##### Usage
 
@@ -468,28 +468,34 @@ expect(elem).toBeVisibleInViewport()
 
 ### toHaveChildren
 
+Checks amount of the element's children by calling `element.$('./*')` command.
+
+##### Usage
+
+```js
+const list = $('ul')
+expect(list).toHaveChildren() // the list has at least one item
+// same as
+expect(list).toHaveChildren({ gte: 1 })
+
+expect(list).toHaveChildren(3) // the list has 3 items
+// same as 
+expect(list).toHaveChildren({ eq: 3 })
+```
+
+### toBeElementsArrayOfSize
+
 Checks amount of fetched elements using [`$$`](/docs/api/browser/$$.html) command.
 
 ##### Usage
 
 ```js
-const elems = $$('div')
-expect(elems).toHaveChildren({ gte: 10 })
+const listItems = $$('ul>li')
+expect(listItems).toBeElementsArrayOfSize(5) // 5 items in the list
+
+expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
 // same as
-assert.ok(elems.length >= 10)
-```
-
-### toBeElementsArrayOfSize
-
-Same as `toHaveChildren`.
-
-##### Usage
-
-```js
-const elems = $$('div')
-expect(elems).toBeElementsArrayOfSize({ gte: 10 })
-// same as
-assert.ok(elems.length >= 10)
+assert.ok(listItems.length <= 10)
 ```
 
 ## Error messages
