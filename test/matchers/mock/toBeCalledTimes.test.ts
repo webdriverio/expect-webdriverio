@@ -1,5 +1,6 @@
 import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTimes'
 import { Matches } from 'webdriverio'
+import { removeColors, getReceived, getExpected, getExpectMessage } from '../../__fixtures__/utils'
 
 class TestMock {
     _calls: Matches[]
@@ -79,21 +80,21 @@ describe('toBeRequestedTimes', () => {
 
         // expect(mock).not.toBeRequestedTimes(0) should fail
         const result = await toBeRequestedTimes.call({ isNot: true }, mock, 0)
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
 
         // expect(mock).not.toBeRequestedTimes(1) should pass
         const result2 = await toBeRequestedTimes.call({ isNot: true }, mock, 1)
-        expect(result2.pass).toBe(true)
+        expect(result2.pass).toBe(false)
 
         mock.calls.push(mockMatch)
 
         // expect(mock).not.toBeRequestedTimes(0) should pass
         const result3 = await toBeRequestedTimes.call({ isNot: true }, mock, 0)
-        expect(result3.pass).toBe(true)
+        expect(result3.pass).toBe(false)
 
         // expect(mock).not.toBeRequestedTimes(1) should fail
         const result4 = await toBeRequestedTimes.call({ isNot: true }, mock, 1)
-        expect(result4.pass).toBe(false)
+        expect(result4.pass).toBe(true)
     })
 
     test('message', async () => {
@@ -109,8 +110,9 @@ describe('toBeRequestedTimes', () => {
         expect(result3.message()).toContain('Expect mock to be called 2 times')
 
         const result4 = await toBeRequestedTimes(mock, { gte: 3 })
-        expect(result4.message()).toContain('Expect mock to be called times')
-        expect(result4.message()).toContain('Expected: ">= 3"')
-        expect(result4.message()).toContain('Received: 0')
+        const message4 = removeColors(result4.message())
+        expect(getExpectMessage(message4)).toBe('Expect mock to be called times')
+        expect(getExpected(message4)).toBe('Expected: ">= 3"')
+        expect(getReceived(message4)).toBe('Received: 0')
     })
 })

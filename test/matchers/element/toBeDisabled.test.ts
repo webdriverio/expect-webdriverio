@@ -95,6 +95,30 @@ describe('toBeDisabled', () => {
         expect(result.pass).toBe(false)
     })
 
+    test('not - failure (with wait)', async () => {
+        const el = await $('sel')
+        el._value = function (): boolean {
+            return false
+        }
+        const result = await toBeDisabled.call({ isNot: true }, el, { wait: 1 })
+        const received = getReceived(result.message())
+
+        expect(received).not.toContain('not')
+        expect(result.pass).toBe(true)
+    })
+
+    test('not - success (with wait)', async () => {
+        const el = await $('sel')
+        el._value = function (): boolean {
+            return true
+        }
+        const result = await toBeDisabled.call({ isNot: true }, el, { wait: 1 })
+        const received = getReceived(result.message())
+
+        expect(received).toContain('not')
+        expect(result.pass).toBe(false)
+    })
+
     test('message', async () => {
         const el = await $('sel')
         el._value = function (): boolean {
