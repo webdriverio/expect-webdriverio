@@ -367,7 +367,7 @@ expect(elem).toBeChecked()
 
 ### toHaveHref
 
-Checks if link element has a specifc link target.
+Checks if link element has a specific link target.
 
 ##### Usage
 
@@ -389,7 +389,7 @@ expect(link).toHaveLink('https://webdriver.io')
 
 ### toHaveHrefContaining
 
-Checks if link element contains a specifc link target.
+Checks if link element contains a specific link target.
 
 ##### Usage
 
@@ -468,7 +468,7 @@ expect(elem).toBeVisibleInViewport()
 
 ### toHaveChildren
 
-Checks amount of the element' children by calling `element.$('./*')` command.
+Checks amount of the element's children by calling `element.$('./*')` command.
 
 ##### Usage
 
