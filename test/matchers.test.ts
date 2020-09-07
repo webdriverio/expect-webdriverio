@@ -49,6 +49,7 @@ test('matchers', () => {
         // mock
         'toBeRequested',
         'toBeRequestedTimes',
+        'toBeRequestedWith',
         'toBeRequestedWithResponse'
     ])
 })

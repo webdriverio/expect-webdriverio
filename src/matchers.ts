@@ -34,6 +34,7 @@ const matchers = {
     // Mock
     ...require('./matchers/mock/toBeRequested'),
     ...require('./matchers/mock/toBeRequestedTimes'),
+    ...require('./matchers/mock/toBeRequestedWith'),
     ...require('./matchers/mock/toBeRequestedWithResponse'),
 }
 
