@@ -35,6 +35,7 @@ const matchers = {
     ...require('./matchers/mock/toBeRequested'),
     ...require('./matchers/mock/toBeRequestedTimes'),
     ...require('./matchers/mock/toBeRequestedWith'),
+    ...require('./matchers/mock/toBeRequestedWithResponse'),
 }
 
 // avoid exporting internal functions
