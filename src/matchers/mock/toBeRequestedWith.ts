@@ -25,11 +25,11 @@ function toBeRequestedWithFn(
                         bodyMatcher(call.postData, requestedWith.request) &&
                         bodyMatcher(call.body, requestedWith.response)
                     ) {
-                        return !isNot
+                        return true
                     }
                 }
 
-                return isNot
+                return false
             },
             isNot,
             { ...options, wait: isNot ? 0 : options.wait }

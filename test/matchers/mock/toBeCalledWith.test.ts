@@ -94,7 +94,7 @@ describe('toBeRequestedWith', () => {
         }, 10)
 
         const result = await toBeRequestedWith.call({ isNot: true }, mock, {})
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
     })
 
     test('wait for NOT failure', async () => {
@@ -105,7 +105,7 @@ describe('toBeRequestedWith', () => {
         }, 10)
 
         const result = await toBeRequestedWith.call({ isNot: true }, mock, { method: 'DELETE' })
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(false)
     })
 
     const scenarios = [
