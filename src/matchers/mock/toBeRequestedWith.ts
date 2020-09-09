@@ -3,6 +3,7 @@ import { runExpect } from '../../util/expectAdapter'
 import { equals } from '../../jasmineUtils'
 
 const STR_LIMIT = 80
+const KEY_LIMIT = 12
 
 export function toBeRequestedWithFn(
     received: WebdriverIO.Mock,
@@ -128,20 +129,10 @@ const bodyMatcher = (
         return false
     }
 
-    // get matcher sample if expected value is a special matcher like `expect.objectContaining({ foo: 'bar })`
-    const actualSample = isMatcher(expected)
-        ? (expected as ExpectWebdriverIO.PartialMatcher).sample
-        : expected
-
     let parsedBody = body
 
     // convert request body from string to JSON if expected value is JSON-like
-    if (
-        Array.isArray(actualSample) ||
-        (typeof actualSample === 'object' &&
-            actualSample !== null &&
-            actualSample instanceof RegExp === false)
-    ) {
+    if (isExpectedJsonLike(expected)) {
         parsedBody = tryParseBody(body)
 
         // failed to parse string as JSON
@@ -151,6 +142,31 @@ const bodyMatcher = (
     }
 
     return equals(parsedBody, expected)
+}
+
+const isExpectedJsonLike = (
+    expected:
+        | string
+        | ExpectWebdriverIO.JsonCompatible
+        | ExpectWebdriverIO.PartialMatcher
+        | undefined
+        | Function
+) => {
+    if (typeof expected === 'undefined') {
+        return false
+    }
+
+    // get matcher sample if expected value is a special matcher like `expect.objectContaining({ foo: 'bar })`
+    const actualSample = isMatcher(expected)
+        ? (expected as ExpectWebdriverIO.PartialMatcher).sample
+        : expected
+
+    return (
+        Array.isArray(actualSample) ||
+        (typeof actualSample === 'object' &&
+            actualSample !== null &&
+            actualSample instanceof RegExp === false)
+    )
 }
 
 /**
@@ -168,11 +184,11 @@ const isMatcher = (filter: any) => {
     return typeof filter.__proto__?.asymmetricMatch === 'function'
 }
 
-const tryParseBody = (jsonString: string) => {
+const tryParseBody = (jsonString: string | undefined, fallback: any = null) => {
     try {
-        return JSON.parse(jsonString)
+        return typeof jsonString === 'undefined' ? fallback : JSON.parse(jsonString)
     } catch {
-        return null
+        return fallback
     }
 }
 
@@ -181,7 +197,7 @@ const tryParseBody = (jsonString: string) => {
  */
 const minifyRequestMock = (
     requestMock: WebdriverIO.Matches | undefined,
-    requestedWith: Record<string, any | undefined>
+    requestedWith: ExpectWebdriverIO.RequestedWith
 ) => {
     if (typeof requestMock === 'undefined') {
         return requestMock
@@ -191,8 +207,12 @@ const minifyRequestMock = (
         url: requestMock.url,
         method: requestMock.method,
         headers: requestMock.headers,
-        request: requestMock.postData,
-        response: requestMock.body,
+        request: isExpectedJsonLike(requestedWith.request)
+            ? tryParseBody(requestMock.postData, requestMock.postData)
+            : requestMock.postData,
+        response: isExpectedJsonLike(requestedWith.response)
+            ? tryParseBody(requestMock.body, requestMock.body)
+            : requestMock.body,
     }
 
     deleteUndefinedValues(r, requestedWith)
@@ -208,9 +228,9 @@ const minifyRequestedWith = (r: ExpectWebdriverIO.RequestedWith) => {
     const result = {
         url: requestedWithParamToString(r.url),
         method: r.method,
-        headers: requestedWithParamToString(r.headers, shortenHeaders),
-        request: requestedWithParamToString(r.request),
-        response: requestedWithParamToString(r.response),
+        headers: requestedWithParamToString(r.headers, shortenJson),
+        request: requestedWithParamToString(r.request, shortenJson),
+        response: requestedWithParamToString(r.response, shortenJson),
     }
 
     deleteUndefinedValues(result)
@@ -242,7 +262,7 @@ const requestedWithParamToString = (
             ' ' +
             (JSON.stringify((param as ExpectWebdriverIO.PartialMatcher).sample) || '')
         )
-    } else if (transformFn) {
+    } else if (transformFn && typeof param === 'object' && param !== null) {
         param = transformFn(param as ExpectWebdriverIO.JsonCompatible)
     }
 
@@ -254,15 +274,42 @@ const requestedWithParamToString = (
 }
 
 /**
- * shorten headers key/values
+ * shorten object key/values and decrease array size
  * ex: `{ someVeryLongKey: 'someVeryLongValue' }` -> `{ som..Key: 'som..lue' }`
  */
-const shortenHeaders = (obj: Record<string, string>) => {
-    const minifiedObject: Record<string, string> = {}
+const shortenJson = (
+    obj: ExpectWebdriverIO.JsonCompatible,
+    lengthLimit = STR_LIMIT * 2,
+    keyLimit = KEY_LIMIT
+) => {
+    if (JSON.stringify(obj).length < lengthLimit) {
+        return obj
+    }
 
-    Object.entries(obj).forEach(([k, v]) => {
-        minifiedObject[shortenString(k, 16)] = shortenString(v, 16)
-    })
+    if (Array.isArray(obj)) {
+        const firstItem: any =
+            typeof obj[0] === 'object' && obj[0] !== null
+                ? shortenJson(obj[0], lengthLimit / 2, keyLimit / 4)
+                : shortenString(JSON.stringify(obj[0]))
+        return [firstItem, `... ${obj.length - 1} more items`]
+    }
+
+    const minifiedObject: Record<string, any> = {}
+    const entries = Object.entries(obj)
+
+    if (keyLimit >= 4) {
+        entries.slice(0, keyLimit).forEach(([k, v]) => {
+            if (typeof v === 'object' && v !== null) {
+                v = shortenJson(v, lengthLimit / 2, keyLimit / 4)
+            } else if (typeof v === 'string') {
+                v = shortenString(v, 16)
+            }
+            minifiedObject[shortenString(k, 24)] = v
+        })
+    }
+    if (entries.length > keyLimit) {
+        minifiedObject['...'] = `${entries.length} items in total`
+    }
 
     return minifiedObject
 }

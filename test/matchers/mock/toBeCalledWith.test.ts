@@ -22,8 +22,14 @@ const mockGet: Matches = {
         page: 1,
         data: {
             result: {
+                aLongValue1: {
+                    k1: { value1: 'bar1' },
+                    k2: { value2: 'bar2' },
+                },
                 foo: { id: 1 },
                 bar: { id: 2 },
+                longValue2: { value: 'foo2' },
+                longValue3: { value: 'foo3' },
             },
         },
     }),
@@ -185,7 +191,7 @@ describe('toBeRequestedWith', () => {
         },
         {
             name: 'failure, response only',
-            mocks: [{ ...mockPost }],
+            mocks: [{ ...mockGet }],
             pass: false,
             params: {
                 response: { foobar: true },
@@ -325,7 +331,7 @@ describe('toBeRequestedWith', () => {
             method: ['DELETE', 'PUT'],
             headers: mockPost.headers,
             request: expect.anything(),
-            response: JSON.parse(mockPost.body),
+            response: [...Array(50).keys()].map((_, id) => ({ id, name: `name_${id}` })),
         })
         const wasNotCalled = removeColors(requested.message())
         expect(getExpectMessage(wasNotCalled)).toBe('Expect mock to be called with')
@@ -334,7 +340,7 @@ describe('toBeRequestedWith', () => {
                 '"headers": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, ' +
                 '"method": ["DELETE", "PUT"], ' +
                 '"request": "Anything ", ' +
-                '"response": [{"id": 1, "name": "foo"}, {"id": 2, "name": "bar"}], ' +
+                '"response": [{"id": 0, "name": "name_0"}, "... 49 more items"], ' +
                 '"url": "() => false"}'
         )
         expect(getReceived(wasNotCalled)).toBe('Received: "was not called"')
