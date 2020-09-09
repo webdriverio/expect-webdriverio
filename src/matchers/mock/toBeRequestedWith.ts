@@ -2,6 +2,8 @@ import { waitUntil, enhanceError } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 import { equals } from '../../jasmineUtils'
 
+const STR_LIMIT = 80
+
 function toBeRequestedWithFn(
     received: WebdriverIO.Mock,
     requestedWith: ExpectWebdriverIO.RequestedWith = {},
@@ -17,11 +19,11 @@ function toBeRequestedWithFn(
                 for (const call of received.calls) {
                     actual = call
                     if (
-                        methodFilter(call.method, requestedWith.method) &&
-                        urlFilter(call.url, requestedWith.url) &&
-                        headersFilter(call.headers, requestedWith.headers) &&
-                        bodyFilter(call.postData, requestedWith.request) &&
-                        bodyFilter(call.body, requestedWith.response)
+                        methodMatcher(call.method, requestedWith.method) &&
+                        urlMatcher(call.url, requestedWith.url) &&
+                        headersMatcher(call.headers, requestedWith.headers) &&
+                        bodyMatcher(call.postData, requestedWith.request) &&
+                        bodyMatcher(call.body, requestedWith.response)
                     ) {
                         return !isNot
                     }
@@ -36,7 +38,7 @@ function toBeRequestedWithFn(
         const message = enhanceError(
             'mock',
             minifyRequestedWith(requestedWith),
-            minifyRequestMock(actual) || 'was not called',
+            minifyRequestMock(actual, requestedWith) || 'was not called',
             this,
             verb,
             expectation,
@@ -50,7 +52,10 @@ function toBeRequestedWithFn(
     })
 }
 
-const methodFilter = (method: string, expected?: string | Array<string>) => {
+/**
+ * is actual method matching an expected method or methods
+ */
+const methodMatcher = (method: string, expected?: string | Array<string>) => {
     if (typeof expected === 'undefined') {
         return true
     }
@@ -67,7 +72,10 @@ const methodFilter = (method: string, expected?: string | Array<string>) => {
         .includes(method)
 }
 
-const urlFilter = (
+/**
+ * is actual url matching an expected condition
+ */
+const urlMatcher = (
     url: string,
     expected?: string | ExpectWebdriverIO.PartialMatcher | ((url: string) => boolean)
 ) => {
@@ -80,7 +88,10 @@ const urlFilter = (
     return equals(url, expected)
 }
 
-const headersFilter = (
+/**
+ * is headers url matching an expected condition
+ */
+const headersMatcher = (
     headers: Record<string, string>,
     expected?:
         | Record<string, string>
@@ -96,7 +107,10 @@ const headersFilter = (
     return equals(headers, expected)
 }
 
-const bodyFilter = (
+/**
+ * is request/response matching an expected condition
+ */
+const bodyMatcher = (
     body: string | undefined,
     expected?:
         | string
@@ -162,50 +176,111 @@ const tryParseBody = (jsonString: string) => {
     }
 }
 
-const minifyRequestMock = (requestMock: WebdriverIO.Matches | undefined) => {
+/**
+ * shorten long url, headers, postData, body
+ */
+const minifyRequestMock = (
+    requestMock: WebdriverIO.Matches | undefined,
+    requestedWith: Record<string, any | undefined>
+) => {
     if (typeof requestMock === 'undefined') {
         return requestMock
     }
 
-    const result = {
-        url: requestMock.url.substr(-80),
+    const r: Record<string, any> = {
+        url: requestMock.url,
         method: requestMock.method,
-        headers: JSON.stringify(requestMock.headers).substring(0, 80),
-        postData: requestMock.postData?.substring(0, 80),
-        body: requestMock.body.substring(0, 80),
+        headers: requestMock.headers,
+        request: requestMock.postData,
+        response: requestMock.body,
     }
 
-    return result
+    deleteUndefinedValues(r, requestedWith)
+
+    return minifyRequestedWith(r)
 }
 
-const minifyRequestedWith = (requestedWith: ExpectWebdriverIO.RequestedWith) => {
+/**
+ * shorten long url, headers, request, response
+ * and transform Function/Matcher to string
+ */
+const minifyRequestedWith = (r: ExpectWebdriverIO.RequestedWith) => {
     const result = {
-        url: requestedWithParamToString(requestedWith.url),
-        method: requestedWith.method,
-        headers: requestedWithParamToString(requestedWith.headers),
-        request: requestedWithParamToString(requestedWith.request),
-        response: requestedWithParamToString(requestedWith.response),
+        url: requestedWithParamToString(r.url),
+        method: r.method,
+        headers: requestedWithParamToString(r.headers, shortenHeaders),
+        request: requestedWithParamToString(r.request),
+        response: requestedWithParamToString(r.response),
     }
+
+    deleteUndefinedValues(result)
 
     return result
 }
 
+/**
+ * transform Function/Matcher/JSON to string if needed
+ */
 const requestedWithParamToString = (
-    param: string | ExpectWebdriverIO.JsonCompatible | ExpectWebdriverIO.PartialMatcher | Function | undefined
+    param:
+        | string
+        | ExpectWebdriverIO.JsonCompatible
+        | ExpectWebdriverIO.PartialMatcher
+        | Function
+        | undefined,
+    transformFn?: (param: ExpectWebdriverIO.JsonCompatible) => ExpectWebdriverIO.JsonCompatible | string
 ) => {
     if (typeof param === 'undefined') {
         return
     }
+
     if (typeof param === 'function') {
-        return 'fn()'
+        param = param.toString()
+    } else if (isMatcher(param)) {
+        return (
+            param.constructor.name +
+            ' ' +
+            (JSON.stringify((param as ExpectWebdriverIO.PartialMatcher).sample) || '')
+        )
+    } else if (transformFn) {
+        param = transformFn(param as ExpectWebdriverIO.JsonCompatible)
     }
-    if (isMatcher(param)) {
-        return param.constructor.name
+
+    if (typeof param === 'string') {
+        param = shortenString(param)
     }
-    if (Array.isArray(param) || typeof param === 'object') {
-        param = JSON.stringify(param)
-    }
-    return param.substring(0, 80)
+
+    return param
+}
+
+/**
+ * shorten headers key/values
+ * ex: `{ someVeryLongKey: 'someVeryLongValue' }` -> `{ som..Key: 'som..lue' }`
+ */
+const shortenHeaders = (obj: Record<string, string>) => {
+    const minifiedObject: Record<string, string> = {}
+
+    Object.entries(obj).forEach(([k, v]) => {
+        minifiedObject[shortenString(k, 16)] = shortenString(v, 16)
+    })
+
+    return minifiedObject
+}
+
+/**
+ * shorten string
+ * ex: '1234567890' -> '12..90'
+ */
+const shortenString = (str: string, limit = STR_LIMIT) => {
+    return str.length > limit ? str.substring(0, limit / 2 - 1) + '..' + str.substr(1 - limit / 2) : str
+}
+
+const deleteUndefinedValues = (obj: Record<string, any>, baseline = obj) => {
+    Object.keys(obj).forEach((k) => {
+        if (typeof baseline[k] === 'undefined') {
+            delete obj[k]
+        }
+    })
 }
 
 export function toBeRequestedWith(...args: any): any {

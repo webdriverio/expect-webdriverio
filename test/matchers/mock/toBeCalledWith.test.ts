@@ -79,7 +79,7 @@ describe('toBeRequestedWith', () => {
             method: 'post.method',
             headers: {},
             request: {},
-            response: 'JSON.parse(post.body)',
+            response: 'post.body',
         }
 
         const result = await toBeRequestedWith(mock, params)
@@ -329,7 +329,14 @@ describe('toBeRequestedWith', () => {
         })
         const wasNotCalled = removeColors(requested.message())
         expect(getExpectMessage(wasNotCalled)).toBe('Expect mock to be called with')
-        // expect(getExpected(wasNotCalled)).toBe('Expected: "{}"')
+        expect(getExpected(wasNotCalled)).toBe(
+            'Expected: {' +
+                '"headers": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, ' +
+                '"method": ["DELETE", "PUT"], ' +
+                '"request": "Anything ", ' +
+                '"response": [{"id": 1, "name": "foo"}, {"id": 2, "name": "bar"}], ' +
+                '"url": "() => false"}'
+        )
         expect(getReceived(wasNotCalled)).toBe('Received: "was not called"')
 
         mock.calls.push(mockPost)
@@ -339,8 +346,17 @@ describe('toBeRequestedWith', () => {
             method: mockPost.method,
         })
         const wasCalled = removeColors(notRequested.message())
-        expect(getExpectMessage(wasCalled)).toBe('Expect mock not to be called with')
-        // expect(getExpected(wasCalled)).toBe('Expected: "{}"')
-        // expect(getReceived(wasCalled)).toBe('Received: was not called')
+        expect(wasCalled).toBe(
+            `Expect mock not to be called with
+
+- Expected [not]  - 1
++ Received        + 1
+
+  Object {
+    "method": "POST",
+-   "url": "() => true",
++   "url": "https://my-app/api/add-tags",
+  }`
+        )
     })
 })
