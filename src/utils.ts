@@ -50,7 +50,7 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
 }
 
 async function executeCommandBe(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): Promise<{
@@ -59,7 +59,8 @@ async function executeCommandBe(
 }> {
     const { isNot, expectation, verb = 'be' } = this
 
-    let el = await received
+    received = await received
+    let el = received
     const pass = await waitUntil(async () => {
         const result = await executeCommand.call(this,
             el,

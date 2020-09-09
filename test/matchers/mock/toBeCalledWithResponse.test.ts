@@ -19,9 +19,9 @@ class TestMock {
 }
 
 const mockMatch: Matches = {
-    body: {
+    body: JSON.stringify({
         foo: 'bar'
-    },
+    }),
     url: '/foo/bar',
     method: 'POST',
     headers: {},
@@ -30,9 +30,9 @@ const mockMatch: Matches = {
 }
 
 const mockMatch2: Matches = {
-    body: {
+    body: JSON.stringify({
         bar: 'foo'
-    },
+    }),
     url: '/foo/bar',
     method: 'POST',
     headers: {},
@@ -75,31 +75,31 @@ describe('toBeRequestedWithResponse', () => {
 
         // expect(mock).not.toBeRequestedWithResponse({ foo: 'bar' }) should pass
         const result = await toBeRequestedWithResponse.call({ isNot: true }, mock, { foo: 'bar' })
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(false)
 
         mock.calls.push(mockMatch) // response { foo: 'bar' }
 
         // expect(mock).not.toBeRequestedWithResponse({ foo: 'foo' }) should pass
         const result2 = await toBeRequestedWithResponse.call({ isNot: true }, mock, { foo: 'foo' })
-        expect(result2.pass).toBe(true)
+        expect(result2.pass).toBe(false)
 
         // expect(mock).not.toBeRequestedWithResponse({ foo: 'bar' }) should fail
         const result3 = await toBeRequestedWithResponse.call({ isNot: true }, mock, { foo: 'bar' })
-        expect(result3.pass).toBe(false)
+        expect(result3.pass).toBe(true)
 
         // expect(mock).not.toBeRequestedWithResponse({ bar: 'foo' }) should pass
         const result4 = await toBeRequestedWithResponse.call({ isNot: true }, mock, { bar: 'foo' })
-        expect(result4.pass).toBe(true)
+        expect(result4.pass).toBe(false)
 
         mock.calls.push(mockMatch2)
 
         // expect(mock).not.toBeRequestedWithResponse({ foo: 'bar' }) should fail
         const result5 = await toBeRequestedWithResponse.call({ isNot: true }, mock, { foo: 'bar' })
-        expect(result5.pass).toBe(false)
+        expect(result5.pass).toBe(true)
 
-        // expect(mock).not.toBeRequestedWithResponse({ bar: 'foo' }) should pass
+        // expect(mock).not.toBeRequestedWithResponse({ bar: 'foo' }) should fail
         const result6 = await toBeRequestedWithResponse.call({ isNot: true }, mock, { bar: 'foo' })
-        expect(result6.pass).toBe(false)
+        expect(result6.pass).toBe(true)
     })
 
     test('message', async () => {

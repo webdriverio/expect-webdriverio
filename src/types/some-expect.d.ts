@@ -8,7 +8,7 @@ declare namespace NodeJS {
         expect?: SomeExpectLib;
         jasmine?: SomeExpectLib;
         expectAsync?: Record<string, unknown>;
-        expectWdio: SomeExpectLib;
+        expectWdio?: SomeExpectLib;
     }
 }
 

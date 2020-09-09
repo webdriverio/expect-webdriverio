@@ -1,4 +1,5 @@
 import { printExpected, printReceived, printDiffOrStringify } from 'jest-matcher-utils';
+import { equals } from '../jasmineUtils'
 
 const EXPECTED_LABEL = 'Expected';
 const RECEIVED_LABEL = 'Received';
@@ -65,7 +66,7 @@ export const enhanceError = (
     }
 
     let diffString
-    if (isNot && actual === expected) {
+    if (isNot && equals(actual, expected)) {
         diffString = `${EXPECTED_LABEL}: ${printExpected(expected)}\n` +
             `${RECEIVED_LABEL}: ${printReceived(actual)}`
     } else {
