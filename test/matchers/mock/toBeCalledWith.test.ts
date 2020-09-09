@@ -86,7 +86,7 @@ describe('toBeRequestedWith', () => {
         expect(result.pass).toBe(false)
     })
 
-    test('wait for NOT success, empty params', async () => {
+    test('wait for NOT failure, empty params', async () => {
         const mock = new TestMock()
         mock.calls.push({ ...mockGet }, { ...mockPost })
         setTimeout(() => {
@@ -97,7 +97,7 @@ describe('toBeRequestedWith', () => {
         expect(result.pass).toBe(true)
     })
 
-    test('wait for NOT failure', async () => {
+    test('wait for NOT success', async () => {
         const mock = new TestMock()
 
         setTimeout(() => {

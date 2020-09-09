@@ -4,7 +4,7 @@ import { equals } from '../../jasmineUtils'
 
 const STR_LIMIT = 80
 
-function toBeRequestedWithFn(
+export function toBeRequestedWithFn(
     received: WebdriverIO.Mock,
     requestedWith: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = {}
