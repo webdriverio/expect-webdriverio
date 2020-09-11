@@ -275,10 +275,24 @@ declare namespace ExpectWebdriverIO {
         ): R
 
         // ==== network mock ====
-        toBeRequestedWith(
-            requestedWith: RequestedWith,
+
+        /**
+         * Check that `WebdriverIO.Mock` was called
+         */
+        toBeRequested(options?: ExpectWebdriverIO.CommandOptions): R
+
+        /**
+         * Check that `WebdriverIO.Mock` was called N times
+         */
+        toBeRequestedTimes(
+            times: number | ExpectWebdriverIO.NumberOptions,
             options?: ExpectWebdriverIO.NumberOptions
         ): R
+
+        /**
+         * Check that `WebdriverIO.Mock` was called with the specific parameters
+         */
+        toBeRequestedWith(requestedWith: RequestedWith, options?: ExpectWebdriverIO.CommandOptions): R
     }
 
     type RequestedWith = {
