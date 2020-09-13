@@ -1,5 +1,6 @@
 import { toBeRequested } from '../../../src/matchers/mock/toBeRequested'
 import { Matches } from 'webdriverio'
+import { getExpected, getExpectMessage, getReceived, removeColors } from '../../__fixtures__/utils'
 
 class TestMock {
     _calls: any[]
@@ -59,8 +60,10 @@ describe('toBeRequested', () => {
     test('message', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
 
-        const result = await toBeRequested(mock)
-        expect(result.message()).toContain('Expect mock to be called')
+        const message = removeColors((await toBeRequested(mock)).message())
+        expect(getExpectMessage(message)).toBe('Expect mock to be called')
+        expect(getReceived(message)).toBe('Received: 0')
+        expect(getExpected(message)).toBe('Expected: ">= 1"')
 
         const result2 = await toBeRequested.call({ isNot: true }, mock)
         expect(result2.message()).toContain('Expect mock not to be called')
