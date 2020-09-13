@@ -102,7 +102,7 @@ export const enhanceErrorBe = (
     return enhanceError(subject, not(context.isNot) + expectation, not(!pass) + expectation, context, verb, expectation, '', options)
 }
 
-export const numberError = (gte: number, lte: number, eq?: number): any => {
+export const numberError = (gte: number, lte?: number, eq?: number): any => {
     if (typeof eq === 'number') {
         return eq
     }
