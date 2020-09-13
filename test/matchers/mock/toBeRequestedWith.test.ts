@@ -21,16 +21,14 @@ const mockGet: Matches = {
         total: 100,
         page: 1,
         data: {
-            result: {
-                aLongValue1: {
-                    k1: { value1: 'bar1' },
-                    k2: { value2: 'bar2' },
-                },
-                foo: { id: 1 },
-                bar: { id: 2 },
-                longValue2: { value: 'foo2' },
-                longValue3: { value: 'foo3' },
+            aLongValue1: {
+                k1: { value1: 'bar1' },
+                k2: { value2: 'bar2' },
             },
+            foo: { id: 1 },
+            bar: { id: 2 },
+            longValue2: { value: 'foo2' },
+            longValue3: { value: 'foo3' },
         },
     }),
     initialPriority: 'Low',
@@ -58,7 +56,7 @@ describe('toBeRequestedWith', () => {
             mock.calls.push({ ...mockGet })
         }, 5)
         setTimeout(() => {
-            mock.calls.push({ ...mockGet }, { ...mockPost })
+            mock.calls.push({ ...mockGet }, { ...mockPost, body: JSON.parse(mockPost.body) })
         }, 15)
 
         const params = {
