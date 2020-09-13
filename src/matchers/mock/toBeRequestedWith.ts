@@ -22,7 +22,8 @@ export function toBeRequestedWithFn(
                     if (
                         methodMatcher(call.method, requestedWith.method) &&
                         urlMatcher(call.url, requestedWith.url) &&
-                        headersMatcher(call.headers, requestedWith.headers) &&
+                        headersMatcher(call.headers, requestedWith.requestHeaders) &&
+                        headersMatcher(call.responseHeaders, requestedWith.responseHeaders) &&
                         bodyMatcher(call.postData, requestedWith.request) &&
                         bodyMatcher(call.body, requestedWith.response)
                     ) {
@@ -206,7 +207,8 @@ const minifyRequestMock = (
     const r: Record<string, any> = {
         url: requestMock.url,
         method: requestMock.method,
-        headers: requestMock.headers,
+        requestHeaders: requestMock.headers,
+        responseHeaders: requestMock.responseHeaders,
         request: isExpectedJsonLike(requestedWith.request)
             ? tryParseBody(requestMock.postData, requestMock.postData)
             : requestMock.postData,
@@ -228,7 +230,8 @@ const minifyRequestedWith = (r: ExpectWebdriverIO.RequestedWith) => {
     const result = {
         url: requestedWithParamToString(r.url),
         method: r.method,
-        headers: requestedWithParamToString(r.headers, shortenJson),
+        requestHeaders: requestedWithParamToString(r.requestHeaders, shortenJson),
+        responseHeaders: requestedWithParamToString(r.responseHeaders, shortenJson),
         request: requestedWithParamToString(r.request, shortenJson),
         response: requestedWithParamToString(r.response, shortenJson),
     }

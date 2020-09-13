@@ -298,7 +298,11 @@ declare namespace ExpectWebdriverIO {
     type RequestedWith = {
         url?: string | ExpectWebdriverIO.PartialMatcher | ((url: string) => boolean)
         method?: string | Array<string>
-        headers?:
+        requestHeaders?:
+            | Record<string, string>
+            | ExpectWebdriverIO.PartialMatcher
+            | ((headers: Record<string, string>) => boolean)
+        responseHeaders?:
             | Record<string, string>
             | ExpectWebdriverIO.PartialMatcher
             | ((headers: Record<string, string>) => boolean)

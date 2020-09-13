@@ -17,6 +17,7 @@ const mockGet: Matches = {
     url: 'http://localhost:8080/api/search?pages=20',
     method: 'GET',
     headers: { ...{ Authorization: 'Bearer ' + '1'.repeat(128), foo: 'bar' } },
+    responseHeaders: {},
     body: JSON.stringify({
         total: 100,
         page: 1,
@@ -41,6 +42,7 @@ const mockPost: Matches = {
     url: 'https://my-app/api/add-tags',
     method: 'POST',
     headers: { ...{ Authorization: 'Bearer ' + '2'.repeat(128), foo: 'bar', Accept: '*' } },
+    responseHeaders: {},
     body: JSON.stringify([
         { id: 1, name: 'foo' },
         { id: 2, name: 'bar' },
@@ -64,7 +66,8 @@ describe('toBeRequestedWith', () => {
         const params = {
             url: mockPost.url,
             method: mockPost.method,
-            headers: mockPost.headers,
+            requestHeaders: mockPost.headers,
+            responseHeaders: mockPost.responseHeaders,
             request: mockPost.postData,
             response: JSON.parse(mockPost.body),
         }
@@ -83,7 +86,8 @@ describe('toBeRequestedWith', () => {
         const params = {
             url: 'post.url',
             method: 'post.method',
-            headers: {},
+            requestHeaders: {},
+            responseHeaders: {},
             request: {},
             response: 'post.body',
         }
@@ -133,11 +137,19 @@ describe('toBeRequestedWith', () => {
             },
         },
         {
-            name: 'success, headers only',
+            name: 'success, requestHeaders only',
             mocks: [{ ...mockPost }],
             pass: true,
             params: {
-                headers: mockPost.headers,
+                requestHeaders: mockPost.headers,
+            },
+        },
+        {
+            name: 'success, responseHeaders only',
+            mocks: [{ ...mockPost }],
+            pass: true,
+            params: {
+                responseHeaders: mockPost.responseHeaders,
             },
         },
         {
@@ -174,11 +186,19 @@ describe('toBeRequestedWith', () => {
             },
         },
         {
-            name: 'failure, headers only',
+            name: 'failure, requestHeaders only',
             mocks: [{ ...mockPost }],
             pass: false,
             params: {
-                headers: { Cache: false },
+                requestHeaders: { Cache: false },
+            },
+        },
+        {
+            name: 'failure, responseHeaders only',
+            mocks: [{ ...mockPost }],
+            pass: false,
+            params: {
+                responseHeaders: { Cache: false },
             },
         },
         {
@@ -211,7 +231,9 @@ describe('toBeRequestedWith', () => {
             mocks: [{ ...mockPost }],
             pass: true,
             params: {
-                headers: expect.objectContaining({ Authorization: expect.stringContaining('Bearer ') }),
+                requestHeaders: expect.objectContaining({
+                    Authorization: expect.stringContaining('Bearer '),
+                }),
             },
         },
         {
@@ -244,7 +266,7 @@ describe('toBeRequestedWith', () => {
             mocks: [{ ...mockPost }],
             pass: true,
             params: {
-                headers: (headers: Record<string, string>) => headers.foo === 'bar',
+                requestHeaders: (headers: Record<string, string>) => headers.foo === 'bar',
             },
         },
         {
@@ -329,7 +351,8 @@ describe('toBeRequestedWith', () => {
         const requested = await toBeRequestedWith(mock, {
             url: () => false,
             method: ['DELETE', 'PUT'],
-            headers: mockPost.headers,
+            requestHeaders: mockPost.headers,
+            responseHeaders: mockPost.responseHeaders,
             request: expect.anything(),
             response: [...Array(50).keys()].map((_, id) => ({ id, name: `name_${id}` })),
         })
@@ -337,10 +360,11 @@ describe('toBeRequestedWith', () => {
         expect(getExpectMessage(wasNotCalled)).toBe('Expect mock to be called with')
         expect(getExpected(wasNotCalled)).toBe(
             'Expected: {' +
-                '"headers": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, ' +
                 '"method": ["DELETE", "PUT"], ' +
                 '"request": "Anything ", ' +
+                '"requestHeaders": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, ' +
                 '"response": [{"id": 0, "name": "name_0"}, "... 49 more items"], ' +
+                '"responseHeaders": {}, ' +
                 '"url": "() => false"}'
         )
         expect(getReceived(wasNotCalled)).toBe('Received: "was not called"')
