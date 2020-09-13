@@ -501,7 +501,8 @@ const mock = browser.mock('**/api/todo*', { method: 'POST' })
 expect(mock).toBeRequestedWith({
     url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
     method: 'POST',                                 // [optional] string | array
-    headers: { Authorization: 'Bearer xxx' },       // [optional] object | function | custom matcher
+    requestHeaders: { Authorization: 'foo' },       // [optional] object | function | custom matcher
+    responseHeaders: { Authorization: 'bar' },      // [optional] object | function | custom matcher
     request: { title: 'foo', description: 'bar' },  // [optional] object | function | custom matcher
     response: { success: true },                    // [optional] object | function | custom matcher
 })
@@ -509,9 +510,9 @@ expect(mock).toBeRequestedWith({
 expect(mock).toBeRequestedWith({
     url: expect.stringMatching(/.*\/api\/.*/i),
     method: ['POST', 'PUT'], // either POST or PUT
-    headers: headers => headers.Authorization.startsWith('Bearer '),
+    requestHeaders: headers => headers.Authorization.startsWith('Bearer '),
     request: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
-    response: r => JSON.parse(r).data.items.length === 20
+    response: r => Array.isArray(r) && r.data.items.length === 20
 })
 ```
 
