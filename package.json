@@ -55,7 +55,7 @@
     "shelljs": "^0.8.4",
     "ts-jest": "^26.3.0",
     "typescript": "^3.9.7",
-    "webdriverio": "^6.4.7"
+    "webdriverio": "^6.5.0"
   },
   "types": "types/jest-global.d.ts",
   "typeScriptVersion": "3.8.3",
