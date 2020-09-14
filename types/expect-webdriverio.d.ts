@@ -59,6 +59,7 @@ declare namespace ExpectWebdriverIO {
         gte?: number
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface Matchers<R, T> {
         // ===== $ or $$ =====
         /**
@@ -302,7 +303,7 @@ declare namespace ExpectWebdriverIO {
             | Record<string, string>
             | ExpectWebdriverIO.PartialMatcher
             | ((headers: Record<string, string>) => boolean)
-        request?:
+        postData?:
             | string
             | ExpectWebdriverIO.JsonCompatible
             | ExpectWebdriverIO.PartialMatcher
