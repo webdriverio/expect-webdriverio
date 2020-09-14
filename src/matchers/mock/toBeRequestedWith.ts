@@ -21,8 +21,10 @@ export function toBeRequestedWithFn(
                     actual = call
                     if (
                         methodMatcher(call.method, requestedWith.method) &&
+                        statusCodeMatcher(call.statusCode, requestedWith.statusCode) &&
                         urlMatcher(call.url, requestedWith.url) &&
-                        headersMatcher(call.headers, requestedWith.headers) &&
+                        headersMatcher(call.headers, requestedWith.requestHeaders) &&
+                        headersMatcher(call.responseHeaders, requestedWith.responseHeaders) &&
                         bodyMatcher(call.postData, requestedWith.postData) &&
                         bodyMatcher(call.body, requestedWith.response)
                     ) {
@@ -71,6 +73,19 @@ const methodMatcher = (method: string, expected?: string | Array<string>) => {
             return m.toUpperCase()
         })
         .includes(method)
+}
+
+/**
+ * is actual statusCode matching an expected statusCode or statusCodes
+ */
+const statusCodeMatcher = (statusCode: number, expected?: number | Array<number>) => {
+    if (typeof expected === 'undefined') {
+        return true
+    }
+    if (!Array.isArray(expected)) {
+        expected = [expected]
+    }
+    return expected.includes(statusCode)
 }
 
 /**
@@ -206,15 +221,14 @@ const minifyRequestMock = (
     const r: Record<string, any> = {
         url: requestMock.url,
         method: requestMock.method,
-        headers: requestMock.headers,
-        postData:
-            typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.postData)
-                ? tryParseBody(requestMock.postData, requestMock.postData)
-                : requestMock.postData,
-        response:
-            typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.response)
-                ? tryParseBody(requestMock.body, requestMock.body)
-                : requestMock.body,
+        requestHeaders: requestMock.headers,
+        responseHeaders: requestMock.responseHeaders,
+        postData: typeof requestMock.postData === 'string' && isExpectedJsonLike(requestedWith.postData)
+            ? tryParseBody(requestMock.postData, requestMock.postData)
+            : requestMock.postData,
+        response: typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.response)
+            ? tryParseBody(requestMock.body, requestMock.body)
+            : requestMock.body,
     }
 
     deleteUndefinedValues(r, requestedWith)
@@ -230,7 +244,8 @@ const minifyRequestedWith = (r: ExpectWebdriverIO.RequestedWith) => {
     const result = {
         url: requestedWithParamToString(r.url),
         method: r.method,
-        headers: requestedWithParamToString(r.headers, shortenJson),
+        requestHeaders: requestedWithParamToString(r.requestHeaders, shortenJson),
+        responseHeaders: requestedWithParamToString(r.responseHeaders, shortenJson),
         postData: requestedWithParamToString(r.postData, shortenJson),
         response: requestedWithParamToString(r.response, shortenJson),
     }

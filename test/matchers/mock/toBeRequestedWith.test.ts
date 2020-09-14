@@ -17,6 +17,8 @@ const mockGet: Matches = {
     url: 'http://localhost:8080/api/search?pages=20',
     method: 'GET',
     headers: { ...{ Authorization: 'Bearer ' + '1'.repeat(128), foo: 'bar' } },
+    responseHeaders: {},
+    statusCode: 200,
     body: JSON.stringify({
         total: 100,
         page: 1,
@@ -39,6 +41,8 @@ const mockPost: Matches = {
     url: 'https://my-app/api/add-tags',
     method: 'POST',
     headers: { ...{ Authorization: 'Bearer ' + '2'.repeat(128), foo: 'bar', Accept: '*' } },
+    responseHeaders: {},
+    statusCode: 201,
     body: JSON.stringify([
         { id: 1, name: 'foo' },
         { id: 2, name: 'bar' },
@@ -56,15 +60,17 @@ describe('toBeRequestedWith', () => {
             mock.calls.push({ ...mockGet })
         }, 5)
         setTimeout(() => {
-            mock.calls.push({ ...mockGet }, { ...mockPost, body: JSON.parse(mockPost.body) })
+            mock.calls.push({ ...mockGet }, { ...mockPost, body: JSON.parse(mockPost.body as string) })
         }, 15)
 
         const params = {
             url: mockPost.url,
             method: mockPost.method,
-            headers: mockPost.headers,
+            requestHeaders: mockPost.headers,
+            statusCode: mockPost.statusCode,
+            responseHeaders: mockPost.responseHeaders,
             postData: mockPost.postData,
-            response: JSON.parse(mockPost.body),
+            response: JSON.parse(mockPost.body as string),
         }
 
         const result = await toBeRequestedWith(mock, params)
@@ -81,7 +87,8 @@ describe('toBeRequestedWith', () => {
         const params = {
             url: 'post.url',
             method: 'post.method',
-            headers: {},
+            requestHeaders: {},
+            responseHeaders: {},
             postData: {},
             response: 'post.body',
         }
@@ -131,11 +138,27 @@ describe('toBeRequestedWith', () => {
             },
         },
         {
-            name: 'success, headers only',
+            name: 'success, statusCode only',
             mocks: [{ ...mockPost }],
             pass: true,
             params: {
-                headers: mockPost.headers,
+                statusCode: [203, 200, 201],
+            },
+        },
+        {
+            name: 'success, requestHeaders only',
+            mocks: [{ ...mockPost }],
+            pass: true,
+            params: {
+                requestHeaders: mockPost.headers,
+            },
+        },
+        {
+            name: 'success, responseHeaders only',
+            mocks: [{ ...mockPost }],
+            pass: true,
+            params: {
+                responseHeaders: mockPost.responseHeaders,
             },
         },
         {
@@ -172,11 +195,27 @@ describe('toBeRequestedWith', () => {
             },
         },
         {
-            name: 'failure, headers only',
+            name: 'failure, statusCode only',
             mocks: [{ ...mockPost }],
             pass: false,
             params: {
-                headers: { Cache: false },
+                statusCode: [400, 401],
+            },
+        },
+        {
+            name: 'failure, requestHeaders only',
+            mocks: [{ ...mockPost }],
+            pass: false,
+            params: {
+                requestHeaders: { Cache: false },
+            },
+        },
+        {
+            name: 'failure, responseHeaders only',
+            mocks: [{ ...mockPost }],
+            pass: false,
+            params: {
+                responseHeaders: { Cache: false },
             },
         },
         {
@@ -209,7 +248,9 @@ describe('toBeRequestedWith', () => {
             mocks: [{ ...mockPost }],
             pass: true,
             params: {
-                headers: expect.objectContaining({ Authorization: expect.stringContaining('Bearer ') }),
+                requestHeaders: expect.objectContaining({
+                    Authorization: expect.stringContaining('Bearer '),
+                }),
             },
         },
         {
@@ -242,7 +283,7 @@ describe('toBeRequestedWith', () => {
             mocks: [{ ...mockPost }],
             pass: true,
             params: {
-                headers: (headers: Record<string, string>) => headers.foo === 'bar',
+                requestHeaders: (headers: Record<string, string>) => headers.foo === 'bar',
             },
         },
         {
@@ -327,7 +368,8 @@ describe('toBeRequestedWith', () => {
         const requested = await toBeRequestedWith(mock, {
             url: () => false,
             method: ['DELETE', 'PUT'],
-            headers: mockPost.headers,
+            requestHeaders: mockPost.headers,
+            responseHeaders: mockPost.responseHeaders,
             postData: expect.anything(),
             response: [...Array(50).keys()].map((_, id) => ({ id, name: `name_${id}` })),
         })
@@ -335,10 +377,11 @@ describe('toBeRequestedWith', () => {
         expect(getExpectMessage(wasNotCalled)).toBe('Expect mock to be called with')
         expect(getExpected(wasNotCalled)).toBe(
             'Expected: {' +
-                '"headers": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, ' +
                 '"method": ["DELETE", "PUT"], ' +
                 '"postData": "Anything ", ' +
+                '"requestHeaders": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, ' +
                 '"response": [{"id": 0, "name": "name_0"}, "... 49 more items"], ' +
+                '"responseHeaders": {}, ' +
                 '"url": "() => false"}'
         )
         expect(getReceived(wasNotCalled)).toBe('Received: "was not called"')
