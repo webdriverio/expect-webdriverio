@@ -302,7 +302,7 @@ declare namespace ExpectWebdriverIO {
             | Record<string, string>
             | ExpectWebdriverIO.PartialMatcher
             | ((headers: Record<string, string>) => boolean)
-        request?:
+        postData?:
             | string
             | ExpectWebdriverIO.JsonCompatible
             | ExpectWebdriverIO.PartialMatcher

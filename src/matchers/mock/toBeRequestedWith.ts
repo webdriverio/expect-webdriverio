@@ -23,7 +23,7 @@ export function toBeRequestedWithFn(
                         methodMatcher(call.method, requestedWith.method) &&
                         urlMatcher(call.url, requestedWith.url) &&
                         headersMatcher(call.headers, requestedWith.headers) &&
-                        bodyMatcher(call.postData, requestedWith.request) &&
+                        bodyMatcher(call.postData, requestedWith.postData) &&
                         bodyMatcher(call.body, requestedWith.response)
                     ) {
                         return true
@@ -109,7 +109,7 @@ const headersMatcher = (
 }
 
 /**
- * is request/response matching an expected condition
+ * is postData/response matching an expected condition
  */
 const bodyMatcher = (
     body: string | ExpectWebdriverIO.JsonCompatible | undefined,
@@ -131,7 +131,7 @@ const bodyMatcher = (
 
     let parsedBody = body
 
-    // convert request body from string to JSON if expected value is JSON-like
+    // convert postData/body from string to JSON if expected value is JSON-like
     if (typeof(body) === 'string' && isExpectedJsonLike(expected)) {
         parsedBody = tryParseBody(body)
 
@@ -207,8 +207,8 @@ const minifyRequestMock = (
         url: requestMock.url,
         method: requestMock.method,
         headers: requestMock.headers,
-        request:
-            typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.request)
+        postData:
+            typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.postData)
                 ? tryParseBody(requestMock.postData, requestMock.postData)
                 : requestMock.postData,
         response:
@@ -223,7 +223,7 @@ const minifyRequestMock = (
 }
 
 /**
- * shorten long url, headers, request, response
+ * shorten long url, headers, postData, response
  * and transform Function/Matcher to string
  */
 const minifyRequestedWith = (r: ExpectWebdriverIO.RequestedWith) => {
@@ -231,7 +231,7 @@ const minifyRequestedWith = (r: ExpectWebdriverIO.RequestedWith) => {
         url: requestedWithParamToString(r.url),
         method: r.method,
         headers: requestedWithParamToString(r.headers, shortenJson),
-        request: requestedWithParamToString(r.request, shortenJson),
+        postData: requestedWithParamToString(r.postData, shortenJson),
         response: requestedWithParamToString(r.response, shortenJson),
     }
 
