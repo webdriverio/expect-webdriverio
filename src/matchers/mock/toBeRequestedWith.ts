@@ -24,7 +24,7 @@ export function toBeRequestedWithFn(
                         urlMatcher(call.url, requestedWith.url) &&
                         headersMatcher(call.headers, requestedWith.requestHeaders) &&
                         headersMatcher(call.responseHeaders, requestedWith.responseHeaders) &&
-                        bodyMatcher(call.postData, requestedWith.request) &&
+                        bodyMatcher(call.postData, requestedWith.postData) &&
                         bodyMatcher(call.body, requestedWith.response)
                     ) {
                         return true
@@ -110,15 +110,15 @@ const headersMatcher = (
 }
 
 /**
- * is request/response matching an expected condition
+ * is postData/response matching an expected condition
  */
 const bodyMatcher = (
-    body: string | undefined,
+    body: string | ExpectWebdriverIO.JsonCompatible | undefined,
     expected?:
         | string
         | ExpectWebdriverIO.JsonCompatible
         | ExpectWebdriverIO.PartialMatcher
-        | ((r: string | undefined) => boolean)
+        | ((r: string | ExpectWebdriverIO.JsonCompatible | undefined) => boolean)
 ) => {
     if (typeof expected === 'undefined') {
         return true
@@ -132,8 +132,8 @@ const bodyMatcher = (
 
     let parsedBody = body
 
-    // convert request body from string to JSON if expected value is JSON-like
-    if (isExpectedJsonLike(expected)) {
+    // convert postData/body from string to JSON if expected value is JSON-like
+    if (typeof(body) === 'string' && isExpectedJsonLike(expected)) {
         parsedBody = tryParseBody(body)
 
         // failed to parse string as JSON
@@ -209,10 +209,10 @@ const minifyRequestMock = (
         method: requestMock.method,
         requestHeaders: requestMock.headers,
         responseHeaders: requestMock.responseHeaders,
-        request: isExpectedJsonLike(requestedWith.request)
+        postData: typeof requestMock.postData === 'string' && isExpectedJsonLike(requestedWith.postData)
             ? tryParseBody(requestMock.postData, requestMock.postData)
             : requestMock.postData,
-        response: isExpectedJsonLike(requestedWith.response)
+        response: typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.response)
             ? tryParseBody(requestMock.body, requestMock.body)
             : requestMock.body,
     }
@@ -223,7 +223,7 @@ const minifyRequestMock = (
 }
 
 /**
- * shorten long url, headers, request, response
+ * shorten long url, headers, postData, response
  * and transform Function/Matcher to string
  */
 const minifyRequestedWith = (r: ExpectWebdriverIO.RequestedWith) => {
@@ -232,7 +232,7 @@ const minifyRequestedWith = (r: ExpectWebdriverIO.RequestedWith) => {
         method: r.method,
         requestHeaders: requestedWithParamToString(r.requestHeaders, shortenJson),
         responseHeaders: requestedWithParamToString(r.responseHeaders, shortenJson),
-        request: requestedWithParamToString(r.request, shortenJson),
+        postData: requestedWithParamToString(r.postData, shortenJson),
         response: requestedWithParamToString(r.response, shortenJson),
     }
 

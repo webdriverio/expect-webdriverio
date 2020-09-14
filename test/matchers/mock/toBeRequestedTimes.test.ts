@@ -1,5 +1,5 @@
 import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTimes'
-import { Matches } from 'webdriverio'
+import type { Matches } from 'webdriverio'
 import { removeColors, getReceived, getExpected, getExpectMessage } from '../../__fixtures__/utils'
 
 class TestMock {

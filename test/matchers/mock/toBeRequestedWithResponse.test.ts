@@ -1,5 +1,5 @@
 import { toBeRequestedWithResponse } from '../../../src/matchers/mock/toBeRequestedWithResponse'
-import { Matches } from 'webdriverio'
+import type { Matches } from 'webdriverio'
 
 class TestMock {
     _calls: Matches[]
@@ -43,6 +43,14 @@ const mockMatch2: Matches = {
 }
 
 describe('toBeRequestedWithResponse', () => {
+    const consoleWarn = global.console.warn
+    beforeEach(() => {
+        global.console.warn = jest.fn()
+    })
+    afterEach(() => {
+        global.console.warn = consoleWarn
+    })
+    
     test('wait for success', async () => {
         const mock: WebdriverIO.Mock = new TestMock()
 

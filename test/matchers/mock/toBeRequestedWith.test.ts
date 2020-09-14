@@ -22,16 +22,14 @@ const mockGet: Matches = {
         total: 100,
         page: 1,
         data: {
-            result: {
-                aLongValue1: {
-                    k1: { value1: 'bar1' },
-                    k2: { value2: 'bar2' },
-                },
-                foo: { id: 1 },
-                bar: { id: 2 },
-                longValue2: { value: 'foo2' },
-                longValue3: { value: 'foo3' },
+            aLongValue1: {
+                k1: { value1: 'bar1' },
+                k2: { value2: 'bar2' },
             },
+            foo: { id: 1 },
+            bar: { id: 2 },
+            longValue2: { value: 'foo2' },
+            longValue3: { value: 'foo3' },
         },
     }),
     initialPriority: 'Low',
@@ -60,7 +58,7 @@ describe('toBeRequestedWith', () => {
             mock.calls.push({ ...mockGet })
         }, 5)
         setTimeout(() => {
-            mock.calls.push({ ...mockGet }, { ...mockPost })
+            mock.calls.push({ ...mockGet }, { ...mockPost, body: JSON.parse(mockPost.body) })
         }, 15)
 
         const params = {
@@ -68,7 +66,7 @@ describe('toBeRequestedWith', () => {
             method: mockPost.method,
             requestHeaders: mockPost.headers,
             responseHeaders: mockPost.responseHeaders,
-            request: mockPost.postData,
+            postData: mockPost.postData,
             response: JSON.parse(mockPost.body),
         }
 
@@ -88,7 +86,7 @@ describe('toBeRequestedWith', () => {
             method: 'post.method',
             requestHeaders: {},
             responseHeaders: {},
-            request: {},
+            postData: {},
             response: 'post.body',
         }
 
@@ -153,11 +151,11 @@ describe('toBeRequestedWith', () => {
             },
         },
         {
-            name: 'success, request only',
+            name: 'success, postData only',
             mocks: [{ ...mockPost }],
             pass: true,
             params: {
-                request: JSON.parse(mockPost.postData as string),
+                postData: JSON.parse(mockPost.postData as string),
             },
         },
         {
@@ -202,11 +200,11 @@ describe('toBeRequestedWith', () => {
             },
         },
         {
-            name: 'failure, request only',
+            name: 'failure, postData only',
             mocks: [{ ...mockPost }],
             pass: false,
             params: {
-                request: 'foobar',
+                postData: 'foobar',
             },
         },
         {
@@ -237,11 +235,11 @@ describe('toBeRequestedWith', () => {
             },
         },
         {
-            name: 'special matcher, request',
+            name: 'special matcher, postData',
             mocks: [{ ...mockPost }],
             pass: true,
             params: {
-                request: expect.stringMatching('"search"'),
+                postData: expect.stringMatching('"search"'),
             },
         },
         {
@@ -270,11 +268,11 @@ describe('toBeRequestedWith', () => {
             },
         },
         {
-            name: 'function, request',
+            name: 'function, postData',
             mocks: [{ ...mockPost }],
             pass: true,
             params: {
-                request: (r: string) => (JSON.parse(r) as Array<Record<string, unknown>>).length === 2,
+                postData: (r: string) => (JSON.parse(r) as Array<Record<string, unknown>>).length === 2,
             },
         },
         {
@@ -291,7 +289,7 @@ describe('toBeRequestedWith', () => {
             mocks: [{ ...mockGet }],
             pass: false,
             params: {
-                request: 'something',
+                postData: 'something',
             },
         },
         // body is not a JSON
@@ -353,7 +351,7 @@ describe('toBeRequestedWith', () => {
             method: ['DELETE', 'PUT'],
             requestHeaders: mockPost.headers,
             responseHeaders: mockPost.responseHeaders,
-            request: expect.anything(),
+            postData: expect.anything(),
             response: [...Array(50).keys()].map((_, id) => ({ id, name: `name_${id}` })),
         })
         const wasNotCalled = removeColors(requested.message())
@@ -361,7 +359,7 @@ describe('toBeRequestedWith', () => {
         expect(getExpected(wasNotCalled)).toBe(
             'Expected: {' +
                 '"method": ["DELETE", "PUT"], ' +
-                '"request": "Anything ", ' +
+                '"postData": "Anything ", ' +
                 '"requestHeaders": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, ' +
                 '"response": [{"id": 0, "name": "name_0"}, "... 49 more items"], ' +
                 '"responseHeaders": {}, ' +
