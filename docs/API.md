@@ -503,7 +503,7 @@ expect(mock).toBeRequestedWith({
     method: 'POST',                                 // [optional] string | array
     requestHeaders: { Authorization: 'foo' },       // [optional] object | function | custom matcher
     responseHeaders: { Authorization: 'bar' },      // [optional] object | function | custom matcher
-    request: { title: 'foo', description: 'bar' },  // [optional] object | function | custom matcher
+    postData: { title: 'foo', description: 'bar' }, // [optional] object | function | custom matcher
     response: { success: true },                    // [optional] object | function | custom matcher
 })
 
@@ -511,7 +511,7 @@ expect(mock).toBeRequestedWith({
     url: expect.stringMatching(/.*\/api\/.*/i),
     method: ['POST', 'PUT'], // either POST or PUT
     requestHeaders: headers => headers.Authorization.startsWith('Bearer '),
-    request: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
+    postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
     response: r => Array.isArray(r) && r.data.items.length === 20
 })
 ```
