@@ -60,7 +60,7 @@ describe('toBeRequestedWith', () => {
             mock.calls.push({ ...mockGet })
         }, 5)
         setTimeout(() => {
-            mock.calls.push({ ...mockGet }, { ...mockPost, body: JSON.parse(mockPost.body) })
+            mock.calls.push({ ...mockGet }, { ...mockPost, body: JSON.parse(mockPost.body as string) })
         }, 15)
 
         const params = {
@@ -70,7 +70,7 @@ describe('toBeRequestedWith', () => {
             statusCode: mockPost.statusCode,
             responseHeaders: mockPost.responseHeaders,
             postData: mockPost.postData,
-            response: JSON.parse(mockPost.body),
+            response: JSON.parse(mockPost.body as string),
         }
 
         const result = await toBeRequestedWith(mock, params)
