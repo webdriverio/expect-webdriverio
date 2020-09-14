@@ -21,6 +21,7 @@ export function toBeRequestedWithFn(
                     actual = call
                     if (
                         methodMatcher(call.method, requestedWith.method) &&
+                        statusCodeMatcher(call.statusCode, requestedWith.statusCode) &&
                         urlMatcher(call.url, requestedWith.url) &&
                         headersMatcher(call.headers, requestedWith.requestHeaders) &&
                         headersMatcher(call.responseHeaders, requestedWith.responseHeaders) &&
@@ -72,6 +73,19 @@ const methodMatcher = (method: string, expected?: string | Array<string>) => {
             return m.toUpperCase()
         })
         .includes(method)
+}
+
+/**
+ * is actual statusCode matching an expected statusCode or statusCodes
+ */
+const statusCodeMatcher = (statusCode: number, expected?: number | Array<number>) => {
+    if (typeof expected === 'undefined') {
+        return true
+    }
+    if (!Array.isArray(expected)) {
+        expected = [expected]
+    }
+    return expected.includes(statusCode)
 }
 
 /**

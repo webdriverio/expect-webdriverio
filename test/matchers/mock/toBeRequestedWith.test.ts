@@ -18,6 +18,7 @@ const mockGet: Matches = {
     method: 'GET',
     headers: { ...{ Authorization: 'Bearer ' + '1'.repeat(128), foo: 'bar' } },
     responseHeaders: {},
+    statusCode: 200,
     body: JSON.stringify({
         total: 100,
         page: 1,
@@ -41,6 +42,7 @@ const mockPost: Matches = {
     method: 'POST',
     headers: { ...{ Authorization: 'Bearer ' + '2'.repeat(128), foo: 'bar', Accept: '*' } },
     responseHeaders: {},
+    statusCode: 201,
     body: JSON.stringify([
         { id: 1, name: 'foo' },
         { id: 2, name: 'bar' },
@@ -65,6 +67,7 @@ describe('toBeRequestedWith', () => {
             url: mockPost.url,
             method: mockPost.method,
             requestHeaders: mockPost.headers,
+            statusCode: mockPost.statusCode,
             responseHeaders: mockPost.responseHeaders,
             postData: mockPost.postData,
             response: JSON.parse(mockPost.body),
@@ -135,6 +138,14 @@ describe('toBeRequestedWith', () => {
             },
         },
         {
+            name: 'success, statusCode only',
+            mocks: [{ ...mockPost }],
+            pass: true,
+            params: {
+                statusCode: [203, 200, 201],
+            },
+        },
+        {
             name: 'success, requestHeaders only',
             mocks: [{ ...mockPost }],
             pass: true,
@@ -181,6 +192,14 @@ describe('toBeRequestedWith', () => {
             pass: false,
             params: {
                 method: ['DELETE', 'PUT'],
+            },
+        },
+        {
+            name: 'failure, statusCode only',
+            mocks: [{ ...mockPost }],
+            pass: false,
+            params: {
+                statusCode: [400, 401],
             },
         },
         {

@@ -26,6 +26,7 @@ const mockMatch: Matches = {
     method: 'POST',
     headers: {},
     responseHeaders: {},
+    statusCode: 200,
     initialPriority: 'Low',
     referrerPolicy: 'origin'
 }
@@ -38,6 +39,7 @@ const mockMatch2: Matches = {
     method: 'POST',
     headers: {},
     responseHeaders: {},
+    statusCode: 200,
     initialPriority: 'Low',
     referrerPolicy: 'origin'
 }
