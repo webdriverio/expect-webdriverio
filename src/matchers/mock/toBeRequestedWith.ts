@@ -112,12 +112,12 @@ const headersMatcher = (
  * is request/response matching an expected condition
  */
 const bodyMatcher = (
-    body: string | undefined,
+    body: string | ExpectWebdriverIO.JsonCompatible | undefined,
     expected?:
         | string
         | ExpectWebdriverIO.JsonCompatible
         | ExpectWebdriverIO.PartialMatcher
-        | ((r: string | undefined) => boolean)
+        | ((r: string | ExpectWebdriverIO.JsonCompatible | undefined) => boolean)
 ) => {
     if (typeof expected === 'undefined') {
         return true
@@ -132,7 +132,7 @@ const bodyMatcher = (
     let parsedBody = body
 
     // convert request body from string to JSON if expected value is JSON-like
-    if (isExpectedJsonLike(expected)) {
+    if (typeof(body) === 'string' && isExpectedJsonLike(expected)) {
         parsedBody = tryParseBody(body)
 
         // failed to parse string as JSON
@@ -207,12 +207,14 @@ const minifyRequestMock = (
         url: requestMock.url,
         method: requestMock.method,
         headers: requestMock.headers,
-        request: isExpectedJsonLike(requestedWith.request)
-            ? tryParseBody(requestMock.postData, requestMock.postData)
-            : requestMock.postData,
-        response: isExpectedJsonLike(requestedWith.response)
-            ? tryParseBody(requestMock.body, requestMock.body)
-            : requestMock.body,
+        request:
+            typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.request)
+                ? tryParseBody(requestMock.postData, requestMock.postData)
+                : requestMock.postData,
+        response:
+            typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.response)
+                ? tryParseBody(requestMock.body, requestMock.body)
+                : requestMock.body,
     }
 
     deleteUndefinedValues(r, requestedWith)
