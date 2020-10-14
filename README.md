@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/webdriverio/expect-webdriverio.svg?branch=master)](https://travis-ci.org/webdriverio/expect-webdriverio) [![codecov](https://codecov.io/gh/webdriverio/expect-webdriverio/branch/master/graph/badge.svg)](https://codecov.io/gh/webdriverio/expect-webdriverio)
 
-###### [TypeScript / JS Autocomplete](/docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](/docs/Extend.md)
+###### [API](docs/API.md) | [TypeScript / JS Autocomplete](/docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](/docs/Extend.md)
 
 > [WebdriverIO](https://webdriver.io/) Assertion library inspired by [expect](https://www.npmjs.com/package/expect)
 
@@ -24,7 +24,7 @@ NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v5.16.11` or hi
 
 In your `wdio.conf.js`
 ```js
-beforeSession () { // before hook works as well
+before () { // not needed in WebdriverIO v6
     require('expect-webdriverio')
 },
 ```

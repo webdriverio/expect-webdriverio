@@ -17,7 +17,7 @@ Only set the options below if you want to wait for specific timeouts for your as
 
 Set options like this:
 ```js
-beforeSession () { // before hook works as well
+before () {
     require('expect-webdriverio').setOptions({ wait: 5000 })
 },
 ```
