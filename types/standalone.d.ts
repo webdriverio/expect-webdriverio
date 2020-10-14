@@ -9,6 +9,7 @@ declare namespace ExpectWebdriverIO {
 
     type Expect = {
         <T = unknown>(actual: T): Matchers<T, T>
+        extend(map: Record<string, Function>): void
     } & AsymmetricMatchers
 
     type AsymmetricMatchers = {
