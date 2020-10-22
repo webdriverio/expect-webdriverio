@@ -11,6 +11,7 @@ Only set the options below if you want to wait for specific timeouts for your as
 ```js
 {
     wait: 2000, // ms to wait for expectation to succeed
+    mockWait: 2000, // ms to wait for network mock expectation to succeed
     interval: 100, // interval between attempts
 }
 ```
@@ -18,7 +19,7 @@ Only set the options below if you want to wait for specific timeouts for your as
 Set options like this:
 ```js
 before () {
-    require('expect-webdriverio').setOptions({ wait: 5000 })
+    require('expect-webdriverio').setOptions({ wait: 5000, mockWait: 10000 })
 },
 ```
 

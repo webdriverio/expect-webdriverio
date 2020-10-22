@@ -23,7 +23,7 @@ export function toBeRequestedTimesFn(received: WebdriverIO.Mock, times: number |
         const pass = await waitUntil(async () => {
             actual = received.calls.length
             return compareNumbers(actual, gte, lte, eq)
-        }, isNot, { ...options, wait: isNot ? 0 : options.wait })
+        }, isNot, { ...options, wait: isNot ? 0 : options.wait }, { isNetworkMock: true })
 
         const error = numberError(gte, lte, eq)
         const message = enhanceError('mock', error, actual, this, verb, expectation, '', options)

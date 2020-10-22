@@ -1,14 +1,21 @@
 declare namespace ExpectWebdriverIO {
-    function setOptions(options: DefaultOptions): void
+    function setOptions(options: DefaultOptions & WaitOptions): void
+
+    interface WaitOptions {
+        /**
+         * time in ms to wait for network mock expectation to succeed. Default: same as DefaultOptions.wait
+         */
+        mockWait?: number
+    }
 
     interface DefaultOptions {
         /**
-         * time in ms to wait for expectation to succeed. Default: 3000
+         * time in ms to wait for expectation to succeed.
          */
         wait?: number
 
         /**
-         * interval between attempts. Default: 100
+         * interval between attempts.
          */
         interval?: number
     }

@@ -32,6 +32,7 @@ interface SomeExpectLib {
     _expectWebdriverio: {
         options: {
             wait: number;
+            mockWait?: number;
             interval?: number;
             message?: string;
         };

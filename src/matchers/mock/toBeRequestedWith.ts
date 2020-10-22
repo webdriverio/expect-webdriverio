@@ -35,7 +35,7 @@ export function toBeRequestedWithFn(
                 return false
             },
             isNot,
-            { ...options, wait: isNot ? 0 : options.wait }
+            { ...options, wait: isNot ? 0 : options.wait }, { isNetworkMock: true }
         )
 
         const message = enhanceError(

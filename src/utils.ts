@@ -14,13 +14,19 @@ const { options: DEFAULT_OPTIONS } = config
  * @param isNot     https://jestjs.io/docs/en/expect#thisisnot
  * @param options   wait, interval, etc
  */
-const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
-    wait = DEFAULT_OPTIONS.wait,
-    interval = DEFAULT_OPTIONS.interval } = {},
+const waitUntil = async (
+    condition: () => Promise<boolean>,
+    isNot = false,
+    { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {},
+    { isNetworkMock = false } = {}
 ): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
         return await condition()
+    }
+
+    if (isNetworkMock && typeof DEFAULT_OPTIONS.mockWait === 'number' && wait === DEFAULT_OPTIONS.wait) {
+        wait = DEFAULT_OPTIONS.mockWait
     }
 
     // wait for condition to be truthy
