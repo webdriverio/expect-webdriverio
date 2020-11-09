@@ -26,6 +26,7 @@ export function toBeRequestedWithFn(
                         headersMatcher(call.headers, requestedWith.requestHeaders) &&
                         headersMatcher(call.responseHeaders, requestedWith.responseHeaders) &&
                         bodyMatcher(call.postData, requestedWith.postData) &&
+                        !Buffer.isBuffer(call.body) &&
                         bodyMatcher(call.body, requestedWith.response)
                     ) {
                         return true
