@@ -4,7 +4,7 @@
     "sourceMap": false,
     "module": "commonjs",
     "target": "es2018",
-    "lib": ["ES2018"],
+    "lib": ["ES2018", "DOM"],
     "strictBindCallApply": true,
     "removeComments": true,
     "noImplicitAny": true,
