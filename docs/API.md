@@ -385,7 +385,7 @@ expect(elem).toHaveId('elem')
 
 ### toHaveText
 
-Checks if element has a specific text.
+Checks if element has a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
 
 ##### Usage
 
@@ -393,11 +393,12 @@ Checks if element has a specific text.
 browser.url('https://webdriver.io/')
 const elem = $('.tagline')
 expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
+expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Adding helper functions'])
 ```
 
 ### toHaveTextContaining
 
-Checks if element contains a specific text.
+Checks if element contains a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
 
 ##### Usage
 
@@ -405,6 +406,7 @@ Checks if element contains a specific text.
 browser.url('https://webdriver.io/')
 const elem = $('.tagline')
 expect(elem).toHaveTextContaining('browser and mobile automation test framework')
+expect(elem).toHaveTextContaining(['browser and mobile automation test framework', 'helper functions'])
 ```
 
 ### toBeDisplayedInViewport

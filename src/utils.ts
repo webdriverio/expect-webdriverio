@@ -118,6 +118,37 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
     }
 }
 
+export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = false, containing = false}) => {
+    if (typeof actual !== 'string') {
+        return {
+            value: actual,
+            result: false
+        }
+    }
+
+    if (trim) {
+        actual = actual.trim()
+    }
+    if (ignoreCase) {
+        actual = actual.toLowerCase()
+        expectedArray = expectedArray.map(item => item.toLowerCase())
+    }
+    if (containing) {
+        let textInArray = false
+        for (let i = 0; i < expectedArray.length; i += 1){
+            textInArray = textInArray || actual.includes(expectedArray[i])
+        }
+        return {
+            value: actual,
+            result: textInArray
+        }
+    }
+    return {
+        value: actual,
+        result: expectedArray.includes(actual)
+    }
+}
+
 function aliasFn(
     fn: (...args: any) => void,
     { verb, expectation }: {
