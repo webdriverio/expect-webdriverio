@@ -134,10 +134,7 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
         expectedArray = expectedArray.map(item => item.toLowerCase())
     }
     if (containing) {
-        let textInArray = false
-        for (let i = 0; i < expectedArray.length; i += 1){
-            textInArray = textInArray || actual.includes(expectedArray[i])
-        }
+        const textInArray = expectedArray.some((t)=> actual.includes(t))
         return {
             value: actual,
             result: textInArray

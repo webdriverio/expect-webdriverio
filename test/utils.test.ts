@@ -39,8 +39,16 @@ describe('utils', () => {
             expect(compareTextWithArray(' FOO ', ['foO', 'bar'], { trim: true, ignoreCase: true }).result).toBe(true)
         })
 
+        test('ignoreCase and string does not match in array', () => {
+            expect(compareTextWithArray(' FOO ', ['foOO', 'bar'], { trim: true, ignoreCase: true }).result).not.toBe(true)
+        })
+
         test('containing', () => {
             expect(compareTextWithArray('qwe_AsD_zxc', ['foo', 'zxc'], { ignoreCase: true, containing: true }).result).toBe(true)
+        })
+
+        test('not containing', () => {
+            expect(compareTextWithArray('qwe_AsD_zxc', ['foo', 'zxcc'], { ignoreCase: true, containing: true }).result).not.toBe(true)
         })
     })
 })
