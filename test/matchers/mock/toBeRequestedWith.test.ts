@@ -321,6 +321,14 @@ describe('toBeRequestedWith', () => {
             },
         },
         {
+            name: 'body as Buffer',
+            mocks: [{ ...mockGet, body: Buffer.from('asd') }],
+            pass: true,
+            params: {
+                response: 'asd',
+            },
+        },
+        {
             name: 'body as JSON',
             mocks: [{ ...mockGet, body: 'asd' }],
             pass: false,

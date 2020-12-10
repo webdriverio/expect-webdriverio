@@ -26,7 +26,6 @@ export function toBeRequestedWithFn(
                         headersMatcher(call.headers, requestedWith.requestHeaders) &&
                         headersMatcher(call.responseHeaders, requestedWith.responseHeaders) &&
                         bodyMatcher(call.postData, requestedWith.postData) &&
-                        !Buffer.isBuffer(call.body) &&
                         bodyMatcher(call.body, requestedWith.response)
                     ) {
                         return true
@@ -128,12 +127,12 @@ const headersMatcher = (
  * is postData/response matching an expected condition
  */
 const bodyMatcher = (
-    body: string | ExpectWebdriverIO.JsonCompatible | undefined,
+    body: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined,
     expected?:
         | string
         | ExpectWebdriverIO.JsonCompatible
         | ExpectWebdriverIO.PartialMatcher
-        | ((r: string | ExpectWebdriverIO.JsonCompatible | undefined) => boolean)
+        | ((r: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined) => boolean)
 ) => {
     if (typeof expected === 'undefined') {
         return true
@@ -146,6 +145,9 @@ const bodyMatcher = (
     }
 
     let parsedBody = body
+    if (body instanceof Buffer) {
+        parsedBody = body.toString()
+    }
 
     // convert postData/body from string to JSON if expected value is JSON-like
     if (typeof(body) === 'string' && isExpectedJsonLike(expected)) {
