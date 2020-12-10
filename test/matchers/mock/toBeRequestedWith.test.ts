@@ -322,10 +322,10 @@ describe('toBeRequestedWith', () => {
         },
         {
             name: 'body as Buffer',
-            mocks: [{ ...mockGet, body: 'asd' }],
+            mocks: [{ ...mockGet, body: Buffer.from('asd') }],
             pass: true,
             params: {
-                response: Buffer.from('asd', 'binary'),
+                response: 'asd',
             },
         },
         {
