@@ -57,7 +57,7 @@ declare namespace WebdriverIO {
         _attempts: number;
     }
     interface Browser {
-        _value: () => string;
+        _value: () => boolean | string;
         _attempts: number;
     }
 }

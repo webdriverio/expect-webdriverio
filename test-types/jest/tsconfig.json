@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "dist",
+    "lib": ["ES2018"],
     "noImplicitAny": true,
     "types": [
       "@types/jest",
