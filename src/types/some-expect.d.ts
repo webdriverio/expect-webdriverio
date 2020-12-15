@@ -56,7 +56,6 @@ declare namespace WebdriverIO {
         _value: () => boolean | string;
         _text: () => string;
         _attempts: number;
-        // getText() : void;
     }
     interface Browser {
         _value: () => boolean | string;
