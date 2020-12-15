@@ -12,6 +12,10 @@ function getPropertyFn(propName) {
     return this._value ? this._value(propName) : undefined
 }
 
+function getTextFn(propName) {
+    return this._text ? this._text(propName) : undefined
+}
+
 const element = {
     $,
     $$,
@@ -22,7 +26,8 @@ const element = {
     isClickable: beFn,
     isFocused: beFn,
     isEnabled: beFn,
-    getProperty: getPropertyFn
+    getProperty: getPropertyFn,
+    getText: getTextFn
 }
 
 function $(selector, ...args) {
@@ -54,8 +59,8 @@ async function waitUntil(condition, { timeout, m, interval }) {
             if (result) {
                 return true
             }
-        } catch { }
-        attemptsLeft --
+        } catch {}
+        attemptsLeft--
         await sleep(interval)
     }
     throw new Error('waitUntil: timeout after ' + timeout)

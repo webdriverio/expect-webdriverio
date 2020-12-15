@@ -233,12 +233,12 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getText`
          */
-        toHaveText(text: string | Array<string>, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveText(text: string | string[], options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getText`
          * Element's text includes the text provided
          */
-        toHaveTextContaining(text: string | Array<string>, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTextContaining(text: string | string[], options?: ExpectWebdriverIO.StringOptions): R
 
         // ===== browser only =====
         /**
