@@ -1,7 +1,19 @@
-import { waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
+import {
+    waitUntil,
+    enhanceError,
+    compareText,
+    executeCommand,
+    wrapExpectedWithArray,
+    updateElementsArray,
+} from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-async function condition(el: WebdriverIO.Element, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}): Promise<any> {
+async function condition(
+    el: WebdriverIO.Element,
+    property: string,
+    value?: any,
+    options: ExpectWebdriverIO.StringOptions = {}
+): Promise<any> {
     const { asString = false } = options
 
     let prop = await el.getProperty(property)
@@ -22,20 +34,29 @@ async function condition(el: WebdriverIO.Element, property: string, value?: any,
     return compareText(prop, value, options)
 }
 
-export function toHaveElementPropertyFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, property: string, value?: any, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveElementPropertyFn(
+    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    property: string,
+    value?: any,
+    options: ExpectWebdriverIO.StringOptions = {}
+): any {
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
 
     return browser.call(async () => {
         let el = await received
         let prop: any
-        const pass = await waitUntil(async () => {
-            const result = await executeCommand.call(this, el, condition, options, [property, value])
-            el = result.el
-            prop = result.values
+        const pass = await waitUntil(
+            async () => {
+                const result = await executeCommand.call(this, el, condition, options, [property, value])
+                el = result.el
+                prop = result.values
 
-            return result.success
-        }, isNot, options)
+                return result.success
+            },
+            isNot,
+            options
+        )
 
         updateElementsArray(pass, received, el)
 
@@ -49,20 +70,11 @@ export function toHaveElementPropertyFn(received: WebdriverIO.Element | Webdrive
 
         return {
             pass,
-            message: (): string => message
+            message: (): string => message,
         }
     })
 }
 
 export function toHaveElementProperty(...args: any): any {
-    return runExpect.call(this, toHaveElementPropertyFn, args)
-}
-
-/**
- * toHaveProperty conflicts with Jest's https://jestjs.io/docs/en/expect#tohavepropertykeypath-value matcher
- * and will be removed from expect-webdriverio in favor of `toHaveElementProperty`
- */
-export function toHaveProperty(...args: any): any {
-    console.warn('expect(...).toHaveProperty is deprecated. Use toHaveElementProperty instead.')
     return runExpect.call(this, toHaveElementPropertyFn, args)
 }

@@ -40,7 +40,6 @@ test('matchers', () => {
         'toHaveLinkContaining',
         'toHaveId',
         'toHaveElementProperty',
-        'toHaveProperty',
         'toHaveText',
         'toHaveTextContaining',
         'toHaveValue',
@@ -50,6 +49,6 @@ test('matchers', () => {
         'toBeRequested',
         'toBeRequestedTimes',
         'toBeRequestedWith',
-        'toBeRequestedWithResponse'
+        'toBeRequestedWithResponse',
     ])
 })
