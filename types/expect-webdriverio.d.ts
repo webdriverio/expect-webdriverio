@@ -138,12 +138,6 @@ declare namespace ExpectWebdriverIO {
 
         /**
          * `WebdriverIO.Element` -> `getProperty`
-         * @deprecated since v1.3.1 - use `toHaveElementProperty` instead.
-         */
-        toHaveProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions): R
-
-        /**
-         * `WebdriverIO.Element` -> `getProperty`
          */
         toHaveElementProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions): R
 
@@ -299,7 +293,7 @@ declare namespace ExpectWebdriverIO {
     type RequestedWith = {
         url?: string | ExpectWebdriverIO.PartialMatcher | ((url: string) => boolean)
         method?: string | Array<string>
-        statusCode?: number | Array<number>,
+        statusCode?: number | Array<number>
         requestHeaders?:
             | Record<string, string>
             | ExpectWebdriverIO.PartialMatcher

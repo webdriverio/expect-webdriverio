@@ -40,7 +40,6 @@ test('matchers', () => {
         'toHaveLinkContaining',
         'toHaveId',
         'toHaveElementProperty',
-        'toHaveProperty',
         'toHaveText',
         'toHaveTextContaining',
         'toHaveValue',
