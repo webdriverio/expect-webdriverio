@@ -49,6 +49,6 @@ test('matchers', () => {
         'toBeRequested',
         'toBeRequestedTimes',
         'toBeRequestedWith',
-        'toBeRequestedWithResponse',
+        'toBeRequestedWithResponse'
     ])
 })
