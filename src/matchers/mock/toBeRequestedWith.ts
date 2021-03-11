@@ -1,3 +1,6 @@
+import type { Mock } from 'webdriverio'
+import type { Matches } from 'webdriverio/build/utils/interception/types'
+
 import { waitUntil, enhanceError } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 import { equals } from '../../jasmineUtils'
@@ -6,7 +9,7 @@ const STR_LIMIT = 80
 const KEY_LIMIT = 12
 
 export function toBeRequestedWithFn(
-    received: WebdriverIO.Mock,
+    received: Mock,
     requestedWith: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = {}
 ): any {
@@ -14,7 +17,7 @@ export function toBeRequestedWithFn(
     const { expectation = 'called with', verb = 'be' } = this
 
     return browser.call(async () => {
-        let actual: WebdriverIO.Matches | undefined
+        let actual: Matches | undefined
         const pass = await waitUntil(
             async () => {
                 for (const call of received.calls) {
@@ -214,7 +217,7 @@ const tryParseBody = (jsonString: string | undefined, fallback: any = null) => {
  * shorten long url, headers, postData, body
  */
 const minifyRequestMock = (
-    requestMock: WebdriverIO.Matches | undefined,
+    requestMock: Matches | undefined,
     requestedWith: ExpectWebdriverIO.RequestedWith
 ) => {
     if (typeof requestMock === 'undefined') {

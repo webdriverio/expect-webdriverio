@@ -1,8 +1,10 @@
+import type { Mock } from 'webdriverio'
+
 import { toBeRequestedWithFn } from './toBeRequestedWith'
 import { runExpect } from '../../util/expectAdapter'
 
 function toBeRequestedWithResponseFn(
-    received: WebdriverIO.Mock,
+    received: Mock,
     response: any,
     options: ExpectWebdriverIO.CommandOptions = {}
 ): any {
