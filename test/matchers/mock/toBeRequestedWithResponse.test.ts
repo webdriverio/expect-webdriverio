@@ -1,5 +1,5 @@
 import { toBeRequestedWithResponse } from '../../../src/matchers/mock/toBeRequestedWithResponse'
-import type { Matches } from 'webdriverio'
+import type { Matches, Mock } from 'webdriverio'
 
 class TestMock {
     _calls: Matches[]
@@ -16,6 +16,7 @@ class TestMock {
     respondOnce () { return Promise.resolve() }
     clear () { return Promise.resolve() }
     restore () { return Promise.resolve() }
+    waitForResponse () { return Promise.resolve(true) }
 }
 
 const mockMatch: Matches = {
@@ -52,9 +53,9 @@ describe('toBeRequestedWithResponse', () => {
     afterEach(() => {
         global.console.warn = consoleWarn
     })
-    
+
     test('wait for success', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
 
         setTimeout(() => {
             mock.calls.push(mockMatch)
@@ -65,7 +66,7 @@ describe('toBeRequestedWithResponse', () => {
     })
 
     test('wait but failure', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
         const result = await toBeRequestedWithResponse(mock, { foo: 'bar' })
         expect(result.pass).toBe(false)
 
@@ -83,7 +84,7 @@ describe('toBeRequestedWithResponse', () => {
     })
 
     test('not to be called', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
 
         // expect(mock).not.toBeRequestedWithResponse({ foo: 'bar' }) should pass
         const result = await toBeRequestedWithResponse.call({ isNot: true }, mock, { foo: 'bar' })
@@ -115,7 +116,7 @@ describe('toBeRequestedWithResponse', () => {
     })
 
     test('message', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
 
         const result = await toBeRequestedWithResponse(mock, { foo: 'foo' })
         expect(result.message()).toContain('Expect mock to be called')

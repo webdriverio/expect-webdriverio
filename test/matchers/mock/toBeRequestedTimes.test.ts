@@ -1,5 +1,5 @@
 import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTimes'
-import type { Matches } from 'webdriverio'
+import type { Matches, Mock } from 'webdriverio'
 import { removeColors, getReceived, getExpected, getExpectMessage } from '../../__fixtures__/utils'
 
 class TestMock {
@@ -17,6 +17,7 @@ class TestMock {
     respondOnce () { return Promise.resolve() }
     clear () { return Promise.resolve() }
     restore () { return Promise.resolve() }
+    waitForResponse () { return Promise.resolve(true) }
 }
 
 const mockMatch: Matches = {
@@ -32,7 +33,7 @@ const mockMatch: Matches = {
 
 describe('toBeRequestedTimes', () => {
     test('wait for success', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
 
         setTimeout(() => {
             mock.calls.push(mockMatch)
@@ -43,7 +44,7 @@ describe('toBeRequestedTimes', () => {
     })
 
     test('wait for success using number options', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
 
         setTimeout(() => {
             mock.calls.push(mockMatch)
@@ -56,7 +57,7 @@ describe('toBeRequestedTimes', () => {
     })
 
     test('wait but failure', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
         const result = await toBeRequestedTimes(mock, 1)
         expect(result.pass).toBe(false)
 
@@ -78,7 +79,7 @@ describe('toBeRequestedTimes', () => {
     })
 
     test('not to be called', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
 
         // expect(mock).not.toBeRequestedTimes(0) should fail
         const result = await toBeRequestedTimes.call({ isNot: true }, mock, 0)
@@ -100,7 +101,7 @@ describe('toBeRequestedTimes', () => {
     })
 
     test('message', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
 
         const result = await toBeRequestedTimes(mock, 0)
         expect(result.message()).toContain('Expect mock to be called 0 times')

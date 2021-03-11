@@ -1,5 +1,5 @@
 import type { Mock } from 'webdriverio'
-import type { Matches } from 'webdriverio/build/utils/interception/types'
+import type { Matches } from 'webdriverio'
 
 import { waitUntil, enhanceError } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'

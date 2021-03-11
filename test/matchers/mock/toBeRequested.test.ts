@@ -1,5 +1,5 @@
 import { toBeRequested } from '../../../src/matchers/mock/toBeRequested'
-import type { Matches } from 'webdriverio'
+import type { Matches, Mock } from 'webdriverio'
 import { getExpected, getExpectMessage, getReceived, removeColors } from '../../__fixtures__/utils'
 
 class TestMock {
@@ -17,6 +17,7 @@ class TestMock {
     respondOnce () { return Promise.resolve() }
     clear () { return Promise.resolve() }
     restore () { return Promise.resolve() }
+    waitForResponse () { return Promise.resolve(true) }
 }
 
 const mockMatch: Matches = {
@@ -32,7 +33,7 @@ const mockMatch: Matches = {
 
 describe('toBeRequested', () => {
     test('wait for success', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
         const result = await toBeRequested(mock)
         expect(result.pass).toBe(false)
 
@@ -46,7 +47,7 @@ describe('toBeRequested', () => {
     })
 
     test('not to be called', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
 
         // expect(mock).not.toBeRequested() should pass
         const result = await toBeRequested.call({ isNot: true }, mock)
@@ -60,7 +61,7 @@ describe('toBeRequested', () => {
     })
 
     test('message', async () => {
-        const mock: WebdriverIO.Mock = new TestMock()
+        const mock: Mock = new TestMock()
 
         const message = removeColors((await toBeRequested(mock)).message())
         expect(getExpectMessage(message)).toBe('Expect mock to be called')
