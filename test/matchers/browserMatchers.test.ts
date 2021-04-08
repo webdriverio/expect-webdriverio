@@ -21,7 +21,7 @@ describe('browser matchers', () => {
                     return validText
                 }
 
-                const result = await fn.call({}, browser, validText)
+                const result = await fn.call({}, browser, validText, { trim: false })
                 expect(result.pass).toBe(true)
                 expect(browser._attempts).toBe(0)
             })
@@ -31,7 +31,7 @@ describe('browser matchers', () => {
                     throw new Error('some error')
                 }
 
-                const result = await fn.call({}, browser, validText)
+                const result = await fn.call({}, browser, validText, { trim: false })
                 expect(result.pass).toBe(false)
             })
 
@@ -42,7 +42,7 @@ describe('browser matchers', () => {
                     return validText
                 }
 
-                const result = await fn.call({}, browser, validText)
+                const result = await fn.call({}, browser, validText, { trim: false })
                 expect(result.pass).toBe(true)
                 expect(browser._attempts).toBe(1)
             })
@@ -54,7 +54,7 @@ describe('browser matchers', () => {
                     return wrongText
                 }
 
-                const result = await fn.call({}, browser, validText, { wait: 0 })
+                const result = await fn.call({}, browser, validText, { wait: 0, trim: false })
                 expect(result.pass).toBe(false)
                 expect(browser._attempts).toBe(1)
             })
@@ -66,14 +66,14 @@ describe('browser matchers', () => {
                     return validText
                 }
 
-                const result = await fn.call({}, browser, validText, { wait: 0 })
+                const result = await fn.call({}, browser, validText, { wait: 0, trim: false })
 
                 expect(result.pass).toBe(true)
                 expect(browser._attempts).toBe(1)
             })
 
             test('not - failure', async () => {
-                const result = await fn.call({ isNot: true }, browser, validText, { wait: 0 })
+                const result = await fn.call({ isNot: true }, browser, validText, { wait: 0, trim: false })
 
                 expect(getExpectMessage(result.message())).toContain('not')
                 expect(getExpected(result.message())).toContain('not')
