@@ -9,3 +9,5 @@ coverage
 
 *.log
 *.log.*
+
+tsconfig.tsbuildinfo
