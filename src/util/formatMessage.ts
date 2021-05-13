@@ -1,4 +1,5 @@
 import { printExpected, printReceived, printDiffOrStringify } from 'jest-matcher-utils';
+import { equals } from '../jasmineUtils'
 
 const EXPECTED_LABEL = 'Expected';
 const RECEIVED_LABEL = 'Received';
@@ -16,7 +17,7 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray):
 
 export const getSelectors = (el: WebdriverIO.Element | WebdriverIO.ElementArray): any => {
     const selectors = []
-    let parent: WebdriverIO.Element | WebdriverIO.BrowserObject | undefined
+    let parent: WebdriverIO.Element | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | undefined
 
     if (Array.isArray(el)) {
         selectors.push(`${el.foundWith}(\`${getSelector(el)}\`)`)
@@ -26,11 +27,11 @@ export const getSelectors = (el: WebdriverIO.Element | WebdriverIO.ElementArray)
     }
 
     while (parent && 'selector' in parent) {
-        const selector = getSelector(parent)
+        const selector = getSelector(parent as WebdriverIO.Element)
         const index = parent.index ? `[${parent.index}]` : ''
         selectors.push(`${parent.index ? '$' : ''}$(\`${selector}\`)${index}`)
 
-        parent = parent.parent
+        parent = (parent as WebdriverIO.Element).parent
     }
 
     return selectors.reverse().join('.')
@@ -65,7 +66,7 @@ export const enhanceError = (
     }
 
     let diffString
-    if (isNot && actual === expected) {
+    if (isNot && equals(actual, expected)) {
         diffString = `${EXPECTED_LABEL}: ${printExpected(expected)}\n` +
             `${RECEIVED_LABEL}: ${printReceived(actual)}`
     } else {
@@ -96,11 +97,12 @@ export const enhanceErrorBe = (
     context: any,
     verb: string,
     expectation: string,
-    options: ExpectWebdriverIO.CommandOptions): any => {
+    options: ExpectWebdriverIO.CommandOptions
+): any => {
     return enhanceError(subject, not(context.isNot) + expectation, not(!pass) + expectation, context, verb, expectation, '', options)
 }
 
-export const numberError = (gte: number, lte: number, eq?: number): any => {
+export const numberError = (gte: number, lte?: number, eq?: number): any => {
     if (typeof eq === 'number') {
         return eq
     }

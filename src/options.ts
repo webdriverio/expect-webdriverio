@@ -8,11 +8,11 @@ let mode: 'jasmine' | 'jest' = 'jest'
 let expectLib: SomeExpectLib
 if (global.expectWdio) {
     expectLib = global.expectWdio
-} else if (global.jasmine && !global.expect!.extend) {
+} else if (global.jasmine && !global.expect?.extend) {
     expectLib = global.jasmine
     mode = 'jasmine'
 } else {
-    expectLib = global.expect!
+    expectLib = global.expect as SomeExpectLib
 }
 
 if (!expectLib._expectWebdriverio) {

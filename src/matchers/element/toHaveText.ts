@@ -1,12 +1,15 @@
-import { waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
+import { waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-async function condition(el: WebdriverIO.Element, text: string, options: ExpectWebdriverIO.StringOptions): Promise<any> {
+async function condition(el: WebdriverIO.Element, text: string | Array<string>, options: ExpectWebdriverIO.StringOptions): Promise<any> {
     const actualText = await el.getText()
+    if (Array.isArray(text)) {
+        return compareTextWithArray(actualText, text, options)
+    }
     return compareText(actualText, text, options)
 }
 
-export function toHaveTextFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, text: string, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveTextFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | Array<string>, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'text', verb = 'have' } = this
 

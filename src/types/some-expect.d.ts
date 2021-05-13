@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 /**
  * INTERNAL USAGE ONLY
  */
@@ -6,8 +7,8 @@ declare namespace NodeJS {
     interface Global {
         expect?: SomeExpectLib;
         jasmine?: SomeExpectLib;
-        expectAsync?: {};
-        expectWdio: SomeExpectLib;
+        expectAsync?: Record<string, unknown>;
+        expectWdio?: SomeExpectLib;
     }
 }
 
@@ -17,16 +18,20 @@ declare namespace jest {
     }
 }
 
-interface SomeExpectLib {
-    extend?: Function;
+type anyFunction = (...args: any) => any
 
-    addMatchers?: Function;
-    addAsyncMatchers?: Function;
-    getEnv?: Function;
+interface SomeExpectLib {
+    // jasmine
+    extend: Function;
+
+    // jest
+    addMatchers: Function;
+    addAsyncMatchers: Function;
+    getEnv: Function;
 
     _expectWebdriverio: {
         options: {
-            wait?: number;
+            wait: number;
             interval?: number;
             message?: string;
         };
@@ -49,10 +54,11 @@ type WdioElementMaybePromise =
 declare namespace WebdriverIO {
     interface Element {
         _value: () => boolean | string;
+        _text: () => string;
         _attempts: number;
     }
     interface Browser {
-        _value: () => string;
+        _value: () => boolean | string;
         _attempts: number;
     }
 }

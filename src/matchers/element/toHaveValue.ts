@@ -1,8 +1,8 @@
 import { runExpect } from '../../util/expectAdapter'
-import { toHavePropertyFn } from './toHaveProperty'
+import { toHaveElementPropertyFn } from './toHaveElementProperty'
 
 export function toHaveValueFn(el: WebdriverIO.Element, value: string, options: ExpectWebdriverIO.StringOptions = {}): any {
-    return toHavePropertyFn.call(this, el, 'value', value, options)
+    return toHaveElementPropertyFn.call(this, el, 'value', value, options)
 }
 
 export function toHaveValue(...args: any): any {

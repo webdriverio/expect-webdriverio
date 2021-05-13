@@ -17,7 +17,7 @@ const { options: DEFAULT_OPTIONS } = config
 const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
     wait = DEFAULT_OPTIONS.wait,
     interval = DEFAULT_OPTIONS.interval } = {},
-) => {
+): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
         return await condition()
@@ -50,13 +50,17 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
 }
 
 async function executeCommandBe(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
-) {
+): Promise<{
+    pass: boolean,
+    message: () => string
+}> {
     const { isNot, expectation, verb = 'be' } = this
 
-    let el = await received
+    received = await received
+    let el = received
     const pass = await waitUntil(async () => {
         const result = await executeCommand.call(this,
             el,
@@ -75,7 +79,7 @@ async function executeCommandBe(
     }
 }
 
-const compareNumbers = (actual: number, gte: number, lte: number, eq?: number) => {
+const compareNumbers = (actual: number, gte: number, lte: number, eq?: number): boolean => {
     if (typeof eq === 'number') {
         return actual === eq
     }
@@ -114,8 +118,36 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
     }
 }
 
+export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = false, containing = false}) => {
+    if (typeof actual !== 'string') {
+        return {
+            value: actual,
+            result: false
+        }
+    }
+
+    if (trim) {
+        actual = actual.trim()
+    }
+    if (ignoreCase) {
+        actual = actual.toLowerCase()
+        expectedArray = expectedArray.map(item => item.toLowerCase())
+    }
+    if (containing) {
+        const textInArray = expectedArray.some((t)=> actual.includes(t))
+        return {
+            value: actual,
+            result: textInArray
+        }
+    }
+    return {
+        value: actual,
+        result: expectedArray.includes(actual)
+    }
+}
+
 function aliasFn(
-    fn: Function,
+    fn: (...args: any) => void,
     { verb, expectation }: {
         verb?: string;
         expectation?: string;

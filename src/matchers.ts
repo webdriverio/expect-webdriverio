@@ -20,16 +20,22 @@ const matchers = {
     ...require('./matchers/element/toHaveAttribute'),
     ...require('./matchers/element/toHaveAttributeContaining'),
     ...require('./matchers/element/toHaveChildren'),
-    ...require('./matchers/element/toHaveClass'),
-    ...require('./matchers/element/toHaveClassContaining'),
+    ...require('./matchers/element/toHaveElementClass'),
+    ...require('./matchers/element/toHaveElementClassContaining'),
     ...require('./matchers/element/toHaveHref'),
     ...require('./matchers/element/toHaveHrefContaining'),
     ...require('./matchers/element/toHaveId'),
-    ...require('./matchers/element/toHaveProperty'),
+    ...require('./matchers/element/toHaveElementProperty'),
     ...require('./matchers/element/toHaveText'),
     ...require('./matchers/element/toHaveTextContaining'),
     ...require('./matchers/element/toHaveValue'),
     ...require('./matchers/element/toHaveValueContaining'),
+
+    // Mock
+    ...require('./matchers/mock/toBeRequested'),
+    ...require('./matchers/mock/toBeRequestedTimes'),
+    ...require('./matchers/mock/toBeRequestedWith'),
+    ...require('./matchers/mock/toBeRequestedWithResponse'),
 }
 
 // avoid exporting internal functions

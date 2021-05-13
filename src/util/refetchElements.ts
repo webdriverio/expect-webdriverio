@@ -1,6 +1,6 @@
 import { getConfig } from '../options'
 
-const config = getConfig()
+const config: SomeExpectLib["_expectWebdriverio"] = getConfig()
 const { options: DEFAULT_OPTIONS } = config
 
 /**
@@ -9,7 +9,7 @@ const { options: DEFAULT_OPTIONS } = config
  */
 export const refetchElements = async (elements: WebdriverIO.ElementArray, wait = DEFAULT_OPTIONS.wait, full = false): Promise<any> => {
     if (elements) {
-        if (wait! > 0 && (elements.length === 0 || full)) {
+        if (wait > 0 && (elements.length === 0 || full)) {
             // @ts-ignore
             elements = (await elements.parent[elements.foundWith](elements.selector, ...elements.props) as WebdriverIO.ElementArray)
         }

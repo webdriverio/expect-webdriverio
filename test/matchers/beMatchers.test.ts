@@ -1,7 +1,7 @@
 import { getExpectMessage, getReceived, matcherNameToString } from '../__fixtures__/utils';
 import Matchers from '../../src/matchers'
 
-const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeDisabled']
+const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeDisabled', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith']
 const beMatchers = [
     ...Object.keys(Matchers).filter(name => name.startsWith('toBe') && !ignoredMatchers.includes(name)),
     'toExist'
@@ -91,6 +91,26 @@ describe('be* matchers', () => {
                     return false
                 }
                 const result = await fn.call({ isNot: true }, el, { wait: 0 })
+                const received = getReceived(result.message())
+
+                expect(received).toContain('not')
+                expect(result.pass).toBe(false)
+            })
+
+            test('not - failure (with wait)', async () => {
+                const result = await fn.call({ isNot: true }, $('sel'), { wait: 1 })
+                const received = getReceived(result.message())
+
+                expect(received).not.toContain('not')
+                expect(result.pass).toBe(true)
+            })
+
+            test('not - success (with wait)', async () => {
+                const el = await $('sel')
+                el._value = function (): boolean {
+                    return false
+                }
+                const result = await fn.call({ isNot: true }, el, { wait: 1 })
                 const received = getReceived(result.message())
 
                 expect(received).toContain('not')

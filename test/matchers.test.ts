@@ -30,17 +30,25 @@ test('matchers', () => {
         'toHaveAttributeContaining',
         'toHaveAttrContaining',
         'toHaveChildren',
+        'toHaveElementClass',
         'toHaveClass',
+        'toHaveElementClassContaining',
         'toHaveClassContaining',
         'toHaveHref',
         'toHaveLink',
         'toHaveHrefContaining',
         'toHaveLinkContaining',
         'toHaveId',
-        'toHaveProperty',
+        'toHaveElementProperty',
         'toHaveText',
         'toHaveTextContaining',
         'toHaveValue',
         'toHaveValueContaining',
+
+        // mock
+        'toBeRequested',
+        'toBeRequestedTimes',
+        'toBeRequestedWith',
+        'toBeRequestedWithResponse'
     ])
 })

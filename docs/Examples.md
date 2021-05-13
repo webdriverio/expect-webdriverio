@@ -47,7 +47,7 @@ describe('suite', () => {
     it('advanced', () => {
         const myInput = $('input')
 
-        expect(myInput).toHaveClass('form-control', { message: 'Not a form control!', })
+        expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
         expect(myInput).toHaveAttribute('class', 'form-control') // alias toHaveAttr
 
         expect(myInput).toHaveValueContaining('USER')
@@ -55,7 +55,7 @@ describe('suite', () => {
         expect(myInput).toHaveValue('value', 'user', { containing: true, ignoreCase: true })
 
         // Simply invert assertions
-        expect(myInput).not.toHaveProperty('height', 0)
+        expect(myInput).not.toHaveElementProperty('height', 0)
     })
 
     it('async mode', async () => {
