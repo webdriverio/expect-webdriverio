@@ -95,7 +95,7 @@ describe('browser matchers', () => {
             })
 
             test('not - failure (with wait)', async () => {
-                const result = await fn.call({ isNot: true }, browser, validText, { wait: 1 })
+                const result = await fn.call({ isNot: true }, browser, validText, { wait: 1, trim: false })
 
                 expect(getExpectMessage(result.message())).toContain('not')
                 expect(getExpected(result.message())).toContain('not')
