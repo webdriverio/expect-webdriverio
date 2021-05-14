@@ -1,4 +1,4 @@
-import { executeCommandBe, aliasFn } from '../../utils'
+import { executeCommandBe } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
 function toBeDisplayedInViewportFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
