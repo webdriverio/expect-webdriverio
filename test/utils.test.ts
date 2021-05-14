@@ -11,11 +11,15 @@ describe('utils', () => {
         })
 
         test('trim', () => {
-            expect(compareText(' foo ', 'foo', { trim: true }).result).toBe(true)
+            expect(compareText(' foo ', 'foo', {}).result).toBe(true)
+        })
+
+        test('without trim', () => {
+            expect(compareText(' foo ', 'foo ', { trim: false }).result).toBe(false)
         })
 
         test('ignoreCase', () => {
-            expect(compareText(' FOO ', 'foo', { trim: true, ignoreCase: true }).result).toBe(true)
+            expect(compareText(' FOO ', 'foo', { ignoreCase: true }).result).toBe(true)
         })
 
         test('containing', () => {
