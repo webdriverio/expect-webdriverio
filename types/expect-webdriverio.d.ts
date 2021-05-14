@@ -66,10 +66,6 @@ declare namespace ExpectWebdriverIO {
          * `WebdriverIO.Element` -> `isDisplayed`
          */
         toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions): R
-        /**
-         * `WebdriverIO.Element` -> `isDisplayed`
-         */
-        toBeVisible(options?: ExpectWebdriverIO.CommandOptions): R
 
         /**
          * `WebdriverIO.Element` -> `isExisting`
@@ -165,10 +161,6 @@ declare namespace ExpectWebdriverIO {
          * `WebdriverIO.Element` -> `isDisplayedInViewport`
          */
         toBeDisplayedInViewport(options?: ExpectWebdriverIO.StringOptions): R
-        /**
-         * `WebdriverIO.Element` -> `isDisplayedInViewport`
-         */
-        toBeVisibleInViewport(options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `isEnabled`

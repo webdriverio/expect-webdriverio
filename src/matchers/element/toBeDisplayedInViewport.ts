@@ -19,7 +19,3 @@ function toBeDisplayedInViewportFn(received: WebdriverIO.Element | WebdriverIO.E
 export function toBeDisplayedInViewport(...args: any): any {
     return runExpect.call(this, toBeDisplayedInViewportFn, args)
 }
-
-export function toBeVisibleInViewport(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions): any {
-    return aliasFn.call(this, toBeDisplayedInViewport, { expectation: 'visible in viewport' }, el, options)
-}

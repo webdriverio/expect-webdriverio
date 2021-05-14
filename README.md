@@ -51,7 +51,6 @@ Error messages are informative out of the box and contain:
 
 ![toHaveText](/docs/img/errors/text.png?raw=true "toHaveText")
 ![toHaveElementClass](/docs/img/errors/class.png?raw=true "toHaveElementClass")
-![not.toBeVisible](/docs/img/errors/not-visible.png?raw=true "not.toBeVisible")
 
 ## What's next?
 
