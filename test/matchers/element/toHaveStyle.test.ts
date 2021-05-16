@@ -21,8 +21,8 @@ describe('toHaveStyle', () => {
                     counter = 0;
                     el._attempts --;
                 }
-                return {};
-            } 
+                return {value: "Wrong Value"};
+            }
             return { value: mockStyle[property] }
         })
         const result = await toHaveStyle(el, mockStyle, { ignoreCase: true });
@@ -111,7 +111,7 @@ describe('toHaveStyle', () => {
         expect(result.pass).toBe(true)
     })
 
-    test('should return false if texts dont match', async () => {
+    test('should return false if styles dont match', async () => {
         const el = await $('sel')
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             return { value: mockStyle[property] }
@@ -127,7 +127,7 @@ describe('toHaveStyle', () => {
         expect(result.pass).toBe(false)
     })
 
-    test('should return true if texts match', async () => {
+    test('should return true if styles match', async () => {
         const el = await $('sel')
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             return { value: mockStyle[property] }
@@ -137,7 +137,7 @@ describe('toHaveStyle', () => {
         expect(result.pass).toBe(true)
     })
 
-    test('message', async () => {
+    test('message shows correctly', async () => {
         const el = await $('sel')
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             return { value: "Wrong Value" }
@@ -146,42 +146,65 @@ describe('toHaveStyle', () => {
         expect(getExpectMessage(result.message())).toContain('to have style')
     })
 
-    // test('success if array matches with text and ignoreCase', async () => {
-    //     const el = await $('sel')
-    //     el._attempts = 0
-    //     el._text = function (): string {
-    //         this._attempts++
-    //         return 'WebdriverIO'
-    //     }
+    test('success if style matches with ignoreCase', async () => {
+        const el = await $('sel')
+        el._attempts = 0
+        let counter = 0;
 
-    //     const result = await toHaveText(el, ['WDIO', 'Webdriverio'], { ignoreCase: true })
-    //     expect(result.pass).toBe(true)
-    //     expect(el._attempts).toBe(1)
-    // })
-    //
-    // test('success if array matches with text and trim', async () => {
-    //     const el = await $('sel')
-    //     el._attempts = 0
-    //     el._text = function (): string {
-    //         this._attempts++
-    //         return '   WebdriverIO   '
-    //     }
+        const actualStyle: { [key: string]: string; } = {
+            "font-family": "Faktum",
+            "font-size": "26px",
+            "color": "#fff"
+        } 
 
-    //     const result = await toHaveText(el, ['WDIO', 'WebdriverIO', 'toto'], { trim: true })
-    //     expect(result.pass).toBe(true)
-    //     expect(el._attempts).toBe(1)
-    // })
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            counter ++;
+            if(counter == Object.keys(mockStyle).length) {
+                counter = 0;
+                el._attempts ++;
+            }
+            return { value: actualStyle[property] }
+        })
 
-    // test('failure if array does not match with text', async () => {
-    //     const el = await $('sel')
-    //     el._attempts = 0
-    //     el._text = function (): string {
-    //         this._attempts++
-    //         return 'WebdriverIO'
-    //     }
+        const alteredCaseStyle: { [key: string]: string; } = {
+            "font-family": "FaKtum",
+            "font-size": "26px",
+            "color": "#FFF"
+        } 
 
-    //     const result = await toHaveText(el, ['WDIO', 'Webdriverio'], { wait: 1 })
-    //     expect(result.pass).toBe(false)
-    //     expect(el._attempts).toBe(1)
-    // })
+        const result = await toHaveStyle(el, alteredCaseStyle, { ignoreCase: true })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+    
+    test('success if style matches with trim', async () => {
+        const el = await $('sel')
+        el._attempts = 0
+        let counter = 0;
+
+        const actualStyle: { [key: string]: string; } = {
+            "font-family": "   Faktum   ",
+            "font-size": "   26px   ",
+            "color": "    #fff     "
+        } 
+
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            counter ++;
+            if(counter == Object.keys(mockStyle).length) {
+                counter = 0;
+                el._attempts ++;
+            }
+            return { value: actualStyle[property] }
+        })
+
+        const alteredSpaceStyle: { [key: string]: string; } = {
+            "font-family": "Faktum",
+            "font-size": "26px",
+            "color": "#fff"
+        } 
+
+        const result = await toHaveStyle(el, alteredSpaceStyle, {   trim: true })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
 })

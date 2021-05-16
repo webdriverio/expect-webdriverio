@@ -4,6 +4,7 @@ import { executeCommand } from './util/executeCommand'
 import { wrapExpectedWithArray, updateElementsArray } from './util/elementsUtil'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage'
 import { getContext } from './util/expectAdapter'
+import { ParsedCSSValue } from 'webdriverio'
 
 const config = getConfig()
 const { options: DEFAULT_OPTIONS } = config
@@ -146,14 +147,26 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
     }
 }
 
-export const compareStyle = async (actualEl: WebdriverIO.Element, style: { [key: string]: string; }, { ignoreCase = false, trim = false, containing = false}) => {
+export const compareStyle = async (actualEl: WebdriverIO.Element, style: { [key: string]: string; }, { ignoreCase = true, trim = false }) => {
     let result: Boolean = true
     let actual: any = {}
 
     for (let key in style) {
-        const css = await actualEl.getCSSProperty(key)
-        result = result && css.value == style[key]
+        const css: ParsedCSSValue = await actualEl.getCSSProperty(key)
 
+        let actualVal: string = css.value as string
+        let expectedVal: string = style[key]
+
+        if (trim) {
+            actualVal = actualVal.trim()
+            expectedVal = expectedVal.trim()
+        }
+        if (ignoreCase) {
+            actualVal = actualVal.toLowerCase()
+            expectedVal = expectedVal.toLowerCase()
+        }
+
+        result = result && actualVal === expectedVal
         actual[key] = css.value
     }
     
