@@ -5,32 +5,36 @@ import { stringify } from 'jest-matcher-utils';
 describe('toHaveStyle', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => {
+    test('wait for success', async () => {
         el = await $('sel')
+        el._attempts = 2
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            if(el._attempts > 0) {
+                el._attempts --;
+                return {};
+            } 
+
             const mockStyle: { [key: string]: string; } = {
-                "font-family": "Faktum",
-                "font-size": "26px",
-                "color": "#000"
-            }
+                "font-family": "Faktum"
+            } 
             return { value: mockStyle[property] }
         })
-    })
-
-    test('success', async () => {
         const result = await toHaveStyle(el, {
-            "font-family": "Faktum",
-            "font-size": "26px",
-            "color": "#000"
+            "font-family": "Faktum"
         }, { ignoreCase: true });
         expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(0)
     })
 
-    test('failure', async () => {
+    test('wait but failure', async () => {
+        el = await $('sel')
+        el._attempts = 0
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            el._attempts ++;
+            throw new Error('some error');
+        })
         const result = await toHaveStyle(el, {
-            "font-family": "Faktum",
-            "font-size": "100px",
-            "color": "#000"
+            "font-family": "Faktum"
         }, { ignoreCase: true });
         expect(result.pass).toBe(false)
     })
