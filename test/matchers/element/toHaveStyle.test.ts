@@ -4,24 +4,28 @@ import { stringify } from 'jest-matcher-utils';
 
 describe('toHaveStyle', () => {
     let el: WebdriverIO.Element
+    const mockStyle: { [key: string]: string; } = {
+        "font-family": "Faktum",
+        "font-size": "26px",
+        "color": "#000"
+    } 
 
     test('wait for success', async () => {
         el = await $('sel')
         el._attempts = 2
+        let counter = 0;
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             if(el._attempts > 0) {
-                el._attempts --;
+                counter ++;
+                if(counter == Object.keys(mockStyle).length) {
+                    counter = 0;
+                    el._attempts --;
+                }
                 return {};
-            } 
-
-            const mockStyle: { [key: string]: string; } = {
-                "font-family": "Faktum"
             } 
             return { value: mockStyle[property] }
         })
-        const result = await toHaveStyle(el, {
-            "font-family": "Faktum"
-        }, { ignoreCase: true });
+        const result = await toHaveStyle(el, mockStyle, { ignoreCase: true });
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
     })
@@ -29,105 +33,118 @@ describe('toHaveStyle', () => {
     test('wait but failure', async () => {
         el = await $('sel')
         el._attempts = 0
+        let counter = 0
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
-            el._attempts ++;
+            counter ++;
+            if(counter == Object.keys(mockStyle).length) {
+                counter = 0;
+                el._attempts ++;
+            }
             throw new Error('some error');
         })
-        const result = await toHaveStyle(el, {
-            "font-family": "Faktum"
-        }, { ignoreCase: true });
+        const result = await toHaveStyle(el, mockStyle, { ignoreCase: true });
         expect(result.pass).toBe(false)
     })
 
-    // test('wait but failure', async () => {
-    //     const el = await $('sel')
-    //     el._text = function (): string {
-    //         throw new Error('some error')
-    //     }
+    test('success on the first attempt', async () => {
+        const el = await $('sel')
+        el._attempts = 0
+        let counter = 0
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            counter ++;
+            if(counter == Object.keys(mockStyle).length) {
+                counter = 0;
+                el._attempts ++;
+            }
+            return { value: mockStyle[property] }
+        })
+        const result = await toHaveStyle(el, mockStyle, { ignoreCase: true })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
 
-    //     const result = await toHaveText(el, 'WebdriverIO', { ignoreCase: true })
-    //     expect(result.pass).toBe(false)
-    // })
+    test('no wait - failure', async () => {
+        const el = await $('sel')
+        el._attempts = 0
+        let counter = 0;
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            counter ++;
+            if(counter == Object.keys(mockStyle).length) {
+                counter = 0;
+                el._attempts ++;
+            }
+            return { value: "Wrong Value" }
+        })
 
-    // test('success on the first attempt', async () => {
-    //     const el = await $('sel')
-    //     el._attempts = 0
-    //     el._text = function (): string {
-    //         this._attempts++
-    //         return 'WebdriverIO'
-    //     }
+        const result = await toHaveStyle(el, mockStyle, { wait: 0 })
+        expect(result.pass).toBe(false)
+        expect(el._attempts).toBe(1)
+    })
 
-    //     const result = await toHaveText(el, 'WebdriverIO', { ignoreCase: true })
-    //     expect(result.pass).toBe(true)
-    //     expect(el._attempts).toBe(1)
-    // })
+    test('no wait - success', async () => {
+        const el = await $('sel')
+        el._attempts = 0;
+        let counter = 0;
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            counter ++;
+            if(counter == Object.keys(mockStyle).length) {
+                counter = 0;
+                el._attempts ++;
+            }
+            return { value: mockStyle[property] }
+        })
 
-    // test('no wait - failure', async () => {
-    //     const el = await $('sel')
-    //     el._attempts = 0
-    //     el._text = function ():string {
-    //         this._attempts++
-    //         return 'webdriverio'
-    //     }
+        const result = await toHaveStyle(el, mockStyle, { wait: 0 })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
 
-    //     const result = await toHaveText(el, 'WebdriverIO', { wait: 0 })
-    //     expect(result.pass).toBe(false)
-    //     expect(el._attempts).toBe(1)
-    // })
+    test('not - failure', async () => {
+        const el = await $('sel')
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            return { value: mockStyle[property] }
+        })
+        const result = await toHaveStyle.call({ isNot: true }, el, mockStyle, { wait: 0 })
+        const received = getReceived(result.message())
 
-    // test('no wait - success', async () => {
-    //     const el = await $('sel')
-    //     el._attempts = 0
-    //     el._text = function (): string {
-    //         this._attempts++
-    //         return 'WebdriverIO'
-    //     }
+        expect(received).not.toContain('not')
+        expect(result.pass).toBe(true)
+    })
 
-    //     const result = await toHaveText(el, 'WebdriverIO', { wait: 0 })
-    //     expect(result.pass).toBe(true)
-    //     expect(el._attempts).toBe(1)
-    // })
+    test('should return false if texts dont match', async () => {
+        const el = await $('sel')
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            return { value: mockStyle[property] }
+        })
 
-    // test('not - failure', async () => {
-    //     const el = await $('sel')
-    //     el._text = function (): string {
-    //         return 'WebdriverIO'
-    //     }
-    //     const result = await toHaveText.call({ isNot: true }, el, 'WebdriverIO', { wait: 0 })
-    //     const received = getReceived(result.message())
+        const wrongStyle: { [key: string]: string; } = {
+            "font-family": "Incorrect Font",
+            "font-size": "100px",
+            "color": "#fff"
+        } 
 
-    //     expect(received).not.toContain('not')
-    //     expect(result.pass).toBe(true)
-    // })
+        const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 1 })
+        expect(result.pass).toBe(false)
+    })
 
-    // test('should return false if texts dont match', async () => {
-    //     const el = await $('sel')
-    //     el._text = function (): string {
-    //         return 'WebdriverIO'
-    //     }
+    test('should return true if texts match', async () => {
+        const el = await $('sel')
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            return { value: mockStyle[property] }
+        })
 
-    //     const result = await toHaveText.bind({ isNot: true })(el, 'foobar', { wait: 1 })
-    //     expect(result.pass).toBe(false)
-    // })
+        const result = await toHaveStyle.bind({ isNot: true })(el, mockStyle, { wait: 1 })
+        expect(result.pass).toBe(true)
+    })
 
-    // test('should return true if texts match', async () => {
-    //     const el = await $('sel')
-    //     el._text = function (): string {
-    //         return 'WebdriverIO'
-    //     }
-
-    //     const result = await toHaveText.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
-    //     expect(result.pass).toBe(true)
-    // })
-
-    // test('message', async () => {
-    //     const el = await $('sel')
-    //     el._text = function (): string {
-    //         return ''
-    //     }
-    //     const result = await toHaveText(el, 'WebdriverIO')
-    //     expect(getExpectMessage(result.message())).toContain('to have text')
-    // })
+    test('message', async () => {
+        const el = await $('sel')
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            return { value: "Wrong Value" }
+        })
+        const result = await toHaveStyle(el, 'WebdriverIO')
+        expect(getExpectMessage(result.message())).toContain('to have style')
+    })
 
     // test('success if array matches with text and ignoreCase', async () => {
     //     const el = await $('sel')
@@ -141,7 +158,7 @@ describe('toHaveStyle', () => {
     //     expect(result.pass).toBe(true)
     //     expect(el._attempts).toBe(1)
     // })
-
+    //
     // test('success if array matches with text and trim', async () => {
     //     const el = await $('sel')
     //     el._attempts = 0
