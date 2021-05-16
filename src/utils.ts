@@ -91,7 +91,7 @@ const compareNumbers = (actual: number, gte: number, lte: number, eq?: number): 
     return actual >= gte
 }
 
-export const compareText = (actual: string, expected: string, { ignoreCase = false, trim = true, containing = false }) => {
+export const compareText = (actual: string, expected: string, { ignoreCase = false, trim = false, containing = false }) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -143,6 +143,23 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
     return {
         value: actual,
         result: expectedArray.includes(actual)
+    }
+}
+
+export const compareStyle = async (actualEl: WebdriverIO.Element, style: { [key: string]: string; }, { ignoreCase = false, trim = false, containing = false}) => {
+    let result: Boolean = true
+    let actual: any = {}
+
+    for (let key in style) {
+        const css = await actualEl.getCSSProperty(key)
+        result = result && css.value == style[key]
+
+        actual[key] = css.value
+    }
+    
+    return {
+        value: actual,
+        result
     }
 }
 
