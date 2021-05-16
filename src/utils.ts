@@ -92,7 +92,7 @@ const compareNumbers = (actual: number, gte: number, lte: number, eq?: number): 
     return actual >= gte
 }
 
-export const compareText = (actual: string, expected: string, { ignoreCase = false, trim = false, containing = false }) => {
+export const compareText = (actual: string, expected: string, { ignoreCase = false, trim = true, containing = false }) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -119,7 +119,7 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
     }
 }
 
-export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = true, containing = false}) => {
+export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = false, containing = false}) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
