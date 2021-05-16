@@ -119,7 +119,7 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
     }
 }
 
-export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = false, containing = false}) => {
+export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = true, containing = false}) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
