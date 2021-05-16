@@ -235,10 +235,9 @@ declare namespace ExpectWebdriverIO {
         toHaveTextContaining(text: string | string[], options?: ExpectWebdriverIO.StringOptions): R
 
         /**
-         * `WebdriverIO.Element` -> `getAttribute("style")`
-         */
-         toHaveStyle(style: { [key: string]: string; }, options?: ExpectWebdriverIO.StringOptions): R
-
+        * `WebdriverIO.Element` -> `getAttribute("style")`
+        */
+        toHaveStyle(style: { [key: string]: string; }, options?: ExpectWebdriverIO.StringOptions): R
 
         // ===== browser only =====
         /**
