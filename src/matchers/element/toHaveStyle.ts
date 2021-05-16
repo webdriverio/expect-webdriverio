@@ -6,7 +6,6 @@ async function condition(el: WebdriverIO.Element, style: { [key: string]: string
 }
 
 export function toHaveStyleFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions = {}): any {
-    
     const isNot = this.isNot
     const { expectation = 'style', verb = 'have' } = this
 
