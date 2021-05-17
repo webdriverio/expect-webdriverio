@@ -114,17 +114,6 @@ const elem = $('#someElem')
 expect(elem).toBeDisplayed()
 ```
 
-### toBeVisible
-
-Same as `toBeDisplayed`.
-
-##### Usage
-
-```js
-const elem = $('#someElem')
-expect(elem).toBeVisible()
-```
-
 ### toExist
 
 Calls [`isExisting`](/docs/api/element/isExisting.html) on given element.
@@ -418,17 +407,6 @@ Checks if an element is within the viewport by calling [`isDisplayedInViewport`]
 ```js
 const elem = $('#elem')
 expect(elem).toBeDisplayedInViewport()
-```
-
-### toBeVisibleInViewport
-
-Same as `toBeDisplayedInViewport`.
-
-##### Usage
-
-```js
-const elem = $('#elem')
-expect(elem).toBeVisibleInViewport()
 ```
 
 ### toHaveChildren

@@ -1,4 +1,4 @@
-import { executeCommandBe, aliasFn } from '../../utils'
+import { executeCommandBe } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
 function toBeDisplayedFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
@@ -18,8 +18,4 @@ function toBeDisplayedFn(received: WdioElementMaybePromise, options: ExpectWebdr
 
 export function toBeDisplayed(...args: any): any {
     return runExpect.call(this, toBeDisplayedFn, args)
-}
-
-export function toBeVisible(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions): any {
-    return aliasFn.call(this, toBeDisplayed, { expectation: 'visible' }, el, options)
 }

@@ -9,18 +9,6 @@ describe('suite', () => {
         expect(browser).toHaveTitle('expect-webdriverio', { containing: true })
     })
 
-    it('be visible', () => {
-        const notVisible = $('body').$$('div')[2].$("not-visible")
-
-        // wait for 2000ms for expectation to succeed by default
-        expect(notVisible).toExist()
-
-        // override default wait timeout
-        expect(notVisible).toBeVisible({ wait: 0 })
-        // fails with error
-        // Element "$(`body`).$$(`div`)[2].$(`not-visible`)" is not displayed.
-    })
-
     it('find elements', () => {
         const formInputs = $$('form input')
 
