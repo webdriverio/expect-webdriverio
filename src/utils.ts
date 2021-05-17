@@ -151,7 +151,7 @@ export const compareStyle = async (actualEl: WebdriverIO.Element, style: { [key:
     let result: Boolean = true
     const actual: any = {}
 
-    for (let key in style) {
+    for (const key in style) {
         const css: ParsedCSSValue = await actualEl.getCSSProperty(key)
 
         let actualVal: string = css.value as string
