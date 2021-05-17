@@ -149,7 +149,7 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
 
 export const compareStyle = async (actualEl: WebdriverIO.Element, style: { [key: string]: string; }, { ignoreCase = true, trim = false }) => {
     let result: Boolean = true
-    let actual: any = {}
+    const actual: any = {}
 
     for (let key in style) {
         const css: ParsedCSSValue = await actualEl.getCSSProperty(key)
