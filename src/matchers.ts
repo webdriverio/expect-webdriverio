@@ -30,6 +30,7 @@ const matchers = {
     ...require('./matchers/element/toHaveTextContaining'),
     ...require('./matchers/element/toHaveValue'),
     ...require('./matchers/element/toHaveValueContaining'),
+    ...require('./matchers/element/toHaveStyle'),
 
     // Mock
     ...require('./matchers/mock/toBeRequested'),

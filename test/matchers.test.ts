@@ -42,6 +42,7 @@ test('matchers', () => {
         'toHaveTextContaining',
         'toHaveValue',
         'toHaveValueContaining',
+        'toHaveStyle',
 
         // mock
         'toBeRequested',
