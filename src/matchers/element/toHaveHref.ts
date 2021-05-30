@@ -1,8 +1,8 @@
 import { runExpect } from '../../util/expectAdapter'
-import { toHaveAttributeFn } from './toHaveAttribute'
+import { toHaveAttributeAndValueFn } from './toHaveAttribute'
 
 export function toHaveHrefFn(el: WebdriverIO.Element, href: string, options: ExpectWebdriverIO.StringOptions = {}): any {
-    return toHaveAttributeFn.call(this, el, 'href', href, options)
+    return toHaveAttributeAndValueFn.call(this, el, 'href', href, options)
 }
 
 export function toHaveHref(...args: any): any {

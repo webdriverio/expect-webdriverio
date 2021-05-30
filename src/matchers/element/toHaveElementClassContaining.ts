@@ -1,8 +1,8 @@
 import { runExpect } from '../../util/expectAdapter'
-import { toHaveAttributeFn } from './toHaveAttribute'
+import { toHaveAttributeAndValueFn } from './toHaveAttribute'
 
 function toHaveElementClassContainingFn(el: WebdriverIO.Element, className: string, options: ExpectWebdriverIO.StringOptions = {}): any {
-    return toHaveAttributeFn.call(this, el, 'class', className, {
+    return toHaveAttributeAndValueFn.call(this, el, 'class', className, {
         ...options,
         containing: true
     })
