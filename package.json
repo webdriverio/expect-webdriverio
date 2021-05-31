@@ -62,7 +62,7 @@
   "types": "types/jest-global.d.ts",
   "typeScriptVersion": "3.8.3",
   "dependencies": {
-    "expect": "^26.6.2",
+    "expect": "^27.0.2",
     "jest-matcher-utils": "^26.6.2"
   }
 }
