@@ -35,11 +35,11 @@ describe('toHaveHref', () => {
                 expect(getExpectMessage(result.message())).toContain('to have attribute')
             })
             test('expected message', () => {
-                let re = /https:////webdriver.io/i
+                const re = /https:////webdriver.io/i
                 expect(getExpected(result.message())).toMatch(re)
             })
             test('received message', () => {
-                let re = /https:////www.example.com/i
+                const re = /https:////www.example.com/i
                 expect(getReceived(result.message())).toMatch(re)
             })
         })
