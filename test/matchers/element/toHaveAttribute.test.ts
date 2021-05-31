@@ -25,7 +25,7 @@ describe('toHaveAttribute', () => {
             expect(result.pass).toBe(false)
         })
 
-        describe('message shows correctly', async () => {
+        describe('message shows correctly', () => {
             let result: any
 
             beforeEach(async () => {
@@ -75,7 +75,7 @@ describe('toHaveAttribute', () => {
             const result = await toHaveAttribute(el, "attribute_name", 123, { ignoreCase: true });
             expect(result.pass).toBe(false)
         })
-        describe('message shows correctly', async () => {
+        describe('message shows correctly', () => {
             let result: any
 
             beforeEach(async () => {

@@ -1,7 +1,7 @@
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils';
 import { toHaveAttrContaining } from '../../../src/matchers/element/toHaveAttributeContaining';
 
-describe('toHaveAttribute', () => {
+describe('toHaveAttributeContaining', () => {
     let el: WebdriverIO.Element
 
     beforeEach(async () => { 
@@ -16,7 +16,7 @@ describe('toHaveAttribute', () => {
         expect(result.pass).toBe(true)
     });
 
-    describe('failure when deosnt contain', () => {
+    describe('failure when doesnt contain', () => {
         let result: any
 
         beforeEach(async () => {
