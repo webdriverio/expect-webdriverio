@@ -30,7 +30,7 @@ describe('toHaveAttribute', () => {
             expect(result.pass).toBe(false)
         })
 
-        describe('message shows correctly', async () => {
+        describe('message shows correctly', () => {
             test('expect message', () => {
                 expect(getExpectMessage(result.message())).toContain('to have attribute')
             })
