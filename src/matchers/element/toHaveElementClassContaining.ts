@@ -12,7 +12,6 @@ export function toHaveElementClassContaining(...args: any): any {
     return runExpect.call(this, toHaveElementClassContainingFn, args)
 }
 
-
 /**
  * toHaveClass conflicts with Jasmine's https://jasmine.github.io/api/edge/matchers#toHaveClass matcher
  * and will be removed from expect-webdriverio in favor of `toHaveElementClass`
