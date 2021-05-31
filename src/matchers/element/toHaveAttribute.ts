@@ -37,13 +37,10 @@ export function toHaveAttributeAndValueFn(received: WebdriverIO.Element | Webdri
         updateElementsArray(pass, received, el)
 
         let message: string
-        if (typeof value === 'string') {
-            const expected = wrapExpectedWithArray(el, attr, value)
-            message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
-        } else {
-            message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, options)
-        }
-
+        
+        const expected = wrapExpectedWithArray(el, attr, value)
+        message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
+    
         return {
             pass,
             message: (): string => message
@@ -79,14 +76,12 @@ export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.El
 }
 
 export function toHaveAttribute(...args: any): any {
-    if(typeof args[1] === 'string') {
-        if(typeof args[2] === 'string') {
-            // Name and value is passed in e.g. toHaveAttribute('attr', 'value')
-            return runExpect.call(this, toHaveAttributeAndValueFn, args)
-        } else {
-            // Only name is passed in e.g. toHaveAttribute('attr')
-            return runExpect.call(this, toHaveAttributeFn, args)
-        }
+    if(args.length===3 || args.length===4 ) {
+        // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
+        return runExpect.call(this, toHaveAttributeAndValueFn, args)
+    } else {
+        // Only name is passed in e.g. el.toHaveAttribute('attr')
+        return runExpect.call(this, toHaveAttributeFn, args)
     }
 }
 
