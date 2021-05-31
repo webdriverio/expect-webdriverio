@@ -36,10 +36,8 @@ export function toHaveAttributeAndValueFn(received: WebdriverIO.Element | Webdri
 
         updateElementsArray(pass, received, el)
 
-        let message: string
-        
         const expected = wrapExpectedWithArray(el, attr, value)
-        message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
+        const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
     
         return {
             pass,
@@ -65,8 +63,7 @@ export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.El
 
         updateElementsArray(pass, received, el)
 
-        let message: string
-        message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, {})
+        const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, {})
 
         return {
             pass,
