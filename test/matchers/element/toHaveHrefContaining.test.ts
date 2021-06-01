@@ -42,12 +42,10 @@ describe('toHaveHrefContaining', () => {
                 expect(getExpectMessage(result.message())).toContain('to have attribute href containing')
             })
             test('expected message', () => {
-                const re = /webdriver/i
-                expect(getExpected(result.message())).toMatch(re)
+                expect(getExpected(result.message())).toContain('webdriver')
             })
             test('received message', () => {
-                const re = /https:////www.example.com/i
-                expect(getReceived(result.message())).toMatch(re)
+                expect(getReceived(result.message())).toContain('https://www.example.com')
             })
         })
     });

@@ -23,7 +23,7 @@ describe('toHaveHref', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveHref(el, "https://webdriver.io");
+            result = await toHaveHref(el, "an href");
         })
 
         test('failure', () => {
@@ -35,12 +35,10 @@ describe('toHaveHref', () => {
                 expect(getExpectMessage(result.message())).toContain('to have attribute href')
             })
             test('expected message', () => {
-                const re = /https:////webdriver.io/i
-                expect(getExpected(result.message())).toMatch(re)
+                expect(getExpected(result.message())).toContain('an href')
             })
             test('received message', () => {
-                const re = /https:////www.example.com/i
-                expect(getReceived(result.message())).toMatch(re)
+                expect(getReceived(result.message())).toContain('https://www.example.com')
             })
         })
     });
