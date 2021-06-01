@@ -32,7 +32,7 @@ describe('toHaveHref', () => {
 
         describe('message shows correctly', () => {
             test('expect message', () => {
-                expect(getExpectMessage(result.message())).toContain('to have attribute')
+                expect(getExpectMessage(result.message())).toContain('to have attribute href')
             })
             test('expected message', () => {
                 const re = /https:////webdriver.io/i
