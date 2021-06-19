@@ -1,0 +1,50 @@
+import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils';
+import { toHaveTextContaining } from '../../../src/matchers/element/toHaveTextContaining'
+
+describe('toHaveTextContaining', () => {
+    let el: WebdriverIO.Element
+
+    beforeEach(async () => { 
+        el = await $('sel')
+        el._text = jest.fn().mockImplementation(() => {
+            return "This is example text"
+        })
+    })    
+
+    describe('success', () => {
+        test('exact passes', async () => {
+            const result = await toHaveTextContaining(el, "This is example text");
+            expect(result.pass).toBe(true)
+        });
+
+        test('part passes', async () => {
+            const result = await toHaveTextContaining(el, "example text");
+            expect(result.pass).toBe(true)
+        })
+    })
+
+    describe('failure', () => {
+        let result: any
+
+        beforeEach(async () => {
+            result = await toHaveTextContaining(el, "webdriver");
+        })
+
+        test('does not pass', () => {
+            expect(result.pass).toBe(false)
+        })
+
+        describe('message shows correctly', () => {
+            test('expect message', () => {
+                expect(getExpectMessage(result.message())).toContain('to have text containing')
+            })
+            test('expected message', () => {
+                expect(getExpected(result.message())).toContain('webdriver')
+            })
+            test('received message', () => {
+                expect(getReceived(result.message())).toContain('This is example text')
+            })
+        })
+    });
+    
+});
