@@ -1,20 +1,25 @@
 import { waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-async function condition(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions): Promise<any> {
+async function conditionAttr(el: WebdriverIO.Element, attribute: string): Promise<any> {
+    const attr = await el.getAttribute(attribute)
+    if (typeof attr !== 'string') {
+        return { result: false, value: attr }
+    } else {
+        return { result: true, value: attr }
+    }
+}
+
+async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions): Promise<any> {
     const attr = await el.getAttribute(attribute)
     if (typeof attr !== 'string') {
         return { result: false, value: attr }
     }
 
-    if (typeof value !== 'string') {
-        return { result: true, value: attr }
-    }
-
     return compareText(attr, value, options)
 }
 
-export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string, value?: string, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveAttributeAndValueFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
@@ -22,7 +27,7 @@ export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.El
         let el = await received
         let attr
         const pass = await waitUntil(async () => {
-            const result = await executeCommand.call(this, el, condition, options, [attribute, value, options])
+            const result = await executeCommand.call(this, el, conditionAttrAndValue, options, [attribute, value, options])
             el = result.el
             attr = result.values
 
@@ -31,13 +36,34 @@ export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.El
 
         updateElementsArray(pass, received, el)
 
-        let message: string
-        if (typeof value === 'string') {
-            const expected = wrapExpectedWithArray(el, attr, value)
-            message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
-        } else {
-            message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, options)
+        const expected = wrapExpectedWithArray(el, attr, value)
+        const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
+    
+        return {
+            pass,
+            message: (): string => message
         }
+    })
+}
+
+export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string): any {
+    const isNot = this.isNot
+    const { expectation = 'attribute', verb = 'have' } = this
+
+    return browser.call(async () => {
+        let el = await received
+        let attr
+        const pass = await waitUntil(async () => {
+            const result = await executeCommand.call(this, el, conditionAttr, {}, [attribute])
+            el = result.el
+            attr = result.values
+
+            return result.success
+        }, isNot, {})
+
+        updateElementsArray(pass, received, el)
+
+        const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, {})
 
         return {
             pass,
@@ -47,7 +73,13 @@ export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.El
 }
 
 export function toHaveAttribute(...args: any): any {
-    return runExpect.call(this, toHaveAttributeFn, args)
+    if(args.length===3 || args.length===4 ) {
+        // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
+        return runExpect.call(this, toHaveAttributeAndValueFn, args)
+    } else {
+        // Only name is passed in e.g. el.toHaveAttribute('attr')
+        return runExpect.call(this, toHaveAttributeFn, args)
+    }
 }
 
 export const toHaveAttr = toHaveAttribute
