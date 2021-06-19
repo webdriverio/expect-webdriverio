@@ -47,7 +47,10 @@ function $$(selector, ...args) {
         }
     })
     // Required to refetch
-    els.parent = element;
+    let parent = element;
+    parent._length = length;
+    els.parent = parent;
+    
     els.foundWith = "$$";
     // Required to check length prop
     els.props = [];

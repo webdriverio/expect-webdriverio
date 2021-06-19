@@ -6,13 +6,23 @@ describe('toBeElementsArrayOfSize', () => {
     let els: WebdriverIO.ElementArray
 
     beforeEach(async () => {
-        // Create an element array of length 2
-        els = await $$('parent');
     })    
 
-    test('success', async () => {
-        const result = await toBeElementsArrayOfSize(els, 2, {});
-        expect(result.pass).toBe(true)
+    describe('success', () => {
+        test('array of size 2', async () => {
+            // Create an element array of length 2
+            els = await $$('parent');
+            const result = await toBeElementsArrayOfSize(els, 2, {});
+            expect(result.pass).toBe(true)
+        })  
+        test('array of size 5', async () => {
+            // Create an element array of length 2
+            els = await $$('parent');
+            // @ts-ignore
+            els.parent._length = 5;
+            const result = await toBeElementsArrayOfSize(els, 5, {});
+            expect(result.pass).toBe(true)
+        })  
     })
     
     // test('wait but failure', async () => {
