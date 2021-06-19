@@ -1,26 +1,19 @@
 import { getExpectMessage, getReceived } from '../../__fixtures__/utils';
-import { toHaveElementClass } from '../../../src/matchers/element/toHaveElementClass';
+import { toBeElementsArrayOfSize } from '../../../src/matchers/elements/toBeElementsArrayOfSize';
+import { walkUpBindingElementsAndPatterns } from 'typescript';
 
 describe('toBeElementsArrayOfSize', () => {
     let els: WebdriverIO.ElementArray
 
-    // beforeEach(async () => { 
-    //     els = [await $('sel1'), await $('sel2'), await $('sel3')]
-    // })    
+    beforeEach(async () => {
+        // Create an element array of length 2
+        els = await $$('parent');
+    })    
 
-    // test('wait for success', async () => {
-    //     el._attempts = 2
-    //     el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
-    //         if(el._attempts > 0) {
-    //             el._attempts --;
-    //             return "wrong-class"
-    //         }
-    //         return "correct-class"
-    //     })
-    //     const result = await toHaveElementClass(el, "correct-class", { ignoreCase: true });
-    //     expect(result.pass).toBe(true)
-    //     expect(el._attempts).toBe(0)
-    // })
+    test('success', async () => {
+        const result = await toBeElementsArrayOfSize(els, 2, {});
+        expect(result.pass).toBe(true)
+    })
     
     // test('wait but failure', async () => {
     //     el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
