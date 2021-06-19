@@ -62,8 +62,7 @@ describe('toBeElementsArrayOfSize', () => {
         it('works if size contains options', async () => {
             // Create an element array of length 2
             els = await $$('parent');
-            let error;
-            let result = await toBeElementsArrayOfSize(els, {lte: 5});
+            const result = await toBeElementsArrayOfSize(els, {lte: 5});
             expect(result.pass).toBe(true);
         })
         
