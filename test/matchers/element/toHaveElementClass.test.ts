@@ -19,6 +19,34 @@ describe('toHaveElementClass', () => {
         expect(result.pass).toBe(true)
     });
 
+    describe('options', () => {
+        it('should fail when class is not a string', async () => {
+            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+                return null
+            })
+            const result = await toHaveElementClass(el, "some-class");
+            expect(result.pass).toBe(false)
+        })
+
+        it('should pass when trimming the attribute', async () => {
+            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+                return "  some-class  "
+            })
+            const result = await toHaveElementClass(el, "some-class", {trim: true});
+            expect(result.pass).toBe(true)
+        })
+        
+        it('should pass when ignore the case', async () => {
+            const result = await toHaveElementClass(el, "sOme-ClAsS", {ignoreCase: true});
+            expect(result.pass).toBe(true) 
+        })
+
+        it('should pass if containing', async () => {
+            const result = await toHaveElementClass(el, "some", {containing: true});
+            expect(result.pass).toBe(true) 
+        }) 
+    })
+    
     describe('failure when class name is not present', () => {
         let result: any
 
