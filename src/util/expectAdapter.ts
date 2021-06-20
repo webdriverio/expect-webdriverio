@@ -12,7 +12,7 @@ const { mode: MODE } = config
  */
 export const getContext = (context?: any): any => global === context ? {} : context || {}
 
-function runJestExpect(fn: (...args: any) => any, args: IArguments): any {
+export function runJestExpect(fn: (...args: any) => any, args: IArguments): any {
     return fn.apply(this, args)
 }
 
@@ -30,7 +30,7 @@ export const jestResultToJasmine = (result: JestExpectationResult | Promise<Jest
     return buildJasmineFromJestResult(result, isNot)
 }
 
-function runJasmineExpect(fn: (...args: any) => any): any {
+export function runJasmineExpect(fn: (...args: any) => any): any {
     // 2nd and 3rd args are `util` and `customEqualityTesters` that are not used
     const context = getContext(this)
     return {

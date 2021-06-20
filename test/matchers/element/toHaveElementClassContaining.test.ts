@@ -14,8 +14,13 @@ describe('toHaveElementClassContaining', () => {
         })
     })    
 
-    test('success when class name is present', async () => {
+    test('success when whole class name is present', async () => {
         const result = await toHaveElementClassContaining(el, "some-class");
+        expect(result.pass).toBe(true)
+    });
+
+    test('success when part of class name is present', async () => {
+        const result = await toHaveElementClassContaining(el, "other");
         expect(result.pass).toBe(true)
     });
 

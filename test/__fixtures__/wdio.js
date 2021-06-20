@@ -39,13 +39,23 @@ function $(selector, ...args) {
 
 function $$(selector, ...args) {
     const length = this._length || 2
-    return Array(length).map((_, index) => {
+    let els = Array(length).map((_, index) => {
         return {
             ...element,
             selector,
             index
         }
     })
+    // Required to refetch
+    let parent = element;
+    parent._length = length;
+    els.parent = parent;
+    
+    els.foundWith = "$$";
+    // Required to check length prop
+    els.props = [];
+    els.props.length = length;
+    return els;
 }
 
 async function waitUntil(condition, { timeout, m, interval }) {
