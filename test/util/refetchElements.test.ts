@@ -1,4 +1,3 @@
-import { doesNotMatch } from 'assert/strict';
 import { refetchElements } from '../../src/util/refetchElements'
 
 describe('refetchElements', () => {
