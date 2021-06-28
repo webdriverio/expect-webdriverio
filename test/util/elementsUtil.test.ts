@@ -1,4 +1,3 @@
-import { resolveProjectReferencePath } from 'typescript'
 import { updateElementsArray, wrapExpectedWithArray } from '../../src/util/elementsUtil'
 import { refetchElements } from '../../src/util/refetchElements'
 
