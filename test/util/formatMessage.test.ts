@@ -25,7 +25,7 @@ describe('formatMessage', () => {
             })
 
             test('diff string', () => {
-                let diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
+                const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
                 expect(actual).toMatch(diffString)
             })
         })
@@ -52,7 +52,7 @@ describe('formatMessage', () => {
                 })
 
                 test('diff string', () => {
-                    let diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected [not]', 'Received      ', true)
+                    const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected [not]', 'Received      ', true)
                     expect(actual).toMatch(diffString)
                 })
             })
@@ -76,7 +76,7 @@ describe('formatMessage', () => {
                 })
 
                 test('diff string', () => {
-                    let diffString = `Expected [not]: ${printExpected("Test Same")}\n` +
+                    const diffString = `Expected [not]: ${printExpected("Test Same")}\n` +
                         `Received      : ${printReceived("Test Same")}`
                     expect(actual).toMatch(diffString)
                 })
@@ -105,7 +105,7 @@ describe('formatMessage', () => {
             })
 
             test('diff string', () => {
-                let diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
+                const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
                 expect(actual).toMatch(diffString)
             })
         })
@@ -131,7 +131,7 @@ describe('formatMessage', () => {
             })
 
             test('diff string', () => {
-                let diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
+                const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
                 expect(actual).toMatch(diffString)
             })
         })
@@ -157,7 +157,7 @@ describe('formatMessage', () => {
             })
 
             test('diff string', () => {
-                let diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
+                const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
                 expect(actual).toMatch(diffString)
             })
         })

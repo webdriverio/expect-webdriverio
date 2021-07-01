@@ -1,5 +1,4 @@
 import { executeCommand } from '../../src/util/executeCommand'
-import { waitUntil } from '../../src/utils'
 
 describe('refetchElements', () => {
     test('is array', async () => {
@@ -8,7 +7,7 @@ describe('refetchElements', () => {
         els.parent._length = 5;
         // Passing in array should cause elements
         // to be refetched hence length should be 5
-        let condition = jest.fn(() => { return { result: true, value: "Test Value "} } )
+        const condition = jest.fn(() => { return { result: true, value: "Test Value "} } )
 
         // @ts-ignore
         const result = await executeCommand.call(this, els, condition, {}, ["Test Property", "Test Value"], true)
@@ -20,7 +19,7 @@ describe('refetchElements', () => {
         while (els.length > 0) { els.pop() }
         // Passing in array should cause elements
         // to be refetched hence length should be 5
-        let condition = jest.fn(() => { return { result: true, value: "Test Value "} } )
+        const condition = jest.fn(() => { return { result: true, value: "Test Value "} } )
 
         // @ts-ignore
         const result = await executeCommand.call(this, els, condition, {wait: 0}, ["Test Property", "Test Value"])

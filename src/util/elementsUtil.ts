@@ -40,7 +40,7 @@ export const updateElementsArray = (
 
         // add every refetched item to original element array
         if (received.length === 0) {
-            for(var i=0; i<refetched.length; i++) {
+            for(let i = 0; i < refetched.length; i++) {
                 received.push(refetched[i])
             }
         }
