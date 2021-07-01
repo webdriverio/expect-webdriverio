@@ -18,8 +18,7 @@ describe('elementsUtil', () => {
 
     describe('updateElementsArray', () => {
         let received: WebdriverIO.ElementArray,
-            refetched: WebdriverIO.ElementArray,
-            preCondition: WebdriverIO.ElementArray
+            refetched: WebdriverIO.ElementArray
 
         beforeEach(async () => {
             // Fetches element array of size 2
@@ -28,7 +27,6 @@ describe('elementsUtil', () => {
             received.parent._length = 5;
             // Only size 5 when refetched (useful for testing)
             refetched = await refetchElements(received, 5, true)
-            preCondition = received
         })
 
         test('is not success', () => {

@@ -47,7 +47,7 @@ describe('expectAdapter', () => {
         })
 
         it('promise input', async () => {
-            const promise: Promise<JestExpectationResult> = new Promise((resolve, reject) => {
+            const promise: Promise<JestExpectationResult> = new Promise((resolve) => {
                 resolve(input);
             });
             const output = await jestResultToJasmine(promise, false);

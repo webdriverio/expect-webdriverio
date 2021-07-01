@@ -10,7 +10,7 @@ describe('toHaveAttribute', () => {
 
     describe('attribute exists', () => {
         test('success when present', async () => {
-            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
                 return "Correct Value"
             })
             const result = await toHaveAttribute(el, "attribute_name");
@@ -18,7 +18,7 @@ describe('toHaveAttribute', () => {
         })
 
         test('failure when not present', async () => {
-            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
                 return null
             })
             const result = await toHaveAttribute(el, "attribute_name");
@@ -29,7 +29,7 @@ describe('toHaveAttribute', () => {
             let result: any
 
             beforeEach(async () => {
-                el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+                el.getAttribute = jest.fn().mockImplementation(() => {
                     return null
                 })
                 result = await toHaveAttribute(el, "attribute_name");
@@ -48,28 +48,28 @@ describe('toHaveAttribute', () => {
     
     describe('attribute has value', () => {
         test('success with correct value', async () => {
-            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
                 return "Correct Value"
             })
             const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true });
             expect(result.pass).toBe(true)
         })
         test('failure with wrong value', async () => {
-            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
                 return "Wrong Value"
             })
             const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true });
             expect(result.pass).toBe(false)
         })
         test('failure with non-string attribute value as actual', async () => {
-            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
                 return 123
             })
             const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true });
             expect(result.pass).toBe(false)
         })
         test('failure with non-string attribute value as expected', async () => {
-            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
                 return "Correct Value"
             })
             const result = await toHaveAttribute(el, "attribute_name", 123, { ignoreCase: true });
@@ -79,7 +79,7 @@ describe('toHaveAttribute', () => {
             let result: any
 
             beforeEach(async () => {
-                el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+                el.getAttribute = jest.fn().mockImplementation(() => {
                     return "Wrong"
                 })
                 result = await toHaveAttribute(el, "attribute_name", "Correct");

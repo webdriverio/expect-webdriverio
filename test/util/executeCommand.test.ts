@@ -10,7 +10,7 @@ describe('refetchElements', () => {
         const condition = jest.fn(() => { return { result: true, value: "Test Value "} } )
 
         // @ts-ignore
-        const result = await executeCommand.call(this, els, condition, {}, ["Test Property", "Test Value"], true)
+        await executeCommand.call(this, els, condition, {}, ["Test Property", "Test Value"], true)
         expect(condition).toHaveBeenCalledTimes(5)
     })
 
