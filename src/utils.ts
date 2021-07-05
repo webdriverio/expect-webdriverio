@@ -80,16 +80,12 @@ async function executeCommandBe(
     }
 }
 
-const compareNumbers = (actual: number, gte: number, lte: number, eq?: number): boolean => {
-    if (typeof eq === 'number') {
-        return actual === eq
-    }
-
-    if (lte > 0 && actual > lte) {
-        return false
-    }
-
-    return actual >= gte
+const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
+    if (options.eq) { return actual == options.eq }
+    if (options.gte && options.lte) { return actual >= options.gte && actual <= options.lte }
+    if (options.gte) { return actual >= options.gte }
+    if (options.lte) { return actual <= options.lte }
+    return false
 }
 
 export const compareText = (actual: string, expected: string, { ignoreCase = false, trim = true, containing = false }) => {
@@ -119,7 +115,7 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
     }
 }
 
-export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = false, containing = false}) => {
+export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = false, containing = false }) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -135,7 +131,7 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
         expectedArray = expectedArray.map(item => item.toLowerCase())
     }
     if (containing) {
-        const textInArray = expectedArray.some((t)=> actual.includes(t))
+        const textInArray = expectedArray.some((t) => actual.includes(t))
         return {
             value: actual,
             result: textInArray
@@ -169,7 +165,7 @@ export const compareStyle = async (actualEl: WebdriverIO.Element, style: { [key:
         result = result && actualVal === expectedVal
         actual[key] = css.value
     }
-    
+
     return {
         value: actual,
         result
