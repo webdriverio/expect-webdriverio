@@ -1,4 +1,4 @@
-import { compareNumbers, compareText, compareTextWithArray } from '../src/utils'
+import { compareNumbers, compareText, compareTextWithArray, waitUntil } from '../src/utils'
 
 describe('utils', () => {
     describe('compareText', () => {
@@ -26,6 +26,7 @@ describe('utils', () => {
             expect(compareText('qwe_AsD_zxc', 'asd', { ignoreCase: true, containing: true }).result).toBe(true)
         })
     })
+
     describe('compareTextWithArray', () => {
         test('should pass if strings match in array', () => {
             expect(compareTextWithArray('foo', ['foo', 'bar'], {}).result).toBe(true)
@@ -47,6 +48,49 @@ describe('utils', () => {
             expect(compareTextWithArray('qwe_AsD_zxc', ['foo', 'zxc'], { ignoreCase: true, containing: true }).result).toBe(true)
         })
     })
+
+    describe('waitUntil', () => {
+        let condition: any
+        const positiveCondition = () => { return {result: true, message: "test" }}
+        const negativeCondition = () => { return {result: false, message: "test" }}
+
+        describe('positive condition', () => {
+            beforeEach(() => { 
+                condition = async () => { 
+                    return positiveCondition().result
+                } 
+            })
+
+            fit('should fail if isNot is true', async () => {
+                const pass = await waitUntil(condition, true, {})
+                expect(pass).toBe(false)
+            })
+
+            fit('should pass if isNot is false', async () => {
+                const pass = await waitUntil(condition, false, {})
+                expect(pass).toBe(true)
+            })
+        })
+
+        describe('negative condition', () => {
+            beforeEach(() => { 
+                condition = async () => { 
+                    return negativeCondition().result
+                } 
+            })
+
+            fit('should pass if isNot is true', async () => {
+                const pass = await waitUntil(condition, true, {})
+                expect(pass).toBe(true)
+            })
+
+            fit('should fail if isNot is false', async () => {
+                const pass = await waitUntil(condition, false, {})
+                expect(pass).toBe(false)
+            })
+        })
+    })
+    
 
     describe('compareNumbers', () => {
         test('should work when equal', () => {
