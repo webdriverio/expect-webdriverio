@@ -7,14 +7,14 @@ async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.Num
     // If no options passed in + children exists
     if(!options.lte && !options.gte && !options.eq) {
         return {
-            result: (typeof children == 'undefined' || !children) ? false : true,
-            value: children.length
+            result: children != null, 
+            value: children?.length
         }
     }
 
     return {
-        result: compareNumbers(children.length, options),
-        value: children.length
+        result: compareNumbers(children?.length, options),
+        value: children?.length
     }
 }
 
