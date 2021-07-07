@@ -83,14 +83,26 @@ async function executeCommandBe(
 }
 
 const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
-    // @ts-ignore
-    if (options.hasOwnProperty('eq')) { return actual == options.eq }
-    // @ts-ignore
-    if (options.hasOwnProperty('gte') && options.hasOwnProperty('lte')) { return actual >= options.gte && actual <= options?.lte }
-    // @ts-ignore
-    if (options.hasOwnProperty('gte')) { return actual >= options.gte }
-    // @ts-ignore
-    if (options.hasOwnProperty('lte')) { return actual <= options.lte }
+    // Equals case
+    if (typeof options.eq == 'number') { 
+        return actual == options.eq
+    }
+
+    // Greater than or equal AND less than or equal case
+    if (typeof options.gte == 'number' && typeof options.lte == 'number' ) { 
+        return actual >= options.gte && actual <= options.lte 
+    }
+
+    // Greater than or equal case
+    if (typeof options.gte == 'number') { 
+        return actual >= options.gte 
+    }
+    
+    // Less than or equal case
+    if (typeof options.lte == 'number') { 
+        return actual <= options.lte 
+    }
+
     return false
 }
 
