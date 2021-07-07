@@ -72,31 +72,43 @@ describe('toHaveText', () => {
         el._text = function (): string {
             return 'WebdriverIO'
         }
-        const result = await toHaveText.call({ isNot: true }, el, 'WebdriverIO', { wait: 0 })
+        const result = await toHaveText.call({ isNot: true }, el, 'WebdriverIO')
+        const received = getReceived(result.message())
+
+        expect(received).not.toContain('not')
+        expect(result.pass).toBe(false)
+    })
+
+    test('not - success', async () => {
+        const el = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+        const result = await toHaveText.call({ isNot: true }, el, 'Fake Text')
         const received = getReceived(result.message())
 
         expect(received).not.toContain('not')
         expect(result.pass).toBe(true)
     })
-
-    test('should return false if texts dont match', async () => {
+    
+    test('not - should return true if texts dont match', async () => {
         const el = await $('sel')
         el._text = function (): string {
             return 'WebdriverIO'
         }
 
         const result = await toHaveText.bind({ isNot: true })(el, 'foobar', { wait: 1 })
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
     })
 
-    test('should return true if texts match', async () => {
+    test('not - should return false if texts match', async () => {
         const el = await $('sel')
         el._text = function (): string {
             return 'WebdriverIO'
         }
 
         const result = await toHaveText.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(false)
     })
 
     test('message', async () => {

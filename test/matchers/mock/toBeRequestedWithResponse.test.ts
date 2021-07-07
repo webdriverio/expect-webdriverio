@@ -88,31 +88,31 @@ describe('toBeRequestedWithResponse', () => {
 
         // expect(mock).not.toBeRequestedWithResponse({ foo: 'bar' }) should pass
         const result = await toBeRequestedWithResponse.call({ isNot: true }, mock, { foo: 'bar' })
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
 
         mock.calls.push(mockMatch) // response { foo: 'bar' }
 
         // expect(mock).not.toBeRequestedWithResponse({ foo: 'foo' }) should pass
         const result2 = await toBeRequestedWithResponse.call({ isNot: true }, mock, { foo: 'foo' })
-        expect(result2.pass).toBe(false)
+        expect(result2.pass).toBe(true)
 
         // expect(mock).not.toBeRequestedWithResponse({ foo: 'bar' }) should fail
         const result3 = await toBeRequestedWithResponse.call({ isNot: true }, mock, { foo: 'bar' })
-        expect(result3.pass).toBe(true)
+        expect(result3.pass).toBe(false)
 
         // expect(mock).not.toBeRequestedWithResponse({ bar: 'foo' }) should pass
         const result4 = await toBeRequestedWithResponse.call({ isNot: true }, mock, { bar: 'foo' })
-        expect(result4.pass).toBe(false)
+        expect(result4.pass).toBe(true)
 
-        mock.calls.push(mockMatch2)
+        mock.calls.push(mockMatch2) // response { bar: 'foo' }
 
         // expect(mock).not.toBeRequestedWithResponse({ foo: 'bar' }) should fail
         const result5 = await toBeRequestedWithResponse.call({ isNot: true }, mock, { foo: 'bar' })
-        expect(result5.pass).toBe(true)
+        expect(result5.pass).toBe(false)
 
         // expect(mock).not.toBeRequestedWithResponse({ bar: 'foo' }) should fail
         const result6 = await toBeRequestedWithResponse.call({ isNot: true }, mock, { bar: 'foo' })
-        expect(result6.pass).toBe(true)
+        expect(result6.pass).toBe(false)
     })
 
     test('message', async () => {

@@ -14,23 +14,23 @@ describe('toHaveElementProperty', () => {
         expect(el._attempts).toBe(1)
     })
 
-    test('should return false if values dont match', async () => {
+    test('should return true if values dont match and isNot=true', async () => {
         const el = await $('sel')
         el._value = function (): string {
             return 'iphone'
         }
 
         const result = await toHaveElementProperty.bind({ isNot: true })(el, 'value', 'foobar', { wait: 1 })
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
     })
 
-    test('should return true if values match', async () => {
+    test('should return false if values match and isNot=true', async () => {
         const el = await $('sel')
         el._value = function (): string {
             return 'iphone'
         }
 
         const result = await toHaveElementProperty.bind({ isNot: true })(el, 'value', 'iphone', { wait: 1 })
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(false)
     })
 })
