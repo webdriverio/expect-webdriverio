@@ -18,7 +18,7 @@ async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.Num
     }
 }
 
-function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, expected?: number | ExpectWebdriverIO.NumberOptions): any {
+function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, expected?: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'children', verb = 'have' } = this
 
@@ -39,7 +39,7 @@ function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArr
             children = result.values
 
             return result.success
-        }, isNot, numberOptions)
+        }, isNot, {...numberOptions, ...options})
 
         updateElementsArray(pass, received, el)
 
