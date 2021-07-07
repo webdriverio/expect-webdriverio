@@ -61,13 +61,23 @@ describe('utils', () => {
                 } 
             })
 
-            fit('should fail if isNot is true', async () => {
+            test('should fail if isNot is true', async () => {
                 const pass = await waitUntil(condition, true, {})
                 expect(pass).toBe(false)
             })
 
-            fit('should pass if isNot is false', async () => {
+            test('should pass if isNot is false', async () => {
                 const pass = await waitUntil(condition, false, {})
+                expect(pass).toBe(true)
+            })
+            
+            test('should fail if isNot is true and wait is 0', async () => {
+                const pass = await waitUntil(condition, true, {wait: 0})
+                expect(pass).toBe(false)
+            })
+
+            test('should pass if isNot is false and wait is 0', async () => {
+                const pass = await waitUntil(condition, false, {wait: 0})
                 expect(pass).toBe(true)
             })
         })
@@ -79,13 +89,23 @@ describe('utils', () => {
                 } 
             })
 
-            fit('should pass if isNot is true', async () => {
+            test('should pass if isNot is true', async () => {
                 const pass = await waitUntil(condition, true, {})
                 expect(pass).toBe(true)
             })
 
-            fit('should fail if isNot is false', async () => {
+            test('should fail if isNot is false', async () => {
                 const pass = await waitUntil(condition, false, {})
+                expect(pass).toBe(false)
+            })
+
+            test('should pass if isNot is true and wait is 0', async () => {
+                const pass = await waitUntil(condition, true, {wait: 0})
+                expect(pass).toBe(true)
+            })
+
+            test('should fail if isNot is false and wait is 0', async () => {
+                const pass = await waitUntil(condition, false, {wait: 0})
                 expect(pass).toBe(false)
             })
         })

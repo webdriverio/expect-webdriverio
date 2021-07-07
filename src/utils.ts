@@ -21,7 +21,7 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
 ): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
-        return await condition()
+        return isNot ? !(await condition()) : await condition()
     }
 
     // wait for condition to be truthy
@@ -30,7 +30,7 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
         await browser.waitUntil(async () => {
             error = undefined
             try {
-                return isNot !== await condition()
+                return isNot ? !(await condition()) : await condition()
             } catch (err) {
                 error = err
                 return false
@@ -44,9 +44,11 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
             throw error
         }
 
-        return !isNot
+        // condition was fufilled after wait
+        return true
     } catch (err) {
-        return isNot
+        // condition was not fufilled after wait
+        return false
     }
 }
 
@@ -81,10 +83,14 @@ async function executeCommandBe(
 }
 
 const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
-    if (options.eq) { return actual == options.eq }
-    if (options.gte && options.lte) { return actual >= options.gte && actual <= options.lte }
-    if (options.gte) { return actual >= options.gte }
-    if (options.lte) { return actual <= options.lte }
+    // @ts-ignore
+    if (options.hasOwnProperty('eq')) { return actual == options.eq }
+    // @ts-ignore
+    if (options.hasOwnProperty('gte') && options.hasOwnProperty('lte')) { return actual >= options.gte && actual <= options?.lte }
+    // @ts-ignore
+    if (options.hasOwnProperty('gte')) { return actual >= options.gte }
+    // @ts-ignore
+    if (options.hasOwnProperty('lte')) { return actual <= options.lte }
     return false
 }
 
