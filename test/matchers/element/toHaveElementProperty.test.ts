@@ -40,7 +40,7 @@ describe('toHaveElementProperty', () => {
             return undefined
         }
 
-        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', 'iphone', { wait: 1 })
+        const result = await toHaveElementProperty(el, 'property', 'iphone', { wait: 1 })
         expect(result.pass).toBe(false)
     })
 
@@ -50,7 +50,7 @@ describe('toHaveElementProperty', () => {
             return "Test Value"
         }
 
-        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', null)
+        const result = await toHaveElementProperty(el, 'property', null)
         expect(result.pass).toBe(true)
     })
 
@@ -60,7 +60,7 @@ describe('toHaveElementProperty', () => {
             return 5
         }
 
-        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', 'Test Value')
+        const result = await toHaveElementProperty(el, 'property', 'Test Value')
         expect(result.pass).toBe(false)
     })
 })
