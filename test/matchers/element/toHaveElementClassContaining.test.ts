@@ -55,7 +55,7 @@ describe('toHaveClassContaining', () => {
     let el: WebdriverIO.Element
     
     test('warning message in console', async () => {
-        const result = await toHaveClassContaining(el, "test");
+        await toHaveClassContaining(el, "test");
         expect(console.warn).toHaveBeenCalledWith('expect(...).toHaveClassContaining is deprecated and will be removed in next release. Use toHaveElementClassContaining instead.')
     })
 })

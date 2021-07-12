@@ -9,7 +9,7 @@ describe('toHaveAttributeContaining', () => {
     })    
 
     test('success when contains', async () => {
-        el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+        el.getAttribute = jest.fn().mockImplementation(() => {
             return "An example phrase"
         })
         const result = await toHaveAttrContaining(el, "attribute_name", "example");
@@ -20,7 +20,7 @@ describe('toHaveAttributeContaining', () => {
         let result: any
 
         beforeEach(async () => {
-            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
                 return "An example phrase"
             })
             result = await toHaveAttrContaining(el, "attribute_name", "donkey");

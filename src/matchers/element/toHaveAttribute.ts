@@ -52,11 +52,10 @@ export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.El
 
     return browser.call(async () => {
         let el = await received
-        let attr
+        
         const pass = await waitUntil(async () => {
             const result = await executeCommand.call(this, el, conditionAttr, {}, [attribute])
             el = result.el
-            attr = result.values
 
             return result.success
         }, isNot, {})
