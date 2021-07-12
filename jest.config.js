@@ -17,7 +17,7 @@ module.exports = {
         }
     },
     testEnvironment: 'node',
-    coveragePathIgnorePatterns: ['/__fixtures__/'],
+    coveragePathIgnorePatterns: ['/__fixtures__/', 'src/jasmineUtils.ts'],
     testPathIgnorePatterns: ['/__fixtures__/'],
     setupFilesAfterEnv: ['./test/__fixtures__/index.js']
 }

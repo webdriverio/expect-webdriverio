@@ -21,7 +21,7 @@ describe('toHaveElementClass', () => {
 
     describe('options', () => {
         it('should fail when class is not a string', async () => {
-            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
                 return null
             })
             const result = await toHaveElementClass(el, "some-class");
@@ -29,7 +29,7 @@ describe('toHaveElementClass', () => {
         })
 
         it('should pass when trimming the attribute', async () => {
-            el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
                 return "  some-class  "
             })
             const result = await toHaveElementClass(el, "some-class", {trim: true});
@@ -78,7 +78,7 @@ describe('toHaveClass', () => {
     let el: WebdriverIO.Element
     
     test('warning message in console', async () => {
-        const result = await toHaveClass(el, "test");
+        await toHaveClass(el, "test");
         expect(console.warn).toHaveBeenCalledWith('expect(...).toHaveClass is deprecated and will be removed in next release. Use toHaveElementClass instead.')
     })
 })
