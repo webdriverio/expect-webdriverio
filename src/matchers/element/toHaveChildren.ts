@@ -1,45 +1,51 @@
 import { waitUntil, enhanceError, compareNumbers, numberError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-async function condition(el: WebdriverIO.Element, gte: number, lte: number, eq?: number): Promise<any> {
+async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.NumberOptions): Promise<any> {
     const children = await el.$$('./*')
+
+    // If no options passed in + children exists
+    if(!options.lte && !options.gte && !options.eq) {
+        return {
+            result: children != null, 
+            value: children?.length
+        }
+    }
+
     return {
-        result: compareNumbers(children.length, gte, lte, eq),
-        value: children.length
+        result: compareNumbers(children?.length, options),
+        value: children?.length
     }
 }
 
-function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, size?: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.NumberOptions = {}): any {
+function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, expected?: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'children', verb = 'have' } = this
 
     // type check
-    if (typeof size === 'number') {
-        options.eq = size
-    } else if (typeof size === 'object') {
-        options = { ...options, ...size }
+    let numberOptions: ExpectWebdriverIO.NumberOptions;
+    if (typeof expected === 'number') {
+        numberOptions = { eq: expected } as ExpectWebdriverIO.NumberOptions
+    } else if (typeof expected === 'object') {
+        numberOptions = expected
     }
-
-    const eq = options.eq
-    const gte = options.gte || 1
-    const lte = options.lte || 0
 
     return browser.call(async () => {
         let el = await received
         let children
         const pass = await waitUntil(async () => {
-            const result = await executeCommand.call(this, el, condition, options, [gte, lte, eq])
+            const result = await executeCommand.call(this, el, condition, numberOptions, [numberOptions])
             el = result.el
             children = result.values
 
             return result.success
-        }, isNot, options)
+        }, isNot, {...numberOptions, ...options})
 
         updateElementsArray(pass, received, el)
 
-        const error = numberError(gte, lte, eq)
+        const error = numberError(numberOptions)
         const expected = wrapExpectedWithArray(el, children, error)
-        const message = enhanceError(el, expected, children, this, verb, expectation, '', options)
+        const message = enhanceError(el, expected, children, this, verb, expectation, '', numberOptions)
 
         return {
             pass,

@@ -21,7 +21,7 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
 ): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
-        return await condition()
+        return isNot ? !(await condition()) : await condition()
     }
 
     // wait for condition to be truthy
@@ -30,7 +30,7 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
         await browser.waitUntil(async () => {
             error = undefined
             try {
-                return isNot !== await condition()
+                return isNot ? !(await condition()) : await condition()
             } catch (err) {
                 error = err
                 return false
@@ -44,9 +44,11 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
             throw error
         }
 
-        return !isNot
+        // condition was fufilled after wait
+        return true
     } catch (err) {
-        return isNot
+        // condition was not fufilled after wait
+        return false
     }
 }
 
@@ -80,16 +82,28 @@ async function executeCommandBe(
     }
 }
 
-const compareNumbers = (actual: number, gte: number, lte: number, eq?: number): boolean => {
-    if (typeof eq === 'number') {
-        return actual === eq
+const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
+    // Equals case
+    if (typeof options.eq == 'number') { 
+        return actual == options.eq
     }
 
-    if (lte > 0 && actual > lte) {
-        return false
+    // Greater than or equal AND less than or equal case
+    if (typeof options.gte == 'number' && typeof options.lte == 'number' ) { 
+        return actual >= options.gte && actual <= options.lte 
     }
 
-    return actual >= gte
+    // Greater than or equal case
+    if (typeof options.gte == 'number') { 
+        return actual >= options.gte 
+    }
+    
+    // Less than or equal case
+    if (typeof options.lte == 'number') { 
+        return actual <= options.lte 
+    }
+
+    return false
 }
 
 export const compareText = (actual: string, expected: string, { ignoreCase = false, trim = true, containing = false }) => {
@@ -119,7 +133,7 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
     }
 }
 
-export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = false, containing = false}) => {
+export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = false, containing = false }) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -135,7 +149,7 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
         expectedArray = expectedArray.map(item => item.toLowerCase())
     }
     if (containing) {
-        const textInArray = expectedArray.some((t)=> actual.includes(t))
+        const textInArray = expectedArray.some((t) => actual.includes(t))
         return {
             value: actual,
             result: textInArray
@@ -169,7 +183,7 @@ export const compareStyle = async (actualEl: WebdriverIO.Element, style: { [key:
         result = result && actualVal === expectedVal
         actual[key] = css.value
     }
-    
+
     return {
         value: actual,
         result

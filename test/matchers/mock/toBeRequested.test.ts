@@ -51,13 +51,13 @@ describe('toBeRequested', () => {
 
         // expect(mock).not.toBeRequested() should pass
         const result = await toBeRequested.call({ isNot: true }, mock)
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
 
         mock.calls.push(mockMatch)
 
         // expect(mock).not.toBeRequested() should fail
         const result4 = await toBeRequested.call({ isNot: true }, mock)
-        expect(result4.pass).toBe(true)
+        expect(result4.pass).toBe(false)
     })
 
     test('message', async () => {

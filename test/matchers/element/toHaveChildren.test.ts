@@ -8,6 +8,24 @@ describe('toHaveChildren', () => {
         expect(result.pass).toBe(true)
     })
 
+    test('no value - children are null', async () => {
+        const el = await $('sel')
+        // Mocks the selector as returning null
+        el.$$ = jest.fn()
+
+        const result = await toHaveChildren(el, { wait: 0 })
+        expect(result.pass).toBe(false)
+    })
+
+    test('value exact - children are null', async () => {
+        const el = await $('sel')
+        // Mocks the selector as returning null
+        el.$$ = jest.fn()
+
+        const result = await toHaveChildren(el, 5, { wait: 0 })
+        expect(result.pass).toBe(false)
+    })
+
     test('exact number value', async () => {
         const el = await $('sel')
 
@@ -43,17 +61,19 @@ describe('toHaveChildren', () => {
         expect(result.pass).toBe(false)
     })
 
+    // There is 2 children so with isNot true should return false
     test('.not exact value - failure', async () => {
         const el = await $('sel')
 
         const result = await toHaveChildren.bind({ isNot: true })(el, { eq: 2, wait: 0 })
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(false)
     })
 
+    // There is 2 children so with isNot true should return true
     test('.not exact value - success', async () => {
         const el = await $('sel')
 
         const result = await toHaveChildren.bind({ isNot: true })(el, { eq: 3, wait: 1 })
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
     })
 })

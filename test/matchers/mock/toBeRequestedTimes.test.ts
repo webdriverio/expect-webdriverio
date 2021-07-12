@@ -83,21 +83,21 @@ describe('toBeRequestedTimes', () => {
 
         // expect(mock).not.toBeRequestedTimes(0) should fail
         const result = await toBeRequestedTimes.call({ isNot: true }, mock, 0)
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(false)
 
         // expect(mock).not.toBeRequestedTimes(1) should pass
         const result2 = await toBeRequestedTimes.call({ isNot: true }, mock, 1)
-        expect(result2.pass).toBe(false)
+        expect(result2.pass).toBe(true)
 
         mock.calls.push(mockMatch)
 
         // expect(mock).not.toBeRequestedTimes(0) should pass
         const result3 = await toBeRequestedTimes.call({ isNot: true }, mock, 0)
-        expect(result3.pass).toBe(false)
+        expect(result3.pass).toBe(true)
 
         // expect(mock).not.toBeRequestedTimes(1) should fail
         const result4 = await toBeRequestedTimes.call({ isNot: true }, mock, 1)
-        expect(result4.pass).toBe(true)
+        expect(result4.pass).toBe(false)
     })
 
     test('message', async () => {

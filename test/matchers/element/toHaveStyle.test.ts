@@ -98,7 +98,7 @@ describe('toHaveStyle', () => {
         expect(el._attempts).toBe(1)
     })
 
-    test('not - failure', async () => {
+    test('should return false if styles match and isNot=true', async () => {
         const el = await $('sel')
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             return { value: mockStyle[property] }
@@ -107,10 +107,10 @@ describe('toHaveStyle', () => {
         const received = getReceived(result.message())
 
         expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(false)
     })
 
-    test('should return false if styles dont match', async () => {
+    test('should return true if styles dont match and isNot=true', async () => {
         const el = await $('sel')
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             return { value: mockStyle[property] }
@@ -122,17 +122,7 @@ describe('toHaveStyle', () => {
             "color": "#fff"
         } 
 
-        const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 1 })
-        expect(result.pass).toBe(false)
-    })
-
-    test('should return true if styles match', async () => {
-        const el = await $('sel')
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
-            return { value: mockStyle[property] }
-        })
-
-        const result = await toHaveStyle.bind({ isNot: true })(el, mockStyle, { wait: 1 })
+        const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 0 })
         expect(result.pass).toBe(true)
     })
 
