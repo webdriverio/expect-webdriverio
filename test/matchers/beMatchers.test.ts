@@ -78,15 +78,11 @@ describe('be* matchers', () => {
             })
 
             test('not - failure', async () => {
-                const el = await $('sel')
-                el._value = function (): boolean {
-                    return true
-                }
-                const result = await fn.call({ isNot: true }, el, { wait: 0 })
+                const result = await fn.call({ isNot: true }, $('sel'), { wait: 0 })
                 const received = getReceived(result.message())
 
-                expect(received).toContain('not')
-                expect(result.pass).toBe(false)
+                expect(received).not.toContain('not')
+                expect(result.pass).toBe(true)
             })
 
             test('not - success', async () => {
@@ -97,20 +93,16 @@ describe('be* matchers', () => {
                 const result = await fn.call({ isNot: true }, el, { wait: 0 })
                 const received = getReceived(result.message())
 
-                expect(received).not.toContain('not')
-                expect(result.pass).toBe(true)
+                expect(received).toContain('not')
+                expect(result.pass).toBe(false)
             })
 
             test('not - failure (with wait)', async () => {
-                const el = await $('sel')
-                el._value = function (): boolean {
-                    return true
-                }
-                const result = await fn.call({ isNot: true }, el, { wait: 1 })
+                const result = await fn.call({ isNot: true }, $('sel'), { wait: 1 })
                 const received = getReceived(result.message())
 
-                expect(received).toContain('not')
-                expect(result.pass).toBe(false)
+                expect(received).not.toContain('not')
+                expect(result.pass).toBe(true)
             })
 
             test('not - success (with wait)', async () => {
@@ -121,8 +113,8 @@ describe('be* matchers', () => {
                 const result = await fn.call({ isNot: true }, el, { wait: 1 })
                 const received = getReceived(result.message())
 
-                expect(received).not.toContain('not')
-                expect(result.pass).toBe(true)
+                expect(received).toContain('not')
+                expect(result.pass).toBe(false)
             })
 
             test('message', async () => {

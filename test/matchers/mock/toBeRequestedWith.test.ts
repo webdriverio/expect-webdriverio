@@ -97,8 +97,6 @@ describe('toBeRequestedWith', () => {
         expect(result.pass).toBe(false)
     })
 
-    // By using isNot and waiting for Get and Post 
-    // there will be a request so result is false 
     test('wait for NOT failure, empty params', async () => {
         const mock = new TestMock()
         mock.calls.push({ ...mockGet }, { ...mockPost })
@@ -107,11 +105,9 @@ describe('toBeRequestedWith', () => {
         }, 10)
 
         const result = await toBeRequestedWith.call({ isNot: true }, mock, {})
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
     })
 
-    // By using isNot and waiting for Get and Post 
-    // there will still be no Delete and hence result is true
     test('wait for NOT success', async () => {
         const mock = new TestMock()
 
@@ -120,7 +116,7 @@ describe('toBeRequestedWith', () => {
         }, 10)
 
         const result = await toBeRequestedWith.call({ isNot: true }, mock, { method: 'DELETE' })
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(false)
     })
 
     const scenarios = [

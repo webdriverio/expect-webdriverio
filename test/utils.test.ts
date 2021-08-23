@@ -1,4 +1,4 @@
-import { compareNumbers, compareText, compareTextWithArray, waitUntil } from '../src/utils'
+import { compareNumbers, compareText, compareTextWithArray } from '../src/utils'
 
 describe('utils', () => {
     describe('compareText', () => {
@@ -48,69 +48,6 @@ describe('utils', () => {
             expect(compareTextWithArray('qwe_AsD_zxc', ['foo', 'zxc'], { ignoreCase: true, containing: true }).result).toBe(true)
         })
     })
-
-    describe('waitUntil', () => {
-        let condition: any
-        const positiveCondition = () => { return {result: true, message: "test" }}
-        const negativeCondition = () => { return {result: false, message: "test" }}
-
-        describe('positive condition', () => {
-            beforeEach(() => { 
-                condition = async () => { 
-                    return positiveCondition().result
-                } 
-            })
-
-            test('should fail if isNot is true', async () => {
-                const pass = await waitUntil(condition, true, {})
-                expect(pass).toBe(false)
-            })
-
-            test('should pass if isNot is false', async () => {
-                const pass = await waitUntil(condition, false, {})
-                expect(pass).toBe(true)
-            })
-            
-            test('should fail if isNot is true and wait is 0', async () => {
-                const pass = await waitUntil(condition, true, {wait: 0})
-                expect(pass).toBe(false)
-            })
-
-            test('should pass if isNot is false and wait is 0', async () => {
-                const pass = await waitUntil(condition, false, {wait: 0})
-                expect(pass).toBe(true)
-            })
-        })
-
-        describe('negative condition', () => {
-            beforeEach(() => { 
-                condition = async () => { 
-                    return negativeCondition().result
-                } 
-            })
-
-            test('should pass if isNot is true', async () => {
-                const pass = await waitUntil(condition, true, {})
-                expect(pass).toBe(true)
-            })
-
-            test('should fail if isNot is false', async () => {
-                const pass = await waitUntil(condition, false, {})
-                expect(pass).toBe(false)
-            })
-
-            test('should pass if isNot is true and wait is 0', async () => {
-                const pass = await waitUntil(condition, true, {wait: 0})
-                expect(pass).toBe(true)
-            })
-
-            test('should fail if isNot is false and wait is 0', async () => {
-                const pass = await waitUntil(condition, false, {wait: 0})
-                expect(pass).toBe(false)
-            })
-        })
-    })
-    
 
     describe('compareNumbers', () => {
         test('should work when equal', () => {

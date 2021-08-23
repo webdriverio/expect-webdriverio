@@ -71,22 +71,10 @@ describe('toBeDisabled', () => {
         expect(el._attempts).toBe(1)
     })
 
-    test('should fail if not enabled and isNot=true', async () => {
+    test('not - failure', async () => {
         const el = await $('sel')
         el._value = function (): boolean {
             return false
-        }
-        const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
-        const received = getReceived(result.message())
-
-        expect(received).toContain('not')
-        expect(result.pass).toBe(false)
-    })
-
-    test('should pass if enabled and isNot=true', async () => {
-        const el = await $('sel')
-        el._value = function (): boolean {
-            return true
         }
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
         const received = getReceived(result.message())
@@ -95,7 +83,19 @@ describe('toBeDisabled', () => {
         expect(result.pass).toBe(true)
     })
 
-    test('should fail if not enabled and isNot=true and wait>0', async () => {
+    test('not - success', async () => {
+        const el = await $('sel')
+        el._value = function (): boolean {
+            return true
+        }
+        const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
+        const received = getReceived(result.message())
+
+        expect(received).toContain('not')
+        expect(result.pass).toBe(false)
+    })
+
+    test('not - failure (with wait)', async () => {
         const el = await $('sel')
         el._value = function (): boolean {
             return false
@@ -103,11 +103,11 @@ describe('toBeDisabled', () => {
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 1 })
         const received = getReceived(result.message())
 
-        expect(received).toContain('not')
-        expect(result.pass).toBe(false)
+        expect(received).not.toContain('not')
+        expect(result.pass).toBe(true)
     })
 
-    test('should pass if enabled and isNot=true and wait>0', async () => {
+    test('not - success (with wait)', async () => {
         const el = await $('sel')
         el._value = function (): boolean {
             return true
@@ -115,8 +115,8 @@ describe('toBeDisabled', () => {
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 1 })
         const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        expect(received).toContain('not')
+        expect(result.pass).toBe(false)
     })
 
     test('message', async () => {

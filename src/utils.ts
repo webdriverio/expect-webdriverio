@@ -15,13 +15,13 @@ const { options: DEFAULT_OPTIONS } = config
  * @param isNot     https://jestjs.io/docs/en/expect#thisisnot
  * @param options   wait, interval, etc
  */
-const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
+ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
     wait = DEFAULT_OPTIONS.wait,
     interval = DEFAULT_OPTIONS.interval } = {},
 ): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
-        return isNot ? !(await condition()) : await condition()
+        return await condition()
     }
 
     // wait for condition to be truthy
@@ -30,7 +30,7 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
         await browser.waitUntil(async () => {
             error = undefined
             try {
-                return isNot ? !(await condition()) : await condition()
+                return isNot !== await condition()
             } catch (err) {
                 error = err
                 return false
@@ -44,11 +44,9 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
             throw error
         }
 
-        // condition was fufilled after wait
-        return true
+        return !isNot
     } catch (err) {
-        // condition was not fufilled after wait
-        return false
+        return isNot
     }
 }
 

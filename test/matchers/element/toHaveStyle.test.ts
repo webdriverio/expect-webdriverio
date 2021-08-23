@@ -1,5 +1,6 @@
 import { getExpectMessage, getReceived } from '../../__fixtures__/utils';
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle'
+import { stringify } from 'jest-matcher-utils';
 
 describe('toHaveStyle', () => {
     let el: WebdriverIO.Element
@@ -33,7 +34,7 @@ describe('toHaveStyle', () => {
         el = await $('sel')
         el._attempts = 0
         let counter = 0
-        el.getCSSProperty = jest.fn().mockImplementation(() => {
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             counter ++;
             if(counter == Object.keys(mockStyle).length) {
                 counter = 0;
@@ -66,7 +67,7 @@ describe('toHaveStyle', () => {
         const el = await $('sel')
         el._attempts = 0
         let counter = 0;
-        el.getCSSProperty = jest.fn().mockImplementation(() => {
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             counter ++;
             if(counter == Object.keys(mockStyle).length) {
                 counter = 0;
@@ -98,7 +99,7 @@ describe('toHaveStyle', () => {
         expect(el._attempts).toBe(1)
     })
 
-    test('should return false if styles match and isNot=true', async () => {
+    test('not - failure', async () => {
         const el = await $('sel')
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             return { value: mockStyle[property] }
@@ -107,10 +108,10 @@ describe('toHaveStyle', () => {
         const received = getReceived(result.message())
 
         expect(received).not.toContain('not')
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
     })
 
-    test('should return true if styles dont match and isNot=true', async () => {
+    test('should return false if styles dont match', async () => {
         const el = await $('sel')
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             return { value: mockStyle[property] }
@@ -122,13 +123,23 @@ describe('toHaveStyle', () => {
             "color": "#fff"
         } 
 
-        const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 0 })
+        const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 1 })
+        expect(result.pass).toBe(false)
+    })
+
+    test('should return true if styles match', async () => {
+        const el = await $('sel')
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            return { value: mockStyle[property] }
+        })
+
+        const result = await toHaveStyle.bind({ isNot: true })(el, mockStyle, { wait: 1 })
         expect(result.pass).toBe(true)
     })
 
     test('message shows correctly', async () => {
         const el = await $('sel')
-        el.getCSSProperty = jest.fn().mockImplementation(() => {
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             return { value: "Wrong Value" }
         })
         const result = await toHaveStyle(el, 'WebdriverIO')

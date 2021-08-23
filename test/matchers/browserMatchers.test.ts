@@ -73,18 +73,12 @@ describe('browser matchers', () => {
             })
 
             test('not - failure', async () => {
-                browser._attempts = 0
-                browser._value = function (): string {
-                    this._attempts++
-                    return validText
-                }
-
                 const result = await fn.call({ isNot: true }, browser, validText, { wait: 0, trim: false })
 
                 expect(getExpectMessage(result.message())).toContain('not')
                 expect(getExpected(result.message())).toContain('not')
 
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true)
             })
 
             test('not - success', async () => {
@@ -97,21 +91,16 @@ describe('browser matchers', () => {
                 expect(getExpected(result.message())).toContain('Valid')
                 expect(getReceived(result.message())).toContain('Wrong')
 
-                expect(result.pass).toBe(true)
+                expect(result.pass).toBe(false)
             })
 
             test('not - failure (with wait)', async () => {
-                browser._attempts = 0
-                browser._value = function (): string {
-                    this._attempts++
-                    return validText
-                }
                 const result = await fn.call({ isNot: true }, browser, validText, { wait: 1, trim: false })
 
                 expect(getExpectMessage(result.message())).toContain('not')
                 expect(getExpected(result.message())).toContain('not')
 
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true)
             })
 
             test('not - success (with wait)', async () => {
@@ -124,7 +113,7 @@ describe('browser matchers', () => {
                 expect(getExpected(result.message())).toContain('Valid')
                 expect(getReceived(result.message())).toContain('Wrong')
 
-                expect(result.pass).toBe(true)
+                expect(result.pass).toBe(false)
             })
 
             test('message', async () => {
