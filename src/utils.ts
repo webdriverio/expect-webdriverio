@@ -15,7 +15,7 @@ const { options: DEFAULT_OPTIONS } = config
  * @param isNot     https://jestjs.io/docs/en/expect#thisisnot
  * @param options   wait, interval, etc
  */
- const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
+const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
     wait = DEFAULT_OPTIONS.wait,
     interval = DEFAULT_OPTIONS.interval } = {},
 ): Promise<boolean> => {
@@ -82,23 +82,23 @@ async function executeCommandBe(
 
 const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
     // Equals case
-    if (typeof options.eq == 'number') { 
+    if (typeof options.eq == 'number') {
         return actual == options.eq
     }
 
     // Greater than or equal AND less than or equal case
-    if (typeof options.gte == 'number' && typeof options.lte == 'number' ) { 
-        return actual >= options.gte && actual <= options.lte 
+    if (typeof options.gte == 'number' && typeof options.lte == 'number') {
+        return actual >= options.gte && actual <= options.lte
     }
 
     // Greater than or equal case
-    if (typeof options.gte == 'number') { 
-        return actual >= options.gte 
+    if (typeof options.gte == 'number') {
+        return actual >= options.gte
     }
-    
+
     // Less than or equal case
-    if (typeof options.lte == 'number') { 
-        return actual <= options.lte 
+    if (typeof options.lte == 'number') {
+        return actual <= options.lte
     }
 
     return false

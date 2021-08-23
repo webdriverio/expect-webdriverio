@@ -1,6 +1,5 @@
 import { getExpectMessage, getReceived } from '../../__fixtures__/utils';
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle'
-import { stringify } from 'jest-matcher-utils';
 
 describe('toHaveStyle', () => {
     let el: WebdriverIO.Element
@@ -34,7 +33,7 @@ describe('toHaveStyle', () => {
         el = await $('sel')
         el._attempts = 0
         let counter = 0
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        el.getCSSProperty = jest.fn().mockImplementation(() => {
             counter ++;
             if(counter == Object.keys(mockStyle).length) {
                 counter = 0;
@@ -67,7 +66,7 @@ describe('toHaveStyle', () => {
         const el = await $('sel')
         el._attempts = 0
         let counter = 0;
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        el.getCSSProperty = jest.fn().mockImplementation(() => {
             counter ++;
             if(counter == Object.keys(mockStyle).length) {
                 counter = 0;
@@ -139,7 +138,7 @@ describe('toHaveStyle', () => {
 
     test('message shows correctly', async () => {
         const el = await $('sel')
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        el.getCSSProperty = jest.fn().mockImplementation(() => {
             return { value: "Wrong Value" }
         })
         const result = await toHaveStyle(el, 'WebdriverIO')
