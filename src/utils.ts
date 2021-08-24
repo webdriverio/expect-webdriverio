@@ -82,22 +82,22 @@ async function executeCommandBe(
 
 const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
     // Equals case
-    if (typeof options.eq == 'number') {
-        return actual == options.eq
+    if (typeof options.eq === 'number') {
+        return actual === options.eq
     }
 
     // Greater than or equal AND less than or equal case
-    if (typeof options.gte == 'number' && typeof options.lte == 'number') {
+    if (typeof options.gte === 'number' && typeof options.lte === 'number') {
         return actual >= options.gte && actual <= options.lte
     }
 
     // Greater than or equal case
-    if (typeof options.gte == 'number') {
+    if (typeof options.gte === 'number') {
         return actual >= options.gte
     }
 
     // Less than or equal case
-    if (typeof options.lte == 'number') {
+    if (typeof options.lte === 'number') {
         return actual <= options.lte
     }
 

@@ -5,9 +5,9 @@ async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.Num
     const children = await el.$$('./*')
 
     // If no options passed in + children exists
-    if(!options.lte && !options.gte && !options.eq) {
+    if (!options.lte && !options.gte && !options.eq) {
         return {
-            result: children != null, 
+            result: children.length > 0,
             value: children?.length
         }
     }
@@ -39,7 +39,7 @@ function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArr
             children = result.values
 
             return result.success
-        }, isNot, {...numberOptions, ...options})
+        }, isNot, { ...numberOptions, ...options })
 
         updateElementsArray(pass, received, el)
 
