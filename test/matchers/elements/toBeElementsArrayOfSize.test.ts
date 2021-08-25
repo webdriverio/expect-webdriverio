@@ -68,4 +68,61 @@ describe('toBeElementsArrayOfSize', () => {
         
     })
     
+    describe('number options', () => {
+        describe('lte', () => {
+            test('should pass if lte', async () => {
+                // Create an element array of length 2
+                els = await $$('parent');
+                const result = await toBeElementsArrayOfSize(els, {lte: 10});
+                expect(result.pass).toBe(true);
+            })
+
+            test('should fail if not lte', async () => {
+                // Create an element array of length 2
+                els = await $$('parent');
+                const result = await toBeElementsArrayOfSize(els, {lte: 1});
+                expect(result.pass).toBe(false);
+            })
+        })
+        
+        describe('gte', () => {
+            test('should pass if gte', async () => {
+                // Create an element array of length 2
+                els = await $$('parent');
+                const result = await toBeElementsArrayOfSize(els, {gte: 1});
+                expect(result.pass).toBe(true);
+            })
+
+            test('should fail if not gte', async () => {
+                // Create an element array of length 2
+                els = await $$('parent');
+                const result = await toBeElementsArrayOfSize(els, {gte: 10});
+                expect(result.pass).toBe(false);
+            })
+        })
+
+        describe('gte && lte', () => {
+            test('should pass if gte and lte', async () => {
+                // Create an element array of length 2
+                els = await $$('parent');
+                const result = await toBeElementsArrayOfSize(els, {gte: 1, lte: 10});
+                expect(result.pass).toBe(true);
+            })
+
+            test('should fail if not gte but is lte', async () => {
+                // Create an element array of length 2
+                els = await $$('parent');
+                const result = await toBeElementsArrayOfSize(els, {gte: 10, lte: 10});
+                expect(result.pass).toBe(false);
+            })
+            
+            test('should fail if not lte but is gte', async () => {
+                // Create an element array of length 2
+                els = await $$('parent');
+                const result = await toBeElementsArrayOfSize(els, {gte: 1, lte: 1});
+                expect(result.pass).toBe(false);
+            })
+        })
+    })
+    
 })
