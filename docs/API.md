@@ -297,7 +297,7 @@ expect(elem).not.toBeDisabled()
 
 ### toBeSelected
 
-Checks if an element is enabled by calling [`isSelected`](/docs/api/element/isSelected.html) on the element.
+Checks if an element is enabled by calling [`isSelected`](https://webdriver.io/docs/api/element/isSelected/) on the element.
 
 ##### Usage
 
