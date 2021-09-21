@@ -48,8 +48,13 @@ export const addMatchers = (): any => {
     expectLib = global.jasmine
 
     return expectLib.getEnv().beforeAll(function addExpectWebdriverIOMatchers(): void {
-        expectLib.addMatchers({ ...matchers })
         expectLib.addAsyncMatchers({ ...matchers })
+
+        /**
+         * we can't use WebdriverIO async matchers with Jasmines synchronous expect
+         * library as we get something like `Error: Expected [object Promise] to be existing.`
+         */
+        global.expect = global.expectAsync as any
     })
 }
 
