@@ -22,20 +22,40 @@ NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v5.16.11` or hi
 
 ## Usage
 
-In your `wdio.conf.js`
-```js
-before () { // not needed in WebdriverIO v6
-    require('expect-webdriverio')
-},
-```
+### Using WebdriverIO Testrunner
 
-In your test
+If you run your tests through the [WDIO testrunner](https://webdriver.io/docs/clioptions) no additional setup is needed. WebdriverIO initialises `expect-webdriverio` and makes `expect` available in the global scope. So you can use it directly in your tests:
+
 ```js
 const $button = $('button')
 expect($button).toBeDisplayed()
 ```
 
 See more [Examples](docs/Examples.md)
+
+### Using in a standalone script
+
+If you embed WebdriverIO in a standalone script, make sure you import `expect-webdriverio` before you use it anywhere.
+
+```js
+const { remote } = require('webdriverio');
+require('expect-webdriverio')
+
+;(async () => {
+    const browser = await remote({
+        capabilities: {
+            browserName: 'chrome'
+        }
+    })
+
+    await browser.url('https://webdriver.io')
+
+    const $button = await browser.$('button')
+    await expect($button).toBeDisplayed()
+    
+    await browser.deleteSession()
+})().catch(console.error)
+```
 
 ## API
 

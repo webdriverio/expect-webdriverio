@@ -65,7 +65,7 @@ Checks if browser is on a specific page.
 
 ```js
 browser.url('https://webdriver.io/')
-expect(browser).toHaveUrl('https://webdriver.io')
+await expect(browser).toHaveUrl('https://webdriver.io')
 ```
 
 ### toHaveUrlContaining
@@ -76,7 +76,7 @@ Checks if browser is on a page URL that contains a value.
 
 ```js
 browser.url('https://webdriver.io/')
-expect(browser).toHaveUrlContaining('webdriver')
+await expect(browser).toHaveUrlContaining('webdriver')
 ```
 
 ### toHaveTitle
@@ -87,7 +87,7 @@ Checks if website has a specific title.
 
 ```js
 browser.url('https://webdriver.io/')
-expect(browser).toHaveTitle('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js')
+await expect(browser).toHaveTitle('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js')
 ```
 
 ### toHaveTitleContaining
@@ -98,7 +98,7 @@ Checks if website has a specific title that contains a value.
 
 ```js
 browser.url('https://webdriver.io/')
-expect(browser).toHaveTitleContaining('WebdriverIO')
+await expect(browser).toHaveTitleContaining('WebdriverIO')
 ```
 
 ## Element Matchers
@@ -111,7 +111,7 @@ Calls [`isDisplayed`](/docs/api/element/isDisplayed.html) on given element.
 
 ```js
 const elem = $('#someElem')
-expect(elem).toBeDisplayed()
+await expect(elem).toBeDisplayed()
 ```
 
 ### toExist
@@ -122,7 +122,7 @@ Calls [`isExisting`](/docs/api/element/isExisting.html) on given element.
 
 ```js
 const elem = $('#someElem')
-expect(elem).toExist()
+await expect(elem).toExist()
 ```
 
 ### toBePresent
@@ -133,7 +133,7 @@ Same as `toExist`.
 
 ```js
 const elem = $('#someElem')
-expect(elem).toBePresent()
+await expect(elem).toBePresent()
 ```
 
 ### toBeExisting
@@ -144,7 +144,7 @@ Same as `toExist`.
 
 ```js
 const elem = $('#someElem')
-expect(elem).toBeExisting()
+await expect(elem).toBeExisting()
 ```
 
 ### toBeFocused
@@ -155,7 +155,7 @@ Checks if element has focus. This assertion only works in a web context.
 
 ```js
 const elem = $('#someElem')
-expect(elem).toBeFocused()
+await expect(elem).toBeFocused()
 ```
 
 ### toHaveAttribute
@@ -166,7 +166,7 @@ Checks if an element has a certain attribute with a specific value.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveAttribute('class', 'form-control')
+await expect(myInput).toHaveAttribute('class', 'form-control')
 ```
 
 ### toHaveAttr
@@ -177,7 +177,7 @@ Same as `toHaveAttribute`.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveAttr('class', 'form-control')
+await expect(myInput).toHaveAttr('class', 'form-control')
 ```
 
 ### toHaveAttributeContaining
@@ -188,7 +188,7 @@ Checks if an element has a certain attribute that contains a value.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveAttributeContaining('class', 'form')
+await expect(myInput).toHaveAttributeContaining('class', 'form')
 ```
 
 ### toHaveAttrContaining
@@ -199,7 +199,7 @@ Same as `toHaveAttributeContaining`.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveAttrContaining('class', 'form')
+await expect(myInput).toHaveAttrContaining('class', 'form')
 ```
 
 ### toHaveElementClass
@@ -210,7 +210,7 @@ Checks if an element has a certain class name.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
+await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
 ```
 
 ### toHaveElementClassContaining
@@ -221,7 +221,7 @@ Checks if an element has a certain class name that contains provided value.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveElementClassContaining('form')
+await expect(myInput).toHaveElementClassContaining('form')
 ```
 
 ### toHaveElementProperty
@@ -232,8 +232,8 @@ Checks if an element has a certain property.
 
 ```js
 const elem = $('#elem')
-expect(elem).toHaveElementProperty('height', 23)
-expect(elem).not.toHaveElementProperty('height', 0)
+await expect(elem).toHaveElementProperty('height', 23)
+await expect(elem).not.toHaveElementProperty('height', 0)
 ```
 
 ### toHaveValue
@@ -244,7 +244,7 @@ Checks if an input element has a certain value.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveValue('user', { ignoreCase: true })
+await expect(myInput).toHaveValue('user', { ignoreCase: true })
 ```
 
 ### toHaveValueContaining
@@ -255,7 +255,7 @@ Checks if an input element contains a certain value.
 
 ```js
 const myInput = $('input')
-expect(myInput).toHaveValueContaining('us')
+await expect(myInput).toHaveValueContaining('us')
 ```
 
 ### toBeClickable
@@ -266,7 +266,7 @@ Checks if an element can be clicked by calling [`isClickable`](/docs/api/element
 
 ```js
 const elem = $('#elem')
-expect(elem).toBeClickable()
+await expect(elem).toBeClickable()
 ```
 
 ### toBeDisabled
@@ -277,9 +277,9 @@ Checks if an element is disabled by calling [`isEnabled`](/docs/api/element/isEn
 
 ```js
 const elem = $('#elem')
-expect(elem).toBeDisabled()
+await expect(elem).toBeDisabled()
 // same as
-expect(elem).not.toBeEnabled()
+await expect(elem).not.toBeEnabled()
 ```
 
 ### toBeEnabled
@@ -290,9 +290,9 @@ Checks if an element is enabled by calling [`isEnabled`](/docs/api/element/isEna
 
 ```js
 const elem = $('#elem')
-expect(elem).toBeEnabled()
+await expect(elem).toBeEnabled()
 // same as
-expect(elem).not.toBeDisabled()
+await expect(elem).not.toBeDisabled()
 ```
 
 ### toBeSelected
@@ -303,7 +303,7 @@ Checks if an element is enabled by calling [`isSelected`](https://webdriver.io/d
 
 ```js
 const elem = $('#elem')
-expect(elem).toBeSelected()
+await expect(elem).toBeSelected()
 ```
 
 ### toBeChecked
@@ -314,7 +314,7 @@ Same as `toBeSelected`.
 
 ```js
 const elem = $('#elem')
-expect(elem).toBeChecked()
+await expect(elem).toBeChecked()
 ```
 
 ### toHaveHref
@@ -325,7 +325,7 @@ Checks if link element has a specific link target.
 
 ```js
 const link = $('a')
-expect(link).toHaveHref('https://webdriver.io')
+await expect(link).toHaveHref('https://webdriver.io')
 ```
 
 ### toHaveLink
@@ -336,7 +336,7 @@ Same as `toHaveHref`.
 
 ```js
 const link = $('a')
-expect(link).toHaveLink('https://webdriver.io')
+await expect(link).toHaveLink('https://webdriver.io')
 ```
 
 ### toHaveHrefContaining
@@ -347,7 +347,7 @@ Checks if link element contains a specific link target.
 
 ```js
 const link = $('a')
-expect(link).toHaveHrefContaining('webdriver.io')
+await expect(link).toHaveHrefContaining('webdriver.io')
 ```
 
 ### toHaveLinkContaining
@@ -358,7 +358,7 @@ Same as `toHaveHrefContaining`.
 
 ```js
 const link = $('a')
-expect(link).toHaveLinkContaining('webdriver.io')
+await expect(link).toHaveLinkContaining('webdriver.io')
 ```
 
 ### toHaveId
@@ -369,7 +369,7 @@ Checks if element has a specific `id` attribute.
 
 ```js
 const elem = $('#elem')
-expect(elem).toHaveId('elem')
+await expect(elem).toHaveId('elem')
 ```
 
 ### toHaveText
@@ -381,8 +381,8 @@ Checks if element has a specific text. Can also be called with an array as param
 ```js
 browser.url('https://webdriver.io/')
 const elem = $('.tagline')
-expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
-expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Adding helper functions'])
+await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
+await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Adding helper functions'])
 ```
 
 ### toHaveTextContaining
@@ -394,8 +394,8 @@ Checks if element contains a specific text. Can also be called with an array as 
 ```js
 browser.url('https://webdriver.io/')
 const elem = $('.tagline')
-expect(elem).toHaveTextContaining('browser and mobile automation test framework')
-expect(elem).toHaveTextContaining(['browser and mobile automation test framework', 'helper functions'])
+await expect(elem).toHaveTextContaining('browser and mobile automation test framework')
+await expect(elem).toHaveTextContaining(['browser and mobile automation test framework', 'helper functions'])
 ```
 
 ### toBeDisplayedInViewport
@@ -406,7 +406,7 @@ Checks if an element is within the viewport by calling [`isDisplayedInViewport`]
 
 ```js
 const elem = $('#elem')
-expect(elem).toBeDisplayedInViewport()
+await expect(elem).toBeDisplayedInViewport()
 ```
 
 ### toHaveChildren
@@ -417,13 +417,13 @@ Checks amount of the fetched element's children by calling `element.$('./*')` co
 
 ```js
 const list = $('ul')
-expect(list).toHaveChildren() // the list has at least one item
+await expect(list).toHaveChildren() // the list has at least one item
 // same as
-expect(list).toHaveChildren({ gte: 1 })
+await expect(list).toHaveChildren({ gte: 1 })
 
-expect(list).toHaveChildren(3) // the list has 3 items
+await expect(list).toHaveChildren(3) // the list has 3 items
 // same as 
-expect(list).toHaveChildren({ eq: 3 })
+await expect(list).toHaveChildren({ eq: 3 })
 ```
 
 ### toBeElementsArrayOfSize
@@ -434,9 +434,9 @@ Checks amount of fetched elements using [`$$`](/docs/api/browser/$$.html) comman
 
 ```js
 const listItems = $$('ul>li')
-expect(listItems).toBeElementsArrayOfSize(5) // 5 items in the list
+await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in the list
 
-expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
+await expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
 // same as
 assert.ok(listItems.length <= 10)
 ```
@@ -451,7 +451,7 @@ Checks that mock was called
 
 ```js
 const mock = browser.mock('**/api/todo*')
-expect(mock).toBeRequested()
+await expect(mock).toBeRequested()
 ```
 
 ### toBeRequestedTimes
@@ -462,9 +462,9 @@ Checks that mock was called for the expected amount of times
 
 ```js
 const mock = browser.mock('**/api/todo*')
-expect(mock).toBeRequestedTimes(2) // expect(mock).toBeRequestedTimes({ eq: 2 })
+await expect(mock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
 
-expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
 ```
 
 ### toBeRequestedWith
@@ -478,7 +478,7 @@ Most of the options supports expect/jasmine partial matchers like [expect.object
 ```js
 const mock = browser.mock('**/api/todo*', { method: 'POST' })
 
-expect(mock).toBeRequestedWith({
+await expect(mock).toBeRequestedWith({
     url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
     method: 'POST',                                 // [optional] string | array
     statusCode: 200,                                // [optional] number | array
@@ -488,7 +488,7 @@ expect(mock).toBeRequestedWith({
     response: { success: true },                    // [optional] object | function | custom matcher
 })
 
-expect(mock).toBeRequestedWith({
+await expect(mock).toBeRequestedWith({
     url: expect.stringMatching(/.*\/api\/.*/i),
     method: ['POST', 'PUT'], // either POST or PUT
     statusCode: [401, 403],  // either 401 or 403
