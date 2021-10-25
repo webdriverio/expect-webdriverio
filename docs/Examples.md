@@ -2,58 +2,49 @@
 
 ```js
 describe('suite', () => {
-    before(() => {
-        browser.url('https://github.com/webdriverio/expect-webdriverio')
+    before(async () => {
+        await browser.url('https://github.com/webdriverio/expect-webdriverio')
 
-        expect(browser).toHaveUrl('https://github.com/webdriverio/expect-webdriverio')
-        expect(browser).toHaveTitle('expect-webdriverio', { containing: true })
+        await expect(browser).toHaveUrl('https://github.com/webdriverio/expect-webdriverio')
+        await expect(browser).toHaveTitle('expect-webdriverio', { containing: true })
     })
 
-    it('find elements', () => {
-        const formInputs = $$('form input')
+    it('find elements', async () => {
+        const formInputs = await $$('form input')
 
         // make sure every form element is enabled
         // waits automatically for formInputs to have at least one element
-        expect(formInputs).toBeEnabled({ wait: 5000 })
+        await expect(formInputs).toBeEnabled({ wait: 5000 })
 
-        const selectOptions = $$('form select>option')
+        const selectOptions = await $$('form select>option')
 
         // make sure there is at least one option in select
-        expect(selectOptions).toBeElementsArrayOfSize({ gte: 1 })
-        // exact match
-        expect($$('button')).toBeElementsArrayOfSize(3)
+        await expect(selectOptions).toBeElementsArrayOfSize({ gte: 1 })
+        
+        // or pass in an element directly
+        await expect($$('button')).toBeElementsArrayOfSize(3)
     })
 
-    it('checks text values', () => {
+    it('checks text values', async () => {
         // assert certain text accurate
-        const repoTitle = $('expect-webdriverio')
-        expect(repoTitle).toHaveText('expect-webdriverio')
+        const repoTitle = await $('expect-webdriverio')
+        await expect(repoTitle).toHaveText('expect-webdriverio')
         // or ignore the case and only check that a substring is present
-        expect(repoTitle).toHaveTextContaining('webdriverio', { ignoreCase: true })
+        await expect(repoTitle).toHaveTextContaining('webdriverio', { ignoreCase: true })
     })
 
-    it('advanced', () => {
-        const myInput = $('input')
+    it('advanced', async () => {
+        const myInput = await $('input')
 
-        expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
-        expect(myInput).toHaveAttribute('class', 'form-control') // alias toHaveAttr
+        await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
+        await expect(myInput).toHaveAttribute('class', 'form-control') // alias toHaveAttr
 
-        expect(myInput).toHaveValueContaining('USER')
+        await expect(myInput).toHaveValueContaining('USER')
         // or pass `containing` as an option
-        expect(myInput).toHaveValue('value', 'user', { containing: true, ignoreCase: true })
+        await expect(myInput).toHaveValue('value', 'user', { containing: true, ignoreCase: true })
 
         // Simply invert assertions
-        expect(myInput).not.toHaveElementProperty('height', 0)
-    })
-
-    it('async mode', async () => {
-        const el = await $('el')
-
-        // Jasmine users should use expectAsync instead of expect!!
-        await expect(el).toBePresent() // aliases toBeExisting or toExist
-
-        // or
-        await expect($('el')).toBePresent()
+        await expect(myInput).not.toHaveElementProperty('height', 0)
     })
 })
 ```
