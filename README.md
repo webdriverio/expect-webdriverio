@@ -27,8 +27,8 @@ NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v5.16.11` or hi
 If you run your tests through the [WDIO testrunner](https://webdriver.io/docs/clioptions) no additional setup is needed. WebdriverIO initialises `expect-webdriverio` and makes `expect` available in the global scope. So you can use it directly in your tests:
 
 ```js
-const $button = $('button')
-expect($button).toBeDisplayed()
+const $button = await $('button')
+await expect($button).toBeDisplayed()
 ```
 
 See more [Examples](docs/Examples.md)
