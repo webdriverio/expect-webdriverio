@@ -1,10 +1,10 @@
 ## TypeScript
 
-Add `expect-webdriverio` to `types` in the `tsconfig.json`
+If you are using the [WDIO Testrunner](https://webdriver.io/docs/clioptions) everything will be automatically setup. Just follow the [setup guide](https://webdriver.io/docs/typescript#framework-setup) from the docs. However if you run WebdriverIO with a different testrunner or in a simple Node.js script you will need to add `expect-webdriverio` to `types` in the `tsconfig.json`.
+
 - `"expect-webdriverio"` for everyone except of Jasmine/Jest users.
 - `"expect-webdriverio/jasmine"` Jasmine
 - `"expect-webdriverio/jest"` Jest
-- `"expect-webdriverio/types/standalone-global"` to use as an additional expectation lib (not recommended)
 
 ## JavaScript (VSCode)
 
