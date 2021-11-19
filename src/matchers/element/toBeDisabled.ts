@@ -1,10 +1,12 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import { executeCommandBe } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-function toBeDisabledFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
+function toBeDisabledFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}, driver?: WebdriverIO.Browser): any {
     this.expectation = this.expectation || 'disabled'
 
-    return browser.call(async () => {
+    const browserToUse: WebdriverIO.Browser = driver ?? browser;
+    return browserToUse.call(async () => {
         const result = await executeCommandBe.call(this, received, async el => !await el.isEnabled(), options)
         return result
     })

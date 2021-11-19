@@ -6,12 +6,17 @@ const DEFAULT_OPTIONS = {
 let mode: 'jasmine' | 'jest' = 'jest'
 
 let expectLib: SomeExpectLib
+// @ts-ignore
 if (global.expectWdio) {
+    // @ts-ignore
     expectLib = global.expectWdio
+    // @ts-ignore
 } else if (global.jasmine && !global.expect?.extend) {
+    // @ts-ignore
     expectLib = global.jasmine
     mode = 'jasmine'
 } else {
+    // @ts-ignore
     expectLib = global.expect as SomeExpectLib
 }
 

@@ -1,3 +1,4 @@
+import { ExpectWebdriverIO } from './types/expect-webdriverio'
 import { getConfig } from './options'
 
 import { executeCommand } from './util/executeCommand'

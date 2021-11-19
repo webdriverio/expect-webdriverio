@@ -1,11 +1,12 @@
-
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import { executeCommandBe } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-function toBeClickableFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
+function toBeClickableFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}, driver?: WebdriverIO.Browser): any {
     this.expectation = this.expectation || 'clickable'
 
-    return browser.call(async () => {
+    const browserToUse: WebdriverIO.Browser = driver ?? browser;
+    return browserToUse.call(async () => {
         const result = await executeCommandBe.call(this, received, async el => {
             try {
                 return el.isClickable()

@@ -5,6 +5,7 @@ lib
 coverage
 
 .vscode
+.history
 .idea
 
 *.log

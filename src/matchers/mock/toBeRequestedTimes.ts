@@ -1,3 +1,4 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import type { Mock } from 'webdriverio'
 
 import { waitUntil, enhanceError, compareNumbers } from '../../utils'
@@ -7,7 +8,7 @@ import { numberError } from '../../util/formatMessage'
 export function toBeRequestedTimesFn(received: Mock, expected: number| ExpectWebdriverIO.NumberOptions = {}, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot || false
     const { expectation = `called${typeof expected === 'number' ? ' ' + expected : '' } time${expected !== 1 ? 's' : ''}`, verb = 'be' } = this
-    
+
     // type check
     let numberOptions: ExpectWebdriverIO.NumberOptions;
     if (typeof expected === 'number') {

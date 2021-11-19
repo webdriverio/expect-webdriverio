@@ -1,3 +1,4 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import type { Mock } from 'webdriverio'
 
 import { toBeRequestedWithFn } from './toBeRequestedWith'

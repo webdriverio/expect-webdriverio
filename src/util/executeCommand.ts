@@ -1,3 +1,4 @@
+import { ExpectWebdriverIO } from '../types/expect-webdriverio'
 import { refetchElements } from './refetchElements'
 
 /**

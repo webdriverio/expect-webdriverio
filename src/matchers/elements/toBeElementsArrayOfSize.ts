@@ -1,8 +1,9 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import { waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils'
 import { refetchElements } from '../../util/refetchElements'
 import { runExpect } from '../../util/expectAdapter'
 
-function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, expected: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}): any {
+function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, expected: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}, driver?: WebdriverIO.Browser): any {
     const isNot = this.isNot
     const { expectation = 'elements array of size', verb = 'be' } = this
 
@@ -16,7 +17,8 @@ function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, expected:
         numberOptions = expected
     }
 
-    return browser.call(async () => {
+    const browserToUse: WebdriverIO.Browser = driver ?? browser;
+    return browserToUse.call(async () => {
         let elements = await received
         const arrLength = elements.length
 

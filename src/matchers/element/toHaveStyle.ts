@@ -1,3 +1,4 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import { waitUntil, enhanceError, compareStyle, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
@@ -5,11 +6,12 @@ async function condition(el: WebdriverIO.Element, style: { [key: string]: string
     return compareStyle(el, style, options)
 }
 
-export function toHaveStyleFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveStyleFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions = {}, driver?: WebdriverIO.Browser): any {
     const isNot = this.isNot
     const { expectation = 'style', verb = 'have' } = this
 
-    return browser.call(async () => {
+    const browserToUse: WebdriverIO.Browser = driver ?? browser;
+    return browserToUse.call(async () => {
         let el = await received
         let actualStyle
 

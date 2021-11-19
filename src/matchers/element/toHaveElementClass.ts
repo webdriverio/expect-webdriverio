@@ -1,3 +1,4 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
@@ -31,13 +32,14 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
     }
 }
 
-function toHaveElementClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string, options: ExpectWebdriverIO.StringOptions = {}): any {
+function toHaveElementClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string, options: ExpectWebdriverIO.StringOptions = {}, driver?: WebdriverIO.Browser): any {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
     const attribute = 'class'
 
-    return browser.call(async () => {
+    const browserToUse: WebdriverIO.Browser = driver ?? browser;
+    return browserToUse.call(async () => {
         let el = await received
         let attr
 

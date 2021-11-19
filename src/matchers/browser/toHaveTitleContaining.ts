@@ -1,3 +1,4 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import { runExpect } from '../../util/expectAdapter'
 import { toHaveTitleFn } from './toHaveTitle'
 

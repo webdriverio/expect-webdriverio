@@ -15,6 +15,7 @@ describe('options', () => {
 
                 expect(getConfig()).toEqual({ options, mode: 'jest' })
 
+                //@ts-ignore
                 delete global.expectWdio
             })
         })
@@ -30,12 +31,12 @@ describe('options', () => {
                 expect(getConfig()).toEqual({ options, mode: 'jasmine' })
 
                 // @ts-ignore
-                delete global.jasmine 
+                delete global.jasmine
                 // @ts-ignore
                 delete global.expect.extend
             })
         })
-        
+
         test('global', () => {
             jest.isolateModules(() => {
                 const { getConfig } = require(optionsModule)
@@ -53,7 +54,7 @@ describe('options', () => {
                 expect(getConfig()).toEqual({ options: { ...options, wait: 1234} , mode: 'jest' })
             })
         })
-        
+
         test('no change if invalid type', () => {
             jest.isolateModules(() => {
                 const { getConfig, setDefaultOptions } = require(optionsModule)

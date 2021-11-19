@@ -1,3 +1,4 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import { waitUntil, enhanceError, compareNumbers, numberError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
@@ -18,7 +19,7 @@ async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.Num
     }
 }
 
-function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, expected?: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}): any {
+function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, expected?: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}, driver?: WebdriverIO.Browser): any {
     const isNot = this.isNot
     const { expectation = 'children', verb = 'have' } = this
 
@@ -30,7 +31,8 @@ function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArr
         numberOptions = expected
     }
 
-    return browser.call(async () => {
+    const browserToUse: WebdriverIO.Browser = driver ?? browser;
+    return browserToUse.call(async () => {
         let el = await received
         let children
         const pass = await waitUntil(async () => {

@@ -1,3 +1,5 @@
+import type * as WebdriverIO from "webdriverio"
+
 declare namespace ExpectWebdriverIO {
     function setOptions(options: DefaultOptions): void
 
@@ -65,29 +67,29 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `isDisplayed`
          */
-        toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions): R
+        toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        toExist(options?: ExpectWebdriverIO.CommandOptions): R
+        toExist(options?: ExpectWebdriverIO.CommandOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        toBePresent(options?: ExpectWebdriverIO.CommandOptions): R
+        toBePresent(options?: ExpectWebdriverIO.CommandOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        toBeExisting(options?: ExpectWebdriverIO.CommandOptions): R
+        toBeExisting(options?: ExpectWebdriverIO.CommandOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        toHaveAttribute(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttribute(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        toHaveAttr(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttr(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
@@ -96,7 +98,8 @@ declare namespace ExpectWebdriverIO {
         toHaveAttributeContaining(
             attribute: string,
             contains: string,
-            options?: ExpectWebdriverIO.StringOptions
+            options?: ExpectWebdriverIO.StringOptions,
+            driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>
         ): R
         /**
          * `WebdriverIO.Element` -> `getAttribute`
@@ -105,82 +108,83 @@ declare namespace ExpectWebdriverIO {
         toHaveAttrContaining(
             attribute: string,
             contains: string,
-            options?: ExpectWebdriverIO.StringOptions
+            options?: ExpectWebdriverIO.StringOptions,
+            driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>
         ): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
          */
-        toHaveClass(className: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveClass(className: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          */
-        toHaveElementClass(className: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementClass(className: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * @deprecated since v1.3.1 - use `toHaveElementClassContaining` instead.
          * Element's class includes the className.
          */
-        toHaveClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * Element's class includes the className.
          */
-        toHaveElementClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `getProperty`
          */
-        toHaveElementProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          */
-        toHaveValue(value: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveValue(value: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          * Element's value includes the value.
          */
-        toHaveValueContaining(value: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveValueContaining(value: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `isClickable`
          */
-        toBeClickable(options?: ExpectWebdriverIO.StringOptions): R
+        toBeClickable(options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `!isEnabled`
          */
-        toBeDisabled(options?: ExpectWebdriverIO.StringOptions): R
+        toBeDisabled(options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `isDisplayedInViewport`
          */
-        toBeDisplayedInViewport(options?: ExpectWebdriverIO.StringOptions): R
+        toBeDisplayedInViewport(options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `isEnabled`
          */
-        toBeEnabled(options?: ExpectWebdriverIO.StringOptions): R
+        toBeEnabled(options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `isFocused`
          */
-        toBeFocused(options?: ExpectWebdriverIO.StringOptions): R
+        toBeFocused(options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `isSelected`
          */
-        toBeSelected(options?: ExpectWebdriverIO.StringOptions): R
+        toBeSelected(options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `isSelected`
          */
-        toBeChecked(options?: ExpectWebdriverIO.StringOptions): R
+        toBeChecked(options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `$$('./*').length`
@@ -188,48 +192,49 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveChildren(
             size?: number | ExpectWebdriverIO.NumberOptions,
-            options?: ExpectWebdriverIO.NumberOptions
+            options?: ExpectWebdriverIO.NumberOptions,
+            driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>
         ): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          */
-        toHaveHref(href: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveHref(href: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          */
-        toHaveLink(href: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveLink(href: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          * Element's href includes the value provided
          */
-        toHaveHrefContaining(href: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveHrefContaining(href: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          * Element's href includes the value provided
          */
-        toHaveLinkContaining(href: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveLinkContaining(href: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          */
-        toHaveId(id: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveId(id: string, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * `WebdriverIO.Element` -> `getText`
          */
-        toHaveText(text: string | string[], options?: ExpectWebdriverIO.StringOptions): R
+        toHaveText(text: string | string[], options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
         /**
          * `WebdriverIO.Element` -> `getText`
          * Element's text includes the text provided
          */
-        toHaveTextContaining(text: string | string[], options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTextContaining(text: string | string[], options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
         * `WebdriverIO.Element` -> `getAttribute("style")`
         */
-        toHaveStyle(style: { [key: string]: string; }, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveStyle(style: { [key: string]: string; }, options?: ExpectWebdriverIO.StringOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         // ===== browser only =====
         /**
@@ -263,7 +268,8 @@ declare namespace ExpectWebdriverIO {
          */
         toBeElementsArrayOfSize(
             size: number | ExpectWebdriverIO.NumberOptions,
-            options?: ExpectWebdriverIO.NumberOptions
+            options?: ExpectWebdriverIO.NumberOptions,
+            driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>
         ): R
 
         // ==== network mock ====

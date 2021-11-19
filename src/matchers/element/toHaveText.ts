@@ -1,3 +1,4 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import { waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
@@ -9,11 +10,12 @@ async function condition(el: WebdriverIO.Element, text: string | Array<string>, 
     return compareText(actualText, text, options)
 }
 
-export function toHaveTextFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | Array<string>, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveTextFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | Array<string>, options: ExpectWebdriverIO.StringOptions = {}, driver?: WebdriverIO.Browser): any {
     const isNot = this.isNot
     const { expectation = 'text', verb = 'have' } = this
 
-    return browser.call(async () => {
+    const browserToUse: WebdriverIO.Browser = driver ?? browser;
+    return browserToUse.call(async () => {
         let el = await received
         let actualText
 

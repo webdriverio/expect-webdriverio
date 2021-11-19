@@ -1,5 +1,6 @@
 import { printExpected, printReceived, printDiffOrStringify } from 'jest-matcher-utils';
 import { equals } from '../jasmineUtils'
+import { ExpectWebdriverIO } from '../types/expect-webdriverio';
 
 const EXPECTED_LABEL = 'Expected';
 const RECEIVED_LABEL = 'Received';

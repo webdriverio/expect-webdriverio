@@ -1,10 +1,12 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import { executeCommandBe } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-function toBeEnabledFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
+function toBeEnabledFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}, driver?: WebdriverIO.Browser): any {
     this.expectation = this.expectation || 'enabled'
 
-    return browser.call(async () => {
+    const browserToUse: WebdriverIO.Browser = driver ?? browser;
+    return browserToUse.call(async () => {
         const result = await executeCommandBe.call(this, received, el => el.isEnabled(), options)
         return result
     })
@@ -13,4 +15,3 @@ function toBeEnabledFn(received: WebdriverIO.Element | WebdriverIO.ElementArray,
 export function toBeEnabled(...args: any): any {
     return runExpect.call(this, toBeEnabledFn, args)
 }
-

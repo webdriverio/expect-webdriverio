@@ -1,3 +1,4 @@
+import { ExpectWebdriverIO } from '../../types/expect-webdriverio'
 import {
     waitUntil,
     enhanceError,
@@ -38,12 +39,14 @@ export function toHaveElementPropertyFn(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     property: string,
     value?: any,
-    options: ExpectWebdriverIO.StringOptions = {}
+    options: ExpectWebdriverIO.StringOptions = {},
+    driver?: WebdriverIO.Browser
 ): any {
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
 
-    return browser.call(async () => {
+    const browserToUse: WebdriverIO.Browser = driver ?? browser;
+    return browserToUse.call(async () => {
         let el = await received
         let prop: any
         const pass = await waitUntil(
