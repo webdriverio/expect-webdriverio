@@ -10,7 +10,13 @@ describe('toBeElementsArrayOfSize', () => {
             els = await $$('parent');
             const result = await toBeElementsArrayOfSize(els, 2, {});
             expect(result.pass).toBe(true)
-        })  
+        })
+        test('array of size 2 with custom driver', async () => {
+            // Create an element array of length 2
+            els = await $$('parent');
+            const result = await toBeElementsArrayOfSize(els, 2, {}, browser);
+            expect(result.pass).toBe(true)
+        })
         test('array of size 5', async () => {
             // Create an element array of length 2
             els = await $$('parent');
@@ -18,11 +24,11 @@ describe('toBeElementsArrayOfSize', () => {
             els.parent._length = 5;
             const result = await toBeElementsArrayOfSize(els, 5, {});
             expect(result.pass).toBe(true)
-        })  
+        })
     })
 
     describe('failure', () => {
-        let result: any; 
+        let result: any;
 
         beforeEach(async () => {
             // Create an element array of length 2
@@ -65,9 +71,9 @@ describe('toBeElementsArrayOfSize', () => {
             const result = await toBeElementsArrayOfSize(els, {lte: 5});
             expect(result.pass).toBe(true);
         })
-        
+
     })
-    
+
     describe('number options', () => {
         describe('lte', () => {
             test('should pass if lte', async () => {
@@ -84,7 +90,7 @@ describe('toBeElementsArrayOfSize', () => {
                 expect(result.pass).toBe(false);
             })
         })
-        
+
         describe('gte', () => {
             test('should pass if gte', async () => {
                 // Create an element array of length 2
@@ -115,7 +121,7 @@ describe('toBeElementsArrayOfSize', () => {
                 const result = await toBeElementsArrayOfSize(els, {gte: 10, lte: 10});
                 expect(result.pass).toBe(false);
             })
-            
+
             test('should fail if not lte but is gte', async () => {
                 // Create an element array of length 2
                 els = await $$('parent');
@@ -124,5 +130,5 @@ describe('toBeElementsArrayOfSize', () => {
             })
         })
     })
-    
+
 })

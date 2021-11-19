@@ -43,6 +43,17 @@ describe('toBeRequestedTimes', () => {
         expect(result.pass).toBe(true)
     })
 
+    test('wait for success with custom driver', async () => {
+        const mock: Mock = new TestMock()
+
+        setTimeout(() => {
+            mock.calls.push(mockMatch)
+        }, 10)
+
+        const result = await toBeRequestedTimes(mock, 1, {}, browser)
+        expect(result.pass).toBe(true)
+    })
+
     test('wait for success using number options', async () => {
         const mock: Mock = new TestMock()
 

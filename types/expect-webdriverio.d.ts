@@ -277,20 +277,21 @@ declare namespace ExpectWebdriverIO {
         /**
          * Check that `WebdriverIO.Mock` was called
          */
-        toBeRequested(options?: ExpectWebdriverIO.CommandOptions): R
+        toBeRequested(options?: ExpectWebdriverIO.CommandOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
 
         /**
          * Check that `WebdriverIO.Mock` was called N times
          */
         toBeRequestedTimes(
             times: number | ExpectWebdriverIO.NumberOptions,
-            options?: ExpectWebdriverIO.NumberOptions
+            options?: ExpectWebdriverIO.NumberOptions,
+            driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>
         ): R
 
         /**
          * Check that `WebdriverIO.Mock` was called with the specific parameters
          */
-        toBeRequestedWith(requestedWith: RequestedWith, options?: ExpectWebdriverIO.CommandOptions): R
+        toBeRequestedWith(requestedWith: RequestedWith, options?: ExpectWebdriverIO.CommandOptions, driver?: WebdriverIO.Browser<'sync'> | WebdriverIO.Browser<'async'>): R
     }
 
     type RequestedWith = {

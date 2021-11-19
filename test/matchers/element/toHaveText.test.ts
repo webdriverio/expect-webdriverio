@@ -18,6 +18,22 @@ describe('toHaveText', () => {
         expect(el._attempts).toBe(0)
     })
 
+    test('wait for success with custom driver', async () => {
+        const el = await $('sel')
+        el._attempts = 2
+        el._text= function (): string {
+            if (this._attempts > 0) {
+                this._attempts--
+                return ''
+            }
+            return 'webdriverio'
+        }
+
+        const result = await toHaveText(el, 'WebdriverIO', { ignoreCase: true }, browser)
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(0)
+    })
+
     test('wait but failure', async () => {
         const el = await $('sel')
         el._text = function (): string {

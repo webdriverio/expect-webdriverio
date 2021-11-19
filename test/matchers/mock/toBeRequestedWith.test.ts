@@ -119,6 +119,17 @@ describe('toBeRequestedWith', () => {
         expect(result.pass).toBe(false)
     })
 
+    test('wait for NOT success with custom driver', async () => {
+        const mock = new TestMock()
+
+        setTimeout(() => {
+            mock.calls.push({ ...mockGet }, { ...mockPost })
+        }, 10)
+
+        const result = await toBeRequestedWith.call({ isNot: true }, mock, { method: 'DELETE' }, browser)
+        expect(result.pass).toBe(false)
+    })
+
     const scenarios = [
         // success
         {

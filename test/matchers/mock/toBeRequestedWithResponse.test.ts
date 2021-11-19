@@ -121,4 +121,11 @@ describe('toBeRequestedWithResponse', () => {
         const result = await toBeRequestedWithResponse(mock, { foo: 'foo' })
         expect(result.message()).toContain('Expect mock to be called')
     })
+
+    test('message with custom driver', async () => {
+        const mock: Mock = new TestMock()
+
+        const result = await toBeRequestedWithResponse(mock, { foo: 'foo' }, {}, browser)
+        expect(result.message()).toContain('Expect mock to be called')
+    })
 })

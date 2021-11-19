@@ -4,16 +4,20 @@ import { toHaveValue } from '../../../src/matchers/element/toHaveValue'
 describe('toHaveValue', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => { 
+    beforeEach(async () => {
         el = await $('sel')
         el._value = jest.fn().mockImplementation(() => {
             return "This is an example value"
         })
-    })    
+    })
 
     describe('success', () => {
         test('exact passes', async () => {
             const result = await toHaveValue(el, "This is an example value");
+            expect(result.pass).toBe(true)
+        });
+        test('exact passes with custom driver', async () => {
+            const result = await toHaveValue(el, "This is an example value", {}, browser);
             expect(result.pass).toBe(true)
         });
     })
@@ -41,5 +45,5 @@ describe('toHaveValue', () => {
             })
         })
     });
-    
+
 });

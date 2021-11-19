@@ -4,7 +4,7 @@ import { toHaveHref } from '../../../src/matchers/element/toHaveHref';
 describe('toHaveHref', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => { 
+    beforeEach(async () => {
         el = await $('sel')
         el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
             if(attribute === 'href') {
@@ -12,10 +12,15 @@ describe('toHaveHref', () => {
             }
             return null
         })
-    })    
+    })
 
     test('success when contains', async () => {
         const result = await toHaveHref(el, "https://www.example.com");
+        expect(result.pass).toBe(true)
+    });
+
+    test('success when contains with custom driver', async () => {
+        const result = await toHaveHref(el, "https://www.example.com", {}, browser);
         expect(result.pass).toBe(true)
     });
 
@@ -42,5 +47,5 @@ describe('toHaveHref', () => {
             })
         })
     });
-    
+
 });

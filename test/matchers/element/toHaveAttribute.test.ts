@@ -4,9 +4,9 @@ import { toHaveAttribute } from '../../../src/matchers/element/toHaveAttribute';
 describe('toHaveAttribute', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => { 
+    beforeEach(async () => {
         el = await $('sel')
-    })    
+    })
 
     describe('attribute exists', () => {
         test('success when present', async () => {
@@ -14,6 +14,14 @@ describe('toHaveAttribute', () => {
                 return "Correct Value"
             })
             const result = await toHaveAttribute(el, "attribute_name");
+            expect(result.pass).toBe(true)
+        })
+
+        test('success when present with custom driver', async () => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
+                return "Correct Value"
+            })
+            const result = await toHaveAttribute(el, "attribute_name", browser);
             expect(result.pass).toBe(true)
         })
 
@@ -45,13 +53,20 @@ describe('toHaveAttribute', () => {
             })
         })
     })
-    
+
     describe('attribute has value', () => {
         test('success with correct value', async () => {
             el.getAttribute = jest.fn().mockImplementation(() => {
                 return "Correct Value"
             })
             const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true });
+            expect(result.pass).toBe(true)
+        })
+        test('success with correct value and custom driver', async () => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
+                return "Correct Value"
+            })
+            const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true }, browser);
             expect(result.pass).toBe(true)
         })
         test('failure with wrong value', async () => {

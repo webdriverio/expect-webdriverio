@@ -7,7 +7,7 @@ describe('toHaveStyle', () => {
         "font-family": "Faktum",
         "font-size": "26px",
         "color": "#000"
-    } 
+    }
 
     test('wait for success', async () => {
         el = await $('sel')
@@ -25,6 +25,26 @@ describe('toHaveStyle', () => {
             return { value: mockStyle[property] }
         })
         const result = await toHaveStyle(el, mockStyle, { ignoreCase: true });
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(0)
+    })
+
+    test('wait for success with custom driver', async () => {
+        el = await $('sel')
+        el._attempts = 2
+        let counter = 0;
+        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+            if(el._attempts > 0) {
+                counter ++;
+                if(counter == Object.keys(mockStyle).length) {
+                    counter = 0;
+                    el._attempts --;
+                }
+                return {value: "Wrong Value"};
+            }
+            return { value: mockStyle[property] }
+        })
+        const result = await toHaveStyle(el, mockStyle, { ignoreCase: true }, browser);
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
     })
@@ -120,7 +140,7 @@ describe('toHaveStyle', () => {
             "font-family": "Incorrect Font",
             "font-size": "100px",
             "color": "#fff"
-        } 
+        }
 
         const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 1 })
         expect(result.pass).toBe(false)
@@ -154,7 +174,7 @@ describe('toHaveStyle', () => {
             "font-family": "Faktum",
             "font-size": "26px",
             "color": "#fff"
-        } 
+        }
 
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             counter ++;
@@ -169,13 +189,13 @@ describe('toHaveStyle', () => {
             "font-family": "FaKtum",
             "font-size": "26px",
             "color": "#FFF"
-        } 
+        }
 
         const result = await toHaveStyle(el, alteredCaseStyle, { ignoreCase: true })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
-    
+
     test('success if style matches with trim', async () => {
         const el = await $('sel')
         el._attempts = 0
@@ -185,7 +205,7 @@ describe('toHaveStyle', () => {
             "font-family": "   Faktum   ",
             "font-size": "   26px   ",
             "color": "    #fff     "
-        } 
+        }
 
         el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
             counter ++;
@@ -200,7 +220,7 @@ describe('toHaveStyle', () => {
             "font-family": "Faktum",
             "font-size": "26px",
             "color": "#fff"
-        } 
+        }
 
         const result = await toHaveStyle(el, alteredSpaceStyle, {   trim: true })
         expect(result.pass).toBe(true)

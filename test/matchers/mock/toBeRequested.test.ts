@@ -46,6 +46,20 @@ describe('toBeRequested', () => {
         expect(result2.pass).toBe(true)
     })
 
+    test('wait for success with custom driver', async () => {
+        const mock: Mock = new TestMock()
+        const result = await toBeRequested(mock, {}, browser)
+        expect(result.pass).toBe(false)
+
+        setTimeout(() => {
+            mock.calls.push(mockMatch)
+            mock.calls.push(mockMatch)
+        }, 10)
+
+        const result2 = await toBeRequested(mock, {}, browser)
+        expect(result2.pass).toBe(true)
+    })
+
     test('not to be called', async () => {
         const mock: Mock = new TestMock()
 

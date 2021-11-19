@@ -8,6 +8,13 @@ describe('toHaveChildren', () => {
         expect(result.pass).toBe(true)
     })
 
+    test('no value with custom driver', async () => {
+        const el = await $('sel')
+
+        const result = await toHaveChildren(el, { wait: 0 }, {}, browser)
+        expect(result.pass).toBe(true)
+    })
+
     test('exact number value', async () => {
         const el = await $('sel')
 

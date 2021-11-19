@@ -122,6 +122,12 @@ describe('be* matchers', () => {
                 expect(getExpectMessage(result.message()))
                     .toContain(matcherNameToString(name))
             })
+
+            test('message with custom driver', async () => {
+                const result = await fn.call({}, $('sel'), {}, browser)
+                expect(getExpectMessage(result.message()))
+                    .toContain(matcherNameToString(name))
+            })
         })
     })
 })

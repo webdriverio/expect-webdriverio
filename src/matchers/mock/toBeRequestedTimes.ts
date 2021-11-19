@@ -5,7 +5,7 @@ import { waitUntil, enhanceError, compareNumbers } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 import { numberError } from '../../util/formatMessage'
 
-export function toBeRequestedTimesFn(received: Mock, expected: number| ExpectWebdriverIO.NumberOptions = {}, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toBeRequestedTimesFn(received: Mock, expected: number| ExpectWebdriverIO.NumberOptions = {}, options: ExpectWebdriverIO.StringOptions = {}, driver?: WebdriverIO.Browser): any {
     const isNot = this.isNot || false
     const { expectation = `called${typeof expected === 'number' ? ' ' + expected : '' } time${expected !== 1 ? 's' : ''}`, verb = 'be' } = this
 
@@ -17,7 +17,8 @@ export function toBeRequestedTimesFn(received: Mock, expected: number| ExpectWeb
         numberOptions = expected
     }
 
-    return browser.call(async () => {
+    const browserToUse = driver ?? browser;
+    return browserToUse.call(async () => {
         let actual
 
         const pass = await waitUntil(async () => {

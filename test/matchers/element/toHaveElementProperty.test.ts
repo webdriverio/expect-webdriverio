@@ -14,6 +14,19 @@ describe('toHaveElementProperty', () => {
         expect(el._attempts).toBe(1)
     })
 
+    test('ignore case of stringified value with custom driver', async () => {
+        const el = await $('sel')
+        el._attempts = 0
+        el._value = function (): string {
+            this._attempts++
+            return 'iphone'
+        }
+
+        const result = await toHaveElementProperty(el, 'property', 'iPhone', { wait: 0, ignoreCase: true }, browser)
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
     test('should return false if values dont match', async () => {
         const el = await $('sel')
         el._value = function (): string {

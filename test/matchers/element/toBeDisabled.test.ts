@@ -127,4 +127,13 @@ describe('toBeDisabled', () => {
         const result = await toBeDisabled(el)
         expect(getExpectMessage(result.message())).toContain('to be disabled')
     })
+
+    test('message with custom driver', async () => {
+        const el = await $('sel')
+        el._value = function (): boolean {
+            return false
+        }
+        const result = await toBeDisabled(el, {}, browser)
+        expect(getExpectMessage(result.message())).toContain('to be disabled')
+    })
 })

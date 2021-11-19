@@ -4,7 +4,7 @@ import { toHaveId } from '../../../src/matchers/element/toHaveId';
 describe('toHaveHref', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => { 
+    beforeEach(async () => {
         el = await $('sel')
         el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
             if(attribute === 'id') {
@@ -12,10 +12,15 @@ describe('toHaveHref', () => {
             }
             return null
         })
-    })    
+    })
 
     test('success', async () => {
         const result = await toHaveId(el, "test id");
+        expect(result.pass).toBe(true)
+    });
+
+    test('success with custom driver', async () => {
+        const result = await toHaveId(el, "test id", {}, browser);
         expect(result.pass).toBe(true)
     });
 
@@ -42,5 +47,5 @@ describe('toHaveHref', () => {
             })
         })
     });
-    
+
 });

@@ -12,12 +12,14 @@ const KEY_LIMIT = 12
 export function toBeRequestedWithFn(
     received: Mock,
     requestedWith: ExpectWebdriverIO.RequestedWith = {},
-    options: ExpectWebdriverIO.CommandOptions = {}
+    options: ExpectWebdriverIO.CommandOptions = {},
+    driver?: WebdriverIO.Browser
 ): any {
     const isNot = this.isNot || false
     const { expectation = 'called with', verb = 'be' } = this
 
-    return browser.call(async () => {
+    const browserToUse = driver ?? browser;
+    return browserToUse.call(async () => {
         let actual: Matches | undefined
         const pass = await waitUntil(
             async () => {

@@ -4,16 +4,21 @@ import { toHaveTextContaining } from '../../../src/matchers/element/toHaveTextCo
 describe('toHaveTextContaining', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => { 
+    beforeEach(async () => {
         el = await $('sel')
         el._text = jest.fn().mockImplementation(() => {
             return "This is example text"
         })
-    })    
+    })
 
     describe('success', () => {
         test('exact passes', async () => {
             const result = await toHaveTextContaining(el, "This is example text");
+            expect(result.pass).toBe(true)
+        });
+
+        test('exact passes with custom driver', async () => {
+            const result = await toHaveTextContaining(el, "This is example text", {}, browser);
             expect(result.pass).toBe(true)
         });
 
@@ -46,5 +51,5 @@ describe('toHaveTextContaining', () => {
             })
         })
     });
-    
+
 });
