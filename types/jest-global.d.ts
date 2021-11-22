@@ -1,9 +1,9 @@
-/// <reference types="expect-webdriverio/types/standalone"/>
+import { ExpectWebdriverIOStandalone } from "./standalone";
 
-declare const expect: ExpectWebdriverIO.Expect
+export declare const expect: ExpectWebdriverIOStandalone.Expect
 
 declare namespace NodeJS {
     interface Global {
-        expect: ExpectWebdriverIO.Expect;
+        expect: ExpectWebdriverIOStandalone.Expect;
     }
 }

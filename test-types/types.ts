@@ -1,3 +1,5 @@
+import { expect } from "../types/jest-global"
+
 expect({}).toBeDisabled()
 expect({}).toHaveAttr('test')
 expect({}).not.toHaveAttr('test')
