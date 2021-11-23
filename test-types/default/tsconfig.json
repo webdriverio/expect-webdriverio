@@ -3,6 +3,9 @@
     "outDir": "dist",
     "noImplicitAny": true,
     "types": [
+      "node",
+      "webdriverio/async",
+      "expect/build/types",
       "expect-webdriverio"
     ]
   }

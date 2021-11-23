@@ -1,10 +1,11 @@
+import { Matchers as ExpectMatchers } from "expect/build/types";
 import { ExpectWebdriverIO as ExpectWebdriverIONamespace } from "./expect-webdriverio";
 
-export declare namespace ExpectWebdriverIOStandalone {
-    interface Matchers<R, T> extends Readonly<import('expect/build/types').Matchers<R>> {
-        not: Matchers<R, T>
-        resolves: Matchers<Promise<R>, T>
-        rejects: Matchers<Promise<R>, T>
+declare namespace ExpectWebdriverIOStandalone {
+    interface Matchers<R, T> extends Readonly<ExpectMatchers<R>>, ExpectWebdriverIONamespace.Matchers<R, T> {
+        not: ExpectWebdriverIONamespace.Matchers<R, T> & ExpectMatchers<R>
+        resolves: ExpectWebdriverIONamespace.Matchers<Promise<R>, T> & ExpectMatchers<Promise<R>>
+        rejects: ExpectWebdriverIONamespace.Matchers<Promise<R>, T> & ExpectMatchers<Promise<R>>
     }
 
     type Expect = {

@@ -5,6 +5,8 @@
     "outDir": "dist",
     "noImplicitAny": true,
     "types": [
+      "node",
+      "webdriverio/async",
       "@types/jasmine",
       "expect-webdriverio/jasmine"
     ]
