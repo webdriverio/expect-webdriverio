@@ -1,6 +1,8 @@
-/// <reference types="expect-webdriverio/types/expect-webdriverio"/>
+import { ExpectWebdriverIOStandalone } from './types/standalone'
 
-declare module jasmine {
-    interface Matchers<T> extends ExpectWebdriverIO.Matchers<any, T> {}
-    interface AsyncMatchers<T, U> extends ExpectWebdriverIO.Matchers<Promise<void>, T> {}
+declare global {
+    namespace jasmine {
+        interface Matchers<T> extends ExpectWebdriverIOStandalone.Matchers<any, T> {}
+        interface AsyncMatchers<T, U> extends ExpectWebdriverIOStandalone.Matchers<Promise<void>, T> {}
+    }
 }

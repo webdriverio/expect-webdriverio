@@ -1,5 +1,7 @@
-/// <reference types="expect-webdriverio/types/expect-webdriverio"/>
+import { ExpectWebdriverIOStandalone } from './types/standalone'
 
-declare namespace jest {
-    interface Matchers<R, T> extends ExpectWebdriverIO.Matchers<R, T> { }
+declare global {
+    namespace jest {
+        interface Matchers<R, T> extends ExpectWebdriverIOStandalone.Matchers<R, T> {}
+    }
 }

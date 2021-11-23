@@ -1,10 +1,11 @@
-/// <reference types="expect-webdriverio/types/expect-webdriverio"/>
+import { Matchers as ExpectMatchers } from "expect/build/types";
+import { ExpectWebdriverIO as ExpectWebdriverIONamespace } from "./expect-webdriverio";
 
-declare namespace ExpectWebdriverIO {
-    interface Matchers<R, T> extends Readonly<import('expect/build/types').Matchers<R>> {
-        not: Matchers<R, T>
-        resolves: Matchers<Promise<R>, T>
-        rejects: Matchers<Promise<R>, T>
+declare namespace ExpectWebdriverIOStandalone {
+    interface Matchers<R, T> extends Readonly<ExpectMatchers<R>>, ExpectWebdriverIONamespace.Matchers<R, T> {
+        not: ExpectWebdriverIONamespace.Matchers<R, T> & ExpectMatchers<R>
+        resolves: ExpectWebdriverIONamespace.Matchers<Promise<R>, T> & ExpectMatchers<Promise<R>>
+        rejects: ExpectWebdriverIONamespace.Matchers<Promise<R>, T> & ExpectMatchers<Promise<R>>
     }
 
     type Expect = {
@@ -13,12 +14,12 @@ declare namespace ExpectWebdriverIO {
     } & AsymmetricMatchers
 
     type AsymmetricMatchers = {
-        any(expectedObject: any): PartialMatcher
-        anything(): PartialMatcher
-        arrayContaining(sample: Array<unknown>): PartialMatcher
-        objectContaining(sample: Record<string, unknown>): PartialMatcher
-        stringContaining(expected: string): PartialMatcher
-        stringMatching(expected: string | RegExp): PartialMatcher
+        any(expectedObject: any): ExpectWebdriverIONamespace.PartialMatcher
+        anything(): ExpectWebdriverIONamespace.PartialMatcher
+        arrayContaining(sample: Array<unknown>): ExpectWebdriverIONamespace.PartialMatcher
+        objectContaining(sample: Record<string, unknown>): ExpectWebdriverIONamespace.PartialMatcher
+        stringContaining(expected: string): ExpectWebdriverIONamespace.PartialMatcher
+        stringMatching(expected: string | RegExp): ExpectWebdriverIONamespace.PartialMatcher
         not: AsymmetricMatchers
     }
 }
