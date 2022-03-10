@@ -18,5 +18,5 @@ function toBeClickableFn(received: WebdriverIO.Element | WebdriverIO.ElementArra
 }
 
 export function toBeClickable(...args: any) {
-    return runExpect.call(this, toBeClickableFn, args)
+    return runExpect.call(this || {}, toBeClickableFn, args)
 }

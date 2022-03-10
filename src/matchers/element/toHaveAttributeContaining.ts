@@ -9,7 +9,7 @@ function toHaveAttributeContainingFn(el: WebdriverIO.Element, attribute: string,
 }
 
 export function toHaveAttributeContaining(...args: any): any {
-    return runExpect.call(this, toHaveAttributeContainingFn, args)
+    return runExpect.call(this || {}, toHaveAttributeContainingFn, args)
 }
 
 export const toHaveAttrContaining = toHaveAttributeContaining

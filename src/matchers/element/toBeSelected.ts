@@ -12,7 +12,7 @@ function toBeSelectedFn(received: WebdriverIO.Element | WebdriverIO.ElementArray
 }
 
 export function toBeSelected(...args: any): any {
-    return runExpect.call(this, toBeSelectedFn, args)
+    return runExpect.call(this || {}, toBeSelectedFn, args)
 }
 
 export function toBeChecked (el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions): any {

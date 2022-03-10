@@ -8,6 +8,6 @@ function toBeRequestedFn(received: Mock, options: ExpectWebdriverIO.CommandOptio
 }
 
 export function toBeRequested(...args: any): any {
-    return runExpect.call(this, toBeRequestedFn, args)
+    return runExpect.call(this || {}, toBeRequestedFn, args)
 }
 

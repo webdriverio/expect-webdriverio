@@ -9,5 +9,5 @@ function toHaveUrlContainingFn(browser: WebdriverIO.Browser, url: string, option
 }
 
 export function toHaveUrlContaining(...args: any): any {
-    return runExpect.call(this, toHaveUrlContainingFn, args)
+    return runExpect.call(this || {}, toHaveUrlContainingFn, args)
 }

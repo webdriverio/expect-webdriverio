@@ -9,7 +9,7 @@ function toHaveHrefContainingFn(el: WebdriverIO.Element, href: string, options: 
 }
 
 export function toHaveHrefContaining(...args: any): any {
-    return runExpect.call(this, toHaveHrefContainingFn, args)
+    return runExpect.call(this || {}, toHaveHrefContainingFn, args)
 }
 
 export const toHaveLinkContaining = toHaveHrefContaining

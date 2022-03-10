@@ -6,5 +6,5 @@ export function toHaveIdFn(el: WebdriverIO.Element, id: string, options: ExpectW
 }
 
 export function toHaveId(...args: any): any {
-    return runExpect.call(this, toHaveIdFn, args)
+    return runExpect.call(this || {}, toHaveIdFn, args)
 }

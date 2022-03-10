@@ -354,5 +354,5 @@ const deleteUndefinedValues = (obj: Record<string, any>, baseline = obj) => {
 }
 
 export function toBeRequestedWith(...args: any): any {
-    return runExpect.call(this, toBeRequestedWithFn, args)
+    return runExpect.call(this || {}, toBeRequestedWithFn, args)
 }

@@ -1,7 +1,7 @@
 {
   "name": "expect-webdriverio",
   "version": "3.1.4",
-  "description": "",
+  "description": "WebdriverIO Assertion library inspired by expect",
   "main": "lib/index.js",
   "scripts": {
     "build": "run-s clean compile",

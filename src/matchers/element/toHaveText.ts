@@ -37,5 +37,5 @@ export function toHaveTextFn(received: WebdriverIO.Element | WebdriverIO.Element
 }
 
 export function toHaveText(...args: any): any {
-    return runExpect.call(this, toHaveTextFn, args)
+    return runExpect.call(this || {}, toHaveTextFn, args)
 }

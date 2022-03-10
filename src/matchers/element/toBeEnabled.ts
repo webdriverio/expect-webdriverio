@@ -11,6 +11,6 @@ function toBeEnabledFn(received: WebdriverIO.Element | WebdriverIO.ElementArray,
 }
 
 export function toBeEnabled(...args: any): any {
-    return runExpect.call(this, toBeEnabledFn, args)
+    return runExpect.call(this || {}, toBeEnabledFn, args)
 }
 

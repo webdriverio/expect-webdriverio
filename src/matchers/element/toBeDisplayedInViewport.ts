@@ -17,5 +17,5 @@ function toBeDisplayedInViewportFn(received: WebdriverIO.Element | WebdriverIO.E
 }
 
 export function toBeDisplayedInViewport(...args: any): any {
-    return runExpect.call(this, toBeDisplayedInViewportFn, args)
+    return runExpect.call(this || {}, toBeDisplayedInViewportFn, args)
 }

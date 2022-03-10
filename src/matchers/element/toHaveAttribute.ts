@@ -38,7 +38,7 @@ export function toHaveAttributeAndValueFn(received: WebdriverIO.Element | Webdri
 
         const expected = wrapExpectedWithArray(el, attr, value)
         const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
-    
+
         return {
             pass,
             message: (): string => message
@@ -52,7 +52,7 @@ export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.El
 
     return browser.call(async () => {
         let el = await received
-        
+
         const pass = await waitUntil(async () => {
             const result = await executeCommand.call(this, el, conditionAttr, {}, [attribute])
             el = result.el
@@ -74,10 +74,10 @@ export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.El
 export function toHaveAttribute(...args: any): any {
     if(args.length===3 || args.length===4 ) {
         // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
-        return runExpect.call(this, toHaveAttributeAndValueFn, args)
+        return runExpect.call(this || {}, toHaveAttributeAndValueFn, args)
     } else {
         // Only name is passed in e.g. el.toHaveAttribute('attr')
-        return runExpect.call(this, toHaveAttributeFn, args)
+        return runExpect.call(this || {}, toHaveAttributeFn, args)
     }
 }
 

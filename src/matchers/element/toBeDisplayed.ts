@@ -17,5 +17,5 @@ function toBeDisplayedFn(received: WdioElementMaybePromise, options: ExpectWebdr
 }
 
 export function toBeDisplayed(...args: any): any {
-    return runExpect.call(this, toBeDisplayedFn, args)
+    return runExpect.call(this || {}, toBeDisplayedFn, args)
 }

@@ -55,5 +55,5 @@ function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.ElementArr
 }
 
 export function toHaveChildren(...args: any): any {
-    return runExpect.call(this, toHaveChildrenFn, args)
+    return runExpect.call(this || {}, toHaveChildrenFn, args)
 }

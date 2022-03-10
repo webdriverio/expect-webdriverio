@@ -9,5 +9,5 @@ function toHaveValueContainingFn(el: WebdriverIO.Element, value: string, options
 }
 
 export function toHaveValueContaining(...args: any): any {
-    return runExpect.call(this, toHaveValueContainingFn, args)
+    return runExpect.call(this || {}, toHaveValueContainingFn, args)
 }

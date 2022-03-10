@@ -32,5 +32,5 @@ export function toHaveStyleFn(received: WebdriverIO.Element | WebdriverIO.Elemen
 }
 
 export function toHaveStyle(...args: any): any {
-    return runExpect.call(this, toHaveStyleFn, args)
+    return runExpect.call(this || {}, toHaveStyleFn, args)
 }

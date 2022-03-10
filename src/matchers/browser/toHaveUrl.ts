@@ -23,5 +23,5 @@ export function toHaveUrlFn(browser: WebdriverIO.Browser, url: string, options: 
 }
 
 export function toHaveUrl(...args: any): any {
-    return runExpect.call(this, toHaveUrlFn, args)
+    return runExpect.call(this || {}, toHaveUrlFn, args)
 }
