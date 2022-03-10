@@ -8,6 +8,13 @@ describe('toHaveChildren', () => {
         expect(result.pass).toBe(true)
     })
 
+    test('If no options passed in + children exists', async () => {
+        const el = await $('sel')
+
+        const result = await toHaveChildren(el, {})
+        expect(result.pass).toBe(true)
+    })
+
     test('exact number value', async () => {
         const el = await $('sel')
 

@@ -5,7 +5,11 @@ async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.Num
     const children = await el.$$('./*')
 
     // If no options passed in + children exists
-    if (!options.lte && !options.gte && !options.eq) {
+    if (
+        typeof options.lte !== 'number' &&
+        typeof options.gte !== 'number' &&
+        typeof options.eq !== 'number'
+    ) {
         return {
             result: children.length > 0,
             value: children?.length
