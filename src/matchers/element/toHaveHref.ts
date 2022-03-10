@@ -6,7 +6,7 @@ export function toHaveHrefFn(el: WebdriverIO.Element, href: string, options: Exp
 }
 
 export function toHaveHref(...args: any): any {
-    return runExpect.call(this, toHaveHrefFn, args)
+    return runExpect.call(this || {}, toHaveHrefFn, args)
 }
 
 export const toHaveLink = toHaveHref

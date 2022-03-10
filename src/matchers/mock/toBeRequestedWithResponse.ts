@@ -13,5 +13,5 @@ function toBeRequestedWithResponseFn(
 
 export function toBeRequestedWithResponse(...args: any): any {
     console.warn('expect(...).toBeRequestedWithResponse is deprecated and will be removed in next release. Use toBeRequestedWith instead.')
-    return runExpect.call(this, toBeRequestedWithResponseFn, args)
+    return runExpect.call(this || {}, toBeRequestedWithResponseFn, args)
 }

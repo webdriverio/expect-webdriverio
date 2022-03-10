@@ -61,7 +61,7 @@ function toHaveElementClassFn(received: WebdriverIO.Element | WebdriverIO.Elemen
 }
 
 export function toHaveElementClass(...args: any): any {
-    return runExpect.call(this, toHaveElementClassFn, args)
+    return runExpect.call(this || {}, toHaveElementClassFn, args)
 }
 
 /**
@@ -70,5 +70,5 @@ export function toHaveElementClass(...args: any): any {
  */
 export function toHaveClass(...args: any): any {
     console.warn('expect(...).toHaveClass is deprecated and will be removed in next release. Use toHaveElementClass instead.')
-    return runExpect.call(this, toHaveElementClassFn, args)
+    return runExpect.call(this || {}, toHaveElementClassFn, args)
 }

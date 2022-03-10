@@ -23,5 +23,5 @@ export function toHaveTitleFn(browser: WebdriverIO.Browser, title: string, optio
 }
 
 export function toHaveTitle(...args: any): any {
-    return runExpect.call(this, toHaveTitleFn, args)
+    return runExpect.call(this || {}, toHaveTitleFn, args)
 }

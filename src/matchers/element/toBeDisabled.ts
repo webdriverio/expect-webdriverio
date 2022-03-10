@@ -11,5 +11,5 @@ function toBeDisabledFn(received: WdioElementMaybePromise, options: ExpectWebdri
 }
 
 export function toBeDisabled(...args: any): any {
-    return runExpect.call(this, toBeDisabledFn, args)
+    return runExpect.call(this || {}, toBeDisabledFn, args)
 }

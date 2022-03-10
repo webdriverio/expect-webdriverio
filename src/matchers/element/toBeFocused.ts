@@ -11,5 +11,5 @@ function toBeFocusedFn(received: WebdriverIO.Element | WebdriverIO.ElementArray,
 }
 
 export function toBeFocused(...args: any): any {
-    return runExpect.call(this, toBeFocusedFn, args)
+    return runExpect.call(this || {}, toBeFocusedFn, args)
 }

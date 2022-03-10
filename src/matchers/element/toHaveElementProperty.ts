@@ -76,5 +76,5 @@ export function toHaveElementPropertyFn(
 }
 
 export function toHaveElementProperty(...args: any): any {
-    return runExpect.call(this, toHaveElementPropertyFn, args)
+    return runExpect.call(this || {}, toHaveElementPropertyFn, args)
 }

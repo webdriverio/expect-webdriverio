@@ -18,7 +18,7 @@ function toExistFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO
 }
 
 export function toExist(...args: any): any {
-    return runExpect.call(this, toExistFn, args)
+    return runExpect.call(this || {}, toExistFn, args)
 }
 
 export function toBeExisting(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions): any {

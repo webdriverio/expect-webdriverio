@@ -7,7 +7,7 @@ import { numberError } from '../../util/formatMessage'
 export function toBeRequestedTimesFn(received: Mock, expected: number| ExpectWebdriverIO.NumberOptions = {}, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot || false
     const { expectation = `called${typeof expected === 'number' ? ' ' + expected : '' } time${expected !== 1 ? 's' : ''}`, verb = 'be' } = this
-    
+
     // type check
     let numberOptions: ExpectWebdriverIO.NumberOptions;
     if (typeof expected === 'number') {
@@ -35,6 +35,6 @@ export function toBeRequestedTimesFn(received: Mock, expected: number| ExpectWeb
 }
 
 export function toBeRequestedTimes(...args: any): any {
-    return runExpect.call(this, toBeRequestedTimesFn, args)
+    return runExpect.call(this || {}, toBeRequestedTimesFn, args)
 }
 

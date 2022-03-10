@@ -9,5 +9,5 @@ function toHaveTextContainingFn(el: WebdriverIO.Element, text: string | Array<st
 }
 
 export function toHaveTextContaining(...args: any): any {
-    return runExpect.call(this, toHaveTextContainingFn, args)
+    return runExpect.call(this || {}, toHaveTextContainingFn, args)
 }

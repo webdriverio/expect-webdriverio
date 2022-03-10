@@ -9,5 +9,5 @@ function toHaveTitleContainingFn(browser: WebdriverIO.Browser, title: string, op
 }
 
 export function toHaveTitleContaining(...args: any): any {
-    return runExpect.call(this, toHaveTitleContainingFn, args)
+    return runExpect.call(this || {}, toHaveTitleContainingFn, args)
 }

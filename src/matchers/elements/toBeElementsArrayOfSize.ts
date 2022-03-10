@@ -38,5 +38,5 @@ function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, expected:
 }
 
 export function toBeElementsArrayOfSize(...args: any): any {
-    return runExpect.call(this, toBeElementsArrayOfSizeFn, args)
+    return runExpect.call(this || {}, toBeElementsArrayOfSizeFn, args)
 }

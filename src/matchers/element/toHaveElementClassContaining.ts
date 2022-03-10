@@ -9,7 +9,7 @@ function toHaveElementClassContainingFn(el: WebdriverIO.Element, className: stri
 }
 
 export function toHaveElementClassContaining(...args: any): any {
-    return runExpect.call(this, toHaveElementClassContainingFn, args)
+    return runExpect.call(this || {}, toHaveElementClassContainingFn, args)
 }
 
 /**
@@ -20,5 +20,5 @@ export function toHaveElementClassContaining(...args: any): any {
  */
 export function toHaveClassContaining(...args: any): any {
     console.warn('expect(...).toHaveClassContaining is deprecated and will be removed in next release. Use toHaveElementClassContaining instead.')
-    return runExpect.call(this, toHaveElementClassContainingFn, args)
+    return runExpect.call(this || {}, toHaveElementClassContainingFn, args)
 }

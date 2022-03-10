@@ -6,5 +6,5 @@ export function toHaveValueFn(el: WebdriverIO.Element, value: string, options: E
 }
 
 export function toHaveValue(...args: any): any {
-    return runExpect.call(this, toHaveValueFn, args)
+    return runExpect.call(this || {}, toHaveValueFn, args)
 }
