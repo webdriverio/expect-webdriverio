@@ -105,7 +105,7 @@ await expect(browser).toHaveTitleContaining('WebdriverIO')
 
 ### toBeDisplayed
 
-Calls [`isDisplayed`](/docs/api/element/isDisplayed.html) on given element.
+Calls [`isDisplayed`](https://webdriver.io/docs/api/element/isDisplayed/) on given element.
 
 ##### Usage
 
@@ -116,7 +116,7 @@ await expect(elem).toBeDisplayed()
 
 ### toExist
 
-Calls [`isExisting`](/docs/api/element/isExisting.html) on given element.
+Calls [`isExisting`](https://webdriver.io/docs/api/element/isExisting) on given element.
 
 ##### Usage
 
@@ -260,7 +260,7 @@ await expect(myInput).toHaveValueContaining('us')
 
 ### toBeClickable
 
-Checks if an element can be clicked by calling [`isClickable`](/docs/api/element/isClickable.html) on the element.
+Checks if an element can be clicked by calling [`isClickable`](https://webdriver.io/docs/api/element/isClickable) on the element.
 
 ##### Usage
 
@@ -271,7 +271,7 @@ await expect(elem).toBeClickable()
 
 ### toBeDisabled
 
-Checks if an element is disabled by calling [`isEnabled`](/docs/api/element/isEnabled.html) on the element.
+Checks if an element is disabled by calling [`isEnabled`](https://webdriver.io/docs/api/element/isEnabled) on the element.
 
 ##### Usage
 
@@ -284,7 +284,7 @@ await expect(elem).not.toBeEnabled()
 
 ### toBeEnabled
 
-Checks if an element is enabled by calling [`isEnabled`](/docs/api/element/isEnabled.html) on the element.
+Checks if an element is enabled by calling [`isEnabled`](https://webdriver.io/docs/api/element/isEnabled) on the element.
 
 ##### Usage
 
@@ -297,7 +297,7 @@ await expect(elem).not.toBeDisabled()
 
 ### toBeSelected
 
-Checks if an element is enabled by calling [`isSelected`](https://webdriver.io/docs/api/element/isSelected/) on the element.
+Checks if an element is enabled by calling [`isSelected`](https://webdriver.io/docs/api/element/isSelected) on the element.
 
 ##### Usage
 
@@ -400,7 +400,7 @@ await expect(elem).toHaveTextContaining(['browser and mobile automation test fra
 
 ### toBeDisplayedInViewport
 
-Checks if an element is within the viewport by calling [`isDisplayedInViewport`](/docs/api/element/isDisplayedInViewport.html) on the element.
+Checks if an element is within the viewport by calling [`isDisplayedInViewport`](https://webdriver.io/docs/api/element/isDisplayedInViewport) on the element.
 
 ##### Usage
 
@@ -428,7 +428,7 @@ await expect(list).toHaveChildren({ eq: 3 })
 
 ### toBeElementsArrayOfSize
 
-Checks amount of fetched elements using [`$$`](/docs/api/browser/$$.html) command.
+Checks amount of fetched elements using [`$$`](https://webdriver.io/docs/api/element/$$) command.
 
 ##### Usage
 
