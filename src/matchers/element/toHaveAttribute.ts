@@ -10,7 +10,7 @@ async function conditionAttr(el: WebdriverIO.Element, attribute: string): Promis
     }
 }
 
-async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions): Promise<any> {
+async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions): Promise<any> {
     const attr = await el.getAttribute(attribute)
     if (typeof attr !== 'string') {
         return { result: false, value: attr }
