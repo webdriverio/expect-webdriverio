@@ -104,7 +104,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
-export const compareText = (actual: string, expected: string, { ignoreCase = false, trim = true, containing = false }) => {
+export const compareText = (actual: string, expected: string | RegExp, { ignoreCase = false, trim = true, containing = false }) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -117,7 +117,16 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
-        expected = expected.toLowerCase()
+        if (! (expected instanceof RegExp)) {
+            expected = expected.toLowerCase()
+        }
+    }
+
+    if (expected instanceof RegExp) {
+        return {
+            value: actual,
+            result: !!actual.match(expected)
+        }
     }
     if (containing) {
         return {
@@ -125,13 +134,14 @@ export const compareText = (actual: string, expected: string, { ignoreCase = fal
             result: actual.includes(expected)
         }
     }
+
     return {
         value: actual,
         result: actual === expected
     }
 }
 
-export const compareTextWithArray = (actual: string, expectedArray: Array<string>, { ignoreCase = false, trim = false, containing = false }) => {
+export const compareTextWithArray = (actual: string, expectedArray: Array<string | RegExp>, { ignoreCase = false, trim = false, containing = false }) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -144,18 +154,15 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
-        expectedArray = expectedArray.map(item => item.toLowerCase())
+        expectedArray = expectedArray.map(item => (item instanceof RegExp) ? item : item.toLowerCase())
     }
-    if (containing) {
-        const textInArray = expectedArray.some((t) => actual.includes(t))
-        return {
-            value: actual,
-            result: textInArray
-        }
-    }
+
+    const textInArray = expectedArray.some((expected) => {
+        return expected instanceof RegExp ? !!actual.match(expected) : containing ? actual.includes(expected) : actual === expected
+    })
     return {
         value: actual,
-        result: expectedArray.includes(actual)
+        result: textInArray
     }
 }
 

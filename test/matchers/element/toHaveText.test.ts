@@ -1,4 +1,4 @@
-import { getExpectMessage, getReceived } from '../../__fixtures__/utils';
+import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils';
 import { toHaveText } from '../../../src/matchers/element/toHaveText'
 
 describe('toHaveText', () => {
@@ -146,4 +146,51 @@ describe('toHaveText', () => {
         expect(result.pass).toBe(false)
         expect(el._attempts).toBe(1)
     })
+
+    describe('with RegExp', () => {
+        let el: WebdriverIO.Element
+    
+        beforeEach(async () => { 
+            el = await $('sel')
+            el._text = jest.fn().mockImplementation(() => {
+                return "This is example text"
+            })
+        })
+
+        test('success if match', async () => {
+            const result = await toHaveText(el, /ExAmplE/i);
+            expect(result.pass).toBe(true)
+        })
+
+        test('success if array matches with RegExp', async () => {
+            const result = await toHaveText(el, ['WDIO', /ExAmPlE/i]);
+            expect(result.pass).toBe(true)
+        })
+
+        test('succes if array matches with text', async () => {
+            const result = await toHaveText(el, ['This is example text', /Webdriver/i]);
+            expect(result.pass).toBe(true)
+        })
+
+        test('succes if array matches with text and ignoreCase', async () => {
+            const result = await toHaveText(el, ['ThIs Is ExAmPlE tExT', /Webdriver/i], { ignoreCase: true });
+            expect(result.pass).toBe(true)
+        })
+
+        test('failure if no match', async () => {
+            const result = await toHaveText(el, /Webdriver/i);
+            expect(result.pass).toBe(false)
+            expect(getExpectMessage(result.message())).toContain('to have text')
+            expect(getExpected(result.message())).toContain('/Webdriver/i')
+            expect(getReceived(result.message())).toContain('This is example text')
+        })
+
+        test('RegExp failure if array does not match with text', async () => {
+            const result = await toHaveText(el, ['WDIO', /Webdriver/i]);
+            expect(result.pass).toBe(false)
+            expect(getExpectMessage(result.message())).toContain('to have text')
+            expect(getExpected(result.message())).toContain('/Webdriver/i')
+            expect(getExpected(result.message())).toContain('WDIO')
+        })
+    })  
 })
