@@ -1,3 +1,4 @@
+import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils'
 import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty'
 
 describe('toHaveElementProperty', () => {
@@ -34,6 +35,16 @@ describe('toHaveElementProperty', () => {
         expect(result.pass).toBe(true)
     })
 
+    test('with RegExp should return true if values match', async () => {
+        const el = await $('sel')
+        el._value = function (): string {
+            return 'iphone'
+        }
+
+        const result = await toHaveElementProperty(el, 'property', /iPhOnE/i)
+        expect(result.pass).toBe(true)
+    })
+
     test('should return false for null input', async () => {
         const el = await $('sel')
         el._value = function (): any {
@@ -62,5 +73,33 @@ describe('toHaveElementProperty', () => {
 
         const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', 'Test Value')
         expect(result.pass).toBe(false)
+    })
+
+    describe('failure with RegExp when value does not match', () => {
+        let result: any
+
+        beforeEach(async () => {
+            const el = await $('sel')
+            el._value = function (): string {
+                return 'iphone'
+            }
+            result = await toHaveElementProperty(el, 'property', /WDIO/)
+        })
+
+        test('failure', () => {
+            expect(result.pass).toBe(false)
+        })
+
+        describe('message shows correctly', () => {
+            test('expect message', () => {
+                expect(getExpectMessage(result.message())).toContain('to have property')
+            })
+            test('expected message', () => {
+                expect(getExpected(result.message())).toContain('/WDIO/')
+            })
+            test('received message', () => {
+                expect(getReceived(result.message())).toContain('iphone')
+            })
+        })
     })
 })

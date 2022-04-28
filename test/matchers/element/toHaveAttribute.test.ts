@@ -1,5 +1,5 @@
-import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils';
-import { toHaveAttribute } from '../../../src/matchers/element/toHaveAttribute';
+import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils'
+import { toHaveAttribute } from '../../../src/matchers/element/toHaveAttribute'
 
 describe('toHaveAttribute', () => {
     let el: WebdriverIO.Element
@@ -13,7 +13,7 @@ describe('toHaveAttribute', () => {
             el.getAttribute = jest.fn().mockImplementation(() => {
                 return "Correct Value"
             })
-            const result = await toHaveAttribute(el, "attribute_name");
+            const result = await toHaveAttribute(el, "attribute_name")
             expect(result.pass).toBe(true)
         })
 
@@ -21,7 +21,7 @@ describe('toHaveAttribute', () => {
             el.getAttribute = jest.fn().mockImplementation(() => {
                 return null
             })
-            const result = await toHaveAttribute(el, "attribute_name");
+            const result = await toHaveAttribute(el, "attribute_name")
             expect(result.pass).toBe(false)
         })
 
@@ -32,7 +32,7 @@ describe('toHaveAttribute', () => {
                 el.getAttribute = jest.fn().mockImplementation(() => {
                     return null
                 })
-                result = await toHaveAttribute(el, "attribute_name");
+                result = await toHaveAttribute(el, "attribute_name")
             })
             test('expect message', () => {
                 expect(getExpectMessage(result.message())).toContain('to have attribute')
@@ -51,28 +51,35 @@ describe('toHaveAttribute', () => {
             el.getAttribute = jest.fn().mockImplementation(() => {
                 return "Correct Value"
             })
-            const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true });
+            const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true })
+            expect(result.pass).toBe(true)
+        })
+        test('success with RegExp and correct value', async () => {
+            el.getAttribute = jest.fn().mockImplementation(() => {
+                return "Correct Value"
+            })
+            const result = await toHaveAttribute(el, "attribute_name", /cOrReCt VaLuE/i)
             expect(result.pass).toBe(true)
         })
         test('failure with wrong value', async () => {
             el.getAttribute = jest.fn().mockImplementation(() => {
                 return "Wrong Value"
             })
-            const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true });
+            const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true })
             expect(result.pass).toBe(false)
         })
         test('failure with non-string attribute value as actual', async () => {
             el.getAttribute = jest.fn().mockImplementation(() => {
                 return 123
             })
-            const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true });
+            const result = await toHaveAttribute(el, "attribute_name", "Correct Value", { ignoreCase: true })
             expect(result.pass).toBe(false)
         })
         test('failure with non-string attribute value as expected', async () => {
             el.getAttribute = jest.fn().mockImplementation(() => {
                 return "Correct Value"
             })
-            const result = await toHaveAttribute(el, "attribute_name", 123, { ignoreCase: true });
+            const result = await toHaveAttribute(el, "attribute_name", 123, { ignoreCase: true })
             expect(result.pass).toBe(false)
         })
         describe('message shows correctly', () => {
@@ -82,13 +89,32 @@ describe('toHaveAttribute', () => {
                 el.getAttribute = jest.fn().mockImplementation(() => {
                     return "Wrong"
                 })
-                result = await toHaveAttribute(el, "attribute_name", "Correct");
+                result = await toHaveAttribute(el, "attribute_name", "Correct")
             })
             test('expect message', () => {
                 expect(getExpectMessage(result.message())).toContain('to have attribute')
             })
             test('expected message', () => {
                 expect(getExpected(result.message())).toContain('Correct')
+            })
+            test('received message', () => {
+                expect(getReceived(result.message())).toContain('Wrong')
+            })
+        })
+        describe('failure with RegExp, message shows correctly', () => {
+            let result: any
+
+            beforeEach(async () => {
+                el.getAttribute = jest.fn().mockImplementation(() => {
+                    return "Wrong"
+                })
+                result = await toHaveAttribute(el, "attribute_name", /WDIO/)
+            })
+            test('expect message', () => {
+                expect(getExpectMessage(result.message())).toContain('to have attribute')
+            })
+            test('expected message', () => {
+                expect(getExpected(result.message())).toContain('/WDIO/')
             })
             test('received message', () => {
                 expect(getReceived(result.message())).toContain('Wrong')

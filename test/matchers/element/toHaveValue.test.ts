@@ -1,4 +1,4 @@
-import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils';
+import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils'
 import { toHaveValue } from '../../../src/matchers/element/toHaveValue'
 
 describe('toHaveValue', () => {
@@ -13,16 +13,21 @@ describe('toHaveValue', () => {
 
     describe('success', () => {
         test('exact passes', async () => {
-            const result = await toHaveValue(el, "This is an example value");
+            const result = await toHaveValue(el, "This is an example value")
             expect(result.pass).toBe(true)
-        });
+        })
+
+        test('RegExp passes', async () => {
+            const result = await toHaveValue(el, /ExAmPlE/i)
+            expect(result.pass).toBe(true)
+        })
     })
 
     describe('failure', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveValue(el, "webdriver");
+            result = await toHaveValue(el, "webdriver")
         })
 
         test('does not pass', () => {
@@ -40,6 +45,29 @@ describe('toHaveValue', () => {
                 expect(getReceived(result.message())).toContain('This is an example value')
             })
         })
-    });
-    
-});
+    })
+
+    describe('failure with RegExp', () => {
+        let result: any
+
+        beforeEach(async () => {
+            result = await toHaveValue(el, /WDIO/)
+        })
+
+        test('does not pass', () => {
+            expect(result.pass).toBe(false)
+        })
+
+        describe('message shows correctly', () => {
+            test('expect message', () => {
+                expect(getExpectMessage(result.message())).toContain('to have property value')
+            })
+            test('expected message', () => {
+                expect(getExpected(result.message())).toContain('/WDIO/')
+            })
+            test('received message', () => {
+                expect(getReceived(result.message())).toContain('This is an example value')
+            })
+        })
+    })
+})

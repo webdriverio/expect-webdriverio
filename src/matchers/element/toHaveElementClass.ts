@@ -1,7 +1,7 @@
 import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-async function condition(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions): Promise<any> {
+async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions): Promise<any> {
     const { ignoreCase = false, trim = false, containing = false } = options
 
     let attr = await el.getAttribute(attribute)
@@ -14,24 +14,23 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
     }
     if (ignoreCase) {
         attr = attr.toLowerCase()
-        value = value.toLowerCase()
-    }
-    if (containing) {
-        return {
-            result: attr.includes(value),
-            value: attr
+        if (! (value instanceof RegExp)) {
+            value = value.toLowerCase()
         }
     }
 
     const classes = attr.split(' ')
 
+    const valueInClasses = classes.some((t) => {
+        return value instanceof RegExp ? !!t.match(value) : containing ? t.includes(value) : t === value
+    })
     return {
-        result: classes.includes(value),
-        value: attr
+        value: attr,
+        result: valueInClasses
     }
 }
 
-function toHaveElementClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string, options: ExpectWebdriverIO.StringOptions = {}): any {
+function toHaveElementClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 

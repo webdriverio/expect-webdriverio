@@ -25,7 +25,7 @@ async function condition(
         return { result: true, value: prop }
     }
 
-    if (typeof value !== 'string' || (typeof prop !== 'string' && !asString)) {
+    if (!(value instanceof RegExp) && (typeof value !== 'string' || (typeof prop !== 'string' && !asString))) {
         return { result: prop === value, value: prop }
     }
 
@@ -37,7 +37,7 @@ async function condition(
 export function toHaveElementPropertyFn(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     property: string,
-    value?: any,
+    value?: string | RegExp,
     options: ExpectWebdriverIO.StringOptions = {}
 ): any {
     const isNot = this.isNot
