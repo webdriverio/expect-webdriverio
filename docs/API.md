@@ -64,7 +64,7 @@ Checks if browser is on a specific page.
 ##### Usage
 
 ```js
-browser.url('https://webdriver.io/')
+await browser.url('https://webdriver.io/')
 await expect(browser).toHaveUrl('https://webdriver.io')
 ```
 
@@ -75,7 +75,7 @@ Checks if browser is on a page URL that contains a value.
 ##### Usage
 
 ```js
-browser.url('https://webdriver.io/')
+await browser.url('https://webdriver.io/')
 await expect(browser).toHaveUrlContaining('webdriver')
 ```
 
@@ -86,7 +86,7 @@ Checks if website has a specific title.
 ##### Usage
 
 ```js
-browser.url('https://webdriver.io/')
+await browser.url('https://webdriver.io/')
 await expect(browser).toHaveTitle('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js')
 ```
 
@@ -97,7 +97,7 @@ Checks if website has a specific title that contains a value.
 ##### Usage
 
 ```js
-browser.url('https://webdriver.io/')
+await browser.url('https://webdriver.io/')
 await expect(browser).toHaveTitleContaining('WebdriverIO')
 ```
 
@@ -110,7 +110,7 @@ Calls [`isDisplayed`](https://webdriver.io/docs/api/element/isDisplayed/) on giv
 ##### Usage
 
 ```js
-const elem = $('#someElem')
+const elem = await $('#someElem')
 await expect(elem).toBeDisplayed()
 ```
 
@@ -121,7 +121,7 @@ Calls [`isExisting`](https://webdriver.io/docs/api/element/isExisting) on given 
 ##### Usage
 
 ```js
-const elem = $('#someElem')
+const elem = await $('#someElem')
 await expect(elem).toExist()
 ```
 
@@ -132,7 +132,7 @@ Same as `toExist`.
 ##### Usage
 
 ```js
-const elem = $('#someElem')
+const elem = await $('#someElem')
 await expect(elem).toBePresent()
 ```
 
@@ -143,7 +143,7 @@ Same as `toExist`.
 ##### Usage
 
 ```js
-const elem = $('#someElem')
+const elem = await $('#someElem')
 await expect(elem).toBeExisting()
 ```
 
@@ -154,7 +154,7 @@ Checks if element has focus. This assertion only works in a web context.
 ##### Usage
 
 ```js
-const elem = $('#someElem')
+const elem = await $('#someElem')
 await expect(elem).toBeFocused()
 ```
 
@@ -165,7 +165,7 @@ Checks if an element has a certain attribute with a specific value.
 ##### Usage
 
 ```js
-const myInput = $('input')
+const myInput = await $('input')
 await expect(myInput).toHaveAttribute('class', 'form-control')
 ```
 
@@ -176,7 +176,7 @@ Same as `toHaveAttribute`.
 ##### Usage
 
 ```js
-const myInput = $('input')
+const myInput = await $('input')
 await expect(myInput).toHaveAttr('class', 'form-control')
 ```
 
@@ -187,7 +187,7 @@ Checks if an element has a certain attribute that contains a value.
 ##### Usage
 
 ```js
-const myInput = $('input')
+const myInput = await $('input')
 await expect(myInput).toHaveAttributeContaining('class', 'form')
 ```
 
@@ -198,7 +198,7 @@ Same as `toHaveAttributeContaining`.
 ##### Usage
 
 ```js
-const myInput = $('input')
+const myInput = await $('input')
 await expect(myInput).toHaveAttrContaining('class', 'form')
 ```
 
@@ -209,7 +209,7 @@ Checks if an element has a certain class name.
 ##### Usage
 
 ```js
-const myInput = $('input')
+const myInput = await $('input')
 await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
 ```
 
@@ -220,7 +220,7 @@ Checks if an element has a certain class name that contains provided value.
 ##### Usage
 
 ```js
-const myInput = $('input')
+const myInput = await $('input')
 await expect(myInput).toHaveElementClassContaining('form')
 ```
 
@@ -231,7 +231,7 @@ Checks if an element has a certain property.
 ##### Usage
 
 ```js
-const elem = $('#elem')
+const elem = await $('#elem')
 await expect(elem).toHaveElementProperty('height', 23)
 await expect(elem).not.toHaveElementProperty('height', 0)
 ```
@@ -243,7 +243,7 @@ Checks if an input element has a certain value.
 ##### Usage
 
 ```js
-const myInput = $('input')
+const myInput = await $('input')
 await expect(myInput).toHaveValue('user', { ignoreCase: true })
 ```
 
@@ -254,7 +254,7 @@ Checks if an input element contains a certain value.
 ##### Usage
 
 ```js
-const myInput = $('input')
+const myInput = await $('input')
 await expect(myInput).toHaveValueContaining('us')
 ```
 
@@ -265,7 +265,7 @@ Checks if an element can be clicked by calling [`isClickable`](https://webdriver
 ##### Usage
 
 ```js
-const elem = $('#elem')
+const elem = await $('#elem')
 await expect(elem).toBeClickable()
 ```
 
@@ -276,7 +276,7 @@ Checks if an element is disabled by calling [`isEnabled`](https://webdriver.io/d
 ##### Usage
 
 ```js
-const elem = $('#elem')
+const elem = await $('#elem')
 await expect(elem).toBeDisabled()
 // same as
 await expect(elem).not.toBeEnabled()
@@ -289,7 +289,7 @@ Checks if an element is enabled by calling [`isEnabled`](https://webdriver.io/do
 ##### Usage
 
 ```js
-const elem = $('#elem')
+const elem = await $('#elem')
 await expect(elem).toBeEnabled()
 // same as
 await expect(elem).not.toBeDisabled()
@@ -302,7 +302,7 @@ Checks if an element is enabled by calling [`isSelected`](https://webdriver.io/d
 ##### Usage
 
 ```js
-const elem = $('#elem')
+const elem = await $('#elem')
 await expect(elem).toBeSelected()
 ```
 
@@ -313,7 +313,7 @@ Same as `toBeSelected`.
 ##### Usage
 
 ```js
-const elem = $('#elem')
+const elem = await $('#elem')
 await expect(elem).toBeChecked()
 ```
 
@@ -324,7 +324,7 @@ Checks if link element has a specific link target.
 ##### Usage
 
 ```js
-const link = $('a')
+const link = await $('a')
 await expect(link).toHaveHref('https://webdriver.io')
 ```
 
@@ -335,7 +335,7 @@ Same as `toHaveHref`.
 ##### Usage
 
 ```js
-const link = $('a')
+const link = await $('a')
 await expect(link).toHaveLink('https://webdriver.io')
 ```
 
@@ -346,7 +346,7 @@ Checks if link element contains a specific link target.
 ##### Usage
 
 ```js
-const link = $('a')
+const link = await $('a')
 await expect(link).toHaveHrefContaining('webdriver.io')
 ```
 
@@ -357,7 +357,7 @@ Same as `toHaveHrefContaining`.
 ##### Usage
 
 ```js
-const link = $('a')
+const link = await $('a')
 await expect(link).toHaveLinkContaining('webdriver.io')
 ```
 
@@ -368,7 +368,7 @@ Checks if element has a specific `id` attribute.
 ##### Usage
 
 ```js
-const elem = $('#elem')
+const elem = await $('#elem')
 await expect(elem).toHaveId('elem')
 ```
 
@@ -379,10 +379,10 @@ Checks if element has a specific text. Can also be called with an array as param
 ##### Usage
 
 ```js
-browser.url('https://webdriver.io/')
-const elem = $('.tagline')
+await browser.url('https://webdriver.io/')
+const elem = await $('.container')
 await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
-await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Adding helper functions'])
+await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'])
 ```
 
 ### toHaveTextContaining
@@ -392,10 +392,10 @@ Checks if element contains a specific text. Can also be called with an array as 
 ##### Usage
 
 ```js
-browser.url('https://webdriver.io/')
-const elem = $('.tagline')
+await browser.url('https://webdriver.io/')
+const elem = await $('.container')
 await expect(elem).toHaveTextContaining('browser and mobile automation test framework')
-await expect(elem).toHaveTextContaining(['browser and mobile automation test framework', 'helper functions'])
+await expect(elem).toHaveTextContaining(['browser and mobile automation test framework', 'Started'])
 ```
 
 ### toBeDisplayedInViewport
@@ -405,7 +405,7 @@ Checks if an element is within the viewport by calling [`isDisplayedInViewport`]
 ##### Usage
 
 ```js
-const elem = $('#elem')
+const elem = await $('#elem')
 await expect(elem).toBeDisplayedInViewport()
 ```
 
@@ -416,7 +416,7 @@ Checks amount of the fetched element's children by calling `element.$('./*')` co
 ##### Usage
 
 ```js
-const list = $('ul')
+const list = await $('ul')
 await expect(list).toHaveChildren() // the list has at least one item
 // same as
 await expect(list).toHaveChildren({ gte: 1 })
@@ -433,7 +433,7 @@ Checks amount of fetched elements using [`$$`](https://webdriver.io/docs/api/ele
 ##### Usage
 
 ```js
-const listItems = $$('ul>li')
+const listItems = await $$('ul>li')
 await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in the list
 
 await expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
@@ -496,6 +496,23 @@ await expect(mock).toBeRequestedWith({
     postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
     response: r => Array.isArray(r) && r.data.items.length === 20
 })
+```
+
+## Using regular expressions
+
+You can also directly use regular expressions for all matchers that do text comparison.
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+const elem = await $('.container')
+await expect(elem).toHaveText(/node\.js/i)
+await expect(elem).toHaveText([/node\.js/i, 'Get Started'])
+await expect(elem).toHaveTextContaining([/node\.js/i, 'Started'])
+await expect(browser).toHaveTitle(/webdriverio/i)
+await expect(browser).toHaveUrl(/webdriver\.io/)
+await expect(elem).toHaveElementClass(/Container/i)
 ```
 
 ## Default Matchers
