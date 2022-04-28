@@ -83,11 +83,11 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        toHaveAttribute(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttribute(attribute: string, value?: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        toHaveAttr(attribute: string, value?: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttr(attribute: string, value?: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
@@ -95,7 +95,7 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveAttributeContaining(
             attribute: string,
-            contains: string,
+            contains: string | RegExp,
             options?: ExpectWebdriverIO.StringOptions
         ): R
         /**
@@ -104,7 +104,7 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveAttrContaining(
             attribute: string,
-            contains: string,
+            contains: string | RegExp,
             options?: ExpectWebdriverIO.StringOptions
         ): R
 
@@ -112,40 +112,40 @@ declare namespace ExpectWebdriverIO {
          * `WebdriverIO.Element` -> `getAttribute` class
          * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
          */
-        toHaveClass(className: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveClass(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          */
-        toHaveElementClass(className: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementClass(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * @deprecated since v1.3.1 - use `toHaveElementClassContaining` instead.
          * Element's class includes the className.
          */
-        toHaveClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveClassContaining(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * Element's class includes the className.
          */
-        toHaveElementClassContaining(className: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementClassContaining(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getProperty`
          */
-        toHaveElementProperty(property: string, value?: any, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementProperty(property: string | RegExp, value?: any, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          */
-        toHaveValue(value: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveValue(value: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          * Element's value includes the value.
          */
-        toHaveValueContaining(value: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveValueContaining(value: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `isClickable`
@@ -194,37 +194,37 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          */
-        toHaveHref(href: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveHref(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          */
-        toHaveLink(href: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveLink(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          * Element's href includes the value provided
          */
-        toHaveHrefContaining(href: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveHrefContaining(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          * Element's href includes the value provided
          */
-        toHaveLinkContaining(href: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveLinkContaining(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          */
-        toHaveId(id: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveId(id: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getText`
          */
-        toHaveText(text: string | string[], options?: ExpectWebdriverIO.StringOptions): R
+        toHaveText(text: string | RegExp | Array<string | RegExp>, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getText`
          * Element's text includes the text provided
          */
-        toHaveTextContaining(text: string | string[], options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTextContaining(text: string | RegExp | Array<string | RegExp>, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
         * `WebdriverIO.Element` -> `getAttribute("style")`
@@ -235,26 +235,26 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Browser` -> `getUrl`
          */
-        toHaveUrl(url: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveUrl(url: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getUrl`
          * Browser's url includes the provided text
          */
-        toHaveUrlContaining(url: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveUrlContaining(url: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Browser` -> `getTitle`
          */
-        toHaveTitle(title: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTitle(title: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getTitle`
          * Browser's title includes the provided text
          */
-        toHaveTitleContaining(title: string, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTitleContaining(title: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
 
         // ===== $$ only =====
         /**

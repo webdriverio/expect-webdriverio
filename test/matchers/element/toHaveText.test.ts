@@ -1,4 +1,4 @@
-import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils';
+import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils'
 import { toHaveText } from '../../../src/matchers/element/toHaveText'
 
 describe('toHaveText', () => {
@@ -158,35 +158,35 @@ describe('toHaveText', () => {
         })
 
         test('success if match', async () => {
-            const result = await toHaveText(el, /ExAmplE/i);
+            const result = await toHaveText(el, /ExAmplE/i)
             expect(result.pass).toBe(true)
         })
 
         test('success if array matches with RegExp', async () => {
-            const result = await toHaveText(el, ['WDIO', /ExAmPlE/i]);
+            const result = await toHaveText(el, ['WDIO', /ExAmPlE/i])
             expect(result.pass).toBe(true)
         })
 
-        test('succes if array matches with text', async () => {
-            const result = await toHaveText(el, ['This is example text', /Webdriver/i]);
+        test('success if array matches with text', async () => {
+            const result = await toHaveText(el, ['This is example text', /Webdriver/i])
             expect(result.pass).toBe(true)
         })
 
-        test('succes if array matches with text and ignoreCase', async () => {
-            const result = await toHaveText(el, ['ThIs Is ExAmPlE tExT', /Webdriver/i], { ignoreCase: true });
+        test('success if array matches with text and ignoreCase', async () => {
+            const result = await toHaveText(el, ['ThIs Is ExAmPlE tExT', /Webdriver/i], { ignoreCase: true })
             expect(result.pass).toBe(true)
         })
 
         test('failure if no match', async () => {
-            const result = await toHaveText(el, /Webdriver/i);
+            const result = await toHaveText(el, /Webdriver/i)
             expect(result.pass).toBe(false)
             expect(getExpectMessage(result.message())).toContain('to have text')
             expect(getExpected(result.message())).toContain('/Webdriver/i')
             expect(getReceived(result.message())).toContain('This is example text')
         })
 
-        test('RegExp failure if array does not match with text', async () => {
-            const result = await toHaveText(el, ['WDIO', /Webdriver/i]);
+        test('failure if array does not match with text', async () => {
+            const result = await toHaveText(el, ['WDIO', /Webdriver/i])
             expect(result.pass).toBe(false)
             expect(getExpectMessage(result.message())).toContain('to have text')
             expect(getExpected(result.message())).toContain('/Webdriver/i')
