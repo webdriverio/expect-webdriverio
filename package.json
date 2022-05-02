@@ -63,6 +63,6 @@
   "typeScriptVersion": "3.8.3",
   "dependencies": {
     "expect": "^27.0.2",
-    "jest-matcher-utils": "^27.0.2"
+    "jest-matcher-utils": "^28.0.2"
   }
 }
