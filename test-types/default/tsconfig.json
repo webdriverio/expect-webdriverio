@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "noImplicitAny": true,
+    "lib": ["ES2015"],
     "types": [
       "expect-webdriverio"
     ]

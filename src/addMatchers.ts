@@ -6,7 +6,7 @@ export const isJasmine = (): boolean => {
 
 export const loadExpect = (): any => {
     try {
-        return expectLib = require('expect')
+        return expectLib = require('expect').expect
     } catch (err) {
         return console.error('Failed to load expect package. Make sure it has been installed: npm i expect')
     }
