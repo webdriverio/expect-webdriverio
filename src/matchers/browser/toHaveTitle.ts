@@ -1,7 +1,6 @@
-import { runExpect } from '../../util/expectAdapter'
 import { waitUntil, enhanceError, compareText } from '../../utils'
 
-export function toHaveTitleFn(browser: WebdriverIO.Browser, title: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveTitle(browser: WebdriverIO.Browser, title: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'title', verb = 'have' } = this
 
@@ -20,8 +19,4 @@ export function toHaveTitleFn(browser: WebdriverIO.Browser, title: string | RegE
             message: () => message
         }
     })
-}
-
-export function toHaveTitle(...args: any): any {
-    return runExpect.call(this || {}, toHaveTitleFn, args)
 }

@@ -1,13 +1,14 @@
-import { getConfig } from '../options'
-
-const config: SomeExpectLib["_expectWebdriverio"] = getConfig()
-const { options: DEFAULT_OPTIONS } = config
+import { DEFAULT_OPTIONS } from '../constants.js'
 
 /**
  * refetch elements array
  * @param elements WebdriverIO.ElementArray
  */
-export const refetchElements = async (elements: WebdriverIO.ElementArray, wait = DEFAULT_OPTIONS.wait, full = false): Promise<any> => {
+export const refetchElements = async (
+    elements: WebdriverIO.ElementArray,
+    wait = DEFAULT_OPTIONS.wait,
+    full = false
+): Promise<WebdriverIO.ElementArray> => {
     if (elements) {
         if (wait > 0 && (elements.length === 0 || full)) {
             // @ts-ignore

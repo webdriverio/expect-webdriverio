@@ -2,13 +2,12 @@ import type { Mock } from 'webdriverio'
 import type { Matches } from 'webdriverio'
 
 import { waitUntil, enhanceError } from '../../utils'
-import { runExpect } from '../../util/expectAdapter'
 import { equals } from '../../jasmineUtils'
 
 const STR_LIMIT = 80
 const KEY_LIMIT = 12
 
-export function toBeRequestedWithFn(
+export function toBeRequestedWith(
     received: Mock,
     requestedWith: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = {}
@@ -351,8 +350,4 @@ const deleteUndefinedValues = (obj: Record<string, any>, baseline = obj) => {
             delete obj[k]
         }
     })
-}
-
-export function toBeRequestedWith(...args: any): any {
-    return runExpect.call(this || {}, toBeRequestedWithFn, args)
 }

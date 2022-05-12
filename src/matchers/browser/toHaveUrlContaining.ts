@@ -1,13 +1,8 @@
-import { runExpect } from '../../util/expectAdapter'
-import { toHaveUrlFn } from './toHaveUrl'
+import { toHaveUrl } from './toHaveUrl'
 
-function toHaveUrlContainingFn(browser: WebdriverIO.Browser, url: string, options: ExpectWebdriverIO.StringOptions = {}): any {
-    return toHaveUrlFn.call(this, browser, url, {
+export function toHaveUrlContaining(browser: WebdriverIO.Browser, url: string, options: ExpectWebdriverIO.StringOptions = {}): any {
+    return toHaveUrl.call(this, browser, url, {
         ...options,
         containing: true
     })
-}
-
-export function toHaveUrlContaining(...args: any): any {
-    return runExpect.call(this || {}, toHaveUrlContainingFn, args)
 }

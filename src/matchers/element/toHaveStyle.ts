@@ -1,11 +1,13 @@
-import { waitUntil, enhanceError, compareStyle, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
-import { runExpect } from '../../util/expectAdapter'
+import {
+    waitUntil, enhanceError, compareStyle, executeCommand, wrapExpectedWithArray,
+    updateElementsArray
+} from '../../utils'
 
 async function condition(el: WebdriverIO.Element, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions): Promise<any> {
     return compareStyle(el, style, options)
 }
 
-export function toHaveStyleFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveStyle(received: WebdriverIO.Element | WebdriverIO.ElementArray, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'style', verb = 'have' } = this
 
@@ -29,8 +31,4 @@ export function toHaveStyleFn(received: WebdriverIO.Element | WebdriverIO.Elemen
             message: (): string => message
         }
     })
-}
-
-export function toHaveStyle(...args: any): any {
-    return runExpect.call(this || {}, toHaveStyleFn, args)
 }

@@ -1,8 +1,37 @@
 {
   "name": "expect-webdriverio",
-  "version": "3.4.0",
-  "description": "",
-  "main": "lib/index.js",
+  "version": "3.3.1",
+  "author": "Mykola Grybyk <mykola.grybyk@gmail.com>",
+  "description": "WebdriverIO Assertion Library",
+  "license": "MIT",
+  "homepage": "https://webdriver.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webdriverio/expect-webdriverio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/webdriverio/expect-webdriverio/issues"
+  },
+  "keywords": [
+    "expect-webdriverio",
+    "expect",
+    "webdriverio",
+    "wdio"
+  ],
+  "main": "./build/index.cjs.js",
+  "type": "module",
+  "module": "./build/index.js",
+  "exports": {
+    ".": [
+      {
+        "import": "./build/index.js",
+        "require": "./build/index.cjs.js"
+      },
+      "./build/index.cjs.js"
+    ]
+  },
+  "types": "./build/index.d.ts",
+  "typeScriptVersion": "3.8.3",
   "scripts": {
     "build": "run-s clean compile",
     "clean": "run-p clean:*",
@@ -16,7 +45,7 @@
     "release:major": "npm run release -- major",
     "test": "run-s test:*",
     "test:lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "test:unit": "jest",
+    "test:unit": "vitest",
     "watch": "npm run compile -- --watch",
     "test:types": "node test-types/copy && npm run ts && npm run clean:tests",
     "ts": "run-p ts:*",
@@ -25,42 +54,22 @@
     "ts:jasmine": "cd test-types/jasmine && tsc --incremental",
     "prepare": "husky install"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/webdriverio/expect-webdriverio.git"
-  },
-  "keywords": [
-    "expect-webdriverio",
-    "expect",
-    "webdriverio",
-    "wdio"
-  ],
-  "author": "Mykola Grybyk <mykola.grybyk@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/webdriverio/expect-webdriverio/issues"
-  },
-  "homepage": "https://github.com/webdriverio/expect-webdriverio#readme",
   "devDependencies": {
-    "@types/jasmine": "^4.0.3",
-    "@types/jest": "^28.1.2",
-    "@types/node": "^15.14.0",
+    "@types/node": "^17.0.32",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "eslint": "^8.15.0",
     "husky": "^8.0.1",
-    "jest": "^28.1.0",
     "npm-run-all": "^4.1.5",
     "release-it": "^15.0.0",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
-    "ts-jest": "^28.0.2",
-    "ts-node": "^10.7.0",
     "typescript": "^4.6.4",
-    "webdriverio": "^7.19.7"
+    "vitest": "0.12.4"
   },
-  "types": "types/jest-global.d.ts",
-  "typeScriptVersion": "3.8.3",
+  "peerDependencies": {
+    "webdriverio": "next"
+  },
   "dependencies": {
     "expect": "^28.1.0",
     "jest-matcher-utils": "^28.1.0"

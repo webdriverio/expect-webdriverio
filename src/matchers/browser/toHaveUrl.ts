@@ -1,7 +1,6 @@
-import { runExpect } from '../../util/expectAdapter'
 import { waitUntil, enhanceError, compareText } from '../../utils'
 
-export function toHaveUrlFn(browser: WebdriverIO.Browser, url: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveUrl(browser: WebdriverIO.Browser, url: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'url', verb = 'have' } = this
 
@@ -20,8 +19,4 @@ export function toHaveUrlFn(browser: WebdriverIO.Browser, url: string | RegExp, 
             message: (): string => message
         }
     })
-}
-
-export function toHaveUrl(...args: any): any {
-    return runExpect.call(this || {}, toHaveUrlFn, args)
 }

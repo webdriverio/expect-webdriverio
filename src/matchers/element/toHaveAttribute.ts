@@ -1,5 +1,7 @@
-import { waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
-import { runExpect } from '../../util/expectAdapter'
+import {
+    waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray,
+    updateElementsArray
+} from '../../utils'
 
 async function conditionAttr(el: WebdriverIO.Element, attribute: string): Promise<any> {
     const attr = await el.getAttribute(attribute)
@@ -74,10 +76,10 @@ export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.El
 export function toHaveAttribute(...args: any): any {
     if(args.length===3 || args.length===4 ) {
         // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
-        return runExpect.call(this || {}, toHaveAttributeAndValueFn, args)
+        return toHaveAttributeAndValueFn.call(this, ...args)
     } else {
         // Only name is passed in e.g. el.toHaveAttribute('attr')
-        return runExpect.call(this || {}, toHaveAttributeFn, args)
+        return toHaveAttributeFn.call(this, ...args)
     }
 }
 

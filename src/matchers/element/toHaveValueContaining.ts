@@ -1,13 +1,8 @@
-import { runExpect } from '../../util/expectAdapter'
-import { toHaveValueFn } from './toHaveValue'
+import { toHaveValue } from './toHaveValue'
 
-function toHaveValueContainingFn(el: WebdriverIO.Element, value: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
-    return toHaveValueFn.call(this, el, value, {
+export function toHaveValueContaining(el: WebdriverIO.Element, value: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
+    return toHaveValue.call(this, el, value, {
         ...options,
         containing: true
     })
-}
-
-export function toHaveValueContaining(...args: any): any {
-    return runExpect.call(this || {}, toHaveValueContainingFn, args)
 }

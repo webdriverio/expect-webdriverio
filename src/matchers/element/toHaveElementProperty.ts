@@ -6,7 +6,6 @@ import {
     wrapExpectedWithArray,
     updateElementsArray,
 } from '../../utils'
-import { runExpect } from '../../util/expectAdapter'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -34,7 +33,7 @@ async function condition(
     return compareText(prop, value, options)
 }
 
-export function toHaveElementPropertyFn(
+export function toHaveElementProperty(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     property: string,
     value?: string | RegExp,
@@ -73,8 +72,4 @@ export function toHaveElementPropertyFn(
             message: (): string => message,
         }
     })
-}
-
-export function toHaveElementProperty(...args: any): any {
-    return runExpect.call(this || {}, toHaveElementPropertyFn, args)
 }

@@ -1,10 +1,9 @@
-import { runExpect } from '../../util/expectAdapter'
-import { toHaveElementPropertyFn } from './toHaveElementProperty'
+import { toHaveElementProperty } from './toHaveElementProperty'
 
-export function toHaveValueFn(el: WebdriverIO.Element, value: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
-    return toHaveElementPropertyFn.call(this, el, 'value', value, options)
-}
-
-export function toHaveValue(...args: any): any {
-    return runExpect.call(this || {}, toHaveValueFn, args)
+export function toHaveValue(
+    el: WebdriverIO.Element,
+    value: string | RegExp,
+    options: ExpectWebdriverIO.StringOptions = {}
+): any {
+    return toHaveElementProperty.call(this, el, 'value', value, options)
 }

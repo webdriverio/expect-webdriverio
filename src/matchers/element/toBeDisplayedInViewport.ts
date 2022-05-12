@@ -1,7 +1,6 @@
 import { executeCommandBe } from '../../utils'
-import { runExpect } from '../../util/expectAdapter'
 
-function toBeDisplayedInViewportFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
+export function toBeDisplayedInViewport(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
     this.expectation = this.expectation || 'displayed in viewport'
 
     return browser.call(async () => {
@@ -14,8 +13,4 @@ function toBeDisplayedInViewportFn(received: WebdriverIO.Element | WebdriverIO.E
         }, options)
         return result
     })
-}
-
-export function toBeDisplayedInViewport(...args: any): any {
-    return runExpect.call(this || {}, toBeDisplayedInViewportFn, args)
 }

@@ -1,4 +1,4 @@
-import { refetchElements } from './refetchElements'
+import { refetchElements } from './refetchElements.js'
 
 /**
  * make sure that condition passes for element or every element of elements array

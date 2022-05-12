@@ -1,7 +1,6 @@
 import { executeCommandBe, aliasFn } from '../../utils'
-import { runExpect } from '../../util/expectAdapter'
 
-function toExistFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
+function toExist(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
     this.expectation = this.expectation || 'exist'
     this.verb = this.verb || ''
 
@@ -15,10 +14,6 @@ function toExistFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO
         }, options)
         return result
     })
-}
-
-export function toExist(...args: any): any {
-    return runExpect.call(this || {}, toExistFn, args)
 }
 
 export function toBeExisting(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions): any {

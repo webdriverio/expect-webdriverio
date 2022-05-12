@@ -1,5 +1,6 @@
-import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
-import { runExpect } from '../../util/expectAdapter'
+import {
+    waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray
+} from '../../utils'
 
 async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions): Promise<any> {
     const { ignoreCase = false, trim = false, containing = false } = options
@@ -30,7 +31,7 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
     }
 }
 
-function toHaveElementClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveElementClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
@@ -57,17 +58,4 @@ function toHaveElementClassFn(received: WebdriverIO.Element | WebdriverIO.Elemen
             message: () => message
         }
     })
-}
-
-export function toHaveElementClass(...args: any): any {
-    return runExpect.call(this || {}, toHaveElementClassFn, args)
-}
-
-/**
- * toHaveClass conflicts with Jasmine's https://jasmine.github.io/api/edge/matchers#toHaveClass matcher
- * and will be removed from expect-webdriverio in favor of `toHaveElementClass`
- */
-export function toHaveClass(...args: any): any {
-    console.warn('expect(...).toHaveClass is deprecated and will be removed in next release. Use toHaveElementClass instead.')
-    return runExpect.call(this || {}, toHaveElementClassFn, args)
 }
