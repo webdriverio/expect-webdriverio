@@ -1,8 +1,6 @@
 import { executeCommandBe } from '../../utils'
-import { runExpect, getContext } from '../../util/expectAdapter'
 
-
-function toBeSelectedFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
+export function toBeSelected(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
     this.expectation = this.expectation || 'selected'
 
     return browser.call(async () => {
@@ -11,12 +9,7 @@ function toBeSelectedFn(received: WebdriverIO.Element | WebdriverIO.ElementArray
     })
 }
 
-export function toBeSelected(...args: any): any {
-    return runExpect.call(this || {}, toBeSelectedFn, args)
-}
-
 export function toBeChecked (el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions): any {
-    const context = getContext(this)
-    context.expectation = 'checked'
-    return toBeSelected.call(context, el, options)
+    this.expectation = 'checked'
+    return toBeSelected.call(this, el, options)
 }

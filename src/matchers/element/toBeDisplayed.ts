@@ -1,7 +1,6 @@
 import { executeCommandBe } from '../../utils'
-import { runExpect } from '../../util/expectAdapter'
 
-function toBeDisplayedFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
+export function toBeDisplayed(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
     this.expectation = this.expectation || 'displayed'
 
     return browser.call(async () => {
@@ -14,8 +13,4 @@ function toBeDisplayedFn(received: WdioElementMaybePromise, options: ExpectWebdr
         }, options)
         return result
     })
-}
-
-export function toBeDisplayed(...args: any): any {
-    return runExpect.call(this || {}, toBeDisplayedFn, args)
 }

@@ -1,5 +1,5 @@
 import { printExpected, printReceived, printDiffOrStringify } from 'jest-matcher-utils';
-import { equals } from '../jasmineUtils'
+import { equals } from '../jasmineUtils.js'
 
 const EXPECTED_LABEL = 'Expected';
 const RECEIVED_LABEL = 'Received';

@@ -1,13 +1,9 @@
-import { getConfig } from './options'
+import type { ParsedCSSValue } from 'webdriverio'
 
-import { executeCommand } from './util/executeCommand'
-import { wrapExpectedWithArray, updateElementsArray } from './util/elementsUtil'
-import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage'
-import { getContext } from './util/expectAdapter'
-import { ParsedCSSValue } from 'webdriverio'
-
-const config = getConfig()
-const { options: DEFAULT_OPTIONS } = config
+import { executeCommand } from './util/executeCommand.js'
+import { wrapExpectedWithArray, updateElementsArray } from './util/elementsUtil.js'
+import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
+import { DEFAULT_OPTIONS } from './constants.js'
 
 /**
  * wait for expectation to succeed
@@ -203,10 +199,9 @@ function aliasFn(
     } = {},
     ...args: any[]
 ): any {
-    const context = getContext(this)
-    context.verb = verb
-    context.expectation = expectation
-    return fn.apply(context, args)
+    this.verb = verb
+    this.expectation = expectation
+    return fn.apply(this, args)
 }
 
 export {

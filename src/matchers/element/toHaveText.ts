@@ -1,5 +1,7 @@
-import { waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
-import { runExpect } from '../../util/expectAdapter'
+import {
+    waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand,
+    wrapExpectedWithArray, updateElementsArray
+} from '../../utils'
 
 async function condition(el: WebdriverIO.Element, text: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions): Promise<any> {
     const actualText = await el.getText()
@@ -9,7 +11,7 @@ async function condition(el: WebdriverIO.Element, text: string | RegExp | Array<
     return compareText(actualText, text, options)
 }
 
-export function toHaveTextFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveText(received: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'text', verb = 'have' } = this
 
@@ -34,8 +36,4 @@ export function toHaveTextFn(received: WebdriverIO.Element | WebdriverIO.Element
             message: (): string => message
         }
     })
-}
-
-export function toHaveText(...args: any): any {
-    return runExpect.call(this || {}, toHaveTextFn, args)
 }

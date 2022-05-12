@@ -1,6 +1,21 @@
-import { addMatchers } from './addMatchers'
+import expectLib from 'expect'
 
-addMatchers()
+import matchers from './matchers.js'
+import { DEFAULT_OPTIONS } from './constants.js'
 
-// options can be imported only after `addMatchers`
-export const setOptions = require('./options').setDefaultOptions
+export const getConfig = (): any => DEFAULT_OPTIONS
+
+export const setDefaultOptions = (options = {}): void => {
+    Object.entries(options).forEach(([key, value]) => {
+        if (key in DEFAULT_OPTIONS) {
+            // @ts-ignore
+            DEFAULT_OPTIONS[key] = value
+        }
+    })
+}
+
+export const expect = async () => {
+    return expectLib.extend({ ...matchers })
+}
+
+export const setOptions = setDefaultOptions
