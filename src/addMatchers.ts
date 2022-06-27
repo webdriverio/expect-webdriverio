@@ -22,6 +22,9 @@ export const addMatchers = (): any => {
         global.expect = expectLib
     } else {
         // WebdriverIO standalone mode + Jest
+        if (global.expect.expect !== undefined) {
+            global.expect = global.expect.expect
+        }
         expectLib = global.expect
     }
 
