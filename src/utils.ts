@@ -4,6 +4,7 @@ import { executeCommand } from './util/executeCommand.js'
 import { wrapExpectedWithArray, updateElementsArray } from './util/elementsUtil.js'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
 import { DEFAULT_OPTIONS } from './constants.js'
+import type { WdioElementMaybePromise } from './types'
 
 /**
  * wait for expectation to succeed
