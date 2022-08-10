@@ -1,4 +1,5 @@
 import { executeCommandBe } from '../../utils'
+import type { WdioElementMaybePromise } from '../../types'
 
 export function toBeDisplayed(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
     this.expectation = this.expectation || 'displayed'
