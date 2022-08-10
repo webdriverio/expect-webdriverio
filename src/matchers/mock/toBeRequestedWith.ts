@@ -1,5 +1,6 @@
-import type { Mock } from 'webdriverio'
-import type { Matches } from 'webdriverio'
+import { browser } from '@wdio/globals'
+
+import type { Mock, Matches } from 'webdriverio'
 
 import { waitUntil, enhanceError } from '../../utils'
 import { equals } from '../../jasmineUtils'

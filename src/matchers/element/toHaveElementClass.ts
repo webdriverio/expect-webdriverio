@@ -1,3 +1,5 @@
+import { browser } from '@wdio/globals'
+
 import {
     waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray
 } from '../../utils'

@@ -1,3 +1,5 @@
+import { browser } from '@wdio/globals'
+
 import { waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils'
 import { refetchElements } from '../../util/refetchElements'
 
