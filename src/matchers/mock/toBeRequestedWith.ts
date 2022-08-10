@@ -352,3 +352,7 @@ const deleteUndefinedValues = (obj: Record<string, any>, baseline = obj) => {
         }
     })
 }
+
+export function toBeRequestedWithResponse(...args: any): any {
+    return toBeRequestedWith.call(this, ...args)
+}

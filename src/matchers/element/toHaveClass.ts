@@ -33,7 +33,11 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
     }
 }
 
-export function toHaveElementClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
+export function toHaveElementClass(...args: any): any {
+    return toHaveClass.call(this || {}, ...args)
+}
+
+export function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 

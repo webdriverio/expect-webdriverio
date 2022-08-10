@@ -1,3 +1,4 @@
+import { test, expect } from 'vitest'
 import Matchers from '../src/matchers'
 
 test('matchers', () => {

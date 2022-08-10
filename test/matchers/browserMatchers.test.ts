@@ -1,5 +1,10 @@
+import { vi, test, describe, expect } from 'vitest'
+import { browser } from '@wdio/globals'
+
 import { getExpectMessage, getReceived, matcherNameToString, getExpected } from '../__fixtures__/utils';
 import Matchers from '../../src/matchers'
+
+vi.mock('@wdio/globals')
 
 const browserMatchers = ['toHaveUrl', 'toHaveTitle', 'toHaveTitleContaining', 'toHaveUrlContaining']
 
@@ -7,12 +12,14 @@ const validText = ' Valid Text '
 const wrongText = ' Wrong Text '
 
 describe('browser matchers', () => {
-    browserMatchers.forEach((name) => {
+    browserMatchers.forEach((name: keyof typeof Matchers) => {
         const fn = Matchers[name]
 
         describe(name, () => {
             test('wait for success', async () => {
+                // @ts-expect-error mock feature
                 browser._attempts = 2
+                // @ts-expect-error mock feature
                 browser._value = function (): string {
                     if (this._attempts > 0) {
                         this._attempts--
@@ -23,10 +30,12 @@ describe('browser matchers', () => {
 
                 const result = await fn.call({}, browser, validText, { trim: false })
                 expect(result.pass).toBe(true)
+                // @ts-expect-error mock feature
                 expect(browser._attempts).toBe(0)
             })
 
             test('wait but failure', async () => {
+                // @ts-expect-error mock feature
                 browser._value = function (): string {
                     throw new Error('some error')
                 }
@@ -36,7 +45,9 @@ describe('browser matchers', () => {
             })
 
             test('success on the first attempt', async () => {
+                // @ts-expect-error mock feature
                 browser._attempts = 0
+                // @ts-expect-error mock feature
                 browser._value = function (): string {
                     this._attempts++
                     return validText
@@ -44,11 +55,14 @@ describe('browser matchers', () => {
 
                 const result = await fn.call({}, browser, validText, { trim: false })
                 expect(result.pass).toBe(true)
+                // @ts-expect-error mock feature
                 expect(browser._attempts).toBe(1)
             })
 
             test('no wait - failure', async () => {
+                // @ts-expect-error mock feature
                 browser._attempts = 0
+                // @ts-expect-error mock feature
                 browser._value = function (): string {
                     this._attempts++
                     return wrongText
@@ -56,11 +70,14 @@ describe('browser matchers', () => {
 
                 const result = await fn.call({}, browser, validText, { wait: 0, trim: false })
                 expect(result.pass).toBe(false)
+                // @ts-expect-error mock feature
                 expect(browser._attempts).toBe(1)
             })
 
             test('no wait - success', async () => {
+                // @ts-expect-error mock feature
                 browser._attempts = 0
+                // @ts-expect-error mock feature
                 browser._value = function (): string {
                     this._attempts++
                     return validText
@@ -69,6 +86,7 @@ describe('browser matchers', () => {
                 const result = await fn.call({}, browser, validText, { wait: 0, trim: false })
 
                 expect(result.pass).toBe(true)
+                // @ts-expect-error mock feature
                 expect(browser._attempts).toBe(1)
             })
 
@@ -82,6 +100,7 @@ describe('browser matchers', () => {
             })
 
             test('not - success', async () => {
+                // @ts-expect-error mock feature
                 browser._value = function (): string {
                     return wrongText
                 }
@@ -104,6 +123,7 @@ describe('browser matchers', () => {
             })
 
             test('not - success (with wait)', async () => {
+                // @ts-expect-error mock feature
                 browser._value = function (): string {
                     return wrongText
                 }
