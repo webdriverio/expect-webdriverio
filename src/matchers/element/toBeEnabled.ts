@@ -1,3 +1,5 @@
+import { browser } from '@wdio/globals'
+
 import { executeCommandBe } from '../../utils'
 
 export function toBeEnabled(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {

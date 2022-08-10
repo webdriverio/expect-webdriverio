@@ -68,6 +68,7 @@
     "vitest": "0.12.4"
   },
   "peerDependencies": {
+    "@wdio/globals": "next",
     "webdriverio": "next"
   },
   "dependencies": {

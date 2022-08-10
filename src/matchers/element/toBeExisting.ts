@@ -1,3 +1,5 @@
+import { browser } from '@wdio/globals'
+
 import { executeCommandBe, aliasFn } from '../../utils'
 import type { WdioElementMaybePromise } from '../../types'
 

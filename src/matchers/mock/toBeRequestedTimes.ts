@@ -1,3 +1,4 @@
+import { browser } from '@wdio/globals'
 import type { Mock } from 'webdriverio'
 
 import { waitUntil, enhanceError, compareNumbers } from '../../utils'
