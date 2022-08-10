@@ -1,4 +1,9 @@
+import { vi, test, describe, beforeEach, expect } from 'vitest'
+import { $$ } from '@wdio/globals'
+
 import { refetchElements } from '../../src/util/refetchElements'
+
+vi.mock('@wdio/globals')
 
 describe('refetchElements', () => {
     let els: WebdriverIO.ElementArray

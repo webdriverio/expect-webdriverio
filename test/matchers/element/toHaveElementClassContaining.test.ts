@@ -1,10 +1,10 @@
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils';
-import { toHaveClassContaining, toHaveElementClassContaining } from '../../../src/matchers/element/toHaveElementClassContaining';
+import { toHaveClassContaining, toHaveElementClassContaining } from '../../../src/matchers/element/toHaveClassContaining';
 
 describe('toHaveElementClassContaining', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => { 
+    beforeEach(async () => {
         el = await $('sel')
         el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
             if(attribute === 'class') {
@@ -12,7 +12,7 @@ describe('toHaveElementClassContaining', () => {
             }
             return null
         })
-    })    
+    })
 
     test('success when whole class name is present', async () => {
         const result = await toHaveElementClassContaining(el, "some-class");
@@ -53,7 +53,7 @@ global.console.warn = jest.fn()
 
 describe('toHaveClassContaining', () => {
     let el: WebdriverIO.Element
-    
+
     test('warning message in console', async () => {
         await toHaveClassContaining(el, "test");
         expect(console.warn).toHaveBeenCalledWith('expect(...).toHaveClassContaining is deprecated and will be removed in next release. Use toHaveElementClassContaining instead.')

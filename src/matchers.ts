@@ -14,8 +14,8 @@ import * as toBeSelected from './matchers/element/toBeSelected.js'
 import * as toHaveAttribute from './matchers/element/toHaveAttribute.js'
 import * as toHaveAttributeContaining from './matchers/element/toHaveAttributeContaining.js'
 import * as toHaveChildren from './matchers/element/toHaveChildren.js'
-import * as toHaveElementClass from './matchers/element/toHaveElementClass.js'
-import * as toHaveElementClassContaining from './matchers/element/toHaveElementClassContaining.js'
+import * as toHaveClass from './matchers/element/toHaveClass.js'
+import * as toHaveClassContaining from './matchers/element/toHaveClassContaining.js'
 import * as toHaveHref from './matchers/element/toHaveHref.js'
 import * as toHaveHrefContaining from './matchers/element/toHaveHrefContaining.js'
 import * as toHaveId from './matchers/element/toHaveId.js'
@@ -51,8 +51,8 @@ const matchers = {
     ...toHaveAttribute,
     ...toHaveAttributeContaining,
     ...toHaveChildren,
-    ...toHaveElementClass,
-    ...toHaveElementClassContaining,
+    ...toHaveClass,
+    ...toHaveClassContaining,
     ...toHaveHref,
     ...toHaveHrefContaining,
     ...toHaveId,

@@ -3,7 +3,7 @@ import { browser } from '@wdio/globals'
 import { executeCommandBe, aliasFn } from '../../utils'
 import type { WdioElementMaybePromise } from '../../types'
 
-function toExist(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
+export function toExist(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
     this.expectation = this.expectation || 'exist'
     this.verb = this.verb || ''
 

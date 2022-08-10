@@ -1,14 +1,7 @@
-import { addMatchers } from '../src/addMatchers'
-import { setOptions } from '../src'
-
-jest.mock('../src/addMatchers', () => ({
-    addMatchers: jest.fn()
-}))
-jest.mock('../src/options', () => ({
-    setDefaultOptions: 'setDefaultOptions'
-}))
+import { test, expect } from 'vitest'
+import { setOptions, expect as expectExport } from '../src'
 
 test('index', () => {
-    expect(addMatchers).toBeCalledTimes(1)
-    expect(setOptions).toBe('setDefaultOptions')
+    expect(setOptions.name).toBe('setDefaultOptions')
+    expect(expectExport).toBeDefined()
 })
