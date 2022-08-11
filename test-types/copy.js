@@ -1,9 +1,13 @@
-const path = require('path')
-const { promisify } = require('util')
+import path from 'node:path'
+import url from 'node:url'
+import { promisify } from 'node:util'
 
-const { ln, mkdir, cp } = require('shelljs')
-const rimraf = promisify(require('rimraf'))
+import rimrafImport from 'rimraf'
+const rimraf = promisify(rimrafImport)
 
+import shelljs from 'shelljs'
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
 
 // TypeScript project root for testing particular typings
@@ -35,41 +39,33 @@ async function copy() {
             const destination = path.join(__dirname, outDir, 'node_modules', packageName)
 
             const destDir = destination.split(path.sep).slice(0, -1).join(path.sep)
-            mkdir('-p', destDir)
-
-            ln('-s', path.join(ROOT, 'node_modules', packageName), destination)
+            shelljs.mkdir('-p', destDir)
+            shelljs.ln('-s', path.join(ROOT, 'node_modules', packageName), destination)
         }
 
         // link test file
-        ln('-s', path.join(__dirname, testFile), path.join(__dirname, outDir, testFile))
+        shelljs.ln('-s', path.join(__dirname, testFile), path.join(__dirname, outDir, testFile))
 
         // copy expect-webdriverio
         const destDir = path.join(__dirname, outDir, 'node_modules', 'expect-webdriverio')
 
-        mkdir('-p', destDir)
-        cp('*.d.ts', destDir)
-        cp('package.json', destDir)
-        cp('-r', 'types', destDir)
+        shelljs.mkdir('-p', destDir)
+        shelljs.cp('*.d.ts', destDir)
+        shelljs.cp('package.json', destDir)
+        shelljs.cp('-r', 'types', destDir)
     }
 }
 
 /**
  * delete eventual artifacts from test folders
  */
-Promise.all(
+await Promise.all(
     artifactDirs.map((dir) =>
         Promise.all(outDirs.map((testDir) => rimraf(path.join(__dirname, testDir, dir))))
     )
-).then(
-    /**
-     * if successful, start test
-     */
-    () => copy(),
-    /**
-     * on failure, error out
-     */
-    (err) => {
-        console.error(err.stack)
-        process.exit(1)
-    }
 )
+
+/**
+ * if successful, start test
+ */
+await copy()
