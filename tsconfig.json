@@ -7,6 +7,7 @@
     "strictBindCallApply": true,
     "removeComments": true,
     "noImplicitAny": true,
+    "skipLibCheck": true,
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
     "moduleResolution": "Node",
