@@ -1,5 +1,9 @@
+import { vi, test, describe, expect } from 'vitest'
+import { $ } from '@wdio/globals'
 import { getExpectMessage, getReceived, matcherNameToString } from '../__fixtures__/utils';
 import Matchers from '../../src/matchers'
+
+vi.mock('@wdio/globals')
 
 const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeDisabled', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith']
 const beMatchers = [
@@ -9,12 +13,14 @@ const beMatchers = [
 
 describe('be* matchers', () => {
     beMatchers.forEach((name) => {
-        const fn = Matchers[name] // .bind({})
+        const fn = Matchers[name as keyof typeof Matchers] // .bind({})
 
         describe(name, () => {
             test('wait for success', async () => {
                 const el = await $('sel')
+                // @ts-expect-error mock feature
                 el._attempts = 2
+                // @ts-expect-error mock feature
                 el._value = function (): boolean {
                     if (this._attempts > 0) {
                         this._attempts--
@@ -25,11 +31,13 @@ describe('be* matchers', () => {
 
                 const result = await fn.call({}, el)
                 expect(result.pass).toBe(true)
+                // @ts-expect-error mock feature
                 expect(el._attempts).toBe(0)
             })
 
             test('wait but failure', async () => {
                 const el = await $('sel')
+                // @ts-expect-error mock feature
                 el._value = function (): boolean {
                     throw new Error('some error')
                 }
@@ -40,7 +48,9 @@ describe('be* matchers', () => {
 
             test('success on the first attempt', async () => {
                 const el = await $('sel')
+                // @ts-expect-error mock feature
                 el._attempts = 0
+                // @ts-expect-error mock feature
                 el._value = function (): boolean {
                     this._attempts++
                     return true
@@ -48,12 +58,15 @@ describe('be* matchers', () => {
 
                 const result = await fn.call({}, el)
                 expect(result.pass).toBe(true)
+                // @ts-expect-error mock feature
                 expect(el._attempts).toBe(1)
             })
 
             test('no wait - failure', async () => {
                 const el = await $('sel')
+                // @ts-expect-error mock feature
                 el._attempts = 0
+                // @ts-expect-error mock feature
                 el._value = function (): boolean {
                     this._attempts++
                     return false
@@ -61,12 +74,15 @@ describe('be* matchers', () => {
 
                 const result = await fn.call({}, el, { wait: 0 })
                 expect(result.pass).toBe(false)
+                // @ts-expect-error mock feature
                 expect(el._attempts).toBe(1)
             })
 
             test('no wait - success', async () => {
                 const el = await $('sel')
+                // @ts-expect-error mock feature
                 el._attempts = 0
+                // @ts-expect-error mock feature
                 el._value = function (): boolean {
                     this._attempts++
                     return true
@@ -74,6 +90,7 @@ describe('be* matchers', () => {
 
                 const result = await fn.call({}, el, { wait: 0 })
                 expect(result.pass).toBe(true)
+                // @ts-expect-error mock feature
                 expect(el._attempts).toBe(1)
             })
 
@@ -87,6 +104,7 @@ describe('be* matchers', () => {
 
             test('not - success', async () => {
                 const el = await $('sel')
+                // @ts-expect-error mock feature
                 el._value = function (): boolean {
                     return false
                 }
@@ -107,6 +125,7 @@ describe('be* matchers', () => {
 
             test('not - success (with wait)', async () => {
                 const el = await $('sel')
+                // @ts-expect-error mock feature
                 el._value = function (): boolean {
                     return false
                 }

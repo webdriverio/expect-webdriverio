@@ -1,9 +1,14 @@
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils'
 import { toHaveText } from '../../../src/matchers/element/toHaveText'
 
+vi.mock('@wdio/globals')
+
 describe('toHaveText', () => {
     test('wait for success', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 2
         el._text= function (): string {
             if (this._attempts > 0) {
@@ -19,7 +24,7 @@ describe('toHaveText', () => {
     })
 
     test('wait but failure', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._text = function (): string {
             throw new Error('some error')
         }
@@ -29,7 +34,7 @@ describe('toHaveText', () => {
     })
 
     test('success on the first attempt', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         el._text = function (): string {
             this._attempts++
@@ -42,7 +47,7 @@ describe('toHaveText', () => {
     })
 
     test('no wait - failure', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         el._text = function ():string {
             this._attempts++
@@ -55,7 +60,7 @@ describe('toHaveText', () => {
     })
 
     test('no wait - success', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         el._text = function (): string {
             this._attempts++
@@ -68,7 +73,7 @@ describe('toHaveText', () => {
     })
 
     test('not - failure', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._text = function (): string {
             return 'WebdriverIO'
         }
@@ -80,7 +85,7 @@ describe('toHaveText', () => {
     })
 
     test('should return false if texts dont match', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._text = function (): string {
             return 'WebdriverIO'
         }
@@ -90,7 +95,7 @@ describe('toHaveText', () => {
     })
 
     test('should return true if texts match', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._text = function (): string {
             return 'WebdriverIO'
         }
@@ -100,7 +105,7 @@ describe('toHaveText', () => {
     })
 
     test('message', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._text = function (): string {
             return ''
         }
@@ -109,7 +114,7 @@ describe('toHaveText', () => {
     })
 
     test('success if array matches with text and ignoreCase', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         el._text = function (): string {
             this._attempts++
@@ -122,7 +127,7 @@ describe('toHaveText', () => {
     })
 
     test('success if array matches with text and trim', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         el._text = function (): string {
             this._attempts++
@@ -135,7 +140,7 @@ describe('toHaveText', () => {
     })
 
     test('failure if array does not match with text', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         el._text = function (): string {
             this._attempts++
@@ -148,11 +153,11 @@ describe('toHaveText', () => {
     })
 
     describe('with RegExp', () => {
-        let el: WebdriverIO.Element
-    
-        beforeEach(async () => { 
+        let el: any
+
+        beforeEach(async () => {
             el = await $('sel')
-            el._text = jest.fn().mockImplementation(() => {
+            el._text = vi.fn().mockImplementation(() => {
                 return "This is example text"
             })
         })
@@ -192,5 +197,5 @@ describe('toHaveText', () => {
             expect(getExpected(result.message())).toContain('/Webdriver/i')
             expect(getExpected(result.message())).toContain('WDIO')
         })
-    })  
+    })
 })

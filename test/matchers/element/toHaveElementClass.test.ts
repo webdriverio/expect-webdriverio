@@ -1,12 +1,17 @@
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils'
-import { toHaveClass, toHaveElementClass } from '../../../src/matchers/element/toHaveClass'
+import { toHaveElementClass } from '../../../src/matchers/element/toHaveClass'
+
+vi.mock('@wdio/globals')
 
 describe('toHaveElementClass', () => {
     let el: WebdriverIO.Element
 
     beforeEach(async () => {
         el = await $('sel')
-        el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+        el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
             if(attribute === 'class') {
                 return 'some-class another-class'
             }
@@ -25,28 +30,28 @@ describe('toHaveElementClass', () => {
     })
 
     describe('options', () => {
-        it('should fail when class is not a string', async () => {
-            el.getAttribute = jest.fn().mockImplementation(() => {
+        test('should fail when class is not a string', async () => {
+            el.getAttribute = vi.fn().mockImplementation(() => {
                 return null
             })
             const result = await toHaveElementClass(el, "some-class")
             expect(result.pass).toBe(false)
         })
 
-        it('should pass when trimming the attribute', async () => {
-            el.getAttribute = jest.fn().mockImplementation(() => {
+        test('should pass when trimming the attribute', async () => {
+            el.getAttribute = vi.fn().mockImplementation(() => {
                 return "  some-class  "
             })
             const result = await toHaveElementClass(el, "some-class", {trim: true})
             expect(result.pass).toBe(true)
         })
 
-        it('should pass when ignore the case', async () => {
+        test('should pass when ignore the case', async () => {
             const result = await toHaveElementClass(el, "sOme-ClAsS", {ignoreCase: true})
             expect(result.pass).toBe(true)
         })
 
-        it('should pass if containing', async () => {
+        test('should pass if containing', async () => {
             const result = await toHaveElementClass(el, "some", {containing: true})
             expect(result.pass).toBe(true)
         })
@@ -98,16 +103,5 @@ describe('toHaveElementClass', () => {
                 expect(getReceived(result.message())).toContain('some-class another-class')
             })
         })
-    })
-})
-
-global.console.warn = jest.fn()
-
-describe('toHaveClass', () => {
-    let el: WebdriverIO.Element
-
-    test('warning message in console', async () => {
-        await toHaveClass(el, "test")
-        expect(console.warn).toHaveBeenCalledWith('expect(...).toHaveClass is deprecated and will be removed in next release. Use toHaveElementClass instead.')
     })
 })

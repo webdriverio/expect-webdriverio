@@ -1,3 +1,4 @@
+import { browser } from '@wdio/globals'
 import type { ParsedCSSValue } from 'webdriverio'
 
 import { executeCommand } from './util/executeCommand.js'

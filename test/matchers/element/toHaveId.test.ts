@@ -1,18 +1,23 @@
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils';
 import { toHaveId } from '../../../src/matchers/element/toHaveId';
+
+vi.mock('@wdio/globals')
 
 describe('toHaveHref', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => { 
+    beforeEach(async () => {
         el = await $('sel')
-        el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+        el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
             if(attribute === 'id') {
                 return "test id"
             }
             return null
         })
-    })    
+    })
 
     test('success', async () => {
         const result = await toHaveId(el, "test id");
@@ -42,5 +47,5 @@ describe('toHaveHref', () => {
             })
         })
     });
-    
+
 });

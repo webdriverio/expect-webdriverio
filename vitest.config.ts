@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -10,6 +11,7 @@ export default defineConfig({
             'dist', '.idea', '.git', '.cache',
             '**/node_modules/**'
         ],
+        testTimeout: 15 * 1000,
         coverage: {
             enabled: false,
             exclude: ['**/build/**', '**/__fixtures__/**', '**/*.test.ts'],

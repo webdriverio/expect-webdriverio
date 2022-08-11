@@ -114,6 +114,8 @@ describe('browser matchers', () => {
             })
 
             test('not - failure (with wait)', async () => {
+                // @ts-expect-error mock feature
+                delete browser._value
                 const result = await fn.call({ isNot: true }, browser, validText, { wait: 1, trim: false })
 
                 expect(getExpectMessage(result.message())).toContain('not')

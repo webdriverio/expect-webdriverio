@@ -1,5 +1,10 @@
+import { vi, test, describe, expect } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getReceived } from '../../__fixtures__/utils';
 import { toBeDisabled } from '../../../src/matchers/element/toBeDisabled'
+
+vi.mock('@wdio/globals')
 
 describe('toBeDisabled', () => {
     /**
@@ -7,7 +12,7 @@ describe('toBeDisabled', () => {
      * `!await el.isEnabled()`
      */
     test('wait for success', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 2
         el._value = function (): boolean {
             if (this._attempts > 0) {
@@ -23,7 +28,7 @@ describe('toBeDisabled', () => {
     })
 
     test('wait but failure', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): boolean {
             throw new Error('some error')
         }
@@ -33,7 +38,7 @@ describe('toBeDisabled', () => {
     })
 
     test('success on the first attempt', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         el._value = function (): boolean {
             this._attempts++
@@ -46,7 +51,7 @@ describe('toBeDisabled', () => {
     })
 
     test('no wait - failure', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         el._value = function (): boolean {
             this._attempts++
@@ -59,7 +64,7 @@ describe('toBeDisabled', () => {
     })
 
     test('no wait - success', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         el._value = function (): boolean {
             this._attempts++
@@ -72,7 +77,7 @@ describe('toBeDisabled', () => {
     })
 
     test('not - failure', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): boolean {
             return false
         }
@@ -84,7 +89,7 @@ describe('toBeDisabled', () => {
     })
 
     test('not - success', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): boolean {
             return true
         }
@@ -96,7 +101,7 @@ describe('toBeDisabled', () => {
     })
 
     test('not - failure (with wait)', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): boolean {
             return false
         }
@@ -108,7 +113,7 @@ describe('toBeDisabled', () => {
     })
 
     test('not - success (with wait)', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): boolean {
             return true
         }
@@ -120,7 +125,7 @@ describe('toBeDisabled', () => {
     })
 
     test('message', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): boolean {
             return false
         }

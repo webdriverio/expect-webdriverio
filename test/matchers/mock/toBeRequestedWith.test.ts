@@ -1,6 +1,10 @@
+import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
+
 import { toBeRequestedWith } from '../../../src/matchers/mock/toBeRequestedWith'
 import type { Matches } from 'webdriverio'
 import { removeColors, getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils'
+
+vi.mock('@wdio/globals')
 
 class TestMock {
     _calls: Matches[]
@@ -54,7 +58,7 @@ const mockPost: Matches = {
 
 describe('toBeRequestedWith', () => {
     test('wait for success, exact match', async () => {
-        const mock = new TestMock()
+        const mock: any = new TestMock()
 
         setTimeout(() => {
             mock.calls.push({ ...mockGet })
@@ -78,7 +82,7 @@ describe('toBeRequestedWith', () => {
     })
 
     test('wait for failure', async () => {
-        const mock = new TestMock()
+        const mock: any = new TestMock()
 
         setTimeout(() => {
             mock.calls.push({ ...mockGet }, { ...mockPost })
@@ -98,7 +102,7 @@ describe('toBeRequestedWith', () => {
     })
 
     test('wait for NOT failure, empty params', async () => {
-        const mock = new TestMock()
+        const mock: any = new TestMock()
         mock.calls.push({ ...mockGet }, { ...mockPost })
         setTimeout(() => {
             mock.calls.push({ ...mockGet }, { ...mockPost })
@@ -109,7 +113,7 @@ describe('toBeRequestedWith', () => {
     })
 
     test('wait for NOT success', async () => {
-        const mock = new TestMock()
+        const mock: any = new TestMock()
 
         setTimeout(() => {
             mock.calls.push({ ...mockGet }, { ...mockPost })
@@ -340,10 +344,10 @@ describe('toBeRequestedWith', () => {
 
     scenarios.forEach((scenario) => {
         test(scenario.name, async () => {
-            const mock = new TestMock()
+            const mock: any = new TestMock()
             mock.calls.push(...scenario.mocks)
 
-            const result = await toBeRequestedWith(mock, scenario.params)
+            const result = await toBeRequestedWith(mock, scenario.params as any)
             expect(result.pass).toBe(scenario.pass)
         })
     })
@@ -351,14 +355,14 @@ describe('toBeRequestedWith', () => {
     describe('error messages', () => {
         const consoleError = global.console.error
         beforeEach(() => {
-            global.console.error = jest.fn()
+            global.console.error = vi.fn()
         })
 
         test('unsupported method', async () => {
-            const mock = new TestMock()
+            const mock: any = new TestMock()
             mock.calls.push({ ...mockGet })
 
-            const result = await toBeRequestedWith(mock, { method: 1234 })
+            const result = await toBeRequestedWith(mock, { method: 1234 } as any)
             expect(result.pass).toBe(false)
             expect(global.console.error).toBeCalledWith(
                 'expect.toBeRequestedWith: unsupported value passed to method 1234'
@@ -371,7 +375,7 @@ describe('toBeRequestedWith', () => {
     })
 
     test('message', async () => {
-        const mock = new TestMock()
+        const mock: any = new TestMock()
 
         const requested = await toBeRequestedWith(mock, {
             url: () => false,

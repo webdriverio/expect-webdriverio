@@ -1,15 +1,20 @@
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils'
 import { toHaveValue } from '../../../src/matchers/element/toHaveValue'
 
-describe('toHaveValue', () => {
-    let el: WebdriverIO.Element
+vi.mock('@wdio/globals')
 
-    beforeEach(async () => { 
+describe('toHaveValue', () => {
+    let el: any
+
+    beforeEach(async () => {
         el = await $('sel')
-        el._value = jest.fn().mockImplementation(() => {
+        el._value = vi.fn().mockImplementation(() => {
             return "This is an example value"
         })
-    })    
+    })
 
     describe('success', () => {
         test('exact passes', async () => {

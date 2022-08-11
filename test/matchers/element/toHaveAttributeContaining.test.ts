@@ -1,15 +1,20 @@
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils';
 import { toHaveAttrContaining } from '../../../src/matchers/element/toHaveAttributeContaining';
+
+vi.mock('@wdio/globals')
 
 describe('toHaveAttributeContaining', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => { 
+    beforeEach(async () => {
         el = await $('sel')
-    })    
+    })
 
     test('success when contains', async () => {
-        el.getAttribute = jest.fn().mockImplementation(() => {
+        el.getAttribute = vi.fn().mockImplementation(() => {
             return "An example phrase"
         })
         const result = await toHaveAttrContaining(el, "attribute_name", "example");
@@ -20,7 +25,7 @@ describe('toHaveAttributeContaining', () => {
         let result: any
 
         beforeEach(async () => {
-            el.getAttribute = jest.fn().mockImplementation(() => {
+            el.getAttribute = vi.fn().mockImplementation(() => {
                 return "An example phrase"
             })
             result = await toHaveAttrContaining(el, "attribute_name", "donkey");
@@ -42,5 +47,5 @@ describe('toHaveAttributeContaining', () => {
             })
         })
     });
-    
+
 });
