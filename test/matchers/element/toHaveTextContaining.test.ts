@@ -1,15 +1,20 @@
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils';
 import { toHaveTextContaining } from '../../../src/matchers/element/toHaveTextContaining'
 
-describe('toHaveTextContaining', () => {
-    let el: WebdriverIO.Element
+vi.mock('@wdio/globals')
 
-    beforeEach(async () => { 
+describe('toHaveTextContaining', () => {
+    let el: any
+
+    beforeEach(async () => {
         el = await $('sel')
-        el._text = jest.fn().mockImplementation(() => {
+        el._text = vi.fn().mockImplementation(() => {
             return "This is example text"
         })
-    })    
+    })
 
     describe('success', () => {
         test('exact passes', async () => {
@@ -51,7 +56,7 @@ describe('toHaveTextContaining', () => {
             })
         })
     });
-    
+
     describe('failure with RegExp', () => {
         let result: any
 

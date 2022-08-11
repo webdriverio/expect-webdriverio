@@ -1,18 +1,23 @@
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils';
 import { toHaveHrefContaining } from '../../../src/matchers/element/toHaveHrefContaining';
+
+vi.mock('@wdio/globals')
 
 describe('toHaveHrefContaining', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => { 
+    beforeEach(async () => {
         el = await $('sel')
-        el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+        el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
             if(attribute === 'href') {
                 return "https://www.example.com"
             }
             return null
         })
-    })    
+    })
 
     describe('success', () => {
         test('exact passes', async () => {
@@ -49,5 +54,5 @@ describe('toHaveHrefContaining', () => {
             })
         })
     });
-    
+
 });

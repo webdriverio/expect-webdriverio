@@ -1,4 +1,9 @@
+import { vi, test, describe, expect } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren'
+
+vi.mock('@wdio/globals')
 
 describe('toHaveChildren', () => {
     test('no value', async () => {

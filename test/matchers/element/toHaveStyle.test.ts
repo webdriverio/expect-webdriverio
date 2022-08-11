@@ -1,19 +1,24 @@
+import { vi, test, describe, expect } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getReceived } from '../../__fixtures__/utils';
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle'
 
+vi.mock('@wdio/globals')
+
 describe('toHaveStyle', () => {
-    let el: WebdriverIO.Element
+    let el: any
     const mockStyle: { [key: string]: string; } = {
         "font-family": "Faktum",
         "font-size": "26px",
         "color": "#000"
-    } 
+    }
 
     test('wait for success', async () => {
         el = await $('sel')
         el._attempts = 2
         let counter = 0;
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
             if(el._attempts > 0) {
                 counter ++;
                 if(counter == Object.keys(mockStyle).length) {
@@ -33,7 +38,7 @@ describe('toHaveStyle', () => {
         el = await $('sel')
         el._attempts = 0
         let counter = 0
-        el.getCSSProperty = jest.fn().mockImplementation(() => {
+        el.getCSSProperty = vi.fn().mockImplementation(() => {
             counter ++;
             if(counter == Object.keys(mockStyle).length) {
                 counter = 0;
@@ -46,10 +51,10 @@ describe('toHaveStyle', () => {
     })
 
     test('success on the first attempt', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         let counter = 0
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
             counter ++;
             if(counter == Object.keys(mockStyle).length) {
                 counter = 0;
@@ -63,10 +68,10 @@ describe('toHaveStyle', () => {
     })
 
     test('no wait - failure', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         let counter = 0;
-        el.getCSSProperty = jest.fn().mockImplementation(() => {
+        el.getCSSProperty = vi.fn().mockImplementation(() => {
             counter ++;
             if(counter == Object.keys(mockStyle).length) {
                 counter = 0;
@@ -81,10 +86,10 @@ describe('toHaveStyle', () => {
     })
 
     test('no wait - success', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0;
         let counter = 0;
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
             counter ++;
             if(counter == Object.keys(mockStyle).length) {
                 counter = 0;
@@ -99,8 +104,8 @@ describe('toHaveStyle', () => {
     })
 
     test('not - failure', async () => {
-        const el = await $('sel')
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        const el: any = await $('sel')
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
             return { value: mockStyle[property] }
         })
         const result = await toHaveStyle.call({ isNot: true }, el, mockStyle, { wait: 0 })
@@ -111,8 +116,8 @@ describe('toHaveStyle', () => {
     })
 
     test('should return false if styles dont match', async () => {
-        const el = await $('sel')
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        const el: any = await $('sel')
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
             return { value: mockStyle[property] }
         })
 
@@ -120,15 +125,15 @@ describe('toHaveStyle', () => {
             "font-family": "Incorrect Font",
             "font-size": "100px",
             "color": "#fff"
-        } 
+        }
 
         const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 1 })
         expect(result.pass).toBe(false)
     })
 
     test('should return true if styles match', async () => {
-        const el = await $('sel')
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        const el: any = await $('sel')
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
             return { value: mockStyle[property] }
         })
 
@@ -137,16 +142,16 @@ describe('toHaveStyle', () => {
     })
 
     test('message shows correctly', async () => {
-        const el = await $('sel')
-        el.getCSSProperty = jest.fn().mockImplementation(() => {
+        const el: any = await $('sel')
+        el.getCSSProperty = vi.fn().mockImplementation(() => {
             return { value: "Wrong Value" }
         })
-        const result = await toHaveStyle(el, 'WebdriverIO')
+        const result = await toHaveStyle(el, 'WebdriverIO' as any)
         expect(getExpectMessage(result.message())).toContain('to have style')
     })
 
     test('success if style matches with ignoreCase', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         let counter = 0;
 
@@ -154,9 +159,9 @@ describe('toHaveStyle', () => {
             "font-family": "Faktum",
             "font-size": "26px",
             "color": "#fff"
-        } 
+        }
 
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
             counter ++;
             if(counter == Object.keys(mockStyle).length) {
                 counter = 0;
@@ -169,15 +174,15 @@ describe('toHaveStyle', () => {
             "font-family": "FaKtum",
             "font-size": "26px",
             "color": "#FFF"
-        } 
+        }
 
         const result = await toHaveStyle(el, alteredCaseStyle, { ignoreCase: true })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
-    
+
     test('success if style matches with trim', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         let counter = 0;
 
@@ -185,9 +190,9 @@ describe('toHaveStyle', () => {
             "font-family": "   Faktum   ",
             "font-size": "   26px   ",
             "color": "    #fff     "
-        } 
+        }
 
-        el.getCSSProperty = jest.fn().mockImplementation((property: string) => {
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
             counter ++;
             if(counter == Object.keys(mockStyle).length) {
                 counter = 0;
@@ -200,7 +205,7 @@ describe('toHaveStyle', () => {
             "font-family": "Faktum",
             "font-size": "26px",
             "color": "#fff"
-        } 
+        }
 
         const result = await toHaveStyle(el, alteredSpaceStyle, {   trim: true })
         expect(result.pass).toBe(true)

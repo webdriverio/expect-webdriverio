@@ -1,6 +1,10 @@
+import { vi, test, describe, expect } from 'vitest'
+
 import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTimes'
 import type { Matches, Mock } from 'webdriverio'
 import { removeColors, getReceived, getExpected, getExpectMessage } from '../../__fixtures__/utils'
+
+vi.mock('@wdio/globals')
 
 class TestMock {
     _calls: Matches[]

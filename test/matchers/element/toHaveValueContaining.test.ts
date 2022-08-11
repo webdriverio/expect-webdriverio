@@ -1,15 +1,20 @@
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils';
 import { toHaveValueContaining } from '../../../src/matchers/element/toHaveValueContaining'
 
-describe('toHaveValueContaining', () => {
-    let el: WebdriverIO.Element
+vi.mock('@wdio/globals')
 
-    beforeEach(async () => { 
+describe('toHaveValueContaining', () => {
+    let el: any
+
+    beforeEach(async () => {
         el = await $('sel')
-        el._value = jest.fn().mockImplementation(() => {
+        el._value = vi.fn().mockImplementation(() => {
             return "This is an example value"
         })
-    })    
+    })
 
     describe('success', () => {
         test('exact passes', async () => {
@@ -45,5 +50,5 @@ describe('toHaveValueContaining', () => {
             })
         })
     });
-    
+
 });

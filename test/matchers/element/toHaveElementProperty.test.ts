@@ -1,9 +1,14 @@
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils'
 import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty'
 
+vi.mock('@wdio/globals')
+
 describe('toHaveElementProperty', () => {
     test('ignore case of stringified value', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._attempts = 0
         el._value = function (): string {
             this._attempts++
@@ -16,7 +21,7 @@ describe('toHaveElementProperty', () => {
     })
 
     test('should return false if values dont match', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): string {
             return 'iphone'
         }
@@ -26,7 +31,7 @@ describe('toHaveElementProperty', () => {
     })
 
     test('should return true if values match', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): string {
             return 'iphone'
         }
@@ -36,7 +41,7 @@ describe('toHaveElementProperty', () => {
     })
 
     test('with RegExp should return true if values match', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): string {
             return 'iphone'
         }
@@ -46,7 +51,7 @@ describe('toHaveElementProperty', () => {
     })
 
     test('should return false for null input', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): any {
             return undefined
         }
@@ -56,17 +61,17 @@ describe('toHaveElementProperty', () => {
     })
 
     test('should return true if value is null', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): any {
             return "Test Value"
         }
 
-        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', null)
+        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', null as any)
         expect(result.pass).toBe(true)
     })
 
     test('should return false if value is non-string', async () => {
-        const el = await $('sel')
+        const el: any = await $('sel')
         el._value = function (): any {
             return 5
         }
@@ -79,7 +84,7 @@ describe('toHaveElementProperty', () => {
         let result: any
 
         beforeEach(async () => {
-            const el = await $('sel')
+            const el: any = await $('sel')
             el._value = function (): string {
                 return 'iphone'
             }

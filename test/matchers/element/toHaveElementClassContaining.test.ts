@@ -1,12 +1,17 @@
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $ } from '@wdio/globals'
+
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils';
-import { toHaveClassContaining, toHaveElementClassContaining } from '../../../src/matchers/element/toHaveClassContaining';
+import { toHaveElementClassContaining } from '../../../src/matchers/element/toHaveClassContaining';
+
+vi.mock('@wdio/globals')
 
 describe('toHaveElementClassContaining', () => {
     let el: WebdriverIO.Element
 
     beforeEach(async () => {
         el = await $('sel')
-        el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
+        el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
             if(attribute === 'class') {
                 return 'some-class another-class'
             }
@@ -48,14 +53,3 @@ describe('toHaveElementClassContaining', () => {
         })
     });
 });
-
-global.console.warn = jest.fn()
-
-describe('toHaveClassContaining', () => {
-    let el: WebdriverIO.Element
-
-    test('warning message in console', async () => {
-        await toHaveClassContaining(el, "test");
-        expect(console.warn).toHaveBeenCalledWith('expect(...).toHaveClassContaining is deprecated and will be removed in next release. Use toHaveElementClassContaining instead.')
-    })
-})
