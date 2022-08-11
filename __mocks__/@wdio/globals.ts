@@ -30,16 +30,16 @@ const element = {
     getText: getTextFn
 }
 
-export function $(selector, ...args) {
+export function $(selector) {
     return {
         ...element,
         selector
     }
 }
 
-export function $$(selector, ...args) {
+export function $$(selector) {
     const length = this._length || 2
-    let els: any = Array(length).map((_, index) => {
+    const els: any = Array(length).map((_, index) => {
         return {
             ...element,
             selector,
@@ -47,7 +47,7 @@ export function $$(selector, ...args) {
         }
     })
     // Required to refetch
-    let parent: any = element;
+    const parent: any = element;
     parent._length = length;
     els.parent = parent;
 
@@ -58,7 +58,7 @@ export function $$(selector, ...args) {
     return els;
 }
 
-async function waitUntil(condition, { timeout, m, interval }) {
+async function waitUntil(condition, { timeout, interval }) {
     if (!Number.isInteger(timeout) || timeout < 1) {
         throw new Error('wrong args passed to waitUntil fixture')
     }
@@ -69,7 +69,9 @@ async function waitUntil(condition, { timeout, m, interval }) {
             if (result) {
                 return true
             }
-        } catch {}
+        } catch {
+            // don't do anything
+        }
         attemptsLeft--
         await sleep(interval)
     }
