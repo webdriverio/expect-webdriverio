@@ -12,8 +12,9 @@ on:
           - patch
           - minor
           - major
+          - ""
       distTag:
-        description: 'NPM tag (e.g. use "next" to release a test version)'
+        description: 'NPM tag (e.g. use "=next --preRelease=alpha --github.preRelease" to release a test version)'
         required: true
         default: 'latest'
 
