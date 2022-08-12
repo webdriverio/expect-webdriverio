@@ -3,7 +3,7 @@ import { browser } from '@wdio/globals'
 import {
     waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand,
     wrapExpectedWithArray, updateElementsArray
-} from '../../utils'
+} from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, text: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions): Promise<any> {
     const actualText = await el.getText()

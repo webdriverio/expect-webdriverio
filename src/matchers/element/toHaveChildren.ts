@@ -3,7 +3,7 @@ import { browser } from '@wdio/globals'
 import {
     waitUntil, enhanceError, compareNumbers, numberError, executeCommand,
     wrapExpectedWithArray, updateElementsArray
-} from '../../utils'
+} from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.NumberOptions): Promise<any> {
     const children = await el.$$('./*')

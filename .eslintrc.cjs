@@ -1,13 +1,15 @@
 module.exports = {
     root: true,
     parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint'],
+    plugins: ['@typescript-eslint', 'unicorn', 'import'],
     extends: [
         'eslint:recommended',
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
     ],
     rules: {
+        'unicorn/prefer-node-protocol': ['error'],
+        'import/extensions': ['error', 'ignorePackages'],
         '@typescript-eslint/no-var-requires': 0,
         '@typescript-eslint/ban-ts-ignore': 0,
         '@typescript-eslint/no-namespace': 1,

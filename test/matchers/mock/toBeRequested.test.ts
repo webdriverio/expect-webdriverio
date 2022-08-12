@@ -1,6 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
-import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
 import type { Matches, Mock } from 'webdriverio'
+
+import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
 
 import { getExpected, getExpectMessage, getReceived, removeColors } from '../../__fixtures__/utils.js'
 

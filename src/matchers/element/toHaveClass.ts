@@ -2,7 +2,7 @@ import { browser } from '@wdio/globals'
 
 import {
     waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray
-} from '../../utils'
+} from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions): Promise<any> {
     const { ignoreCase = false, trim = false, containing = false } = options

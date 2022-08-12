@@ -1,8 +1,8 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils';
-import { toHaveHrefContaining } from '../../../src/matchers/element/toHaveHrefContaining';
+import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
+import { toHaveHrefContaining } from '../../../src/matchers/element/toHaveHrefContaining.js'
 
 vi.mock('@wdio/globals')
 

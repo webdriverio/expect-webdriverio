@@ -3,7 +3,7 @@ import { browser } from '@wdio/globals'
 import {
     waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray,
     updateElementsArray
-} from '../../utils'
+} from '../../utils.js'
 
 async function conditionAttr(el: WebdriverIO.Element, attribute: string): Promise<any> {
     const attr = await el.getAttribute(attribute)

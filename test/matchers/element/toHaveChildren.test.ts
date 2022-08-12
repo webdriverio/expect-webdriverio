@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren'
+import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren.js'
 
 vi.mock('@wdio/globals')
 

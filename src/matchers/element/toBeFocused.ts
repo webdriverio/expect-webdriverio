@@ -1,6 +1,6 @@
 import { browser } from '@wdio/globals'
 
-import { executeCommandBe } from '../../utils'
+import { executeCommandBe } from '../../utils.js'
 
 export function toBeFocused(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
     this.expectation = this.expectation || 'focused'

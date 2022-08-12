@@ -7,7 +7,7 @@ import {
     executeCommand,
     wrapExpectedWithArray,
     updateElementsArray,
-} from '../../utils'
+} from '../../utils.js'
 
 async function condition(
     el: WebdriverIO.Element,

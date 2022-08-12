@@ -3,7 +3,7 @@ import { browser } from '@wdio/globals'
 import {
     waitUntil, enhanceError, compareStyle, executeCommand, wrapExpectedWithArray,
     updateElementsArray
-} from '../../utils'
+} from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions): Promise<any> {
     return compareStyle(el, style, options)

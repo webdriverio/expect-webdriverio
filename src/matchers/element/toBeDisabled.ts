@@ -1,6 +1,6 @@
 import { browser } from '@wdio/globals'
 
-import { executeCommandBe } from '../../utils'
+import { executeCommandBe } from '../../utils.js'
 import type { WdioElementMaybePromise } from '../../types'
 
 export function toBeDisabled(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {

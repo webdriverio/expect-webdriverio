@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { compareNumbers, compareText, compareTextWithArray } from '../src/utils'
+import { compareNumbers, compareText, compareTextWithArray } from '../src/utils.js'
 
 describe('utils', () => {
     describe('compareText', () => {

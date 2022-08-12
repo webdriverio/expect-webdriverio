@@ -1,4 +1,4 @@
-import { toHaveText } from './toHaveText'
+import { toHaveText } from './toHaveText.js'
 
 export function toHaveTextContaining(el: WebdriverIO.Element, text: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}): any {
     return toHaveText.call(this, el, text, {

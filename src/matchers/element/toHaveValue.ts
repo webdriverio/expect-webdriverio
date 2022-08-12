@@ -1,4 +1,4 @@
-import { toHaveElementProperty } from './toHaveElementProperty'
+import { toHaveElementProperty } from './toHaveElementProperty.js'
 
 export function toHaveValue(
     el: WebdriverIO.Element,

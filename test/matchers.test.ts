@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import Matchers from '../src/matchers'
+import Matchers from '../src/matchers.js'
 
 test('matchers', () => {
     expect(Object.keys(Matchers)).toEqual([

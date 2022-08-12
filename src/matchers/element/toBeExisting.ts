@@ -1,6 +1,6 @@
 import { browser } from '@wdio/globals'
 
-import { executeCommandBe, aliasFn } from '../../utils'
+import { executeCommandBe, aliasFn } from '../../utils.js'
 import type { WdioElementMaybePromise } from '../../types'
 
 export function toExist(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {

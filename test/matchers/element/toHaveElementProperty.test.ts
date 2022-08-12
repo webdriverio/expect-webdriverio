@@ -1,8 +1,8 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils'
-import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty'
+import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
+import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty.js'
 
 vi.mock('@wdio/globals')
 

@@ -1,4 +1,4 @@
-import { toHaveAttributeAndValueFn } from './toHaveAttribute'
+import { toHaveAttributeAndValueFn } from './toHaveAttribute.js'
 
 export function toHaveElementClassContaining (...args: any) {
     return toHaveClassContaining.call(this, ...args)

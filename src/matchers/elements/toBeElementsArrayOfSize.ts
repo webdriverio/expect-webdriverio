@@ -1,7 +1,7 @@
 import { browser } from '@wdio/globals'
 
-import { waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils'
-import { refetchElements } from '../../util/refetchElements'
+import { waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils.js'
+import { refetchElements } from '../../util/refetchElements.js'
 
 export function toBeElementsArrayOfSize(received: WebdriverIO.ElementArray, expected: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot

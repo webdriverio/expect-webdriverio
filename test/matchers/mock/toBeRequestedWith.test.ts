@@ -1,8 +1,8 @@
 import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 
-import { toBeRequestedWith } from '../../../src/matchers/mock/toBeRequestedWith'
+import { toBeRequestedWith } from '../../../src/matchers/mock/toBeRequestedWith.js'
 import type { Matches } from 'webdriverio'
-import { removeColors, getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils'
+import { removeColors, getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 
 vi.mock('@wdio/globals')
 

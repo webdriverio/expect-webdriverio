@@ -2,8 +2,8 @@ import { browser } from '@wdio/globals'
 
 import type { Mock, Matches } from 'webdriverio'
 
-import { waitUntil, enhanceError } from '../../utils'
-import { equals } from '../../jasmineUtils'
+import { waitUntil, enhanceError } from '../../utils.js'
+import { equals } from '../../jasmineUtils.js'
 
 const STR_LIMIT = 80
 const KEY_LIMIT = 12

@@ -1,8 +1,8 @@
 import { browser } from '@wdio/globals'
 import type { Mock } from 'webdriverio'
 
-import { waitUntil, enhanceError, compareNumbers } from '../../utils'
-import { numberError } from '../../util/formatMessage'
+import { waitUntil, enhanceError, compareNumbers } from '../../utils.js'
+import { numberError } from '../../util/formatMessage.js'
 
 export function toBeRequestedTimes(received: Mock, expected: number| ExpectWebdriverIO.NumberOptions = {}, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot || false

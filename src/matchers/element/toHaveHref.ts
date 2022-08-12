@@ -1,4 +1,4 @@
-import { toHaveAttributeAndValueFn } from './toHaveAttribute'
+import { toHaveAttributeAndValueFn } from './toHaveAttribute.js'
 
 export function toHaveHref(el: WebdriverIO.Element, href: string, options: ExpectWebdriverIO.StringOptions = {}): any {
     return toHaveAttributeAndValueFn.call(this, el, 'href', href, options)

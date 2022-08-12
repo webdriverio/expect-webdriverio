@@ -1,8 +1,8 @@
 import { vi, beforeEach, test, describe, expect } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 
-import { updateElementsArray, wrapExpectedWithArray } from '../../src/util/elementsUtil'
-import { refetchElements } from '../../src/util/refetchElements'
+import { updateElementsArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
+import { refetchElements } from '../../src/util/refetchElements.js'
 
 vi.mock('@wdio/globals')
 

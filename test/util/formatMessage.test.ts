@@ -1,7 +1,7 @@
 import { test, describe, beforeEach, expect } from 'vitest'
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils';
 
-import { enhanceError } from '../../src/util/formatMessage'
+import { enhanceError } from '../../src/util/formatMessage.js'
 
 describe('formatMessage', () => {
     describe('enhanceError', () => {

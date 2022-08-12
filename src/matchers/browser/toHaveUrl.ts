@@ -1,4 +1,4 @@
-import { waitUntil, enhanceError, compareText } from '../../utils'
+import { waitUntil, enhanceError, compareText } from '../../utils.js'
 
 export function toHaveUrl(browser: WebdriverIO.Browser, url: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
     const isNot = this.isNot

@@ -1,4 +1,4 @@
-import { toHaveAttributeAndValueFn } from './toHaveAttribute'
+import { toHaveAttributeAndValueFn } from './toHaveAttribute.js'
 
 export function toHaveAttributeContaining(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions = {}): any {
     return toHaveAttributeAndValueFn.call(this, el, attribute, value, {

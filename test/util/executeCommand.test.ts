@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $$ } from '@wdio/globals'
 
-import { executeCommand } from '../../src/util/executeCommand'
+import { executeCommand } from '../../src/util/executeCommand.js'
 
 vi.mock('@wdio/globals')
 
