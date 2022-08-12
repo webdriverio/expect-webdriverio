@@ -1,4 +1,5 @@
 declare namespace ExpectWebdriverIO {
+    function expect<T = unknown>(actual: T): Matchers<T, T>
     function setOptions(options: DefaultOptions): void
 
     interface DefaultOptions {
