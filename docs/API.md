@@ -4,7 +4,7 @@ When you're writing tests, you often need to check that values meet certain cond
 
 ## Default Options
 
-These default options below are connected to the waitforTimeout and waitforInterval options set in the config.
+These default options below are connected to the [`waitforTimeout`](https://webdriver.io/docs/options#waitfortimeout) and [`waitforInterval`](https://webdriver.io/docs/options#waitforinterval) options set in the config.
 
 Only set the options below if you want to wait for specific timeouts for your assertions.
 
@@ -15,11 +15,19 @@ Only set the options below if you want to wait for specific timeouts for your as
 }
 ```
 
-Set options like this:
+If you like to pick different timeouts and intervals, set these options like this:
+
 ```js
-before () {
-    require('expect-webdriverio').setOptions({ wait: 5000 })
-},
+// wdio.conf.js
+import { setOptions } from 'expect-webdriverio'
+
+export const config = {
+    // ...
+    before () {
+        setOptions({ wait: 5000 })
+    },
+    // ...
+}
 ```
 
 ### Matcher Options

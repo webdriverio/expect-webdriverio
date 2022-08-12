@@ -38,8 +38,8 @@ See more [Examples](docs/Examples.md)
 If you embed WebdriverIO in a standalone script, make sure you import `expect-webdriverio` before you use it anywhere.
 
 ```js
-const { remote } = require('webdriverio');
-require('expect-webdriverio')
+import { remote } from 'webdriverio'
+import { expect } from 'expect-webdriverio'
 
 ;(async () => {
     const browser = await remote({

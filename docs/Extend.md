@@ -10,22 +10,20 @@ Custom matchers should be added in wdio `before` hook
 ```js
 // wdio.conf.js
 {
-  before() {
-    const matchers = require('./myMatchers')
-    matchers.addCustomMatchers()
-  }
+    async before () {
+        const { addCustomMatchers } = await import('./myMatchers')
+        addCustomMatchers()
+    }
 }
 ```
 
 ```js
 // myMatchers.js - Jest example
-module.exports = {
-    addCustomMatchers: () => {
-        expect.extend({
-            myMatcher(actual, expected) {
-                return { pass: actual === expected, message: () => 'some message' }
-            },
-        })
-    }
+export function addCustomMatchers () {
+    expect.extend({
+        myMatcher (actual, expected) {
+            return { pass: actual === expected, message: () => 'some message' }
+        }
+    })
 }
 ```
