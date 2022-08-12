@@ -12,11 +12,18 @@ on:
           - patch
           - minor
           - major
-          - " "
       distTag:
         description: 'NPM tag (e.g. use "next --preRelease=alpha --github.preRelease" to release a test version)'
         required: true
         default: 'latest'
+      preRelease:
+        description: If latest release was a pre-release (e.g. X.X.X-alpha.0) and you want to push another one, pick "yes"
+        required: true
+        type: choice
+        default: "no"
+        options:
+          - "yes"
+          - "no"
 
 env:
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -63,3 +70,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ github.event.inputs.preRelease == 'no' }}
+      - name: Release
+        run: npx release-it --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --preRelease=alpha --github.preRelease --npm.tag=next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ github.event.inputs.preRelease == 'yes' }}
