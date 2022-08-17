@@ -20,6 +20,10 @@ Custom matchers should be added in wdio `before` hook
 ```js
 // myMatchers.js - Jest example
 export function addCustomMatchers () {
+    if (global.expect.expect !== undefined) { // Temporary workaround. See https://github.com/webdriverio/expect-webdriverio/issues/835
+        global.expect = global.expect.expect;
+    }
+
     expect.extend({
         myMatcher (actual, expected) {
             return { pass: actual === expected, message: () => 'some message' }
