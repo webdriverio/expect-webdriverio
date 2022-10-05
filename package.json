@@ -32,6 +32,9 @@
   },
   "types": "types/jest-global.d.ts",
   "typeScriptVersion": "3.8.3",
+  "engines": {
+    "node": "^16.13 || >=18"
+  },
   "scripts": {
     "build": "run-s clean compile",
     "clean": "run-p clean:*",
@@ -68,8 +71,8 @@
     "vitest": "0.23.4"
   },
   "peerDependencies": {
-    "@wdio/globals": "next",
-    "webdriverio": "next"
+    "@wdio/globals": "^8.0.0-alpha.365",
+    "webdriverio": "^8.0.0-alpha.365"
   },
   "dependencies": {
     "expect": "^29.0.2",
