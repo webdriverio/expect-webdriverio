@@ -74,6 +74,14 @@
     "@wdio/globals": "^8.0.0-alpha.365",
     "webdriverio": "^8.0.0-alpha.365"
   },
+  "peerDependenciesMeta": {
+    "@wdio/globals": {
+      "optional": false
+    },
+    "webdriverio": {
+      "optional": false
+    }
+  },
   "dependencies": {
     "expect": "^29.0.2",
     "jest-matcher-utils": "^29.0.2"
