@@ -18,18 +18,8 @@
     "webdriverio",
     "wdio"
   ],
-  "main": "./lib/index.cjs.js",
   "type": "module",
-  "module": "./lib/index.js",
-  "exports": {
-    ".": [
-      {
-        "import": "./lib/index.js",
-        "require": "./lib/index.cjs.js"
-      },
-      "./lib/index.cjs.js"
-    ]
-  },
+  "exports": "./lib/index.js",
   "types": "types/jest-global.d.ts",
   "typeScriptVersion": "3.8.3",
   "engines": {
