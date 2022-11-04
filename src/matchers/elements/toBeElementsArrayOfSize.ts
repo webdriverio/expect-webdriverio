@@ -1,9 +1,7 @@
-import { browser } from '@wdio/globals'
-
 import { waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 
-export function toBeElementsArrayOfSize(received: WebdriverIO.ElementArray, expected: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}): any {
+export async function toBeElementsArrayOfSize(received: WebdriverIO.ElementArray, expected: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'elements array of size', verb = 'be' } = this
 
@@ -17,23 +15,21 @@ export function toBeElementsArrayOfSize(received: WebdriverIO.ElementArray, expe
         numberOptions = expected
     }
 
-    return browser.call(async () => {
-        let elements = await received
-        const arrLength = elements.length
+    let elements = await received
+    const arrLength = elements.length
 
-        const pass = await waitUntil(async () => {
-            elements = await refetchElements(elements, numberOptions.wait, true)
-            return compareNumbers(elements.length, numberOptions)
-        }, isNot, {...numberOptions, ...options})
+    const pass = await waitUntil(async () => {
+        elements = await refetchElements(elements, numberOptions.wait, true)
+        return compareNumbers(elements.length, numberOptions)
+    }, isNot, {...numberOptions, ...options})
 
-        updateElementsArray(pass, received, elements, true)
+    updateElementsArray(pass, received, elements, true)
 
-        const error = numberError(numberOptions)
-        const message = enhanceError(elements, error, arrLength, this, verb, expectation, '', numberOptions)
+    const error = numberError(numberOptions)
+    const message = enhanceError(elements, error, arrLength, this, verb, expectation, '', numberOptions)
 
-        return {
-            pass,
-            message: (): string => message
-        }
-    })
+    return {
+        pass,
+        message: (): string => message
+    }
 }

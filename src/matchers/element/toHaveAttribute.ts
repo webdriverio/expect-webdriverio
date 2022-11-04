@@ -1,11 +1,9 @@
-import { browser } from '@wdio/globals'
-
 import {
     waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray,
     updateElementsArray
 } from '../../utils.js'
 
-async function conditionAttr(el: WebdriverIO.Element, attribute: string): Promise<any> {
+async function conditionAttr(el: WebdriverIO.Element, attribute: string) {
     const attr = await el.getAttribute(attribute)
     if (typeof attr !== 'string') {
         return { result: false, value: attr }
@@ -14,7 +12,7 @@ async function conditionAttr(el: WebdriverIO.Element, attribute: string): Promis
     }
 }
 
-async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions): Promise<any> {
+async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions) {
     const attr = await el.getAttribute(attribute)
     if (typeof attr !== 'string') {
         return { result: false, value: attr }
@@ -23,56 +21,52 @@ async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string,
     return compareText(attr, value, options)
 }
 
-export function toHaveAttributeAndValueFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
+export async function toHaveAttributeAndValueFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
-    return browser.call(async () => {
-        let el = await received
-        let attr
-        const pass = await waitUntil(async () => {
-            const result = await executeCommand.call(this, el, conditionAttrAndValue, options, [attribute, value, options])
-            el = result.el
-            attr = result.values
+    let el = await received
+    let attr
+    const pass = await waitUntil(async () => {
+        const result = await executeCommand.call(this, el, conditionAttrAndValue, options, [attribute, value, options])
+        el = result.el
+        attr = result.values
 
-            return result.success
-        }, isNot, options)
+        return result.success
+    }, isNot, options)
 
-        updateElementsArray(pass, received, el)
+    updateElementsArray(pass, received, el)
 
-        const expected = wrapExpectedWithArray(el, attr, value)
-        const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
+    const expected = wrapExpectedWithArray(el, attr, value)
+    const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
 
-        return {
-            pass,
-            message: (): string => message
-        }
-    })
+    return {
+        pass,
+        message: (): string => message
+    }
 }
 
-export function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string): any {
+export async function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
-    return browser.call(async () => {
-        let el = await received
+    let el = await received
 
-        const pass = await waitUntil(async () => {
-            const result = await executeCommand.call(this, el, conditionAttr, {}, [attribute])
-            el = result.el
+    const pass = await waitUntil(async () => {
+        const result = await executeCommand.call(this, el, conditionAttr, {}, [attribute])
+        el = result.el
 
-            return result.success
-        }, isNot, {})
+        return result.success
+    }, isNot, {})
 
-        updateElementsArray(pass, received, el)
+    updateElementsArray(pass, received, el)
 
-        const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, {})
+    const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, {})
 
-        return {
-            pass,
-            message: (): string => message
-        }
-    })
+    return {
+        pass,
+        message: (): string => message
+    }
 }
 
 export function toHaveAttribute(...args: any): any {

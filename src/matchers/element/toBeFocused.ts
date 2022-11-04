@@ -1,12 +1,6 @@
-import { browser } from '@wdio/globals'
-
 import { executeCommandBe } from '../../utils.js'
 
-export function toBeFocused(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
+export function toBeFocused(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'focused'
-
-    return browser.call(async () => {
-        const result = await executeCommandBe.call(this, received, el => el.isFocused(), options)
-        return result
-    })
+    return executeCommandBe.call(this, received, el => el.isFocused(), options)
 }

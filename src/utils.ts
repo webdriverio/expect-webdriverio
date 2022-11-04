@@ -1,4 +1,3 @@
-import { browser } from '@wdio/globals'
 import type { ParsedCSSValue } from 'webdriverio'
 
 import { executeCommand } from './util/executeCommand.js'
@@ -7,15 +6,21 @@ import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.
 import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types'
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 /**
  * wait for expectation to succeed
  * @param condition function
  * @param isNot     https://jestjs.io/docs/en/expect#thisisnot
  * @param options   wait, interval, etc
  */
-const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
-    wait = DEFAULT_OPTIONS.wait,
-    interval = DEFAULT_OPTIONS.interval } = {},
+const waitUntil = async (
+    condition: () => Promise<boolean>,
+    isNot = false,
+    {
+        wait = DEFAULT_OPTIONS.wait,
+        interval = DEFAULT_OPTIONS.interval
+    } = {},
 ): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
@@ -25,18 +30,25 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
     // wait for condition to be truthy
     try {
         let error
-        await browser.waitUntil(async () => {
+        const start = Date.now()
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            if ((Date.now() - start) > wait) {
+                throw new Error('timeout')
+            }
+
             error = undefined
             try {
-                return isNot !== await condition()
+                const result = isNot !== await condition()
+                if (result) {
+                    break
+                }
+                await sleep(interval)
             } catch (err) {
                 error = err
-                return false
+                await sleep(interval)
             }
-        }, {
-            timeout: wait,
-            interval
-        })
+        }
 
         if (error) {
             throw error
@@ -215,5 +227,5 @@ export {
     executeCommandBe,
     waitUntil,
     compareNumbers,
-    aliasFn,
+    aliasFn
 }

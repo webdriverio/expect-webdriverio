@@ -1,5 +1,3 @@
-import { browser } from '@wdio/globals'
-
 import type { Mock, Matches } from 'webdriverio'
 
 import { waitUntil, enhanceError } from '../../utils.js'
@@ -8,54 +6,52 @@ import { equals } from '../../jasmineUtils.js'
 const STR_LIMIT = 80
 const KEY_LIMIT = 12
 
-export function toBeRequestedWith(
+export async function toBeRequestedWith(
     received: Mock,
     requestedWith: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = {}
-): any {
+) {
     const isNot = this.isNot || false
     const { expectation = 'called with', verb = 'be' } = this
 
-    return browser.call(async () => {
-        let actual: Matches | undefined
-        const pass = await waitUntil(
-            async () => {
-                for (const call of received.calls) {
-                    actual = call
-                    if (
-                        methodMatcher(call.method, requestedWith.method) &&
-                        statusCodeMatcher(call.statusCode, requestedWith.statusCode) &&
-                        urlMatcher(call.url, requestedWith.url) &&
-                        headersMatcher(call.headers, requestedWith.requestHeaders) &&
-                        headersMatcher(call.responseHeaders, requestedWith.responseHeaders) &&
-                        bodyMatcher(call.postData, requestedWith.postData) &&
-                        bodyMatcher(call.body, requestedWith.response)
-                    ) {
-                        return true
-                    }
+    let actual: Matches | undefined
+    const pass = await waitUntil(
+        async () => {
+            for (const call of received.calls) {
+                actual = call
+                if (
+                    methodMatcher(call.method, requestedWith.method) &&
+                    statusCodeMatcher(call.statusCode, requestedWith.statusCode) &&
+                    urlMatcher(call.url, requestedWith.url) &&
+                    headersMatcher(call.headers, requestedWith.requestHeaders) &&
+                    headersMatcher(call.responseHeaders, requestedWith.responseHeaders) &&
+                    bodyMatcher(call.postData, requestedWith.postData) &&
+                    bodyMatcher(call.body, requestedWith.response)
+                ) {
+                    return true
                 }
+            }
 
-                return false
-            },
-            isNot,
-            { ...options, wait: isNot ? 0 : options.wait }
-        )
+            return false
+        },
+        isNot,
+        { ...options, wait: isNot ? 0 : options.wait }
+    )
 
-        const message = enhanceError(
-            'mock',
-            minifyRequestedWith(requestedWith),
-            minifyRequestMock(actual, requestedWith) || 'was not called',
-            this,
-            verb,
-            expectation,
-            '',
-            options
-        )
-        return {
-            pass,
-            message: (): string => message,
-        }
-    })
+    const message = enhanceError(
+        'mock',
+        minifyRequestedWith(requestedWith),
+        minifyRequestMock(actual, requestedWith) || 'was not called',
+        this,
+        verb,
+        expectation,
+        '',
+        options
+    )
+    return {
+        pass,
+        message: (): string => message,
+    }
 }
 
 /**

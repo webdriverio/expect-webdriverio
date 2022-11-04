@@ -1,13 +1,7 @@
-import { browser } from '@wdio/globals'
-
 import { executeCommandBe } from '../../utils.js'
 import type { WdioElementMaybePromise } from '../../types'
 
-export function toBeDisabled(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
+export function toBeDisabled(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'disabled'
-
-    return browser.call(async () => {
-        const result = await executeCommandBe.call(this, received, async el => !await el.isEnabled(), options)
-        return result
-    })
+    return executeCommandBe.call(this, received, async el => !await el.isEnabled(), options)
 }

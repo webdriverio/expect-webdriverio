@@ -1,10 +1,6 @@
-import { browser } from '@wdio/globals'
+import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils.js'
 
-import {
-    waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray
-} from '../../utils.js'
-
-async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions): Promise<any> {
+async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions) {
     const { ignoreCase = false, trim = false, containing = false } = options
 
     let attr = await el.getAttribute(attribute)
@@ -37,31 +33,29 @@ export function toHaveElementClass(...args: any): any {
     return toHaveClass.call(this || {}, ...args)
 }
 
-export function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
+export async function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
     const attribute = 'class'
 
-    return browser.call(async () => {
-        let el = await received
-        let attr
+    let el = await received
+    let attr
 
-        const pass = await waitUntil(async () => {
-            const result = await executeCommand.call(this, el, condition, options, [attribute, className, options])
-            el = result.el
-            attr = result.values
+    const pass = await waitUntil(async () => {
+        const result = await executeCommand.call(this, el, condition, options, [attribute, className, options])
+        el = result.el
+        attr = result.values
 
-            return result.success
-        }, isNot, options)
+        return result.success
+    }, isNot, options)
 
-        updateElementsArray(pass, received, el)
+    updateElementsArray(pass, received, el)
 
-        const message = enhanceError(el, wrapExpectedWithArray(el, attr, className), attr, this, verb, expectation, '', options)
+    const message = enhanceError(el, wrapExpectedWithArray(el, attr, className), attr, this, verb, expectation, '', options)
 
-        return {
-            pass,
-            message: () => message
-        }
-    })
+    return {
+        pass,
+        message: () => message
+    }
 }

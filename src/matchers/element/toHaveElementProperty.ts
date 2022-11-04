@@ -1,5 +1,3 @@
-import { browser } from '@wdio/globals'
-
 import {
     waitUntil,
     enhanceError,
@@ -35,43 +33,41 @@ async function condition(
     return compareText(prop, value, options)
 }
 
-export function toHaveElementProperty(
+export async function toHaveElementProperty(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     property: string,
     value?: string | RegExp,
     options: ExpectWebdriverIO.StringOptions = {}
-): any {
+) {
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
 
-    return browser.call(async () => {
-        let el = await received
-        let prop: any
-        const pass = await waitUntil(
-            async () => {
-                const result = await executeCommand.call(this, el, condition, options, [property, value])
-                el = result.el
-                prop = result.values
+    let el = await received
+    let prop: any
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand.call(this, el, condition, options, [property, value])
+            el = result.el
+            prop = result.values
 
-                return result.success
-            },
-            isNot,
-            options
-        )
+            return result.success
+        },
+        isNot,
+        options
+    )
 
-        updateElementsArray(pass, received, el)
+    updateElementsArray(pass, received, el)
 
-        let message: string
-        if (value === undefined) {
-            message = enhanceError(el, !isNot, pass, this, verb, expectation, property, options)
-        } else {
-            const expected = wrapExpectedWithArray(el, prop, value)
-            message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
-        }
+    let message: string
+    if (value === undefined) {
+        message = enhanceError(el, !isNot, pass, this, verb, expectation, property, options)
+    } else {
+        const expected = wrapExpectedWithArray(el, prop, value)
+        message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
+    }
 
-        return {
-            pass,
-            message: (): string => message,
-        }
-    })
+    return {
+        pass,
+        message: (): string => message,
+    }
 }

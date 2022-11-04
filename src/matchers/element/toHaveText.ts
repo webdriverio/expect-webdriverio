@@ -1,11 +1,9 @@
-import { browser } from '@wdio/globals'
-
 import {
     waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand,
     wrapExpectedWithArray, updateElementsArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, text: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions): Promise<any> {
+async function condition(el: WebdriverIO.Element, text: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
     if (Array.isArray(text)) {
         return compareTextWithArray(actualText, text, options)
@@ -13,29 +11,27 @@ async function condition(el: WebdriverIO.Element, text: string | RegExp | Array<
     return compareText(actualText, text, options)
 }
 
-export function toHaveText(received: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}): any {
+export async function toHaveText(received: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'text', verb = 'have' } = this
 
-    return browser.call(async () => {
-        let el = await received
-        let actualText
+    let el = await received
+    let actualText
 
-        const pass = await waitUntil(async () => {
-            const result = await executeCommand.call(this, el, condition, options, [text, options])
-            el = result.el
-            actualText = result.values
+    const pass = await waitUntil(async () => {
+        const result = await executeCommand.call(this, el, condition, options, [text, options])
+        el = result.el
+        actualText = result.values
 
-            return result.success
-        }, isNot, options)
+        return result.success
+    }, isNot, options)
 
-        updateElementsArray(pass, received, el)
+    updateElementsArray(pass, received, el)
 
-        const message = enhanceError(el, wrapExpectedWithArray(el, actualText, text), actualText, this, verb, expectation, '', options)
+    const message = enhanceError(el, wrapExpectedWithArray(el, actualText, text), actualText, this, verb, expectation, '', options)
 
-        return {
-            pass,
-            message: (): string => message
-        }
-    })
+    return {
+        pass,
+        message: (): string => message
+    }
 }

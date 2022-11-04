@@ -1,22 +1,17 @@
-import { browser } from '@wdio/globals'
-
 import { executeCommandBe, aliasFn } from '../../utils.js'
 import type { WdioElementMaybePromise } from '../../types'
 
-export function toExist(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
+export function toExist(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'exist'
     this.verb = this.verb || ''
 
-    return browser.call(async () => {
-        const result = await executeCommandBe.call(this, received, async el => {
-            try {
-                return el.isExisting()
-            } catch {
-                return false
-            }
-        }, options)
-        return result
-    })
+    return executeCommandBe.call(this, received, async el => {
+        try {
+            return el.isExisting()
+        } catch {
+            return false
+        }
+    }, options)
 }
 
 export function toBeExisting(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions): any {
