@@ -62,17 +62,9 @@
     "vitest": "0.24.4",
     "webdriverio": "^8.0.0-alpha.505"
   },
-  "peerDependencies": {
+  "optionalDependencies": {
     "@wdio/globals": "^8.0.0-alpha.505",
     "webdriverio": "^8.0.0-alpha.505"
-  },
-  "peerDependenciesMeta": {
-    "@wdio/globals": {
-      "optional": true
-    },
-    "webdriverio": {
-      "optional": true
-    }
   },
   "dependencies": {
     "expect": "^29.0.2",
