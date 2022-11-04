@@ -60,7 +60,7 @@ jobs:
           git config --global user.email "bot@webdriver.io"
           git config --global user.name "WebdriverIO Release Bot"
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --force
       - name: Build Project
         run: npm run build
         env:
