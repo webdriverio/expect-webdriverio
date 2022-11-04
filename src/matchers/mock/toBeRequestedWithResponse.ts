@@ -4,7 +4,7 @@ import { toBeRequestedWithFn } from './toBeRequestedWith'
 import { runExpect } from '../../util/expectAdapter'
 
 function toBeRequestedWithResponseFn(
-    received: Mock,
+    received: Mock & {browser: WebdriverIO.Browser},
     response: any,
     options: ExpectWebdriverIO.CommandOptions = {}
 ): any {

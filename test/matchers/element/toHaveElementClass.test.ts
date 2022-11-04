@@ -4,7 +4,7 @@ import { toHaveClass, toHaveElementClass } from '../../../src/matchers/element/t
 describe('toHaveElementClass', () => {
     let el: WebdriverIO.Element
 
-    beforeEach(async () => { 
+    beforeEach(async () => {
         el = await $('sel')
         el.getAttribute = jest.fn().mockImplementation((attribute: string) => {
             if(attribute === 'class') {
@@ -12,7 +12,7 @@ describe('toHaveElementClass', () => {
             }
             return null
         })
-    })    
+    })
 
     test('success when class name is present', async () => {
         const result = await toHaveElementClass(el, "some-class")
@@ -40,18 +40,18 @@ describe('toHaveElementClass', () => {
             const result = await toHaveElementClass(el, "some-class", {trim: true})
             expect(result.pass).toBe(true)
         })
-        
+
         it('should pass when ignore the case', async () => {
             const result = await toHaveElementClass(el, "sOme-ClAsS", {ignoreCase: true})
-            expect(result.pass).toBe(true) 
+            expect(result.pass).toBe(true)
         })
 
         it('should pass if containing', async () => {
             const result = await toHaveElementClass(el, "some", {containing: true})
-            expect(result.pass).toBe(true) 
-        }) 
+            expect(result.pass).toBe(true)
+        })
     })
-    
+
     describe('failure when class name is not present', () => {
         let result: any
 
@@ -105,7 +105,11 @@ global.console.warn = jest.fn()
 
 describe('toHaveClass', () => {
     let el: WebdriverIO.Element
-    
+
+    beforeEach(async () => {
+        el = await $('sel')
+    })
+
     test('warning message in console', async () => {
         await toHaveClass(el, "test")
         expect(console.warn).toHaveBeenCalledWith('expect(...).toHaveClass is deprecated and will be removed in next release. Use toHaveElementClass instead.')

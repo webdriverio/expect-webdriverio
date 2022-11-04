@@ -9,15 +9,21 @@ import { ParsedCSSValue } from 'webdriverio'
 const config = getConfig()
 const { options: DEFAULT_OPTIONS } = config
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 /**
  * wait for expectation to succeed
  * @param condition function
  * @param isNot     https://jestjs.io/docs/en/expect#thisisnot
  * @param options   wait, interval, etc
  */
-const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
-    wait = DEFAULT_OPTIONS.wait,
-    interval = DEFAULT_OPTIONS.interval } = {},
+const waitUntil = async (
+    condition: () => Promise<boolean>,
+    isNot = false,
+    {
+        wait = DEFAULT_OPTIONS.wait,
+        interval = DEFAULT_OPTIONS.interval
+    } = {},
 ): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
@@ -27,18 +33,25 @@ const waitUntil = async (condition: () => Promise<boolean>, isNot = false, {
     // wait for condition to be truthy
     try {
         let error
-        await browser.waitUntil(async () => {
+        const start = Date.now()
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            if ((Date.now() - start) > wait) {
+                throw new Error('timeout')
+            }
+
             error = undefined
             try {
-                return isNot !== await condition()
+                const result = isNot !== await condition()
+                if (result) {
+                    break
+                }
+                await sleep(interval)
             } catch (err) {
                 error = err
-                return false
+                await sleep(interval)
             }
-        }, {
-            timeout: wait,
-            interval
-        })
+        }
 
         if (error) {
             throw error
@@ -209,6 +222,20 @@ function aliasFn(
     return fn.apply(context, args)
 }
 
+/**
+ * traverse up the scope chain until browser element was reached
+ */
+function getBrowserObject (elem: WebdriverIO.Element | WebdriverIO.Browser): WebdriverIO.Browser {
+    const elemObject = elem as WebdriverIO.Element
+    return (elemObject as WebdriverIO.Element).parent ? getBrowserObject(elemObject.parent) : elem as WebdriverIO.Browser
+}
+
+async function getFirstElement (received: WdioElementMaybePromise): Promise<WebdriverIO.Element> {
+    received = await received
+
+    return Array.isArray(received) ? received[0] : received
+}
+
 export {
     updateElementsArray,
     wrapExpectedWithArray,
@@ -219,4 +246,6 @@ export {
     waitUntil,
     compareNumbers,
     aliasFn,
+    getBrowserObject,
+    getFirstElement,
 }

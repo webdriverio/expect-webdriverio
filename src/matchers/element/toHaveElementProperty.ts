@@ -1,4 +1,6 @@
 import {
+    getFirstElement,
+    getBrowserObject,
     waitUntil,
     enhanceError,
     compareText,
@@ -34,14 +36,17 @@ async function condition(
     return compareText(prop, value, options)
 }
 
-export function toHaveElementPropertyFn(
+export async function toHaveElementPropertyFn(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     property: string,
     value?: string | RegExp,
     options: ExpectWebdriverIO.StringOptions = {}
-): any {
+) {
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
+
+    const el = await getFirstElement(received)
+    const browser = getBrowserObject(el)
 
     return browser.call(async () => {
         let el = await received

@@ -1,4 +1,4 @@
-import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
+import { getFirstElement, getBrowserObject, waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
 async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions): Promise<any> {
@@ -30,11 +30,13 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
     }
 }
 
-function toHaveElementClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}): any {
+async function toHaveElementClassFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
     const attribute = 'class'
+    const el = await getFirstElement(received)
+    const browser = getBrowserObject(el)
 
     return browser.call(async () => {
         let el = await received

@@ -16,6 +16,15 @@ function getTextFn(propName) {
     return this._text ? this._text(propName) : undefined
 }
 
+const browser = {
+    $,
+    $$,
+    waitUntil,
+    getUrl: strFn,
+    getTitle: strFn,
+    call(fn) { return fn() },
+}
+
 const element = {
     $,
     $$,
@@ -27,7 +36,8 @@ const element = {
     isFocused: beFn,
     isEnabled: beFn,
     getProperty: getPropertyFn,
-    getText: getTextFn
+    getText: getTextFn,
+    parent: browser
 }
 
 function $(selector, ...args) {
@@ -39,7 +49,7 @@ function $(selector, ...args) {
 
 function $$(selector, ...args) {
     const length = this._length || 2
-    let els = Array(length).map((_, index) => {
+    let els = Array.from(Array(length), (_, index) => {
         return {
             ...element,
             selector,
@@ -50,7 +60,7 @@ function $$(selector, ...args) {
     let parent = element;
     parent._length = length;
     els.parent = parent;
-    
+
     els.foundWith = "$$";
     // Required to check length prop
     els.props = [];
@@ -74,15 +84,6 @@ async function waitUntil(condition, { timeout, m, interval }) {
         await sleep(interval)
     }
     throw new Error('waitUntil: timeout after ' + timeout)
-}
-
-const browser = {
-    $,
-    $$,
-    waitUntil,
-    getUrl: strFn,
-    getTitle: strFn,
-    call(fn) { return fn() },
 }
 
 global.browser = browser
