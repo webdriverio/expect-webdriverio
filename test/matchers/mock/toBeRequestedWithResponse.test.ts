@@ -10,6 +10,9 @@ class TestMock {
     get calls () {
         return this._calls
     }
+    get browser () {
+        return browser
+    }
     abort () { return Promise.resolve() }
     abortOnce () { return Promise.resolve() }
     respond () { return Promise.resolve() }

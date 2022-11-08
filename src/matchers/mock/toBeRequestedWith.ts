@@ -9,14 +9,14 @@ const STR_LIMIT = 80
 const KEY_LIMIT = 12
 
 export function toBeRequestedWithFn(
-    received: Mock,
+    received: Mock & {browser: WebdriverIO.Browser},
     requestedWith: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = {}
 ): any {
     const isNot = this.isNot || false
     const { expectation = 'called with', verb = 'be' } = this
 
-    return browser.call(async () => {
+    return received.browser.call(async () => {
         let actual: Matches | undefined
         const pass = await waitUntil(
             async () => {

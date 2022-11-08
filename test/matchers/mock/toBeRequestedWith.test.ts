@@ -11,6 +11,9 @@ class TestMock {
     get calls() {
         return this._calls
     }
+    get browser () {
+        return browser
+    }
 }
 
 const mockGet: Matches = {

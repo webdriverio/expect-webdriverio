@@ -1,9 +1,12 @@
-import { executeCommandBe, aliasFn } from '../../utils'
+import { getFirstElement, getBrowserObject, executeCommandBe, aliasFn } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
-function toExistFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}): any {
+async function toExistFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'exist'
     this.verb = this.verb || ''
+
+    const el = await getFirstElement(received)
+    const browser = getBrowserObject(el)
 
     return browser.call(async () => {
         const result = await executeCommandBe.call(this, received, async el => {
