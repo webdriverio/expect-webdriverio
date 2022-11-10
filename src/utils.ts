@@ -225,15 +225,9 @@ function aliasFn(
 /**
  * traverse up the scope chain until browser element was reached
  */
-function getBrowserObject (elem: WebdriverIO.Element | WebdriverIO.Browser): WebdriverIO.Browser {
+function getBrowserObject (elem: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Browser): WebdriverIO.Browser {
     const elemObject = elem as WebdriverIO.Element
     return (elemObject as WebdriverIO.Element).parent ? getBrowserObject(elemObject.parent) : elem as WebdriverIO.Browser
-}
-
-async function getFirstElement (received: WdioElementMaybePromise): Promise<WebdriverIO.Element> {
-    received = await received
-
-    return Array.isArray(received) ? received[0] : received
 }
 
 export {
@@ -247,5 +241,4 @@ export {
     compareNumbers,
     aliasFn,
     getBrowserObject,
-    getFirstElement,
 }

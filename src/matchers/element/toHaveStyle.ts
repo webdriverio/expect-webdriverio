@@ -1,4 +1,4 @@
-import { getFirstElement, getBrowserObject, waitUntil, enhanceError, compareStyle, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
+import { getBrowserObject, waitUntil, enhanceError, compareStyle, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
 async function condition(el: WebdriverIO.Element, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions): Promise<any> {
@@ -9,8 +9,7 @@ export async function toHaveStyleFn(received: WebdriverIO.Element | WebdriverIO.
     const isNot = this.isNot
     const { expectation = 'style', verb = 'have' } = this
 
-    const el = await getFirstElement(received)
-    const browser = getBrowserObject(el)
+    const browser = getBrowserObject(received)
 
     return browser.call(async () => {
         let el = await received

@@ -1,4 +1,4 @@
-import { compareNumbers, compareText, compareTextWithArray, getBrowserObject, getFirstElement } from '../src/utils'
+import { compareNumbers, compareText, compareTextWithArray, getBrowserObject } from '../src/utils'
 
 describe('utils', () => {
     describe('compareText', () => {
@@ -101,22 +101,6 @@ describe('utils', () => {
                     }
                 }
             } as any)).toEqual({ foo: 'bar' })
-        })
-    })
-
-    describe('getFirstElement', () => {
-        it('should return passed element', async () => {
-            const el = await $('sel')
-            const firstEl = await getFirstElement(el)
-
-            expect(firstEl).toEqual(el)
-        })
-
-        it('should return first element from elements array', async () => {
-            const els = await $$('sel')
-            const el = await getFirstElement(els)
-
-            expect(el).toEqual(els[0])
         })
     })
 })

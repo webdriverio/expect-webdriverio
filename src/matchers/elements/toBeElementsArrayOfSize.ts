@@ -1,4 +1,4 @@
-import { getFirstElement, getBrowserObject, waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils'
+import { getBrowserObject, waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils'
 import { refetchElements } from '../../util/refetchElements'
 import { runExpect } from '../../util/expectAdapter'
 
@@ -16,8 +16,7 @@ async function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, exp
         numberOptions = expected
     }
 
-    const el = await getFirstElement(received)
-    const browser = getBrowserObject(el)
+    const browser = getBrowserObject(received)
 
     return browser.call(async () => {
         let elements = await received

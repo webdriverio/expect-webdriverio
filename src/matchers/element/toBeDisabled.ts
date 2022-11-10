@@ -1,11 +1,11 @@
-import { getFirstElement, getBrowserObject, executeCommandBe } from '../../utils'
+import { getBrowserObject, executeCommandBe } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
 async function toBeDisabledFn(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'disabled'
 
-    const el = await getFirstElement(received)
-    const browser = getBrowserObject(el)
+    received = await received
+    const browser = getBrowserObject(received)
 
     return browser.call(async () => {
         const result = await executeCommandBe.call(this, received, async el => !await el.isEnabled(), options)
