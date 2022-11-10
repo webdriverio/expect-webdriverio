@@ -1,4 +1,4 @@
-import { getFirstElement, getBrowserObject, waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
+import { getBrowserObject, waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils'
 import { runExpect } from '../../util/expectAdapter'
 
 async function conditionAttr(el: WebdriverIO.Element, attribute: string): Promise<any> {
@@ -23,8 +23,7 @@ export async function toHaveAttributeAndValueFn(received: WebdriverIO.Element | 
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
-    const el = await getFirstElement(received)
-    const browser = getBrowserObject(el)
+    const browser = getBrowserObject(received)
 
     return browser.call(async () => {
         let el = await received
@@ -53,8 +52,7 @@ export async function toHaveAttributeFn(received: WebdriverIO.Element | Webdrive
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
-    const el = await getFirstElement(received)
-    const browser = getBrowserObject(el)
+    const browser = getBrowserObject(received)
 
     return browser.call(async () => {
         let el = await received

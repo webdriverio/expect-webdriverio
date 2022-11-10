@@ -1,5 +1,4 @@
 import {
-    getFirstElement,
     getBrowserObject,
     waitUntil,
     enhanceError,
@@ -45,8 +44,7 @@ export async function toHaveElementPropertyFn(
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
 
-    const el = await getFirstElement(received)
-    const browser = getBrowserObject(el)
+    const browser = getBrowserObject(received)
 
     return browser.call(async () => {
         let el = await received
