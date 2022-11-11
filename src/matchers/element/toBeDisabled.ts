@@ -5,7 +5,7 @@ async function toBeDisabledFn(received: WdioElementMaybePromise, options: Expect
     this.expectation = this.expectation || 'disabled'
 
     received = await received
-    const browser = getBrowserObject(received)
+    const browser = await getBrowserObject(received)
 
     return browser.call(async () => {
         const result = await executeCommandBe.call(this, received, async el => !await el.isEnabled(), options)

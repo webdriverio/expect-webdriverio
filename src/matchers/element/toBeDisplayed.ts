@@ -5,7 +5,7 @@ async function toBeDisplayedFn(received: WdioElementMaybePromise, options: Expec
     this.expectation = this.expectation || 'displayed'
 
     received = await received
-    const browser = getBrowserObject(received)
+    const browser = await getBrowserObject(received)
 
     return browser.call(async () => {
         const result = await executeCommandBe.call(this, received, async el => {

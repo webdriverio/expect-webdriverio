@@ -34,7 +34,7 @@ async function toHaveChildrenFn(received: WebdriverIO.Element | WebdriverIO.Elem
         numberOptions = expected
     }
 
-    const browser = getBrowserObject(received)
+    const browser = await getBrowserObject(received)
 
     return browser.call(async () => {
         let el = await received

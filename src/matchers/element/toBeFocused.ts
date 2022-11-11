@@ -4,7 +4,7 @@ import { runExpect } from '../../util/expectAdapter'
 async function toBeFocusedFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'focused'
 
-    const browser = getBrowserObject(received)
+    const browser = await getBrowserObject(received)
 
     return browser.call(async () => {
         const result = await executeCommandBe.call(this, received, el => el.isFocused(), options)

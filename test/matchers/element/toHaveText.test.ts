@@ -18,6 +18,22 @@ describe('toHaveText', () => {
         expect(el._attempts).toBe(0)
     })
 
+    test('can deal with chained elements', async () => {
+        const el = await $('sel')
+        el._attempts = 2
+        el._text= function (): string {
+            if (this._attempts > 0) {
+                this._attempts--
+                return ''
+            }
+            return 'webdriverio'
+        }
+
+        const result = await toHaveText(Promise.resolve(el), 'WebdriverIO', { ignoreCase: true })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(0)
+    })
+
     test('wait but failure', async () => {
         const el = await $('sel')
         el._text = function (): string {
@@ -149,8 +165,8 @@ describe('toHaveText', () => {
 
     describe('with RegExp', () => {
         let el: WebdriverIO.Element
-    
-        beforeEach(async () => { 
+
+        beforeEach(async () => {
             el = await $('sel')
             el._text = jest.fn().mockImplementation(() => {
                 return "This is example text"
@@ -192,5 +208,5 @@ describe('toHaveText', () => {
             expect(getExpected(result.message())).toContain('/Webdriver/i')
             expect(getExpected(result.message())).toContain('WDIO')
         })
-    })  
+    })
 })
