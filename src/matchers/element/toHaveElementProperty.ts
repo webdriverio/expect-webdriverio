@@ -44,7 +44,7 @@ export async function toHaveElementPropertyFn(
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
 
-    const browser = await getBrowserObject(received)
+    const browser = getBrowserObject(await received)
 
     return browser.call(async () => {
         let el = await received

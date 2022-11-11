@@ -9,7 +9,7 @@ export async function toHaveStyleFn(received: WebdriverIO.Element | WebdriverIO.
     const isNot = this.isNot
     const { expectation = 'style', verb = 'have' } = this
 
-    const browser = await getBrowserObject(received)
+    const browser = getBrowserObject(await received)
 
     return browser.call(async () => {
         let el = await received

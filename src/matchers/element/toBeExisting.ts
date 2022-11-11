@@ -6,7 +6,7 @@ async function toExistFn(received: WdioElementMaybePromise, options: ExpectWebdr
     this.verb = this.verb || ''
 
     received = await received
-    const browser = await getBrowserObject(received)
+    const browser = getBrowserObject(await received)
 
     return browser.call(async () => {
         const result = await executeCommandBe.call(this, received, async el => {

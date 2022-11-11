@@ -4,7 +4,7 @@ import { runExpect, getContext } from '../../util/expectAdapter'
 async function toBeSelectedFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'selected'
 
-    const browser = await getBrowserObject(received)
+    const browser = getBrowserObject(await received)
 
     return browser.call(async () => {
         const result = await executeCommandBe.call(this, received, el => el.isSelected(), options)

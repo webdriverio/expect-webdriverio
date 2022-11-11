@@ -4,7 +4,7 @@ import { runExpect } from '../../util/expectAdapter'
 async function toBeClickableFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'clickable'
 
-    const browser = await getBrowserObject(received)
+    const browser = getBrowserObject(await received)
 
     return browser.call(async () => {
         const result = await executeCommandBe.call(this, received, async el => {
