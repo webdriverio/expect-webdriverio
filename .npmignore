@@ -1,6 +1,7 @@
 /*
 
 !lib/**/*.js
+!lib/**/*.d.ts
 !types/**/*.d.ts
 !jasmine.d.ts
 !jest.d.ts
