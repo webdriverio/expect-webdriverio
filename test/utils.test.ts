@@ -91,14 +91,14 @@ describe('utils', () => {
     })
 
     describe('getBrowserObject', () => {
-        it('should traverse up', () => {
-            expect(getBrowserObject({
+        it('should traverse up', async () => {
+            expect(await getBrowserObject({
                 parent: {
-                    parent: {
+                    parent: Promise.resolve({
                         parent: {
                             foo: 'bar'
                         }
-                    }
+                    })
                 }
             } as any)).toEqual({ foo: 'bar' })
         })
