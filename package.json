@@ -47,7 +47,7 @@
     "@types/node": "^18.7.1",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
-    "@vitest/coverage-c8": "^0.24.0",
+    "@vitest/coverage-c8": "^0.25.1",
     "@wdio/globals": "^8.0.0-alpha.505",
     "c8": "^7.12.0",
     "eslint": "^8.21.0",
