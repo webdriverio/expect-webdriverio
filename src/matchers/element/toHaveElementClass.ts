@@ -35,7 +35,7 @@ async function toHaveElementClassFn(received: WebdriverIO.Element | WebdriverIO.
     const { expectation = 'class', verb = 'have' } = this
 
     const attribute = 'class'
-    const browser = getBrowserObject(await received)
+    const browser = await getBrowserObject(await received)
 
     return browser.call(async () => {
         let el = await received

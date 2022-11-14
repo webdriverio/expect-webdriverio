@@ -23,7 +23,7 @@ export async function toHaveAttributeAndValueFn(received: WebdriverIO.Element | 
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
-    const browser = getBrowserObject(await received)
+    const browser = await getBrowserObject(await received)
 
     return browser.call(async () => {
         let el = await received
@@ -52,7 +52,7 @@ export async function toHaveAttributeFn(received: WebdriverIO.Element | Webdrive
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
-    const browser = getBrowserObject(await received)
+    const browser = await getBrowserObject(await received)
 
     return browser.call(async () => {
         let el = await received

@@ -16,7 +16,7 @@ async function toBeElementsArrayOfSizeFn(received: WebdriverIO.ElementArray, exp
         numberOptions = expected
     }
 
-    const browser = getBrowserObject(await received)
+    const browser = await getBrowserObject(await received)
 
     return browser.call(async () => {
         let elements = await received

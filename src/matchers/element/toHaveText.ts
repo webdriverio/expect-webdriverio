@@ -13,7 +13,7 @@ export async function toHaveTextFn(received: WebdriverIO.Element | WebdriverIO.E
     const isNot = this.isNot
     const { expectation = 'text', verb = 'have' } = this
 
-    const browser = getBrowserObject(await received)
+    const browser = await getBrowserObject(await received)
 
     return browser.call(async () => {
         let el = await received

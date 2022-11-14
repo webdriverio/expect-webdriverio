@@ -225,9 +225,9 @@ function aliasFn(
 /**
  * traverse up the scope chain until browser element was reached
  */
-function getBrowserObject (elem: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Browser): WebdriverIO.Browser {
+async function getBrowserObject (elem: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Browser): Promise<WebdriverIO.Browser> {
     const elemObject = elem as WebdriverIO.Element
-    return (elemObject as WebdriverIO.Element).parent ? getBrowserObject(elemObject.parent) : elem as WebdriverIO.Browser
+    return (elemObject as WebdriverIO.Element).parent ? getBrowserObject(await elemObject.parent) : elem as WebdriverIO.Browser
 }
 
 export {
