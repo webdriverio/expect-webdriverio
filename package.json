@@ -1,6 +1,6 @@
 {
   "name": "expect-webdriverio",
-  "version": "3.5.2",
+  "version": "3.5.3",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
