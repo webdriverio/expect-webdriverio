@@ -43,22 +43,22 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@types/jest": "^29.0.0",
-    "@types/node": "^18.7.1",
-    "@typescript-eslint/eslint-plugin": "^5.33.0",
-    "@typescript-eslint/parser": "^5.33.0",
-    "@vitest/coverage-c8": "^0.25.1",
+    "@types/jest": "^29.2.3",
+    "@types/node": "^18.11.9",
+    "@typescript-eslint/eslint-plugin": "^5.44.0",
+    "@typescript-eslint/parser": "^5.44.0",
+    "@vitest/coverage-c8": "^0.25.2",
     "@wdio/globals": "^8.0.0-alpha.505",
     "c8": "^7.12.0",
-    "eslint": "^8.21.0",
+    "eslint": "^8.28.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-unicorn": "^44.0.0",
-    "husky": "^8.0.1",
+    "eslint-plugin-unicorn": "^45.0.0",
+    "husky": "^8.0.2",
     "npm-run-all": "^4.1.5",
-    "release-it": "^15.3.0",
+    "release-it": "^15.5.0",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
-    "typescript": "^4.7.4",
+    "typescript": "^4.9.3",
     "vitest": "0.25.2",
     "webdriverio": "^8.0.0-alpha.505"
   },
@@ -67,7 +67,7 @@
     "webdriverio": "^8.0.0-alpha.505"
   },
   "dependencies": {
-    "expect": "^29.0.2",
-    "jest-matcher-utils": "^29.0.2"
+    "expect": "^29.3.1",
+    "jest-matcher-utils": "^29.3.1"
   }
 }
