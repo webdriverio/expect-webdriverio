@@ -23,7 +23,7 @@
   "types": "types/jest-global.d.ts",
   "typeScriptVersion": "3.8.3",
   "engines": {
-    "node": "^16.13 || >=18"
+    "node": ">=16 || >=18 || >=20"
   },
   "scripts": {
     "build": "run-s clean compile",
