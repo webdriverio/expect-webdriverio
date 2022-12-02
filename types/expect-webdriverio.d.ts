@@ -66,29 +66,29 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `isDisplayed`
          */
-        toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions): R
+        toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        toExist(options?: ExpectWebdriverIO.CommandOptions): R
+        toExist(options?: ExpectWebdriverIO.CommandOptions): Promise<R>
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        toBePresent(options?: ExpectWebdriverIO.CommandOptions): R
+        toBePresent(options?: ExpectWebdriverIO.CommandOptions): Promise<R>
         /**
          * `WebdriverIO.Element` -> `isExisting`
          */
-        toBeExisting(options?: ExpectWebdriverIO.CommandOptions): R
+        toBeExisting(options?: ExpectWebdriverIO.CommandOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        toHaveAttribute(attribute: string, value?: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttribute(attribute: string, value?: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        toHaveAttr(attribute: string, value?: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttr(attribute: string, value?: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
@@ -98,7 +98,7 @@ declare namespace ExpectWebdriverIO {
             attribute: string,
             contains: string | RegExp,
             options?: ExpectWebdriverIO.StringOptions
-        ): R
+        ): Promise<R>
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          * Element's attribute includes the value.
@@ -107,81 +107,81 @@ declare namespace ExpectWebdriverIO {
             attribute: string,
             contains: string | RegExp,
             options?: ExpectWebdriverIO.StringOptions
-        ): R
+        ): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
          */
-        toHaveClass(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveClass(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          */
-        toHaveElementClass(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementClass(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * @deprecated since v1.3.1 - use `toHaveElementClassContaining` instead.
          * Element's class includes the className.
          */
-        toHaveClassContaining(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveClassContaining(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * Element's class includes the className.
          */
-        toHaveElementClassContaining(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementClassContaining(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getProperty`
          */
-        toHaveElementProperty(property: string | RegExp, value?: any, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementProperty(property: string | RegExp, value?: any, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          */
-        toHaveValue(value: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveValue(value: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          * Element's value includes the value.
          */
-        toHaveValueContaining(value: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveValueContaining(value: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `isClickable`
          */
-        toBeClickable(options?: ExpectWebdriverIO.StringOptions): R
+        toBeClickable(options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `!isEnabled`
          */
-        toBeDisabled(options?: ExpectWebdriverIO.StringOptions): R
+        toBeDisabled(options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `isDisplayedInViewport`
          */
-        toBeDisplayedInViewport(options?: ExpectWebdriverIO.StringOptions): R
+        toBeDisplayedInViewport(options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `isEnabled`
          */
-        toBeEnabled(options?: ExpectWebdriverIO.StringOptions): R
+        toBeEnabled(options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `isFocused`
          */
-        toBeFocused(options?: ExpectWebdriverIO.StringOptions): R
+        toBeFocused(options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `isSelected`
          */
-        toBeSelected(options?: ExpectWebdriverIO.StringOptions): R
+        toBeSelected(options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `isSelected`
          */
-        toBeChecked(options?: ExpectWebdriverIO.StringOptions): R
+        toBeChecked(options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `$$('./*').length`
@@ -190,72 +190,72 @@ declare namespace ExpectWebdriverIO {
         toHaveChildren(
             size?: number | ExpectWebdriverIO.NumberOptions,
             options?: ExpectWebdriverIO.NumberOptions
-        ): R
+        ): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          */
-        toHaveHref(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveHref(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          */
-        toHaveLink(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveLink(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          * Element's href includes the value provided
          */
-        toHaveHrefContaining(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveHrefContaining(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          * Element's href includes the value provided
          */
-        toHaveLinkContaining(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveLinkContaining(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          */
-        toHaveId(id: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveId(id: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Element` -> `getText`
          */
-        toHaveText(text: string | RegExp | Array<string | RegExp>, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveText(text: string | RegExp | Array<string | RegExp>, options?: ExpectWebdriverIO.StringOptions): Promise<R>
         /**
          * `WebdriverIO.Element` -> `getText`
          * Element's text includes the text provided
          */
-        toHaveTextContaining(text: string | RegExp | Array<string | RegExp>, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTextContaining(text: string | RegExp | Array<string | RegExp>, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
         * `WebdriverIO.Element` -> `getAttribute("style")`
         */
-        toHaveStyle(style: { [key: string]: string; }, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveStyle(style: { [key: string]: string; }, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getUrl`
          */
-        toHaveUrl(url: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveUrl(url: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getUrl`
          * Browser's url includes the provided text
          */
-        toHaveUrlContaining(url: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveUrlContaining(url: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         /**
          * `WebdriverIO.Browser` -> `getTitle`
          */
-        toHaveTitle(title: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTitle(title: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getTitle`
          * Browser's title includes the provided text
          */
-        toHaveTitleContaining(title: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTitleContaining(title: string | RegExp, options?: ExpectWebdriverIO.StringOptions): Promise<R>
 
         // ===== $$ only =====
         /**
@@ -265,14 +265,14 @@ declare namespace ExpectWebdriverIO {
         toBeElementsArrayOfSize(
             size: number | ExpectWebdriverIO.NumberOptions,
             options?: ExpectWebdriverIO.NumberOptions
-        ): R
+        ): Promise<R>
 
         // ==== network mock ====
 
         /**
          * Check that `WebdriverIO.Mock` was called
          */
-        toBeRequested(options?: ExpectWebdriverIO.CommandOptions): R
+        toBeRequested(options?: ExpectWebdriverIO.CommandOptions): Promise<R>
 
         /**
          * Check that `WebdriverIO.Mock` was called N times
@@ -280,12 +280,12 @@ declare namespace ExpectWebdriverIO {
         toBeRequestedTimes(
             times: number | ExpectWebdriverIO.NumberOptions,
             options?: ExpectWebdriverIO.NumberOptions
-        ): R
+        ): Promise<R>
 
         /**
          * Check that `WebdriverIO.Mock` was called with the specific parameters
          */
-        toBeRequestedWith(requestedWith: RequestedWith, options?: ExpectWebdriverIO.CommandOptions): R
+        toBeRequestedWith(requestedWith: RequestedWith, options?: ExpectWebdriverIO.CommandOptions): Promise<R>
     }
 
     type RequestedWith = {
