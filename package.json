@@ -43,28 +43,28 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.3",
-    "@types/node": "^18.11.9",
-    "@typescript-eslint/eslint-plugin": "^5.44.0",
-    "@typescript-eslint/parser": "^5.44.0",
-    "@vitest/coverage-c8": "^0.25.2",
-    "@wdio/globals": "^8.0.0-alpha.505",
+    "@types/jest": "^29.2.4",
+    "@types/node": "^18.11.10",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@vitest/coverage-c8": "^0.25.3",
+    "@wdio/globals": "^8.0.5",
     "c8": "^7.12.0",
-    "eslint": "^8.28.0",
+    "eslint": "^8.29.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-unicorn": "^45.0.0",
+    "eslint-plugin-unicorn": "^45.0.1",
     "husky": "^8.0.2",
     "npm-run-all": "^4.1.5",
-    "release-it": "^15.5.0",
+    "release-it": "^15.5.1",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "typescript": "^4.9.3",
     "vitest": "0.25.3",
-    "webdriverio": "^8.0.0-alpha.505"
+    "webdriverio": "^8.0.5"
   },
   "optionalDependencies": {
-    "@wdio/globals": "^8.0.0-alpha.505",
-    "webdriverio": "^8.0.0-alpha.505"
+    "@wdio/globals": "^8.0.5",
+    "webdriverio": "^8.0.5"
   },
   "dependencies": {
     "expect": "^29.3.1",
