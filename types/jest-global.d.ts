@@ -1,4 +1,4 @@
-/// <reference types="./standalone"/>
+/// <reference types="./standalone.js"/>
 
 declare const expect: ExpectWebdriverIO.Expect
 
