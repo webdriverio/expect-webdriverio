@@ -1,4 +1,4 @@
-/// <reference types="./expect-webdriverio"/>
+/// <reference types="./expect-webdriverio.js"/>
 
 declare namespace ExpectWebdriverIO {
     interface Matchers<R, T> extends Readonly<import('expect').Matchers<R>> {
