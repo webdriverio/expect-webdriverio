@@ -29,7 +29,7 @@ export const config = {
     // ...
 }
 ```
-
+t
 ### Matcher Options
 
 Every matcher can take several options that allows you to modify the assertion:
@@ -62,6 +62,24 @@ This options can be applied in addition to the command options when numbers are 
 | <code><var>eq</var></code> | number | equals |
 | <code><var>lte</var></code> | number | less then equals |
 | <code><var>gte</var></code> | number | greater than or equals |
+
+### Handling HTML Entities
+
+An HTML entity is a piece of text (“string”) that begins with an ampersand (`&`) and ends with a semicolon (`;`). Entities are frequently used to display reserved characters (which would otherwise be interpreted as HTML code), and invisible characters (like non-breaking spaces, e.g. `&nbsp;`).
+
+To find or interact with such element use unicode equivalent of the entity. e.g.:
+
+```html
+<div data="Some&nbsp;Value">Some&nbsp;Text</div>
+```
+
+```js
+const myElem = await $('div[Some\u00a0Value]')
+await expect(myElem).toHaveAttribute('data', 'div[Some\u00a0Value')
+await expect(myElem).toHaveText('Some\u00a0Text')
+```
+
+You can find all unicode references in the [HTML spec](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references).
 
 ## Browser Matchers
 
