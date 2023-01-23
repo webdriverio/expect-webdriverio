@@ -79,7 +79,7 @@ await expect(myElem).toHaveAttribute('data', 'div[Some\u00a0Value')
 await expect(myElem).toHaveText('Some\u00a0Text')
 ```
 
-you can find unicode of HTML entity at: https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references
+You can find all unicode references in the [HTML spec](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references).
 
 ## Browser Matchers
 
