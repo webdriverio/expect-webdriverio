@@ -29,7 +29,7 @@ export const config = {
     // ...
 }
 ```
-t
+
 ### Matcher Options
 
 Every matcher can take several options that allows you to modify the assertion:
@@ -74,12 +74,14 @@ To find or interact with such element use unicode equivalent of the entity. e.g.
 ```
 
 ```js
-const myElem = await $('div[Some\u00a0Value]')
+const myElem = await $('div[data="Some\u00a0Value"]')
 await expect(myElem).toHaveAttribute('data', 'div[Some\u00a0Value')
 await expect(myElem).toHaveText('Some\u00a0Text')
 ```
 
 You can find all unicode references in the [HTML spec](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references).
+
+**Note:** unicode is case-insensitive hence both `\u00a0` and `\u00A0` works. To find element in browser inspect, remove `u` from unicode e.g.: `div[data="Some\00a0Value"]`
 
 ## Browser Matchers
 
