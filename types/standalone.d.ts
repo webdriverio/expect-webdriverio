@@ -1,14 +1,14 @@
 /// <reference types="expect-webdriverio/types/expect-webdriverio"/>
 
 declare namespace ExpectWebdriverIO {
-    interface Matchers<R, T> extends Readonly<import('expect').Matchers<R>> {
+    interface Matchers<R extends void|Promise<void>, T> extends Readonly<import('expect').Matchers<R>> {
         not: Matchers<R, T>
-        resolves: Matchers<Promise<R>, T>
-        rejects: Matchers<Promise<R>, T>
+        resolves: Matchers<R, T>
+        rejects: Matchers<R, T>
     }
 
     type Expect = {
-        <T = unknown>(actual: T): Matchers<T, T>
+        <T = unknown>(actual: T): Matchers<void, T>
         extend(map: Record<string, Function>): void
     } & AsymmetricMatchers
 
