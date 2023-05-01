@@ -4,7 +4,7 @@ import { executeCommand } from './util/executeCommand.js'
 import { wrapExpectedWithArray, updateElementsArray } from './util/elementsUtil.js'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
 import { DEFAULT_OPTIONS } from './constants.js'
-import type { WdioElementMaybePromise } from './types'
+import type { WdioElementMaybePromise } from './types.js'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 

@@ -6,7 +6,7 @@ import { removeColors, getReceived, getExpected, getExpectMessage } from '../../
 
 vi.mock('@wdio/globals')
 
-class TestMock {
+class TestMock implements Mock {
     _calls: Matches[]
 
     constructor () {
@@ -15,6 +15,7 @@ class TestMock {
     get calls () {
         return this._calls
     }
+    on = vi.fn()
     abort () { return Promise.resolve() }
     abortOnce () { return Promise.resolve() }
     respond () { return Promise.resolve() }

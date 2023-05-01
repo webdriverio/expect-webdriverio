@@ -1,14 +1,18 @@
 /// <reference types="./expect-webdriverio.js"/>
 
+type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement<WebdriverIO.Element>
+type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray<WebdriverIO.Element>
+type ExpectType = WebdriverIO.Element | Promise<WebdriverIO.Element> | ChainablePromiseElement | ChainablePromiseArray
+
 declare namespace ExpectWebdriverIO {
-    interface Matchers<R, T> extends Readonly<import('expect').Matchers<R>> {
+    interface Matchers<R extends Promise<void>, T> extends Readonly<import('expect').Matchers<R>> {
         not: Matchers<R, T>
-        resolves: Matchers<Promise<R>, T>
-        rejects: Matchers<Promise<R>, T>
+        resolves: Matchers<R, T>
+        rejects: Matchers<R, T>
     }
 
     type Expect = {
-        <T = unknown>(actual: T): Matchers<T, T>
+        <T extends ExpectType, R extends Promise<void>>(actual: T): Matchers<R, T>
         extend(map: Record<string, Function>): void
     } & AsymmetricMatchers
 

@@ -1,5 +1,5 @@
 import { executeCommandBe, aliasFn } from '../../utils.js'
-import type { WdioElementMaybePromise } from '../../types'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 export function toExist(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'exist'

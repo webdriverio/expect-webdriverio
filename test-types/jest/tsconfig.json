@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "lib": ["ES2018"],
     "noImplicitAny": true,
+    "target": "ES2020",
+    "module": "ES2015",
+    "moduleResolution": "nodenext",
+    "skipLibCheck": true,
     "types": [
       "@types/jest",
-      "expect-webdriverio/jest"
+      "expect-webdriverio/jest",
+      "@wdio/globals/types"
     ]
   }
 }

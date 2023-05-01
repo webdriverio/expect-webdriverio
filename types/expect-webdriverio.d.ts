@@ -1,5 +1,5 @@
 declare namespace ExpectWebdriverIO {
-    function expect<T = unknown>(actual: T): Matchers<T, T>
+    function expect<T extends Promise<void>>(actual: T): Matchers<T, T>
     function setOptions(options: DefaultOptions): void
 
     interface DefaultOptions {
@@ -324,5 +324,5 @@ declare namespace ExpectWebdriverIO {
 }
 
 declare module 'expect-webdriverio' {
-    export = ExpectWebdriverIO
+    export default ExpectWebdriverIO
 }
