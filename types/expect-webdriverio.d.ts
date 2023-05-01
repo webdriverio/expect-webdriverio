@@ -324,5 +324,5 @@ declare namespace ExpectWebdriverIO {
 }
 
 declare module 'expect-webdriverio' {
-    export default ExpectWebdriverIO
+    export = ExpectWebdriverIO
 }
