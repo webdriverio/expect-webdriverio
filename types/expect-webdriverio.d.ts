@@ -1,5 +1,5 @@
 declare namespace ExpectWebdriverIO {
-    function expect<T extends Promise<void>>(actual: T): Matchers<T, T>
+    function expect<T = unknown, R extends void | Promise<void> = void | Promise<void>>(actual: T): Matchers<R, T>
     function setOptions(options: DefaultOptions): void
 
     interface DefaultOptions {
