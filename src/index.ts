@@ -1,10 +1,11 @@
 import { expect as expectLib } from 'expect'
 
-import matchers from './matchers.js'
+import wdioMatchers from './matchers.js'
 import { DEFAULT_OPTIONS } from './constants.js'
 
-expectLib.extend({ ...matchers })
+expectLib.extend({ ...wdioMatchers })
 export const expect = expectLib
+export const matchers = wdioMatchers
 export const getConfig = (): any => DEFAULT_OPTIONS
 export const setDefaultOptions = (options = {}): void => {
     Object.entries(options).forEach(([key, value]) => {
