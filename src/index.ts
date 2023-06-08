@@ -1,6 +1,7 @@
 import { expect as expectLib } from 'expect'
 
 import wdioMatchers from './matchers.js'
+import * as expectUtils from './utils.js'
 import { DEFAULT_OPTIONS } from './constants.js'
 
 expectLib.extend({ ...wdioMatchers })
@@ -16,3 +17,4 @@ export const setDefaultOptions = (options = {}): void => {
     })
 }
 export const setOptions = setDefaultOptions
+export const utils = expectUtils
