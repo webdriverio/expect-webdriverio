@@ -1,11 +1,11 @@
 declare namespace ExpectWebdriverIO {
     function expect<T = unknown, R extends void | Promise<void> = void | Promise<void>>(actual: T): Matchers<R, T>
     function setOptions(options: DefaultOptions): void
-    type matchers = Record<string, ((actual: any, ...expected: any[]) => Promise<{
+    function getConfig(): any
+    const matchers: Record<string, ((actual: any, ...expected: any[]) => Promise<{
         pass: boolean;
         message(): string;
     }>)>
-    type getConfig = () => any
 
     interface DefaultOptions {
         /**
