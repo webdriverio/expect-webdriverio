@@ -1,9 +1,7 @@
 import path from 'node:path'
 import url from 'node:url'
-import { promisify } from 'node:util'
 
-import rimrafImport from 'rimraf'
-const rimraf = promisify(rimrafImport)
+import { rimraf } from 'rimraf'
 
 import shelljs from 'shelljs'
 
