@@ -44,7 +44,7 @@ describe('toBeRequestedTimes', () => {
             mock.calls.push(mockMatch)
         }, 10)
 
-        const result = await toBeRequestedTimes(mock, 1)
+        const result = await toBeRequestedTimes.call({}, mock, 1)
         expect(result.pass).toBe(true)
     })
 
@@ -55,15 +55,15 @@ describe('toBeRequestedTimes', () => {
             mock.calls.push(mockMatch)
         }, 10)
 
-        const result = await toBeRequestedTimes(mock, { gte: 1 })
+        const result = await toBeRequestedTimes.call({}, mock, { gte: 1 })
         expect(result.pass).toBe(true)
-        const result2 = await toBeRequestedTimes(mock, { eq: 1 })
+        const result2 = await toBeRequestedTimes.call({}, mock, { eq: 1 })
         expect(result2.pass).toBe(true)
     })
 
     test('wait but failure', async () => {
         const mock: Mock = new TestMock()
-        const result = await toBeRequestedTimes(mock, 1)
+        const result = await toBeRequestedTimes.call({}, mock, 1)
         expect(result.pass).toBe(false)
 
         setTimeout(() => {
@@ -71,15 +71,15 @@ describe('toBeRequestedTimes', () => {
             mock.calls.push(mockMatch)
         }, 10)
 
-        const result2 = await toBeRequestedTimes(mock, 1)
+        const result2 = await toBeRequestedTimes.call({}, mock, 1)
         expect(result2.pass).toBe(false)
-        const result3 = await toBeRequestedTimes(mock, 2)
+        const result3 = await toBeRequestedTimes.call({}, mock, 2)
         expect(result3.pass).toBe(true)
-        const result4 = await toBeRequestedTimes(mock, { gte: 2 })
+        const result4 = await toBeRequestedTimes.call({}, mock, { gte: 2 })
         expect(result4.pass).toBe(true)
-        const result5 = await toBeRequestedTimes(mock, { lte: 2 })
+        const result5 = await toBeRequestedTimes.call({}, mock, { lte: 2 })
         expect(result5.pass).toBe(true)
-        const result6 = await toBeRequestedTimes(mock, { lte: 3 })
+        const result6 = await toBeRequestedTimes.call({}, mock, { lte: 3 })
         expect(result6.pass).toBe(true)
     })
 
@@ -108,16 +108,16 @@ describe('toBeRequestedTimes', () => {
     test('message', async () => {
         const mock: Mock = new TestMock()
 
-        const result = await toBeRequestedTimes(mock, 0)
+        const result = await toBeRequestedTimes.call({}, mock, 0)
         expect(result.message()).toContain('Expect mock to be called 0 times')
 
-        const result2 = await toBeRequestedTimes(mock, 1)
+        const result2 = await toBeRequestedTimes.call({}, mock, 1)
         expect(result2.message()).toContain('Expect mock to be called 1 time')
 
-        const result3 = await toBeRequestedTimes(mock, 2)
+        const result3 = await toBeRequestedTimes.call({}, mock, 2)
         expect(result3.message()).toContain('Expect mock to be called 2 times')
 
-        const result4 = await toBeRequestedTimes(mock, { gte: 3 })
+        const result4 = await toBeRequestedTimes.call({}, mock, { gte: 3 })
         const message4 = removeColors(result4.message())
         expect(getExpectMessage(message4)).toBe('Expect mock to be called times')
         expect(getExpected(message4)).toBe('Expected: ">= 3"')

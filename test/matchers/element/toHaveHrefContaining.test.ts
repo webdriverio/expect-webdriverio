@@ -13,7 +13,7 @@ describe('toHaveHrefContaining', () => {
         el = await $('sel')
         el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
             if(attribute === 'href') {
-                return "https://www.example.com"
+                return 'https://www.example.com'
             }
             return null
         })
@@ -21,12 +21,12 @@ describe('toHaveHrefContaining', () => {
 
     describe('success', () => {
         test('exact passes', async () => {
-            const result = await toHaveHrefContaining(el, "https://www.example.com");
+            const result = await toHaveHrefContaining.call({}, el, 'https://www.example.com');
             expect(result.pass).toBe(true)
         });
 
         test('part passes', async () => {
-            const result = await toHaveHrefContaining(el, "example");
+            const result = await toHaveHrefContaining.call({}, el, 'example');
             expect(result.pass).toBe(true)
         })
     })
@@ -35,7 +35,7 @@ describe('toHaveHrefContaining', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveHrefContaining(el, "webdriver");
+            result = await toHaveHrefContaining.call({}, el, 'webdriver');
         })
 
         test('does not pass', () => {

@@ -20,12 +20,12 @@ describe('toHaveElementClass', () => {
     })
 
     test('success when class name is present', async () => {
-        const result = await toHaveElementClass(el, "some-class")
+        const result = await toHaveElementClass.call({}, el, "some-class")
         expect(result.pass).toBe(true)
     })
 
     test('success with RegExp when class name is present', async () => {
-        const result = await toHaveElementClass(el, /sOmE-cLaSs/i)
+        const result = await toHaveElementClass.call({}, el, /sOmE-cLaSs/i)
         expect(result.pass).toBe(true)
     })
 
@@ -34,7 +34,7 @@ describe('toHaveElementClass', () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
                 return null
             })
-            const result = await toHaveElementClass(el, "some-class")
+            const result = await toHaveElementClass.call({}, el, "some-class")
             expect(result.pass).toBe(false)
         })
 
@@ -42,17 +42,17 @@ describe('toHaveElementClass', () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
                 return "  some-class  "
             })
-            const result = await toHaveElementClass(el, "some-class", {trim: true})
+            const result = await toHaveElementClass.call({}, el, "some-class", {trim: true})
             expect(result.pass).toBe(true)
         })
 
         test('should pass when ignore the case', async () => {
-            const result = await toHaveElementClass(el, "sOme-ClAsS", {ignoreCase: true})
+            const result = await toHaveElementClass.call({}, el, "sOme-ClAsS", {ignoreCase: true})
             expect(result.pass).toBe(true)
         })
 
         test('should pass if containing', async () => {
-            const result = await toHaveElementClass(el, "some", {containing: true})
+            const result = await toHaveElementClass.call({}, el, "some", {containing: true})
             expect(result.pass).toBe(true)
         })
     })
@@ -61,7 +61,7 @@ describe('toHaveElementClass', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveElementClass(el, "test")
+            result = await toHaveElementClass.call({}, el, "test")
         })
 
         test('failure', () => {
@@ -85,7 +85,7 @@ describe('toHaveElementClass', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveElementClass(el, /WDIO/)
+            result = await toHaveElementClass.call({}, el, /WDIO/)
         })
 
         test('failure', () => {

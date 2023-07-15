@@ -18,7 +18,7 @@ describe('toHaveText', () => {
             return 'webdriverio'
         }
 
-        const result = await toHaveText(el, 'WebdriverIO', { ignoreCase: true })
+        const result = await toHaveText.call({}, el, 'WebdriverIO', { ignoreCase: true })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
     })
@@ -29,7 +29,7 @@ describe('toHaveText', () => {
             throw new Error('some error')
         }
 
-        const result = await toHaveText(el, 'WebdriverIO', { ignoreCase: true })
+        const result = await toHaveText.call({}, el, 'WebdriverIO', { ignoreCase: true })
         expect(result.pass).toBe(false)
     })
 
@@ -41,7 +41,7 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText(el, 'WebdriverIO', { ignoreCase: true })
+        const result = await toHaveText.call({}, el, 'WebdriverIO', { ignoreCase: true })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -54,7 +54,7 @@ describe('toHaveText', () => {
             return 'webdriverio'
         }
 
-        const result = await toHaveText(el, 'WebdriverIO', { wait: 0 })
+        const result = await toHaveText.call({}, el, 'WebdriverIO', { wait: 0 })
         expect(result.pass).toBe(false)
         expect(el._attempts).toBe(1)
     })
@@ -67,7 +67,7 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText(el, 'WebdriverIO', { wait: 0 })
+        const result = await toHaveText.call({}, el, 'WebdriverIO', { wait: 0 })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -109,7 +109,7 @@ describe('toHaveText', () => {
         el._text = function (): string {
             return ''
         }
-        const result = await toHaveText(el, 'WebdriverIO')
+        const result = await toHaveText.call({}, el, 'WebdriverIO')
         expect(getExpectMessage(result.message())).toContain('to have text')
     })
 
@@ -121,7 +121,7 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText(el, ['WDIO', 'Webdriverio'], { ignoreCase: true })
+        const result = await toHaveText.call({}, el, ['WDIO', 'Webdriverio'], { ignoreCase: true })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -134,7 +134,7 @@ describe('toHaveText', () => {
             return '   WebdriverIO   '
         }
 
-        const result = await toHaveText(el, ['WDIO', 'WebdriverIO', 'toto'], { trim: true })
+        const result = await toHaveText.call({}, el, ['WDIO', 'WebdriverIO', 'toto'], { trim: true })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -147,7 +147,7 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText(el, ['WDIO', 'Webdriverio'], { wait: 1 })
+        const result = await toHaveText.call({}, el, ['WDIO', 'Webdriverio'], { wait: 1 })
         expect(result.pass).toBe(false)
         expect(el._attempts).toBe(1)
     })
@@ -163,27 +163,27 @@ describe('toHaveText', () => {
         })
 
         test('success if match', async () => {
-            const result = await toHaveText(el, /ExAmplE/i)
+            const result = await toHaveText.call({}, el, /ExAmplE/i)
             expect(result.pass).toBe(true)
         })
 
         test('success if array matches with RegExp', async () => {
-            const result = await toHaveText(el, ['WDIO', /ExAmPlE/i])
+            const result = await toHaveText.call({}, el, ['WDIO', /ExAmPlE/i])
             expect(result.pass).toBe(true)
         })
 
         test('success if array matches with text', async () => {
-            const result = await toHaveText(el, ['This is example text', /Webdriver/i])
+            const result = await toHaveText.call({}, el, ['This is example text', /Webdriver/i])
             expect(result.pass).toBe(true)
         })
 
         test('success if array matches with text and ignoreCase', async () => {
-            const result = await toHaveText(el, ['ThIs Is ExAmPlE tExT', /Webdriver/i], { ignoreCase: true })
+            const result = await toHaveText.call({}, el, ['ThIs Is ExAmPlE tExT', /Webdriver/i], { ignoreCase: true })
             expect(result.pass).toBe(true)
         })
 
         test('failure if no match', async () => {
-            const result = await toHaveText(el, /Webdriver/i)
+            const result = await toHaveText.call({}, el, /Webdriver/i)
             expect(result.pass).toBe(false)
             expect(getExpectMessage(result.message())).toContain('to have text')
             expect(getExpected(result.message())).toContain('/Webdriver/i')
@@ -191,7 +191,7 @@ describe('toHaveText', () => {
         })
 
         test('failure if array does not match with text', async () => {
-            const result = await toHaveText(el, ['WDIO', /Webdriver/i])
+            const result = await toHaveText.call({}, el, ['WDIO', /Webdriver/i])
             expect(result.pass).toBe(false)
             expect(getExpectMessage(result.message())).toContain('to have text')
             expect(getExpected(result.message())).toContain('/Webdriver/i')

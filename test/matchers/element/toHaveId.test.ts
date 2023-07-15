@@ -13,14 +13,14 @@ describe('toHaveHref', () => {
         el = await $('sel')
         el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
             if(attribute === 'id') {
-                return "test id"
+                return 'test id'
             }
             return null
         })
     })
 
     test('success', async () => {
-        const result = await toHaveId(el, "test id");
+        const result = await toHaveId.call({}, el, 'test id');
         expect(result.pass).toBe(true)
     });
 
@@ -28,7 +28,7 @@ describe('toHaveHref', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveId(el, "an attribute");
+            result = await toHaveId.call({}, el, 'an attribute');
         })
 
         test('failure', () => {

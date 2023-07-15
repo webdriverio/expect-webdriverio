@@ -18,17 +18,17 @@ describe('toHaveTextContaining', () => {
 
     describe('success', () => {
         test('exact passes', async () => {
-            const result = await toHaveTextContaining(el, "This is example text");
+            const result = await toHaveTextContaining.call({}, el, "This is example text");
             expect(result.pass).toBe(true)
         });
 
         test('part passes', async () => {
-            const result = await toHaveTextContaining(el, "example text");
+            const result = await toHaveTextContaining.call({}, el, "example text");
             expect(result.pass).toBe(true)
         })
 
         test('RegExp passes', async () => {
-            const result = await toHaveTextContaining(el, /ExAmplE/i);
+            const result = await toHaveTextContaining.call({}, el, /ExAmplE/i);
             expect(result.pass).toBe(true)
         })
     })
@@ -37,7 +37,7 @@ describe('toHaveTextContaining', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveTextContaining(el, "webdriver");
+            result = await toHaveTextContaining.call({}, el, "webdriver");
         })
 
         test('does not pass', () => {
@@ -61,7 +61,7 @@ describe('toHaveTextContaining', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveTextContaining(el, /Webdriver/i);
+            result = await toHaveTextContaining.call({}, el, /Webdriver/i);
         })
 
         test('does not pass', () => {

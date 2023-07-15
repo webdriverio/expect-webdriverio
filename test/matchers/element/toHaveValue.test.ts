@@ -18,12 +18,12 @@ describe('toHaveValue', () => {
 
     describe('success', () => {
         test('exact passes', async () => {
-            const result = await toHaveValue(el, "This is an example value")
+            const result = await toHaveValue.call({}, el, "This is an example value")
             expect(result.pass).toBe(true)
         })
 
         test('RegExp passes', async () => {
-            const result = await toHaveValue(el, /ExAmPlE/i)
+            const result = await toHaveValue.call({}, el, /ExAmPlE/i)
             expect(result.pass).toBe(true)
         })
     })
@@ -32,7 +32,7 @@ describe('toHaveValue', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveValue(el, "webdriver")
+            result = await toHaveValue.call({}, el, "webdriver")
         })
 
         test('does not pass', () => {
@@ -56,7 +56,7 @@ describe('toHaveValue', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveValue(el, /WDIO/)
+            result = await toHaveValue.call({}, el, /WDIO/)
         })
 
         test('does not pass', () => {

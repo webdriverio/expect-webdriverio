@@ -22,7 +22,7 @@ describe('toBeDisabled', () => {
             return false
         }
 
-        const result = await toBeDisabled(el)
+        const result = await toBeDisabled.call({}, el)
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
     })
@@ -33,7 +33,7 @@ describe('toBeDisabled', () => {
             throw new Error('some error')
         }
 
-        const result = await toBeDisabled(el)
+        const result = await toBeDisabled.call({}, el)
         expect(result.pass).toBe(false)
     })
 
@@ -45,7 +45,7 @@ describe('toBeDisabled', () => {
             return false
         }
 
-        const result = await toBeDisabled(el)
+        const result = await toBeDisabled.call({}, el)
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -58,7 +58,7 @@ describe('toBeDisabled', () => {
             return true
         }
 
-        const result = await toBeDisabled(el, { wait: 0 })
+        const result = await toBeDisabled.call({}, el, { wait: 0 })
         expect(result.pass).toBe(false)
         expect(el._attempts).toBe(1)
     })
@@ -71,7 +71,7 @@ describe('toBeDisabled', () => {
             return false
         }
 
-        const result = await toBeDisabled(el, { wait: 0 })
+        const result = await toBeDisabled.call({}, el, { wait: 0 })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -129,7 +129,7 @@ describe('toBeDisabled', () => {
         el._value = function (): boolean {
             return false
         }
-        const result = await toBeDisabled(el)
+        const result = await toBeDisabled.call({}, el)
         expect(getExpectMessage(result.message())).toContain('to be disabled')
     })
 })

@@ -15,7 +15,7 @@ describe('toHaveElementProperty', () => {
             return 'iphone'
         }
 
-        const result = await toHaveElementProperty(el, 'property', 'iPhone', { wait: 0, ignoreCase: true })
+        const result = await toHaveElementProperty.call({}, el, 'property', 'iPhone', { wait: 0, ignoreCase: true })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -46,7 +46,7 @@ describe('toHaveElementProperty', () => {
             return 'iphone'
         }
 
-        const result = await toHaveElementProperty(el, 'property', /iPhOnE/i)
+        const result = await toHaveElementProperty.call({}, el, 'property', /iPhOnE/i)
         expect(result.pass).toBe(true)
     })
 
@@ -88,7 +88,7 @@ describe('toHaveElementProperty', () => {
             el._value = function (): string {
                 return 'iphone'
             }
-            result = await toHaveElementProperty(el, 'property', /WDIO/)
+            result = await toHaveElementProperty.call({}, el, 'property', /WDIO/)
         })
 
         test('failure', () => {

@@ -38,7 +38,7 @@ export function $(selector) {
 }
 
 export function $$(selector) {
-    const length = this._length || 2
+    const length = this?._length || 2
     const els: any = Array(length).map((_, index) => {
         return {
             ...element,

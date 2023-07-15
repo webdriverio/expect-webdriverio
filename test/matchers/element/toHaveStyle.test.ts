@@ -29,7 +29,7 @@ describe('toHaveStyle', () => {
             }
             return { value: mockStyle[property] }
         })
-        const result = await toHaveStyle(el, mockStyle, { ignoreCase: true });
+        const result = await toHaveStyle.call({}, el, mockStyle, { ignoreCase: true });
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
     })
@@ -46,7 +46,7 @@ describe('toHaveStyle', () => {
             }
             throw new Error('some error');
         })
-        const result = await toHaveStyle(el, mockStyle, { ignoreCase: true });
+        const result = await toHaveStyle.call({}, el, mockStyle, { ignoreCase: true });
         expect(result.pass).toBe(false)
     })
 
@@ -62,7 +62,7 @@ describe('toHaveStyle', () => {
             }
             return { value: mockStyle[property] }
         })
-        const result = await toHaveStyle(el, mockStyle, { ignoreCase: true })
+        const result = await toHaveStyle.call({}, el, mockStyle, { ignoreCase: true })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -80,7 +80,7 @@ describe('toHaveStyle', () => {
             return { value: "Wrong Value" }
         })
 
-        const result = await toHaveStyle(el, mockStyle, { wait: 0 })
+        const result = await toHaveStyle.call({}, el, mockStyle, { wait: 0 })
         expect(result.pass).toBe(false)
         expect(el._attempts).toBe(1)
     })
@@ -98,7 +98,7 @@ describe('toHaveStyle', () => {
             return { value: mockStyle[property] }
         })
 
-        const result = await toHaveStyle(el, mockStyle, { wait: 0 })
+        const result = await toHaveStyle.call({}, el, mockStyle, { wait: 0 })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -146,7 +146,7 @@ describe('toHaveStyle', () => {
         el.getCSSProperty = vi.fn().mockImplementation(() => {
             return { value: "Wrong Value" }
         })
-        const result = await toHaveStyle(el, 'WebdriverIO' as any)
+        const result = await toHaveStyle.call({}, el, 'WebdriverIO' as any)
         expect(getExpectMessage(result.message())).toContain('to have style')
     })
 
@@ -176,7 +176,7 @@ describe('toHaveStyle', () => {
             "color": "#FFF"
         }
 
-        const result = await toHaveStyle(el, alteredCaseStyle, { ignoreCase: true })
+        const result = await toHaveStyle.call({}, el, alteredCaseStyle, { ignoreCase: true })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -207,7 +207,7 @@ describe('toHaveStyle', () => {
             "color": "#fff"
         }
 
-        const result = await toHaveStyle(el, alteredSpaceStyle, {   trim: true })
+        const result = await toHaveStyle.call({}, el, alteredSpaceStyle, {   trim: true })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })

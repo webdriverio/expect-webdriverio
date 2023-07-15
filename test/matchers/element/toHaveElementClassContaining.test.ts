@@ -20,12 +20,12 @@ describe('toHaveElementClassContaining', () => {
     })
 
     test('success when whole class name is present', async () => {
-        const result = await toHaveElementClassContaining(el, "some-class");
+        const result = await toHaveElementClassContaining.call({}, el, "some-class");
         expect(result.pass).toBe(true)
     });
 
     test('success when part of class name is present', async () => {
-        const result = await toHaveElementClassContaining(el, "other");
+        const result = await toHaveElementClassContaining.call({}, el, "other");
         expect(result.pass).toBe(true)
     });
 
@@ -33,7 +33,7 @@ describe('toHaveElementClassContaining', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveElementClassContaining(el, "test");
+            result = await toHaveElementClassContaining.call({}, el, "test");
         })
 
         test('failure', () => {

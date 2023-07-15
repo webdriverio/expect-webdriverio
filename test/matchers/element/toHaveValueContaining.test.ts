@@ -12,17 +12,17 @@ describe('toHaveValueContaining', () => {
     beforeEach(async () => {
         el = await $('sel')
         el._value = vi.fn().mockImplementation(() => {
-            return "This is an example value"
+            return 'This is an example value'
         })
     })
 
     describe('success', () => {
         test('exact passes', async () => {
-            const result = await toHaveValueContaining(el, "This is an example value");
+            const result = await toHaveValueContaining.call({}, el, 'This is an example value');
             expect(result.pass).toBe(true)
         });
         test('part passes', async () => {
-            const result = await toHaveValueContaining(el, "example value");
+            const result = await toHaveValueContaining.call({}, el, 'example value');
             expect(result.pass).toBe(true)
         });
     })
@@ -31,7 +31,7 @@ describe('toHaveValueContaining', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveValueContaining(el, "webdriver");
+            result = await toHaveValueContaining.call({}, el, 'webdriver');
         })
 
         test('does not pass', () => {

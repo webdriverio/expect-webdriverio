@@ -17,7 +17,7 @@ describe('toHaveAttributeContaining', () => {
         el.getAttribute = vi.fn().mockImplementation(() => {
             return "An example phrase"
         })
-        const result = await toHaveAttrContaining(el, "attribute_name", "example");
+        const result = await toHaveAttrContaining.call({}, el, "attribute_name", "example");
         expect(result.pass).toBe(true)
     });
 
@@ -28,7 +28,7 @@ describe('toHaveAttributeContaining', () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
                 return "An example phrase"
             })
-            result = await toHaveAttrContaining(el, "attribute_name", "donkey");
+            result = await toHaveAttrContaining.call({}, el, "attribute_name", "donkey");
         })
 
         test('failure', () => {

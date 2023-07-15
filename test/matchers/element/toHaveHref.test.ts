@@ -20,7 +20,7 @@ describe('toHaveHref', () => {
     })
 
     test('success when contains', async () => {
-        const result = await toHaveHref(el, "https://www.example.com");
+        const result = await toHaveHref.call({}, el, "https://www.example.com");
         expect(result.pass).toBe(true)
     });
 
@@ -28,7 +28,7 @@ describe('toHaveHref', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveHref(el, "an href");
+            result = await toHaveHref.call({}, el, "an href");
         })
 
         test('failure', () => {

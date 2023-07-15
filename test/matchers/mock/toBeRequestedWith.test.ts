@@ -77,7 +77,7 @@ describe('toBeRequestedWith', () => {
             response: JSON.parse(mockPost.body as string),
         }
 
-        const result = await toBeRequestedWith(mock, params)
+        const result = await toBeRequestedWith.call({}, mock, params)
         expect(result.pass).toBe(true)
     })
 
@@ -97,7 +97,7 @@ describe('toBeRequestedWith', () => {
             response: 'post.body',
         }
 
-        const result = await toBeRequestedWith(mock, params)
+        const result = await toBeRequestedWith.call({}, mock, params)
         expect(result.pass).toBe(false)
     })
 
@@ -347,7 +347,7 @@ describe('toBeRequestedWith', () => {
             const mock: any = new TestMock()
             mock.calls.push(...scenario.mocks)
 
-            const result = await toBeRequestedWith(mock, scenario.params as any)
+            const result = await toBeRequestedWith.call({}, mock, scenario.params as any)
             expect(result.pass).toBe(scenario.pass)
         })
     })
@@ -362,7 +362,7 @@ describe('toBeRequestedWith', () => {
             const mock: any = new TestMock()
             mock.calls.push({ ...mockGet })
 
-            const result = await toBeRequestedWith(mock, { method: 1234 } as any)
+            const result = await toBeRequestedWith.call({}, mock, { method: 1234 } as any)
             expect(result.pass).toBe(false)
             expect(global.console.error).toBeCalledWith(
                 'expect.toBeRequestedWith: unsupported value passed to method 1234'
@@ -377,7 +377,7 @@ describe('toBeRequestedWith', () => {
     test('message', async () => {
         const mock: any = new TestMock()
 
-        const requested = await toBeRequestedWith(mock, {
+        const requested = await toBeRequestedWith.call({}, mock, {
             url: () => false,
             method: ['DELETE', 'PUT'],
             requestHeaders: mockPost.headers,
