@@ -44,7 +44,7 @@ Every matcher can take several options that allows you to modify the assertion:
 
 ##### String Options
 
-This options can be applied in addition to the command options when strings are being asserted.
+This option can be applied in addition to the command options when strings are being asserted. 
 
 | Name | Type | Details |
 | ---- | ---- | ------- |
@@ -55,7 +55,7 @@ This options can be applied in addition to the command options when strings are 
 
 ##### Number Options
 
-This options can be applied in addition to the command options when numbers are being asserted.
+This option can be applied in addition to the command options when numbers are being asserted.
 
 | Name | Type | Details |
 | ---- | ---- | ------- |
