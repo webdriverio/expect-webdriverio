@@ -75,7 +75,7 @@
     "rimraf": "^5.0.1",
     "shelljs": "^0.8.5",
     "typescript": "^5.1.6",
-    "vitest": "0.34.3",
+    "vitest": "0.34.4",
     "webdriverio": "^8.13.1"
   },
   "optionalDependencies": {
