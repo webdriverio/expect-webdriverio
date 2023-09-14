@@ -3,8 +3,8 @@
     "outDir": "dist",
     "noImplicitAny": true,
     "target": "ES2020",
-    "moduleResolution": "nodenext",
     "esModuleInterop": true,
+    "module": "Node16",
     "skipLibCheck": true,
     "types": [
       "expect-webdriverio"

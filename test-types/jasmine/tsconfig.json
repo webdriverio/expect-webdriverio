@@ -1,7 +1,14 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "moduleResolution": "nodenext",
-    "target": "ES2020"
+    "outDir": "dist",
+    "noImplicitAny": true,
+    "target": "ES2020",
+    "module": "Node16",
+    "skipLibCheck": true,
+    "types": [
+      "@types/jest",
+      "expect-webdriverio/jest",
+      "@wdio/globals/types"
+    ]
   }
 }
