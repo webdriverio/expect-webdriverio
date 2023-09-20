@@ -44,6 +44,24 @@ declare namespace ExpectWebdriverIO {
         containing?: boolean
 
         /**
+         * expect actual value to start with the expected value
+         * Otherwise strict equal
+         */
+        atStart?: boolean,
+
+        /**
+         * expect actual value to end with the expected value
+         * Otherwise strict equal
+         */
+        atEnd?: boolean,
+
+        /**
+         * expect actual value to have the expected value at the given index (index starts at 0 not 1)
+         * Otherwise strict equal
+         */
+        atIndex?: number,
+
+        /**
          * might be helpful to force converting property value to string
          */
         asString?: boolean

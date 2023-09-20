@@ -114,7 +114,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
-export const compareText = (actual: string, expected: string | RegExp, { ignoreCase = false, trim = true, containing = false }) => {
+export const compareText = (actual: string, expected: string | RegExp, { ignoreCase = false, trim = true, containing = false, atStart = false, atEnd = false, atIndex = undefined }: ExpectWebdriverIO.StringOptions) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -145,13 +145,34 @@ export const compareText = (actual: string, expected: string | RegExp, { ignoreC
         }
     }
 
+    if (atStart) {
+        return {
+            value: actual,
+            result: actual.startsWith(expected)
+        }
+    }
+
+    if (atEnd) {
+        return {
+            value: actual,
+            result: actual.endsWith(expected)
+        }
+    }
+
+    if (atIndex) {
+        return {
+            value: actual,
+            result: actual.substring(atIndex, actual.length).startsWith(expected)
+        }
+    }
+
     return {
         value: actual,
         result: actual === expected
     }
 }
 
-export const compareTextWithArray = (actual: string, expectedArray: Array<string | RegExp>, { ignoreCase = false, trim = false, containing = false }) => {
+export const compareTextWithArray = (actual: string, expectedArray: Array<string | RegExp>, { ignoreCase = false, trim = false, containing = false, atStart = false, atEnd = false, atIndex = undefined }: ExpectWebdriverIO.StringOptions) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -168,7 +189,22 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
     }
 
     const textInArray = expectedArray.some((expected) => {
-        return expected instanceof RegExp ? !!actual.match(expected) : containing ? actual.includes(expected) : actual === expected
+        if (expected instanceof RegExp) {
+            return !!actual.match(expected)
+        }
+        if (containing) {
+            return actual.includes(expected)
+        }
+        if (atStart) {
+            return actual.startsWith(expected)
+        }
+        if (atEnd) {
+            return actual.endsWith(expected)
+        }
+        if (atIndex) {
+            return actual.substring(atIndex, actual.length).startsWith(expected)
+        }
+        return actual === expected
     })
     return {
         value: actual,
