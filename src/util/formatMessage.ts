@@ -48,16 +48,18 @@ export const enhanceError = (
     context: { isNot: boolean },
     verb: string,
     expectation: string,
-    arg2 = '', {
-        message = '',
-        containing = false
-    }): any => {
+    arg2 = '',
+    options:
+        | ExpectWebdriverIO.StringOptions
+        | ExpectWebdriverIO.CommandOptions
+        | ExpectWebdriverIO.NumberOptions
+): any => {
     const { isNot = false } = context
 
     subject = typeof subject === 'string' ? subject : getSelectors(subject)
 
     let contain = ''
-    if (containing) {
+    if ((options as ExpectWebdriverIO.StringOptions).containing) {
         contain = ' containing'
     }
 
@@ -79,9 +81,7 @@ export const enhanceError = (
             .replace(RECEIVED_LABEL, RECEIVED_LABEL + ' '.repeat(NOT_SUFFIX.length))
     }
 
-    if (message) {
-        message += '\n'
-    }
+    const message = options.message ? options.message + '\n' : '';
 
     if (arg2) {
         arg2 = ` ${arg2}`
