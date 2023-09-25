@@ -50,7 +50,7 @@ This option can be applied in addition to the command options when strings are b
 | ---- | ---- | ------- |
 | <code><var>ignoreCase</var></code> | boolean | apply `toLowerCase` to both actual and expected values |
 | <code><var>trim</var></code> | boolean | apply `trim` to actual value |
-| <code><var>replace</var></code> | Replacer or Record<string, Replacer*> | replace parts of the actual value that match the string/RegExp with the next string |
+| <code><var>replace</var></code> | Replacer or Record<string, Replacer> | replace parts of the actual value that match the string/RegExp with the next string |
 | <code><var>containing</var></code> | boolean | expect actual value to contain expected value, otherwise strict equal. |
 | <code><var>asString</var></code> | boolean | might be helpful to force converting property value to string |
 | <code><var>atStart</var></code> | boolean | expect actual value to start with the expected value |
