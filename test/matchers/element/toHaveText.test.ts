@@ -110,7 +110,7 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: ['Web', 'Browser'] })
+        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: [['Web', 'Browser']] })
         expect(result.pass).toBe(true)
     })
 
@@ -120,7 +120,7 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: [/Web/, 'Browser'] })
+        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: [[/Web/, 'Browser']] })
         expect(result.pass).toBe(true)
     })
 
@@ -197,7 +197,7 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: ['Web', 'Browser'] })
+        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [['Web', 'Browser']] })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -210,7 +210,25 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [/Web/g, 'Browser'] })
+        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [[/Web/g, 'Browser']] })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
+    test('success if array matches with text and multiple replacers and one of the replacers is a function', async () => {
+        const el: any = await $('sel')
+        el._attempts = 0
+        el._text = function (): string {
+            this._attempts++
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], {
+            replace: [
+                [/Web/g, 'Browser'],
+                [/[A-Z]g/, (match) => match.toLowerCase()],
+            ],
+        })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })

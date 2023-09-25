@@ -125,8 +125,15 @@ export const compareText = (actual: string, expected: string | RegExp, { ignoreC
     if (trim) {
         actual = actual.trim()
     }
-    if (Array.isArray(replace) && replace.length === 2) {
-        actual = actual.replace(replace[0], replace[1])
+    if (Array.isArray(replace) && replace.length) {
+        if (replace.some(r => r.length !== 2)) {
+            throw new Error('The replace option needs to be an array containing one or more replacers [[searchValue, replaceValue]]');
+        }
+
+        for (const replacer of replace) {
+            const [searchValue, replaceValue] = replacer
+            actual = actual.replace(searchValue, replaceValue as string)
+        }
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
@@ -186,8 +193,15 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
     if (trim) {
         actual = actual.trim()
     }
-    if (Array.isArray(replace) && replace.length === 2) {
-        actual = actual.replace(replace[0], replace[1])
+    if (Array.isArray(replace) && replace.length) {
+        if (replace.some(r => r.length !== 2)) {
+            throw new Error('The replace option needs to be an array containing one or more replacers [[searchValue, replaceValue]]');
+        }
+
+        for (const replacer of replace) {
+            const [searchValue, replaceValue] = replacer
+            actual = actual.replace(searchValue, replaceValue as string)
+        }
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
