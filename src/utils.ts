@@ -114,7 +114,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
-export const compareText = (actual: string, expected: string | RegExp, { ignoreCase = false, trim = true, containing = false, atStart = false, atEnd = false, atIndex = undefined }: ExpectWebdriverIO.StringOptions) => {
+export const compareText = (actual: string, expected: string | RegExp, { ignoreCase = false, trim = true, containing = false, atStart = false, atEnd = false, atIndex, replace }: ExpectWebdriverIO.StringOptions) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -124,6 +124,9 @@ export const compareText = (actual: string, expected: string | RegExp, { ignoreC
 
     if (trim) {
         actual = actual.trim()
+    }
+    if (Array.isArray(replace) && replace.length === 2) {
+        actual = actual.replace(replace[0], replace[1])
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
@@ -172,7 +175,7 @@ export const compareText = (actual: string, expected: string | RegExp, { ignoreC
     }
 }
 
-export const compareTextWithArray = (actual: string, expectedArray: Array<string | RegExp>, { ignoreCase = false, trim = false, containing = false, atStart = false, atEnd = false, atIndex = undefined }: ExpectWebdriverIO.StringOptions) => {
+export const compareTextWithArray = (actual: string, expectedArray: Array<string | RegExp>, { ignoreCase = false, trim = false, containing = false, atStart = false, atEnd = false, atIndex, replace }: ExpectWebdriverIO.StringOptions) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -182,6 +185,9 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
 
     if (trim) {
         actual = actual.trim()
+    }
+    if (Array.isArray(replace) && replace.length === 2) {
+        actual = actual.replace(replace[0], replace[1])
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()

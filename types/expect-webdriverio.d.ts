@@ -1,11 +1,19 @@
 declare namespace ExpectWebdriverIO {
-    function expect<T = unknown, R extends void | Promise<void> = void | Promise<void>>(actual: T): Matchers<R, T>
+    function expect<T = unknown, R extends void | Promise<void> = void | Promise<void>>(
+        actual: T
+    ): Matchers<R, T>
     function setOptions(options: DefaultOptions): void
     function getConfig(): any
-    const matchers: Record<string, ((actual: any, ...expected: any[]) => Promise<{
-        pass: boolean;
-        message(): string;
-    }>)>
+    const matchers: Record<
+        string,
+        (
+            actual: any,
+            ...expected: any[]
+        ) => Promise<{
+            pass: boolean
+            message(): string
+        }>
+    >
 
     interface DefaultOptions {
         /**
@@ -47,19 +55,25 @@ declare namespace ExpectWebdriverIO {
          * expect actual value to start with the expected value
          * Otherwise strict equal
          */
-        atStart?: boolean,
+        atStart?: boolean
 
         /**
          * expect actual value to end with the expected value
          * Otherwise strict equal
          */
-        atEnd?: boolean,
+        atEnd?: boolean
 
         /**
          * expect actual value to have the expected value at the given index (index starts at 0 not 1)
          * Otherwise strict equal
          */
-        atIndex?: number,
+        atIndex?: number
+
+        /**
+         * replace the actual value (example: strip newlines from the value) and expect it to match the expected value
+         * Otherwise strict equal
+         */
+        replace?: [string | RegExp, string]
 
         /**
          * might be helpful to force converting property value to string
@@ -107,7 +121,11 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        toHaveAttribute(attribute: string, value?: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttribute(
+            attribute: string,
+            value?: string | RegExp,
+            options?: ExpectWebdriverIO.StringOptions
+        ): R
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
@@ -159,7 +177,11 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getProperty`
          */
-        toHaveElementProperty(property: string | RegExp, value?: any, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementProperty(
+            property: string | RegExp,
+            value?: any,
+            options?: ExpectWebdriverIO.StringOptions
+        ): R
 
         /**
          * `WebdriverIO.Element` -> `getProperty` value
@@ -243,17 +265,23 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getText`
          */
-        toHaveText(text: string | RegExp | Array<string | RegExp>, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveText(
+            text: string | RegExp | Array<string | RegExp>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): R
         /**
          * `WebdriverIO.Element` -> `getText`
          * Element's text includes the text provided
          */
-        toHaveTextContaining(text: string | RegExp | Array<string | RegExp>, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTextContaining(
+            text: string | RegExp | Array<string | RegExp>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): R
 
         /**
-        * `WebdriverIO.Element` -> `getAttribute("style")`
-        */
-        toHaveStyle(style: { [key: string]: string; }, options?: ExpectWebdriverIO.StringOptions): R
+         * `WebdriverIO.Element` -> `getAttribute("style")`
+         */
+        toHaveStyle(style: { [key: string]: string }, options?: ExpectWebdriverIO.StringOptions): R
 
         // ===== browser only =====
         /**
