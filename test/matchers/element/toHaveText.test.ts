@@ -104,13 +104,23 @@ describe('toHaveText', () => {
         expect(result.pass).toBe(true)
     })
 
+    test('should return true if actual text + single replacer matches the expected text', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: ['Web', 'Browser'] })
+        expect(result.pass).toBe(true)
+    })
+
     test('should return true if actual text + replace (string) matches the expected text', async () => {
         const el: any = await $('sel')
         el._text = function (): string {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: [['Web', 'Browser']] })
+        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: { replaceWebWithBrowser: ['Web', 'Browser'] } })
         expect(result.pass).toBe(true)
     })
 
@@ -120,7 +130,7 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: [[/Web/, 'Browser']] })
+        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: { replaceWebWithBrowser: [/Web/, 'Browser'] } })
         expect(result.pass).toBe(true)
     })
 
@@ -197,7 +207,7 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [['Web', 'Browser']] })
+        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: { replaceWebWithBrowser: ['Web', 'Browser'] } })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -210,7 +220,7 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [[/Web/g, 'Browser']] })
+        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: { replaceWebWithBrowser: [/Web/g, 'Browser'] } })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -224,10 +234,10 @@ describe('toHaveText', () => {
         }
 
         const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], {
-            replace: [
-                [/Web/g, 'Browser'],
-                [/[A-Z]g/, (match) => match.toLowerCase()],
-            ],
+            replace: {
+                replaceWebWithBrowser: [/Web/g, 'Browser'],
+                replaceUppercaseWithLowercase: [/[A-Z]g/, (match) => match.toLowerCase()],
+            },
         })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)

@@ -125,12 +125,16 @@ export const compareText = (actual: string, expected: string | RegExp, { ignoreC
     if (trim) {
         actual = actual.trim()
     }
-    if (Array.isArray(replace) && replace.length) {
-        if (replace.some(r => r.length !== 2)) {
-            throw new Error('The replace option needs to be an array containing one or more replacers [[searchValue, replaceValue]]');
+    if (typeof replace === 'object') {
+        const replacers = Array.isArray(replace)
+            ? [replace]
+            : Object.values(replace)
+
+        if (replacers.some(r => r.length !== 2)) {
+            throw new Error('Replacers need to have a searchValue and a replaceValue');
         }
 
-        for (const replacer of replace) {
+        for (const replacer of replacers) {
             const [searchValue, replaceValue] = replacer
             actual = actual.replace(searchValue, replaceValue as string)
         }
@@ -193,12 +197,16 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
     if (trim) {
         actual = actual.trim()
     }
-    if (Array.isArray(replace) && replace.length) {
-        if (replace.some(r => r.length !== 2)) {
-            throw new Error('The replace option needs to be an array containing one or more replacers [[searchValue, replaceValue]]');
+    if (typeof replace === 'object') {
+        const replacers = Array.isArray(replace)
+            ? [replace]
+            : Object.values(replace)
+
+        if (replacers.some(r => r.length !== 2)) {
+            throw new Error('Replacers need to have a searchValue and a replaceValue');
         }
 
-        for (const replacer of replace) {
+        for (const replacer of replacers) {
             const [searchValue, replaceValue] = replacer
             actual = actual.replace(searchValue, replaceValue as string)
         }

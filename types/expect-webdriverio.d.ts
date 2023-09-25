@@ -1,3 +1,7 @@
+type searchValue = string | RegExp
+type replaceValue = string | ((substring: string, ...args: any[]) => string)
+type Replacer = [searchValue, replaceValue]
+
 declare namespace ExpectWebdriverIO {
     function expect<T = unknown, R extends void | Promise<void> = void | Promise<void>>(
         actual: T
@@ -73,7 +77,7 @@ declare namespace ExpectWebdriverIO {
          * replace the actual value (example: strip newlines from the value) and expect it to match the expected value
          * Otherwise strict equal
          */
-        replace?: [string | RegExp, string | ((substring: string, ...args: any[]) => string)][]
+        replace?: Replacer | Record<string, Replacer>
 
         /**
          * might be helpful to force converting property value to string
