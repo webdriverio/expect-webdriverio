@@ -114,7 +114,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
-export const compareText = (actual: string, expected: string | RegExp, { ignoreCase = false, trim = true, containing = false }) => {
+export const compareText = (actual: string, expected: string | RegExp, { ignoreCase = false, trim = true, containing = false, atStart = false, atEnd = false, atIndex, replace }: ExpectWebdriverIO.StringOptions) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -124,6 +124,9 @@ export const compareText = (actual: string, expected: string | RegExp, { ignoreC
 
     if (trim) {
         actual = actual.trim()
+    }
+    if (Array.isArray(replace)) {
+        actual = replaceActual(replace, actual)
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
@@ -145,13 +148,34 @@ export const compareText = (actual: string, expected: string | RegExp, { ignoreC
         }
     }
 
+    if (atStart) {
+        return {
+            value: actual,
+            result: actual.startsWith(expected)
+        }
+    }
+
+    if (atEnd) {
+        return {
+            value: actual,
+            result: actual.endsWith(expected)
+        }
+    }
+
+    if (atIndex) {
+        return {
+            value: actual,
+            result: actual.substring(atIndex, actual.length).startsWith(expected)
+        }
+    }
+
     return {
         value: actual,
         result: actual === expected
     }
 }
 
-export const compareTextWithArray = (actual: string, expectedArray: Array<string | RegExp>, { ignoreCase = false, trim = false, containing = false }) => {
+export const compareTextWithArray = (actual: string, expectedArray: Array<string | RegExp>, { ignoreCase = false, trim = false, containing = false, atStart = false, atEnd = false, atIndex, replace }: ExpectWebdriverIO.StringOptions) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -162,13 +186,31 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
     if (trim) {
         actual = actual.trim()
     }
+    if (Array.isArray(replace)) {
+        actual = replaceActual(replace, actual)
+    }
     if (ignoreCase) {
         actual = actual.toLowerCase()
         expectedArray = expectedArray.map(item => (item instanceof RegExp) ? item : item.toLowerCase())
     }
 
     const textInArray = expectedArray.some((expected) => {
-        return expected instanceof RegExp ? !!actual.match(expected) : containing ? actual.includes(expected) : actual === expected
+        if (expected instanceof RegExp) {
+            return !!actual.match(expected)
+        }
+        if (containing) {
+            return actual.includes(expected)
+        }
+        if (atStart) {
+            return actual.startsWith(expected)
+        }
+        if (atEnd) {
+            return actual.endsWith(expected)
+        }
+        if (atIndex) {
+            return actual.substring(atIndex, actual.length).startsWith(expected)
+        }
+        return actual === expected
     })
     return {
         value: actual,
@@ -228,4 +270,22 @@ export {
     waitUntil,
     compareNumbers,
     aliasFn
+}
+
+function replaceActual(replace: Replacer | Replacer[], actual: string) {
+    const hasMultipleReplacers = (replace as Replacer[]).every(r => Array.isArray(r));
+    const replacers = hasMultipleReplacers
+        ? replace as Replacer[]
+        : [replace as Replacer]
+
+    if (replacers.some(r => Array.isArray(r) && r.length !== 2)) {
+        throw new Error('Replacers need to have a searchValue and a replaceValue');
+    }
+
+    for (const replacer of replacers) {
+        const [searchValue, replaceValue] = replacer
+        actual = actual.replace(searchValue, replaceValue as string)
+    }
+
+    return actual
 }

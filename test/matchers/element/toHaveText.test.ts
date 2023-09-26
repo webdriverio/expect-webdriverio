@@ -10,7 +10,7 @@ describe('toHaveText', () => {
     test('wait for success', async () => {
         const el: any = await $('sel')
         el._attempts = 2
-        el._text= function (): string {
+        el._text = function (): string {
             if (this._attempts > 0) {
                 this._attempts--
                 return ''
@@ -49,7 +49,7 @@ describe('toHaveText', () => {
     test('no wait - failure', async () => {
         const el: any = await $('sel')
         el._attempts = 0
-        el._text = function ():string {
+        el._text = function (): string {
             this._attempts++
             return 'webdriverio'
         }
@@ -84,7 +84,7 @@ describe('toHaveText', () => {
         expect(result.pass).toBe(true)
     })
 
-    test('should return false if texts dont match', async () => {
+    test('should return false if texts don\'t match', async () => {
         const el: any = await $('sel')
         el._text = function (): string {
             return 'WebdriverIO'
@@ -101,6 +101,66 @@ describe('toHaveText', () => {
         }
 
         const result = await toHaveText.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
+        expect(result.pass).toBe(true)
+    })
+
+    test('should return true if actual text + single replacer matches the expected text', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: ['Web', 'Browser'] })
+        expect(result.pass).toBe(true)
+    })
+
+    test('should return true if actual text + replace (string) matches the expected text', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: [['Web', 'Browser']] })
+        expect(result.pass).toBe(true)
+    })
+
+    test('should return true if actual text + replace (regex) matches the expected text', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: [[/Web/, 'Browser']] })
+        expect(result.pass).toBe(true)
+    })
+
+    test('should return true if actual text starts with expected text', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, 'Web', { atStart: true })
+        expect(result.pass).toBe(true)
+    })
+
+    test('should return true if actual text ends with expected text', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, 'IO', { atEnd: true })
+        expect(result.pass).toBe(true)
+    })
+
+    test('should return true if actual text contains the expected text at the given index', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, 'iverIO', { atIndex: 5 })
         expect(result.pass).toBe(true)
     })
 
@@ -139,6 +199,50 @@ describe('toHaveText', () => {
         expect(el._attempts).toBe(1)
     })
 
+    test('success if array matches with text and replace (string)', async () => {
+        const el: any = await $('sel')
+        el._attempts = 0
+        el._text = function (): string {
+            this._attempts++
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [['Web', 'Browser']] })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
+    test('success if array matches with text and replace (regex)', async () => {
+        const el: any = await $('sel')
+        el._attempts = 0
+        el._text = function (): string {
+            this._attempts++
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [[/Web/g, 'Browser']] })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
+    test('success if array matches with text and multiple replacers and one of the replacers is a function', async () => {
+        const el: any = await $('sel')
+        el._attempts = 0
+        el._text = function (): string {
+            this._attempts++
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], {
+            replace: [
+                [/Web/g, 'Browser'],
+                [/[A-Z]g/, (match) => match.toLowerCase()],
+            ],
+        })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
     test('failure if array does not match with text', async () => {
         const el: any = await $('sel')
         el._attempts = 0
@@ -158,7 +262,7 @@ describe('toHaveText', () => {
         beforeEach(async () => {
             el = await $('sel')
             el._text = vi.fn().mockImplementation(() => {
-                return "This is example text"
+                return 'This is example text'
             })
         })
 
@@ -178,7 +282,9 @@ describe('toHaveText', () => {
         })
 
         test('success if array matches with text and ignoreCase', async () => {
-            const result = await toHaveText.call({}, el, ['ThIs Is ExAmPlE tExT', /Webdriver/i], { ignoreCase: true })
+            const result = await toHaveText.call({}, el, ['ThIs Is ExAmPlE tExT', /Webdriver/i], {
+                ignoreCase: true,
+            })
             expect(result.pass).toBe(true)
         })
 
