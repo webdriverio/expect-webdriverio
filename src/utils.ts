@@ -125,19 +125,8 @@ export const compareText = (actual: string, expected: string | RegExp, { ignoreC
     if (trim) {
         actual = actual.trim()
     }
-    if (typeof replace === 'object') {
-        const replacers = Array.isArray(replace)
-            ? [replace]
-            : Object.values(replace)
-
-        if (replacers.some(r => r.length !== 2)) {
-            throw new Error('Replacers need to have a searchValue and a replaceValue');
-        }
-
-        for (const replacer of replacers) {
-            const [searchValue, replaceValue] = replacer
-            actual = actual.replace(searchValue, replaceValue as string)
-        }
+    if (Array.isArray(replace)) {
+        actual = replaceActual(replace, actual)
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
@@ -197,19 +186,8 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
     if (trim) {
         actual = actual.trim()
     }
-    if (typeof replace === 'object') {
-        const replacers = Array.isArray(replace)
-            ? [replace]
-            : Object.values(replace)
-
-        if (replacers.some(r => r.length !== 2)) {
-            throw new Error('Replacers need to have a searchValue and a replaceValue');
-        }
-
-        for (const replacer of replacers) {
-            const [searchValue, replaceValue] = replacer
-            actual = actual.replace(searchValue, replaceValue as string)
-        }
+    if (Array.isArray(replace)) {
+        actual = replaceActual(replace, actual)
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
@@ -292,4 +270,22 @@ export {
     waitUntil,
     compareNumbers,
     aliasFn
+}
+
+function replaceActual(replace: Replacer | Replacer[], actual: string) {
+    const hasMultipleReplacers = (replace as Replacer[]).every(r => Array.isArray(r));
+    const replacers = hasMultipleReplacers
+        ? replace as Replacer[]
+        : [replace as Replacer]
+
+    if (replacers.some(r => Array.isArray(r) && r.length !== 2)) {
+        throw new Error('Replacers need to have a searchValue and a replaceValue');
+    }
+
+    for (const replacer of replacers) {
+        const [searchValue, replaceValue] = replacer
+        actual = actual.replace(searchValue, replaceValue as string)
+    }
+
+    return actual
 }

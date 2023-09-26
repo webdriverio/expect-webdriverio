@@ -77,7 +77,7 @@ declare namespace ExpectWebdriverIO {
          * replace the actual value (example: strip newlines from the value) and expect it to match the expected value
          * Otherwise strict equal
          */
-        replace?: Replacer | Record<string, Replacer>
+        replace?: Replacer | Replacer[]
 
         /**
          * might be helpful to force converting property value to string
