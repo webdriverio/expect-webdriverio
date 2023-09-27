@@ -12,8 +12,12 @@ function getPropertyFn(propName) {
     return this._value ? this._value(propName) : undefined
 }
 
-function getTextFn(propName) {
-    return this._text ? this._text(propName) : undefined
+function getTextFn() {
+    return this._text ? this._text() : undefined
+}
+
+function getHTMLFn(includeSelectorTag) {
+    return this._html ? this._html(includeSelectorTag) : undefined
 }
 
 const element = {
@@ -27,7 +31,8 @@ const element = {
     isFocused: beFn,
     isEnabled: beFn,
     getProperty: getPropertyFn,
-    getText: getTextFn
+    getText: getTextFn,
+    getHTML: getHTMLFn,
 }
 
 export function $(selector) {
