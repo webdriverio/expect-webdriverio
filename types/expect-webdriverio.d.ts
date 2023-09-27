@@ -38,6 +38,13 @@ declare namespace ExpectWebdriverIO {
         message?: string
     }
 
+    interface HTMLOptions extends StringOptions {
+        /**
+         * return the HTML with the selector tag included
+         */
+        includeSelectorTag?: boolean;
+    }
+
     interface StringOptions extends CommandOptions {
         /**
          * apply `toLowerCase` to both actual and expected values
