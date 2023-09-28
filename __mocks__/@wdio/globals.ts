@@ -1,5 +1,3 @@
-import type { RectReturn } from '@wdio/protocols'
-
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 function beFn() {
@@ -30,7 +28,7 @@ function getComputedRoleFn() {
     return this._computed_role ? this._computed_role() : undefined
 }
 
-function getSizeFn(property: keyof RectReturn) {
+function getSizeFn(property: 'height' | 'width') {
     return this._size ? this._size(property) : undefined
 }
 
