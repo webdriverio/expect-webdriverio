@@ -28,7 +28,7 @@ function getComputedRoleFn() {
     return this._computed_role ? this._computed_role() : undefined
 }
 
-function getSizeFn(property: 'height' | 'width') {
+function getSizeFn(property?: 'height' | 'width') {
     return this._size ? this._size(property) : undefined
 }
 
