@@ -7,9 +7,7 @@ import {
     compareObject,
 } from '../../utils.js'
 
-import type { Size } from 'webdriverio/build/commands/element/getSize.js'
-
-async function condition(el: WebdriverIO.Element, size: Size | string): Promise<any> {
+async function condition(el: WebdriverIO.Element, size: { height: number; width: number }): Promise<any> {
     const actualSize = await el.getSize()
 
     return compareObject(actualSize, size)
@@ -17,7 +15,7 @@ async function condition(el: WebdriverIO.Element, size: Size | string): Promise<
 
 export async function toHaveSize(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
-    size: Size | string,
+    size: { height: number; width: number },
     options: ExpectWebdriverIO.CommandOptions = {}
 ) {
     const isNot = this.isNot
