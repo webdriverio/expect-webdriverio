@@ -349,6 +349,58 @@ const elem = await $('#elem')
 await expect(elem).toBeChecked()
 ```
 
+### toHaveComputedLabel
+
+Checks if element has a specific computed WAI-ARIA label. Can also be called with an array as parameter in the case where the element can have different labels.
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+const elem = await $('a[href="https://github.com/webdriverio/webdriverio"]')
+await expect(elem).toHaveComputedLabel('GitHub repository')
+await expect(elem).toHaveComputedLabel(['GitHub repository', 'Private repository'])
+```
+
+### toHaveComputedLabelContaining
+
+Checks if element contains a specific computed WAI-ARIA label. Can also be called with an array as parameter in the case where the element can have different labels.
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+const elem = await $('a[href="https://github.com/webdriverio/webdriverio"]')
+await expect(elem).toHaveComputedLabelContaining('GitHub')
+await expect(elem).toHaveComputedLabelContaining(['GitHub', 'Private'])
+```
+
+### toHaveComputedRole
+
+Checks if element has a specific computed WAI-ARIA role. Can also be called with an array as parameter in the case where the element can have different labels.
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+const elem = await $('[aria-label="Skip to main content"]')
+await expect(elem).toHaveComputedRole('region')
+await expect(elem).toHaveComputedRole(['region', 'section'])
+```
+
+### toHaveComputedRoleContaining
+
+Checks if element contains a specific computed WAI-ARIA role. Can also be called with an array as parameter in the case where the element can have different roles.
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+const elem = await $('[aria-label="Skip to main content"]')
+await expect(elem).toHaveComputedRoleContaining('reg')
+await expect(elem).toHaveComputedRoleContaining(['reg', 'sec'])
+```
+
 ### toHaveHref
 
 Checks if link element has a specific link target.
@@ -484,6 +536,42 @@ await expect(list).toHaveChildren({ gte: 1 })
 await expect(list).toHaveChildren(3) // the list has 3 items
 // same as 
 await expect(list).toHaveChildren({ eq: 3 })
+```
+
+### toHaveWidth
+
+Checks if element has a specific width.
+
+##### Usage
+
+```js
+await browser.url('http://github.com')
+const logo = await $('.octicon-mark-github')
+await expect(logo).toHaveWidth(32)
+```
+
+### toHaveHeight
+
+Checks if element has a specific height.
+
+##### Usage
+
+```js
+await browser.url('http://github.com')
+const logo = await $('.octicon-mark-github')
+await expect(logo).toHaveHeight(32)
+```
+
+### toHaveSize
+
+Checks if element has a specific size.
+
+##### Usage
+
+```js
+await browser.url('http://github.com')
+const logo = await $('.octicon-mark-github')
+await expect(logo).toHaveSize({ width: 32, height: 32 })
 ```
 
 ### toBeElementsArrayOfSize

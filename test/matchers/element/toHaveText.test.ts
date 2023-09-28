@@ -233,10 +233,10 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], {
+        const result = await toHaveText.call({}, el, ['WDIO', 'browserdriverio', 'toto'], {
             replace: [
                 [/Web/g, 'Browser'],
-                [/[A-Z]g/, (match) => match.toLowerCase()],
+                [/[A-Z]/g, (match) => match.toLowerCase()],
             ],
         })
         expect(result.pass).toBe(true)

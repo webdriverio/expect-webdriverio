@@ -11,6 +11,7 @@
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
     "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
     "types": [
       "node",
       "@wdio/globals/types"

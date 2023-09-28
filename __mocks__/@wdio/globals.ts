@@ -20,6 +20,18 @@ function getHTMLFn(includeSelectorTag) {
     return this._html ? this._html(includeSelectorTag) : undefined
 }
 
+function getComputedLabelFn() {
+    return this._computed_label ? this._computed_label() : undefined
+}
+
+function getComputedRoleFn() {
+    return this._computed_role ? this._computed_role() : undefined
+}
+
+function getSizeFn(property?: 'height' | 'width') {
+    return this._size ? this._size(property) : undefined
+}
+
 const element = {
     $,
     $$,
@@ -33,6 +45,9 @@ const element = {
     getProperty: getPropertyFn,
     getText: getTextFn,
     getHTML: getHTMLFn,
+    getComputedLabel: getComputedLabelFn,
+    getComputedRole: getComputedRoleFn,
+    getSize: getSizeFn,
 }
 
 export function $(selector) {

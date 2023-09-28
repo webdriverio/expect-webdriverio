@@ -256,13 +256,13 @@ describe('toHaveHTML', () => {
         el._attempts = 0
         el._html = function (): string {
             this._attempts++
-            return '<div>foo</div>'
+            return '<div>FOO</div>'
         }
 
-        const result = await toHaveHTML.call({}, el, ['div', '<div>foo</div>', 'toto'], {
+        const result = await toHaveHTML.call({}, el, ['div', '<p>foo</p>', 'toto'], {
             replace: [
-                [/Web/g, 'Browser'],
-                [/[A-Z]g/, (match) => match.toLowerCase()],
+                [/div/g, 'p'],
+                [/[A-Z]/g, (match) => match.toLowerCase()],
             ],
         })
         expect(result.pass).toBe(true)
