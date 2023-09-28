@@ -538,6 +538,30 @@ await expect(list).toHaveChildren(3) // the list has 3 items
 await expect(list).toHaveChildren({ eq: 3 })
 ```
 
+### toHaveWidth
+
+Checks if element has a specific width.
+
+##### Usage
+
+```js
+await browser.url('http://github.com')
+const logo = await $('.octicon-mark-github')
+await expect(logo).toHaveWidth(32)
+```
+
+### toHaveHeight
+
+Checks if element has a specific height.
+
+##### Usage
+
+```js
+await browser.url('http://github.com')
+const logo = await $('.octicon-mark-github')
+await expect(logo).toHaveHeight(32)
+```
+
 ### toHaveSize
 
 Checks if element has a specific size.
@@ -548,10 +572,6 @@ Checks if element has a specific size.
 await browser.url('http://github.com')
 const logo = await $('.octicon-mark-github')
 await expect(logo).toHaveSize({ width: 32, height: 32 })
-await expect(logo).toHaveSize(32, property: 'width')
-await expect(logo).toHaveSize(32, property: 'height')
-const sizeAsJSONString = JSON.stringify({ width: 32, height: 32 });
-await expect(logo).toHaveSize(sizeAsJSONString, { asJSONString: true})
 ```
 
 ### toBeElementsArrayOfSize

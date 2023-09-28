@@ -235,23 +235,6 @@ export const compareObject = (actual: object | number, expected: string | number
     }
 }
 
-export const compareObjectWithArray = (actual: object | number | string, expectedArray: (string | number | Size)[]) => {
-    if (typeof actual !== 'object' || Array.isArray(actual)) {
-        return {
-            value: actual,
-            result: false
-        }
-    }
-
-    const textInArray = expectedArray.some((expected) => {
-        return isEqual(actual, expected)
-    })
-    return {
-        value: actual,
-        result: textInArray
-    }
-}
-
 export const compareStyle = async (actualEl: WebdriverIO.Element, style: { [key: string]: string; }, { ignoreCase = true, trim = false }) => {
     let result = true
     const actual: any = {}

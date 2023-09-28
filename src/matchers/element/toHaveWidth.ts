@@ -4,34 +4,34 @@ import {
     executeCommand,
     wrapExpectedWithArray,
     updateElementsArray,
-    compareObject,
 } from '../../utils.js'
 
-import type { Size } from 'webdriverio/build/commands/element/getSize.js'
+async function condition(el: WebdriverIO.Element, width: number): Promise<any> {
+    const actualWidth = await el.getSize('width')
 
-async function condition(el: WebdriverIO.Element, size: Size | string): Promise<any> {
-    const actualSize = await el.getSize()
-
-    return compareObject(actualSize, size)
+    return {
+        value: actualWidth,
+        result: actualWidth === width,
+    }
 }
 
-export async function toHaveSize(
+export async function toHaveWidth(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
-    size: Size | string,
+    width: number,
     options: ExpectWebdriverIO.CommandOptions = {}
 ) {
     const isNot = this.isNot
-    const { expectation = 'size', verb = 'have' } = this
+    const { expectation = 'width', verb = 'have' } = this
 
     let el = await received
-    let actualSize
+    let actualWidth
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [size, options])
+            const result = await executeCommand.call(this, el, condition, options, [width, options])
 
             el = result.el
-            actualSize = result.values
+            actualWidth = result.values
 
             return result.success
         },
@@ -43,8 +43,8 @@ export async function toHaveSize(
 
     const message = enhanceError(
         el,
-        wrapExpectedWithArray(el, actualSize, size),
-        actualSize,
+        wrapExpectedWithArray(el, actualWidth, width),
+        actualWidth,
         this,
         verb,
         expectation,

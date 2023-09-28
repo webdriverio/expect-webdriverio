@@ -1,8 +1,6 @@
-import type { RectReturn } from '@wdio/protocols'
-
 type searchValue = string | RegExp
 type replaceValue = string | ((substring: string, ...args: any[]) => string)
-type Replacer = [searchValue, replaceValue]
+export type Replacer = [searchValue, replaceValue]
 
 declare global {
     namespace ExpectWebdriverIO {
@@ -46,18 +44,6 @@ declare global {
              * return the HTML with the selector tag included
              */
             includeSelectorTag?: boolean
-        }
-
-        interface SizeOptions extends CommandOptions {
-            /**
-             * only return the value of the size property
-             */
-            property?: keyof RectReturn
-
-            /**
-             * might be helpful to force converting property value to string
-             */
-            asJSONString?: boolean
         }
 
         interface StringOptions extends CommandOptions {
@@ -297,6 +283,7 @@ declare global {
 
             /**
              * `WebdriverIO.Element` -> `getText`
+             * Element's text equals the text provided
              */
             toHaveText(
                 text: string | RegExp | Array<string | RegExp>,
@@ -309,6 +296,78 @@ declare global {
             toHaveTextContaining(
                 text: string | RegExp | Array<string | RegExp>,
                 options?: ExpectWebdriverIO.StringOptions
+            ): R
+
+            /**
+             * `WebdriverIO.Element` -> `getHTML`
+             * Element's html equals the html provided
+             */
+            toHaveHTML(
+                html: string | RegExp | Array<string | RegExp>,
+                options?: ExpectWebdriverIO.HTMLOptions
+            ): R
+            /**
+             * `WebdriverIO.Element` -> `getHTML`
+             * Element's html includes the html provided
+             */
+            toHaveHTMLContaining(
+                html: string | RegExp | Array<string | RegExp>,
+                options?: ExpectWebdriverIO.HTMLOptions
+            ): R
+
+            /**
+             * `WebdriverIO.Element` -> `getComputedLabel`
+             * Element's computed label equals the computed label provided
+             */
+            toHaveComputedLabel(
+                computedLabel: string | RegExp | Array<string | RegExp>,
+                options?: ExpectWebdriverIO.StringOptions
+            ): R
+            /**
+             * `WebdriverIO.Element` -> `getComputedLabel`
+             * Element's computed label includes the computed label provided
+             */
+            toHaveComputedLabelContaining(
+                computedLabel: string | RegExp | Array<string | RegExp>,
+                options?: ExpectWebdriverIO.StringOptions
+            ): R
+
+            /**
+             * `WebdriverIO.Element` -> `getComputedRole`
+             * Element's computed role equals the computed role provided
+             */
+            toHaveComputedRole(
+                computedRole: string | RegExp | Array<string | RegExp>,
+                options?: ExpectWebdriverIO.StringOptions
+            ): R
+            /**
+             * `WebdriverIO.Element` -> `getComputedRole`
+             * Element's computed role includes the computed role provided
+             */
+            toHaveComputedRoleContaining(
+                computedRole: string | RegExp | Array<string | RegExp>,
+                options?: ExpectWebdriverIO.StringOptions
+            ): R
+
+            /**
+             * `WebdriverIO.Element` -> `getSize('width')`
+             * Element's width equals the width provided
+             */
+            toHaveWidth(width: number, options?: ExpectWebdriverIO.CommandOptions): R
+
+            /**
+             * `WebdriverIO.Element` -> `getSize('height')`
+             * Element's height equals the height provided
+             */
+            toHaveHeight(height: number, options?: ExpectWebdriverIO.CommandOptions): R
+
+            /**
+             * `WebdriverIO.Element` -> `getSize()`
+             * Element's size equals the size provided
+             */
+            toHaveHeight(
+                size: { height: number; width: number },
+                options?: ExpectWebdriverIO.CommandOptions
             ): R
 
             /**

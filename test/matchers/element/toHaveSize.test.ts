@@ -84,7 +84,7 @@ describe('toHaveSize', () => {
         expect(result.pass).toBe(true)
     })
 
-    test('should return false if sizes don\'t match', async () => {
+    test("should return false if sizes don't match", async () => {
         const el: any = await $('sel')
         el._size = function () {
             return { width: 32, height: 32 }
@@ -101,53 +101,6 @@ describe('toHaveSize', () => {
         }
 
         const result = await toHaveSize.bind({})(el, { width: 32, height: 32 }, { wait: 1 })
-        expect(result.pass).toBe(true)
-    })
-
-    test('should return true if sizes match as JSON string', async () => {
-        const el: any = await $('sel')
-        el._size = function () {
-            return { width: 32, height: 32 }
-        }
-
-        const sizeAsJsonString = JSON.stringify({ width: 32, height: 32 });
-        const result = await toHaveSize.bind({})(el, sizeAsJsonString, { asJSONString: true })
-        expect(result.pass).toBe(true)
-    })
-
-    test('should return true if sizes match when passing the width property', async () => {
-        const el: any = await $('sel')
-        el._size = function (property: string) {
-            console.log('jjjjj', property);
-            
-            if (property === 'width') {
-                return 50
-            }
-            if (property === 'height') {
-                return 32
-            }
-            return { width: 50, height: 32 }
-        }
-
-        const result = await toHaveSize.bind({})(el, 50, { property: 'width' })
-        expect(result.pass).toBe(true)
-    })
-
-    test('should return true if sizes match when passing the height property', async () => {
-        const el: any = await $('sel')
-        el._size = function (property: string) {
-            console.log('jjjjj', property);
-            
-            if (property === 'width') {
-                return 50
-            }
-            if (property === 'height') {
-                return 32
-            }
-            return { width: 50, height: 32 }
-        }
-
-        const result = await toHaveSize.bind({})(el, 32, { property: 'height' })
         expect(result.pass).toBe(true)
     })
 
