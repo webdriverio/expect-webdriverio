@@ -1,3 +1,5 @@
+import type { RectReturn } from '@wdio/protocols';
+
 type searchValue = string | RegExp
 type replaceValue = string | ((substring: string, ...args: any[]) => string)
 type Replacer = [searchValue, replaceValue]
@@ -43,6 +45,18 @@ declare namespace ExpectWebdriverIO {
          * return the HTML with the selector tag included
          */
         includeSelectorTag?: boolean;
+    }
+
+    interface SizeOptions extends CommandOptions {
+        /**
+         * only return the value of the size property
+         */
+        property?: keyof RectReturn;
+
+        /**
+         * might be helpful to force converting property value to string
+         */
+        asJSONString?: boolean
     }
 
     interface StringOptions extends CommandOptions {

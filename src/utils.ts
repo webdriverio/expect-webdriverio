@@ -1,10 +1,13 @@
 import type { ParsedCSSValue } from 'webdriverio'
+import isEqual from 'lodash.isequal';
 
 import { executeCommand } from './util/executeCommand.js'
 import { wrapExpectedWithArray, updateElementsArray } from './util/elementsUtil.js'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
 import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types.js'
+import { Replacer } from './types/expect-webdriverio.js'
+import { Size } from 'webdriverio/build/commands/element/getSize.js';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -211,6 +214,37 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
             return actual.substring(atIndex, actual.length).startsWith(expected)
         }
         return actual === expected
+    })
+    return {
+        value: actual,
+        result: textInArray
+    }
+}
+
+export const compareObject = (actual: object | number, expected: string | number | Size) => {
+    if (typeof actual !== 'object' || Array.isArray(actual)) {
+        return {
+            value: actual,
+            result: false
+        }
+    }
+
+    return {
+        value: actual,
+        result: isEqual(actual, expected)
+    }
+}
+
+export const compareObjectWithArray = (actual: object | number | string, expectedArray: (string | number | Size)[]) => {
+    if (typeof actual !== 'object' || Array.isArray(actual)) {
+        return {
+            value: actual,
+            result: false
+        }
+    }
+
+    const textInArray = expectedArray.some((expected) => {
+        return isEqual(actual, expected)
     })
     return {
         value: actual,
