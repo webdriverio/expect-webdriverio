@@ -1,12 +1,11 @@
 import type { ParsedCSSValue } from 'webdriverio'
-import isEqual from 'lodash.isequal';
+import isEqual from 'lodash.isequal'
 
 import { executeCommand } from './util/executeCommand.js'
 import { wrapExpectedWithArray, updateElementsArray } from './util/elementsUtil.js'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
 import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types.js'
-import { Replacer } from './types/expect-webdriverio.js'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -19,10 +18,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 const waitUntil = async (
     condition: () => Promise<boolean>,
     isNot = false,
-    {
-        wait = DEFAULT_OPTIONS.wait,
-        interval = DEFAULT_OPTIONS.interval
-    } = {},
+    { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
 ): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
@@ -35,13 +31,13 @@ const waitUntil = async (
         const start = Date.now()
         // eslint-disable-next-line no-constant-condition
         while (true) {
-            if ((Date.now() - start) > wait) {
+            if (Date.now() - start > wait) {
                 throw new Error('timeout')
             }
 
             error = undefined
             try {
-                const result = isNot !== await condition()
+                const result = isNot !== (await condition())
                 if (result) {
                     break
                 }
@@ -67,20 +63,27 @@ async function executeCommandBe(
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): Promise<{
-    pass: boolean,
+    pass: boolean
     message: () => string
 }> {
     const { isNot, expectation, verb = 'be' } = this
 
     received = await received
     let el = received
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this,
-            el,
-            async element => ({ result: await command(element) }), options)
-        el = result.el
-        return result.success
-    }, isNot, options)
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand.call(
+                this,
+                el,
+                async (element) => ({ result: await command(element) }),
+                options
+            )
+            el = result.el
+            return result.success
+        },
+        isNot,
+        options
+    )
 
     updateElementsArray(pass, received, el)
 
@@ -88,7 +91,7 @@ async function executeCommandBe(
 
     return {
         pass,
-        message: () => message
+        message: () => message,
     }
 }
 
@@ -116,11 +119,23 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
-export const compareText = (actual: string, expected: string | RegExp, { ignoreCase = false, trim = true, containing = false, atStart = false, atEnd = false, atIndex, replace }: ExpectWebdriverIO.StringOptions) => {
+export const compareText = (
+    actual: string,
+    expected: string | RegExp,
+    {
+        ignoreCase = false,
+        trim = true,
+        containing = false,
+        atStart = false,
+        atEnd = false,
+        atIndex,
+        replace,
+    }: ExpectWebdriverIO.StringOptions
+) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
-            result: false
+            result: false,
         }
     }
 
@@ -132,7 +147,7 @@ export const compareText = (actual: string, expected: string | RegExp, { ignoreC
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
-        if (! (expected instanceof RegExp)) {
+        if (!(expected instanceof RegExp)) {
             expected = expected.toLowerCase()
         }
     }
@@ -140,48 +155,60 @@ export const compareText = (actual: string, expected: string | RegExp, { ignoreC
     if (expected instanceof RegExp) {
         return {
             value: actual,
-            result: !!actual.match(expected)
+            result: !!actual.match(expected),
         }
     }
     if (containing) {
         return {
             value: actual,
-            result: actual.includes(expected)
+            result: actual.includes(expected),
         }
     }
 
     if (atStart) {
         return {
             value: actual,
-            result: actual.startsWith(expected)
+            result: actual.startsWith(expected),
         }
     }
 
     if (atEnd) {
         return {
             value: actual,
-            result: actual.endsWith(expected)
+            result: actual.endsWith(expected),
         }
     }
 
     if (atIndex) {
         return {
             value: actual,
-            result: actual.substring(atIndex, actual.length).startsWith(expected)
+            result: actual.substring(atIndex, actual.length).startsWith(expected),
         }
     }
 
     return {
         value: actual,
-        result: actual === expected
+        result: actual === expected,
     }
 }
 
-export const compareTextWithArray = (actual: string, expectedArray: Array<string | RegExp>, { ignoreCase = false, trim = false, containing = false, atStart = false, atEnd = false, atIndex, replace }: ExpectWebdriverIO.StringOptions) => {
+export const compareTextWithArray = (
+    actual: string,
+    expectedArray: Array<string | RegExp>,
+    {
+        ignoreCase = false,
+        trim = false,
+        containing = false,
+        atStart = false,
+        atEnd = false,
+        atIndex,
+        replace,
+    }: ExpectWebdriverIO.StringOptions
+) => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
-            result: false
+            result: false,
         }
     }
 
@@ -193,7 +220,7 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
-        expectedArray = expectedArray.map(item => (item instanceof RegExp) ? item : item.toLowerCase())
+        expectedArray = expectedArray.map((item) => (item instanceof RegExp ? item : item.toLowerCase()))
     }
 
     const textInArray = expectedArray.some((expected) => {
@@ -216,7 +243,7 @@ export const compareTextWithArray = (actual: string, expectedArray: Array<string
     })
     return {
         value: actual,
-        result: textInArray
+        result: textInArray,
     }
 }
 
@@ -224,17 +251,21 @@ export const compareObject = (actual: object | number, expected: string | number
     if (typeof actual !== 'object' || Array.isArray(actual)) {
         return {
             value: actual,
-            result: false
+            result: false,
         }
     }
 
     return {
         value: actual,
-        result: isEqual(actual, expected)
+        result: isEqual(actual, expected),
     }
 }
 
-export const compareStyle = async (actualEl: WebdriverIO.Element, style: { [key: string]: string; }, { ignoreCase = true, trim = false }) => {
+export const compareStyle = async (
+    actualEl: WebdriverIO.Element,
+    style: { [key: string]: string },
+    { ignoreCase = true, trim = false }
+) => {
     let result = true
     const actual: any = {}
 
@@ -259,15 +290,18 @@ export const compareStyle = async (actualEl: WebdriverIO.Element, style: { [key:
 
     return {
         value: actual,
-        result
+        result,
     }
 }
 
 function aliasFn(
     fn: (...args: any) => void,
-    { verb, expectation }: {
-        verb?: string;
-        expectation?: string;
+    {
+        verb,
+        expectation,
+    }: {
+        verb?: string
+        expectation?: string
     } = {},
     ...args: any[]
 ): any {
@@ -285,17 +319,22 @@ export {
     executeCommandBe,
     waitUntil,
     compareNumbers,
-    aliasFn
+    aliasFn,
 }
 
-function replaceActual(replace: Replacer | Replacer[], actual: string) {
-    const hasMultipleReplacers = (replace as Replacer[]).every(r => Array.isArray(r));
+function replaceActual(
+    replace: [string | RegExp, string | Function] | Array<[string | RegExp, string | Function]>,
+    actual: string
+) {
+    const hasMultipleReplacers = (replace as [string | RegExp, string | Function][]).every((r) =>
+        Array.isArray(r)
+    )
     const replacers = hasMultipleReplacers
-        ? replace as Replacer[]
-        : [replace as Replacer]
+        ? (replace as [string | RegExp, string | Function][])
+        : [replace as [string | RegExp, string | Function]]
 
-    if (replacers.some(r => Array.isArray(r) && r.length !== 2)) {
-        throw new Error('Replacers need to have a searchValue and a replaceValue');
+    if (replacers.some((r) => Array.isArray(r) && r.length !== 2)) {
+        throw new Error('Replacers need to have a searchValue and a replaceValue')
     }
 
     for (const replacer of replacers) {
