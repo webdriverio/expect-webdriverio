@@ -1,4 +1,5 @@
 import type { ParsedCSSValue } from 'webdriverio'
+import type { AsymmetricMatcher } from 'expect'
 import isEqual from 'lodash.isequal'
 
 import { executeCommand } from './util/executeCommand.js'
@@ -8,6 +9,11 @@ import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types.js'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const asymmetricMatcher =
+  typeof Symbol === 'function' && Symbol.for
+    ? Symbol.for('jest.asymmetricMatcher')
+    : 0x13_57_a5
 
 /**
  * wait for expectation to succeed
@@ -121,7 +127,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareText = (
     actual: string,
-    expected: string | RegExp,
+    expected: string | RegExp | AsymmetricMatcher<string>,
     {
         ignoreCase = false,
         trim = true,
@@ -138,6 +144,15 @@ export const compareText = (
             result: false,
         }
     }
+    if (typeof expected === 'object' && '$$typeof' in expected && expected.$$typeof === asymmetricMatcher) {
+        const result = expected.asymmetricMatch(actual)
+        return {
+            value: actual,
+            result
+        }
+    }
+
+    expected = expected as string | RegExp
 
     if (trim) {
         actual = actual.trim()
