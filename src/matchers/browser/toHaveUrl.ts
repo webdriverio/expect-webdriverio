@@ -1,6 +1,6 @@
 import { waitUntil, enhanceError, compareText } from '../../utils.js'
 
-export async function toHaveUrl(browser: WebdriverIO.Browser, url: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveUrl(browser: WebdriverIO.Browser, url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'url', verb = 'have' } = this
 

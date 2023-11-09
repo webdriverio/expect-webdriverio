@@ -130,13 +130,13 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveAttribute(
             attribute: string,
-            value?: string | RegExp,
+            value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
             options?: ExpectWebdriverIO.StringOptions
         ): R
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          */
-        toHaveAttr(attribute: string, value?: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveAttr(attribute: string, value?: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute`
@@ -144,7 +144,7 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveAttributeContaining(
             attribute: string,
-            contains: string | RegExp,
+            contains: string | RegExp | ExpectWebdriverIO.PartialMatcher,
             options?: ExpectWebdriverIO.StringOptions
         ): R
         /**
@@ -153,7 +153,7 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveAttrContaining(
             attribute: string,
-            contains: string | RegExp,
+            contains: string | RegExp | ExpectWebdriverIO.PartialMatcher,
             options?: ExpectWebdriverIO.StringOptions
         ): R
 
@@ -161,31 +161,31 @@ declare namespace ExpectWebdriverIO {
          * `WebdriverIO.Element` -> `getAttribute` class
          * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
          */
-        toHaveClass(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveClass(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          */
-        toHaveElementClass(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementClass(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * @deprecated since v1.3.1 - use `toHaveElementClassContaining` instead.
          * Element's class includes the className.
          */
-        toHaveClassContaining(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveClassContaining(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
          * Element's class includes the className.
          */
-        toHaveElementClassContaining(className: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementClassContaining(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getProperty`
          */
         toHaveElementProperty(
-            property: string | RegExp,
+            property: string | RegExp | ExpectWebdriverIO.PartialMatcher,
             value?: any,
             options?: ExpectWebdriverIO.StringOptions
         ): R
@@ -193,12 +193,12 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          */
-        toHaveValue(value: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveValue(value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          * Element's value includes the value.
          */
-        toHaveValueContaining(value: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveValueContaining(value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `isClickable`
@@ -247,34 +247,34 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          */
-        toHaveHref(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveHref(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          */
-        toHaveLink(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveLink(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          * Element's href includes the value provided
          */
-        toHaveHrefContaining(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveHrefContaining(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          * Element's href includes the value provided
          */
-        toHaveLinkContaining(href: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveLinkContaining(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getProperty` value
          */
-        toHaveId(id: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveId(id: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getText`
          * Element's text equals the text provided
          */
         toHaveText(
-            text: string | RegExp | Array<string | RegExp>,
+            text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
         /**
@@ -282,7 +282,7 @@ declare namespace ExpectWebdriverIO {
          * Element's text includes the text provided
          */
         toHaveTextContaining(
-            text: string | RegExp | Array<string | RegExp>,
+            text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
 
@@ -290,13 +290,13 @@ declare namespace ExpectWebdriverIO {
          * `WebdriverIO.Element` -> `getHTML`
          * Element's html equals the html provided
          */
-        toHaveHTML(html: string | RegExp | Array<string | RegExp>, options?: ExpectWebdriverIO.HTMLOptions): R
+        toHaveHTML(html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options?: ExpectWebdriverIO.HTMLOptions): R
         /**
          * `WebdriverIO.Element` -> `getHTML`
          * Element's html includes the html provided
          */
         toHaveHTMLContaining(
-            html: string | RegExp | Array<string | RegExp>,
+            html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.HTMLOptions
         ): R
 
@@ -305,7 +305,7 @@ declare namespace ExpectWebdriverIO {
          * Element's computed label equals the computed label provided
          */
         toHaveComputedLabel(
-            computedLabel: string | RegExp | Array<string | RegExp>,
+            computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
         /**
@@ -313,7 +313,7 @@ declare namespace ExpectWebdriverIO {
          * Element's computed label includes the computed label provided
          */
         toHaveComputedLabelContaining(
-            computedLabel: string | RegExp | Array<string | RegExp>,
+            computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
 
@@ -322,7 +322,7 @@ declare namespace ExpectWebdriverIO {
          * Element's computed role equals the computed role provided
          */
         toHaveComputedRole(
-            computedRole: string | RegExp | Array<string | RegExp>,
+            computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
         /**
@@ -330,7 +330,7 @@ declare namespace ExpectWebdriverIO {
          * Element's computed role includes the computed role provided
          */
         toHaveComputedRoleContaining(
-            computedRole: string | RegExp | Array<string | RegExp>,
+            computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
 
@@ -361,26 +361,26 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Browser` -> `getUrl`
          */
-        toHaveUrl(url: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveUrl(url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getUrl`
          * Browser's url includes the provided text
          */
-        toHaveUrlContaining(url: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveUrlContaining(url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Browser` -> `getTitle`
          */
-        toHaveTitle(title: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTitle(title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getTitle`
          * Browser's title includes the provided text
          */
-        toHaveTitleContaining(title: string | RegExp, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveTitleContaining(title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         // ===== $$ only =====
         /**
@@ -444,7 +444,8 @@ declare namespace ExpectWebdriverIO {
 
     interface PartialMatcher {
         sample?: any
-        asymmetricMatch?(...args: any[]): boolean
+        $$typeof: symbol
+        asymmetricMatch(...args: any[]): boolean
     }
 }
 

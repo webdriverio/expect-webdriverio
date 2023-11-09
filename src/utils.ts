@@ -1,5 +1,4 @@
 import type { ParsedCSSValue } from 'webdriverio'
-import type { AsymmetricMatcher } from 'expect'
 import isEqual from 'lodash.isequal'
 
 import { executeCommand } from './util/executeCommand.js'
@@ -127,7 +126,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareText = (
     actual: string,
-    expected: string | RegExp | AsymmetricMatcher<string>,
+    expected: string | RegExp | ExpectWebdriverIO.PartialMatcher | ExpectWebdriverIO.PartialMatcher,
     {
         ignoreCase = false,
         trim = true,
@@ -144,15 +143,6 @@ export const compareText = (
             result: false,
         }
     }
-    if (typeof expected === 'object' && '$$typeof' in expected && expected.$$typeof === asymmetricMatcher) {
-        const result = expected.asymmetricMatch(actual)
-        return {
-            value: actual,
-            result
-        }
-    }
-
-    expected = expected as string | RegExp
 
     if (trim) {
         actual = actual.trim()
@@ -162,11 +152,20 @@ export const compareText = (
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
-        if (!(expected instanceof RegExp)) {
+        if (typeof expected === 'string') {
             expected = expected.toLowerCase()
         }
     }
 
+    if (typeof expected === 'object' && '$$typeof' in expected && expected.$$typeof === asymmetricMatcher && expected.asymmetricMatch) {
+        const result = expected.asymmetricMatch(actual)
+        return {
+            value: actual,
+            result
+        }
+    }
+
+    expected = expected as string | RegExp
     if (expected instanceof RegExp) {
         return {
             value: actual,

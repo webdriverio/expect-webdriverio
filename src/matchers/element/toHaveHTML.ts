@@ -3,7 +3,7 @@ import {
     wrapExpectedWithArray, updateElementsArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, html: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions) {
+async function condition(el: WebdriverIO.Element, html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions) {
     const actualHTML = await el.getHTML(options.includeSelectorTag)
     if (Array.isArray(html)) {
         return compareTextWithArray(actualHTML, html, options)
@@ -11,7 +11,7 @@ async function condition(el: WebdriverIO.Element, html: string | RegExp | Array<
     return compareText(actualHTML, html, options)
 }
 
-export async function toHaveHTML(received: WebdriverIO.Element | WebdriverIO.ElementArray, html: string | RegExp | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions = {}) {
+export async function toHaveHTML(received: WebdriverIO.Element | WebdriverIO.ElementArray, html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'HTML', verb = 'have' } = this
 

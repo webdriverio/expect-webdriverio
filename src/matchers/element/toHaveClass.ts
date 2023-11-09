@@ -1,6 +1,6 @@
-import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray } from '../../utils.js'
+import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray, compareText } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp, options: ExpectWebdriverIO.StringOptions) {
+async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
     const { ignoreCase = false, trim = false, containing = false } = options
 
     let attr = await el.getAttribute(attribute)
@@ -13,7 +13,7 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
     }
     if (ignoreCase) {
         attr = attr.toLowerCase()
-        if (! (value instanceof RegExp)) {
+        if (typeof value === 'string') {
             value = value.toLowerCase()
         }
     }
@@ -21,7 +21,11 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
     const classes = attr.split(' ')
 
     const valueInClasses = classes.some((t) => {
-        return value instanceof RegExp ? !!t.match(value) : containing ? t.includes(value) : t === value
+        return value instanceof RegExp
+            ? !!t.match(value)
+            : containing && typeof value === 'string'
+                ? t.includes(value)
+                : compareText(t, value, options)
     })
     return {
         value: attr,
@@ -33,7 +37,7 @@ export function toHaveElementClass(...args: any): any {
     return toHaveClass.call(this || {}, ...args)
 }
 
-export async function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
