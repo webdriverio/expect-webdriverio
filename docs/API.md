@@ -666,3 +666,21 @@ await expect(elem).toHaveElementClass(/Container/i)
 ## Default Matchers
 
 In addition to the `expect-webdriverio` matchers you can use builtin Jest's [expect](https://jestjs.io/docs/en/expect) assertions or [expect/expectAsync](https://jasmine.github.io/api/3.5/global.html#expect) for Jasmine.
+
+## Asymmetric Matchers
+
+WebdriverIO supports usage of asymmetric matchers wherever you compare text values, e.g.:
+
+```ts
+await expect(browser).toHaveTitle(expect.stringContaining('some title'))
+// is the same as:
+await expect(browser).toHaveTitleContaining('some title')
+```
+
+or
+
+```ts
+await expect(browser).toHaveTitle(expect.not.stringContaining('some title'))
+// is the same as:
+await expect(browser).not.toHaveTitleContaining('some title')
+```
