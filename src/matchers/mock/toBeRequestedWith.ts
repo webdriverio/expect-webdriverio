@@ -1,4 +1,4 @@
-import type { Mock, Matches } from 'webdriverio'
+import type { Mock } from 'webdriverio'
 
 import { waitUntil, enhanceError } from '../../utils.js'
 import { equals } from '../../jasmineUtils.js'
@@ -14,7 +14,7 @@ export async function toBeRequestedWith(
     const isNot = this.isNot || false
     const { expectation = 'called with', verb = 'be' } = this
 
-    let actual: Matches | undefined
+    let actual: any | undefined
     const pass = await waitUntil(
         async () => {
             for (const call of received.calls) {
@@ -213,7 +213,7 @@ const tryParseBody = (jsonString: string | undefined, fallback: any = null) => {
  * shorten long url, headers, postData, body
  */
 const minifyRequestMock = (
-    requestMock: Matches | undefined,
+    requestMock: any | undefined,
     requestedWith: ExpectWebdriverIO.RequestedWith
 ) => {
     if (typeof requestMock === 'undefined') {
