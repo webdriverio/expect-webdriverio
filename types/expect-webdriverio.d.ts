@@ -106,6 +106,10 @@ declare namespace ExpectWebdriverIO {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface Matchers<R, T> {
+        // ==== Snapshots ====
+        toMatchSnapshot(options?: ExpectWebdriverIO.CommandOptions): R
+
+
         // ===== $ or $$ =====
         /**
          * `WebdriverIO.Element` -> `isDisplayed`
@@ -411,6 +415,7 @@ declare namespace ExpectWebdriverIO {
          * Check that `WebdriverIO.Mock` was called with the specific parameters
          */
         toBeRequestedWith(requestedWith: RequestedWith, options?: ExpectWebdriverIO.CommandOptions): R
+
     }
 
     type RequestedWith = {
@@ -418,23 +423,23 @@ declare namespace ExpectWebdriverIO {
         method?: string | Array<string>
         statusCode?: number | Array<number>
         requestHeaders?:
-            | Record<string, string>
-            | ExpectWebdriverIO.PartialMatcher
-            | ((headers: Record<string, string>) => boolean)
+        | Record<string, string>
+        | ExpectWebdriverIO.PartialMatcher
+        | ((headers: Record<string, string>) => boolean)
         responseHeaders?:
-            | Record<string, string>
-            | ExpectWebdriverIO.PartialMatcher
-            | ((headers: Record<string, string>) => boolean)
+        | Record<string, string>
+        | ExpectWebdriverIO.PartialMatcher
+        | ((headers: Record<string, string>) => boolean)
         postData?:
-            | string
-            | ExpectWebdriverIO.JsonCompatible
-            | ExpectWebdriverIO.PartialMatcher
-            | ((r: string | undefined) => boolean)
+        | string
+        | ExpectWebdriverIO.JsonCompatible
+        | ExpectWebdriverIO.PartialMatcher
+        | ((r: string | undefined) => boolean)
         response?:
-            | string
-            | ExpectWebdriverIO.JsonCompatible
-            | ExpectWebdriverIO.PartialMatcher
-            | ((r: string) => boolean)
+        | string
+        | ExpectWebdriverIO.JsonCompatible
+        | ExpectWebdriverIO.PartialMatcher
+        | ((r: string) => boolean)
     }
 
     type jsonPrimitive = string | number | boolean | null

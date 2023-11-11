@@ -28,6 +28,7 @@ import * as toHaveStyle from './matchers/element/toHaveStyle.js'
 import * as toBeRequested from './matchers/mock/toBeRequested.js'
 import * as toBeRequestedTimes from './matchers/mock/toBeRequestedTimes.js'
 import * as toBeRequestedWith from './matchers/mock/toBeRequestedWith.js'
+import * as toMatchSnapshot from './matchers/element/toMatchSnapshot.js'
 
 const matchers = {
     // browser
@@ -67,6 +68,13 @@ const matchers = {
     ...toBeRequested,
     ...toBeRequestedTimes,
     ...toBeRequestedWith,
+
+    // Snapshots
+    ...toMatchSnapshot
+    //...toMatchInlineSnapshot()
+    //...toMatchFileSnapshot()
+    //...toMatchImageSnapshot()
+
 }
 
 // avoid exporting internal functions
