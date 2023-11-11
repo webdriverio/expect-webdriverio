@@ -1,6 +1,6 @@
 import { waitUntil, enhanceError, compareText } from '../../utils.js'
 
-export async function toHaveTitle(browser: WebdriverIO.Browser, title: string | RegExp, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveTitle(browser: WebdriverIO.Browser, title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'title', verb = 'have' } = this
 

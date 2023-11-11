@@ -10,7 +10,7 @@ import {
 
 async function condition(
     el: WebdriverIO.Element,
-    label: string | RegExp | Array<string | RegExp>,
+    label: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.HTMLOptions
 ) {
     const actualLabel = await el.getComputedLabel()
@@ -22,7 +22,7 @@ async function condition(
 
 export async function toHaveComputedLabel(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
-    label: string | RegExp | Array<string | RegExp>,
+    label: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = {}
 ) {
     const isNot = this.isNot

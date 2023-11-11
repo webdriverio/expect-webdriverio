@@ -36,7 +36,7 @@ async function condition(
 export async function toHaveElementProperty(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     property: string,
-    value?: string | RegExp,
+    value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
     options: ExpectWebdriverIO.StringOptions = {}
 ) {
     const isNot = this.isNot

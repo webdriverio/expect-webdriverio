@@ -10,7 +10,7 @@ import {
 
 async function condition(
     el: WebdriverIO.Element,
-    role: string | RegExp | Array<string | RegExp>,
+    role: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.HTMLOptions
 ) {
     const actualRole = await el.getComputedRole()
@@ -22,7 +22,7 @@ async function condition(
 
 export async function toHaveComputedRole(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
-    role: string | RegExp | Array<string | RegExp>,
+    role: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = {}
 ) {
     const isNot = this.isNot

@@ -21,7 +21,7 @@ declare namespace ExpectWebdriverIO {
         arrayContaining(sample: Array<unknown>): PartialMatcher
         objectContaining(sample: Record<string, unknown>): PartialMatcher
         stringContaining(expected: string): PartialMatcher
-        stringMatching(expected: string | RegExp): PartialMatcher
+        stringMatching(expected: string | RegExp | ExpectWebdriverIO.PartialMatcher): PartialMatcher
         not: AsymmetricMatchers
     }
 }
