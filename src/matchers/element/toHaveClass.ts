@@ -25,7 +25,7 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
             ? !!t.match(value)
             : containing && typeof value === 'string'
                 ? t.includes(value)
-                : compareText(t, value, options)
+                : compareText(t, value, options).result
     })
     return {
         value: attr,
