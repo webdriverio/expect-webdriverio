@@ -24,13 +24,19 @@ async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.Num
     }
 }
 
-export async function toHaveChildren(received: WebdriverIO.Element | WebdriverIO.ElementArray, expected?: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveChildren(received: WebdriverIO.Element | WebdriverIO.ElementArray, expectedValue?: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'children', verb = 'have' } = this
 
-    const numberOptions: ExpectWebdriverIO.NumberOptions = typeof expected === 'number'
-        ? { eq: expected } as ExpectWebdriverIO.NumberOptions
-        : expected || {}
+    await options.beforeAssertion?.({
+        matcherName: 'toHaveChildren',
+        expectedValue,
+        options,
+    })
+
+    const numberOptions: ExpectWebdriverIO.NumberOptions = typeof expectedValue === 'number'
+        ? { eq: expectedValue } as ExpectWebdriverIO.NumberOptions
+        : expectedValue || {}
 
     let el = await received
     let children
@@ -47,9 +53,17 @@ export async function toHaveChildren(received: WebdriverIO.Element | WebdriverIO
     const error = numberError(numberOptions)
     const expectedArray = wrapExpectedWithArray(el, children, error)
     const message = enhanceError(el, expectedArray, children, this, verb, expectation, '', numberOptions)
-
-    return {
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toHaveChildren',
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
 }

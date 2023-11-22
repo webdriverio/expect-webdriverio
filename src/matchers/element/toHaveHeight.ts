@@ -17,18 +17,24 @@ async function condition(el: WebdriverIO.Element, height: number): Promise<any> 
 
 export async function toHaveHeight(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
-    height: number,
+    expectedValue: number,
     options: ExpectWebdriverIO.CommandOptions = {}
 ) {
     const isNot = this.isNot
     const { expectation = 'height', verb = 'have' } = this
+
+    await options.beforeAssertion?.({
+        matcherName: 'toHaveHeight',
+        expectedValue,
+        options,
+    })
 
     let el = await received
     let actualHeight
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [height, options])
+            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
 
             el = result.el
             actualHeight = result.values
@@ -43,7 +49,7 @@ export async function toHaveHeight(
 
     const message = enhanceError(
         el,
-        wrapExpectedWithArray(el, actualHeight, height),
+        wrapExpectedWithArray(el, actualHeight, expectedValue),
         actualHeight,
         this,
         verb,
@@ -52,8 +58,17 @@ export async function toHaveHeight(
         options
     )
 
-    return {
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
-        message: (): string => message,
+        message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toHaveHeight',
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
 }

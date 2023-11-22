@@ -1,3 +1,4 @@
+import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray, compareText } from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
@@ -37,9 +38,15 @@ export function toHaveElementClass(...args: any): any {
     return toHaveClass.call(this || {}, ...args)
 }
 
-export async function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
+
+    await options.beforeAssertion?.({
+        matcherName: 'toHaveClass',
+        expectedValue,
+        options,
+    })
 
     const attribute = 'class'
 
@@ -47,7 +54,7 @@ export async function toHaveClass(received: WebdriverIO.Element | WebdriverIO.El
     let attr
 
     const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, condition, options, [attribute, className, options])
+        const result = await executeCommand.call(this, el, condition, options, [attribute, expectedValue, options])
         el = result.el
         attr = result.values
 
@@ -56,10 +63,35 @@ export async function toHaveClass(received: WebdriverIO.Element | WebdriverIO.El
 
     updateElementsArray(pass, received, el)
 
-    const message = enhanceError(el, wrapExpectedWithArray(el, attr, className), attr, this, verb, expectation, '', options)
-
-    return {
+    const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, this, verb, expectation, '', options)
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
-        message: () => message
+        message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toHaveClass',
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
+}
+
+/**
+ * @deprecated
+ */
+export function toHaveElementClassContaining (...args: any) {
+    return toHaveClassContaining.call(this, ...args)
+}
+
+/**
+ * @deprecated
+ */
+export function toHaveClassContaining(el: WebdriverIO.Element, className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
+    return toHaveAttributeAndValue.call(this, el, 'class', className, {
+        ...options,
+        containing: true
+    })
 }

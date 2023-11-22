@@ -42,6 +42,12 @@ export async function toHaveElementProperty(
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
 
+    await options.beforeAssertion?.({
+        matcherName: 'toHaveElementProperty',
+        expectedValue: [property, value],
+        options,
+    })
+
     let el = await received
     let prop: any
     const pass = await waitUntil(
@@ -66,8 +72,17 @@ export async function toHaveElementProperty(
         message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
     }
 
-    return {
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
-        message: (): string => message,
+        message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toHaveElementProperty',
+        expectedValue: [property, value],
+        options,
+        result
+    })
+
+    return result
 }

@@ -1,8 +1,7 @@
 import { vi, test, expect } from 'vitest'
 import { browser } from '@wdio/globals'
 
-import { toHaveClipboardText } from '../../../src/matchers/browser/toHaveClipboardText.js'
-import { toHaveClipboardTextContaining } from '../../../src/matchers/browser/toHaveClipboardTextContaining.js'
+import { toHaveClipboardText, toHaveClipboardTextContaining } from '../../../src/matchers/browser/toHaveClipboardText.js'
 
 vi.mock('@wdio/globals')
 

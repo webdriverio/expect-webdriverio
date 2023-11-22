@@ -7,15 +7,21 @@ async function condition(el: WebdriverIO.Element, style: { [key: string]: string
     return compareStyle(el, style, options)
 }
 
-export async function toHaveStyle(received: WebdriverIO.Element | WebdriverIO.ElementArray, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveStyle(received: WebdriverIO.Element | WebdriverIO.ElementArray, expectedValue: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'style', verb = 'have' } = this
+
+    await options.beforeAssertion?.({
+        matcherName: 'toHaveStyle',
+        expectedValue,
+        options,
+    })
 
     let el = await received
     let actualStyle
 
     const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, condition, options, [style, options])
+        const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
         el = result.el
         actualStyle = result.values
 
@@ -23,10 +29,19 @@ export async function toHaveStyle(received: WebdriverIO.Element | WebdriverIO.El
     }, isNot, options)
 
     updateElementsArray(pass, received, el)
-    const message = enhanceError(el, wrapExpectedWithArray(el, actualStyle, style), actualStyle, this, verb, expectation, '', options)
+    const message = enhanceError(el, wrapExpectedWithArray(el, actualStyle, expectedValue), actualStyle, this, verb, expectation, '', options)
 
-    return {
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toHaveStyle',
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
 }

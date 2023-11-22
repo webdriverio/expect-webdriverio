@@ -8,11 +8,17 @@ const KEY_LIMIT = 12
 
 export async function toBeRequestedWith(
     received: Mock,
-    requestedWith: ExpectWebdriverIO.RequestedWith = {},
+    expectedValue: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = {}
 ) {
     const isNot = this.isNot || false
     const { expectation = 'called with', verb = 'be' } = this
+
+    await options.beforeAssertion?.({
+        matcherName: 'toBeRequestedWith',
+        expectedValue,
+        options,
+    })
 
     let actual: any | undefined
     const pass = await waitUntil(
@@ -20,13 +26,13 @@ export async function toBeRequestedWith(
             for (const call of received.calls) {
                 actual = call
                 if (
-                    methodMatcher(call.method, requestedWith.method) &&
-                    statusCodeMatcher(call.statusCode, requestedWith.statusCode) &&
-                    urlMatcher(call.url, requestedWith.url) &&
-                    headersMatcher(call.headers, requestedWith.requestHeaders) &&
-                    headersMatcher(call.responseHeaders, requestedWith.responseHeaders) &&
-                    bodyMatcher(call.postData, requestedWith.postData) &&
-                    bodyMatcher(call.body, requestedWith.response)
+                    methodMatcher(call.method, expectedValue.method) &&
+                    statusCodeMatcher(call.statusCode, expectedValue.statusCode) &&
+                    urlMatcher(call.url, expectedValue.url) &&
+                    headersMatcher(call.headers, expectedValue.requestHeaders) &&
+                    headersMatcher(call.responseHeaders, expectedValue.responseHeaders) &&
+                    bodyMatcher(call.postData, expectedValue.postData) &&
+                    bodyMatcher(call.body, expectedValue.response)
                 ) {
                     return true
                 }
@@ -40,18 +46,28 @@ export async function toBeRequestedWith(
 
     const message = enhanceError(
         'mock',
-        minifyRequestedWith(requestedWith),
-        minifyRequestMock(actual, requestedWith) || 'was not called',
+        minifyRequestedWith(expectedValue),
+        minifyRequestMock(actual, expectedValue) || 'was not called',
         this,
         verb,
         expectation,
         '',
         options
     )
-    return {
+
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
-        message: (): string => message,
+        message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toBeRequestedWith',
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
 }
 
 /**

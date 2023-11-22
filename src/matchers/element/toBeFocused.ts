@@ -1,6 +1,20 @@
 import { executeCommandBe } from '../../utils.js'
 
-export function toBeFocused(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+export async function toBeFocused(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'focused'
-    return executeCommandBe.call(this, received, el => el.isFocused(), options)
+
+    await options.beforeAssertion?.({
+        matcherName: 'toBeFocused',
+        options,
+    })
+
+    const result = await executeCommandBe.call(this, received, el => el.isFocused(), options)
+
+    await options.afterAssertion?.({
+        matcherName: 'toBeFocused',
+        options,
+        result
+    })
+
+    return result
 }

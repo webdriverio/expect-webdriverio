@@ -67,10 +67,7 @@ async function executeCommandBe(
     received: WdioElementMaybePromise,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
-): Promise<{
-    pass: boolean
-    message: () => string
-}> {
+): Promise<ExpectWebdriverIO.AssertionResult> {
     const { isNot, expectation, verb = 'be' } = this
 
     received = await received
