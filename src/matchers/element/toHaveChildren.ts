@@ -2,6 +2,7 @@ import {
     waitUntil, enhanceError, compareNumbers, numberError, executeCommand,
     wrapExpectedWithArray, updateElementsArray
 } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.NumberOptions) {
     const children = await el.$$('./*')
@@ -24,7 +25,11 @@ async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.Num
     }
 }
 
-export async function toHaveChildren(received: WebdriverIO.Element | WebdriverIO.ElementArray, expectedValue?: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveChildren(
+    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    expectedValue?: number | ExpectWebdriverIO.NumberOptions,
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     const isNot = this.isNot
     const { expectation = 'children', verb = 'have' } = this
 

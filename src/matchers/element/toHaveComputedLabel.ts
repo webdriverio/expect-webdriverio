@@ -7,6 +7,7 @@ import {
     wrapExpectedWithArray,
     updateElementsArray,
 } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -23,7 +24,7 @@ async function condition(
 export async function toHaveComputedLabel(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-    options: ExpectWebdriverIO.StringOptions = {}
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot
     const { expectation = 'computed label', verb = 'have' } = this
@@ -80,7 +81,7 @@ export async function toHaveComputedLabel(
 /**
  * @deprecated
  */
-export function toHaveComputedLabelContaining(el: WebdriverIO.Element, label: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHaveComputedLabelContaining(el: WebdriverIO.Element, label: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     return toHaveComputedLabel.call(this, el, label, {
         ...options,
         containing: true

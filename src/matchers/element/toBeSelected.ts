@@ -1,6 +1,10 @@
 import { executeCommandBe } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
-export async function toBeSelected(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
+export async function toBeSelected(
+    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+) {
     this.expectation = this.expectation || 'selected'
 
     await options.beforeAssertion?.({
@@ -19,7 +23,7 @@ export async function toBeSelected(received: WebdriverIO.Element | WebdriverIO.E
     return result
 }
 
-export async function toBeChecked (el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
+export async function toBeChecked (el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
     this.expectation = 'checked'
 
     await options.beforeAssertion?.({

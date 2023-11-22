@@ -2,6 +2,7 @@ import type { Mock } from 'webdriverio'
 
 import { waitUntil, enhanceError } from '../../utils.js'
 import { equals } from '../../jasmineUtils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 const STR_LIMIT = 80
 const KEY_LIMIT = 12
@@ -9,7 +10,7 @@ const KEY_LIMIT = 12
 export async function toBeRequestedWith(
     received: Mock,
     expectedValue: ExpectWebdriverIO.RequestedWith = {},
-    options: ExpectWebdriverIO.CommandOptions = {}
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot || false
     const { expectation = 'called with', verb = 'be' } = this

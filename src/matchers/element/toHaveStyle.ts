@@ -2,12 +2,17 @@ import {
     waitUntil, enhanceError, compareStyle, executeCommand, wrapExpectedWithArray,
     updateElementsArray
 } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function condition(el: WebdriverIO.Element, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions) {
     return compareStyle(el, style, options)
 }
 
-export async function toHaveStyle(received: WebdriverIO.Element | WebdriverIO.ElementArray, expectedValue: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveStyle(
+    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    expectedValue: { [key: string]: string; },
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     const isNot = this.isNot
     const { expectation = 'style', verb = 'have' } = this
 

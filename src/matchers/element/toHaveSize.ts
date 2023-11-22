@@ -6,6 +6,7 @@ import {
     updateElementsArray,
     compareObject,
 } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function condition(el: WebdriverIO.Element, size: { height: number; width: number }): Promise<any> {
     const actualSize = await el.getSize()
@@ -16,7 +17,7 @@ async function condition(el: WebdriverIO.Element, size: { height: number; width:
 export async function toHaveSize(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     expectedValue: { height: number; width: number },
-    options: ExpectWebdriverIO.CommandOptions = {}
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot
     const { expectation = 'size', verb = 'have' } = this

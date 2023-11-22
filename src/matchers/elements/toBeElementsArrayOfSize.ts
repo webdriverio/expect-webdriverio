@@ -1,7 +1,12 @@
 import { waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
-export async function toBeElementsArrayOfSize(received: WebdriverIO.ElementArray, expectedValue: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toBeElementsArrayOfSize(
+    received: WebdriverIO.ElementArray,
+    expectedValue: number | ExpectWebdriverIO.NumberOptions,
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     const isNot = this.isNot
     const { expectation = 'elements array of size', verb = 'be' } = this
 

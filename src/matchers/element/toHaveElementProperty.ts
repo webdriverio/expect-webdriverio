@@ -6,13 +6,14 @@ import {
     wrapExpectedWithArray,
     updateElementsArray,
 } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function condition(
     el: WebdriverIO.Element,
     property: string,
     value?: any,
-    options: ExpectWebdriverIO.StringOptions = {}
-): Promise<any> {
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     const { asString = false } = options
 
     let prop = await el.getProperty(property)
@@ -37,7 +38,7 @@ export async function toHaveElementProperty(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     property: string,
     value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
-    options: ExpectWebdriverIO.StringOptions = {}
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this

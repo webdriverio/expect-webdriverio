@@ -7,6 +7,7 @@ import {
     wrapExpectedWithArray,
     updateElementsArray,
 } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -23,7 +24,7 @@ async function condition(
 export async function toHaveComputedRole(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-    options: ExpectWebdriverIO.StringOptions = {}
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot
     const { expectation = 'computed role', verb = 'have' } = this
@@ -80,7 +81,11 @@ export async function toHaveComputedRole(
 /**
  * @deprecated
  */
-export function toHaveComputedRoleContaining(el: WebdriverIO.Element, role: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHaveComputedRoleContaining(
+    el: WebdriverIO.Element,
+    role: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     return toHaveComputedRole.call(this, el, role, {
         ...options,
         containing: true

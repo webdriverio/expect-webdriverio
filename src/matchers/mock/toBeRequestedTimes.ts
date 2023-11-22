@@ -2,8 +2,13 @@ import type { Mock } from 'webdriverio'
 
 import { waitUntil, enhanceError, compareNumbers } from '../../utils.js'
 import { numberError } from '../../util/formatMessage.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
-export async function toBeRequestedTimes(received: Mock, expectedValue: number | ExpectWebdriverIO.NumberOptions = {}, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toBeRequestedTimes(
+    received: Mock,
+    expectedValue: number | ExpectWebdriverIO.NumberOptions = {},
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     const isNot = this.isNot || false
     const { expectation = `called${typeof expectedValue === 'number' ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`, verb = 'be' } = this
 

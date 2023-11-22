@@ -2,6 +2,7 @@ import {
     waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray,
     updateElementsArray
 } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function conditionAttr(el: WebdriverIO.Element, attribute: string) {
     const attr = await el.getAttribute(attribute)
@@ -21,7 +22,7 @@ async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string,
     return compareText(attr, value, options)
 }
 
-export async function toHaveAttributeAndValue(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveAttributeAndValue(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
@@ -73,7 +74,7 @@ export async function toHaveAttribute(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     attribute: string,
     value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
-    options: ExpectWebdriverIO.StringOptions = {}
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     await options.beforeAssertion?.({
         matcherName: 'toHaveAttribute',
@@ -97,7 +98,12 @@ export async function toHaveAttribute(
     return result
 }
 
-export function toHaveAttributeContaining(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHaveAttributeContaining(
+    el: WebdriverIO.Element,
+    attribute: string,
+    value: string,
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     return toHaveAttributeAndValue.call(this, el, attribute, value, {
         ...options,
         containing: true

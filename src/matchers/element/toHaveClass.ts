@@ -1,5 +1,6 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray, compareText } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
     const { ignoreCase = false, trim = false, containing = false } = options
@@ -41,7 +42,11 @@ export function toHaveClass(...args: any): any {
     return toHaveElementClass.call(this || {}, ...args)
 }
 
-export async function toHaveElementClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveElementClass(
+    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
@@ -92,7 +97,7 @@ export function toHaveElementClassContaining (...args: any) {
 /**
  * @deprecated
  */
-export function toHaveClassContaining(el: WebdriverIO.Element, className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHaveClassContaining(el: WebdriverIO.Element, className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     return toHaveAttributeAndValue.call(this, el, 'class', className, {
         ...options,
         containing: true

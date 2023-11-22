@@ -1,9 +1,15 @@
-import { waitUntil, enhanceError, compareText } from '../../utils.js'
 import logger from '@wdio/logger'
+
+import { waitUntil, enhanceError, compareText } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 const log = logger('expect-webdriverio')
 
-export async function toHaveClipboardText(browser: WebdriverIO.Browser, expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveClipboardText(
+    browser: WebdriverIO.Browser,
+    expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     const isNot = this.isNot
     const { expectation = 'clipboard text', verb = 'have' } = this
 

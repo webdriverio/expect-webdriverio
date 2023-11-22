@@ -2,6 +2,7 @@ import {
     waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand,
     wrapExpectedWithArray, updateElementsArray
 } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function condition(el: WebdriverIO.Element, text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
@@ -11,7 +12,11 @@ async function condition(el: WebdriverIO.Element, text: string | RegExp | Expect
     return compareText(actualText, text, options)
 }
 
-export async function toHaveText(received: WebdriverIO.Element | WebdriverIO.ElementArray, expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveText(
+    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     const isNot = this.isNot
     const { expectation = 'text', verb = 'have' } = this
 
@@ -53,7 +58,7 @@ export async function toHaveText(received: WebdriverIO.Element | WebdriverIO.Ele
 /**
  * @deprecated
  */
-export function toHaveTextContaining(el: WebdriverIO.Element, text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHaveTextContaining(el: WebdriverIO.Element, text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     return toHaveText.call(this, el, text, {
         ...options,
         containing: true

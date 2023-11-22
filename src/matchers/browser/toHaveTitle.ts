@@ -1,6 +1,11 @@
 import { waitUntil, enhanceError, compareText } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
-export async function toHaveTitle(browser: WebdriverIO.Browser, expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveTitle(
+    browser: WebdriverIO.Browser,
+    expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     const isNot = this.isNot
     const { expectation = 'title', verb = 'have' } = this
 

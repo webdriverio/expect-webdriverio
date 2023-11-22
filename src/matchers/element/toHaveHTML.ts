@@ -2,6 +2,7 @@ import {
     waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand,
     wrapExpectedWithArray, updateElementsArray
 } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function condition(el: WebdriverIO.Element, html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions) {
     const actualHTML = await el.getHTML(options.includeSelectorTag)
@@ -11,7 +12,11 @@ async function condition(el: WebdriverIO.Element, html: string | RegExp | Expect
     return compareText(actualHTML, html, options)
 }
 
-export async function toHaveHTML(received: WebdriverIO.Element | WebdriverIO.ElementArray, expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions = {}) {
+export async function toHaveHTML(
+    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+    options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
+) {
     const isNot = this.isNot
     const { expectation = 'HTML', verb = 'have' } = this
 
@@ -54,7 +59,11 @@ export async function toHaveHTML(received: WebdriverIO.Element | WebdriverIO.Ele
 /**
  * @deprecated
  */
-export function toHaveHTMLContaining(el: WebdriverIO.Element, html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions = {}) {
+export function toHaveHTMLContaining(
+    el: WebdriverIO.Element,
+    html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+    options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
+) {
     return toHaveHTML.call(this, el, html, {
         ...options,
         containing: true

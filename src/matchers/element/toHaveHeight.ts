@@ -5,8 +5,9 @@ import {
     wrapExpectedWithArray,
     updateElementsArray,
 } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
-async function condition(el: WebdriverIO.Element, height: number): Promise<any> {
+async function condition(el: WebdriverIO.Element, height: number) {
     const actualHeight = await el.getSize('height')
 
     return {
@@ -18,7 +19,7 @@ async function condition(el: WebdriverIO.Element, height: number): Promise<any> 
 export async function toHaveHeight(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     expectedValue: number,
-    options: ExpectWebdriverIO.CommandOptions = {}
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot
     const { expectation = 'height', verb = 'have' } = this

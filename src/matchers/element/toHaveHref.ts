@@ -1,6 +1,11 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 
-export async function toHaveHref(el: WebdriverIO.Element, expectedValue: string, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveHref(
+    el: WebdriverIO.Element,
+    expectedValue: string,
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     await options.beforeAssertion?.({
         matcherName: 'toHaveHref',
         expectedValue,
@@ -24,7 +29,11 @@ export const toHaveLink = toHaveHref
 /**
  * @deprecated
  */
-export function toHaveHrefContaining(el: WebdriverIO.Element, href: string, options: ExpectWebdriverIO.StringOptions = {}) {
+export function toHaveHrefContaining(
+    el: WebdriverIO.Element,
+    href: string,
+    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+) {
     return toHaveHref.call(this, el, href, {
         ...options,
         containing: true

@@ -1,7 +1,11 @@
 import { executeCommandBe, aliasFn } from '../../utils.js'
+import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
 
-export async function toExist(received: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = {}) {
+export async function toExist(
+    received: WdioElementMaybePromise,
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+) {
     this.expectation = this.expectation || 'exist'
     this.verb = this.verb || ''
 
