@@ -24,9 +24,22 @@ describe('toHaveHeight', () => {
             return { width: 50, height: 32 }
         }
 
-        const result = await toHaveHeight.call({}, el, 32, {})
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+        const result = await toHaveHeight.call({}, el, 32, { beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toHaveHeight',
+            expectedValue: 32,
+            options: { beforeAssertion, afterAssertion }
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toHaveHeight',
+            expectedValue: 32,
+            options: { beforeAssertion, afterAssertion },
+            result
+        })
     })
 
     test('wait but failure', async () => {

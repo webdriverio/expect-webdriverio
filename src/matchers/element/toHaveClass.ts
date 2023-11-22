@@ -34,16 +34,19 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
     }
 }
 
-export function toHaveElementClass(...args: any): any {
-    return toHaveClass.call(this || {}, ...args)
+/**
+ * @deprecated
+ */
+export function toHaveClass(...args: any): any {
+    return toHaveElementClass.call(this || {}, ...args)
 }
 
-export async function toHaveClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveElementClass(received: WebdriverIO.Element | WebdriverIO.ElementArray, expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveClass',
+        matcherName: 'toHaveElementClass',
         expectedValue,
         options,
     })
@@ -70,7 +73,7 @@ export async function toHaveClass(received: WebdriverIO.Element | WebdriverIO.El
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveClass',
+        matcherName: 'toHaveElementClass',
         expectedValue,
         options,
         result

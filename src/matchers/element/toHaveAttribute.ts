@@ -72,7 +72,7 @@ async function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.Ele
 export async function toHaveAttribute(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
     attribute: string,
-    value: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
     options: ExpectWebdriverIO.StringOptions = {}
 ) {
     await options.beforeAssertion?.({
@@ -81,8 +81,7 @@ export async function toHaveAttribute(
         options,
     })
 
-    const args = [received, attribute, value, options].filter(Boolean)
-    const result = args.length === 3 || args.length === 4
+    const result = typeof value !== 'undefined'
         // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
         ? await toHaveAttributeAndValue.call(this, received, attribute, value, options)
         // Only name is passed in e.g. el.toHaveAttribute('attr')

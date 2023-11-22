@@ -44,8 +44,21 @@ describe('toBeRequestedTimes', () => {
             mock.calls.push(mockMatch)
         }, 10)
 
-        const result = await toBeRequestedTimes.call({}, mock, 1)
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+        const result = await toBeRequestedTimes.call({}, mock, 1, { beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toBeRequestedTimes',
+            expectedValue: 1,
+            options: { beforeAssertion, afterAssertion }
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toBeRequestedTimes',
+            expectedValue: 1,
+            options: { beforeAssertion, afterAssertion },
+            result
+        })
     })
 
     test('wait for success using number options', async () => {

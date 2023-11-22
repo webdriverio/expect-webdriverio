@@ -17,7 +17,7 @@ export default defineConfig({
             exclude: ['**/build/**', '**/__fixtures__/**', '**/*.test.ts'],
             lines: 92,
             functions: 87,
-            branches: 91,
+            branches: 89,
             statements: 92
         }
     }

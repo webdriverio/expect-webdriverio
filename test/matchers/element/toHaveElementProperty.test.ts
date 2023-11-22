@@ -15,9 +15,22 @@ describe('toHaveElementProperty', () => {
             return 'iphone'
         }
 
-        const result = await toHaveElementProperty.call({}, el, 'property', 'iPhone', { wait: 0, ignoreCase: true })
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+        const result = await toHaveElementProperty.call({}, el, 'property', 'iPhone', { wait: 0, ignoreCase: true, beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toHaveElementProperty',
+            expectedValue: ['property', 'iPhone'],
+            options: { wait: 0, ignoreCase: true, beforeAssertion, afterAssertion }
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toHaveElementProperty',
+            expectedValue: ['property', 'iPhone'],
+            options: { wait: 0, ignoreCase: true, beforeAssertion, afterAssertion },
+            result
+        })
     })
 
     test('should return false if values dont match', async () => {

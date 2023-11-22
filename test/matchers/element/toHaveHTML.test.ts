@@ -2,7 +2,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
 import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils.js'
-import { toHaveHTML } from '../../../src/matchers/element/toHaveHTML.js'
+import { toHaveHTML, toHaveHTMLContaining } from '../../../src/matchers/element/toHaveHTML.js'
 
 vi.mock('@wdio/globals')
 
@@ -18,9 +18,22 @@ describe('toHaveHTML', () => {
             return '<div>foo</div>'
         }
 
-        const result = await toHaveHTML.call({}, el, '<div>foo</div>', { ignoreCase: true })
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+        const result = await toHaveHTML.call({}, el, '<div>foo</div>', { ignoreCase: true, beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toHaveHTML',
+            expectedValue: '<div>foo</div>',
+            options: { ignoreCase: true, beforeAssertion, afterAssertion }
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toHaveHTML',
+            expectedValue: '<div>foo</div>',
+            options: { ignoreCase: true, beforeAssertion, afterAssertion },
+            result
+        })
     })
 
     test('wait but failure', async () => {
@@ -262,7 +275,7 @@ describe('toHaveHTML', () => {
         const result = await toHaveHTML.call({}, el, ['div', '<p>foo</p>', 'toto'], {
             replace: [
                 [/div/g, 'p'],
-                [/[A-Z]/g, (match) => match.toLowerCase()],
+                [/[A-Z]/g, (match: string) => match.toLowerCase()],
             ],
         })
         expect(result.pass).toBe(true)
@@ -328,6 +341,82 @@ describe('toHaveHTML', () => {
             expect(getExpectMessage(result.message())).toContain('to have HTML')
             expect(getExpected(result.message())).toContain('/Webdriver/i')
             expect(getExpected(result.message())).toContain('div')
+        })
+    })
+})
+
+describe('toHaveHTMLContaining', () => {
+    let el: any
+
+    beforeEach(async () => {
+        el = await $('sel')
+        el._html = vi.fn().mockImplementation(() => {
+            return '<div>foo</div>'
+        })
+    })
+
+    describe('success', () => {
+        test('exact passes', async () => {
+            const result = await toHaveHTMLContaining.call({}, el, '<div>foo</div>')
+            expect(result.pass).toBe(true)
+        })
+
+        test('part passes', async () => {
+            const result = await toHaveHTMLContaining.call({}, el, 'foo')
+            expect(result.pass).toBe(true)
+        })
+
+        test('RegExp passes', async () => {
+            const result = await toHaveHTMLContaining.call({}, el, /foo/i)
+            expect(result.pass).toBe(true)
+        })
+    })
+
+    describe('failure', () => {
+        let result: any
+
+        beforeEach(async () => {
+            result = await toHaveHTMLContaining.call({}, el, 'webdriver')
+        })
+
+        test('does not pass', () => {
+            expect(result.pass).toBe(false)
+        })
+
+        describe('message shows correctly', () => {
+            test('expect message', () => {
+                expect(getExpectMessage(result.message())).toContain('to have HTML containing')
+            })
+            test('expected message', () => {
+                expect(getExpected(result.message())).toContain('webdriver')
+            })
+            test('received message', () => {
+                expect(getReceived(result.message())).toContain('<div>foo</div>')
+            })
+        })
+    })
+
+    describe('failure with RegExp', () => {
+        let result: any
+
+        beforeEach(async () => {
+            result = await toHaveHTMLContaining.call({}, el, /Webdriver/i)
+        })
+
+        test('does not pass', () => {
+            expect(result.pass).toBe(false)
+        })
+
+        describe('message shows correctly', () => {
+            test('expect message', () => {
+                expect(getExpectMessage(result.message())).toContain('to have HTML containing')
+            })
+            test('expected message', () => {
+                expect(getExpected(result.message())).toContain('/Webdriver/i')
+            })
+            test('received message', () => {
+                expect(getReceived(result.message())).toContain('<div>foo</div>')
+            })
         })
     })
 })

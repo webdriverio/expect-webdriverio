@@ -48,8 +48,21 @@ describe('toBeRequested', () => {
             mock.calls.push(mockMatch)
         }, 10)
 
-        const result2 = await toBeRequested(mock)
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+        const result2 = await toBeRequested(mock, { beforeAssertion, afterAssertion })
         expect(result2.pass).toBe(true)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toBeRequestedTimes',
+            expectedValue: { gte: 1 },
+            options: { beforeAssertion, afterAssertion }
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toBeRequestedTimes',
+            expectedValue: { gte: 1 },
+            options: { beforeAssertion, afterAssertion },
+            result: result2
+        })
     })
 
     test('not to be called', async () => {

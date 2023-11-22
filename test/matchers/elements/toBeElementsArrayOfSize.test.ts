@@ -13,8 +13,21 @@ describe('toBeElementsArrayOfSize', () => {
         test('array of size 2', async () => {
             // Create an element array of length 2
             els = await $$('parent');
-            const result = await toBeElementsArrayOfSize.call({}, els, 2, {});
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+            const result = await toBeElementsArrayOfSize.call({}, els, 2, { beforeAssertion, afterAssertion })
             expect(result.pass).toBe(true)
+            expect(beforeAssertion).toBeCalledWith({
+                matcherName: 'toBeElementsArrayOfSize',
+                expectedValue: 2,
+                options: { beforeAssertion, afterAssertion }
+            })
+            expect(afterAssertion).toBeCalledWith({
+                matcherName: 'toBeElementsArrayOfSize',
+                expectedValue: 2,
+                options: { beforeAssertion, afterAssertion },
+                result
+            })
         })
         test('array of size 5', async () => {
             // Create an element array of length 2

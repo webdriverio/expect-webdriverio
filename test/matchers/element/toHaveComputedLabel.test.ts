@@ -2,7 +2,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
 import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils.js'
-import { toHaveComputedLabel } from '../../../src/matchers/element/toHaveComputedLabel.js'
+import { toHaveComputedLabel, toHaveComputedLabelContaining } from '../../../src/matchers/element/toHaveComputedLabel.js'
 
 vi.mock('@wdio/globals')
 
@@ -18,9 +18,22 @@ describe('toHaveComputedLabel', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveComputedLabel.call({}, el, 'WebdriverIO', { ignoreCase: true })
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+        const result = await toHaveComputedLabel.call({}, el, 'WebdriverIO', { ignoreCase: true, beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toHaveComputedLabel',
+            expectedValue: 'WebdriverIO',
+            options: { ignoreCase: true, beforeAssertion, afterAssertion }
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toHaveComputedLabel',
+            expectedValue: 'WebdriverIO',
+            options: { ignoreCase: true, beforeAssertion, afterAssertion },
+            result
+        })
     })
 
     test('wait but failure', async () => {
@@ -248,7 +261,7 @@ describe('toHaveComputedLabel', () => {
         const result = await toHaveComputedLabel.call({}, el, ['div', 'browserdriverio', 'toto'], {
             replace: [
                 [/Web/g, 'Browser'],
-                [/[A-Z]/g, (match) => match.toLowerCase()],
+                [/[A-Z]/g, (match: string) => match.toLowerCase()],
             ],
         })
         expect(result.pass).toBe(true)
@@ -322,6 +335,86 @@ describe('toHaveComputedLabel', () => {
             expect(getExpectMessage(result.message())).toContain('to have computed label')
             expect(getExpected(result.message())).toContain('/Webdriver/i')
             expect(getExpected(result.message())).toContain('div')
+        })
+    })
+})
+
+describe('toHaveComputedLabelContaining', () => {
+    let el: any
+
+    beforeEach(async () => {
+        el = await $('sel')
+        el._computed_label = vi.fn().mockImplementation(() => {
+            return 'This is an example of a computed label'
+        })
+    })
+
+    describe('success', () => {
+        test('exact passes', async () => {
+            const result = await toHaveComputedLabelContaining.call(
+                {},
+                el,
+                'This is an example of a computed label'
+            )
+            expect(result.pass).toBe(true)
+        })
+
+        test('part passes', async () => {
+            const result = await toHaveComputedLabelContaining.call({}, el, 'example of a computed label')
+            expect(result.pass).toBe(true)
+        })
+
+        test('RegExp passes', async () => {
+            const result = await toHaveComputedLabelContaining.call({}, el, /ExAmplE/i)
+            expect(result.pass).toBe(true)
+        })
+    })
+
+    describe('failure', () => {
+        let result: any
+
+        beforeEach(async () => {
+            result = await toHaveComputedLabelContaining.call({}, el, 'webdriver')
+        })
+
+        test('does not pass', () => {
+            expect(result.pass).toBe(false)
+        })
+
+        describe('message shows correctly', () => {
+            test('expect message', () => {
+                expect(getExpectMessage(result.message())).toContain('to have computed label containing')
+            })
+            test('expected message', () => {
+                expect(getExpected(result.message())).toContain('webdriver')
+            })
+            test('received message', () => {
+                expect(getReceived(result.message())).toContain('This is an example of a computed label')
+            })
+        })
+    })
+
+    describe('failure with RegExp', () => {
+        let result: any
+
+        beforeEach(async () => {
+            result = await toHaveComputedLabelContaining.call({}, el, /Webdriver/i)
+        })
+
+        test('does not pass', () => {
+            expect(result.pass).toBe(false)
+        })
+
+        describe('message shows correctly', () => {
+            test('expect message', () => {
+                expect(getExpectMessage(result.message())).toContain('to have computed label containing')
+            })
+            test('expected message', () => {
+                expect(getExpected(result.message())).toContain('/Webdriver/i')
+            })
+            test('received message', () => {
+                expect(getReceived(result.message())).toContain('This is an example of a computed label')
+            })
         })
     })
 })

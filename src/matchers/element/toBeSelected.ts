@@ -19,7 +19,7 @@ export async function toBeSelected(received: WebdriverIO.Element | WebdriverIO.E
     return result
 }
 
-export async function toBeChecked (el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions) {
+export async function toBeChecked (el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = 'checked'
 
     await options.beforeAssertion?.({
