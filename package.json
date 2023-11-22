@@ -81,6 +81,7 @@
   },
   "optionalDependencies": {
     "@wdio/globals": "^8.23.1",
+    "@wdio/logger": "^8.16.17",
     "webdriverio": "^8.23.1"
   },
   "dependencies": {

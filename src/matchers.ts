@@ -1,3 +1,5 @@
+import * as toHaveClipboardText from './matchers/browser/toHaveClipboardText.js'
+import * as toHaveClipboardTextContaining from './matchers/browser/toHaveClipboardTextContaining.js'
 import * as toHaveTitle from './matchers/browser/toHaveTitle.js'
 import * as toHaveTitleContaining from './matchers/browser/toHaveTitleContaining.js'
 import * as toHaveUrl from './matchers/browser/toHaveUrl.js'
@@ -31,6 +33,8 @@ import * as toBeRequestedWith from './matchers/mock/toBeRequestedWith.js'
 
 const matchers = {
     // browser
+    ...toHaveClipboardText,
+    ...toHaveClipboardTextContaining,
     ...toHaveTitle,
     ...toHaveTitleContaining,
     ...toHaveUrl,

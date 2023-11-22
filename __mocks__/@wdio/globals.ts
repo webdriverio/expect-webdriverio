@@ -98,10 +98,22 @@ async function waitUntil(condition, { timeout, interval }) {
     throw new Error('waitUntil: timeout after ' + timeout)
 }
 
+async function execute(fn) {
+    if (typeof fn === 'function' && fn.toString().includes('navigator.clipboard.readText')) {
+        return 'some clipboard text'
+    }
+}
+
+async function setPermissions() {
+    return true
+}
+
 export const browser = {
     $,
     $$,
+    execute,
     waitUntil,
+    setPermissions,
     getUrl: strFn,
     getTitle: strFn,
     call(fn) { return fn() },

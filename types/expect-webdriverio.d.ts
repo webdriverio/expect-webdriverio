@@ -382,6 +382,19 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveTitleContaining(title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
+        /**
+         * `WebdriverIO.Browser` -> `execute`
+         */
+        toHaveClipboardText(clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
+
+        // ===== browser only =====
+        /**
+         * `WebdriverIO.Browser` -> `execute`
+         * Browser's clipboard includes the provided text
+         */
+        toHaveClipboardTextContaining(clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
+
+
         // ===== $$ only =====
         /**
          * `WebdriverIO.ElementArray` -> `$$('...').length`
