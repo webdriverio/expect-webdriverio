@@ -6,7 +6,7 @@ import { toHaveId } from '../../../src/matchers/element/toHaveId.js'
 
 vi.mock('@wdio/globals')
 
-describe('toHaveHref', () => {
+describe('toHaveId', () => {
     let el: WebdriverIO.Element
 
     beforeEach(async () => {
@@ -26,13 +26,26 @@ describe('toHaveHref', () => {
 
     describe('failure', () => {
         let result: any
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
 
         beforeEach(async () => {
-            result = await toHaveId.call({}, el, 'an attribute');
+            result = await toHaveId.call({}, el, 'an attribute', { beforeAssertion, afterAssertion });
         })
 
         test('failure', () => {
+            expect(beforeAssertion).toBeCalledWith({
+                matcherName: 'toHaveId',
+                expectedValue: 'an attribute',
+                options: { beforeAssertion, afterAssertion }
+            })
             expect(result.pass).toBe(false)
+            expect(afterAssertion).toBeCalledWith({
+                matcherName: 'toHaveId',
+                expectedValue: 'an attribute',
+                options: { beforeAssertion, afterAssertion },
+                result
+            })
         })
 
         describe('message shows correctly', () => {

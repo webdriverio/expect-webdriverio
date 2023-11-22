@@ -17,18 +17,24 @@ async function condition(el: WebdriverIO.Element, width: number): Promise<any> {
 
 export async function toHaveWidth(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
-    width: number,
+    expectedValue: number,
     options: ExpectWebdriverIO.CommandOptions = {}
 ) {
     const isNot = this.isNot
     const { expectation = 'width', verb = 'have' } = this
+
+    await options.beforeAssertion?.({
+        matcherName: 'toHaveWidth',
+        expectedValue,
+        options,
+    })
 
     let el = await received
     let actualWidth
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [width, options])
+            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
 
             el = result.el
             actualWidth = result.values
@@ -43,7 +49,7 @@ export async function toHaveWidth(
 
     const message = enhanceError(
         el,
-        wrapExpectedWithArray(el, actualWidth, width),
+        wrapExpectedWithArray(el, actualWidth, expectedValue),
         actualWidth,
         this,
         verb,
@@ -52,8 +58,17 @@ export async function toHaveWidth(
         options
     )
 
-    return {
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
-        message: (): string => message,
+        message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toHaveWidth',
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
 }

@@ -3,14 +3,20 @@ import type { Mock } from 'webdriverio'
 import { waitUntil, enhanceError, compareNumbers } from '../../utils.js'
 import { numberError } from '../../util/formatMessage.js'
 
-export async function toBeRequestedTimes(received: Mock, expected: number| ExpectWebdriverIO.NumberOptions = {}, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toBeRequestedTimes(received: Mock, expectedValue: number | ExpectWebdriverIO.NumberOptions = {}, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot || false
-    const { expectation = `called${typeof expected === 'number' ? ' ' + expected : '' } time${expected !== 1 ? 's' : ''}`, verb = 'be' } = this
+    const { expectation = `called${typeof expectedValue === 'number' ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`, verb = 'be' } = this
+
+    await options.beforeAssertion?.({
+        matcherName: 'toBeRequestedTimes',
+        expectedValue,
+        options,
+    })
 
     // type check
-    const numberOptions: ExpectWebdriverIO.NumberOptions = typeof expected === 'number'
-        ? { eq: expected } as ExpectWebdriverIO.NumberOptions
-        : expected || {}
+    const numberOptions: ExpectWebdriverIO.NumberOptions = typeof expectedValue === 'number'
+        ? { eq: expectedValue } as ExpectWebdriverIO.NumberOptions
+        : expectedValue || {}
 
     let actual
     const pass = await waitUntil(async () => {
@@ -21,8 +27,17 @@ export async function toBeRequestedTimes(received: Mock, expected: number| Expec
     const error = numberError(numberOptions)
     const message = enhanceError('mock', error, actual, this, verb, expectation, '', numberOptions)
 
-    return {
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toBeRequestedTimes',
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
 }

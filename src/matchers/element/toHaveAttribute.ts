@@ -21,7 +21,7 @@ async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string,
     return compareText(attr, value, options)
 }
 
-export async function toHaveAttributeAndValueFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toHaveAttributeAndValue(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
@@ -43,10 +43,10 @@ export async function toHaveAttributeAndValueFn(received: WebdriverIO.Element | 
     return {
         pass,
         message: (): string => message
-    }
+    } as ExpectWebdriverIO.AssertionResult
 }
 
-export async function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string) {
+async function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
@@ -69,14 +69,40 @@ export async function toHaveAttributeFn(received: WebdriverIO.Element | Webdrive
     }
 }
 
-export function toHaveAttribute(...args: any): any {
-    if(args.length===3 || args.length===4 ) {
+export async function toHaveAttribute(
+    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    attribute: string,
+    value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    options: ExpectWebdriverIO.StringOptions = {}
+) {
+    await options.beforeAssertion?.({
+        matcherName: 'toHaveAttribute',
+        expectedValue: [attribute, value],
+        options,
+    })
+
+    const result = typeof value !== 'undefined'
         // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
-        return toHaveAttributeAndValueFn.call(this, ...args)
-    } else {
+        ? await toHaveAttributeAndValue.call(this, received, attribute, value, options)
         // Only name is passed in e.g. el.toHaveAttribute('attr')
-        return toHaveAttributeFn.call(this, ...args)
-    }
+        : await toHaveAttributeFn.call(this, received, attribute)
+
+    await options.afterAssertion?.({
+        matcherName: 'toHaveAttribute',
+        expectedValue: [attribute, value],
+        options,
+        result
+    })
+
+    return result
 }
 
+export function toHaveAttributeContaining(el: WebdriverIO.Element, attribute: string, value: string, options: ExpectWebdriverIO.StringOptions = {}) {
+    return toHaveAttributeAndValue.call(this, el, attribute, value, {
+        ...options,
+        containing: true
+    })
+}
+
+export const toHaveAttrContaining = toHaveAttributeContaining
 export const toHaveAttr = toHaveAttribute

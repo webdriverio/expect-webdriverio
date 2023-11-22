@@ -2,7 +2,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
-import { toHaveAttribute } from '../../../src/matchers/element/toHaveAttribute.js'
+import { toHaveAttribute, toHaveAttrContaining } from '../../../src/matchers/element/toHaveAttribute.js'
 
 vi.mock('@wdio/globals')
 
@@ -15,18 +15,31 @@ describe('toHaveAttribute', () => {
 
     describe('attribute exists', () => {
         test('success when present', async () => {
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
             el.getAttribute = vi.fn().mockImplementation(() => {
-                return "Correct Value"
+                return 'Correct Value'
             })
-            const result = await toHaveAttribute.call({}, el, "attribute_name")
+            const result = await toHaveAttribute.call({}, el, 'attribute_name', undefined, { beforeAssertion, afterAssertion })
             expect(result.pass).toBe(true)
+            expect(beforeAssertion).toBeCalledWith({
+                matcherName: 'toHaveAttribute',
+                expectedValue: ['attribute_name', undefined],
+                options: { beforeAssertion, afterAssertion }
+            })
+            expect(afterAssertion).toBeCalledWith({
+                matcherName: 'toHaveAttribute',
+                expectedValue: ['attribute_name', undefined],
+                options: { beforeAssertion, afterAssertion },
+                result
+            })
         })
 
         test('failure when not present', async () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
                 return null
             })
-            const result = await toHaveAttribute.call({}, el, "attribute_name")
+            const result = await toHaveAttribute.call({}, el, 'attribute_name')
             expect(result.pass).toBe(false)
         })
 
@@ -37,7 +50,7 @@ describe('toHaveAttribute', () => {
                 el.getAttribute = vi.fn().mockImplementation(() => {
                     return null
                 })
-                result = await toHaveAttribute.call({}, el, "attribute_name")
+                result = await toHaveAttribute.call({}, el, 'attribute_name')
             })
             test('expect message', () => {
                 expect(getExpectMessage(result.message())).toContain('to have attribute')
@@ -54,37 +67,38 @@ describe('toHaveAttribute', () => {
     describe('attribute has value', () => {
         test('success with correct value', async () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
-                return "Correct Value"
+                return 'Correct Value'
             })
-            const result = await toHaveAttribute.call({}, el, "attribute_name", "Correct Value", { ignoreCase: true })
+            const result = await toHaveAttribute.call({}, el, 'attribute_name', 'Correct Value', { ignoreCase: true })
             expect(result.pass).toBe(true)
         })
         test('success with RegExp and correct value', async () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
-                return "Correct Value"
+                return 'Correct Value'
             })
-            const result = await toHaveAttribute.call({}, el, "attribute_name", /cOrReCt VaLuE/i)
+            const result = await toHaveAttribute.call({}, el, 'attribute_name', /cOrReCt VaLuE/i)
             expect(result.pass).toBe(true)
         })
         test('failure with wrong value', async () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
-                return "Wrong Value"
+                return 'Wrong Value'
             })
-            const result = await toHaveAttribute.call({}, el, "attribute_name", "Correct Value", { ignoreCase: true })
+            const result = await toHaveAttribute.call({}, el, 'attribute_name', 'Correct Value', { ignoreCase: true })
             expect(result.pass).toBe(false)
         })
         test('failure with non-string attribute value as actual', async () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
                 return 123
             })
-            const result = await toHaveAttribute.call({}, el, "attribute_name", "Correct Value", { ignoreCase: true })
+            const result = await toHaveAttribute.call({}, el, 'attribute_name', 'Correct Value', { ignoreCase: true })
             expect(result.pass).toBe(false)
         })
         test('failure with non-string attribute value as expected', async () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
-                return "Correct Value"
+                return 'Correct Value'
             })
-            const result = await toHaveAttribute.call({}, el, "attribute_name", 123, { ignoreCase: true })
+            // @ts-expect-error invalid type
+            const result = await toHaveAttribute.call({}, el, 'attribute_name', 123, { ignoreCase: true })
             expect(result.pass).toBe(false)
         })
         describe('message shows correctly', () => {
@@ -92,9 +106,9 @@ describe('toHaveAttribute', () => {
 
             beforeEach(async () => {
                 el.getAttribute = vi.fn().mockImplementation(() => {
-                    return "Wrong"
+                    return 'Wrong'
                 })
-                result = await toHaveAttribute.call({}, el, "attribute_name", "Correct")
+                result = await toHaveAttribute.call({}, el, 'attribute_name', 'Correct')
             })
             test('expect message', () => {
                 expect(getExpectMessage(result.message())).toContain('to have attribute')
@@ -111,9 +125,9 @@ describe('toHaveAttribute', () => {
 
             beforeEach(async () => {
                 el.getAttribute = vi.fn().mockImplementation(() => {
-                    return "Wrong"
+                    return 'Wrong'
                 })
-                result = await toHaveAttribute.call({}, el, "attribute_name", /WDIO/)
+                result = await toHaveAttribute.call({}, el, 'attribute_name', /WDIO/)
             })
             test('expect message', () => {
                 expect(getExpectMessage(result.message())).toContain('to have attribute')
@@ -127,3 +141,47 @@ describe('toHaveAttribute', () => {
         })
     })
 })
+
+describe('toHaveAttributeContaining', () => {
+    let el: WebdriverIO.Element
+
+    beforeEach(async () => {
+        el = await $('sel')
+    })
+
+    test('success when contains', async () => {
+        el.getAttribute = vi.fn().mockImplementation(() => {
+            return 'An example phrase'
+        })
+        const result = await toHaveAttrContaining.call({}, el, 'attribute_name', 'example');
+        expect(result.pass).toBe(true)
+    });
+
+    describe('failure when doesnt contain', () => {
+        let result: any
+
+        beforeEach(async () => {
+            el.getAttribute = vi.fn().mockImplementation(() => {
+                return 'An example phrase'
+            })
+            result = await toHaveAttrContaining.call({}, el, 'attribute_name', 'donkey');
+        })
+
+        test('failure', () => {
+            expect(result.pass).toBe(false)
+        })
+
+        describe('message shows correctly', () => {
+            test('expect message', () => {
+                expect(getExpectMessage(result.message())).toContain('to have attribute')
+            })
+            test('expected message', () => {
+                expect(getExpected(result.message())).toContain('donkey')
+            })
+            test('received message', () => {
+                expect(getReceived(result.message())).toContain('An example phrase')
+            })
+        })
+    });
+
+});

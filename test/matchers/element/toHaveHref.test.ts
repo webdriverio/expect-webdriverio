@@ -2,7 +2,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
-import { toHaveHref } from '../../../src/matchers/element/toHaveHref.js'
+import { toHaveHref, toHaveHrefContaining } from '../../../src/matchers/element/toHaveHref.js'
 
 vi.mock('@wdio/globals')
 
@@ -13,22 +13,35 @@ describe('toHaveHref', () => {
         el = await $('sel')
         el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
             if(attribute === 'href') {
-                return "https://www.example.com"
+                return 'https://www.example.com'
             }
             return null
         })
     })
 
     test('success when contains', async () => {
-        const result = await toHaveHref.call({}, el, "https://www.example.com");
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+        const result = await toHaveHref.call({}, el, 'https://www.example.com', { beforeAssertion, afterAssertion });
         expect(result.pass).toBe(true)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toHaveHref',
+            expectedValue: 'https://www.example.com',
+            options: { beforeAssertion, afterAssertion }
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toHaveHref',
+            expectedValue: 'https://www.example.com',
+            options: { beforeAssertion, afterAssertion },
+            result
+        })
     });
 
     describe('failure when doesnt contain', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveHref.call({}, el, "an href");
+            result = await toHaveHref.call({}, el, 'an href');
         })
 
         test('failure', () => {
@@ -46,6 +59,55 @@ describe('toHaveHref', () => {
                 expect(getReceived(result.message())).toContain('https://www.example.com')
             })
         })
-    });
+    })
+})
 
-});
+describe('toHaveHrefContaining', () => {
+    let el: WebdriverIO.Element
+
+    beforeEach(async () => {
+        el = await $('sel')
+        el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
+            if(attribute === 'href') {
+                return 'https://www.example.com'
+            }
+            return null
+        })
+    })
+
+    describe('success', () => {
+        test('exact passes', async () => {
+            const result = await toHaveHrefContaining.call({}, el, 'https://www.example.com');
+            expect(result.pass).toBe(true)
+        });
+
+        test('part passes', async () => {
+            const result = await toHaveHrefContaining.call({}, el, 'example');
+            expect(result.pass).toBe(true)
+        })
+    })
+
+    describe('failure', () => {
+        let result: any
+
+        beforeEach(async () => {
+            result = await toHaveHrefContaining.call({}, el, 'webdriver');
+        })
+
+        test('does not pass', () => {
+            expect(result.pass).toBe(false)
+        })
+
+        describe('message shows correctly', () => {
+            test('expect message', () => {
+                expect(getExpectMessage(result.message())).toContain('to have attribute href containing')
+            })
+            test('expected message', () => {
+                expect(getExpected(result.message())).toContain('webdriver')
+            })
+            test('received message', () => {
+                expect(getReceived(result.message())).toContain('https://www.example.com')
+            })
+        })
+    })
+})

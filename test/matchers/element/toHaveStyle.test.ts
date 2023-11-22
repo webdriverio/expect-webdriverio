@@ -29,9 +29,22 @@ describe('toHaveStyle', () => {
             }
             return { value: mockStyle[property] }
         })
-        const result = await toHaveStyle.call({}, el, mockStyle, { ignoreCase: true });
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+        const result = await toHaveStyle.call({}, el, mockStyle, { ignoreCase: true, beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toHaveStyle',
+            expectedValue: mockStyle,
+            options: { ignoreCase: true, beforeAssertion, afterAssertion }
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toHaveStyle',
+            expectedValue: mockStyle,
+            options: { ignoreCase: true, beforeAssertion, afterAssertion },
+            result
+        })
     })
 
     test('wait but failure', async () => {

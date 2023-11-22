@@ -22,18 +22,24 @@ async function condition(
 
 export async function toHaveComputedLabel(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
-    label: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+    expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = {}
 ) {
     const isNot = this.isNot
     const { expectation = 'computed label', verb = 'have' } = this
+
+    await options.beforeAssertion?.({
+        matcherName: 'toHaveComputedLabel',
+        expectedValue,
+        options,
+    })
 
     let el = await received
     let actualLabel
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [label, options])
+            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
             el = result.el
             actualLabel = result.values
 
@@ -47,7 +53,7 @@ export async function toHaveComputedLabel(
 
     const message = enhanceError(
         el,
-        wrapExpectedWithArray(el, actualLabel, label),
+        wrapExpectedWithArray(el, actualLabel, expectedValue),
         actualLabel,
         this,
         verb,
@@ -56,8 +62,27 @@ export async function toHaveComputedLabel(
         options
     )
 
-    return {
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
-        message: (): string => message,
+        message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toHaveComputedLabel',
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
+}
+
+/**
+ * @deprecated
+ */
+export function toHaveComputedLabelContaining(el: WebdriverIO.Element, label: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}) {
+    return toHaveComputedLabel.call(this, el, label, {
+        ...options,
+        containing: true
+    })
 }

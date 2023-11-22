@@ -7,10 +7,21 @@ vi.mock('@wdio/globals')
 
 describe('toHaveChildren', () => {
     test('no value', async () => {
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
         const el = await $('sel')
 
-        const result = await toHaveChildren.call({}, el, { wait: 0 })
+        const result = await toHaveChildren.call({}, el, undefined, { wait: 0, beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toHaveChildren',
+            options: { wait: 0, beforeAssertion, afterAssertion }
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toHaveChildren',
+            options: { wait: 0, beforeAssertion, afterAssertion },
+            result
+        })
     })
 
     test('If no options passed in + children exists', async () => {

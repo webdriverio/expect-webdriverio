@@ -22,9 +22,20 @@ describe('toBeDisabled', () => {
             return false
         }
 
-        const result = await toBeDisabled.call({}, el)
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+        const result = await toBeDisabled.call({}, el, { beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toBeDisabled',
+            options: { beforeAssertion, afterAssertion }
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toBeDisabled',
+            options: { beforeAssertion, afterAssertion },
+            result
+        })
     })
 
     test('wait but failure', async () => {

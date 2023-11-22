@@ -77,8 +77,21 @@ describe('toBeRequestedWith', () => {
             response: JSON.parse(mockPost.body as string),
         }
 
-        const result = await toBeRequestedWith.call({}, mock, params)
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+        const result = await toBeRequestedWith.call({}, mock, params, { beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
+        expect(beforeAssertion).toBeCalledWith({
+            matcherName: 'toBeRequestedWith',
+            expectedValue: params,
+            options: { beforeAssertion, afterAssertion },
+        })
+        expect(afterAssertion).toBeCalledWith({
+            matcherName: 'toBeRequestedWith',
+            expectedValue: params,
+            options: { beforeAssertion, afterAssertion },
+            result
+        })
     })
 
     test('wait for failure', async () => {

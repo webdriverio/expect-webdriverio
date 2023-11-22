@@ -1,6 +1,20 @@
 import { executeCommandBe } from '../../utils.js'
 
-export function toBeEnabled(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}): any {
+export async function toBeEnabled(received: WebdriverIO.Element | WebdriverIO.ElementArray, options: ExpectWebdriverIO.CommandOptions = {}) {
     this.expectation = this.expectation || 'enabled'
-    return executeCommandBe.call(this, received, el => el.isEnabled(), options)
+
+    await options.beforeAssertion?.({
+        matcherName: 'toBeEnabled',
+        options,
+    })
+
+    const result = await executeCommandBe.call(this, received, el => el.isEnabled(), options)
+
+    await options.afterAssertion?.({
+        matcherName: 'toBeEnabled',
+        options,
+        result
+    })
+
+    return result
 }

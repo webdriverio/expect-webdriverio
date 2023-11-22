@@ -22,18 +22,24 @@ async function condition(
 
 export async function toHaveComputedRole(
     received: WebdriverIO.Element | WebdriverIO.ElementArray,
-    role: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+    expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = {}
 ) {
     const isNot = this.isNot
     const { expectation = 'computed role', verb = 'have' } = this
+
+    await options.beforeAssertion?.({
+        matcherName: 'toHaveComputedRole',
+        expectedValue,
+        options,
+    })
 
     let el = await received
     let actualRole
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [role, options])
+            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
             el = result.el
             actualRole = result.values
 
@@ -47,7 +53,7 @@ export async function toHaveComputedRole(
 
     const message = enhanceError(
         el,
-        wrapExpectedWithArray(el, actualRole, role),
+        wrapExpectedWithArray(el, actualRole, expectedValue),
         actualRole,
         this,
         verb,
@@ -56,8 +62,27 @@ export async function toHaveComputedRole(
         options
     )
 
-    return {
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
-        message: (): string => message,
+        message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toHaveComputedRole',
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
+}
+
+/**
+ * @deprecated
+ */
+export function toHaveComputedRoleContaining(el: WebdriverIO.Element, role: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = {}) {
+    return toHaveComputedRole.call(this, el, role, {
+        ...options,
+        containing: true
+    })
 }

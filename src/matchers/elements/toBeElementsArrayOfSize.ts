@@ -1,18 +1,24 @@
 import { waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 
-export async function toBeElementsArrayOfSize(received: WebdriverIO.ElementArray, expected: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}) {
+export async function toBeElementsArrayOfSize(received: WebdriverIO.ElementArray, expectedValue: number | ExpectWebdriverIO.NumberOptions, options: ExpectWebdriverIO.StringOptions = {}) {
     const isNot = this.isNot
     const { expectation = 'elements array of size', verb = 'be' } = this
 
+    await options.beforeAssertion?.({
+        matcherName: 'toBeElementsArrayOfSize',
+        expectedValue,
+        options,
+    })
+
     // type check
     let numberOptions: ExpectWebdriverIO.NumberOptions;
-    if (typeof expected === 'number') {
-        numberOptions = { eq: expected } as ExpectWebdriverIO.NumberOptions
-    } else if (!expected || (typeof expected.eq !== 'number' && typeof expected.gte !== 'number' && typeof expected.lte !== 'number')) {
+    if (typeof expectedValue === 'number') {
+        numberOptions = { eq: expectedValue } as ExpectWebdriverIO.NumberOptions
+    } else if (!expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')) {
         throw new Error('Invalid params passed to toBeElementsArrayOfSize.')
     } else {
-        numberOptions = expected
+        numberOptions = expectedValue
     }
 
     let elements = await received
@@ -28,8 +34,17 @@ export async function toBeElementsArrayOfSize(received: WebdriverIO.ElementArray
     const error = numberError(numberOptions)
     const message = enhanceError(elements, error, arrLength, this, verb, expectation, '', numberOptions)
 
-    return {
+    const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message
     }
+
+    await options.afterAssertion?.({
+        matcherName: 'toBeElementsArrayOfSize',
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
 }
