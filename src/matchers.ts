@@ -23,8 +23,12 @@ import * as toHaveStyle from './matchers/element/toHaveStyle.js'
 import * as toBeRequested from './matchers/mock/toBeRequested.js'
 import * as toBeRequestedTimes from './matchers/mock/toBeRequestedTimes.js'
 import * as toBeRequestedWith from './matchers/mock/toBeRequestedWith.js'
+import * as toMatchSnapshot from './matchers/general/toMatchSnapshot.js'
 
 const matchers = {
+    //general
+    ...toMatchSnapshot,
+
     // browser
     ...toHaveClipboardText,
     ...toHaveTitle,

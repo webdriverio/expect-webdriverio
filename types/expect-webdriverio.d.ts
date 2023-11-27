@@ -1,7 +1,5 @@
 declare namespace ExpectWebdriverIO {
-    function expect<T = unknown, R extends void | Promise<void> = void | Promise<void>>(
-        actual: T
-    ): Matchers<R, T>
+    const expect: ExpectWebdriverIO.Expect
     function setOptions(options: DefaultOptions): void
     function getConfig(): any
 
