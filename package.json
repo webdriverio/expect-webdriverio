@@ -77,7 +77,7 @@
     "shelljs": "^0.8.5",
     "typescript": "^5.2.2",
     "vitest": "0.34.6",
-    "webdriverio": "8.24.2"
+    "webdriverio": "8.24.6"
   },
   "optionalDependencies": {
     "@wdio/globals": "^8.23.1",
