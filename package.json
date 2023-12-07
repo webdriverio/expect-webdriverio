@@ -1,6 +1,6 @@
 {
   "name": "expect-webdriverio",
-  "version": "4.6.1",
+  "version": "4.7.0",
   "author": "Mykola Grybyk <mykola.grybyk@gmail.com>",
   "description": "WebdriverIO Assertion Library",
   "license": "MIT",
