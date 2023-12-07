@@ -4,13 +4,13 @@ type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement<Web
 type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray<WebdriverIO.Element>
 
 declare namespace ExpectWebdriverIO {
-    interface Matchers<R extends void | Promise<void>, T> extends Readonly<import('expect').Matchers<R, T>>, Readonly<import('jest-snapshot').SnapshotMatchers<R, T>> {
+    interface Matchers<R extends void | Promise<void>, T> extends Readonly<import('expect').Matchers<R>> {
         not: Matchers<R, T>
         resolves: Matchers<R, T>
         rejects: Matchers<R, T>
     }
 
-    type Expect = Readonly<import('@jest/expect').JestExpect> & {
+    type Expect = {
         <T = unknown, R extends void | Promise<void> = void | Promise<void>>(actual: T): Matchers<R, T>
         extend(map: Record<string, Function>): void
     } & AsymmetricMatchers
