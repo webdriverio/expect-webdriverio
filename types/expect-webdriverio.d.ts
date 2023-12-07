@@ -144,6 +144,29 @@ declare namespace ExpectWebdriverIO {
     interface Matchers<R, T> {
         // ===== $ or $$ =====
         /**
+          * This ensures that element html value matches the most recent snapshot with property matchers.
+          */
+        toMatchElementSnapshot(hint?: string): R;
+        /**
+         * This ensures that element html matches the most recent snapshot.
+         */
+        toMatchElementSnapshot<U extends Record<keyof T, unknown>>(
+            propertyMatchers: Partial<U>,
+            hint?: string,
+        ): R;
+        /**
+         * This ensures that element html matches the most recent snapshot with property matchers.
+         */
+        toMatchElementInlineSnapshot(snapshot?: string): R;
+        /**
+         * This ensures that element html matches the most recent snapshot with property matchers.
+         */
+        toMatchElementInlineSnapshot<U extends Record<keyof T, unknown>>(
+            propertyMatchers: Partial<U>,
+            snapshot?: string,
+        ): R;
+
+        /**
          * `WebdriverIO.Element` -> `isDisplayed`
          */
         toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions): R
@@ -485,23 +508,23 @@ declare namespace ExpectWebdriverIO {
         method?: string | Array<string>
         statusCode?: number | Array<number>
         requestHeaders?:
-            | Record<string, string>
-            | ExpectWebdriverIO.PartialMatcher
-            | ((headers: Record<string, string>) => boolean)
+        | Record<string, string>
+        | ExpectWebdriverIO.PartialMatcher
+        | ((headers: Record<string, string>) => boolean)
         responseHeaders?:
-            | Record<string, string>
-            | ExpectWebdriverIO.PartialMatcher
-            | ((headers: Record<string, string>) => boolean)
+        | Record<string, string>
+        | ExpectWebdriverIO.PartialMatcher
+        | ((headers: Record<string, string>) => boolean)
         postData?:
-            | string
-            | ExpectWebdriverIO.JsonCompatible
-            | ExpectWebdriverIO.PartialMatcher
-            | ((r: string | undefined) => boolean)
+        | string
+        | ExpectWebdriverIO.JsonCompatible
+        | ExpectWebdriverIO.PartialMatcher
+        | ((r: string | undefined) => boolean)
         response?:
-            | string
-            | ExpectWebdriverIO.JsonCompatible
-            | ExpectWebdriverIO.PartialMatcher
-            | ((r: string) => boolean)
+        | string
+        | ExpectWebdriverIO.JsonCompatible
+        | ExpectWebdriverIO.PartialMatcher
+        | ((r: string) => boolean)
     }
 
     type jsonPrimitive = string | number | boolean | null

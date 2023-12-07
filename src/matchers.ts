@@ -16,6 +16,7 @@ import * as toHaveClass from './matchers/element/toHaveClass.js'
 import * as toHaveHref from './matchers/element/toHaveHref.js'
 import * as toHaveId from './matchers/element/toHaveId.js'
 import * as toHaveSize from './matchers/element/toHaveSize.js'
+import * as toMatchElementSnapshot from './matchers/element/toMatchElementSnapshot.js'
 import * as toHaveElementProperty from './matchers/element/toHaveElementProperty.js'
 import * as toHaveText from './matchers/element/toHaveText.js'
 import * as toHaveValue from './matchers/element/toHaveValue.js'
@@ -56,6 +57,7 @@ const matchers = {
     ...toHaveText,
     ...toHaveValue,
     ...toHaveStyle,
+    ...toMatchElementSnapshot,
 
     // Mock
     ...toBeRequested,
