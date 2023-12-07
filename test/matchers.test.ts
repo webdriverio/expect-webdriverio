@@ -3,6 +3,9 @@ import Matchers from '../src/matchers.js'
 
 test('matchers', () => {
     expect(Object.keys(Matchers)).toEqual([
+        // general
+        'toMatchSnapshot',
+        'toMatchInlineSnapshot',
         // browser
         'toHaveClipboardText',
         'toHaveClipboardTextContaining',
@@ -48,6 +51,8 @@ test('matchers', () => {
         'toHaveValue',
         'toHaveValueContaining',
         'toHaveStyle',
+        'toMatchElementSnapshot',
+        'toMatchElementInlineSnapshot',
 
         // mock
         'toBeRequested',

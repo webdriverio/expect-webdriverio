@@ -16,6 +16,7 @@ import * as toHaveClass from './matchers/element/toHaveClass.js'
 import * as toHaveHref from './matchers/element/toHaveHref.js'
 import * as toHaveId from './matchers/element/toHaveId.js'
 import * as toHaveSize from './matchers/element/toHaveSize.js'
+import * as toMatchElementSnapshot from './matchers/element/toMatchElementSnapshot.js'
 import * as toHaveElementProperty from './matchers/element/toHaveElementProperty.js'
 import * as toHaveText from './matchers/element/toHaveText.js'
 import * as toHaveValue from './matchers/element/toHaveValue.js'
@@ -23,8 +24,12 @@ import * as toHaveStyle from './matchers/element/toHaveStyle.js'
 import * as toBeRequested from './matchers/mock/toBeRequested.js'
 import * as toBeRequestedTimes from './matchers/mock/toBeRequestedTimes.js'
 import * as toBeRequestedWith from './matchers/mock/toBeRequestedWith.js'
+import * as toMatchSnapshot from './matchers/general/toMatchSnapshot.js'
 
 const matchers = {
+    //general
+    ...toMatchSnapshot,
+
     // browser
     ...toHaveClipboardText,
     ...toHaveTitle,
@@ -52,6 +57,7 @@ const matchers = {
     ...toHaveText,
     ...toHaveValue,
     ...toHaveStyle,
+    ...toMatchElementSnapshot,
 
     // Mock
     ...toBeRequested,
