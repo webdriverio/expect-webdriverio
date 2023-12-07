@@ -85,11 +85,9 @@
     "webdriverio": "^8.23.1"
   },
   "dependencies": {
+    "jest-snapshot": "^29.7.0",
     "@jest/expect": "^29.7.0",
     "jest-matcher-utils": "^29.7.0",
     "lodash.isequal": "^4.5.0"
-  },
-  "peerDependencies": {
-    "jest-snapshot": "^29.7.0"
   }
 }
