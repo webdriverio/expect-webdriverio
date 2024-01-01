@@ -1,1 +1,1 @@
-../../types/expect-webdriverio.d.ts
+/// <reference types="../../types/expect-webdriverio.d.ts" />

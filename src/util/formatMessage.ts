@@ -8,7 +8,7 @@ const NOT_EXPECTED_LABEL = EXPECTED_LABEL + NOT_SUFFIX
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray): any => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
-    if (Array.isArray(el) && el.props.length > 0) {
+    if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
         // todo handle custom$ selector
         result += ', <props>'
     }
@@ -20,10 +20,10 @@ export const getSelectors = (el: WebdriverIO.Element | WebdriverIO.ElementArray)
     let parent: WebdriverIO.Element | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | undefined
 
     if (Array.isArray(el)) {
-        selectors.push(`${el.foundWith}(\`${getSelector(el)}\`)`)
+        selectors.push(`${(el as WebdriverIO.ElementArray).foundWith}(\`${getSelector(el)}\`)`)
         parent = el.parent
-    } else {
-        parent = el
+    } else { 
+        parent = el as WebdriverIO.Element
     }
 
     while (parent && 'selector' in parent) {
