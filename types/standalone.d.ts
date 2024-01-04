@@ -15,7 +15,7 @@ declare namespace ExpectWebdriverIO {
         extend(map: Record<string, Function>): void
     } & AsymmetricMatchers
 
-    type AsymmetricMatchers = {
+    interface AsymmetricMatchers {
         any(expectedObject: any): PartialMatcher
         anything(): PartialMatcher
         arrayContaining(sample: Array<unknown>): PartialMatcher
