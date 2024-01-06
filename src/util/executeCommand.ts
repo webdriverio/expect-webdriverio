@@ -16,13 +16,13 @@ export async function executeCommand(
     fullRefetch = false
 ) {
     const { isNot = false } = this
-    let elements
+    let elements: WebdriverIO.ElementArray
 
     if (Array.isArray(el)) {
-        elements = await refetchElements(el, options.wait, fullRefetch)
+        elements = await refetchElements(el as WebdriverIO.ElementArray, options.wait, fullRefetch)
     } else {
         // it doesn't matter if it's WebdriverIO.ElementArray or WebdriverIO.Element[]
-        elements = ([el] as WebdriverIO.ElementArray)
+        elements = ([el] as unknown as WebdriverIO.ElementArray)
     }
 
     if (elements.length === 0) {
