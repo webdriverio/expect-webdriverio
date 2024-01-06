@@ -65,7 +65,6 @@
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
     "@vitest/coverage-v8": "^1.1.0",
-    "@wdio/globals": "^8.27.0",
     "c8": "^8.0.1",
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",

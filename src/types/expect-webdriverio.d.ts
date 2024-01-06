@@ -1,1 +1,0 @@
-../../types/expect-webdriverio.d.ts
