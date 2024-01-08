@@ -739,7 +739,7 @@ await expect(browser).toMatchFullPageSnapshot('fullPage', 0, {
 })
 ```
 
-### toMatchScreenSnapshot
+### toMatchTabbablePageSnapshot
 
 Checks that if the full page screenshot including tab marks matches with snapshot of baseline.
 
