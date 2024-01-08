@@ -727,7 +727,7 @@ await expect(browser).toMatchScreenSnapshot('partialPage', 0, {
 })
 ```
 
-### toMatchScreenSnapshot
+### toMatchFullPageSnapshot
 
 Checks that if the full page screenshot matches with snapshot of baseline.
 
