@@ -694,6 +694,63 @@ await expect(browser).toHaveUrl(/webdriver\.io/)
 await expect(elem).toHaveElementClass(/Container/i)
 ```
 
+## Visual Matchers
+
+<!--
+    These matchers aren't implemented in the `expect-webdriverio` project and can be found
+    here: https://github.com/webdriverio-community/visual-testing/blob/e10f7005c1533f5b06811888a9cbb9020e6e765e/packages/service/src/matcher.ts
+-->
+
+The following matcher are implemented as part of the `@wdio/visual-service` plugin and only available when the service is set up. Make sure you follow the [set-up instructions](/docs/visual-testing) accordingly.
+
+### toMatchElementSnapshot
+
+Checks that if given element matches with snapshot of baseline.
+
+##### Usage
+
+```js
+await expect($('.hero__title-logo')).toMatchElementSnapshot('wdioLogo', 0, {
+    // options
+})
+```
+
+### toMatchScreenSnapshot
+
+Checks that if current screen matches with snapshot of baseline.
+
+##### Usage
+
+```js
+await expect(browser).toMatchScreenSnapshot('partialPage', 0, {
+    // options
+})
+```
+
+### toMatchScreenSnapshot
+
+Checks that if the full page screenshot matches with snapshot of baseline.
+
+##### Usage
+
+```js
+await expect(browser).toMatchFullPageSnapshot('fullPage', 0, {
+    // options
+})
+```
+
+### toMatchScreenSnapshot
+
+Checks that if the full page screenshot including tab marks matches with snapshot of baseline.
+
+##### Usage
+
+```js
+await expect(browser).toMatchTabbablePageSnapshot('tabbable', 0, {
+    // options
+})
+```
+
 ## Default Matchers
 
 In addition to the `expect-webdriverio` matchers you can use builtin Jest's [expect](https://jestjs.io/docs/en/expect) assertions or [expect/expectAsync](https://jasmine.github.io/api/3.5/global.html#expect) for Jasmine.
