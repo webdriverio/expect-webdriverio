@@ -43,6 +43,8 @@ test('matchers', () => {
         'toHaveId',
         'toHaveSize',
         'toHaveElementProperty',
+        'toHaveHTML',
+        'toHaveHTMLContaining',
         'toHaveText',
         'toHaveTextContaining',
         'toHaveValue',
