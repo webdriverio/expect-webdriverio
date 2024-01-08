@@ -123,7 +123,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareText = (
     actual: string,
-    expected: string | RegExp | ExpectWebdriverIO.PartialMatcher | ExpectWebdriverIO.PartialMatcher,
+    expected: string | RegExp | ExpectWebdriverIO.PartialMatcher,
     {
         ignoreCase = false,
         trim = true,

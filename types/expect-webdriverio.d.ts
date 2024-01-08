@@ -1,4 +1,9 @@
 declare namespace ExpectWebdriverIO {
+    /**
+     * expect function declaration, containing two generics:
+     *  - T: the type of the actual value, e.g. WebdriverIO.Browser or WebdriverIO.Element
+     *  - R: the type of the return value, e.g. Promise<void> or void
+     */
     function expect<T = unknown, R extends void | Promise<void> = void | Promise<void>>(
         actual: T
     ): Matchers<R, T>
