@@ -14,6 +14,7 @@ import * as toHaveAttribute from './matchers/element/toHaveAttribute.js'
 import * as toHaveChildren from './matchers/element/toHaveChildren.js'
 import * as toHaveClass from './matchers/element/toHaveClass.js'
 import * as toHaveHref from './matchers/element/toHaveHref.js'
+import * as toHaveHTML from './matchers/element/toHaveHTML.js'
 import * as toHaveId from './matchers/element/toHaveId.js'
 import * as toHaveSize from './matchers/element/toHaveSize.js'
 import * as toHaveElementProperty from './matchers/element/toHaveElementProperty.js'
@@ -46,6 +47,7 @@ const matchers = {
     ...toHaveChildren,
     ...toHaveClass,
     ...toHaveHref,
+    ...toHaveHTML,
     ...toHaveId,
     ...toHaveSize,
     ...toHaveElementProperty,
