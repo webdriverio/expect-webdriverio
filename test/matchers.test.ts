@@ -40,6 +40,8 @@ test('matchers', () => {
         'toHaveLink',
         'toHaveHrefContaining',
         'toHaveLinkContaining',
+        'toHaveHTML',
+        'toHaveHTMLContaining',
         'toHaveId',
         'toHaveSize',
         'toHaveElementProperty',
