@@ -715,6 +715,20 @@ await expect($('.hero__title-logo')).toMatchElementSnapshot('wdioLogo', 0, {
 })
 ```
 
+The expected result is by default `0`, so you can write the same assertion as:
+
+```js
+await expect($('.hero__title-logo')).toMatchElementSnapshot('wdioLogo', {
+    // options
+})
+```
+
+or not pass in any options at all:
+
+```js
+await expect($('.hero__title-logo')).toMatchElementSnapshot()
+```
+
 ### toMatchScreenSnapshot
 
 Checks that if current screen matches with snapshot of baseline.
@@ -725,6 +739,20 @@ Checks that if current screen matches with snapshot of baseline.
 await expect(browser).toMatchScreenSnapshot('partialPage', 0, {
     // options
 })
+```
+
+The expected result is by default `0`, so you can write the same assertion as:
+
+```js
+await expect(browser).toMatchScreenSnapshot('partialPage', {
+    // options
+})
+```
+
+or not pass in any options at all:
+
+```js
+await expect(browser).toMatchScreenSnapshot('partialPage')
 ```
 
 ### toMatchFullPageSnapshot
@@ -739,6 +767,20 @@ await expect(browser).toMatchFullPageSnapshot('fullPage', 0, {
 })
 ```
 
+The expected result is by default `0`, so you can write the same assertion as:
+
+```js
+await expect(browser).toMatchFullPageSnapshot('fullPage', {
+    // options
+})
+```
+
+or not pass in any options at all:
+
+```js
+await expect(browser).toMatchFullPageSnapshot('fullPage')
+```
+
 ### toMatchTabbablePageSnapshot
 
 Checks that if the full page screenshot including tab marks matches with snapshot of baseline.
@@ -749,6 +791,20 @@ Checks that if the full page screenshot including tab marks matches with snapsho
 await expect(browser).toMatchTabbablePageSnapshot('tabbable', 0, {
     // options
 })
+```
+
+The expected result is by default `0`, so you can write the same assertion as:
+
+```js
+await expect(browser).toMatchTabbablePageSnapshot('tabbable', {
+    // options
+})
+```
+
+or not pass in any options at all:
+
+```js
+await expect(browser).toMatchTabbablePageSnapshot('tabbable')
 ```
 
 ## Default Matchers
