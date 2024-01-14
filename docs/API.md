@@ -677,23 +677,6 @@ await expect(mock).toBeRequestedWith({
 })
 ```
 
-## Using regular expressions
-
-You can also directly use regular expressions for all matchers that do text comparison.
-
-##### Usage
-
-```js
-await browser.url('https://webdriver.io/')
-const elem = await $('.container')
-await expect(elem).toHaveText(/node\.js/i)
-await expect(elem).toHaveText([/node\.js/i, 'Get Started'])
-await expect(elem).toHaveTextContaining([/node\.js/i, 'Started'])
-await expect(browser).toHaveTitle(/webdriverio/i)
-await expect(browser).toHaveUrl(/webdriver\.io/)
-await expect(elem).toHaveElementClass(/Container/i)
-```
-
 ## Visual Matchers
 
 <!--
@@ -701,7 +684,7 @@ await expect(elem).toHaveElementClass(/Container/i)
     here: https://github.com/webdriverio-community/visual-testing/blob/e10f7005c1533f5b06811888a9cbb9020e6e765e/packages/service/src/matcher.ts
 -->
 
-The following matcher are implemented as part of the `@wdio/visual-service` plugin and only available when the service is set up. Make sure you follow the [set-up instructions](/docs/visual-testing) accordingly.
+The following matcher are implemented as part of the `@wdio/visual-service` plugin and only available when the service is set up. Make sure you follow the [set-up instructions](https://webdriver.io/docs/visual-testing) accordingly.
 
 ### toMatchElementSnapshot
 
@@ -805,6 +788,23 @@ or not pass in any options at all:
 
 ```js
 await expect(browser).toMatchTabbablePageSnapshot('tabbable')
+```
+
+## Using regular expressions
+
+You can also directly use regular expressions for all matchers that do text comparison.
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+const elem = await $('.container')
+await expect(elem).toHaveText(/node\.js/i)
+await expect(elem).toHaveText([/node\.js/i, 'Get Started'])
+await expect(elem).toHaveTextContaining([/node\.js/i, 'Started'])
+await expect(browser).toHaveTitle(/webdriverio/i)
+await expect(browser).toHaveUrl(/webdriver\.io/)
+await expect(elem).toHaveElementClass(/Container/i)
 ```
 
 ## Default Matchers
