@@ -1,4 +1,4 @@
-/// <reference types="./standalone.js"/>
+/// <reference types="./expect-webdriverio.js"/>
 
 // @ts-expect-error
 declare const expect: ExpectWebdriverIO.Expect

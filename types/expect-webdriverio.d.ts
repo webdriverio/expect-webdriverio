@@ -1,4 +1,57 @@
+type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement<WebdriverIO.Element>
+type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray<WebdriverIO.Element>
+
 declare namespace ExpectWebdriverIO {
+    type PromiseMatchers<T = unknown> = {
+        /**
+         * Unwraps the reason of a rejected promise so any other matcher can be chained.
+         * If the promise is fulfilled the assertion fails.
+         */
+        rejects: Matchers<T, Promise<void>> & Inverse<Matchers<T, Promise<void>>>
+        /**
+         * Unwraps the value of a fulfilled promise so any other matcher can be chained.
+         * If the promise is rejected the assertion fails.
+         */
+        resolves: Matchers<T, Promise<void>> & Inverse<Matchers<T, Promise<void>>>
+    }
+    type Inverse<Matchers> = {
+        /**
+         * Inverse next matcher. If you know how to test something, `.not` lets you test its opposite.
+         */
+        not: Matchers
+    }
+
+    type ExpectMatchers<R extends void | Promise<void>> = Readonly<import('expect').Matchers<R>>
+    type Matchers<T, R extends void | Promise<void>> = ExpectMatchers<R> & PromiseMatchers<T> & T extends WebdriverIO.Browser
+        // ===== browser only =====
+        ? BrowserMatchers<R>
+        // ===== $ only =====
+        : T extends WebdriverIO.Element
+            ? ElementMatchers<R>
+            : T extends ChainablePromiseElement
+                ? ElementMatchers<R>
+                // ===== $$ only =====
+                : T extends WebdriverIO.ElementArray
+                    ? ElementsMatchers<R>
+                    : T extends ChainablePromiseArray
+                        ? ElementsMatchers<R>
+                        : unknown
+
+    type Expect = {
+        <T = unknown, R extends void | Promise<void> = void | Promise<void>>(actual: T): Matchers<T, R>
+        extend(map: Record<string, Function>): void
+    } & AsymmetricMatchers
+
+    interface AsymmetricMatchers {
+        any(expectedObject: any): PartialMatcher
+        anything(): PartialMatcher
+        arrayContaining(sample: Array<unknown>): PartialMatcher
+        objectContaining(sample: Record<string, unknown>): PartialMatcher
+        stringContaining(expected: string): PartialMatcher
+        stringMatching(expected: string | RegExp | ExpectWebdriverIO.PartialMatcher): PartialMatcher
+        not: AsymmetricMatchers
+    }
+
     /**
      * expect function declaration, containing two generics:
      *  - T: the type of the actual value, e.g. WebdriverIO.Browser or WebdriverIO.Element
@@ -6,7 +59,8 @@ declare namespace ExpectWebdriverIO {
      */
     function expect<T = unknown, R extends void | Promise<void> = void | Promise<void>>(
         actual: T
-    ): Matchers<R, T>
+    ): Matchers<T, R>
+
     function setOptions(options: DefaultOptions): void
     function getConfig(): any
 
@@ -27,7 +81,7 @@ declare namespace ExpectWebdriverIO {
         /**
          * name of the matcher, e.g. `toHaveText` or `toBeClickable`
          */
-        matcherName: keyof Matchers<void, unknown>,
+        matcherName: keyof Matchers<void, void>,
         /**
          * Value that the user has passed in
          *
@@ -148,7 +202,7 @@ declare namespace ExpectWebdriverIO {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    interface Matchers<R, T> {
+    interface ElementMatchers<R> {
         // ===== $ or $$ =====
         /**
          * `WebdriverIO.Element` -> `isDisplayed`
@@ -414,7 +468,21 @@ declare namespace ExpectWebdriverIO {
          * `WebdriverIO.Element` -> `getAttribute("style")`
          */
         toHaveStyle(style: { [key: string]: string }, options?: ExpectWebdriverIO.StringOptions): R
+    }
 
+    // ===== $$ only =====
+    interface ElementsMatchers<R> {
+        /**
+         * `WebdriverIO.ElementArray` -> `$$('...').length`
+         * supports less / greater then or equals to be passed in options
+         */
+        toBeElementsArrayOfSize(
+            size: number | ExpectWebdriverIO.NumberOptions,
+            options?: ExpectWebdriverIO.NumberOptions
+        ): R
+    }
+
+    interface BrowserMatchers<R> {
         // ===== browser only =====
         /**
          * `WebdriverIO.Browser` -> `getUrl`
@@ -454,20 +522,10 @@ declare namespace ExpectWebdriverIO {
          * @deprecated use `expect(el).toHaveClipboardText(expect.stringContaining('...'))` instead
          */
         toHaveClipboardTextContaining(clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
+    }
 
-
-        // ===== $$ only =====
-        /**
-         * `WebdriverIO.ElementArray` -> `$$('...').length`
-         * supports less / greater then or equals to be passed in options
-         */
-        toBeElementsArrayOfSize(
-            size: number | ExpectWebdriverIO.NumberOptions,
-            options?: ExpectWebdriverIO.NumberOptions
-        ): R
-
-        // ==== network mock ====
-
+    // ==== network mock ====
+    interface MockMatchers<R> {
         /**
          * Check that `WebdriverIO.Mock` was called
          */
