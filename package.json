@@ -53,7 +53,9 @@
     "ts": "run-s ts:*",
     "ts:default": "cd test-types/default && tsc -p ./tsconfig.json --incremental",
     "ts:jest": "cd test-types/jest && tsc -p ./tsconfig.json --incremental",
-    "ts:jasmine": "cd test-types/jasmine && tsc -p ./tsconfig.json --incremental",
+    "ts:jasmine": "run-s ts:jasmine:*",
+    "ts:jasmine:setup": "rimraf ./node_modules/expect-webdriverio && ln -s ../ ./node_modules/expect-webdriverio",
+    "ts:jasmine:test": "cd test-types/jasmine && tsc -p ./tsconfig.json --incremental",
     "watch": "npm run compile -- --watch",
     "prepare": "husky install"
   },
