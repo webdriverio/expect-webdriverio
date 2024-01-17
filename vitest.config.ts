@@ -14,11 +14,16 @@ export default defineConfig({
         testTimeout: 15 * 1000,
         coverage: {
             enabled: true,
-            exclude: ['**/build/**', '**/__fixtures__/**', '**/*.test.ts'],
-            lines: 92,
-            functions: 87,
-            branches: 89,
-            statements: 92
+            exclude: [
+                '**/build/**', '**/__fixtures__/**', '**/*.test.ts', 'lib', '**/*.d.ts',
+                'test-types', '*.cjs'
+            ],
+            thresholds: {
+                lines: 92,
+                functions: 87,
+                branches: 89,
+                statements: 92
+            }
         }
     }
 })

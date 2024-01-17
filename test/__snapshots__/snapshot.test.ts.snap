@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`test/snapshot.test.ts > supports snapshot testing 1`] = `
+{
+  "a": "a",
+}
+`;
