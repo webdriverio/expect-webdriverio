@@ -677,7 +677,40 @@ await expect(mock).toBeRequestedWith({
 })
 ```
 
-## Visual Matchers
+## Snapshot Matcher
+
+WebdriverIO supports basic snapshot tests as well as DOM snapshot testing.
+
+### toMatchSnapshot
+
+Checks if any arbitrary object matches a certain value. If you pass in an [`WebdriverIO.Element`](https://webdriver.io/docs/api/element) it will automatically snapshot the [`outerHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/outerHTML) state of it.
+
+##### Usage
+
+```js
+// snapshot arbitrary objects (no "await" needed here)
+expect({ foo: 'bar' }).toMatchSnapshot()
+// snapshot `outerHTML` of WebdriverIO.Element (DOM snapshot, requires "await")
+await expect($('elem')).toMatchSnapshot()
+// snapshot result of element command
+await expect($('elem').getCSSProperty('background-color')).toMatchSnapshot()
+```
+
+### toMatchInlineSnapshot
+
+Similarly, you can use the `toMatchInlineSnapshot()` to store the snapshot inline within the test file. For example, given:
+
+```js
+await expect($('img')).toMatchInlineSnapshot()
+```
+
+Instead of creating a snapshot file, WebdriverIO will modify the test file directly to update the snapshot as a string:
+
+```js
+await expect($('img')).toMatchInlineSnapshot(`"<img src="/public/apple-touch-icon-precomposed.png">"`)
+```
+
+## Visual Snapshot Matchers
 
 <!--
     These matchers aren't implemented in the `expect-webdriverio` project and can be found
