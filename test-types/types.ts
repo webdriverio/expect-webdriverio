@@ -1,10 +1,13 @@
 const elem: WebdriverIO.Element = {} as any
+const wdioExpect = ExpectWebdriverIO.expect
 
-expect(elem).toBeDisabled()
-expect(elem).toHaveAttr('test')
-expect(elem).not.toHaveAttr('test')
-expect(elem).toBe('bar')
+wdioExpect(elem).toBeDisabled()
+wdioExpect(elem).toHaveAttr('test')
+wdioExpect(elem).not.toHaveAttr('test')
+wdioExpect(elem).toBe('bar')
 
-expect(elem).toHaveElementClass('bar')
-expect(elem).toHaveElementClassContaining('bar')
-expect(elem).toHaveElementProperty('n', 'v', {})
+wdioExpect(elem).toHaveElementClass('bar')
+wdioExpect(elem).toHaveElementClassContaining('bar')
+wdioExpect(elem).toHaveElementProperty('n', 'v', {})
+wdioExpect({ foo: 'bar' }).toMatchSnapshot()
+wdioExpect({ foo: 'bar' }).toMatchInlineSnapshot()

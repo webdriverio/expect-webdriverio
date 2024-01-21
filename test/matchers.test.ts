@@ -55,6 +55,10 @@ test('matchers', () => {
         'toBeRequested',
         'toBeRequestedTimes',
         'toBeRequestedWith',
-        'toBeRequestedWithResponse'
+        'toBeRequestedWithResponse',
+
+        // snapshot
+        'toMatchSnapshot',
+        'toMatchInlineSnapshot'
     ])
 })

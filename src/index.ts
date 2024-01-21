@@ -1,11 +1,11 @@
+/// <reference types="../types/standalone.d.ts" />
 import { expect as expectLib } from 'expect'
 
 import wdioMatchers from './matchers.js'
-import * as expectUtils from './utils.js'
 import { DEFAULT_OPTIONS } from './constants.js'
 
 expectLib.extend({ ...wdioMatchers })
-export const expect = expectLib
+export const expect = expectLib as unknown as ExpectWebdriverIO.Expect
 export const matchers = wdioMatchers
 export const getConfig = (): any => DEFAULT_OPTIONS
 export const setDefaultOptions = (options = {}): void => {
@@ -17,4 +17,13 @@ export const setDefaultOptions = (options = {}): void => {
     })
 }
 export const setOptions = setDefaultOptions
-export const utils = expectUtils
+
+/**
+ * export snapshot utilities
+ */
+export * from './snapshot.js'
+
+/**
+ * export utils
+ */
+export * as utils from './utils.js'
