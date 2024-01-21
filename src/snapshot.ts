@@ -9,6 +9,14 @@ import type { Services, Frameworks } from '@wdio/types'
  */
 let service: SnapshotService
 
+/**
+ * Snapshot service to take snapshots of elements.
+ * The `@wdio/runner` module will attach this service to the test environment
+ * so it can track the current test file and test name.
+ *
+ * @param {string} updateState update state
+ * @return {SnapshotService}
+ */
 export class SnapshotService implements Services.ServiceInstance {
     #currentFilePath?: string
     #currentTestName?: string
@@ -54,8 +62,6 @@ export class SnapshotService implements Services.ServiceInstance {
         if (!result) {
             return
         }
-        console.log('push result', result);
-
         this.#snapshotResults.push(result)
     }
 
