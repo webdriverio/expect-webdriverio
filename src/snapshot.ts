@@ -57,7 +57,7 @@ export class SnapshotService implements Services.ServiceInstance {
         this.#snapshotClient.startCurrentRun(test.file, test.fullTitle, this.#options)
     }
 
-    async afterTest() {
+    async after() {
         const result = await this.#snapshotClient.finishCurrentRun()
         if (!result) {
             return
