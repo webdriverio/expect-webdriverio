@@ -123,7 +123,7 @@ export function toMatchInlineSnapshot(received: unknown, inlineSnapshot: string,
      * When running component/unit tests in the browser we receive a stack trace
      * through the `this` scope.
      */
-    const browserErrorStack: string = this.errorStack
+    const browserErrorLine: string = this.errorStack
 
     function __INLINE_SNAPSHOT__(inlineSnapshot: string, message: string) {
         /**
@@ -133,26 +133,16 @@ export function toMatchInlineSnapshot(received: unknown, inlineSnapshot: string,
         const error = new Error('inline snapshot')
 
         /**
-         * merge stack traces from browser and node
+         * merge stack traces from browser and node and push the error of the test
+         * into the stack trace
          */
-        if (browserErrorStack && error.stack) {
+        if (browserErrorLine && error.stack) {
+            const stack = error.stack.split('\n')
             error.stack = [
-                ...error.stack.split('\n').slice(0, 3),
-                ...browserErrorStack
-                    .split('\n')
-                    .slice(2)
-                    .map((line) => line
-                        /**
-                         * stack traces within the browser have an url path, e.g.
-                         * `http://localhost:8080/@fs/path/to/__tests__/unit/snapshot.test.js:123:45`
-                         * that we want to remove so that the stack trace is properly
-                         * parsed by Vitest, e.g. make it to:
-                         * `/__tests__/unit/snapshot.test.js:123:45`
-                         */
-                        .replace(/http:\/\/localhost:\d+/g, '')
-                        .replace('/@fs/', '/')
-                    )
-            ].join('\n');
+                ...stack.slice(0, 4),
+                browserErrorLine,
+                ...stack.slice(3)
+            ].join('\n')
         }
         error.stack = error.stack?.split('\n').filter((line) => (
             line.includes('__INLINE_SNAPSHOT__') ||
