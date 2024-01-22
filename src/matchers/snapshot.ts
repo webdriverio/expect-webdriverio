@@ -119,12 +119,41 @@ export function toMatchSnapshot(received: unknown, message: string) {
 }
 
 export function toMatchInlineSnapshot(received: unknown, inlineSnapshot: string, message: string) {
+    /**
+     * When running component/unit tests in the browser we receive a stack trace
+     * through the `this` scope.
+     */
+    const browserErrorStack: string = this.errorStack
+
     function __INLINE_SNAPSHOT__(inlineSnapshot: string, message: string) {
         /**
          * create a error object to pass along that helps Vitest's snapshot manager
          * to infer the stack trace and locate the inline snapshot
          */
         const error = new Error('inline snapshot')
+
+        /**
+         * merge stack traces from browser and node
+         */
+        if (browserErrorStack && error.stack) {
+            error.stack = [
+                ...error.stack.split('\n').slice(0, 3),
+                ...browserErrorStack
+                    .split('\n')
+                    .slice(2)
+                    .map((line) => line
+                        /**
+                         * stack traces within the browser have an url path, e.g.
+                         * `http://localhost:8080/@fs/path/to/__tests__/unit/snapshot.test.js:123:45`
+                         * that we want to remove so that the stack trace is properly
+                         * parsed by Vitest, e.g. make it to:
+                         * `/__tests__/unit/snapshot.test.js:123:45`
+                         */
+                        .replace(/http:\/\/localhost:\d+/g, '')
+                        .replace('/@fs/', '/')
+                    )
+            ].join('\n');
+        }
         error.stack = error.stack?.split('\n').filter((line) => (
             line.includes('__INLINE_SNAPSHOT__') ||
             !(
