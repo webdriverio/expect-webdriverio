@@ -48,8 +48,8 @@ describe('toHaveHeight', () => {
             throw new Error('some error')
         }
 
-        const result = await toHaveHeight.call({}, el, 10, {})
-        expect(result.pass).toBe(false)
+        await expect(() => toHaveHeight.call({}, el, 10, {}))
+            .rejects.toThrow('some error')
     })
 
     test('success on the first attempt', async () => {

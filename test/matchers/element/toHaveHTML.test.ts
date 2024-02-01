@@ -42,8 +42,8 @@ describe('toHaveHTML', () => {
             throw new Error('some error')
         }
 
-        const result = await toHaveHTML.call({}, el, '<div>foo</div>', { ignoreCase: true })
-        expect(result.pass).toBe(false)
+        await expect(() => toHaveHTML.call({}, el, '<div>foo</div>', { ignoreCase: true }))
+            .rejects.toThrow('some error')
     })
 
     test('success on the first attempt', async () => {

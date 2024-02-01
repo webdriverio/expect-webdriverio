@@ -30,9 +30,10 @@ const waitUntil = async (
         return await condition()
     }
 
+    let error: Error | undefined
+
     // wait for condition to be truthy
     try {
-        let error
         const start = Date.now()
         // eslint-disable-next-line no-constant-condition
         while (true) {
@@ -43,6 +44,7 @@ const waitUntil = async (
             error = undefined
             try {
                 const result = isNot !== (await condition())
+                error = undefined
                 if (result) {
                     break
                 }
@@ -59,6 +61,10 @@ const waitUntil = async (
 
         return !isNot
     } catch (err) {
+        if (error) {
+            throw error
+        }
+
         return isNot
     }
 }

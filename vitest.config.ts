@@ -8,17 +8,29 @@ export default defineConfig({
          * not to ESM ported packages
          */
         exclude: [
-            'dist', '.idea', '.git', '.cache',
+            'dist', '.idea', '.git', '.cache', 'lib',
             '**/node_modules/**'
         ],
         testTimeout: 15 * 1000,
         coverage: {
             enabled: true,
-            exclude: ['**/build/**', '**/__fixtures__/**', '**/*.test.ts'],
-            lines: 92,
-            functions: 87,
-            branches: 89,
-            statements: 92
+            exclude: [
+                '**/build/**',
+                '**/__fixtures__/**',
+                '**/*.test.ts',
+                'lib',
+                'test-types',
+                '.eslintrc.cjs',
+                'jasmine.d.ts',
+                'jest.d.ts',
+                'types'
+            ],
+            thresholds: {
+                lines: 93,
+                functions: 87,
+                branches: 91,
+                statements: 93
+            }
         }
     }
 })
