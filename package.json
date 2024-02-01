@@ -48,7 +48,7 @@
     "compile": "tsc --build tsconfig.build.json",
     "test": "run-s test:*",
     "test:lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "test:unit": "vitest",
+    "test:unit": "vitest --run",
     "test:types": "node test-types/copy && npm run ts && npm run clean:tests",
     "ts": "run-s ts:*",
     "ts:default": "cd test-types/default && tsc -p ./tsconfig.json --incremental",

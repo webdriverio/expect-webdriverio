@@ -44,8 +44,8 @@ describe('toBeDisabled', () => {
             throw new Error('some error')
         }
 
-        const result = await toBeDisabled.call({}, el)
-        expect(result.pass).toBe(false)
+        await expect(() => toBeDisabled.call({}, el))
+            .rejects.toThrow('some error')
     })
 
     test('success on the first attempt', async () => {

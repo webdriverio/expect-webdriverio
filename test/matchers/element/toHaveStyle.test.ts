@@ -59,8 +59,8 @@ describe('toHaveStyle', () => {
             }
             throw new Error('some error');
         })
-        const result = await toHaveStyle.call({}, el, mockStyle, { ignoreCase: true });
-        expect(result.pass).toBe(false)
+        await expect(() => toHaveStyle.call({}, el, mockStyle, { ignoreCase: true }))
+            .rejects.toThrow('some error')
     })
 
     test('success on the first attempt', async () => {

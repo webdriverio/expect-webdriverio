@@ -42,8 +42,8 @@ describe('toHaveSize', () => {
             throw new Error('some error')
         }
 
-        const result = await toHaveSize.call({}, el, { width: 32, height: 32 }, {})
-        expect(result.pass).toBe(false)
+        await expect(() => toHaveSize.call({}, el, { width: 32, height: 32 }, {}))
+            .rejects.toThrow('some error')
     })
 
     test('success on the first attempt', async () => {

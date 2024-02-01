@@ -40,8 +40,8 @@ describe('browser matchers', () => {
                     throw new Error('some error')
                 }
 
-                const result = await fn.call({}, browser, validText, { trim: false })
-                expect(result.pass).toBe(false)
+                await expect(() => fn.call({}, browser, validText, { trim: false }))
+                    .rejects.toThrow('some error')
             })
 
             test('success on the first attempt', async () => {

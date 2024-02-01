@@ -12,13 +12,7 @@ export async function toBeClickable(
         options,
     })
 
-    const result = await executeCommandBe.call(this, received, async el => {
-        try {
-            return el.isClickable()
-        } catch {
-            return false
-        }
-    }, options)
+    const result = await executeCommandBe.call(this, received, el => el.isClickable(), options)
 
     await options.afterAssertion?.({
         matcherName: 'toBeClickable',

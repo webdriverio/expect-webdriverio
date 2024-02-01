@@ -13,13 +13,7 @@ export async function toBeDisplayed(
         options,
     })
 
-    const result = await executeCommandBe.call(this, received, async el => {
-        try {
-            return el.isDisplayed()
-        } catch {
-            return false
-        }
-    }, options)
+    const result = await executeCommandBe.call(this, received, el => el.isDisplayed(), options)
 
     await options.afterAssertion?.({
         matcherName: 'toBeDisplayed',
