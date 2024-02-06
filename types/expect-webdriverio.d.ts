@@ -16,7 +16,7 @@ declare namespace ExpectWebdriverIO {
         message(): string
     }
 
-    const matchers: Record<
+    const matchers: Map<
         string,
         (
             actual: any,
