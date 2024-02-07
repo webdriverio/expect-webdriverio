@@ -33,7 +33,7 @@ export const setOptions = setDefaultOptions
 /**
  * export snapshot utilities
  */
-export * from './snapshot.js'
+export { SnapshotService } from './snapshot.js'
 
 /**
  * export utils

@@ -3,10 +3,13 @@ declare namespace ExpectWebdriverIO {
     function setOptions(options: DefaultOptions): void
     function getConfig(): any
 
+    interface SnapshotServiceArgs {
+        updateState?: import('@vitest/snapshot').SnapshotUpdateState
+        snapshotsDirName?: string
+    }
+
     class SnapshotService {
-        static initiate(
-            updateState?: import('@vitest/snapshot').SnapshotUpdateState
-        ): import('@wdio/types').Services.ServiceInstance & {
+        static initiate(options: SnapshotServiceArgs): import('@wdio/types').Services.ServiceInstance & {
             results: import('@vitest/snapshot').SnapshotResult[]
         }
     }

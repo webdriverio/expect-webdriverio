@@ -9,6 +9,11 @@ import type { Services, Frameworks } from '@wdio/types'
  */
 let service: SnapshotService
 
+interface SnapshotServiceArgs {
+    updateState?: SnapshotUpdateState
+    snapshotsDirName?: string
+}
+
 /**
  * Snapshot service to take snapshots of elements.
  * The `@wdio/runner` module will attach this service to the test environment
@@ -23,14 +28,17 @@ export class SnapshotService implements Services.ServiceInstance {
     #options: SnapshotStateOptions
     #snapshotResults: SnapshotResult[] = []
 
-    #snapshotEnvironment = new NodeSnapshotEnvironment()
+    #snapshotEnvironment: NodeSnapshotEnvironment
     #snapshotClient = new SnapshotClient({
         isEqual: this.#isEqual.bind(this),
     })
 
-    constructor (updateState: SnapshotUpdateState) {
+    constructor (options?: SnapshotServiceArgs) {
+        this.#snapshotEnvironment = new NodeSnapshotEnvironment({
+            snapshotsDirName: options?.snapshotsDirName
+        })
         this.#options = {
-            updateSnapshot: updateState,
+            updateSnapshot: options?.updateState || 'new',
             snapshotEnvironment: this.#snapshotEnvironment,
         } as const
     }
@@ -74,9 +82,9 @@ export class SnapshotService implements Services.ServiceInstance {
         }
     }
 
-    static initiate (updateState: SnapshotUpdateState = 'new') {
+    static initiate (options?: SnapshotServiceArgs) {
         if (!service) {
-            service = new SnapshotService(updateState)
+            service = new SnapshotService(options)
         }
         return service
     }
