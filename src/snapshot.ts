@@ -25,7 +25,7 @@ class WebdriverIOSnapshotEnvironment extends NodeSnapshotEnvironment {
 
     async resolvePath (filepath: string): Promise<string> {
         if (this.#resolveSnapshotPath) {
-            return Promise.resolve(this.#resolveSnapshotPath(filepath, '.snap'))
+            return this.#resolveSnapshotPath(filepath, '.snap')
         }
         return super.resolvePath(filepath)
     }
