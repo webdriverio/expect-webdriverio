@@ -9,9 +9,26 @@ import type { Services, Frameworks } from '@wdio/types'
  */
 let service: SnapshotService
 
+type ResolveSnapshotPathFunction = (path: string, extension: string) => string
 interface SnapshotServiceArgs {
     updateState?: SnapshotUpdateState
-    snapshotsDirName?: string
+    resolveSnapshotPath?: ResolveSnapshotPathFunction
+}
+
+class WebdriverIOSnapshotEnvironment extends NodeSnapshotEnvironment {
+    #resolveSnapshotPath?: (path: string, extension: string) => string
+
+    constructor (resolveSnapshotPath?: ResolveSnapshotPathFunction) {
+        super({})
+        this.#resolveSnapshotPath = resolveSnapshotPath
+    }
+
+    async resolvePath (filepath: string): Promise<string> {
+        if (this.#resolveSnapshotPath) {
+            return Promise.resolve(this.#resolveSnapshotPath(filepath, '.snap'))
+        }
+        return super.resolvePath(filepath)
+    }
 }
 
 /**
@@ -27,19 +44,19 @@ export class SnapshotService implements Services.ServiceInstance {
     #currentTestName?: string
     #options: SnapshotStateOptions
     #snapshotResults: SnapshotResult[] = []
-
-    #snapshotEnvironment: NodeSnapshotEnvironment
     #snapshotClient = new SnapshotClient({
         isEqual: this.#isEqual.bind(this),
     })
 
     constructor (options?: SnapshotServiceArgs) {
-        this.#snapshotEnvironment = new NodeSnapshotEnvironment({
-            snapshotsDirName: options?.snapshotsDirName
-        })
+        const updateSnapshot = (Boolean(process.env.CI) && !options?.updateState)
+            ? 'none'
+            : options?.updateState
+                ? options.updateState
+                : 'new'
         this.#options = {
-            updateSnapshot: options?.updateState || 'new',
-            snapshotEnvironment: this.#snapshotEnvironment,
+            updateSnapshot,
+            snapshotEnvironment: new WebdriverIOSnapshotEnvironment(options?.resolveSnapshotPath)
         } as const
     }
 
