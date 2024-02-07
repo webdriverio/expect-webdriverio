@@ -1,20 +1,35 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import { test, expect } from 'vitest'
 import type { Frameworks } from '@wdio/types'
 
 import { expect as expectExport, SnapshotService } from '../src/index.js'
 
-const service = SnapshotService.initiate()
-service.beforeTest({
-    title: 'test',
-    parent: 'parent',
-    file: '/foo/bar/file',
-} as Frameworks.Test)
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
-test('supports snapshot testing', () => {
+const service = SnapshotService.initiate({
+    resolveSnapshotPath: (path, extension) => path + extension
+})
+
+test('supports snapshot testing', async () => {
+    await service.beforeTest({
+        title: 'test',
+        parent: 'parent',
+        file: `${__dirname}/file`,
+    } as Frameworks.Test)
+
     const exp = expectExport;
     expect(exp).toBeDefined()
     expect(exp({}).toMatchSnapshot).toBeDefined()
     expect(exp({}).toMatchInlineSnapshot).toBeDefined()
-    exp({ a: 'a' }).toMatchSnapshot()
-    exp({ a: 'a' }).toMatchInlineSnapshot()
+    await exp({ a: 'a' }).toMatchSnapshot()
+    /**
+     * doesn't work without running in WebdriverIO test runner context
+     */
+    // await exp({ a: 'a' }).toMatchInlineSnapshot()
+    await service.after()
+
+    const expectedSnapfileExist = await fs.access(path.resolve(__dirname, 'file.snap'))
+        .then(() => true, () => false)
+    expect(expectedSnapfileExist).toBe(true)
 })

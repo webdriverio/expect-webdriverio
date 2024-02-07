@@ -76,10 +76,10 @@ export class SnapshotService implements Services.ServiceInstance {
         return this.#snapshotResults
     }
 
-    beforeTest(test: Frameworks.Test) {
+    async beforeTest(test: Frameworks.Test) {
         this.#currentFilePath = test.file
         this.#currentTestName = `${test.parent} > ${test.title}`
-        this.#snapshotClient.startCurrentRun(test.file, test.fullTitle, this.#options)
+        await this.#snapshotClient.startCurrentRun(test.file, test.fullTitle, this.#options)
     }
 
     async after() {
