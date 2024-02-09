@@ -3,10 +3,9 @@ declare namespace ExpectWebdriverIO {
     function setOptions(options: DefaultOptions): void
     function getConfig(): any
 
-    type ResolveSnapshotPathFunction = (path: string, extension: string) => string
     interface SnapshotServiceArgs {
-        updateState?: SnapshotUpdateState
-        resolveSnapshotPath?: ResolveSnapshotPathFunction
+        updateState?: import('@vitest/snapshot').SnapshotUpdateState
+        resolveSnapshotPath?: (path: string, extension: string) => string
     }
 
     class SnapshotService {
