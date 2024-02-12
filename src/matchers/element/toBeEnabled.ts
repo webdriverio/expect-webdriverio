@@ -12,7 +12,7 @@ export async function toBeEnabled(
         options,
     })
 
-    const result = await executeCommandBe.call(this, received, el => el.isEnabled(), options)
+    const result = await executeCommandBe.call(this, received, el => el?.isEnabled(), options)
 
     await options.afterAssertion?.({
         matcherName: 'toBeEnabled',

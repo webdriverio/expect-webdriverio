@@ -14,7 +14,7 @@ export async function toExist(
         options,
     })
 
-    const result = await executeCommandBe.call(this, received, el => el.isExisting(), options)
+    const result = await executeCommandBe.call(this, received, el => el?.isExisting(), options)
 
     await options.afterAssertion?.({
         matcherName: 'toExist',

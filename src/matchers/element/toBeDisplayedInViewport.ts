@@ -12,7 +12,7 @@ export async function toBeDisplayedInViewport(
         options,
     })
 
-    const result = await executeCommandBe.call(this, received, el => el.isDisplayedInViewport(), options)
+    const result = await executeCommandBe.call(this, received, el => el?.isDisplayedInViewport(), options)
 
     await options.afterAssertion?.({
         matcherName: 'toBeDisplayedInViewport',

@@ -12,7 +12,7 @@ export async function toBeSelected(
         options,
     })
 
-    const result = await executeCommandBe.call(this, received, el => el.isSelected(), options)
+    const result = await executeCommandBe.call(this, received, el => el?.isSelected(), options)
 
     await options.afterAssertion?.({
         matcherName: 'toBeSelected',

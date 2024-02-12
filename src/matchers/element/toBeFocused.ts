@@ -12,7 +12,7 @@ export async function toBeFocused(
         options,
     })
 
-    const result = await executeCommandBe.call(this, received, el => el.isFocused(), options)
+    const result = await executeCommandBe.call(this, received, el => el?.isFocused(), options)
 
     await options.afterAssertion?.({
         matcherName: 'toBeFocused',
