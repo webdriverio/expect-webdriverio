@@ -1,8 +1,9 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 export async function toHaveId(
-    el: WebdriverIO.Element,
+    el: WdioElementMaybePromise,
     expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {

@@ -39,8 +39,6 @@ describe('toHaveElementProperty', () => {
             return 'iphone'
         }
 
-        console.log(el);
-
         const result = await toHaveElementProperty.call({}, el, 'property', expect.stringContaining('phone'))
         expect(result.pass).toBe(true)
     })

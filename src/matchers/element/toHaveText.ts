@@ -1,8 +1,9 @@
 import {
     waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand,
-    wrapExpectedWithArray, updateElementsArray
+    wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 async function condition(el: WebdriverIO.Element, text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
@@ -13,7 +14,7 @@ async function condition(el: WebdriverIO.Element, text: string | RegExp | Expect
 }
 
 export async function toHaveText(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -36,8 +37,6 @@ export async function toHaveText(
 
         return result.success
     }, isNot, options)
-
-    updateElementsArray(pass, received, el)
 
     const message = enhanceError(el, wrapExpectedWithArray(el, actualText, expectedValue), actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {

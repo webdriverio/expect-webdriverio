@@ -1,11 +1,12 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
-import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray, compareText } from '../../utils.js'
+import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, compareText } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
-async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
+async function condition(el: WdioElementMaybePromise, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
     const { ignoreCase = false, trim = false, containing = false } = options
 
-    let attr = await el.getAttribute(attribute)
+    let attr = await (await el).getAttribute(attribute)
     if (typeof attr !== 'string') {
         return { result: false }
     }
@@ -43,7 +44,7 @@ export function toHaveClass(...args: any): any {
 }
 
 export async function toHaveElementClass(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -68,8 +69,6 @@ export async function toHaveElementClass(
 
         return result.success
     }, isNot, options)
-
-    updateElementsArray(pass, received, el)
 
     const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {

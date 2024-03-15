@@ -1,8 +1,9 @@
 import {
     waitUntil, enhanceError, compareNumbers, numberError, executeCommand,
-    wrapExpectedWithArray, updateElementsArray
+    wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.NumberOptions) {
     const children = await el.$$('./*')
@@ -26,7 +27,7 @@ async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.Num
 }
 
 export async function toHaveChildren(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     expectedValue?: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -52,8 +53,6 @@ export async function toHaveChildren(
 
         return result.success
     }, isNot, { ...numberOptions, ...options })
-
-    updateElementsArray(pass, received, el)
 
     const error = numberError(numberOptions)
     const expectedArray = wrapExpectedWithArray(el, children, error)

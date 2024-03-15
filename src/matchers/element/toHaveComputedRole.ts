@@ -4,10 +4,10 @@ import {
     compareText,
     compareTextWithArray,
     executeCommand,
-    wrapExpectedWithArray,
-    updateElementsArray,
+    wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -22,7 +22,7 @@ async function condition(
 }
 
 export async function toHaveComputedRole(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -49,8 +49,6 @@ export async function toHaveComputedRole(
         isNot,
         options
     )
-
-    updateElementsArray(pass, received, el)
 
     const message = enhanceError(
         el,

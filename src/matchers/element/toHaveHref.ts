@@ -1,8 +1,9 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 export async function toHaveHref(
-    el: WebdriverIO.Element,
+    el: WdioElementMaybePromise,
     expectedValue: string,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -30,7 +31,7 @@ export const toHaveLink = toHaveHref
  * @deprecated
  */
 export function toHaveHrefContaining(
-    el: WebdriverIO.Element,
+    el: WdioElementMaybePromise,
     href: string,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {

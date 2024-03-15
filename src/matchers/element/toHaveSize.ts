@@ -3,10 +3,10 @@ import {
     enhanceError,
     executeCommand,
     wrapExpectedWithArray,
-    updateElementsArray,
     compareObject,
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 async function condition(el: WebdriverIO.Element, size: { height: number; width: number }): Promise<any> {
     const actualSize = await el.getSize()
@@ -15,7 +15,7 @@ async function condition(el: WebdriverIO.Element, size: { height: number; width:
 }
 
 export async function toHaveSize(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     expectedValue: { height: number; width: number },
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
@@ -43,8 +43,6 @@ export async function toHaveSize(
         isNot,
         options
     )
-
-    updateElementsArray(pass, received, el)
 
     const message = enhanceError(
         el,

@@ -1,8 +1,9 @@
 import { toHaveElementProperty } from './toHaveElementProperty.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 export function toHaveValue(
-    el: WebdriverIO.Element,
+    el: WdioElementMaybePromise,
     value: string | RegExp | ExpectWebdriverIO.PartialMatcher,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -13,7 +14,7 @@ export function toHaveValue(
  * @deprecated
  */
 export function toHaveValueContaining(
-    el: WebdriverIO.Element,
+    el: WdioElementMaybePromise,
     value: string | RegExp | ExpectWebdriverIO.PartialMatcher,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
