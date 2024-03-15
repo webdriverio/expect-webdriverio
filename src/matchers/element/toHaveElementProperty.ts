@@ -25,7 +25,7 @@ async function condition(
         return { result: true, value: prop }
     }
 
-    if (!(value instanceof RegExp) && (typeof value !== 'string' || (typeof prop !== 'string' && !asString))) {
+    if (!(value instanceof RegExp) && typeof prop !== 'string' && !asString) {
         return { result: prop === value, value: prop }
     }
 

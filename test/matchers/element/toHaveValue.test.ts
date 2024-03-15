@@ -35,6 +35,11 @@ describe('toHaveValue', () => {
             })
         })
 
+        test('assymetric passes', async () => {
+            const result = await toHaveValue.call({}, el, expect.stringContaining('example value'))
+            expect(result.pass).toBe(true)
+        })
+
         test('RegExp passes', async () => {
             const result = await toHaveValue.call({}, el, /ExAmPlE/i)
             expect(result.pass).toBe(true)

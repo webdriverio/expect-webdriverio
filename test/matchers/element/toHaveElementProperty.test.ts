@@ -33,6 +33,18 @@ describe('toHaveElementProperty', () => {
         })
     })
 
+    test('assymeric match', async () => {
+        const el: any = await $('sel')
+        el._value = function (): string {
+            return 'iphone'
+        }
+
+        console.log(el);
+
+        const result = await toHaveElementProperty.call({}, el, 'property', expect.stringContaining('phone'))
+        expect(result.pass).toBe(true)
+    })
+
     test('should return false if values dont match', async () => {
         const el: any = await $('sel')
         el._value = function (): string {
