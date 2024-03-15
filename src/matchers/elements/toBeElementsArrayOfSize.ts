@@ -1,4 +1,4 @@
-import { waitUntil, enhanceError, compareNumbers, numberError, updateElementsArray } from '../../utils.js'
+import { waitUntil, enhanceError, compareNumbers, numberError } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
@@ -27,17 +27,13 @@ export async function toBeElementsArrayOfSize(
     }
 
     let elements = await received
-    const arrLength = elements.length
-
     const pass = await waitUntil(async () => {
         elements = await refetchElements(elements, numberOptions.wait, true)
         return compareNumbers(elements.length, numberOptions)
     }, isNot, {...numberOptions, ...options})
 
-    updateElementsArray(pass, received, elements, true)
-
     const error = numberError(numberOptions)
-    const message = enhanceError(elements, error, arrLength, this, verb, expectation, '', numberOptions)
+    const message = enhanceError(elements, error, elements.length, this, verb, expectation, '', numberOptions)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

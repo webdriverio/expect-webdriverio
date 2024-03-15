@@ -3,7 +3,6 @@ import {
     enhanceError,
     executeCommand,
     wrapExpectedWithArray,
-    updateElementsArray,
     compareObject,
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
@@ -43,8 +42,6 @@ export async function toHaveSize(
         isNot,
         options
     )
-
-    updateElementsArray(pass, received, el)
 
     const message = enhanceError(
         el,

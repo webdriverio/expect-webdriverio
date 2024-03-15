@@ -3,8 +3,7 @@ import {
     enhanceError,
     compareText,
     executeCommand,
-    wrapExpectedWithArray,
-    updateElementsArray,
+    wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
@@ -62,8 +61,6 @@ export async function toHaveElementProperty(
         isNot,
         options
     )
-
-    updateElementsArray(pass, received, el)
 
     let message: string
     if (value === undefined) {

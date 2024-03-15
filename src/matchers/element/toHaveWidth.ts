@@ -2,8 +2,7 @@ import {
     waitUntil,
     enhanceError,
     executeCommand,
-    wrapExpectedWithArray,
-    updateElementsArray,
+    wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
@@ -45,8 +44,6 @@ export async function toHaveWidth(
         isNot,
         options
     )
-
-    updateElementsArray(pass, received, el)
 
     const message = enhanceError(
         el,

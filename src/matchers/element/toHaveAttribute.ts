@@ -1,6 +1,5 @@
 import {
-    waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray,
-    updateElementsArray
+    waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
@@ -36,8 +35,6 @@ export async function toHaveAttributeAndValue(received: WebdriverIO.Element | We
         return result.success
     }, isNot, options)
 
-    updateElementsArray(pass, received, el)
-
     const expected = wrapExpectedWithArray(el, attr, value)
     const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
 
@@ -59,8 +56,6 @@ async function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.Ele
 
         return result.success
     }, isNot, {})
-
-    updateElementsArray(pass, received, el)
 
     const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, {})
 

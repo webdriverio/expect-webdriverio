@@ -4,8 +4,7 @@ import {
     compareText,
     compareTextWithArray,
     executeCommand,
-    wrapExpectedWithArray,
-    updateElementsArray,
+    wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
@@ -49,8 +48,6 @@ export async function toHaveComputedLabel(
         isNot,
         options
     )
-
-    updateElementsArray(pass, received, el)
 
     const message = enhanceError(
         el,

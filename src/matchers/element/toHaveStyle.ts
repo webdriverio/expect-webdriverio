@@ -1,6 +1,5 @@
 import {
-    waitUntil, enhanceError, compareStyle, executeCommand, wrapExpectedWithArray,
-    updateElementsArray
+    waitUntil, enhanceError, compareStyle, executeCommand, wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
@@ -33,7 +32,6 @@ export async function toHaveStyle(
         return result.success
     }, isNot, options)
 
-    updateElementsArray(pass, received, el)
     const message = enhanceError(el, wrapExpectedWithArray(el, actualStyle, expectedValue), actualStyle, this, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {

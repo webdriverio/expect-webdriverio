@@ -1,5 +1,5 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
-import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, updateElementsArray, compareText } from '../../utils.js'
+import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, compareText } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
 async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
@@ -68,8 +68,6 @@ export async function toHaveElementClass(
 
         return result.success
     }, isNot, options)
-
-    updateElementsArray(pass, received, el)
 
     const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {

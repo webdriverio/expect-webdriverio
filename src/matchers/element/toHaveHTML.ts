@@ -1,6 +1,6 @@
 import {
     waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand,
-    wrapExpectedWithArray, updateElementsArray
+    wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
@@ -36,8 +36,6 @@ export async function toHaveHTML(
 
         return result.success
     }, isNot, options)
-
-    updateElementsArray(pass, received, el)
 
     const message = enhanceError(el, wrapExpectedWithArray(el, actualHTML, expectedValue), actualHTML, this, verb, expectation, '', options)
 

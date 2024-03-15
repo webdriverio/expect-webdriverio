@@ -1,6 +1,6 @@
 import {
     waitUntil, enhanceError, compareNumbers, numberError, executeCommand,
-    wrapExpectedWithArray, updateElementsArray
+    wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
@@ -52,8 +52,6 @@ export async function toHaveChildren(
 
         return result.success
     }, isNot, { ...numberOptions, ...options })
-
-    updateElementsArray(pass, received, el)
 
     const error = numberError(numberOptions)
     const expectedArray = wrapExpectedWithArray(el, children, error)
