@@ -1,7 +1,7 @@
 import { test, describe, beforeEach, expect } from 'vitest'
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils';
 
-import { enhanceError } from '../../src/util/formatMessage.js'
+import { enhanceError, numberError } from '../../src/util/formatMessage.js'
 
 describe('formatMessage', () => {
     describe('enhanceError', () => {
@@ -161,6 +161,16 @@ describe('formatMessage', () => {
                 const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
                 expect(actual).toMatch(diffString)
             })
+        })
+    })
+
+    describe('numberError', () => {
+        test('should return correct message', () => {
+            expect(numberError()).toBe('no params')
+            expect(numberError({ eq: 0 })).toBe(0)
+            expect(numberError({ gte: 1 })).toBe('>= 1')
+            expect(numberError({ lte: 1 })).toBe(' <= 1')
+            expect(numberError({ gte: 2, lte: 1 })).toBe('>= 2 && <= 1')
         })
     })
 })
