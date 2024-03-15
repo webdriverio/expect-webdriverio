@@ -12,12 +12,10 @@ export async function executeCommand(
     options: ExpectWebdriverIO.DefaultOptions = {},
     params: any[] = []
 ) {
-    const { isNot = false } = this
     const result = await condition(el, ...params, options)
-    const success = (result.result === isNot) === true
     return {
         el,
-        success,
+        success: result.result === true,
         values: result.value
     }
 }
