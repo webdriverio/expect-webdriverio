@@ -5,6 +5,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 async function condition(el: WebdriverIO.Element, height: number) {
     const actualHeight = await el.getSize('height')
@@ -16,7 +17,7 @@ async function condition(el: WebdriverIO.Element, height: number) {
 }
 
 export async function toHaveHeight(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     expectedValue: number,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {

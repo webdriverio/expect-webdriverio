@@ -3,6 +3,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.NumberOptions) {
     const children = await el.$$('./*')
@@ -26,7 +27,7 @@ async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.Num
 }
 
 export async function toHaveChildren(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     expectedValue?: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {

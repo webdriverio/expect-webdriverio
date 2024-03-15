@@ -1,9 +1,10 @@
 import { waitUntil, enhanceError, compareNumbers, numberError } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementsMaybePromise } from '../../types.js'
 
 export async function toBeElementsArrayOfSize(
-    received: WebdriverIO.ElementArray,
+    received: WdioElementsMaybePromise,
     expectedValue: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -26,7 +27,7 @@ export async function toBeElementsArrayOfSize(
         numberOptions = expectedValue
     }
 
-    let elements = await received
+    let elements = await received as WebdriverIO.ElementArray
     const pass = await waitUntil(async () => {
         elements = await refetchElements(elements, numberOptions.wait, true)
         return compareNumbers(elements.length, numberOptions)

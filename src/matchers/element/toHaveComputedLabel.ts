@@ -7,6 +7,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -21,7 +22,7 @@ async function condition(
 }
 
 export async function toHaveComputedLabel(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {

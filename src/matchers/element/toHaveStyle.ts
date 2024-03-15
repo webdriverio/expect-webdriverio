@@ -2,13 +2,14 @@ import {
     waitUntil, enhanceError, compareStyle, executeCommand, wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 async function condition(el: WebdriverIO.Element, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions) {
     return compareStyle(el, style, options)
 }
 
 export async function toHaveStyle(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     expectedValue: { [key: string]: string; },
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {

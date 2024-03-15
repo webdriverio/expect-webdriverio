@@ -2,6 +2,7 @@ import {
     waitUntil, enhanceError, compareText, executeCommand, wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 async function conditionAttr(el: WebdriverIO.Element, attribute: string) {
     const attr = await el.getAttribute(attribute)
@@ -21,7 +22,7 @@ async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string,
     return compareText(attr, value, options)
 }
 
-export async function toHaveAttributeAndValue(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
+export async function toHaveAttributeAndValue(received: WdioElementMaybePromise, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
@@ -44,7 +45,7 @@ export async function toHaveAttributeAndValue(received: WebdriverIO.Element | We
     } as ExpectWebdriverIO.AssertionResult
 }
 
-async function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.ElementArray, attribute: string) {
+async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: string) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
@@ -66,7 +67,7 @@ async function toHaveAttributeFn(received: WebdriverIO.Element | WebdriverIO.Ele
 }
 
 export async function toHaveAttribute(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     attribute: string,
     value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
@@ -94,7 +95,7 @@ export async function toHaveAttribute(
 }
 
 export function toHaveAttributeContaining(
-    el: WebdriverIO.Element,
+    el: WdioElementMaybePromise,
     attribute: string,
     value: string,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS

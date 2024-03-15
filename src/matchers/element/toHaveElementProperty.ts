@@ -6,6 +6,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -34,7 +35,7 @@ async function condition(
 }
 
 export async function toHaveElementProperty(
-    received: WebdriverIO.Element | WebdriverIO.ElementArray,
+    received: WdioElementMaybePromise,
     property: string,
     value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
