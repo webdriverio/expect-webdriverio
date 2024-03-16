@@ -29,8 +29,15 @@ export async function toBeElementsArrayOfSize(
 
     let elements = await received as WebdriverIO.ElementArray
     const pass = await waitUntil(async () => {
+        /**
+         * check numbers first before refetching elements
+         */
+        const isPassing = compareNumbers(elements.length, numberOptions)
+        if (isPassing) {
+            return isPassing
+        }
         elements = await refetchElements(elements, numberOptions.wait, true)
-        return compareNumbers(elements.length, numberOptions)
+        return false
     }, isNot, {...numberOptions, ...options})
 
     const error = numberError(numberOptions)
