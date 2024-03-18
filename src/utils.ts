@@ -14,6 +14,10 @@ const asymmetricMatcher =
     ? Symbol.for('jest.asymmetricMatcher')
     : 0x13_57_a5
 
+export function isAsymmeyricMatcher(expected: any): expected is ExpectWebdriverIO.PartialMatcher {
+    return typeof expected === 'object' && '$$typeof' in expected && expected.$$typeof === asymmetricMatcher && expected.asymmetricMatch
+}
+
 /**
  * wait for expectation to succeed
  * @param condition function
@@ -158,7 +162,7 @@ export const compareText = (
         }
     }
 
-    if (typeof expected === 'object' && '$$typeof' in expected && expected.$$typeof === asymmetricMatcher && expected.asymmetricMatch) {
+    if (isAsymmeyricMatcher(expected)) {
         const result = expected.asymmetricMatch(actual)
         return {
             value: actual,

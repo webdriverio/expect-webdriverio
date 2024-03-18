@@ -1,5 +1,5 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
-import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, compareText } from '../../utils.js'
+import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, compareText, isAsymmeyricMatcher } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
 
@@ -21,8 +21,15 @@ async function condition(el: WdioElementMaybePromise, attribute: string, value: 
         }
     }
 
-    const classes = attr.split(' ')
+    /**
+     * if value is an asymmetric matcher, no need to split class names
+     * into an array and compare each of them
+     */
+    if (isAsymmeyricMatcher(value)) {
+        return compareText(attr, value, options)
+    }
 
+    const classes = attr.split(' ')
     const valueInClasses = classes.some((t) => {
         return value instanceof RegExp
             ? !!t.match(value)
