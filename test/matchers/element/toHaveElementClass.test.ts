@@ -13,7 +13,7 @@ describe('toHaveElementClass', () => {
         el = await $('sel')
         el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
             if(attribute === 'class') {
-                return 'some-class another-class'
+                return 'some-class another-class yet-another-class'
             }
             return null
         })
@@ -35,6 +35,13 @@ describe('toHaveElementClass', () => {
             options: { beforeAssertion, afterAssertion },
             result
         })
+    })
+
+    test('success when including surrounding spaces and asymmetric matcher', async () => {
+        const result = await toHaveElementClass.call({}, el, expect.stringContaining('some-class '))
+        expect(result.pass).toBe(true)
+        const result2 = await toHaveElementClass.call({}, el, expect.stringContaining(' another-class '))
+        expect(result2.pass).toBe(true)
     })
 
     test('success with RegExp when class name is present', async () => {
