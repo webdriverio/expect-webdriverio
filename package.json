@@ -23,7 +23,7 @@
   "exports": {
     ".": [
       {
-        "types": "./types/jest-global.d.ts",
+        "types": "./types/standalone.d.ts",
         "import": "./lib/index.js"
       },
       "./lib/index.js"
@@ -35,7 +35,7 @@
     ],
     "./types": "./types/jest-global.d.ts"
   },
-  "types": "./types/jest-global.d.ts",
+  "types": "./types/standalone.d.ts",
   "typeScriptVersion": "3.8.3",
   "engines": {
     "node": ">=16 || >=18 || >=20"
