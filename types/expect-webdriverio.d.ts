@@ -430,14 +430,6 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveTitle(title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
-        // ===== browser only =====
-        /**
-         * `WebdriverIO.Browser` -> `getTitle`
-         * Browser's title includes the provided text
-         * @deprecated use `expect(el).toHaveTitle(expect.stringContaining('...'))` instead
-         */
-        toHaveTitleContaining(title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
         /**
          * `WebdriverIO.Browser` -> `execute`
          */

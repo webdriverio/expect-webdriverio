@@ -6,7 +6,6 @@ const ALL_MATCHERS = [
     'toHaveClipboardText',
     'toHaveClipboardTextContaining',
     'toHaveTitle',
-    'toHaveTitleContaining',
     'toHaveUrl',
 
     // elements

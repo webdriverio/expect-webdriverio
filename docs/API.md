@@ -113,22 +113,6 @@ await browser.url('https://webdriver.io/')
 await expect(browser).toHaveTitle('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js')
 ```
 
-### toHaveTitleContaining
-
-Checks if website has a specific title that contains a value.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-await browser.url('https://webdriver.io/')
-// 👎 deprecated
-await expect(browser).toHaveTitleContaining('WebdriverIO')
-// 👍 supported starting with v9
-await expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
-```
-
 ### toHaveClipboardText
 
 Checks if the browser has a specific text stored in its clipboard.
@@ -931,14 +915,10 @@ WebdriverIO supports usage of asymmetric matchers wherever you compare text valu
 
 ```ts
 await expect(browser).toHaveTitle(expect.stringContaining('some title'))
-// is the same as:
-await expect(browser).toHaveTitleContaining('some title')
 ```
 
 or
 
 ```ts
 await expect(browser).toHaveTitle(expect.not.stringContaining('some title'))
-// is the same as:
-await expect(browser).not.toHaveTitleContaining('some title')
 ```
