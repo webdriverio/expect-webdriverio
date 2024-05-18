@@ -347,15 +347,6 @@ declare namespace ExpectWebdriverIO {
             computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
-        /**
-         * `WebdriverIO.Element` -> `getComputedRole`
-         * Element's computed role includes the computed role provided
-         * @deprecated use `expect(el).toHaveComputedRole(expect.stringContaining('...'))` instead
-         */
-        toHaveComputedRoleContaining(
-            computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-            options?: ExpectWebdriverIO.StringOptions
-        ): R
 
         /**
          * `WebdriverIO.Element` -> `getSize('width')`

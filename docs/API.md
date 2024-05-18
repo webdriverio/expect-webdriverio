@@ -335,28 +335,6 @@ await expect(elem).toHaveComputedRole('region')
 await expect(elem).toHaveComputedRole(['region', 'section'])
 ```
 
-### toHaveComputedRoleContaining
-
-Checks if element contains a specific computed WAI-ARIA role. Can also be called with an array as parameter in the case where the element can have different roles.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-await browser.url('https://webdriver.io/')
-const elem = await $('[aria-label="Skip to main content"]')
-// 👎 deprecated
-await expect(elem).toHaveComputedRoleContaining('reg')
-await expect(elem).toHaveComputedRoleContaining(['reg', 'sec'])
-// 👍 supported starting with v9
-await expect(elem).toHaveComputedRole(expect.stringContaining('reg'))
-await expect(elem).toHaveComputedRole([
-    expect.stringContaining('reg'),
-    expect.stringContaining('sec')
-])
-```
-
 ### toHaveHref
 
 Checks if link element has a specific link target.
