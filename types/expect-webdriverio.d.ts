@@ -435,15 +435,6 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveClipboardText(clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
-        // ===== browser only =====
-        /**
-         * `WebdriverIO.Browser` -> `execute`
-         * Browser's clipboard includes the provided text
-         * @deprecated use `expect(el).toHaveClipboardText(expect.stringContaining('...'))` instead
-         */
-        toHaveClipboardTextContaining(clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
-
         // ===== $$ only =====
         /**
          * `WebdriverIO.ElementArray` -> `$$('...').length`

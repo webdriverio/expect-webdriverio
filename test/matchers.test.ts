@@ -4,7 +4,6 @@ import { matchers, expect as expectLib } from '../src/index.js'
 const ALL_MATCHERS = [
     // browser
     'toHaveClipboardText',
-    'toHaveClipboardTextContaining',
     'toHaveTitle',
     'toHaveUrl',
 

@@ -127,12 +127,6 @@ await browser.keys([Key.Ctrl, 'c'])
 await expect(browser).toHaveClipboardText('some clipboard text')
 ```
 
-### toHaveClipboardTextContaining
-
-Checks if the browser has a specific text stored in its clipboard that contains a given string.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
 ##### Usage
 
 ```js
@@ -140,9 +134,6 @@ import { Key } from 'webdriverio'
 
 await browser.keys([Key.Ctrl, 'a'])
 await browser.keys([Key.Ctrl, 'c'])
-// 👎 deprecated
-await expect(browser).toHaveClipboardTextContaining('clipboard')
-// 👍 supported starting with v9
 await expect(browser).toHaveClipboardText(expect.stringContaining('WebdriverIO'))
 ```
 
