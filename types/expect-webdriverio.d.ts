@@ -188,16 +188,6 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          * Element's attribute includes the value.
-         * @deprecated use `expect(el).toHaveAttribute('attribute', expect.stringContaining('...'))` instead
-         */
-        toHaveAttributeContaining(
-            attribute: string,
-            contains: string | RegExp | ExpectWebdriverIO.PartialMatcher,
-            options?: ExpectWebdriverIO.StringOptions
-        ): R
-        /**
-         * `WebdriverIO.Element` -> `getAttribute`
-         * Element's attribute includes the value.
          * @deprecated use `expect(el).toHaveAttr('attribute', expect.stringContaining('...'))` instead
          */
         toHaveAttrContaining(

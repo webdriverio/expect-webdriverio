@@ -94,17 +94,4 @@ export async function toHaveAttribute(
     return result
 }
 
-export function toHaveAttributeContaining(
-    el: WdioElementMaybePromise,
-    attribute: string,
-    value: string,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
-    return toHaveAttributeAndValue.call(this, el, attribute, value, {
-        ...options,
-        containing: true
-    })
-}
-
-export const toHaveAttrContaining = toHaveAttributeContaining
 export const toHaveAttr = toHaveAttribute

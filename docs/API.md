@@ -216,38 +216,6 @@ const myInput = await $('input')
 await expect(myInput).toHaveAttr('class', 'form-control')
 ```
 
-### toHaveAttributeContaining
-
-Checks if an element has a certain attribute that contains a value.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const myInput = await $('input')
-// 👎 deprecated
-await expect(myInput).toHaveAttributeContaining('class', 'form')
-// 👍 supported starting with v9
-await expect(myInput).toHaveAttribute('class', expect.stringContaining('form'))
-```
-
-### toHaveAttrContaining
-
-Same as `toHaveAttributeContaining`.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const myInput = await $('input')
-// 👎 deprecated
-await expect(myInput).toHaveAttrContaining('class', 'form')
-// 👍 supported starting with v9
-await expect(myInput).toHaveAttr('class', expect.stringContaining('form'))
-```
-
 ### toHaveElementClass
 
 Checks if an element has a certain class name.
