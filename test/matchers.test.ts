@@ -32,7 +32,6 @@ const ALL_MATCHERS = [
     'toHaveClassContaining',
     'toHaveHref',
     'toHaveLink',
-    'toHaveLinkContaining',
     'toHaveHTML',
     'toHaveHTMLContaining',
     'toHaveId',
