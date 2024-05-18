@@ -357,38 +357,6 @@ const link = await $('a')
 await expect(link).toHaveLink('https://webdriver.io')
 ```
 
-### toHaveHrefContaining
-
-Checks if link element contains a specific link target.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const link = await $('a')
-// 👎 deprecated
-await expect(link).toHaveHrefContaining('webdriver.io')
-// 👍 supported starting with v9
-await expect(link).toHaveHref(expect.stringContaining('webdriver.io'))
-```
-
-### toHaveLinkContaining
-
-Same as `toHaveHrefContaining`.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const link = await $('a')
-// 👎 deprecated
-await expect(link).toHaveLinkContaining('webdriver.io')
-// 👍 supported starting with v9
-await expect(link).toHaveLink(expect.stringContaining('webdriver.io'))
-```
-
 ### toHaveId
 
 Checks if element has a specific `id` attribute.

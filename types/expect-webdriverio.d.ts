@@ -277,12 +277,6 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getAttribute` href
          * Element's href includes the value provided
-         * @deprecated use `expect(el).toHaveHref(expect.stringContaining('...'))` instead
-         */
-        toHaveHrefContaining(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-        /**
-         * `WebdriverIO.Element` -> `getAttribute` href
-         * Element's href includes the value provided
          * @deprecated use `expect(el).toHaveLink(expect.stringContaining('...'))` instead
          */
         toHaveLinkContaining(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
