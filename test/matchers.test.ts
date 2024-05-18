@@ -33,7 +33,6 @@ const ALL_MATCHERS = [
     'toHaveHref',
     'toHaveLink',
     'toHaveHTML',
-    'toHaveHTMLContaining',
     'toHaveId',
     'toHaveSize',
     'toHaveElementProperty',

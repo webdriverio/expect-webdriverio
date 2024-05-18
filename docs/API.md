@@ -395,41 +395,6 @@ await expect(elem).toHaveHTML('Next-gen browser and mobile automation test frame
 await expect(elem).toHaveHTML(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'], { includeSelectorTag: false })
 ```
 
-### toHaveHTMLContaining
-
-Checks if element contains a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-await browser.url('https://webdriver.io/')
-const elem = await $('.hero__subtitle')
-
-// 👎 deprecated
-await expect(elem).toHaveHTMLContaining('Next-gen browser')
-await expect(elem).toHaveHTMLContaining(
-    'Next-gen browser',
-    { includeSelectorTag: false }
-)
-await expect(elem).toHaveHTMLContaining([
-    'Next-gen browser',
-    'Get Started'
-], { includeSelectorTag: false })
-// 👍 supported starting with v9
-await expect(elem).toHaveHTMLContaining(
-    expect.stringContaining('Next-gen browser'))
-await expect(elem).toHaveHTMLContaining(
-    expect.stringContaining('Next-gen browser'),
-    { includeSelectorTag: false }
-)
-await expect(elem).toHaveHTMLContaining([
-    expect.stringContaining('Next-gen browser'),
-    expect.stringContaining('Get Started')
-], { includeSelectorTag: false })
-```
-
 ### toBeDisplayedInViewport
 
 Checks if an element is within the viewport by calling [`isDisplayedInViewport`](https://webdriver.io/docs/api/element/isDisplayedInViewport) on the element.

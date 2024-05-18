@@ -298,15 +298,6 @@ declare namespace ExpectWebdriverIO {
          * Element's html equals the html provided
          */
         toHaveHTML(html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options?: ExpectWebdriverIO.HTMLOptions): R
-        /**
-         * `WebdriverIO.Element` -> `getHTML`
-         * Element's html includes the html provided
-         * @deprecated use `expect(el).toHaveHTML(expect.stringContaining('...'))` instead
-         */
-        toHaveHTMLContaining(
-            html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-            options?: ExpectWebdriverIO.HTMLOptions
-        ): R
 
         /**
          * `WebdriverIO.Element` -> `getComputedLabel`
