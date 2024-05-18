@@ -24,13 +24,11 @@ const ALL_MATCHERS = [
     'toBeChecked',
     'toHaveAttributeAndValue',
     'toHaveAttribute',
-    'toHaveAttributeContaining',
     'toHaveAttrContaining',
     'toHaveAttr',
     'toHaveChildren',
     'toHaveClass',
     'toHaveElementClass',
-    'toHaveElementClassContaining',
     'toHaveClassContaining',
     'toHaveHref',
     'toHaveLink',
@@ -44,7 +42,6 @@ const ALL_MATCHERS = [
     'toHaveText',
     'toHaveTextContaining',
     'toHaveValue',
-    'toHaveValueContaining',
     'toHaveStyle',
 
     // mock

@@ -39,8 +39,6 @@ describe('suite', () => {
         await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
         await expect(myInput).toHaveAttribute('class', 'form-control') // alias toHaveAttr
 
-        await expect(myInput).toHaveValueContaining('USER')
-        // or pass `containing` as an option
         await expect(myInput).toHaveValue('value', 'user', { containing: true, ignoreCase: true })
 
         // Simply invert assertions

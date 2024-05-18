@@ -250,22 +250,6 @@ const myInput = await $('input')
 await expect(myInput).toHaveValue('user', { ignoreCase: true })
 ```
 
-### toHaveValueContaining
-
-Checks if an input element contains a certain value.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const myInput = await $('input')
-// 👎 deprecated
-await expect(myInput).toHaveValueContaining('us')
-// 👍 supported starting with v9
-await expect(myInput).toHaveValue(expect.stringContaining('us'))
-```
-
 ### toBeClickable
 
 Checks if an element can be clicked by calling [`isClickable`](https://webdriver.io/docs/api/element/isClickable) on the element.

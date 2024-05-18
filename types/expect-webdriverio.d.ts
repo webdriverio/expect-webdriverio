@@ -208,20 +208,6 @@ declare namespace ExpectWebdriverIO {
         toHaveElementClass(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
-         * `WebdriverIO.Element` -> `getAttribute` class
-         * Element's class includes the className.
-         * @deprecated since v1.3.1 - use `toHaveElementClassContaining` instead.
-         */
-        toHaveClassContaining(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
-        /**
-         * `WebdriverIO.Element` -> `getAttribute` class
-         * Element's class includes the className.
-         * @deprecated use `expect(el).toHaveElementClass(expect.stringContaining('...'))` instead
-         */
-        toHaveElementClassContaining(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
-        /**
          * `WebdriverIO.Element` -> `getProperty`
          */
         toHaveElementProperty(
@@ -234,12 +220,6 @@ declare namespace ExpectWebdriverIO {
          * `WebdriverIO.Element` -> `getProperty` value
          */
         toHaveValue(value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-        /**
-         * `WebdriverIO.Element` -> `getProperty` value
-         * Element's value includes the value.
-         * @deprecated use `expect(el).toHaveValue(expect.stringContaining('...'))` instead
-         */
-        toHaveValueContaining(value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `isClickable`
