@@ -322,28 +322,6 @@ await expect(elem).toHaveComputedLabel('GitHub repository')
 await expect(elem).toHaveComputedLabel(['GitHub repository', 'Private repository'])
 ```
 
-### toHaveComputedLabelContaining
-
-Checks if element contains a specific computed WAI-ARIA label. Can also be called with an array as parameter in the case where the element can have different labels.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-await browser.url('https://webdriver.io/')
-const elem = await $('a[href="https://github.com/webdriverio/webdriverio"]')
-// 👎 deprecated
-await expect(elem).toHaveComputedLabelContaining('GitHub')
-await expect(elem).toHaveComputedLabelContaining(['GitHub', 'Private'])
-// 👍 supported starting with v9
-await expect(elem).toHaveComputedLabel(expect.stringContaining('us'))
-await expect(elem).toHaveComputedLabel([
-    expect.stringContaining('GitHub'),
-    expect.stringContaining('us')
-])
-```
-
 ### toHaveComputedRole
 
 Checks if element has a specific computed WAI-ARIA role. Can also be called with an array as parameter in the case where the element can have different labels.

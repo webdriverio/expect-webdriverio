@@ -338,15 +338,6 @@ declare namespace ExpectWebdriverIO {
             computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
-        /**
-         * `WebdriverIO.Element` -> `getComputedLabel`
-         * Element's computed label includes the computed label provided
-         * @deprecated use `expect(el).toHaveComputedLabel(expect.stringContaining('...'))` instead
-         */
-        toHaveComputedLabelContaining(
-            computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-            options?: ExpectWebdriverIO.StringOptions
-        ): R
 
         /**
          * `WebdriverIO.Element` -> `getComputedRole`
