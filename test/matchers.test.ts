@@ -38,7 +38,6 @@ const ALL_MATCHERS = [
     'toHaveSize',
     'toHaveElementProperty',
     'toHaveText',
-    'toHaveTextContaining',
     'toHaveValue',
     'toHaveStyle',
 

@@ -292,15 +292,6 @@ declare namespace ExpectWebdriverIO {
             text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
-        /**
-         * `WebdriverIO.Element` -> `getText`
-         * Element's text includes the text provided
-         * @deprecated use `expect(el).toHaveText(expect.stringContaining('...'))` instead
-         */
-        toHaveTextContaining(
-            text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-            options?: ExpectWebdriverIO.StringOptions
-        ): R
 
         /**
          * `WebdriverIO.Element` -> `getHTML`

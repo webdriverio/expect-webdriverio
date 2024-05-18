@@ -29,8 +29,6 @@ describe('suite', () => {
         // assert certain text accurate
         const repoTitle = await $('expect-webdriverio')
         await expect(repoTitle).toHaveText('expect-webdriverio')
-        // or ignore the case and only check that a substring is present
-        await expect(repoTitle).toHaveTextContaining('webdriverio', { ignoreCase: true })
     })
 
     it('advanced', async () => {

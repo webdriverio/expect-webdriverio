@@ -53,13 +53,3 @@ export async function toHaveText(
 
     return result
 }
-
-/**
- * @deprecated
- */
-export function toHaveTextContaining(el: WebdriverIO.Element, text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
-    return toHaveText.call(this, el, text, {
-        ...options,
-        containing: true
-    })
-}

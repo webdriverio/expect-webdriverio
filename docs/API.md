@@ -381,33 +381,6 @@ await expect(elem).toHaveText('Next-gen browser and mobile automation test frame
 await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'])
 ```
 
-### toHaveTextContaining
-
-Checks if element contains a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-await browser.url('https://webdriver.io/')
-const elem = $('.container')
-// 👎 deprecated
-await expect(elem).toHaveTextContaining(
-    'browser and mobile automation test framework')
-await expect(elem).toHaveTextContaining([
-    'browser and mobile automation test framework',
-    'Started'
-])
-// 👍 supported starting with v9
-await expect(elem).toHaveText(
-    expect.stringContaining('browser and mobile automation test framework'))
-await expect(elem).toHaveText([
-    expect.stringContaining('browser and mobile automation test framework'),
-    expect.stringContaining('Started')
-])
-```
-
 ### toHaveHTML
 
 Checks if element has a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
@@ -750,7 +723,6 @@ await browser.url('https://webdriver.io/')
 const elem = await $('.container')
 await expect(elem).toHaveText(/node\.js/i)
 await expect(elem).toHaveText([/node\.js/i, 'Get Started'])
-await expect(elem).toHaveTextContaining([/node\.js/i, 'Started'])
 await expect(browser).toHaveTitle(/webdriverio/i)
 await expect(browser).toHaveUrl(/webdriver\.io/)
 await expect(elem).toHaveElementClass(/Container/i)

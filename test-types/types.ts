@@ -7,7 +7,6 @@ wdioExpect(elem).not.toHaveAttr('test')
 wdioExpect(elem).toBe('bar')
 
 wdioExpect(elem).toHaveElementClass('bar')
-wdioExpect(elem).toHaveElementClassContaining('bar')
 wdioExpect(elem).toHaveElementProperty('n', 'v', {})
 wdioExpect({ foo: 'bar' }).toMatchSnapshot()
 wdioExpect({ foo: 'bar' }).toMatchInlineSnapshot()
