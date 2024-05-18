@@ -227,22 +227,6 @@ const myInput = await $('input')
 await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
 ```
 
-### toHaveElementClassContaining
-
-Checks if an element has a certain class name that contains provided value.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const myInput = await $('input')
-// 👎 deprecated
-await expect(myInput).toHaveElementClassContaining('form')
-// 👍 supported starting with v9
-await expect(myInput).toHaveElementClass(expect.stringContaining('form'))
-```
-
 ### toHaveElementProperty
 
 Checks if an element has a certain property.

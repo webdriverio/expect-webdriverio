@@ -96,13 +96,6 @@ export async function toHaveElementClass(
 /**
  * @deprecated
  */
-export function toHaveElementClassContaining (...args: any) {
-    return toHaveClassContaining.call(this, ...args)
-}
-
-/**
- * @deprecated
- */
 export function toHaveClassContaining(el: WebdriverIO.Element, className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     return toHaveAttributeAndValue.call(this, el, 'class', className, {
         ...options,
