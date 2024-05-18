@@ -8,7 +8,6 @@ const ALL_MATCHERS = [
     'toHaveTitle',
     'toHaveTitleContaining',
     'toHaveUrl',
-    'toHaveUrlContaining',
 
     // elements
     'toBeElementsArrayOfSize',

@@ -425,14 +425,6 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveUrl(url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
-        // ===== browser only =====
-        /**
-         * `WebdriverIO.Browser` -> `getUrl`
-         * Browser's url includes the provided text
-         * @deprecated use `expect(el).toHaveUrl(expect.stringContaining('...'))` instead
-         */
-        toHaveUrlContaining(url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
         /**
          * `WebdriverIO.Browser` -> `getTitle`
          */

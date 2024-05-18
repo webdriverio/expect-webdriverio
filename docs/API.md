@@ -102,22 +102,6 @@ await browser.url('https://webdriver.io/')
 await expect(browser).toHaveUrl('https://webdriver.io')
 ```
 
-### toHaveUrlContaining
-
-Checks if browser is on a page URL that contains a value.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-await browser.url('https://webdriver.io/')
-// 👎 deprecated
-await expect(browser).toHaveUrlContaining('webdriver')
-// 👍 supported starting with v9
-await expect(browser).toHaveUrl(expect.stringContaining('webdriver'))
-```
-
 ### toHaveTitle
 
 Checks if website has a specific title.
