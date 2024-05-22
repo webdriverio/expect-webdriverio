@@ -102,6 +102,13 @@ await browser.url('https://webdriver.io/')
 await expect(browser).toHaveUrl('https://webdriver.io')
 ```
 
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+await expect(browser).toHaveUrl(expect.stringContaining('webdriver'))
+```
+
 ### toHaveTitle
 
 Checks if website has a specific title.
@@ -111,6 +118,7 @@ Checks if website has a specific title.
 ```js
 await browser.url('https://webdriver.io/')
 await expect(browser).toHaveTitle('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js')
+await expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
 ```
 
 ### toHaveClipboardText
@@ -125,16 +133,7 @@ import { Key } from 'webdriverio'
 await browser.keys([Key.Ctrl, 'a'])
 await browser.keys([Key.Ctrl, 'c'])
 await expect(browser).toHaveClipboardText('some clipboard text')
-```
-
-##### Usage
-
-```js
-import { Key } from 'webdriverio'
-
-await browser.keys([Key.Ctrl, 'a'])
-await browser.keys([Key.Ctrl, 'c'])
-await expect(browser).toHaveClipboardText(expect.stringContaining('WebdriverIO'))
+await expect(browser).toHaveClipboardText(expect.stringContaining('clipboard text'))
 ```
 
 ## Element Matchers
@@ -203,6 +202,7 @@ Checks if an element has a certain attribute with a specific value.
 ```js
 const myInput = await $('input')
 await expect(myInput).toHaveAttribute('class', 'form-control')
+await expect(myInput).toHaveAttribute('class', expect.stringContaining('control'))
 ```
 
 ### toHaveAttr
@@ -214,6 +214,7 @@ Same as `toHaveAttribute`.
 ```js
 const myInput = await $('input')
 await expect(myInput).toHaveAttr('class', 'form-control')
+await expect(myInput).toHaveAttr('class', expect.stringContaining('control'))
 ```
 
 ### toHaveElementClass
@@ -225,6 +226,7 @@ Checks if an element has a certain class name.
 ```js
 const myInput = await $('input')
 await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
+await expect(myInput).toHaveElementClass(expect.stringContaining('form'), { message: 'Not a form control!', })
 ```
 
 ### toHaveElementProperty
@@ -247,7 +249,8 @@ Checks if an input element has a certain value.
 
 ```js
 const myInput = await $('input')
-await expect(myInput).toHaveValue('user', { ignoreCase: true })
+await expect(myInput).toHaveValue('admin-user', { ignoreCase: true })
+await expect(myInput).toHaveValue(expect.stringContaining('user'), { ignoreCase: true })
 ```
 
 ### toBeClickable
@@ -319,7 +322,16 @@ Checks if element has a specific computed WAI-ARIA label. Can also be called wit
 await browser.url('https://webdriver.io/')
 const elem = await $('a[href="https://github.com/webdriverio/webdriverio"]')
 await expect(elem).toHaveComputedLabel('GitHub repository')
+await expect(elem).toHaveComputedLabel(expect.stringContaining('repository'))
+```
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+const elem = await $('a[href="https://github.com/webdriverio/webdriverio"]')
 await expect(elem).toHaveComputedLabel(['GitHub repository', 'Private repository'])
+await expect(elem).toHaveComputedLabel([expect.stringContaining('GitHub'), expect.stringContaining('Private')])
 ```
 
 ### toHaveComputedRole
@@ -332,7 +344,16 @@ Checks if element has a specific computed WAI-ARIA role. Can also be called with
 await browser.url('https://webdriver.io/')
 const elem = await $('[aria-label="Skip to main content"]')
 await expect(elem).toHaveComputedRole('region')
+await expect(elem).toHaveComputedRole(expect.stringContaining('ion'))
+```
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+const elem = await $('[aria-label="Skip to main content"]')
 await expect(elem).toHaveComputedRole(['region', 'section'])
+await expect(elem).toHaveComputedRole([expect.stringContaining('reg'), expect.stringContaining('sec')])
 ```
 
 ### toHaveHref
@@ -344,6 +365,7 @@ Checks if link element has a specific link target.
 ```js
 const link = await $('a')
 await expect(link).toHaveHref('https://webdriver.io')
+await expect(link).toHaveHref(expect.stringContaining('webdriver.io'))
 ```
 
 ### toHaveLink
@@ -355,6 +377,7 @@ Same as `toHaveHref`.
 ```js
 const link = await $('a')
 await expect(link).toHaveLink('https://webdriver.io')
+await expect(link).toHaveLink(expect.stringContaining('webdriver.io'))
 ```
 
 ### toHaveId
@@ -378,7 +401,16 @@ Checks if element has a specific text. Can also be called with an array as param
 await browser.url('https://webdriver.io/')
 const elem = await $('.container')
 await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
+await expect(elem).toHaveText(expect.stringContaining('test framework for Node.js'))
+```
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+const elem = await $('.container')
 await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'])
+await expect(elem).toHaveText([expect.stringContaining('test framework for Node.js'), expect.stringContaining('Started')])
 ```
 
 ### toHaveHTML
@@ -391,8 +423,17 @@ Checks if element has a specific text. Can also be called with an array as param
 await browser.url('https://webdriver.io/')
 const elem = await $('.hero__subtitle')
 await expect(elem).toHaveHTML('<p class="hero__subtitle">Next-gen browser and mobile automation test framework for Node.js</p>')
+await expect(elem).toHaveHTML(expect.stringContaining('Next-gen browser and mobile automation test framework for Node.js'))
 await expect(elem).toHaveHTML('Next-gen browser and mobile automation test framework for Node.js', { includeSelectorTag: false })
+```
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+const elem = await $('.hero__subtitle')
 await expect(elem).toHaveHTML(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'], { includeSelectorTag: false })
+await expect(elem).toHaveHTML([expect.stringContaining('automation test framework for Node.js'), expect.stringContaining('Started')], { includeSelectorTag: false })
 ```
 
 ### toBeDisplayedInViewport
