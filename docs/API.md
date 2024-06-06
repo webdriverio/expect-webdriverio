@@ -291,13 +291,15 @@ await expect(myInput).toHaveAttr('class', expect.stringContaining('form'))
 
 ### toHaveElementClass
 
-Checks if an element has a certain class name.
+Checks if an element has a single class name. Can also be called with an array as a parameter when the element can have multiple class names.
 
 ##### Usage
 
 ```js
-const myInput = await $('input')
-await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
+// <button id="main" class="btn btn-large">
+const myButton = await $('#main')
+await expect(myButton).toHaveElementClass('btn')
+await expect(myButton).toHaveElementClass(['btn' , 'btn-large'])
 ```
 
 ### toHaveElementClassContaining

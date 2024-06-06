@@ -1,24 +1,12 @@
-import { toHaveAttributeAndValue } from './toHaveAttribute.js'
-import { waitUntil, enhanceError, executeCommand, wrapExpectedWithArray, compareText, isAsymmeyricMatcher } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
+import { compareText, compareTextWithArray, enhanceError, executeCommand, isAsymmeyricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 
-async function condition(el: WdioElementMaybePromise, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
-    const { ignoreCase = false, trim = false, containing = false } = options
-
-    let attr = await (await el).getAttribute(attribute)
-    if (typeof attr !== 'string') {
+async function condition(el: WdioElementMaybePromise, attribute: string, value: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
+    const actualClass = await (await el).getAttribute(attribute)
+    if (typeof actualClass !== 'string') {
         return { result: false }
-    }
-
-    if (trim) {
-        attr = attr.trim()
-    }
-    if (ignoreCase) {
-        attr = attr.toLowerCase()
-        if (typeof value === 'string') {
-            value = value.toLowerCase()
-        }
     }
 
     /**
@@ -26,20 +14,19 @@ async function condition(el: WdioElementMaybePromise, attribute: string, value: 
      * into an array and compare each of them
      */
     if (isAsymmeyricMatcher(value)) {
-        return compareText(attr, value, options)
+        return compareText(actualClass, value, options)
     }
 
-    const classes = attr.split(' ')
-    const valueInClasses = classes.some((t) => {
-        return value instanceof RegExp
-            ? !!t.match(value)
-            : containing && typeof value === 'string'
-                ? t.includes(value)
-                : compareText(t, value, options).result
-    })
+    const classes = actualClass.split(' ')
+    const isValueInClasses = classes.some((t) => {
+        return Array.isArray(value)
+            ? compareTextWithArray(t, value, options).result
+            : compareText(t, value, options).result
+    });
+
     return {
-        value: attr,
-        result: valueInClasses
+        value: actualClass,
+        result: isValueInClasses
     }
 }
 
@@ -52,7 +39,7 @@ export function toHaveClass(...args: any): any {
 
 export async function toHaveElementClass(
     received: WdioElementMaybePromise,
-    expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    expectedValue: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot

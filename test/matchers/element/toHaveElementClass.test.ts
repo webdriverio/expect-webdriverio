@@ -1,8 +1,8 @@
-import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 import { toHaveElementClass, toHaveElementClassContaining } from '../../../src/matchers/element/toHaveClass.js'
+import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -49,6 +49,22 @@ describe('toHaveElementClass', () => {
         expect(result.pass).toBe(true)
     })
 
+    test('success if array matches with class', async () => {
+        const result = await toHaveElementClass.call({}, el, ["some-class", "yet-another-class"])
+        expect(result.pass).toBe(true)
+    })
+
+    test('failure if the classes do not match', async () => {
+        const result = await toHaveElementClass.call({}, el, "someclass", {message: "Not found!"})
+        expect(result.pass).toBe(false)
+        expect(getExpectMessage(result.message())).toContain('Not found!')
+    })
+
+    test('failure if array does not match with class', async () => {
+        const result = await toHaveElementClass.call({}, el, ["someclass", "anotherclass"])
+        expect(result.pass).toBe(false)
+    })
+
     describe('options', () => {
         test('should fail when class is not a string', async () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
@@ -73,6 +89,11 @@ describe('toHaveElementClass', () => {
 
         test('should pass if containing', async () => {
             const result = await toHaveElementClass.call({}, el, "some", {containing: true})
+            expect(result.pass).toBe(true)
+        })
+
+        test('should pass if array ignores the case', async () => {
+            const result = await toHaveElementClass.call({}, el, ["sOme-ClAsS", "anOther-ClAsS"], {ignoreCase: true})
             expect(result.pass).toBe(true)
         })
     })
