@@ -54,6 +54,12 @@ describe('toHaveElementClass', () => {
         expect(result.pass).toBe(true)
     })
 
+    test('failure if the classes do not match', async () => {
+        const result = await toHaveElementClass.call({}, el, "someclass", {message: "Not found!"})
+        expect(result.pass).toBe(false)
+        expect(getExpectMessage(result.message())).toContain('Not found!')
+    })
+
     test('failure if array does not match with class', async () => {
         const result = await toHaveElementClass.call({}, el, ["someclass", "anotherclass"])
         expect(result.pass).toBe(false)

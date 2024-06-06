@@ -298,7 +298,7 @@ Checks if an element has a single class name. Can also be called with an array a
 ```js
 // <button id="main" class="btn btn-large">
 const myButton = await $('#main')
-await expect(myButton).toHaveElementClass('btn', { message: 'Not found!', })
+await expect(myButton).toHaveElementClass('btn')
 await expect(myButton).toHaveElementClass(['btn' , 'btn-large'])
 ```
 
