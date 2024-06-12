@@ -1,12 +1,12 @@
+import { DEFAULT_OPTIONS } from '../../constants.js';
+import type { WdioElementMaybePromise } from '../../types.js';
 import {
-    waitUntil,
+    compareObject,
     enhanceError,
     executeCommand,
+    waitUntil,
     wrapExpectedWithArray,
-    compareObject,
-} from '../../utils.js'
-import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+} from '../../utils.js';
 
 async function condition(el: WebdriverIO.Element, size: { height: number; width: number }): Promise<any> {
     const actualSize = await el.getSize()
@@ -35,7 +35,7 @@ export async function toHaveSize(
         async () => {
             const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
 
-            el = result.el
+            el = result.el as WebdriverIO.Element
             actualSize = result.values
 
             return result.success

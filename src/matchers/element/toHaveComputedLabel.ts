@@ -1,13 +1,13 @@
-import {
-    waitUntil,
-    enhanceError,
-    compareText,
-    compareTextWithArray,
-    executeCommand,
-    wrapExpectedWithArray
-} from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
+import {
+    compareText,
+    compareTextWithArray,
+    enhanceError,
+    executeCommand,
+    waitUntil,
+    wrapExpectedWithArray
+} from '../../utils.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -41,7 +41,7 @@ export async function toHaveComputedLabel(
     const pass = await waitUntil(
         async () => {
             const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
-            el = result.el
+            el = result.el as WebdriverIO.Element
             actualLabel = result.values
 
             return result.success
