@@ -1,12 +1,45 @@
-import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils.js'
 import { toHaveText, toHaveTextContaining } from '../../../src/matchers/element/toHaveText.js'
+import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 
 vi.mock('@wdio/globals')
 
 describe('toHaveText', () => {
+    describe('when receiving an element array', () => {
+        let els: any
+
+        beforeEach(async () => {
+            els = await $$('parent');
+            const el1: any = await $('sel')
+            el1._text = function (): string {
+                return 'WebdriverIO'
+            }
+            const el2: any = await $('dev')
+            el2._text = function (): string {
+                return 'Get Started'
+            }
+            els[0] = el1
+            els[1] = el2
+        })
+
+        test('should return true if the received element array matches the expected text array', async () => {
+            const result = await toHaveText.bind({})(els, ['WebdriverIO','Get Started'])
+            expect(result.pass).toBe(true)
+        })
+
+        test('should return true if the received element array matches the expected text array & ignoreCase', async () => {
+            const result = await toHaveText.bind({})(els, ['webdriverio','get started'], { ignoreCase: true})
+            expect(result.pass).toBe(true)
+        })
+
+        test('should return false if the received element array does not match the expected text array', async () => {
+            const result = await toHaveText.bind({})(els, ['webdriverio','get started'])
+            expect(result.pass).toBe(false)
+        })
+    })
+
     test('wait for success', async () => {
         const el: any = await $('sel')
         el._attempts = 2

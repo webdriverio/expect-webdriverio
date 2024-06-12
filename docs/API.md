@@ -564,6 +564,22 @@ await expect(elem).toHaveText('Next-gen browser and mobile automation test frame
 await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'])
 ```
 
+In case there is a list of elements in the div below, you can assert them using an array.
+```
+<ul>
+  <li>Coffee</li>
+  <li>Tea</li>
+  <li>Milk</li>
+</ul>
+```
+
+##### Usage
+
+```js
+const elem = await $('ul > li')
+await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
+```
+
 ### toHaveTextContaining
 
 Checks if element contains a specific text. Can also be called with an array as parameter in the case where the element can have different texts.

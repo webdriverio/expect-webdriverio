@@ -1,20 +1,39 @@
+import { DEFAULT_OPTIONS } from '../../constants.js';
+import { WdioElementMaybePromise, WdioElementsMaybePromise } from '../../types.js';
 import {
-    waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand,
+    compareText, compareTextWithArray,
+    enhanceError,
+    executeCommand,
+    waitUntil,
     wrapExpectedWithArray
-} from '../../utils.js'
-import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+} from '../../utils.js';
 
-async function condition(el: WebdriverIO.Element, text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions) {
-    const actualText = await el.getText()
-    if (Array.isArray(text)) {
-        return compareTextWithArray(actualText, text, options)
+async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions) {
+    let actualText, checkAllValuesMatchCondition
+    if(Array.isArray(el)){
+        const checkPromises = el.map(async (value) => {
+            actualText = await value.getText()
+            return Array.isArray(text)
+                ? compareTextWithArray(actualText, text, options).result
+                : compareText(actualText, text, options).result
+        })
+        const results = await Promise.all(checkPromises)
+        checkAllValuesMatchCondition = results.every(result => result);
     }
-    return compareText(actualText, text, options)
+    else{
+        actualText = await (el as WebdriverIO.Element).getText()
+        checkAllValuesMatchCondition = Array.isArray(text)
+            ? compareTextWithArray(actualText, text, options).result
+            : compareText(actualText, text, options).result
+    }
+    return {
+        value: actualText,
+        result: checkAllValuesMatchCondition
+    }
 }
 
 export async function toHaveText(
-    received: WdioElementMaybePromise,
+    received: WdioElementMaybePromise | WdioElementsMaybePromise,
     expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
