@@ -1,12 +1,12 @@
-import {
-    waitUntil,
-    enhanceError,
-    compareText,
-    executeCommand,
-    wrapExpectedWithArray
-} from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
+import {
+    compareText,
+    enhanceError,
+    executeCommand,
+    waitUntil,
+    wrapExpectedWithArray
+} from '../../utils.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -54,7 +54,7 @@ export async function toHaveElementProperty(
     const pass = await waitUntil(
         async () => {
             const result = await executeCommand.call(this, el, condition, options, [property, value])
-            el = result.el
+            el = result.el as WebdriverIO.Element
             prop = result.values
 
             return result.success

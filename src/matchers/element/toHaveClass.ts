@@ -3,8 +3,8 @@ import type { WdioElementMaybePromise } from '../../types.js'
 import { compareText, compareTextWithArray, enhanceError, executeCommand, isAsymmeyricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 
-async function condition(el: WdioElementMaybePromise, attribute: string, value: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
-    const actualClass = await (await el).getAttribute(attribute)
+async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
+    const actualClass = await el.getAttribute(attribute)
     if (typeof actualClass !== 'string') {
         return { result: false }
     }
@@ -58,7 +58,7 @@ export async function toHaveElementClass(
 
     const pass = await waitUntil(async () => {
         const result = await executeCommand.call(this, el, condition, options, [attribute, expectedValue, options])
-        el = result.el
+        el = result.el as WebdriverIO.Element
         attr = result.values
 
         return result.success

@@ -1,9 +1,13 @@
-import {
-    waitUntil, enhanceError, compareNumbers, numberError, executeCommand,
-    wrapExpectedWithArray
-} from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
+import {
+    compareNumbers,
+    enhanceError,
+    executeCommand,
+    numberError,
+    waitUntil,
+    wrapExpectedWithArray
+} from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.NumberOptions) {
     const children = await el.$$('./*')
@@ -48,7 +52,7 @@ export async function toHaveChildren(
     let children
     const pass = await waitUntil(async () => {
         const result = await executeCommand.call(this, el, condition, numberOptions, [numberOptions])
-        el = result.el
+        el = result.el as WebdriverIO.Element
         children = result.values
 
         return result.success

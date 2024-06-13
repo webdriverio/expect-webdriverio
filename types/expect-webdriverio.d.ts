@@ -214,8 +214,21 @@ declare namespace ExpectWebdriverIO {
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
+         *
+         * Checks if an element has the specified class or matches any of the provided class patterns.
+         * @param className - The class name(s) or pattern(s) to match against.
+         * @param options - Optional settings that can be passed to the function.
+         *
+         * **Usage**
+         * ```js
+         * // Check if an element has the class 'btn'
+         * await expect(element).toHaveElementClass('btn');
+         *
+         * // Check if an element has any of the specified classes
+         * await expect(element).toHaveElementClass(['btn', 'btn-large']);
+         * ```
          */
-        toHaveElementClass(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementClass(className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
@@ -330,6 +343,21 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getText`
          * Element's text equals the text provided
+         *
+         * @param text - The expected text to match.
+         * @param options - Optional settings that can be passed to the function.
+         *
+         * **Usage**
+         *
+         * ```js
+         * // Check if an element has the text
+         * const elem = await $('.container')
+         * await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
+         *
+         * // Check if an element array contains the specified text
+         * const elem = await $$('ul > li')
+         * await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
+         * ```
          */
         toHaveText(
             text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,

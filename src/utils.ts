@@ -1,11 +1,11 @@
-import type { ParsedCSSValue } from 'webdriverio'
 import isEqual from 'lodash.isequal'
+import type { ParsedCSSValue } from 'webdriverio'
 
-import { executeCommand } from './util/executeCommand.js'
-import { wrapExpectedWithArray } from './util/elementsUtil.js'
-import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
 import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types.js'
+import { wrapExpectedWithArray } from './util/elementsUtil.js'
+import { executeCommand } from './util/executeCommand.js'
+import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -87,10 +87,10 @@ async function executeCommandBe(
             const result = await executeCommand.call(
                 this,
                 el,
-                async (element) => ({ result: await command(element) }),
+                async (element ) => ({ result: await command(element as WebdriverIO.Element) }),
                 options
             )
-            el = result.el
+            el = result.el as WebdriverIO.Element
             return result.success
         },
         isNot,
@@ -330,14 +330,8 @@ function aliasFn(
 }
 
 export {
-    wrapExpectedWithArray,
-    enhanceError,
-    numberError,
-    executeCommand,
-    executeCommandBe,
-    waitUntil,
-    compareNumbers,
-    aliasFn,
+    aliasFn, compareNumbers, enhanceError, executeCommand,
+    executeCommandBe, numberError, waitUntil, wrapExpectedWithArray
 }
 
 function replaceActual(
