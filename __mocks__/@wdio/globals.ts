@@ -67,15 +67,16 @@ export function $$(selector) {
         }
     })
     // Required to refetch
-    const parent: any = element;
-    parent._length = length;
-    els.parent = parent;
+    const parent: any = element
+    parent._length = length
+    els.parent = parent
 
-    els.foundWith = "$$";
+    els.foundWith = "$$"
     // Required to check length prop
-    els.props = [];
-    els.props.length = length;
-    return els;
+    els.props = []
+    els.props.length = length
+    els.selector = selector
+    return els
 }
 
 async function waitUntil(condition, { timeout, interval }) {
