@@ -38,6 +38,11 @@ describe('toHaveText', () => {
             const result = await toHaveText.bind({})(els, ['webdriverio','get started'])
             expect(result.pass).toBe(false)
         })
+
+        test('should return true if the expected message shows correctly', async () => {
+            const result = await toHaveText.bind({})(els, ['webdriverio','get started'], { message: 'Test'})
+            expect(getExpectMessage(result.message())).toContain('Test')
+        })
     })
 
     test('wait for success', async () => {

@@ -9,10 +9,13 @@ import {
 } from '../../utils.js';
 
 async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions) {
+    const actualTextArray = []
     let actualText, checkAllValuesMatchCondition
+
     if(Array.isArray(el)){
         const checkPromises = el.map(async (value) => {
             actualText = await value.getText()
+            actualTextArray.push(actualText)
             return Array.isArray(text)
                 ? compareTextWithArray(actualText, text, options).result
                 : compareText(actualText, text, options).result
@@ -22,12 +25,14 @@ async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, tex
     }
     else{
         actualText = await (el as WebdriverIO.Element).getText()
+        actualTextArray.push(actualText);
         checkAllValuesMatchCondition = Array.isArray(text)
             ? compareTextWithArray(actualText, text, options).result
             : compareText(actualText, text, options).result
     }
+
     return {
-        value: actualText,
+        value: actualTextArray.length === 1 ? actualTextArray[0] : actualTextArray,
         result: checkAllValuesMatchCondition
     }
 }
