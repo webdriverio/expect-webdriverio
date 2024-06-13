@@ -1,5 +1,5 @@
-import { printExpected, printReceived, printDiffOrStringify } from 'jest-matcher-utils';
-import { equals } from '../jasmineUtils.js'
+import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils';
+import { equals } from '../jasmineUtils.js';
 
 const EXPECTED_LABEL = 'Expected';
 const RECEIVED_LABEL = 'Received';
@@ -51,7 +51,7 @@ export const enhanceError = (
     arg2 = '', {
         message = '',
         containing = false
-    }): any => {
+    }): string => {
     const { isNot = false } = context
 
     subject = typeof subject === 'string' ? subject : getSelectors(subject)
