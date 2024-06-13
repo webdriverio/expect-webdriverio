@@ -576,7 +576,7 @@ In case there is a list of elements in the div below, you can assert them using 
 ##### Usage
 
 ```js
-const elem = await $('ul > li')
+const elem = await $$('ul > li')
 await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
 ```
 
