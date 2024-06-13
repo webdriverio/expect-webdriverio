@@ -214,8 +214,18 @@ declare namespace ExpectWebdriverIO {
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
+         *
+         * Checks if an element has the specified class or matches any of the provided class patterns.
+         * @param className - The class name(s) or pattern(s) to match against. It can be a string, a RegExp, an array of strings and/or RegExps, or a partial matcher.
+         * @param options - Optional settings that can be passed to the function.
+         * @example
+         * // Check if an element has the class 'btn'
+         * await expect(element).toHaveElementClass('btn');
+         * @example
+         * // Check if an element has any of the specified classes
+         * await expect(element).toHaveElementClass(['btn', 'btn-large']);
          */
-        toHaveElementClass(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveElementClass(className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getAttribute` class
