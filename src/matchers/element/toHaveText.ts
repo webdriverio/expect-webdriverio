@@ -10,18 +10,19 @@ import {
 
 async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions) {
     const actualTextArray = []
+    const resultArray = []
     let actualText, checkAllValuesMatchCondition
 
     if(Array.isArray(el)){
-        const checkPromises = el.map(async (value) => {
-            actualText = await value.getText()
+        for(const element of el){
+            actualText = await element.getText()
             actualTextArray.push(actualText)
-            return Array.isArray(text)
+            const result = Array.isArray(text)
                 ? compareTextWithArray(actualText, text, options).result
                 : compareText(actualText, text, options).result
-        })
-        const results = await Promise.all(checkPromises)
-        checkAllValuesMatchCondition = results.every(result => result);
+            resultArray.push(result)
+        }
+    checkAllValuesMatchCondition = resultArray.every(result => result)
     }
     else{
         actualText = await (el as WebdriverIO.Element).getText()
