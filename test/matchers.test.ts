@@ -24,7 +24,6 @@ const ALL_MATCHERS = [
     'toBeChecked',
     'toHaveAttributeAndValue',
     'toHaveAttribute',
-    'toHaveAttrContaining',
     'toHaveAttr',
     'toHaveChildren',
     'toHaveClass',
