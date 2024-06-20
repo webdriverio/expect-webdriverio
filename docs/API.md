@@ -219,14 +219,15 @@ await expect(myInput).toHaveAttr('class', expect.stringContaining('control'))
 
 ### toHaveElementClass
 
-Checks if an element has a certain class name.
+Checks if an element has a single class name. Can also be called with an array as a parameter when the element can have multiple class names.
 
 ##### Usage
 
 ```js
 const myInput = await $('input')
-await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
-await expect(myInput).toHaveElementClass(expect.stringContaining('form'), { message: 'Not a form control!', })
+await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!' })
+await expect(myInput).toHaveElementClass(['form-control' , 'w-full'], { message: 'not full width' })
+await expect(myInput).toHaveElementClass(expect.stringContaining('form'), { message: 'Not a form control!' })
 ```
 
 ### toHaveElementProperty
@@ -402,15 +403,25 @@ await browser.url('https://webdriver.io/')
 const elem = await $('.container')
 await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
 await expect(elem).toHaveText(expect.stringContaining('test framework for Node.js'))
-```
-
-##### Usage
-
-```js
-await browser.url('https://webdriver.io/')
-const elem = await $('.container')
 await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'])
 await expect(elem).toHaveText([expect.stringContaining('test framework for Node.js'), expect.stringContaining('Started')])
+```
+
+In case there is a list of elements in the div below:
+
+```
+<ul>
+  <li>Coffee</li>
+  <li>Tea</li>
+  <li>Milk</li>
+</ul>
+```
+
+You can assert them using an array:
+
+```js
+const elem = await $$('ul > li')
+await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
 ```
 
 ### toHaveHTML

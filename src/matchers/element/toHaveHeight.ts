@@ -1,11 +1,11 @@
-import {
-    waitUntil,
-    enhanceError,
-    executeCommand,
-    wrapExpectedWithArray
-} from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
+import {
+    enhanceError,
+    executeCommand,
+    waitUntil,
+    wrapExpectedWithArray
+} from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, height: number) {
     const actualHeight = await el.getSize('height')
@@ -37,7 +37,7 @@ export async function toHaveHeight(
         async () => {
             const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
 
-            el = result.el
+            el = result.el as WebdriverIO.Element
             actualHeight = result.values
 
             return result.success

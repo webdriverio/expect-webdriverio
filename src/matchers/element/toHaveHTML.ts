@@ -1,9 +1,12 @@
-import {
-    waitUntil, enhanceError, compareText, compareTextWithArray, executeCommand,
-    wrapExpectedWithArray
-} from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
+import {
+    compareText, compareTextWithArray,
+    enhanceError,
+    executeCommand,
+    waitUntil,
+    wrapExpectedWithArray
+} from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions) {
     const actualHTML = await el.getHTML(options.includeSelectorTag)
@@ -32,7 +35,7 @@ export async function toHaveHTML(
 
     const pass = await waitUntil(async () => {
         const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
-        el = result.el
+        el = result.el as WebdriverIO.Element
         actualHTML = result.values
 
         return result.success

@@ -1,11 +1,11 @@
-import {
-    waitUntil,
-    enhanceError,
-    executeCommand,
-    wrapExpectedWithArray
-} from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
+import {
+    enhanceError,
+    executeCommand,
+    waitUntil,
+    wrapExpectedWithArray
+} from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, width: number): Promise<any> {
     const actualWidth = await el.getSize('width')
@@ -37,7 +37,7 @@ export async function toHaveWidth(
         async () => {
             const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
 
-            el = result.el
+            el = result.el as WebdriverIO.Element
             actualWidth = result.values
 
             return result.success
