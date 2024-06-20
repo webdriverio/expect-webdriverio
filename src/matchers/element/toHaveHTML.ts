@@ -57,17 +57,3 @@ export async function toHaveHTML(
 
     return result
 }
-
-/**
- * @deprecated
- */
-export function toHaveHTMLContaining(
-    el: WebdriverIO.Element,
-    html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-    options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
-) {
-    return toHaveHTML.call(this, el, html, {
-        ...options,
-        containing: true
-    })
-}

@@ -188,16 +188,6 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getAttribute`
          * Element's attribute includes the value.
-         * @deprecated use `expect(el).toHaveAttribute('attribute', expect.stringContaining('...'))` instead
-         */
-        toHaveAttributeContaining(
-            attribute: string,
-            contains: string | RegExp | ExpectWebdriverIO.PartialMatcher,
-            options?: ExpectWebdriverIO.StringOptions
-        ): R
-        /**
-         * `WebdriverIO.Element` -> `getAttribute`
-         * Element's attribute includes the value.
          * @deprecated use `expect(el).toHaveAttr('attribute', expect.stringContaining('...'))` instead
          */
         toHaveAttrContaining(
@@ -231,20 +221,6 @@ declare namespace ExpectWebdriverIO {
         toHaveElementClass(className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
-         * `WebdriverIO.Element` -> `getAttribute` class
-         * Element's class includes the className.
-         * @deprecated since v1.3.1 - use `toHaveElementClassContaining` instead.
-         */
-        toHaveClassContaining(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
-        /**
-         * `WebdriverIO.Element` -> `getAttribute` class
-         * Element's class includes the className.
-         * @deprecated use `expect(el).toHaveElementClass(expect.stringContaining('...'))` instead
-         */
-        toHaveElementClassContaining(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
-        /**
          * `WebdriverIO.Element` -> `getProperty`
          */
         toHaveElementProperty(
@@ -257,12 +233,6 @@ declare namespace ExpectWebdriverIO {
          * `WebdriverIO.Element` -> `getProperty` value
          */
         toHaveValue(value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-        /**
-         * `WebdriverIO.Element` -> `getProperty` value
-         * Element's value includes the value.
-         * @deprecated use `expect(el).toHaveValue(expect.stringContaining('...'))` instead
-         */
-        toHaveValueContaining(value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `isClickable`
@@ -318,19 +288,6 @@ declare namespace ExpectWebdriverIO {
         toHaveLink(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
-         * `WebdriverIO.Element` -> `getAttribute` href
-         * Element's href includes the value provided
-         * @deprecated use `expect(el).toHaveHref(expect.stringContaining('...'))` instead
-         */
-        toHaveHrefContaining(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-        /**
-         * `WebdriverIO.Element` -> `getAttribute` href
-         * Element's href includes the value provided
-         * @deprecated use `expect(el).toHaveLink(expect.stringContaining('...'))` instead
-         */
-        toHaveLinkContaining(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
-        /**
          * `WebdriverIO.Element` -> `getProperty` value
          */
         toHaveId(id: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
@@ -363,30 +320,12 @@ declare namespace ExpectWebdriverIO {
             text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
-        /**
-         * `WebdriverIO.Element` -> `getText`
-         * Element's text includes the text provided
-         * @deprecated use `expect(el).toHaveText(expect.stringContaining('...'))` instead
-         */
-        toHaveTextContaining(
-            text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-            options?: ExpectWebdriverIO.StringOptions
-        ): R
 
         /**
          * `WebdriverIO.Element` -> `getHTML`
          * Element's html equals the html provided
          */
         toHaveHTML(html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options?: ExpectWebdriverIO.HTMLOptions): R
-        /**
-         * `WebdriverIO.Element` -> `getHTML`
-         * Element's html includes the html provided
-         * @deprecated use `expect(el).toHaveHTML(expect.stringContaining('...'))` instead
-         */
-        toHaveHTMLContaining(
-            html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-            options?: ExpectWebdriverIO.HTMLOptions
-        ): R
 
         /**
          * `WebdriverIO.Element` -> `getComputedLabel`
@@ -396,30 +335,12 @@ declare namespace ExpectWebdriverIO {
             computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
-        /**
-         * `WebdriverIO.Element` -> `getComputedLabel`
-         * Element's computed label includes the computed label provided
-         * @deprecated use `expect(el).toHaveComputedLabel(expect.stringContaining('...'))` instead
-         */
-        toHaveComputedLabelContaining(
-            computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-            options?: ExpectWebdriverIO.StringOptions
-        ): R
 
         /**
          * `WebdriverIO.Element` -> `getComputedRole`
          * Element's computed role equals the computed role provided
          */
         toHaveComputedRole(
-            computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-            options?: ExpectWebdriverIO.StringOptions
-        ): R
-        /**
-         * `WebdriverIO.Element` -> `getComputedRole`
-         * Element's computed role includes the computed role provided
-         * @deprecated use `expect(el).toHaveComputedRole(expect.stringContaining('...'))` instead
-         */
-        toHaveComputedRoleContaining(
             computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
@@ -453,40 +374,15 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveUrl(url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
-        // ===== browser only =====
-        /**
-         * `WebdriverIO.Browser` -> `getUrl`
-         * Browser's url includes the provided text
-         * @deprecated use `expect(el).toHaveUrl(expect.stringContaining('...'))` instead
-         */
-        toHaveUrlContaining(url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
         /**
          * `WebdriverIO.Browser` -> `getTitle`
          */
         toHaveTitle(title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
-        // ===== browser only =====
-        /**
-         * `WebdriverIO.Browser` -> `getTitle`
-         * Browser's title includes the provided text
-         * @deprecated use `expect(el).toHaveTitle(expect.stringContaining('...'))` instead
-         */
-        toHaveTitleContaining(title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
         /**
          * `WebdriverIO.Browser` -> `execute`
          */
         toHaveClipboardText(clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
-        // ===== browser only =====
-        /**
-         * `WebdriverIO.Browser` -> `execute`
-         * Browser's clipboard includes the provided text
-         * @deprecated use `expect(el).toHaveClipboardText(expect.stringContaining('...'))` instead
-         */
-        toHaveClipboardTextContaining(clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
-
 
         // ===== $$ only =====
         /**
