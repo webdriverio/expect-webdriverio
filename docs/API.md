@@ -102,19 +102,10 @@ await browser.url('https://webdriver.io/')
 await expect(browser).toHaveUrl('https://webdriver.io')
 ```
 
-### toHaveUrlContaining
-
-Checks if browser is on a page URL that contains a value.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
 ##### Usage
 
 ```js
 await browser.url('https://webdriver.io/')
-// 👎 deprecated
-await expect(browser).toHaveUrlContaining('webdriver')
-// 👍 supported starting with v9
 await expect(browser).toHaveUrl(expect.stringContaining('webdriver'))
 ```
 
@@ -127,21 +118,6 @@ Checks if website has a specific title.
 ```js
 await browser.url('https://webdriver.io/')
 await expect(browser).toHaveTitle('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js')
-```
-
-### toHaveTitleContaining
-
-Checks if website has a specific title that contains a value.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-await browser.url('https://webdriver.io/')
-// 👎 deprecated
-await expect(browser).toHaveTitleContaining('WebdriverIO')
-// 👍 supported starting with v9
 await expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
 ```
 
@@ -157,25 +133,7 @@ import { Key } from 'webdriverio'
 await browser.keys([Key.Ctrl, 'a'])
 await browser.keys([Key.Ctrl, 'c'])
 await expect(browser).toHaveClipboardText('some clipboard text')
-```
-
-### toHaveClipboardTextContaining
-
-Checks if the browser has a specific text stored in its clipboard that contains a given string.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-import { Key } from 'webdriverio'
-
-await browser.keys([Key.Ctrl, 'a'])
-await browser.keys([Key.Ctrl, 'c'])
-// 👎 deprecated
-await expect(browser).toHaveClipboardTextContaining('clipboard')
-// 👍 supported starting with v9
-await expect(browser).toHaveClipboardText(expect.stringContaining('WebdriverIO'))
+await expect(browser).toHaveClipboardText(expect.stringContaining('clipboard text'))
 ```
 
 ## Element Matchers
@@ -244,6 +202,7 @@ Checks if an element has a certain attribute with a specific value.
 ```js
 const myInput = await $('input')
 await expect(myInput).toHaveAttribute('class', 'form-control')
+await expect(myInput).toHaveAttribute('class', expect.stringContaining('control'))
 ```
 
 ### toHaveAttr
@@ -255,38 +214,7 @@ Same as `toHaveAttribute`.
 ```js
 const myInput = await $('input')
 await expect(myInput).toHaveAttr('class', 'form-control')
-```
-
-### toHaveAttributeContaining
-
-Checks if an element has a certain attribute that contains a value.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const myInput = await $('input')
-// 👎 deprecated
-await expect(myInput).toHaveAttributeContaining('class', 'form')
-// 👍 supported starting with v9
-await expect(myInput).toHaveAttribute('class', expect.stringContaining('form'))
-```
-
-### toHaveAttrContaining
-
-Same as `toHaveAttributeContaining`.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const myInput = await $('input')
-// 👎 deprecated
-await expect(myInput).toHaveAttrContaining('class', 'form')
-// 👍 supported starting with v9
-await expect(myInput).toHaveAttr('class', expect.stringContaining('form'))
+await expect(myInput).toHaveAttr('class', expect.stringContaining('control'))
 ```
 
 ### toHaveElementClass
@@ -296,26 +224,10 @@ Checks if an element has a single class name. Can also be called with an array a
 ##### Usage
 
 ```js
-// <button id="main" class="btn btn-large">
-const myButton = await $('#main')
-await expect(myButton).toHaveElementClass('btn')
-await expect(myButton).toHaveElementClass(['btn' , 'btn-large'])
-```
-
-### toHaveElementClassContaining
-
-Checks if an element has a certain class name that contains provided value.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
 const myInput = await $('input')
-// 👎 deprecated
-await expect(myInput).toHaveElementClassContaining('form')
-// 👍 supported starting with v9
-await expect(myInput).toHaveElementClass(expect.stringContaining('form'))
+await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!' })
+await expect(myInput).toHaveElementClass(['form-control' , 'w-full'], { message: 'not full width' })
+await expect(myInput).toHaveElementClass(expect.stringContaining('form'), { message: 'Not a form control!' })
 ```
 
 ### toHaveElementProperty
@@ -338,23 +250,8 @@ Checks if an input element has a certain value.
 
 ```js
 const myInput = await $('input')
-await expect(myInput).toHaveValue('user', { ignoreCase: true })
-```
-
-### toHaveValueContaining
-
-Checks if an input element contains a certain value.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const myInput = await $('input')
-// 👎 deprecated
-await expect(myInput).toHaveValueContaining('us')
-// 👍 supported starting with v9
-await expect(myInput).toHaveValue(expect.stringContaining('us'))
+await expect(myInput).toHaveValue('admin-user', { ignoreCase: true })
+await expect(myInput).toHaveValue(expect.stringContaining('user'), { ignoreCase: true })
 ```
 
 ### toBeClickable
@@ -426,29 +323,16 @@ Checks if element has a specific computed WAI-ARIA label. Can also be called wit
 await browser.url('https://webdriver.io/')
 const elem = await $('a[href="https://github.com/webdriverio/webdriverio"]')
 await expect(elem).toHaveComputedLabel('GitHub repository')
-await expect(elem).toHaveComputedLabel(['GitHub repository', 'Private repository'])
+await expect(elem).toHaveComputedLabel(expect.stringContaining('repository'))
 ```
-
-### toHaveComputedLabelContaining
-
-Checks if element contains a specific computed WAI-ARIA label. Can also be called with an array as parameter in the case where the element can have different labels.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
 
 ##### Usage
 
 ```js
 await browser.url('https://webdriver.io/')
 const elem = await $('a[href="https://github.com/webdriverio/webdriverio"]')
-// 👎 deprecated
-await expect(elem).toHaveComputedLabelContaining('GitHub')
-await expect(elem).toHaveComputedLabelContaining(['GitHub', 'Private'])
-// 👍 supported starting with v9
-await expect(elem).toHaveComputedLabel(expect.stringContaining('us'))
-await expect(elem).toHaveComputedLabel([
-    expect.stringContaining('GitHub'),
-    expect.stringContaining('us')
-])
+await expect(elem).toHaveComputedLabel(['GitHub repository', 'Private repository'])
+await expect(elem).toHaveComputedLabel([expect.stringContaining('GitHub'), expect.stringContaining('Private')])
 ```
 
 ### toHaveComputedRole
@@ -461,29 +345,16 @@ Checks if element has a specific computed WAI-ARIA role. Can also be called with
 await browser.url('https://webdriver.io/')
 const elem = await $('[aria-label="Skip to main content"]')
 await expect(elem).toHaveComputedRole('region')
-await expect(elem).toHaveComputedRole(['region', 'section'])
+await expect(elem).toHaveComputedRole(expect.stringContaining('ion'))
 ```
-
-### toHaveComputedRoleContaining
-
-Checks if element contains a specific computed WAI-ARIA role. Can also be called with an array as parameter in the case where the element can have different roles.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
 
 ##### Usage
 
 ```js
 await browser.url('https://webdriver.io/')
 const elem = await $('[aria-label="Skip to main content"]')
-// 👎 deprecated
-await expect(elem).toHaveComputedRoleContaining('reg')
-await expect(elem).toHaveComputedRoleContaining(['reg', 'sec'])
-// 👍 supported starting with v9
-await expect(elem).toHaveComputedRole(expect.stringContaining('reg'))
-await expect(elem).toHaveComputedRole([
-    expect.stringContaining('reg'),
-    expect.stringContaining('sec')
-])
+await expect(elem).toHaveComputedRole(['region', 'section'])
+await expect(elem).toHaveComputedRole([expect.stringContaining('reg'), expect.stringContaining('sec')])
 ```
 
 ### toHaveHref
@@ -495,6 +366,7 @@ Checks if link element has a specific link target.
 ```js
 const link = await $('a')
 await expect(link).toHaveHref('https://webdriver.io')
+await expect(link).toHaveHref(expect.stringContaining('webdriver.io'))
 ```
 
 ### toHaveLink
@@ -506,37 +378,6 @@ Same as `toHaveHref`.
 ```js
 const link = await $('a')
 await expect(link).toHaveLink('https://webdriver.io')
-```
-
-### toHaveHrefContaining
-
-Checks if link element contains a specific link target.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const link = await $('a')
-// 👎 deprecated
-await expect(link).toHaveHrefContaining('webdriver.io')
-// 👍 supported starting with v9
-await expect(link).toHaveHref(expect.stringContaining('webdriver.io'))
-```
-
-### toHaveLinkContaining
-
-Same as `toHaveHrefContaining`.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-const link = await $('a')
-// 👎 deprecated
-await expect(link).toHaveLinkContaining('webdriver.io')
-// 👍 supported starting with v9
 await expect(link).toHaveLink(expect.stringContaining('webdriver.io'))
 ```
 
@@ -561,10 +402,13 @@ Checks if element has a specific text. Can also be called with an array as param
 await browser.url('https://webdriver.io/')
 const elem = await $('.container')
 await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
+await expect(elem).toHaveText(expect.stringContaining('test framework for Node.js'))
 await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'])
+await expect(elem).toHaveText([expect.stringContaining('test framework for Node.js'), expect.stringContaining('Started')])
 ```
 
-In case there is a list of elements in the div below, you can assert them using an array.
+In case there is a list of elements in the div below:
+
 ```
 <ul>
   <li>Coffee</li>
@@ -573,38 +417,11 @@ In case there is a list of elements in the div below, you can assert them using 
 </ul>
 ```
 
-##### Usage
+You can assert them using an array:
 
 ```js
 const elem = await $$('ul > li')
 await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
-```
-
-### toHaveTextContaining
-
-Checks if element contains a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
-
-##### Usage
-
-```js
-await browser.url('https://webdriver.io/')
-const elem = $('.container')
-// 👎 deprecated
-await expect(elem).toHaveTextContaining(
-    'browser and mobile automation test framework')
-await expect(elem).toHaveTextContaining([
-    'browser and mobile automation test framework',
-    'Started'
-])
-// 👍 supported starting with v9
-await expect(elem).toHaveText(
-    expect.stringContaining('browser and mobile automation test framework'))
-await expect(elem).toHaveText([
-    expect.stringContaining('browser and mobile automation test framework'),
-    expect.stringContaining('Started')
-])
 ```
 
 ### toHaveHTML
@@ -617,43 +434,17 @@ Checks if element has a specific text. Can also be called with an array as param
 await browser.url('https://webdriver.io/')
 const elem = await $('.hero__subtitle')
 await expect(elem).toHaveHTML('<p class="hero__subtitle">Next-gen browser and mobile automation test framework for Node.js</p>')
+await expect(elem).toHaveHTML(expect.stringContaining('Next-gen browser and mobile automation test framework for Node.js'))
 await expect(elem).toHaveHTML('Next-gen browser and mobile automation test framework for Node.js', { includeSelectorTag: false })
-await expect(elem).toHaveHTML(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'], { includeSelectorTag: false })
 ```
-
-### toHaveHTMLContaining
-
-Checks if element contains a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
-
-__Deprecated:__ please use `expect.stringContaining()` instead!
 
 ##### Usage
 
 ```js
 await browser.url('https://webdriver.io/')
 const elem = await $('.hero__subtitle')
-
-// 👎 deprecated
-await expect(elem).toHaveHTMLContaining('Next-gen browser')
-await expect(elem).toHaveHTMLContaining(
-    'Next-gen browser',
-    { includeSelectorTag: false }
-)
-await expect(elem).toHaveHTMLContaining([
-    'Next-gen browser',
-    'Get Started'
-], { includeSelectorTag: false })
-// 👍 supported starting with v9
-await expect(elem).toHaveHTMLContaining(
-    expect.stringContaining('Next-gen browser'))
-await expect(elem).toHaveHTMLContaining(
-    expect.stringContaining('Next-gen browser'),
-    { includeSelectorTag: false }
-)
-await expect(elem).toHaveHTMLContaining([
-    expect.stringContaining('Next-gen browser'),
-    expect.stringContaining('Get Started')
-], { includeSelectorTag: false })
+await expect(elem).toHaveHTML(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'], { includeSelectorTag: false })
+await expect(elem).toHaveHTML([expect.stringContaining('automation test framework for Node.js'), expect.stringContaining('Started')], { includeSelectorTag: false })
 ```
 
 ### toBeDisplayedInViewport
@@ -949,7 +740,6 @@ await browser.url('https://webdriver.io/')
 const elem = await $('.container')
 await expect(elem).toHaveText(/node\.js/i)
 await expect(elem).toHaveText([/node\.js/i, 'Get Started'])
-await expect(elem).toHaveTextContaining([/node\.js/i, 'Started'])
 await expect(browser).toHaveTitle(/webdriverio/i)
 await expect(browser).toHaveUrl(/webdriver\.io/)
 await expect(elem).toHaveElementClass(/Container/i)
@@ -965,14 +755,10 @@ WebdriverIO supports usage of asymmetric matchers wherever you compare text valu
 
 ```ts
 await expect(browser).toHaveTitle(expect.stringContaining('some title'))
-// is the same as:
-await expect(browser).toHaveTitleContaining('some title')
 ```
 
 or
 
 ```ts
 await expect(browser).toHaveTitle(expect.not.stringContaining('some title'))
-// is the same as:
-await expect(browser).not.toHaveTitleContaining('some title')
 ```
