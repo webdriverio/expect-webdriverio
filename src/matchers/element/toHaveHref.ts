@@ -26,22 +26,3 @@ export async function toHaveHref(
 }
 
 export const toHaveLink = toHaveHref
-
-/**
- * @deprecated
- */
-export function toHaveHrefContaining(
-    el: WdioElementMaybePromise,
-    href: string,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
-    return toHaveHref.call(this, el, href, {
-        ...options,
-        containing: true
-    })
-}
-
-/**
- * @deprecated
- */
-export const toHaveLinkContaining = toHaveHrefContaining
