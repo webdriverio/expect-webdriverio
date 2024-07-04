@@ -80,7 +80,9 @@ async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, in
     let received: WebdriverIO.Element | unknown = await asyncReceived
 
     if (received && typeof received === 'object' && 'elementId' in received) {
-        received = await (received as WebdriverIO.Element).getHTML(true)
+        received = await (received as WebdriverIO.Element).getHTML({
+            includeSelectorTag: true
+        })
     }
     return toMatchSnapshotAssert(received, message, inlineOptions)
 }

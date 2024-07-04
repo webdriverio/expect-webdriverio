@@ -7,7 +7,7 @@ import { toHaveHref } from '../../../src/matchers/element/toHaveHref.js'
 vi.mock('@wdio/globals')
 
 describe('toHaveHref', () => {
-    let el: WebdriverIO.Element
+    let el: ChainablePromiseElement
 
     beforeEach(async () => {
         el = await $('sel')

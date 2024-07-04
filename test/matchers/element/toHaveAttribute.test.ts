@@ -7,7 +7,7 @@ import { toHaveAttribute } from '../../../src/matchers/element/toHaveAttribute.j
 vi.mock('@wdio/globals')
 
 describe('toHaveAttribute', () => {
-    let el: WebdriverIO.Element
+    let el: ChainablePromiseElement
 
     beforeEach(async () => {
         el = await $('sel')

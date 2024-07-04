@@ -284,7 +284,7 @@ declare namespace ExpectWebdriverIO {
         /**
          * `WebdriverIO.Element` -> `getSize` value
          */
-        toHaveSize(id: string | RegExp | ExpectWebdriverIO.PartialMatcher, size: { height: number; width: number }, options?: ExpectWebdriverIO.StringOptions): R
+        toHaveSize(size: { height: number; width: number }, options?: ExpectWebdriverIO.StringOptions): R
 
         /**
          * `WebdriverIO.Element` -> `getText`

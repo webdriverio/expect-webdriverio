@@ -16,7 +16,7 @@ function getTextFn() {
     return this._text ? this._text() : undefined
 }
 
-function getHTMLFn(includeSelectorTag) {
+function getHTMLFn({ includeSelectorTag }) {
     return this._html ? this._html(includeSelectorTag) : undefined
 }
 
@@ -51,10 +51,12 @@ const element = {
 }
 
 export function $(selector) {
-    return {
+    const el: any = {
         ...element,
         selector
     }
+    el.getElement = async () => el
+    return el
 }
 
 export function $$(selector) {
@@ -76,6 +78,7 @@ export function $$(selector) {
     els.props = []
     els.props.length = length
     els.selector = selector
+    els.getElements = async () => els
     return els
 }
 

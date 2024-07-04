@@ -1,5 +1,5 @@
+import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js';
-import { WdioElementMaybePromise, WdioElementsMaybePromise } from '../../types.js';
 import {
     compareText, compareTextWithArray,
     enhanceError,
@@ -39,7 +39,7 @@ async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, tex
 }
 
 export async function toHaveText(
-    received: WdioElementMaybePromise | WdioElementsMaybePromise,
+    received: ChainablePromiseElement | ChainablePromiseArray,
     expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -52,7 +52,11 @@ export async function toHaveText(
         options,
     })
 
-    let el = await received
+    let el = 'getElement' in received
+        ? await received.getElement()
+        : 'getElements' in received
+            ? await received.getElements()
+            : received
     let actualText
 
     const pass = await waitUntil(async () => {

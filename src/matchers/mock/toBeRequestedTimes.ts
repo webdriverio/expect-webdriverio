@@ -1,11 +1,9 @@
-import type { Mock } from 'webdriverio'
-
 import { waitUntil, enhanceError, compareNumbers } from '../../utils.js'
 import { numberError } from '../../util/formatMessage.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
 export async function toBeRequestedTimes(
-    received: Mock,
+    received: WebdriverIO.Mock,
     expectedValue: number | ExpectWebdriverIO.NumberOptions = {},
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
