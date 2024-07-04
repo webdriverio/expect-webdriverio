@@ -22,6 +22,8 @@ describe('toHaveText', () => {
             }
             els[0] = el1
             els[1] = el2
+            console.log(els);
+
         })
 
         test('should return true if the received element array matches the expected text array', async () => {

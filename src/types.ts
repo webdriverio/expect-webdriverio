@@ -3,11 +3,11 @@ import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio
 
 export type WdioElementMaybePromise =
     WebdriverIO.Element |
-    ChainablePromiseElement<WebdriverIO.Element>
+    ChainablePromiseElement
 
 export type WdioElementsMaybePromise =
     WebdriverIO.ElementArray |
-    ChainablePromiseArray<WebdriverIO.Element>
+    ChainablePromiseArray
 
 export type RawMatcherFn<Context extends MatcherContext = MatcherContext> = {
     (this: Context, actual: any, ...expected: Array<any>): ExpectationResult;

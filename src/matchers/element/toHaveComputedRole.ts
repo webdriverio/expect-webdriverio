@@ -35,7 +35,7 @@ export async function toHaveComputedRole(
         options,
     })
 
-    let el = await received
+    let el = await received.getElement()
     let actualRole
 
     const pass = await waitUntil(

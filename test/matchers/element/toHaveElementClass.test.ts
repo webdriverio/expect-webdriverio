@@ -7,7 +7,7 @@ import { toHaveElementClass } from '../../../src/matchers/element/toHaveClass.js
 vi.mock('@wdio/globals')
 
 describe('toHaveElementClass', () => {
-    let el: WebdriverIO.Element
+    let el: ChainablePromiseElement
 
     beforeEach(async () => {
         el = await $('sel')
