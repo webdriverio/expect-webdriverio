@@ -7,7 +7,7 @@ import { toHaveId } from '../../../src/matchers/element/toHaveId.js'
 vi.mock('@wdio/globals')
 
 describe('toHaveId', () => {
-    let el: WebdriverIO.Element
+    let el: ChainablePromiseElement
 
     beforeEach(async () => {
         el = await $('sel')

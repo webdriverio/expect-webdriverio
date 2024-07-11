@@ -37,13 +37,3 @@ export async function toHaveUrl(
 
     return result
 }
-
-/**
- * @deprecated
- */
-export function toHaveUrlContaining(browser: WebdriverIO.Browser, url: string, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
-    return toHaveUrl.call(this, browser, url, {
-        ...options,
-        containing: true
-    })
-}

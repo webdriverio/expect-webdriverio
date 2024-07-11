@@ -10,7 +10,7 @@ import {
 } from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.NumberOptions) {
-    const children = await el.$$('./*')
+    const children = await el.$$('./*').getElements()
 
     // If no options passed in + children exists
     if (
@@ -48,7 +48,7 @@ export async function toHaveChildren(
         ? { eq: expectedValue } as ExpectWebdriverIO.NumberOptions
         : expectedValue || {}
 
-    let el = await received
+    let el = await received.getElement()
     let children
     const pass = await waitUntil(async () => {
         const result = await executeCommand.call(this, el, condition, numberOptions, [numberOptions])

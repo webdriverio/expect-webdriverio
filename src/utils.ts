@@ -80,8 +80,7 @@ async function executeCommandBe(
 ): Promise<ExpectWebdriverIO.AssertionResult> {
     const { isNot, expectation, verb = 'be' } = this
 
-    received = await received
-    let el = received
+    let el = await received.getElement()
     const pass = await waitUntil(
         async () => {
             const result = await executeCommand.call(

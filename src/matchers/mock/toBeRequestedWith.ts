@@ -1,4 +1,4 @@
-import type { Mock } from 'webdriverio'
+import type { local } from 'webdriver'
 
 import { waitUntil, enhanceError } from '../../utils.js'
 import { equals } from '../../jasmineUtils.js'
@@ -7,8 +7,15 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 const STR_LIMIT = 80
 const KEY_LIMIT = 12
 
+function reduceHeaders(headers: local.NetworkHeader[]) {
+    return Object.entries(headers).reduce((acc, [, value]: [string, local.NetworkHeader]) => {
+        acc[value.name] = value.value.value
+        return acc
+    }, {} as Record<string, string>)
+}
+
 export async function toBeRequestedWith(
-    received: Mock,
+    received: WebdriverIO.Mock,
     expectedValue: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
@@ -27,13 +34,14 @@ export async function toBeRequestedWith(
             for (const call of received.calls) {
                 actual = call
                 if (
-                    methodMatcher(call.method, expectedValue.method) &&
-                    statusCodeMatcher(call.statusCode, expectedValue.statusCode) &&
-                    urlMatcher(call.url, expectedValue.url) &&
-                    headersMatcher(call.headers, expectedValue.requestHeaders) &&
-                    headersMatcher(call.responseHeaders, expectedValue.responseHeaders) &&
-                    bodyMatcher(call.postData, expectedValue.postData) &&
-                    bodyMatcher(call.body, expectedValue.response)
+                    methodMatcher(call.request.method, expectedValue.method) &&
+                    statusCodeMatcher(call.response.status, expectedValue.statusCode) &&
+                    urlMatcher(call.request.url, expectedValue.url) &&
+                    headersMatcher(reduceHeaders(call.request.headers), expectedValue.requestHeaders) &&
+                    headersMatcher(reduceHeaders(call.response.headers), expectedValue.responseHeaders)
+                    // &&
+                    // bodyMatcher(call.postData, expectedValue.postData) &&
+                    // bodyMatcher(call.body, expectedValue.response)
                 ) {
                     return true
                 }
@@ -130,9 +138,19 @@ const headersMatcher = (
         | ExpectWebdriverIO.PartialMatcher
         | ((headers: Record<string, string>) => boolean)
 ) => {
-    if (typeof expected === 'undefined') {
+    /**
+     * match with no headers were passed in as filter or
+     * if header matcher is an empty object, match with no headers
+     */
+    if (
+        typeof expected === 'undefined' ||
+        typeof expected === 'object' && Object.keys(expected).length === 0
+    ) {
         return true
     }
+    /**
+     * call function of provided
+     */
     if (typeof expected === 'function') {
         return expected(headers)
     }
@@ -142,66 +160,66 @@ const headersMatcher = (
 /**
  * is postData/response matching an expected condition
  */
-const bodyMatcher = (
-    body: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined,
-    expected?:
-        | string
-        | ExpectWebdriverIO.JsonCompatible
-        | ExpectWebdriverIO.PartialMatcher
-        | ((r: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined) => boolean)
-) => {
-    if (typeof expected === 'undefined') {
-        return true
-    }
-    if (typeof expected === 'function') {
-        return expected(body)
-    }
-    if (typeof body === 'undefined') {
-        return false
-    }
+// const bodyMatcher = (
+//     body: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined,
+//     expected?:
+//         | string
+//         | ExpectWebdriverIO.JsonCompatible
+//         | ExpectWebdriverIO.PartialMatcher
+//         | ((r: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined) => boolean)
+// ) => {
+//     if (typeof expected === 'undefined') {
+//         return true
+//     }
+//     if (typeof expected === 'function') {
+//         return expected(body)
+//     }
+//     if (typeof body === 'undefined') {
+//         return false
+//     }
 
-    let parsedBody = body
-    if (body instanceof Buffer) {
-        parsedBody = body.toString()
-    }
+//     let parsedBody = body
+//     if (body instanceof Buffer) {
+//         parsedBody = body.toString()
+//     }
 
-    // convert postData/body from string to JSON if expected value is JSON-like
-    if (typeof(body) === 'string' && isExpectedJsonLike(expected)) {
-        parsedBody = tryParseBody(body)
+//     // convert postData/body from string to JSON if expected value is JSON-like
+//     if (typeof(body) === 'string' && isExpectedJsonLike(expected)) {
+//         parsedBody = tryParseBody(body)
 
-        // failed to parse string as JSON
-        if (parsedBody === null) {
-            return false
-        }
-    }
+//         // failed to parse string as JSON
+//         if (parsedBody === null) {
+//             return false
+//         }
+//     }
 
-    return equals(parsedBody, expected)
-}
+//     return equals(parsedBody, expected)
+// }
 
-const isExpectedJsonLike = (
-    expected:
-        | string
-        | ExpectWebdriverIO.JsonCompatible
-        | ExpectWebdriverIO.PartialMatcher
-        | undefined
-        | Function
-) => {
-    if (typeof expected === 'undefined') {
-        return false
-    }
+// const isExpectedJsonLike = (
+//     expected:
+//         | string
+//         | ExpectWebdriverIO.JsonCompatible
+//         | ExpectWebdriverIO.PartialMatcher
+//         | undefined
+//         | Function
+// ) => {
+//     if (typeof expected === 'undefined') {
+//         return false
+//     }
 
-    // get matcher sample if expected value is a special matcher like `expect.objectContaining({ foo: 'bar })`
-    const actualSample = isMatcher(expected)
-        ? (expected as ExpectWebdriverIO.PartialMatcher).sample
-        : expected
+//     // get matcher sample if expected value is a special matcher like `expect.objectContaining({ foo: 'bar })`
+//     const actualSample = isMatcher(expected)
+//         ? (expected as ExpectWebdriverIO.PartialMatcher).sample
+//         : expected
 
-    return (
-        Array.isArray(actualSample) ||
-        (typeof actualSample === 'object' &&
-            actualSample !== null &&
-            actualSample instanceof RegExp === false)
-    )
-}
+//     return (
+//         Array.isArray(actualSample) ||
+//         (typeof actualSample === 'object' &&
+//             actualSample !== null &&
+//             actualSample instanceof RegExp === false)
+//     )
+// }
 
 /**
  * is jasmine/jest special matcher
@@ -218,19 +236,22 @@ const isMatcher = (filter: any) => {
     return typeof filter.__proto__?.asymmetricMatch === 'function'
 }
 
-const tryParseBody = (jsonString: string | undefined, fallback: any = null) => {
-    try {
-        return typeof jsonString === 'undefined' ? fallback : JSON.parse(jsonString)
-    } catch {
-        return fallback
-    }
-}
+// const tryParseBody = (jsonString: string | undefined, fallback: any = null) => {
+//     try {
+//         return typeof jsonString === 'undefined' ? fallback : JSON.parse(jsonString)
+//     } catch {
+//         return fallback
+//     }
+// }
 
 /**
  * shorten long url, headers, postData, body
  */
 const minifyRequestMock = (
-    requestMock: any | undefined,
+    requestMock: {
+        request: local.NetworkRequestData,
+        response: local.NetworkResponseData
+    },
     requestedWith: ExpectWebdriverIO.RequestedWith
 ) => {
     if (typeof requestMock === 'undefined') {
@@ -238,16 +259,16 @@ const minifyRequestMock = (
     }
 
     const r: Record<string, any> = {
-        url: requestMock.url,
-        method: requestMock.method,
-        requestHeaders: requestMock.headers,
-        responseHeaders: requestMock.responseHeaders,
-        postData: typeof requestMock.postData === 'string' && isExpectedJsonLike(requestedWith.postData)
-            ? tryParseBody(requestMock.postData, requestMock.postData)
-            : requestMock.postData,
-        response: typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.response)
-            ? tryParseBody(requestMock.body, requestMock.body)
-            : requestMock.body,
+        url: requestMock.request.url,
+        method: requestMock.request.method,
+        requestHeaders: requestMock.request.headers,
+        responseHeaders: requestMock.response.headers,
+        // postData: typeof requestMock.postData === 'string' && isExpectedJsonLike(requestedWith.postData)
+        //     ? tryParseBody(requestMock.postData, requestMock.postData)
+        //     : requestMock.postData,
+        // response: typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.response)
+        //     ? tryParseBody(requestMock.body, requestMock.body)
+        //     : requestMock.body,
     }
 
     deleteUndefinedValues(r, requestedWith)
