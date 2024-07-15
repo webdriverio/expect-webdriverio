@@ -84,7 +84,7 @@
     "webdriverio": "^8.29.3"
   },
   "dependencies": {
-    "@vitest/snapshot": "^1.2.2",
+    "@vitest/snapshot": "^2.0.3",
     "expect": "^29.7.0",
     "jest-matcher-utils": "^29.7.0",
     "lodash.isequal": "^4.5.0"
