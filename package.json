@@ -61,7 +61,7 @@
     "@types/debug": "^4.1.12",
     "@types/jest": "^29.5.11",
     "@types/lodash.isequal": "^4.5.8",
-    "@types/node": "^20.11.14",
+    "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.1",
     "@vitest/coverage-v8": "^1.2.2",
