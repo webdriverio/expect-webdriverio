@@ -28,7 +28,7 @@ export async function toHaveSize(
         options,
     })
 
-    let el = await received.getElement()
+    let el = await received?.getElement()
     let actualSize
 
     const pass = await waitUntil(

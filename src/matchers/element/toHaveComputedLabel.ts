@@ -35,7 +35,7 @@ export async function toHaveComputedLabel(
         options,
     })
 
-    let el = await received.getElement()
+    let el = await received?.getElement()
     let actualLabel
 
     const pass = await waitUntil(

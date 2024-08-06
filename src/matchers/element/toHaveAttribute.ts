@@ -30,7 +30,7 @@ export async function toHaveAttributeAndValue(received: ChainablePromiseElement,
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
-    let el = await received.getElement()
+    let el = await received?.getElement()
     let attr
     const pass = await waitUntil(async () => {
         const result = await executeCommand.call(this, el, conditionAttrAndValue, options, [attribute, value, options])

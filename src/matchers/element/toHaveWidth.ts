@@ -30,7 +30,7 @@ export async function toHaveWidth(
         options,
     })
 
-    let el = await received.getElement()
+    let el = await received?.getElement()
     let actualWidth
 
     const pass = await waitUntil(

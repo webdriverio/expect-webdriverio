@@ -53,9 +53,9 @@ export async function toHaveText(
     })
 
     let el = 'getElement' in received
-        ? await received.getElement()
+        ? await received?.getElement()
         : 'getElements' in received
-            ? await received.getElements()
+            ? await received?.getElements()
             : received
     let actualText
 
