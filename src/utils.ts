@@ -239,7 +239,7 @@ export const compareTextWithArray = (
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
-        expectedArray = expectedArray.map((item) => (item instanceof RegExp || typeof item !== 'string' ? item : item.toLowerCase()))
+        expectedArray = expectedArray.map((item) => (typeof item !== 'string' ? item : item.toLowerCase()))
     }
 
     const textInArray = expectedArray.some((expected) => {
