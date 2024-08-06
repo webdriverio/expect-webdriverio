@@ -30,7 +30,7 @@ export async function toHaveHeight(
         options,
     })
 
-    let el = await received.getElement()
+    let el = await received?.getElement()
     let actualHeight
 
     const pass = await waitUntil(

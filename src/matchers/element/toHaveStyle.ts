@@ -26,7 +26,7 @@ export async function toHaveStyle(
         options,
     })
 
-    let el = await received.getElement()
+    let el = await received?.getElement()
     let actualStyle
 
     const pass = await waitUntil(async () => {
