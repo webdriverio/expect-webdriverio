@@ -239,12 +239,15 @@ export const compareTextWithArray = (
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
-        expectedArray = expectedArray.map((item) => (item instanceof RegExp ? item : item.toLowerCase()))
+        expectedArray = expectedArray.map((item) => (item instanceof RegExp || typeof item !== 'string' ? item : item.toLowerCase()))
     }
 
     const textInArray = expectedArray.some((expected) => {
         if (expected instanceof RegExp) {
             return !!actual.match(expected)
+        }
+        if (isAsymmeyricMatcher(expected)) {
+            return expected.asymmetricMatch(actual)
         }
         if (containing) {
             return actual.includes(expected)

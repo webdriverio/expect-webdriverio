@@ -307,6 +307,46 @@ describe('toHaveText', () => {
         expect(el._attempts).toBe(1)
     })
 
+    test('should return true if actual text contains the expected text', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, expect.stringContaining('iverIO'), {})
+        expect(result.pass).toBe(true)
+    })
+
+    test('should return false if actual text does not contain the expected text', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, expect.stringContaining('WDIO'), {})
+        expect(result.pass).toBe(false)
+    })
+
+    test('should return true if actual text contains one of the expected texts', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, [expect.stringContaining('iverIO'), expect.stringContaining('WDIO')], {})
+        expect(result.pass).toBe(true)
+    })
+
+    test('should return false if actual text does not contain the expected texts', async () => {
+        const el: any = await $('sel')
+        el._text = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveText.bind({})(el, [expect.stringContaining('EXAMPLE'), expect.stringContaining('WDIO')], {})
+        expect(result.pass).toBe(false)
+    })
+
     describe('with RegExp', () => {
         let el: any
 
