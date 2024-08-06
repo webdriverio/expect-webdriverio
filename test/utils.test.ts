@@ -53,6 +53,16 @@ describe('utils', () => {
         test('should pass if string contains and using containing', () => {
             expect(compareTextWithArray('qwe_AsD_zxc', ['foo', 'zxc'], { ignoreCase: true, containing: true }).result).toBe(true)
         })
+
+        test('should support asymmetric matchers', () => {
+            expect(compareTextWithArray('foo', [expect.stringContaining('oo'), expect.stringContaining('oobb')], {}).result).toBe(true)
+            expect(compareTextWithArray('foo', [expect.not.stringContaining('oo'), expect.stringContaining('oobb')] , {}).result).toBe(false)
+        })
+
+        test('should support asymmetric matchers and using ignoreCase', () => {
+            expect(compareTextWithArray('FOO', [expect.stringContaining('oo'), expect.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
+            expect(compareTextWithArray('FOO', [expect.not.stringContaining('oo'), expect.stringContaining('oobb')] , { ignoreCase: true }).result).toBe(false)
+        })
     })
 
     describe('compareNumbers', () => {
