@@ -49,7 +49,7 @@ export async function toHaveElementProperty(
         options,
     })
 
-    let el = await received.getElement()
+    let el = await received?.getElement()
     let prop: any
     const pass = await waitUntil(
         async () => {

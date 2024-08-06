@@ -48,7 +48,7 @@ export async function toHaveChildren(
         ? { eq: expectedValue } as ExpectWebdriverIO.NumberOptions
         : expectedValue || {}
 
-    let el = await received.getElement()
+    let el = await received?.getElement()
     let children
     const pass = await waitUntil(async () => {
         const result = await executeCommand.call(this, el, condition, numberOptions, [numberOptions])
