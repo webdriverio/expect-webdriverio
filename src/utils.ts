@@ -1,5 +1,6 @@
 import isEqual from 'lodash.isequal'
 import type { ParsedCSSValue } from 'webdriverio'
+import expect from 'expect'
 
 import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types.js'
@@ -16,6 +17,10 @@ const asymmetricMatcher =
 
 export function isAsymmeyricMatcher(expected: any): expected is ExpectWebdriverIO.PartialMatcher {
     return typeof expected === 'object' && '$$typeof' in expected && expected.$$typeof === asymmetricMatcher && expected.asymmetricMatch
+}
+
+function isStringContainingMatcher(expected: any): expected is ExpectWebdriverIO.PartialMatcher {
+    return isAsymmeyricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
 }
 
 /**
@@ -159,6 +164,10 @@ export const compareText = (
         actual = actual.toLowerCase()
         if (typeof expected === 'string') {
             expected = expected.toLowerCase()
+        } else if (isStringContainingMatcher(expected)) {
+            expected = (expected.toString() === 'StringContaining'
+                ? expect.stringContaining(expected.sample?.toString().toLowerCase())
+                : expect.not.stringContaining(expected.sample?.toString().toLowerCase())) as ExpectWebdriverIO.PartialMatcher   
         }
     }
 

@@ -560,6 +560,7 @@ declare namespace ExpectWebdriverIO {
         sample?: any
         $$typeof: symbol
         asymmetricMatch(...args: any[]): boolean
+        toString(): string
     }
 }
 
