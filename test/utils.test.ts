@@ -21,6 +21,7 @@ describe('utils', () => {
 
         test('should pass if same word but wrong case and using ignoreCase', () => {
             expect(compareText(' FOO ', 'foo', { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' foo ', 'FOO', { ignoreCase: true }).result).toBe(true)
         })
 
         test('should pass if string contains expected and using containing', () => {
@@ -30,6 +31,14 @@ describe('utils', () => {
         test('should support asymmetric matchers', () => {
             expect(compareText('foo', expect.stringContaining('oo'), {}).result).toBe(true)
             expect(compareText('foo', expect.not.stringContaining('oo'), {}).result).toBe(false)
+        })
+
+        test('should support asymmetric matchers and using ignoreCase', () => {
+            expect(compareText(' FOO ', expect.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' FOO ', expect.not.stringContaining('foo'), { ignoreCase: true }).result).toBe(false)
+            expect(compareText(' Foo ', expect.stringContaining('FOO'), { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' Foo ', expect.not.stringContaining('FOO'), { ignoreCase: true }).result).toBe(false)
+            expect(compareText(' foo ', expect.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
         })
     })
 
