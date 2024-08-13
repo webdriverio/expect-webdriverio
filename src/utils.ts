@@ -222,7 +222,7 @@ export const compareText = (
 
 export const compareTextWithArray = (
     actual: string,
-    expectedArray: Array<string | RegExp>,
+    expectedArray: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher>,
     {
         ignoreCase = false,
         trim = false,
@@ -248,7 +248,17 @@ export const compareTextWithArray = (
     }
     if (ignoreCase) {
         actual = actual.toLowerCase()
-        expectedArray = expectedArray.map((item) => (typeof item !== 'string' ? item : item.toLowerCase()))
+        expectedArray = expectedArray.map((item) => {
+            if (typeof item === 'string') {
+                return item.toLowerCase()
+            }
+            if (isStringContainingMatcher(item)) {
+                return (item.toString() === 'StringContaining'
+                    ? expect.stringContaining(item.sample?.toString().toLowerCase())
+                    : expect.not.stringContaining(item.sample?.toString().toLowerCase())) as ExpectWebdriverIO.PartialMatcher
+            }
+            return item
+        })
     }
 
     const textInArray = expectedArray.some((expected) => {
