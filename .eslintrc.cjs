@@ -14,15 +14,8 @@ module.exports = {
         '@typescript-eslint/ban-ts-ignore': 0,
         '@typescript-eslint/no-namespace': 1,
         '@typescript-eslint/no-explicit-any': 0,
+        '@typescript-eslint/no-unsafe-function-type': 0,
         '@typescript-eslint/explicit-module-boundary-types': 0,
-        '@typescript-eslint/ban-types': [
-            'error',
-            {
-                types: {
-                    Function: false,
-                },
-            },
-        ],
         '@typescript-eslint/ban-ts-comment': 0,
         '@typescript-eslint/no-empty-interface': [
             'error',

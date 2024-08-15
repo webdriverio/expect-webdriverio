@@ -69,7 +69,7 @@ const waitUntil = async (
         }
 
         return !isNot
-    } catch (err) {
+    } catch {
         if (error) {
             throw error
         }
