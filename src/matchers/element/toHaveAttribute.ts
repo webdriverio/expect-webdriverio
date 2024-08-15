@@ -26,11 +26,11 @@ async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string,
     return compareText(attr, value, options)
 }
 
-export async function toHaveAttributeAndValue(received: WdioElementMaybePromise, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
+export async function toHaveAttributeAndValue(received: ChainablePromiseElement, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
-    let el = await received
+    let el = await received?.getElement()
     let attr
     const pass = await waitUntil(async () => {
         const result = await executeCommand.call(this, el, conditionAttrAndValue, options, [attribute, value, options])
@@ -49,7 +49,7 @@ export async function toHaveAttributeAndValue(received: WdioElementMaybePromise,
     } as ExpectWebdriverIO.AssertionResult
 }
 
-async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: string) {
+async function toHaveAttributeFn(received: ChainablePromiseElement | WebdriverIO.Element, attribute: string) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
@@ -98,17 +98,4 @@ export async function toHaveAttribute(
     return result
 }
 
-export function toHaveAttributeContaining(
-    el: WdioElementMaybePromise,
-    attribute: string,
-    value: string,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
-    return toHaveAttributeAndValue.call(this, el, attribute, value, {
-        ...options,
-        containing: true
-    })
-}
-
-export const toHaveAttrContaining = toHaveAttributeContaining
 export const toHaveAttr = toHaveAttribute

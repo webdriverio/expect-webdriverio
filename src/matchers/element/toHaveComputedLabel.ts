@@ -35,7 +35,7 @@ export async function toHaveComputedLabel(
         options,
     })
 
-    let el = await received
+    let el = await received?.getElement()
     let actualLabel
 
     const pass = await waitUntil(
@@ -74,14 +74,4 @@ export async function toHaveComputedLabel(
     })
 
     return result
-}
-
-/**
- * @deprecated
- */
-export function toHaveComputedLabelContaining(el: WebdriverIO.Element, label: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
-    return toHaveComputedLabel.call(this, el, label, {
-        ...options,
-        containing: true
-    })
 }

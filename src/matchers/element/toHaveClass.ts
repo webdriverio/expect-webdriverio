@@ -53,7 +53,7 @@ export async function toHaveElementClass(
 
     const attribute = 'class'
 
-    let el = await received
+    let el = await received?.getElement()
     let attr
 
     const pass = await waitUntil(async () => {
@@ -78,13 +78,6 @@ export async function toHaveElementClass(
     })
 
     return result
-}
-
-/**
- * @deprecated
- */
-export function toHaveElementClassContaining (...args: any) {
-    return toHaveClassContaining.call(this, ...args)
 }
 
 /**

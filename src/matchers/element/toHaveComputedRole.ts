@@ -35,7 +35,7 @@ export async function toHaveComputedRole(
         options,
     })
 
-    let el = await received
+    let el = await received?.getElement()
     let actualRole
 
     const pass = await waitUntil(
@@ -74,18 +74,4 @@ export async function toHaveComputedRole(
     })
 
     return result
-}
-
-/**
- * @deprecated
- */
-export function toHaveComputedRoleContaining(
-    el: WebdriverIO.Element,
-    role: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
-    return toHaveComputedRole.call(this, el, role, {
-        ...options,
-        containing: true
-    })
 }

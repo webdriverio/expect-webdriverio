@@ -9,17 +9,3 @@ export function toHaveValue(
 ) {
     return toHaveElementProperty.call(this, el, 'value', value, options)
 }
-
-/**
- * @deprecated
- */
-export function toHaveValueContaining(
-    el: WdioElementMaybePromise,
-    value: string | RegExp | ExpectWebdriverIO.PartialMatcher,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
-    return toHaveValue.call(this, el, value, {
-        ...options,
-        containing: true
-    })
-}
