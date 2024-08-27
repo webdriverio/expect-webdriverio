@@ -85,9 +85,9 @@
     "webdriverio": "9.0.7"
   },
   "peerDependencies": {
-    "@wdio/globals": "^9.0.0-alpha.350",
-    "@wdio/logger": "^9.0.0-alpha.350",
-    "webdriverio": "^9.0.0-alpha.350"
+    "@wdio/globals": "^9.0.0",
+    "@wdio/logger": "^9.0.0",
+    "webdriverio": "^9.0.0"
   },
   "peerDependenciesMeta": {
     "@wdio/globals": {
