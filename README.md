@@ -17,7 +17,7 @@
 1. `npm install expect` (**Jasmine** and **Jest** users should skip this step)
 2. `npm install expect-webdriverio`
 
-NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v8.0.0` or higher is required!
+NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v9.0.0` or higher is required!
 
 ## Usage
 
