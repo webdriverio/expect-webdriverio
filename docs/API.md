@@ -515,6 +515,8 @@ await expect(logo).toHaveSize({ width: 32, height: 32 })
 
 Checks amount of fetched elements using [`$$`](https://webdriver.io/docs/api/element/$$) command.
 
+**Note:** This matcher will update the passed array with the latest elements if the assertion passes. However, if you've reassigned the variable, you'll need to fetch the elements again.
+
 ##### Usage
 
 ```js

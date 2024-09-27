@@ -28,6 +28,7 @@ export async function toBeElementsArrayOfSize(
     }
 
     let elements = await received as WebdriverIO.ElementArray
+    const originalLength = elements.length;
     const pass = await waitUntil(async () => {
         /**
          * check numbers first before refetching elements
@@ -40,8 +41,13 @@ export async function toBeElementsArrayOfSize(
         return false
     }, isNot, {...numberOptions, ...options})
 
+    if (Array.isArray(received) && pass) {
+        received.length = 0;
+        received.push(...elements);
+    }
+
     const error = numberError(numberOptions)
-    const message = enhanceError(elements, error, elements.length, this, verb, expectation, '', numberOptions)
+    const message = enhanceError(elements, error, originalLength, this, verb, expectation, '', numberOptions)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

@@ -381,7 +381,7 @@ declare namespace ExpectWebdriverIO {
         toBeElementsArrayOfSize(
             size: number | ExpectWebdriverIO.NumberOptions,
             options?: ExpectWebdriverIO.NumberOptions
-        ): R
+        ): R & Promise<WebdriverIO.ElementArray>;
 
         // ==== network mock ====
         /**
