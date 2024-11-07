@@ -120,18 +120,18 @@ describe('toBeElementsArrayOfSize', () => {
             const receivedArray = createMockElementArray(2);
             (receivedArray.parent as any)._length = 5;
             (receivedArray.parent as any).$$ = vi.fn().mockReturnValue(createMockElementArray(5));
-            
+
             const result = await toBeElementsArrayOfSize.call({}, receivedArray, 5);
-            
+
             expect(result.pass).toBe(true);
             expect(receivedArray.length).toBe(5);
         });
 
         test('does not update the received array when assertion fails', async () => {
             const receivedArray = createMockElementArray(2);
-            
+
             const result = await toBeElementsArrayOfSize.call({}, receivedArray, 10);
-            
+
             expect(result.pass).toBe(false);
             expect(receivedArray.length).toBe(2);
         });
@@ -147,11 +147,19 @@ describe('toBeElementsArrayOfSize', () => {
                 foundWith: '$$',
                 props: [],
             } as unknown as WebdriverIO.ElementArray;
-            
+
             const result = await toBeElementsArrayOfSize.call({}, nonArrayEls, 5);
-            
+
             expect(result.pass).toBe(true);
             expect(nonArrayEls.length).toBe(2);
         });
+
+        test('does not alter the array when checking', async () => {
+            const receivedArray = createMockElementArray(2);
+            const result = await toBeElementsArrayOfSize.call({}, receivedArray, 2);
+
+            expect(result.pass).toBe(true);
+            expect(receivedArray.length).toBe(2);
+        })
     });
 })

@@ -42,8 +42,9 @@ export async function toBeElementsArrayOfSize(
     }, isNot, {...numberOptions, ...options})
 
     if (Array.isArray(received) && pass) {
-        received.length = 0;
-        received.push(...elements);
+        for (let index = originalLength; index < elements.length; index++) {
+            received.push(elements[index]);
+        }
     }
 
     const error = numberError(numberOptions)
