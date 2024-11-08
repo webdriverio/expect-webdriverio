@@ -67,10 +67,10 @@
     "@types/debug": "^4.1.12",
     "@types/jest": "^29.5.12",
     "@types/lodash.isequal": "^4.5.8",
-    "@types/node": "^22.5.0",
-    "@typescript-eslint/eslint-plugin": "^8.3.0",
-    "@typescript-eslint/parser": "^8.3.0",
-    "@vitest/coverage-v8": "^2.0.5",
+    "@types/node": "^22.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "@vitest/coverage-v8": "^2.1.4",
     "c8": "^10.1.2",
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",
@@ -81,8 +81,8 @@
     "rimraf": "^6.0.1",
     "shelljs": "^0.8.5",
     "typescript": "^5.5.4",
-    "vitest": "2.0.5",
-    "webdriverio": "9.2.8"
+    "vitest": "^2.1.4",
+    "webdriverio": "^9.2.11"
   },
   "peerDependencies": {
     "@wdio/globals": "^9.0.0",
