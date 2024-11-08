@@ -82,7 +82,7 @@
     "shelljs": "^0.8.5",
     "typescript": "^5.5.4",
     "vitest": "^2.1.4",
-    "webdriverio": "9.2.8"
+    "webdriverio": "^9.2.11"
   },
   "peerDependencies": {
     "@wdio/globals": "^9.0.0",
