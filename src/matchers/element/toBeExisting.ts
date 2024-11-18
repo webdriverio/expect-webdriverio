@@ -25,9 +25,9 @@ export async function toExist(
     return result
 }
 
-export function toBeExisting(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions): any {
+export function toBeExisting(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
     return aliasFn.call(this, toExist, { verb: 'be', expectation: 'existing' }, el, options)
 }
-export function toBePresent(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions): any {
+export function toBePresent(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
     return aliasFn.call(this, toExist, { verb: 'be', expectation: 'present' }, el, options)
 }

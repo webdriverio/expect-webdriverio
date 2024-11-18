@@ -1,20 +1,20 @@
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
-import { DEFAULT_OPTIONS } from '../../constants.js';
+import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
     compareText, compareTextWithArray,
     enhanceError,
     executeCommand,
     waitUntil,
     wrapExpectedWithArray
-} from '../../utils.js';
+} from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions) {
     const actualTextArray: string[] = []
     const resultArray: boolean[] = []
     let checkAllValuesMatchCondition: boolean
 
-    if(Array.isArray(el)){
-        for(const element of el){
+    if (Array.isArray(el)){
+        for (const element of el){
             const actualText = await element.getText()
             actualTextArray.push(actualText)
             const result = Array.isArray(text)
@@ -22,11 +22,10 @@ async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, tex
                 : compareText(actualText, text, options).result
             resultArray.push(result)
         }
-    checkAllValuesMatchCondition = resultArray.every(result => result)
-    }
-    else{
+        checkAllValuesMatchCondition = resultArray.every(result => result)
+    } else {
         const actualText = await (el as WebdriverIO.Element).getText()
-        actualTextArray.push(actualText);
+        actualTextArray.push(actualText)
         checkAllValuesMatchCondition = Array.isArray(text)
             ? compareTextWithArray(actualText, text, options).result
             : compareText(actualText, text, options).result

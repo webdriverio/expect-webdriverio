@@ -19,6 +19,7 @@ function getReceivedOrExpected(msg: string, type: string) {
 }
 
 export function removeColors(msg: string) {
+    // eslint-disable-next-line no-control-regex
     const s = msg.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
     return s
 }

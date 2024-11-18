@@ -18,7 +18,7 @@ export async function toBeElementsArrayOfSize(
     })
 
     // type check
-    let numberOptions: ExpectWebdriverIO.NumberOptions;
+    let numberOptions: ExpectWebdriverIO.NumberOptions
     if (typeof expectedValue === 'number') {
         numberOptions = { eq: expectedValue } as ExpectWebdriverIO.NumberOptions
     } else if (!expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')) {
@@ -28,7 +28,7 @@ export async function toBeElementsArrayOfSize(
     }
 
     let elements = await received as WebdriverIO.ElementArray
-    const originalLength = elements.length;
+    const originalLength = elements.length
     const pass = await waitUntil(async () => {
         /**
          * check numbers first before refetching elements
@@ -39,11 +39,11 @@ export async function toBeElementsArrayOfSize(
         }
         elements = await refetchElements(elements, numberOptions.wait, true)
         return false
-    }, isNot, {...numberOptions, ...options})
+    }, isNot, { ...numberOptions, ...options })
 
     if (Array.isArray(received) && pass) {
         for (let index = originalLength; index < elements.length; index++) {
-            received.push(elements[index]);
+            received.push(elements[index])
         }
     }
 

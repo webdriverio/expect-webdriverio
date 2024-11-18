@@ -17,9 +17,11 @@ expectLib.extend = (m) => {
     return extend(m)
 }
 
-expectLib.extend(wdioMatchers)
+type MatchersObject = Parameters<typeof expectLib.extend>[0]
+
+expectLib.extend(wdioMatchers as MatchersObject)
 export const expect = expectLib as unknown as ExpectWebdriverIO.Expect
-export const getConfig = (): any => DEFAULT_OPTIONS
+export const getConfig = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
 export const setDefaultOptions = (options = {}): void => {
     Object.entries(options).forEach(([key, value]) => {
         if (key in DEFAULT_OPTIONS) {

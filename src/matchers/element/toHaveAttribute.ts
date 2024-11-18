@@ -12,9 +12,9 @@ async function conditionAttr(el: WebdriverIO.Element, attribute: string) {
     const attr = await el.getAttribute(attribute)
     if (typeof attr !== 'string') {
         return { result: false, value: attr }
-    } else {
-        return { result: true, value: attr }
     }
+    return { result: true, value: attr }
+
 }
 
 async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {

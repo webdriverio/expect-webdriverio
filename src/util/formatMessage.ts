@@ -1,12 +1,12 @@
-import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils';
-import { equals } from '../jasmineUtils.js';
+import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
+import { equals } from '../jasmineUtils.js'
 
-const EXPECTED_LABEL = 'Expected';
-const RECEIVED_LABEL = 'Received';
+const EXPECTED_LABEL = 'Expected'
+const RECEIVED_LABEL = 'Received'
 const NOT_SUFFIX = ' [not]'
 const NOT_EXPECTED_LABEL = EXPECTED_LABEL + NOT_SUFFIX
 
-export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray): any => {
+export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
     if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
         // todo handle custom$ selector
@@ -15,7 +15,7 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray):
     return result
 }
 
-export const getSelectors = (el: WebdriverIO.Element | WebdriverIO.ElementArray): any => {
+export const getSelectors = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     const selectors = []
     let parent: WebdriverIO.Element | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | undefined
 
@@ -43,8 +43,8 @@ export const not = (isNot: boolean): string => {
 
 export const enhanceError = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
-    expected: any,
-    actual: any,
+    expected: unknown,
+    actual: unknown,
     context: { isNot: boolean },
     verb: string,
     expectation: string,
@@ -65,14 +65,10 @@ export const enhanceError = (
         verb += ' '
     }
 
-    let diffString
-    if (isNot && equals(actual, expected)) {
-        diffString = `${EXPECTED_LABEL}: ${printExpected(expected)}\n` +
-            `${RECEIVED_LABEL}: ${printReceived(actual)}`
-    } else {
-        // TODO this.extend should be configurable! The last param that is always true
-        diffString = printDiffOrStringify(expected, actual, EXPECTED_LABEL, RECEIVED_LABEL, true)
-    }
+    let diffString = isNot && equals(actual, expected)
+        ? `${EXPECTED_LABEL}: ${printExpected(expected)}\n${RECEIVED_LABEL}: ${printReceived(actual)}`
+        : printDiffOrStringify(expected, actual, EXPECTED_LABEL, RECEIVED_LABEL, true)
+
     if (isNot) {
         diffString = diffString
             .replace(EXPECTED_LABEL, NOT_EXPECTED_LABEL)
@@ -94,15 +90,15 @@ export const enhanceError = (
 export const enhanceErrorBe = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
     pass: boolean,
-    context: any,
+    context: { isNot: boolean },
     verb: string,
     expectation: string,
     options: ExpectWebdriverIO.CommandOptions
-): any => {
+) => {
     return enhanceError(subject, not(context.isNot) + expectation, not(!pass) + expectation, context, verb, expectation, '', options)
 }
 
-export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): any => {
+export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): string | number => {
     if (typeof options.eq === 'number') {
         return options.eq
     }
@@ -119,5 +115,5 @@ export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): any 
         return ` <= ${options.lte}`
     }
 
-    return "no params"
+    return 'no params'
 }

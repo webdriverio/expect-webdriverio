@@ -12,7 +12,7 @@ describe('toHaveElementClass', () => {
     beforeEach(async () => {
         el = await $('sel')
         el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
-            if(attribute === 'class') {
+            if (attribute === 'class') {
                 return 'some-class another-class yet-another-class'
             }
             return null
@@ -22,7 +22,7 @@ describe('toHaveElementClass', () => {
     test('success when class name is present', async () => {
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
-        const result = await toHaveElementClass.call({}, el, "some-class", { beforeAssertion, afterAssertion })
+        const result = await toHaveElementClass.call({}, el, 'some-class', { beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
         expect(beforeAssertion).toBeCalledWith({
             matcherName: 'toHaveElementClass',
@@ -50,18 +50,18 @@ describe('toHaveElementClass', () => {
     })
 
     test('success if array matches with class', async () => {
-        const result = await toHaveElementClass.call({}, el, ["some-class", "yet-another-class"])
+        const result = await toHaveElementClass.call({}, el, ['some-class', 'yet-another-class'])
         expect(result.pass).toBe(true)
     })
 
     test('failure if the classes do not match', async () => {
-        const result = await toHaveElementClass.call({}, el, "someclass", {message: "Not found!"})
+        const result = await toHaveElementClass.call({}, el, 'someclass', { message: 'Not found!' })
         expect(result.pass).toBe(false)
         expect(getExpectMessage(result.message())).toContain('Not found!')
     })
 
     test('failure if array does not match with class', async () => {
-        const result = await toHaveElementClass.call({}, el, ["someclass", "anotherclass"])
+        const result = await toHaveElementClass.call({}, el, ['someclass', 'anotherclass'])
         expect(result.pass).toBe(false)
     })
 
@@ -70,30 +70,30 @@ describe('toHaveElementClass', () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
                 return null
             })
-            const result = await toHaveElementClass.call({}, el, "some-class")
+            const result = await toHaveElementClass.call({}, el, 'some-class')
             expect(result.pass).toBe(false)
         })
 
         test('should pass when trimming the attribute', async () => {
             el.getAttribute = vi.fn().mockImplementation(() => {
-                return "  some-class  "
+                return '  some-class  '
             })
-            const result = await toHaveElementClass.call({}, el, "some-class", {trim: true})
+            const result = await toHaveElementClass.call({}, el, 'some-class', { trim: true })
             expect(result.pass).toBe(true)
         })
 
         test('should pass when ignore the case', async () => {
-            const result = await toHaveElementClass.call({}, el, "sOme-ClAsS", {ignoreCase: true})
+            const result = await toHaveElementClass.call({}, el, 'sOme-ClAsS', { ignoreCase: true })
             expect(result.pass).toBe(true)
         })
 
         test('should pass if containing', async () => {
-            const result = await toHaveElementClass.call({}, el, "some", {containing: true})
+            const result = await toHaveElementClass.call({}, el, 'some', { containing: true })
             expect(result.pass).toBe(true)
         })
 
         test('should pass if array ignores the case', async () => {
-            const result = await toHaveElementClass.call({}, el, ["sOme-ClAsS", "anOther-ClAsS"], {ignoreCase: true})
+            const result = await toHaveElementClass.call({}, el, ['sOme-ClAsS', 'anOther-ClAsS'], { ignoreCase: true })
             expect(result.pass).toBe(true)
         })
     })
@@ -102,7 +102,7 @@ describe('toHaveElementClass', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveElementClass.call({}, el, "test")
+            result = await toHaveElementClass.call({}, el, 'test')
         })
 
         test('failure', () => {

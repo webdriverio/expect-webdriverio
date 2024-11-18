@@ -12,7 +12,7 @@ describe('toHaveId', () => {
     beforeEach(async () => {
         el = await $('sel')
         el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
-            if(attribute === 'id') {
+            if (attribute === 'id') {
                 return 'test id'
             }
             return null
@@ -20,9 +20,9 @@ describe('toHaveId', () => {
     })
 
     test('success', async () => {
-        const result = await toHaveId.call({}, el, 'test id');
+        const result = await toHaveId.call({}, el, 'test id')
         expect(result.pass).toBe(true)
-    });
+    })
 
     describe('failure', () => {
         let result: any
@@ -30,7 +30,7 @@ describe('toHaveId', () => {
         const afterAssertion = vi.fn()
 
         beforeEach(async () => {
-            result = await toHaveId.call({}, el, 'an attribute', { beforeAssertion, afterAssertion });
+            result = await toHaveId.call({}, el, 'an attribute', { beforeAssertion, afterAssertion })
         })
 
         test('failure', () => {
@@ -59,6 +59,6 @@ describe('toHaveId', () => {
                 expect(getReceived(result.message())).toContain('test id')
             })
         })
-    });
+    })
 
-});
+})

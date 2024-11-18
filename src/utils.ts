@@ -13,14 +13,22 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const asymmetricMatcher =
   typeof Symbol === 'function' && Symbol.for
-    ? Symbol.for('jest.asymmetricMatcher')
-    : 0x13_57_a5
+      ? Symbol.for('jest.asymmetricMatcher')
+      : 0x13_57_a5
 
-export function isAsymmeyricMatcher(expected: any): expected is ExpectWebdriverIO.PartialMatcher {
-    return typeof expected === 'object' && '$$typeof' in expected && expected.$$typeof === asymmetricMatcher && expected.asymmetricMatch
+export function isAsymmeyricMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
+    return (
+        typeof expected === 'object' &&
+        typeof expected === 'object' &&
+        expected &&
+        '$$typeof' in expected &&
+        'asymmetricMatch' in expected &&
+        expected.$$typeof === asymmetricMatcher &&
+        Boolean(expected.asymmetricMatch)
+    ) as boolean
 }
 
-function isStringContainingMatcher(expected: any): expected is ExpectWebdriverIO.PartialMatcher {
+function isStringContainingMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
     return isAsymmeyricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
 }
 
@@ -167,7 +175,7 @@ export const compareText = (
         } else if (isStringContainingMatcher(expected)) {
             expected = (expected.toString() === 'StringContaining'
                 ? expect.stringContaining(expected.sample?.toString().toLowerCase())
-                : expect.not.stringContaining(expected.sample?.toString().toLowerCase())) as ExpectWebdriverIO.PartialMatcher   
+                : expect.not.stringContaining(expected.sample?.toString().toLowerCase())) as ExpectWebdriverIO.PartialMatcher
         }
     }
 
@@ -308,7 +316,7 @@ export const compareStyle = async (
     { ignoreCase = true, trim = false }
 ) => {
     let result = true
-    const actual: any = {}
+    const actual: Record<string, string | undefined> = {}
 
     for (const key in style) {
         const css: ParsedCSSValue = await actualEl.getCSSProperty(key)
@@ -336,7 +344,7 @@ export const compareStyle = async (
 }
 
 function aliasFn(
-    fn: (...args: any) => void,
+    fn: (...args: unknown[]) => void,
     {
         verb,
         expectation,
@@ -344,8 +352,8 @@ function aliasFn(
         verb?: string
         expectation?: string
     } = {},
-    ...args: any[]
-): any {
+    ...args: unknown[]
+): unknown {
     this.verb = verb
     this.expectation = expectation
     return fn.apply(this, args)

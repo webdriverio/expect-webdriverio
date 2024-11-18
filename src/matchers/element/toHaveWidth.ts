@@ -7,7 +7,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, width: number): Promise<any> {
+async function condition(el: WebdriverIO.Element, width: number) {
     const actualWidth = await el.getSize('width')
 
     return {

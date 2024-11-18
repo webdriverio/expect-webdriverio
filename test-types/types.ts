@@ -1,4 +1,6 @@
-const elem: WebdriverIO.Element = {} as any
+/// <reference types="@wdio/globals" />
+/// <reference types="expect-webdriverio" />
+const elem: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
 const wdioExpect = ExpectWebdriverIO.expect
 
 wdioExpect(elem).toBeDisabled()

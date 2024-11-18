@@ -11,7 +11,7 @@ import {
 async function condition(
     el: WebdriverIO.Element,
     property: string,
-    value?: any,
+    value: unknown,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { asString = false } = options
@@ -31,7 +31,7 @@ async function condition(
 
     prop = prop.toString()
 
-    return compareText(prop, value, options)
+    return compareText(prop, value as string | RegExp | ExpectWebdriverIO.PartialMatcher, options)
 }
 
 export async function toHaveElementProperty(
@@ -50,7 +50,7 @@ export async function toHaveElementProperty(
     })
 
     let el = await received?.getElement()
-    let prop: any
+    let prop: unknown
     const pass = await waitUntil(
         async () => {
             const result = await executeCommand.call(this, el, condition, options, [property, value])

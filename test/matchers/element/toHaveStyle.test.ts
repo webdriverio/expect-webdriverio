@@ -9,23 +9,23 @@ vi.mock('@wdio/globals')
 describe('toHaveStyle', () => {
     let el: any
     const mockStyle: { [key: string]: string; } = {
-        "font-family": "Faktum",
-        "font-size": "26px",
-        "color": "#000"
+        'font-family': 'Faktum',
+        'font-size': '26px',
+        'color': '#000'
     }
 
     test('wait for success', async () => {
         el = await $('sel')
         el._attempts = 2
-        let counter = 0;
+        let counter = 0
         el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
-            if(el._attempts > 0) {
-                counter ++;
-                if(counter == Object.keys(mockStyle).length) {
-                    counter = 0;
-                    el._attempts --;
+            if (el._attempts > 0) {
+                counter ++
+                if (counter === Object.keys(mockStyle).length) {
+                    counter = 0
+                    el._attempts --
                 }
-                return {value: "Wrong Value"};
+                return { value: 'Wrong Value' }
             }
             return { value: mockStyle[property] }
         })
@@ -52,12 +52,12 @@ describe('toHaveStyle', () => {
         el._attempts = 0
         let counter = 0
         el.getCSSProperty = vi.fn().mockImplementation(() => {
-            counter ++;
-            if(counter == Object.keys(mockStyle).length) {
-                counter = 0;
-                el._attempts ++;
+            counter ++
+            if (counter === Object.keys(mockStyle).length) {
+                counter = 0
+                el._attempts ++
             }
-            throw new Error('some error');
+            throw new Error('some error')
         })
         await expect(() => toHaveStyle.call({}, el, mockStyle, { ignoreCase: true }))
             .rejects.toThrow('some error')
@@ -68,10 +68,10 @@ describe('toHaveStyle', () => {
         el._attempts = 0
         let counter = 0
         el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
-            counter ++;
-            if(counter == Object.keys(mockStyle).length) {
-                counter = 0;
-                el._attempts ++;
+            counter ++
+            if (counter === Object.keys(mockStyle).length) {
+                counter = 0
+                el._attempts ++
             }
             return { value: mockStyle[property] }
         })
@@ -83,14 +83,14 @@ describe('toHaveStyle', () => {
     test('no wait - failure', async () => {
         const el: any = await $('sel')
         el._attempts = 0
-        let counter = 0;
+        let counter = 0
         el.getCSSProperty = vi.fn().mockImplementation(() => {
-            counter ++;
-            if(counter == Object.keys(mockStyle).length) {
-                counter = 0;
-                el._attempts ++;
+            counter ++
+            if (counter === Object.keys(mockStyle).length) {
+                counter = 0
+                el._attempts ++
             }
-            return { value: "Wrong Value" }
+            return { value: 'Wrong Value' }
         })
 
         const result = await toHaveStyle.call({}, el, mockStyle, { wait: 0 })
@@ -100,13 +100,13 @@ describe('toHaveStyle', () => {
 
     test('no wait - success', async () => {
         const el: any = await $('sel')
-        el._attempts = 0;
-        let counter = 0;
+        el._attempts = 0
+        let counter = 0
         el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
-            counter ++;
-            if(counter == Object.keys(mockStyle).length) {
-                counter = 0;
-                el._attempts ++;
+            counter ++
+            if (counter === Object.keys(mockStyle).length) {
+                counter = 0
+                el._attempts ++
             }
             return { value: mockStyle[property] }
         })
@@ -135,9 +135,9 @@ describe('toHaveStyle', () => {
         })
 
         const wrongStyle: { [key: string]: string; } = {
-            "font-family": "Incorrect Font",
-            "font-size": "100px",
-            "color": "#fff"
+            'font-family': 'Incorrect Font',
+            'font-size': '100px',
+            'color': '#fff'
         }
 
         const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 1 })
@@ -157,7 +157,7 @@ describe('toHaveStyle', () => {
     test('message shows correctly', async () => {
         const el: any = await $('sel')
         el.getCSSProperty = vi.fn().mockImplementation(() => {
-            return { value: "Wrong Value" }
+            return { value: 'Wrong Value' }
         })
         const result = await toHaveStyle.call({}, el, 'WebdriverIO' as any)
         expect(getExpectMessage(result.message())).toContain('to have style')
@@ -166,27 +166,27 @@ describe('toHaveStyle', () => {
     test('success if style matches with ignoreCase', async () => {
         const el: any = await $('sel')
         el._attempts = 0
-        let counter = 0;
+        let counter = 0
 
         const actualStyle: { [key: string]: string; } = {
-            "font-family": "Faktum",
-            "font-size": "26px",
-            "color": "#fff"
+            'font-family': 'Faktum',
+            'font-size': '26px',
+            'color': '#fff'
         }
 
         el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
-            counter ++;
-            if(counter == Object.keys(mockStyle).length) {
-                counter = 0;
-                el._attempts ++;
+            counter ++
+            if (counter === Object.keys(mockStyle).length) {
+                counter = 0
+                el._attempts ++
             }
             return { value: actualStyle[property] }
         })
 
         const alteredCaseStyle: { [key: string]: string; } = {
-            "font-family": "FaKtum",
-            "font-size": "26px",
-            "color": "#FFF"
+            'font-family': 'FaKtum',
+            'font-size': '26px',
+            'color': '#FFF'
         }
 
         const result = await toHaveStyle.call({}, el, alteredCaseStyle, { ignoreCase: true })
@@ -197,27 +197,27 @@ describe('toHaveStyle', () => {
     test('success if style matches with trim', async () => {
         const el: any = await $('sel')
         el._attempts = 0
-        let counter = 0;
+        let counter = 0
 
         const actualStyle: { [key: string]: string; } = {
-            "font-family": "   Faktum   ",
-            "font-size": "   26px   ",
-            "color": "    #fff     "
+            'font-family': '   Faktum   ',
+            'font-size': '   26px   ',
+            'color': '    #fff     '
         }
 
         el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
-            counter ++;
-            if(counter == Object.keys(mockStyle).length) {
-                counter = 0;
-                el._attempts ++;
+            counter ++
+            if (counter === Object.keys(mockStyle).length) {
+                counter = 0
+                el._attempts ++
             }
             return { value: actualStyle[property] }
         })
 
         const alteredSpaceStyle: { [key: string]: string; } = {
-            "font-family": "Faktum",
-            "font-size": "26px",
-            "color": "#fff"
+            'font-family': 'Faktum',
+            'font-size': '26px',
+            'color': '#fff'
         }
 
         const result = await toHaveStyle.call({}, el, alteredSpaceStyle, {   trim: true })

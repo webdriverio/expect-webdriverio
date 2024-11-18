@@ -12,7 +12,7 @@ describe('toHaveValue', () => {
     beforeEach(async () => {
         el = await $('sel')
         el._value = vi.fn().mockImplementation(() => {
-            return "This is an example value"
+            return 'This is an example value'
         })
     })
 
@@ -20,7 +20,7 @@ describe('toHaveValue', () => {
         test('exact passes', async () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
-            const result = await toHaveValue.call({}, el, "This is an example value", { beforeAssertion, afterAssertion })
+            const result = await toHaveValue.call({}, el, 'This is an example value', { beforeAssertion, afterAssertion })
             expect(result.pass).toBe(true)
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toHaveElementProperty',
@@ -50,7 +50,7 @@ describe('toHaveValue', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveValue.call({}, el, "webdriver")
+            result = await toHaveValue.call({}, el, 'webdriver')
         })
 
         test('does not pass', () => {

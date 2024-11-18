@@ -1,5 +1,5 @@
 import { test, describe, beforeEach, expect } from 'vitest'
-import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils';
+import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
 
 import { enhanceError, numberError } from '../../src/util/formatMessage.js'
 
@@ -49,7 +49,7 @@ describe('formatMessage', () => {
                 })
 
                 test('starting message', () => {
-                    expect(actual).toMatch("Expect Test Subject not to Test Verb Test Expectation")
+                    expect(actual).toMatch('Expect Test Subject not to Test Verb Test Expectation')
                 })
 
                 test('diff string', () => {
@@ -73,12 +73,12 @@ describe('formatMessage', () => {
                 })
 
                 test('starting message', () => {
-                    expect(actual).toMatch("Expect Test Subject not to Test Verb Test Expectation")
+                    expect(actual).toMatch('Expect Test Subject not to Test Verb Test Expectation')
                 })
 
                 test('diff string', () => {
-                    const diffString = `Expected [not]: ${printExpected("Test Same")}\n` +
-                        `Received      : ${printReceived("Test Same")}`
+                    const diffString = `Expected [not]: ${printExpected('Test Same')}\n` +
+                        `Received      : ${printReceived('Test Same')}`
                     expect(actual).toMatch(diffString)
                 })
             })

@@ -9,9 +9,9 @@ describe('refetchElements', () => {
     let els: WebdriverIO.ElementArray
 
     beforeEach(async () => {
-        els = await $$('parent');
+        els = await $$('parent')
         // @ts-ignore
-        els.parent._length = 5;
+        els.parent._length = 5
     })
 
     test('default', async () => {

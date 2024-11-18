@@ -11,7 +11,7 @@ describe('toHaveText', () => {
         let els: any
 
         beforeEach(async () => {
-            els = await $$('parent');
+            els = await $$('parent')
             const el1: any = await $('sel')
             el1._text = function (): string {
                 return 'WebdriverIO'
@@ -25,22 +25,22 @@ describe('toHaveText', () => {
         })
 
         test('should return true if the received element array matches the expected text array', async () => {
-            const result = await toHaveText.bind({})(els, ['WebdriverIO','Get Started'])
+            const result = await toHaveText.bind({})(els, ['WebdriverIO', 'Get Started'])
             expect(result.pass).toBe(true)
         })
 
         test('should return true if the received element array matches the expected text array & ignoreCase', async () => {
-            const result = await toHaveText.bind({})(els, ['webdriverio','get started'], { ignoreCase: true})
+            const result = await toHaveText.bind({})(els, ['webdriverio', 'get started'], { ignoreCase: true })
             expect(result.pass).toBe(true)
         })
 
         test('should return false if the received element array does not match the expected text array', async () => {
-            const result = await toHaveText.bind({})(els, ['webdriverio','get started'])
+            const result = await toHaveText.bind({})(els, ['webdriverio', 'get started'])
             expect(result.pass).toBe(false)
         })
 
         test('should return true if the expected message shows correctly', async () => {
-            const result = await toHaveText.bind({})(els, ['webdriverio','get started'], { message: 'Test'})
+            const result = await toHaveText.bind({})(els, ['webdriverio', 'get started'], { message: 'Test' })
             expect(getExpectMessage(result.message())).toContain('Test')
         })
     })

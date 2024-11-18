@@ -86,7 +86,7 @@ describe('toHaveElementProperty', () => {
     test('should return true if value is null', async () => {
         const el: any = await $('sel')
         el._value = function (): any {
-            return "Test Value"
+            return 'Test Value'
         }
 
         const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', null as any)

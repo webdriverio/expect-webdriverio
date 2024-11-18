@@ -73,7 +73,7 @@ export function $$(selector) {
     parent._length = length
     els.parent = parent
 
-    els.foundWith = "$$"
+    els.foundWith = '$$'
     // Required to check length prop
     els.props = []
     els.props.length = length

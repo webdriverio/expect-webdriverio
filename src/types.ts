@@ -10,5 +10,5 @@ export type WdioElementsMaybePromise =
     ChainablePromiseArray
 
 export type RawMatcherFn<Context extends MatcherContext = MatcherContext> = {
-    (this: Context, actual: any, ...expected: Array<any>): ExpectationResult;
+    (this: Context, actual: unknown, ...expected: unknown[]): ExpectationResult;
 }

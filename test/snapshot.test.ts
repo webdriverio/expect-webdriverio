@@ -18,7 +18,7 @@ test('supports snapshot testing', async () => {
         file: `${__dirname}/file`,
     } as Frameworks.Test)
 
-    const exp = expectExport;
+    const exp = expectExport
     expect(exp).toBeDefined()
     expect(exp({}).toMatchSnapshot).toBeDefined()
     expect(exp({}).toMatchInlineSnapshot).toBeDefined()

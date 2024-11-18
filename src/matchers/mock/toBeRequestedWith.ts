@@ -7,6 +7,11 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 const STR_LIMIT = 80
 const KEY_LIMIT = 12
 
+interface RequestMock {
+    request: local.NetworkRequestData,
+    response: local.NetworkResponseData
+}
+
 function reduceHeaders(headers: local.NetworkHeader[]) {
     return Object.entries(headers).reduce((acc, [, value]: [string, local.NetworkHeader]) => {
         acc[value.name] = value.value.value
@@ -28,7 +33,7 @@ export async function toBeRequestedWith(
         options,
     })
 
-    let actual: any | undefined
+    let actual: RequestMock | undefined
     const pass = await waitUntil(
         async () => {
             for (const call of received.calls) {
@@ -52,6 +57,10 @@ export async function toBeRequestedWith(
         isNot,
         { ...options, wait: isNot ? 0 : options.wait }
     )
+
+    if (!actual) {
+        throw new Error('No request was made')
+    }
 
     const message = enhanceError(
         'mock',
@@ -232,8 +241,16 @@ const headersMatcher = (
  * jasmine.any and jasmine.anything don't have `sample` property
  * @param filter
  */
-const isMatcher = (filter: any) => {
-    return typeof filter.__proto__?.asymmetricMatch === 'function'
+const isMatcher = (filter: unknown) => {
+    return (
+        typeof filter === 'object' &&
+        filter !== null &&
+        '__proto__' in filter &&
+        typeof filter.__proto__ === 'object' &&
+        filter.__proto__ &&
+        'asymmetricMatch' in filter.__proto__ &&
+        typeof filter.__proto__.asymmetricMatch === 'function'
+    )
 }
 
 // const tryParseBody = (jsonString: string | undefined, fallback: any = null) => {
@@ -258,7 +275,7 @@ const minifyRequestMock = (
         return requestMock
     }
 
-    const r: Record<string, any> = {
+    const r: Record<string, unknown> = {
         url: requestMock.request.url,
         method: requestMock.request.method,
         requestHeaders: requestMock.request.headers,
@@ -338,20 +355,20 @@ const shortenJson = (
     obj: ExpectWebdriverIO.JsonCompatible,
     lengthLimit = STR_LIMIT * 2,
     keyLimit = KEY_LIMIT
-) => {
+): ExpectWebdriverIO.JsonCompatible => {
     if (JSON.stringify(obj).length < lengthLimit) {
-        return obj
+        return obj as ExpectWebdriverIO.JsonCompatible
     }
 
     if (Array.isArray(obj)) {
-        const firstItem: any =
+        const firstItem: object | string =
             typeof obj[0] === 'object' && obj[0] !== null
                 ? shortenJson(obj[0], lengthLimit / 2, keyLimit / 4)
                 : shortenString(JSON.stringify(obj[0]))
-        return [firstItem, `... ${obj.length - 1} more items`]
+        return [firstItem, `... ${obj.length - 1} more items`] as string[]
     }
 
-    const minifiedObject: Record<string, any> = {}
+    const minifiedObject: Record<string, unknown> = {}
     const entries = Object.entries(obj)
 
     if (keyLimit >= 4) {
@@ -368,7 +385,7 @@ const shortenJson = (
         minifiedObject['...'] = `${entries.length} items in total`
     }
 
-    return minifiedObject
+    return minifiedObject as ExpectWebdriverIO.JsonCompatible
 }
 
 /**
@@ -379,7 +396,7 @@ const shortenString = (str: string, limit = STR_LIMIT) => {
     return str.length > limit ? str.substring(0, limit / 2 - 1) + '..' + str.substr(1 - limit / 2) : str
 }
 
-const deleteUndefinedValues = (obj: Record<string, any>, baseline = obj) => {
+const deleteUndefinedValues = (obj: Record<string, unknown>, baseline = obj) => {
     Object.keys(obj).forEach((k) => {
         if (typeof baseline[k] === 'undefined') {
             delete obj[k]
@@ -387,6 +404,6 @@ const deleteUndefinedValues = (obj: Record<string, any>, baseline = obj) => {
     })
 }
 
-export function toBeRequestedWithResponse(...args: any): any {
+export function toBeRequestedWithResponse(...args: unknown[]) {
     return toBeRequestedWith.call(this, ...args)
 }

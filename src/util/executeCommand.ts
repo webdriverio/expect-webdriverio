@@ -7,13 +7,13 @@
  */
 export async function executeCommand(
     el: WebdriverIO.Element | WebdriverIO.ElementArray,
-    condition: (el: WebdriverIO.Element | WebdriverIO.ElementArray, ...params: any[]) => Promise<{
+    condition: (el: WebdriverIO.Element | WebdriverIO.ElementArray, ...params: unknown[]) => Promise<{
         result: boolean;
-        value?: any;
+        value?: unknown;
     }>,
     options: ExpectWebdriverIO.DefaultOptions = {},
-    params: any[] = []
-): Promise<{ el: WebdriverIO.Element | WebdriverIO.ElementArray; success: boolean; values: any; }> {
+    params: unknown[] = []
+): Promise<{ el: WebdriverIO.Element | WebdriverIO.ElementArray; success: boolean; values: unknown; }> {
     const result = await condition(el, ...params, options)
     return {
         el,

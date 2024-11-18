@@ -22,7 +22,7 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
         return Array.isArray(value)
             ? compareTextWithArray(t, value, options).result
             : compareText(t, value, options).result
-    });
+    })
 
     return {
         value: actualClass,
@@ -33,7 +33,7 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
 /**
  * @deprecated
  */
-export function toHaveClass(...args: any): any {
+export function toHaveClass(...args: unknown[]) {
     return toHaveElementClass.call(this || {}, ...args)
 }
 

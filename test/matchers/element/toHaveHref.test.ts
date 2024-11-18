@@ -12,7 +12,7 @@ describe('toHaveHref', () => {
     beforeEach(async () => {
         el = await $('sel')
         el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
-            if(attribute === 'href') {
+            if (attribute === 'href') {
                 return 'https://www.example.com'
             }
             return null
@@ -22,7 +22,7 @@ describe('toHaveHref', () => {
     test('success when contains', async () => {
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
-        const result = await toHaveHref.call({}, el, 'https://www.example.com', { beforeAssertion, afterAssertion });
+        const result = await toHaveHref.call({}, el, 'https://www.example.com', { beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
         expect(beforeAssertion).toBeCalledWith({
             matcherName: 'toHaveHref',
@@ -35,13 +35,13 @@ describe('toHaveHref', () => {
             options: { beforeAssertion, afterAssertion },
             result
         })
-    });
+    })
 
     describe('failure when doesnt contain', () => {
         let result: any
 
         beforeEach(async () => {
-            result = await toHaveHref.call({}, el, 'an href');
+            result = await toHaveHref.call({}, el, 'an href')
         })
 
         test('failure', () => {

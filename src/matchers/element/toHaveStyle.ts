@@ -1,12 +1,12 @@
-import { DEFAULT_OPTIONS } from '../../constants.js';
-import type { WdioElementMaybePromise } from '../../types.js';
+import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 import {
     compareStyle,
     enhanceError,
     executeCommand,
     waitUntil,
     wrapExpectedWithArray
-} from '../../utils.js';
+} from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions) {
     return compareStyle(el, style, options)

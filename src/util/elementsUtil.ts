@@ -5,7 +5,7 @@
  * @param actual actual result or results array
  * @param expected expected result
  */
-export const wrapExpectedWithArray = (el: WebdriverIO.Element | WebdriverIO.ElementArray, actual: any, expected: any) => {
+export const wrapExpectedWithArray = (el: WebdriverIO.Element | WebdriverIO.ElementArray, actual: unknown, expected: unknown) => {
     if (Array.isArray(el) && el.length > 1 && Array.isArray(actual)) {
         expected = [expected]
     }

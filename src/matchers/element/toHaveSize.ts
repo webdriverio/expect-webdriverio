@@ -1,14 +1,14 @@
-import { DEFAULT_OPTIONS } from '../../constants.js';
-import type { WdioElementMaybePromise } from '../../types.js';
+import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 import {
     compareObject,
     enhanceError,
     executeCommand,
     waitUntil,
     wrapExpectedWithArray,
-} from '../../utils.js';
+} from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, size: { height: number; width: number }): Promise<any> {
+async function condition(el: WebdriverIO.Element, size: { height: number; width: number }) {
     const actualSize = await el.getSize()
 
     return compareObject(actualSize, size)
