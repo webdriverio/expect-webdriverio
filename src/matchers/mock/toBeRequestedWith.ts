@@ -58,10 +58,6 @@ export async function toBeRequestedWith(
         { ...options, wait: isNot ? 0 : options.wait }
     )
 
-    if (!actual) {
-        throw new Error('No request was made')
-    }
-
     const message = enhanceError(
         'mock',
         minifyRequestedWith(expectedValue),
@@ -265,11 +261,11 @@ const isMatcher = (filter: unknown) => {
  * shorten long url, headers, postData, body
  */
 const minifyRequestMock = (
-    requestMock: {
+    requestMock?: {
         request: local.NetworkRequestData,
         response: local.NetworkResponseData
     },
-    requestedWith: ExpectWebdriverIO.RequestedWith
+    requestedWith?: ExpectWebdriverIO.RequestedWith
 ) => {
     if (typeof requestMock === 'undefined') {
         return requestMock
