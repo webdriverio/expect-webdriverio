@@ -1,6 +1,6 @@
 // Snapshot v1
 
-exports[`undefined > test 1`] = `
+exports[`Fake scenario > Fake step 1`] = `
 {
   "cucum": "ber",
 }

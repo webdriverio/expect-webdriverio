@@ -36,8 +36,9 @@ test('supports snapshot testing', async () => {
 
 test('supports cucumber snapshot testing', async () => {
     await service.beforeStep({
-        text: 'test',
+        text: 'Fake step',
     } as Frameworks.PickleStep, {
+        name: 'Fake scenario',
         uri: `${__dirname}/file.feature`,
     } as Frameworks.Scenario)
 
