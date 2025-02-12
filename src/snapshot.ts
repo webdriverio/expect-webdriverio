@@ -82,6 +82,15 @@ export class SnapshotService implements Services.ServiceInstance {
         await this.#snapshotClient.startCurrentRun(test.file, test.fullTitle, this.#options)
     }
 
+    async beforeStep(step: Frameworks.PickleStep, scenario: Frameworks.Scenario) {
+        const file = scenario.uri
+        const testName = `${scenario.name} > ${step.text}`
+
+        this.#currentFilePath = file
+        this.#currentTestName = testName
+        await this.#snapshotClient.startCurrentRun(file, testName, this.#options)
+    }
+
     async after() {
         const result = await this.#snapshotClient.finishCurrentRun()
         if (!result) {
