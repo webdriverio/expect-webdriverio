@@ -33,3 +33,24 @@ test('supports snapshot testing', async () => {
         .then(() => true, () => false)
     expect(expectedSnapfileExist).toBe(true)
 })
+
+test('supports cucumber snapshot testing', async () => {
+    await service.beforeStep({
+        text: 'Fake step',
+    } as Frameworks.PickleStep, {
+        name: 'Fake scenario',
+        uri: `${__dirname}/file.feature`,
+    } as Frameworks.Scenario)
+
+    const exp = expectExport
+    expect(exp).toBeDefined()
+    expect(exp({}).toMatchSnapshot).toBeDefined()
+    expect(exp({}).toMatchInlineSnapshot).toBeDefined()
+    await exp({ cucum: 'ber' }).toMatchSnapshot()
+    await service.after()
+
+    const expectedSnapfileExist = await fs.access(path.resolve(__dirname, 'file.feature.snap'))
+        .then(() => true, () => false)
+    expect(expectedSnapfileExist).toBe(true)
+})
+
