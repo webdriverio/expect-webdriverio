@@ -34,10 +34,10 @@ async function condition(
     return compareText(prop, value as string | RegExp | ExpectWebdriverIO.PartialMatcher, options)
 }
 
-export async function toHaveElementProperty(
+export async function toHaveElementProperty<T>(
     received: WdioElementMaybePromise,
     property: string,
-    value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    value?: T,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot
