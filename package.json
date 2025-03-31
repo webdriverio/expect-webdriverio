@@ -70,7 +70,7 @@
     "@types/node": "^22.9.0",
     "@wdio/types": "^9.9.0",
     "@vitest/coverage-v8": "^3.0.5",
-    "@wdio/eslint": "^0.0.5",
+    "@wdio/eslint": "^0.1.0",
     "c8": "^10.1.2",
     "eslint": "^9.15.0",
     "husky": "^9.1.5",
