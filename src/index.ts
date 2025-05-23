@@ -4,6 +4,9 @@ import type { RawMatcherFn } from './types.js'
 
 import wdioMatchers from './matchers.js'
 import { DEFAULT_OPTIONS } from './constants.js'
+import createSoftExpect from './softExpect.js'
+import { SoftAssertService } from './softAssert.js'
+import { SoftAssertionService } from './softAssertService.js'
 
 export const matchers = new Map<string, RawMatcherFn>()
 
@@ -20,7 +23,28 @@ expectLib.extend = (m) => {
 type MatchersObject = Parameters<typeof expectLib.extend>[0]
 
 expectLib.extend(wdioMatchers as MatchersObject)
-export const expect = expectLib as unknown as ExpectWebdriverIO.Expect
+
+// Extend the expect object with soft assertions
+const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect
+Object.defineProperty(expectWithSoft, 'soft', {
+    value: <T = unknown>(actual: T) => createSoftExpect(actual)
+})
+
+// Add soft assertions utility methods
+Object.defineProperty(expectWithSoft, 'getSoftFailures', {
+    value: (testId?: string) => SoftAssertService.getInstance().getFailures(testId)
+})
+
+Object.defineProperty(expectWithSoft, 'assertSoftFailures', {
+    value: (testId?: string) => SoftAssertService.getInstance().assertNoFailures(testId)
+})
+
+Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
+    value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId)
+})
+
+export const expect = expectWithSoft
+
 export const getConfig = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
 export const setDefaultOptions = (options = {}): void => {
     Object.entries(options).forEach(([key, value]) => {
@@ -36,6 +60,11 @@ export const setOptions = setDefaultOptions
  * export snapshot utilities
  */
 export { SnapshotService } from './snapshot.js'
+
+/**
+ * export soft assertion utilities
+ */
+export { SoftAssertService, SoftAssertionService }
 
 /**
  * export utils
