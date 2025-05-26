@@ -31,8 +31,12 @@ declare namespace ExpectWebdriverIO {
         assertNoFailures(testId?: string): void;
     }
 
+    interface SoftAssertionServiceOptions {
+        autoAssertOnTestEnd?: boolean;
+    }
+
     class SoftAssertionService implements import('@wdio/types').Services.ServiceInstance {
-        constructor();
+        constructor(serviceOptions?: SoftAssertionServiceOptions, capabilities?: any, config?: any);
         beforeTest(test: import('@wdio/types').Frameworks.Test): void;
         beforeStep(step: import('@wdio/types').Frameworks.PickleStep, scenario: import('@wdio/types').Frameworks.Scenario): void;
         afterTest(test: import('@wdio/types').Frameworks.Test, context: any, result: import('@wdio/types').Frameworks.TestResult): void;

@@ -2,14 +2,25 @@ import type { Services } from '@wdio/types'
 import type { Frameworks } from '@wdio/types'
 import { SoftAssertService } from './softAssert'
 
+export interface SoftAssertionServiceOptions {
+    autoAssertOnTestEnd?: boolean;
+}
+
 /**
  * WebdriverIO service to integrate soft assertions into the test lifecycle
  */
 export class SoftAssertionService implements Services.ServiceInstance {
     private softAssertService: SoftAssertService
+    public options: SoftAssertionServiceOptions
 
-    constructor() {
+    constructor(
+        serviceOptions?: SoftAssertionServiceOptions,
+    ) {
         this.softAssertService = SoftAssertService.getInstance()
+        this.options = {
+            autoAssertOnTestEnd: true,
+            ...serviceOptions
+        }
     }
 
     /**
@@ -31,9 +42,11 @@ export class SoftAssertionService implements Services.ServiceInstance {
     /**
      * Hook after a test completes
      */
-    afterTest(test: Frameworks.Test, _: any, result: Frameworks.TestResult) {
-        // Only assert failures if the test hasn't already failed for another reason
-        if (!result.error) {
+    afterTest(test: Frameworks.Test, _: unknown, result: Frameworks.TestResult) {
+        // Only assert failures if:
+        // 1. The test hasn't yet failed for another reason
+        // 2. Auto-assertion is enabled in the configuration
+        if (!result.error && this.options.autoAssertOnTestEnd) {
             try {
                 const testId = this.getTestId(test)
                 this.softAssertService.assertNoFailures(testId)

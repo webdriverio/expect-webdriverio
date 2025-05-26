@@ -63,7 +63,7 @@ expect.clearSoftFailures();
 
 ### Integration with Test Frameworks
 
-The soft assertions feature integrates with WebdriverIO's test runner automatically. It will report all soft assertion failures at the end of each test (Mocha/Jasmine) or step (Cucumber).
+The soft assertions feature integrates with WebdriverIO's test runner automatically. By default, it will report all soft assertion failures at the end of each test (Mocha/Jasmine) or step (Cucumber).
 
 To use with WebdriverIO, add the SoftAssertionService to your services list:
 
@@ -81,6 +81,36 @@ export const config = {
 }
 ```
 
+#### Configuration Options
+
+The SoftAssertionService can be configured with options to control its behavior:
+
+```js
+// wdio.conf.js
+import { SoftAssertionService } from 'expect-webdriverio'
+
+export const config = {
+  // ...
+  services: [
+    // ...other services
+    [SoftAssertionService, {
+      // Disable automatic assertion at the end of tests (default: true)
+      autoAssertOnTestEnd: false
+    }]
+  ],
+  // ...
+}
+```
+
+##### autoAssertOnTestEnd
+
+- **Type**: `boolean`
+- **Default**: `true`
+
+When set to `true` (default), the service will automatically assert all soft assertions at the end of each test and throw an aggregated error if any failures are found. When set to `false`, you must manually call `expect.assertSoftFailures()` to verify soft assertions.
+
+This is useful if you want full control over when soft assertions are verified or if you want to handle soft assertion failures in a custom way.
+
 ## Default Options
 
 These default options below are connected to the [`waitforTimeout`](https://webdriver.io/docs/options#waitfortimeout) and [`waitforInterval`](https://webdriver.io/docs/options#waitforinterval) options set in the config.
@@ -90,7 +120,7 @@ Only set the options below if you want to wait for specific timeouts for your as
 ```js
 {
     wait: 2000, // ms to wait for expectation to succeed
-    interval: 100, // interval between attempts
+        interval: 100, // interval between attempts
 }
 ```
 
@@ -125,7 +155,7 @@ Every matcher can take several options that allows you to modify the assertion:
 
 ##### String Options
 
-This option can be applied in addition to the command options when strings are being asserted. 
+This option can be applied in addition to the command options when strings are being asserted.
 
 | Name | Type | Details |
 | ---- | ---- | ------- |

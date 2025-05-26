@@ -113,7 +113,6 @@ describe('Soft Assertions', () => {
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('test-hooks-1', 'test hooks', 'test file')
 
-            // Mock a test failure
             const error = new Error('Test failure')
             softService.addFailure(error, 'toBeDisplayed')
 
@@ -327,6 +326,158 @@ describe('Soft Assertions', () => {
             // Should either limit failures or handle large numbers gracefully
             expect(failures.length).toBeGreaterThan(0)
             expect(failures.length).toBeLessThanOrEqual(150)
+        })
+    })
+
+    describe('SoftAssertionService Configuration', () => {
+        beforeEach(() => {
+            expectWdio.clearSoftFailures()
+        })
+
+        it('should auto-assert failures by default', () => {
+            const softService = SoftAssertService.getInstance()
+
+            const testId = 'test file::config default'
+            softService.setCurrentTest(testId, 'config default', 'test file')
+
+            const error = new Error('Test failure')
+            softService.addFailure(error, 'toBeDisplayed')
+
+            const service = new SoftAssertionService()
+
+            const testResult = { passed: true, error: undefined } as TestResult
+
+            service.afterTest({
+                file: 'test file',
+                parent: '',
+                title: 'config default',
+                fullName: '',
+                ctx: undefined,
+                type: '',
+                fullTitle: '',
+                pending: false
+            }, null, testResult)
+
+            expect(testResult.passed).toBe(false)
+            expect(testResult.error).toBeDefined()
+        })
+
+        it('should not auto-assert when autoAssertOnTestEnd is false', () => {
+            const softService = SoftAssertService.getInstance()
+
+            const testId = 'test file::config disabled'
+            softService.setCurrentTest(testId, 'config disabled', 'test file')
+
+            const error = new Error('Test failure')
+            softService.addFailure(error, 'toBeDisplayed')
+
+            const service = new SoftAssertionService({ autoAssertOnTestEnd: false })
+
+            // Create mock test result object
+            const testResult = { passed: true, error: undefined } as TestResult
+
+            // Call afterTest hook - should NOT update the result because auto-assert is disabled
+            service.afterTest({
+                file: 'test file',
+                parent: '',
+                title: 'config disabled',
+                fullName: '',
+                ctx: undefined,
+                type: '',
+                fullTitle: '',
+                pending: false
+            }, null, testResult)
+
+            expect(testResult.passed).toBe(true)
+            expect(testResult.error).toBeUndefined()
+
+            const failures = expectWdio.getSoftFailures(testId)
+            expect(failures.length).toBe(1)
+        })
+
+        it('should still auto-assert with explicit autoAssertOnTestEnd: true', () => {
+            const softService = SoftAssertService.getInstance()
+
+            const testId = 'test file::config explicit'
+            softService.setCurrentTest(testId, 'config explicit', 'test file')
+
+            const error = new Error('Test failure')
+            softService.addFailure(error, 'toBeDisplayed')
+
+            const service = new SoftAssertionService({ autoAssertOnTestEnd: true })
+
+            const testResult = { passed: true, error: undefined } as TestResult
+
+            service.afterTest({
+                file: 'test file',
+                parent: '',
+                title: 'config explicit',
+                fullName: '',
+                ctx: undefined,
+                type: '',
+                fullTitle: '',
+                pending: false
+            }, null, testResult)
+
+            expect(testResult.passed).toBe(false)
+            expect(testResult.error).toBeDefined()
+        })
+
+        it('should skip auto-assert if test already has an error', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('config-existing-error-test', 'config existing error', 'test file')
+
+            const error = new Error('Soft assertion failure')
+            softService.addFailure(error, 'toBeDisplayed')
+
+            const service = new SoftAssertionService()
+
+            const existingError = new Error('Pre-existing test error')
+            const testResult = { passed: false, error: existingError } as TestResult
+
+            service.afterTest({
+                file: 'test file',
+                parent: '',
+                title: 'config existing error',
+                fullName: '',
+                ctx: undefined,
+                type: '',
+                fullTitle: '',
+                pending: false
+            }, null, testResult)
+
+            expect(testResult.passed).toBe(false)
+            expect(testResult.error).toBe(existingError)
+            expect(testResult.error?.message).toBe('Pre-existing test error')
+        })
+
+        it('should accept undefined options and use defaults', () => {
+            const service = new SoftAssertionService(undefined)
+            expect(service).toBeDefined()
+
+            const softService = SoftAssertService.getInstance()
+
+            const testId = 'test file::config undefined'
+            softService.setCurrentTest(testId, 'config undefined', 'test file')
+
+            const error = new Error('Test failure')
+            softService.addFailure(error, 'toBeDisplayed')
+
+            const testResult = { passed: true, error: undefined } as TestResult
+
+            service.afterTest({
+                file: 'test file',
+                parent: '',
+                title: 'config undefined',
+                fullName: '',
+                ctx: undefined,
+                type: '',
+                fullTitle: '',
+                pending: false
+            }, null, testResult)
+
+            expect(testResult.passed).toBe(false)
+            expect(testResult.error).toBeDefined()
         })
     })
 })

@@ -64,7 +64,8 @@ export { SnapshotService } from './snapshot.js'
 /**
  * export soft assertion utilities
  */
-export { SoftAssertService, SoftAssertionService }
+export { SoftAssertService } from './softAssert.js'
+export { SoftAssertionService, type SoftAssertionServiceOptions } from './softAssertService.js'
 
 /**
  * export utils
