@@ -6,7 +6,6 @@ import wdioMatchers from './matchers.js'
 import { DEFAULT_OPTIONS } from './constants.js'
 import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
-import { SoftAssertionService } from './softAssertService.js'
 
 export const matchers = new Map<string, RawMatcherFn>()
 
