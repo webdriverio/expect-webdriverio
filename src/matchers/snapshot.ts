@@ -1,7 +1,7 @@
 import path from 'node:path'
 import type { AssertionError } from 'node:assert'
 
-import { expect } from '../index.js'
+import { expect } from 'expect'
 import { SnapshotService } from '../snapshot.js'
 
 interface InlineSnapshotOptions {

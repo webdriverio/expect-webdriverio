@@ -1,7 +1,7 @@
 import isEqual from 'lodash.isequal'
 import type { ParsedCSSValue } from 'webdriverio'
 
-import { expect } from './index.js'
+import { expect } from 'expect'
 
 import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types.js'
