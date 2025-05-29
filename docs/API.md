@@ -120,7 +120,7 @@ Only set the options below if you want to wait for specific timeouts for your as
 ```js
 {
     wait: 2000, // ms to wait for expectation to succeed
-   interval: 100, // interval between attempts
+    interval: 100, // interval between attempts
 }
 ```
 
