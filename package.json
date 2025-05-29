@@ -58,7 +58,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@vitest/snapshot": "^2.0.5",
+    "@vitest/snapshot": "^3.1.4",
     "expect": "^29.7.0",
     "jest-matcher-utils": "^29.7.0",
     "lodash.isequal": "^4.5.0"
