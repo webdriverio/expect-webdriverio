@@ -2,6 +2,115 @@
 
 When you're writing tests, you often need to check that values meet certain conditions. `expect` gives you access to a number of "matchers" that let you validate different things on the `browser`, an `element` or `mock` object.
 
+## Soft Assertions
+
+Soft assertions allow you to continue test execution even when an assertion fails. This is useful when you want to check multiple conditions in a test and collect all failures rather than stopping at the first failure. Failures are collected and reported at the end of the test.
+
+### Usage
+
+```js
+// Mocha example
+it('product page smoke', async () => {
+  // These won't throw immediately if they fail
+  await expect.soft(await $('h1').getText()).toEqual('Basketball Shoes');
+  await expect.soft(await $('#price').getText()).toMatch(/€\d+/);
+
+  // Regular assertions still throw immediately
+  await expect(await $('.add-to-cart').isClickable()).toBe(true);
+});
+
+// At the end of the test, all soft assertion failures
+// will be reported together with their details
+```
+
+### Soft Assertion API
+
+#### expect.soft()
+
+Creates a soft assertion that collects failures instead of immediately throwing errors.
+
+```js
+await expect.soft(actual).toBeDisplayed();
+await expect.soft(actual).not.toHaveText('Wrong text');
+```
+
+#### expect.getSoftFailures()
+
+Get all collected soft assertion failures for the current test.
+
+```js
+const failures = expect.getSoftFailures();
+console.log(`There are ${failures.length} soft assertion failures`);
+```
+
+#### expect.assertSoftFailures()
+
+Manually assert all collected soft failures. This will throw an aggregated error if any soft assertions have failed.
+
+```js
+// Manually throw if any soft assertions have failed
+expect.assertSoftFailures();
+```
+
+#### expect.clearSoftFailures()
+
+Clear all collected soft assertion failures for the current test.
+
+```js
+// Clear all collected failures
+expect.clearSoftFailures();
+```
+
+### Integration with Test Frameworks
+
+The soft assertions feature integrates with WebdriverIO's test runner automatically. By default, it will report all soft assertion failures at the end of each test (Mocha/Jasmine) or step (Cucumber).
+
+To use with WebdriverIO, add the SoftAssertionService to your services list:
+
+```js
+// wdio.conf.js
+import { SoftAssertionService } from 'expect-webdriverio'
+
+export const config = {
+  // ...
+  services: [
+    // ...other services
+    [SoftAssertionService]
+  ],
+  // ...
+}
+```
+
+#### Configuration Options
+
+The SoftAssertionService can be configured with options to control its behavior:
+
+```js
+// wdio.conf.js
+import { SoftAssertionService } from 'expect-webdriverio'
+
+export const config = {
+  // ...
+  services: [
+    // ...other services
+    [SoftAssertionService, {
+      // Disable automatic assertion at the end of tests (default: true)
+      autoAssertOnTestEnd: false
+    }]
+  ],
+  // ...
+}
+```
+
+##### autoAssertOnTestEnd
+
+- **Type**: `boolean`
+- **Default**: `true`
+
+When set to `true` (default), the service will automatically assert all soft assertions at the end of each test and throw an aggregated error if any failures are found. When set to `false`, you must manually call `expect.assertSoftFailures()` to verify soft assertions.
+
+This is useful if you want full control over when soft assertions are verified or if you want to handle soft assertion failures in a custom way.
+
 ## Default Options
 
 These default options below are connected to the [`waitforTimeout`](https://webdriver.io/docs/options#waitfortimeout) and [`waitforInterval`](https://webdriver.io/docs/options#waitforinterval) options set in the config.
@@ -46,7 +155,7 @@ Every matcher can take several options that allows you to modify the assertion:
 
 ##### String Options
 
-This option can be applied in addition to the command options when strings are being asserted. 
+This option can be applied in addition to the command options when strings are being asserted.
 
 | Name | Type | Details |
 | ---- | ---- | ------- |

@@ -14,6 +14,35 @@ declare namespace ExpectWebdriverIO {
         }
     }
 
+    interface SoftFailure {
+        error: Error;
+        matcherName: string;
+        location?: string;
+    }
+
+    class SoftAssertService {
+        static getInstance(): SoftAssertService;
+        setCurrentTest(testId: string, testName?: string, testFile?: string): void;
+        clearCurrentTest(): void;
+        getCurrentTestId(): string | null;
+        addFailure(error: Error, matcherName: string): void;
+        getFailures(testId?: string): SoftFailure[];
+        clearFailures(testId?: string): void;
+        assertNoFailures(testId?: string): void;
+    }
+
+    interface SoftAssertionServiceOptions {
+        autoAssertOnTestEnd?: boolean;
+    }
+
+    class SoftAssertionService implements import('@wdio/types').Services.ServiceInstance {
+        constructor(serviceOptions?: SoftAssertionServiceOptions, capabilities?: any, config?: any);
+        beforeTest(test: import('@wdio/types').Frameworks.Test): void;
+        beforeStep(step: import('@wdio/types').Frameworks.PickleStep, scenario: import('@wdio/types').Frameworks.Scenario): void;
+        afterTest(test: import('@wdio/types').Frameworks.Test, context: any, result: import('@wdio/types').Frameworks.TestResult): void;
+        afterStep(step: import('@wdio/types').Frameworks.PickleStep, scenario: import('@wdio/types').Frameworks.Scenario, result: { passed: boolean, error?: Error }): void;
+    }
+
     interface AssertionResult {
         pass: boolean
         message(): string
@@ -446,6 +475,57 @@ declare namespace ExpectWebdriverIO {
         $$typeof: symbol
         asymmetricMatch(...args: any[]): boolean
         toString(): string
+    }
+
+    /**
+     * expect function declaration, containing two generics:
+     *  - T: the type of the actual value, e.g. WebdriverIO.Browser or WebdriverIO.Element
+     *  - R: the type of the return value, e.g. Promise<void> or void
+     */
+    interface Expect {
+        <T = unknown, R extends void | Promise<void> = void | Promise<void>>(actual: T): Matchers<R, T>
+
+        /**
+         * Creates a soft assertion wrapper around standard expect
+         * Soft assertions record failures but don't throw errors immediately
+         * All failures are collected and reported at the end of the test
+         */
+        soft<T = unknown>(actual: T): Matchers<Promise<void>, T>
+
+        /**
+         * Get all current soft assertion failures
+         */
+        getSoftFailures(testId?: string): SoftFailure[]
+
+        /**
+         * Manually assert all soft failures (throws an error if any failures exist)
+         */
+        assertSoftFailures(testId?: string): void
+
+        /**
+         * Clear all current soft assertion failures
+         */
+        clearSoftFailures(testId?: string): void
+
+        // Standard asymmetric matchers from Jest
+        extend(map: Record<string, Function>): void
+        anything(): PartialMatcher
+        any(sample: unknown): PartialMatcher
+        stringContaining(expected: string): PartialMatcher
+        objectContaining(sample: Record<string, unknown>): PartialMatcher
+        arrayContaining(sample: Array<unknown>): PartialMatcher
+        stringMatching(expected: string | RegExp): PartialMatcher
+        not: AsymmetricMatchers
+    }
+
+    interface AsymmetricMatchers {
+        any(expectedObject: any): PartialMatcher
+        anything(): PartialMatcher
+        arrayContaining(sample: Array<unknown>): PartialMatcher
+        objectContaining(sample: Record<string, unknown>): PartialMatcher
+        stringContaining(expected: string): PartialMatcher
+        stringMatching(expected: string | RegExp): PartialMatcher
+        not: AsymmetricMatchers
     }
 }
 
