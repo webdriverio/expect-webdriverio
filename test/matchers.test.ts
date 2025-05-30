@@ -7,10 +7,7 @@ const ALL_MATCHERS = [
     'toHaveTitle',
     'toHaveUrl',
 
-    // elements
-    'toBeElementsArrayOfSize',
-
-    // elements
+    // element
     'toBeClickable',
     'toBeDisabled',
     'toBeDisplayed',
@@ -29,15 +26,22 @@ const ALL_MATCHERS = [
     'toHaveClass',
     'toHaveElementClass',
     'toHaveClassContaining',
+    'toHaveComputedLabel',
+    'toHaveComputedRole',
+    'toHaveElementProperty',
+    'toHaveHeight',
     'toHaveHref',
     'toHaveLink',
     'toHaveHTML',
     'toHaveId',
     'toHaveSize',
-    'toHaveElementProperty',
+    'toHaveStyle',
     'toHaveText',
     'toHaveValue',
-    'toHaveStyle',
+    'toHaveWidth',
+
+    // elements
+    'toBeElementsArrayOfSize',
 
     // mock
     'toBeRequested',

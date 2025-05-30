@@ -4,6 +4,6 @@ import { setOptions, expect as expectExport, matchers, utils } from '../src/inde
 test('index', () => {
     expect(setOptions.name).toBe('setDefaultOptions')
     expect(expectExport).toBeDefined()
-    expect(matchers).toBeDefined()
     expect(utils.compareText).toBeDefined()
+    expect(matchers.size).toEqual(41)
 })

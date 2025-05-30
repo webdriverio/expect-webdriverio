@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 import { getExpectMessage, getReceived, matcherNameToString } from '../__fixtures__/utils.js'
-import Matchers from '../../src/matchers.js'
+import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
 
