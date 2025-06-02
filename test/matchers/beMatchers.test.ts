@@ -29,7 +29,7 @@ describe('be* matchers', () => {
                     return true
                 }
 
-                const result = await fn.call({}, el)
+                const result = await fn.call({}, el) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(true)
                 // @ts-expect-error mock feature
                 expect(el._attempts).toBe(0)
@@ -56,7 +56,7 @@ describe('be* matchers', () => {
                     return true
                 }
 
-                const result = await fn.call({}, el)
+                const result = await fn.call({}, el) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(true)
                 // @ts-expect-error mock feature
                 expect(el._attempts).toBe(1)
@@ -72,7 +72,7 @@ describe('be* matchers', () => {
                     return false
                 }
 
-                const result = await fn.call({}, el, { wait: 0 })
+                const result = await fn.call({}, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(false)
                 // @ts-expect-error mock feature
                 expect(el._attempts).toBe(1)
@@ -88,14 +88,14 @@ describe('be* matchers', () => {
                     return true
                 }
 
-                const result = await fn.call({}, el, { wait: 0 })
+                const result = await fn.call({}, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(true)
                 // @ts-expect-error mock feature
                 expect(el._attempts).toBe(1)
             })
 
             test('not - failure', async () => {
-                const result = await fn.call({ isNot: true }, $('sel'), { wait: 0 })
+                const result = await fn.call({ isNot: true }, $('sel'), { wait: 0 }) as ExpectWebdriverIO.AssertionResult
                 const received = getReceived(result.message())
 
                 expect(received).not.toContain('not')
@@ -108,7 +108,7 @@ describe('be* matchers', () => {
                 el._value = function (): boolean {
                     return false
                 }
-                const result = await fn.call({ isNot: true }, el, { wait: 0 })
+                const result = await fn.call({ isNot: true }, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
                 const received = getReceived(result.message())
 
                 expect(received).toContain('not')
@@ -116,7 +116,7 @@ describe('be* matchers', () => {
             })
 
             test('not - failure (with wait)', async () => {
-                const result = await fn.call({ isNot: true }, $('sel'), { wait: 1 })
+                const result = await fn.call({ isNot: true }, $('sel'), { wait: 1 }) as ExpectWebdriverIO.AssertionResult
                 const received = getReceived(result.message())
 
                 expect(received).not.toContain('not')
@@ -129,7 +129,7 @@ describe('be* matchers', () => {
                 el._value = function (): boolean {
                     return false
                 }
-                const result = await fn.call({ isNot: true }, el, { wait: 1 })
+                const result = await fn.call({ isNot: true }, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
                 const received = getReceived(result.message())
 
                 expect(received).toContain('not')
@@ -137,7 +137,7 @@ describe('be* matchers', () => {
             })
 
             test('message', async () => {
-                const result = await fn.call({}, $('sel'))
+                const result = await fn.call({}, $('sel')) as ExpectWebdriverIO.AssertionResult
                 expect(getExpectMessage(result.message()))
                     .toContain(matcherNameToString(name))
             })
