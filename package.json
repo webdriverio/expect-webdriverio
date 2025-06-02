@@ -58,7 +58,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@vitest/snapshot": "^3.1.4",
+    "@vitest/snapshot": "^3.2.0",
     "expect": "^29.7.0",
     "jest-matcher-utils": "^29.7.0",
     "lodash.isequal": "^4.5.0"
@@ -68,9 +68,9 @@
     "@types/jest": "^29.5.12",
     "@types/lodash.isequal": "^4.5.8",
     "@types/node": "^22.9.0",
-    "@wdio/types": "^9.9.0",
     "@vitest/coverage-v8": "^3.0.5",
     "@wdio/eslint": "^0.1.0",
+    "@wdio/types": "^9.9.0",
     "c8": "^10.1.2",
     "eslint": "^9.15.0",
     "husky": "^9.1.5",

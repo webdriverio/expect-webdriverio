@@ -11,6 +11,7 @@ export const matchers = new Map<string, RawMatcherFn>()
 const filteredMatchers = {}
 const extend = expectLib.extend
 
+// filter out matchers that aren't a function
 Object.keys(wdioMatchers).forEach(matcher => {
     if (typeof wdioMatchers[matcher as keyof typeof wdioMatchers] === 'function') {
         filteredMatchers[matcher as keyof typeof filteredMatchers] = wdioMatchers[matcher as keyof typeof filteredMatchers]

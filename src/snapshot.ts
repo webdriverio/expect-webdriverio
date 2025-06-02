@@ -92,13 +92,15 @@ export class SnapshotService implements Services.ServiceInstance {
     }
 
     async after() {
-        if (this.#currentFilePath) {
-            const result = await this.#snapshotClient.finish(this.#currentFilePath)
-            if (!result) {
-                return
-            }
-            this.#snapshotResults.push(result)
+        if (!this.#currentFilePath) {
+            return
         }
+
+        const result = await this.#snapshotClient.finish(this.#currentFilePath)
+        if (!result) {
+            return
+        }
+        this.#snapshotResults.push(result)
     }
 
     #isEqual (received: unknown, expected: unknown) {
