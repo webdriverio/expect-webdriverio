@@ -79,7 +79,7 @@ export class SnapshotService implements Services.ServiceInstance {
     async beforeTest(test: Frameworks.Test) {
         this.#currentFilePath = test.file
         this.#currentTestName = `${test.parent} > ${test.title}`
-        await this.#snapshotClient.startCurrentRun(test.file, test.fullTitle, this.#options)
+        await this.#snapshotClient.setup(test.file, this.#options)
     }
 
     async beforeStep(step: Frameworks.PickleStep, scenario: Frameworks.Scenario) {
@@ -88,11 +88,15 @@ export class SnapshotService implements Services.ServiceInstance {
 
         this.#currentFilePath = file
         this.#currentTestName = testName
-        await this.#snapshotClient.startCurrentRun(file, testName, this.#options)
+        await this.#snapshotClient.setup(file, this.#options)
     }
 
     async after() {
-        const result = await this.#snapshotClient.finishCurrentRun()
+        if (!this.#currentFilePath) {
+            return
+        }
+
+        const result = await this.#snapshotClient.finish(this.#currentFilePath)
         if (!result) {
             return
         }

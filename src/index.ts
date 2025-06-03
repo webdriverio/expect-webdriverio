@@ -2,14 +2,22 @@
 import { expect as expectLib } from 'expect'
 import type { RawMatcherFn } from './types.js'
 
-import wdioMatchers from './matchers.js'
+import * as wdioMatchers from './matchers.js'
 import { DEFAULT_OPTIONS } from './constants.js'
 import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
 
 export const matchers = new Map<string, RawMatcherFn>()
-
+const filteredMatchers = {}
 const extend = expectLib.extend
+
+// filter out matchers that aren't a function
+Object.keys(wdioMatchers).forEach(matcher => {
+    if (typeof wdioMatchers[matcher as keyof typeof wdioMatchers] === 'function') {
+        filteredMatchers[matcher as keyof typeof filteredMatchers] = wdioMatchers[matcher as keyof typeof filteredMatchers]
+    }
+})
+
 expectLib.extend = (m) => {
     if (!m || typeof m !== 'object') {
         return
@@ -21,7 +29,7 @@ expectLib.extend = (m) => {
 
 type MatchersObject = Parameters<typeof expectLib.extend>[0]
 
-expectLib.extend(wdioMatchers as MatchersObject)
+expectLib.extend(filteredMatchers as MatchersObject)
 
 // Extend the expect object with soft assertions
 const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect

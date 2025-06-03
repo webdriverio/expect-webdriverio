@@ -49,8 +49,8 @@ function toMatchSnapshotAssert (received: unknown, message: string, inlineOption
         snapshotService.client.assert({
             received,
             message,
-            filepath: snapshotService.currentFilePath,
-            name: snapshotService.currentTestName,
+            filepath: snapshotService.currentFilePath as string,
+            name: snapshotService.currentTestName as string,
             /**
              * apply inline options if needed
              */

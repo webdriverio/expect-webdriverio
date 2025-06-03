@@ -2,7 +2,7 @@ import { vi, test, describe, expect } from 'vitest'
 import { browser } from '@wdio/globals'
 
 import { getExpectMessage, getReceived, matcherNameToString, getExpected } from '../__fixtures__/utils.js'
-import Matchers from '../../src/matchers.js'
+import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
 
@@ -28,7 +28,7 @@ describe('browser matchers', () => {
                     return validText
                 }
 
-                const result = await fn.call({}, browser, validText, { trim: false })
+                const result = await fn.call({}, browser, validText, { trim: false }) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(true)
                 // @ts-expect-error mock feature
                 expect(browser._attempts).toBe(0)
@@ -53,7 +53,7 @@ describe('browser matchers', () => {
                     return validText
                 }
 
-                const result = await fn.call({}, browser, validText, { trim: false })
+                const result = await fn.call({}, browser, validText, { trim: false }) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(true)
                 // @ts-expect-error mock feature
                 expect(browser._attempts).toBe(1)
@@ -68,7 +68,7 @@ describe('browser matchers', () => {
                     return wrongText
                 }
 
-                const result = await fn.call({}, browser, validText, { wait: 0, trim: false })
+                const result = await fn.call({}, browser, validText, { wait: 0, trim: false }) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(false)
                 // @ts-expect-error mock feature
                 expect(browser._attempts).toBe(1)
@@ -83,7 +83,7 @@ describe('browser matchers', () => {
                     return validText
                 }
 
-                const result = await fn.call({}, browser, validText, { wait: 0, trim: false })
+                const result = await fn.call({}, browser, validText, { wait: 0, trim: false }) as ExpectWebdriverIO.AssertionResult
 
                 expect(result.pass).toBe(true)
                 // @ts-expect-error mock feature
@@ -91,7 +91,7 @@ describe('browser matchers', () => {
             })
 
             test('not - failure', async () => {
-                const result = await fn.call({ isNot: true }, browser, validText, { wait: 0, trim: false })
+                const result = await fn.call({ isNot: true }, browser, validText, { wait: 0, trim: false }) as ExpectWebdriverIO.AssertionResult
 
                 expect(getExpectMessage(result.message())).toContain('not')
                 expect(getExpected(result.message())).toContain('not')
@@ -104,7 +104,7 @@ describe('browser matchers', () => {
                 browser._value = function (): string {
                     return wrongText
                 }
-                const result = await fn.call({ isNot: true }, browser, validText, { wait: 0 })
+                const result = await fn.call({ isNot: true }, browser, validText, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
 
                 expect(getExpectMessage(result.message())).toContain('not')
                 expect(getExpected(result.message())).toContain('Valid')
@@ -116,7 +116,7 @@ describe('browser matchers', () => {
             test('not - failure (with wait)', async () => {
                 // @ts-expect-error mock feature
                 delete browser._value
-                const result = await fn.call({ isNot: true }, browser, validText, { wait: 1, trim: false })
+                const result = await fn.call({ isNot: true }, browser, validText, { wait: 1, trim: false }) as ExpectWebdriverIO.AssertionResult
 
                 expect(getExpectMessage(result.message())).toContain('not')
                 expect(getExpected(result.message())).toContain('not')
@@ -129,7 +129,7 @@ describe('browser matchers', () => {
                 browser._value = function (): string {
                     return wrongText
                 }
-                const result = await fn.call({ isNot: true }, browser, validText, { wait: 1 })
+                const result = await fn.call({ isNot: true }, browser, validText, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
 
                 expect(getExpectMessage(result.message())).toContain('not')
                 expect(getExpected(result.message())).toContain('Valid')
@@ -139,7 +139,7 @@ describe('browser matchers', () => {
             })
 
             test('message', async () => {
-                const result = await fn.call({}, browser)
+                const result = await fn.call({}, browser) as ExpectWebdriverIO.AssertionResult
                 expect(getExpectMessage(result.message())).toContain(matcherNameToString(name))
             })
         })
