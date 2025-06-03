@@ -1,6 +1,6 @@
 import type { Services } from '@wdio/types'
 import type { Frameworks } from '@wdio/types'
-import { SoftAssertService } from './softAssert'
+import { SoftAssertService } from './softAssert.js'
 
 export interface SoftAssertionServiceOptions {
     autoAssertOnTestEnd?: boolean;
