@@ -30,8 +30,7 @@ async function condition(
     }
 
     prop = prop.toString()
-
-    return compareText(prop, value as string | RegExp | ExpectWebdriverIO.PartialMatcher, options)
+    return compareText(prop as string, value as string | RegExp | ExpectWebdriverIO.PartialMatcher, options)
 }
 
 export async function toHaveElementProperty(
