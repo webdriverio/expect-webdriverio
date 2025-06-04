@@ -1,3 +1,5 @@
+type ServiceInstance =  import('@wdio/types').Services.ServiceInstance;
+
 declare namespace ExpectWebdriverIO {
     const expect: ExpectWebdriverIO.Expect
     function setOptions(options: DefaultOptions): void
@@ -9,7 +11,7 @@ declare namespace ExpectWebdriverIO {
     }
 
     class SnapshotService {
-        static initiate(options: SnapshotServiceArgs): import('@wdio/types').Services.ServiceInstance & {
+        static initiate(options: SnapshotServiceArgs): ServiceInstance & {
             results: import('@vitest/snapshot').SnapshotResult[]
         }
     }
@@ -35,7 +37,7 @@ declare namespace ExpectWebdriverIO {
         autoAssertOnTestEnd?: boolean;
     }
 
-    class SoftAssertionService implements import('@wdio/types').Services.ServiceInstance {
+    class SoftAssertionService implements ServiceInstance {
         constructor(serviceOptions?: SoftAssertionServiceOptions, capabilities?: any, config?: any);
         beforeTest(test: import('@wdio/types').Frameworks.Test): void;
         beforeStep(step: import('@wdio/types').Frameworks.PickleStep, scenario: import('@wdio/types').Frameworks.Scenario): void;
