@@ -1,16 +1,24 @@
+type ServiceInstance =  import('@wdio/types').Services.ServiceInstance;
+type Test = import('@wdio/types').Frameworks.Test;
+type TestResult = import('@wdio/types').Frameworks.TestResult;
+type PickleStep = import('@wdio/types').Frameworks.PickleStep;
+type Scenario = import('@wdio/types').Frameworks.Scenario;
+type SnapshotResult = import('@vitest/snapshot').SnapshotResult;
+type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState;
+
 declare namespace ExpectWebdriverIO {
     const expect: ExpectWebdriverIO.Expect
     function setOptions(options: DefaultOptions): void
     function getConfig(): any
 
     interface SnapshotServiceArgs {
-        updateState?: import('@vitest/snapshot').SnapshotUpdateState
+        updateState?: SnapshotUpdateState
         resolveSnapshotPath?: (path: string, extension: string) => string
     }
 
     class SnapshotService {
-        static initiate(options: SnapshotServiceArgs): import('@wdio/types').Services.ServiceInstance & {
-            results: import('@vitest/snapshot').SnapshotResult[]
+        static initiate(options: SnapshotServiceArgs): ServiceInstance & {
+            results: SnapshotResult[]
         }
     }
 
@@ -35,12 +43,12 @@ declare namespace ExpectWebdriverIO {
         autoAssertOnTestEnd?: boolean;
     }
 
-    class SoftAssertionService implements import('@wdio/types').Services.ServiceInstance {
+    class SoftAssertionService implements ServiceInstance {
         constructor(serviceOptions?: SoftAssertionServiceOptions, capabilities?: any, config?: any);
-        beforeTest(test: import('@wdio/types').Frameworks.Test): void;
-        beforeStep(step: import('@wdio/types').Frameworks.PickleStep, scenario: import('@wdio/types').Frameworks.Scenario): void;
-        afterTest(test: import('@wdio/types').Frameworks.Test, context: any, result: import('@wdio/types').Frameworks.TestResult): void;
-        afterStep(step: import('@wdio/types').Frameworks.PickleStep, scenario: import('@wdio/types').Frameworks.Scenario, result: { passed: boolean, error?: Error }): void;
+        beforeTest(test: Test): void;
+        beforeStep(step: PickleStep, scenario: Scenario): void;
+        afterTest(test: Test, context: any, result: TestResult): void;
+        afterStep(step: PickleStep, scenario: Scenario, result: { passed: boolean, error?: Error }): void;
     }
 
     interface AssertionResult {
