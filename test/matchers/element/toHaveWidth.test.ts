@@ -67,6 +67,7 @@ describe('toHaveWidth', () => {
         }
 
         const result = await toHaveWidth.call({}, el, 50, {})
+        expect(result.message()).toEqual('Expect $(`sel`) to have width\n\nExpected: 50\nReceived: serializes to the same string')
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -86,6 +87,7 @@ describe('toHaveWidth', () => {
         }
 
         const result = await toHaveWidth.call({}, el, 10, { wait: 0 })
+        expect(result.message()).toEqual('Expect $(`sel`) to have width\n\nExpected: 10\nReceived: 50')
         expect(result.pass).toBe(false)
         expect(el._attempts).toBe(1)
     })
@@ -105,6 +107,26 @@ describe('toHaveWidth', () => {
         }
 
         const result = await toHaveWidth.call({}, el, 50, { wait: 0 })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
+    test('gte and lte', async () => {
+        const el: any = await $('sel')
+        el._attempts = 0
+        el._size = function (property?: 'width' | 'height') {
+            this._attempts++
+            if (property === 'width') {
+                return 50
+            }
+            if (property === 'height') {
+                return 32
+            }
+            return { width: 50, height: 32 }
+        }
+
+        const result = await toHaveWidth.call({}, el, { gte: 49, lte: 51 }, { wait: 0 })
+        expect(result.message()).toEqual('Expect $(`sel`) to have width\n\nExpected: ">= 49 && <= 51"\nReceived: 50')
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
