@@ -109,6 +109,25 @@ describe('toHaveWidth', () => {
         expect(el._attempts).toBe(1)
     })
 
+    test('gte and lte', async () => {
+        const el: any = await $('sel')
+        el._attempts = 0
+        el._size = function (property?: 'width' | 'height') {
+            this._attempts++
+            if (property === 'width') {
+                return 50
+            }
+            if (property === 'height') {
+                return 32
+            }
+            return { width: 50, height: 32 }
+        }
+
+        const result = await toHaveWidth.call({}, el, { gte: 49, lte: 51 }, { wait: 0 })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
     test('not - failure', async () => {
         const el: any = await $('sel')
         el._size = function (property?: 'width' | 'height') {
