@@ -67,6 +67,7 @@ describe('toHaveHeight', () => {
         }
 
         const result = await toHaveHeight.call({}, el, 32, {})
+        expect(result.message()).toEqual('Expect $(`sel`) to have height\n\nExpected: 32\nReceived: serializes to the same string')
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -86,6 +87,7 @@ describe('toHaveHeight', () => {
         }
 
         const result = await toHaveHeight.call({}, el, 10, { wait: 0 })
+        expect(result.message()).toEqual('Expect $(`sel`) to have height\n\nExpected: 10\nReceived: 32')
         expect(result.pass).toBe(false)
         expect(el._attempts).toBe(1)
     })
@@ -124,6 +126,7 @@ describe('toHaveHeight', () => {
         }
 
         const result = await toHaveHeight.call({}, el, { gte: 31, lte: 33 }, { wait: 0 })
+        expect(result.message()).toEqual('Expect $(`sel`) to have height\n\nExpected: ">= 31 && <= 33"\nReceived: 32')
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
