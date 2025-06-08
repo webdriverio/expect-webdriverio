@@ -5,6 +5,7 @@ type PickleStep = import('@wdio/types').Frameworks.PickleStep;
 type Scenario = import('@wdio/types').Frameworks.Scenario;
 type SnapshotResult = import('@vitest/snapshot').SnapshotResult;
 type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState;
+type PromiseLikeExpect = WebdriverIO.Browser | WebdriverIO.Element | WebdriverIO.MultiRemoteBrowser | WebdriverIO.MultiRemoteElement
 
 declare namespace ExpectWebdriverIO {
     const expect: ExpectWebdriverIO.Expect
@@ -188,7 +189,6 @@ declare namespace ExpectWebdriverIO {
         gte?: number
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface Matchers<R, T> {
         // ===== $ or $$ =====
         /**
@@ -491,7 +491,7 @@ declare namespace ExpectWebdriverIO {
      *  - R: the type of the return value, e.g. Promise<void> or void
      */
     interface Expect {
-        <T = unknown, R extends void | Promise<void> = void | Promise<void>>(actual: T): Matchers<R, T>
+        <T = unknown, R = T extends PromiseLikeExpect ? Promise<void> : void>(actual: T): Matchers<R, T>
 
         /**
          * Creates a soft assertion wrapper around standard expect
