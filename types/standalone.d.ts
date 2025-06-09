@@ -1,10 +1,12 @@
 /// <reference types="./expect-webdriverio.js"/>
 
 type PromiseLikeExpect = WebdriverIO.Browser | WebdriverIO.Element | WebdriverIO.MultiRemoteBrowser | WebdriverIO.MultiRemoteElement
+type WdioPromiseLikeExpect = WebdriverIO.Browser | WebdriverIO.Element | WebdriverIO.MultiRemoteBrowser | WebdriverIO.MultiRemoteElement | ReturnType<WebdriverIO.Browser['$']> |ReturnType<WebdriverIO.Browser['$$']>
 
 declare namespace ExpectWebdriverIO {
-    interface Matchers<R = T extends PromiseLikeExpect ? Promise<void> : void, T> extends Readonly<import('expect').Matchers<R>> {
+    interface Matchers<R = T extends WdioPromiseLikeExpect ? Promise<void> : void> extends Readonly<import('expect').Matchers<R>> {
         not: Matchers<R, T>
+        // TODO when type is promise the below are incorrect
         resolves: Matchers<R, T>
         rejects: Matchers<R, T>
     }
@@ -15,7 +17,7 @@ declare namespace ExpectWebdriverIO {
      *  - R: the type of the return value, e.g. Promise<void> or void
      */
     type Expect = {
-        <T = unknown, R = T extends PromiseLikeExpect ? Promise<void> : void>(actual: T): Matchers<R, T>
+        <T = unknown, R = T extends WdioPromiseLikeExpect ? Promise<void> : void>(actual: T): Matchers<R, T>
         extend(map: Record<string, Function>): void
     } & AsymmetricMatchers
 
