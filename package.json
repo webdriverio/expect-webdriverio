@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^30.0.0",
     "@types/lodash.isequal": "^4.5.8",
     "@types/node": "^24.0.3",
     "@vitest/coverage-v8": "^3.2.1",
