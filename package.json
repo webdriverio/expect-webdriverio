@@ -60,7 +60,7 @@
   "dependencies": {
     "@vitest/snapshot": "^3.2.1",
     "expect": "^30.0.0",
-    "jest-matcher-utils": "^29.7.0",
+    "jest-matcher-utils": "^30.0.0",
     "lodash.isequal": "^4.5.0"
   },
   "devDependencies": {
