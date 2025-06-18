@@ -153,6 +153,11 @@ export function toMatchInlineSnapshot(received: unknown, inlineSnapshot: string,
                 line.includes('__EXTERNAL_MATCHER_TRAP__') ||
                 line.includes(`expect-webdriverio${path.sep}lib${path.sep}matchers${path.sep}snapshot.js:`)
             )
+        )).filter((line) => (
+            /**
+             * remove jasmine-core stack trace to make it work with jasmine
+             */
+            !line.includes('node_modules/jasmine-core/')
         )) || []
 
         /**
