@@ -9,10 +9,12 @@ import type { Services, Frameworks } from '@wdio/types'
  */
 let service: SnapshotService
 
+export type SnapshotFormat = SnapshotStateOptions['snapshotFormat']
 type ResolveSnapshotPathFunction = (path: string, extension: string) => string
 interface SnapshotServiceArgs {
     updateState?: SnapshotUpdateState
     resolveSnapshotPath?: ResolveSnapshotPathFunction
+    snapshotFormat?: SnapshotFormat
 }
 
 class WebdriverIOSnapshotEnvironment extends NodeSnapshotEnvironment {
@@ -54,9 +56,18 @@ export class SnapshotService implements Services.ServiceInstance {
             : options?.updateState
                 ? options.updateState
                 : 'new'
+
+        // Only set snapshotFormat if user provides explicit options
+        const snapshotFormatConfig = options?.snapshotFormat ? {
+            printBasicPrototype: false,
+            escapeString: false,
+            ...options.snapshotFormat
+        } : undefined
+
         this.#options = {
             updateSnapshot,
-            snapshotEnvironment: new WebdriverIOSnapshotEnvironment(options?.resolveSnapshotPath)
+            snapshotEnvironment: new WebdriverIOSnapshotEnvironment(options?.resolveSnapshotPath),
+            ...(snapshotFormatConfig && { snapshotFormat: snapshotFormatConfig })
         } as const
     }
 

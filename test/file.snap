@@ -1,7 +1,0 @@
-// Snapshot v1
-
-exports[`parent > test 1`] = `
-{
-  "a": "a",
-}
-`;

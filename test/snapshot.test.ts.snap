@@ -1,0 +1,17 @@
+// Snapshot v1
+
+exports[`parent > test 1`] = `
+{
+  "a": "a",
+}
+`;
+
+exports[`parent > test 2`] = `
+{
+  "deep": {
+    "nested": {
+      "object": "value",
+    },
+  },
+}
+`;

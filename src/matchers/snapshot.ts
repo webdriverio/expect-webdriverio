@@ -2,6 +2,7 @@ import path from 'node:path'
 import type { AssertionError } from 'node:assert'
 
 import { expect } from 'expect'
+import { stripSnapshotIndentation } from '@vitest/snapshot'
 import { SnapshotService } from '../snapshot.js'
 
 interface InlineSnapshotOptions {
@@ -146,13 +147,27 @@ export function toMatchInlineSnapshot(received: unknown, inlineSnapshot: string,
                 ...stack.slice(3)
             ].join('\n')
         }
-        error.stack = error.stack?.split('\n').filter((line) => (
+        const trace = error.stack?.split('\n').filter((line) => (
             line.includes('__INLINE_SNAPSHOT__') ||
             !(
                 line.includes('__EXTERNAL_MATCHER_TRAP__') ||
                 line.includes(`expect-webdriverio${path.sep}lib${path.sep}matchers${path.sep}snapshot.js:`)
             )
-        )).join('\n')
+        )) || []
+
+        /**
+         * tweak the stack trace to enable inline snapshot testing within this projects
+         * unit tests
+         */
+        if (process.env.WDIO_INTERNAL_TEST) {
+            trace.splice(2, 1)
+        }
+
+        if (inlineSnapshot) {
+            inlineSnapshot = stripSnapshotIndentation(inlineSnapshot)
+        }
+
+        error.stack = trace.join('\n')
         return toMatchSnapshotHelper(received, message, {
             inlineSnapshot,
             error
