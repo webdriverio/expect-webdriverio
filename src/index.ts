@@ -29,6 +29,27 @@ type MatchersObject = Parameters<typeof expectLib.extend>[0]
 
 expectLib.extend(filteredMatchers as MatchersObject)
 
+// Extend the expect object with soft assertions
+const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect
+// Object.defineProperty(expectWithSoft, 'soft', {
+//     value: <T = unknown>(actual: T) => createSoftExpect(actual)
+// })
+
+// // Add soft assertions utility methods
+// Object.defineProperty(expectWithSoft, 'getSoftFailures', {
+//     value: (testId?: string) => SoftAssertService.getInstance().getFailures(testId)
+// })
+
+// Object.defineProperty(expectWithSoft, 'assertSoftFailures', {
+//     value: (testId?: string) => SoftAssertService.getInstance().assertNoFailures(testId)
+// })
+
+// Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
+//     value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId)
+// })
+
+export const expect = expectWithSoft
+
 export const getConfig = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
 export const setDefaultOptions = (options = {}): void => {
     Object.entries(options).forEach(([key, value]) => {
