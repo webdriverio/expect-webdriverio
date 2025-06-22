@@ -1,39 +1,35 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports*/
 /// <reference types="./expect-webdriverio.d.ts"/>
+/// <reference types="expect"/>
+
+type ExpectAsymmetricMatchers = import('expect').AsymmetricMatchers;
+type ExpectBaseExpect = import('expect').BaseExpect;
+
+// Not exportable from 'expect'
+type Inverse<Matchers> = {
+  /**
+   * Inverse next matcher. If you know how to test something, `.not` lets you test its opposite.
+   */
+  not: Matchers;
+};
 
 declare namespace ExpectWebdriverIO {
 
     interface Matchers<R, T> extends WdioMatchers<R, T>{}
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    interface Expect extends WdioMatchers<any> {}
+    /**
+     * Mostly derived from the types of `jest-expect` but adapted to work with WebdriverIO.
+     * @see https://github.com/jestjs/jest/blob/main/packages/jest-expect/src/types.ts
+     */
+    interface Expect extends ExpectBaseExpect, ExpectAsymmetricMatchers, Inverse<Omit<ExpectAsymmetricMatchers, 'any' | 'anything'>> {
+        /**
+         * The `expect` function is used every time you want to test a value.
+         * You will rarely call `expect` by itself.
+         *
+         * @param actual The value to apply matchers against.
+         */
+        <T = unknown>(actual: T): WdioMatchers<void, T> & Inverse<WdioMatchers<void, T>>
+    }
 
     interface InverseAsymmetricMatchers extends Expect {}
-
-
-    // interface Matchers<R, T> extends Readonly<import('expect').Matchers<R>> {
-    //     not: Matchers<R, T>
-    //     resolves: Matchers<R, T>
-    //     rejects: Matchers<R, T>
-    // }
-
-    // /**
-    //  * expect function declaration, containing two generics:
-    //  *  - T: the type of the actual value, e.g. WebdriverIO.Browser or WebdriverIO.Element
-    //  *  - R: the type of the return value, e.g. Promise<void> or void
-    //  */
-    // type Expect = {
-    //     <T = unknown, R extends void | Promise<void> = void | Promise<void>>(actual: T): Matchers<R, T>
-    //     extend(map: Record<string, Function>): void
-    // } & AsymmetricMatchers
-
-    // interface AsymmetricMatchers {
-    //     any(expectedObject: any): PartialMatcher
-    //     anything(): PartialMatcher
-    //     arrayContaining(sample: Array<unknown>): PartialMatcher
-    //     objectContaining(sample: Record<string, unknown>): PartialMatcher
-    //     stringContaining(expected: string): PartialMatcher
-    //     stringMatching(expected: string | RegExp | ExpectWebdriverIO.PartialMatcher): PartialMatcher
-    //     not: AsymmetricMatchers
-    // }
 }

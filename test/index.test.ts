@@ -4,5 +4,5 @@ import { setOptions, matchers, utils } from '../src/index.js'
 test('index', () => {
     expect(setOptions.name).toBe('setDefaultOptions')
     expect(utils.compareText).toBeDefined()
-    expect(matchers.size).toEqual(37)
+    expect(matchers.size).toEqual(39)
 })

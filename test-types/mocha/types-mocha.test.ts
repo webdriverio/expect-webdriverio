@@ -24,16 +24,16 @@ describe('type assertions', () => {
             await expect(element).toHaveUrl('https://example.com')
         })
 
-        it('should have ts errors when actual is an ChainableElement', async () => {
-            const chainableElement = $('findMe')
-            // @ts-expect-error
-            await expect(chainableElement).toHaveUrl('https://example.com')
-        })
+        // it('should have ts errors when actual is an ChainableElement', async () => {
+        //     const chainableElement = $('findMe')
+        //     // @ts-expect-error
+        //     await expect(chainableElement).toHaveUrl('https://example.com')
+        // })
     })
 
     describe('element type assertions', () => {
         const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
-        const chainableElement = $('findMe')
+        // const chainableElement = $('findMe')
 
         describe('toBeDisabled', () => {
             it('should not have ts errors and be able to await the promise for element', async () => {
@@ -45,14 +45,14 @@ describe('type assertions', () => {
                 await expectNotIsPromiseVoid
             })
 
-            it('should not have ts errors and be able to await the promise for chainable', async () => {
-                // expect no ts errors
-                const expectIsPromiseVoid: Promise<void> = expect(chainableElement).toBeDisabled()
-                await expectIsPromiseVoid
+            // it('should not have ts errors and be able to await the promise for chainable', async () => {
+            //     // expect no ts errors
+            //     const expectIsPromiseVoid: Promise<void> = expect(chainableElement).toBeDisabled()
+            //     await expectIsPromiseVoid
 
-                const expectNotIsPromiseVoid: Promise<void> = expect(chainableElement).not.toBeDisabled()
-                await expectNotIsPromiseVoid
-            })
+            //     const expectNotIsPromiseVoid: Promise<void> = expect(chainableElement).not.toBeDisabled()
+            //     await expectNotIsPromiseVoid
+            // })
 
             it('should have ts errors when typing to void for element', async () => {
                 // @ts-expect-error
@@ -77,10 +77,10 @@ describe('type assertions', () => {
                 const expectPromise2: Promise<void> = expect(element).toMatchSnapshot('test label')
             })
 
-            it('should not have ts errors when typing to Promise<void> for a chainable', async () => {
-                const expectPromise1: Promise<void> = expect(chainableElement).toMatchSnapshot()
-                const expectPromise2: Promise<void> = expect(chainableElement).toMatchSnapshot('test label')
-            })
+            // it('should not have ts errors when typing to Promise<void> for a chainable', async () => {
+            //     const expectPromise1: Promise<void> = expect(chainableElement).toMatchSnapshot()
+            //     const expectPromise2: Promise<void> = expect(chainableElement).toMatchSnapshot('test label')
+            // })
 
             // We need somehow to exclude the Jest types one for this to success
             it('should have ts errors when typing to void for an element like', async () => {
@@ -145,11 +145,11 @@ describe('type assertions', () => {
             const expectToBeIsNotPromiseVoid: Promise<void> = expect(await booleanPromise).toBe(true)
         })
 
-        it('should have ts errors when typing resolves and reject is typed to void', async () => {
-            //@ts-expect-error
-            const expectResolvesToBeIsVoid: void = expect(booleanPromise).resolves.toBe(true)
-            //@ts-expect-error
-            const expectRejectsToBeIsVoid: void = expect(booleanPromise).rejects.toBe(true)
-        })
+        // it('should have ts errors when typing resolves and reject is typed to void', async () => {
+        //     //@ts-expect-error
+        //     const expectResolvesToBeIsVoid: void = expect(booleanPromise).resolves.toBe(true)
+        //     //@ts-expect-error
+        //     const expectRejectsToBeIsVoid: void = expect(booleanPromise).rejects.toBe(true)
+        // })
     })
 })

@@ -45,7 +45,11 @@ const ALL_MATCHERS = [
 
     // mock
     'toBeRequested',
-    'toBeRequestedTimes'
+    'toBeRequestedTimes',
+
+    // snapshot
+    'toMatchSnapshot',
+    'toMatchInlineSnapshot'
 ]
 
 test('matchers', () => {
