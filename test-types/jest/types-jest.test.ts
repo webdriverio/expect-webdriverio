@@ -2,6 +2,7 @@
 describe('type assertions', () => {
     const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
     const chainableElement = $('findMe')
+    const chainableArray = $$('ul>li')
 
     describe('toHaveUrl', () => {
         const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
@@ -68,7 +69,6 @@ describe('type assertions', () => {
         })
 
         describe('toMatchSnapshot', () => {
-            const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
             it('should not have ts errors when typing to Promise<void> for an element', async () => {
                 const expectPromise1: Promise<void> = expect(element).toMatchSnapshot()
@@ -91,6 +91,34 @@ describe('type assertions', () => {
             // TODO - conditional types check on T to have the below match void does not work
             // it('should not have ts errors when typing to void for a string', async () => {
             //     const expectNotToBeVoid: void = expect('.findme').toMatchSnapshot()
+            // })
+        })
+
+        describe('toMatchInlineSnapshot', () => {
+
+            it('should not have ts errors when typing to Promise<void> for an element', async () => {
+                const expectPromise1: Promise<void> = expect(element).toMatchInlineSnapshot()
+                const expectPromise2: Promise<void> = expect(element).toMatchInlineSnapshot('test snapshot')
+                const expectPromise3: Promise<void> = expect(element).toMatchInlineSnapshot('test snapshot', 'test label')
+            })
+
+            it('should not have ts errors when typing to Promise<void> for a chainable', async () => {
+                const expectPromise1: Promise<void> = expect(chainableElement).toMatchInlineSnapshot()
+                const expectPromise2: Promise<void> = expect(chainableElement).toMatchInlineSnapshot('test snapshot')
+                const expectPromise3: Promise<void> = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+            })
+
+            // We need somehow to exclude the Jest types one for this to success
+            it('should have ts errors when typing to void for an element like', async () => {
+                //@ts-expect-error
+                const expectNotToBeVoid1: void = expect(element).toMatchInlineSnapshot()
+                //@ts-expect-error
+                const expectPromise2: void = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+            })
+
+            // TODO - conditional types check on T to have the below match void does not work
+            // it('should not have ts errors when typing to void for a string', async () => {
+            //     const expectNotToBeVoid: void = expect('.findme').toMatchInlineSnapshot()
             // })
         })
     })
@@ -157,6 +185,63 @@ describe('type assertions', () => {
             const expectResolvesToBeIsVoid: void = expect(booleanPromise).resolves.toBe(true)
             //@ts-expect-error
             const expectRejectsToBeIsVoid: void = expect(booleanPromise).rejects.toBe(true)
+        })
+    })
+
+    describe('toBeElementsArrayOfSize', async () => {
+
+        it('should not have ts errors when typing to Promise', async () => {
+            const listItems = await chainableArray
+            const expectPromise: Promise<void> = expect(listItems).toBeElementsArrayOfSize(5)
+            const expectPromise1: Promise<void> = expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
+        })
+
+        it('should have ts errors when typing to void', async () => {
+            const listItems = await chainableArray
+            // @ts-expect-error
+            const expectPromise: void = expect(listItems).toBeElementsArrayOfSize(5)
+            // @ts-expect-error
+            const expectPromise1: void = expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
+        })
+    })
+
+    describe('Network Matchers', () => {
+        const mock = browser.mock('**/api/todo*')
+
+        it('should not have ts errors when typing to Promise', async () => {
+            const expectPromise1: Promise<void> = expect(mock).toBeRequested()
+            const expectPromise2: Promise<void> = expect(mock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
+            const expectPromise3: Promise<void> = expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+
+            const expectPromise4: Promise<void> = expect(mock).toBeRequestedWith({
+                url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
+                method: 'POST',                                 // [optional] string | array
+                statusCode: 200,                                // [optional] number | array
+                requestHeaders: { Authorization: 'foo' },       // [optional] object | function | custom matcher
+                responseHeaders: { Authorization: 'bar' },      // [optional] object | function | custom matcher
+                postData: { title: 'foo', description: 'bar' }, // [optional] object | function | custom matcher
+                response: { success: true },                    // [optional] object | function | custom matcher
+            })
+        })
+
+        it('should have ts errors when typing to void', async () => {
+            // @ts-expect-error
+            const expectPromise1: void = expect(mock).toBeRequested()
+            // @ts-expect-error
+            const expectPromise2: void = expect(mock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
+            // @ts-expect-error
+            const expectPromise3: void = expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+
+            // @ts-expect-error
+            const expectPromise4: void = expect(mock).toBeRequestedWith({
+                url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
+                method: 'POST',                                 // [optional] string | array
+                statusCode: 200,                                // [optional] number | array
+                requestHeaders: { Authorization: 'foo' },       // [optional] object | function | custom matcher
+                responseHeaders: { Authorization: 'bar' },      // [optional] object | function | custom matcher
+                postData: { title: 'foo', description: 'bar' }, // [optional] object | function | custom matcher
+                response: { success: true },                    // [optional] object | function | custom matcher
+            })
         })
     })
 
