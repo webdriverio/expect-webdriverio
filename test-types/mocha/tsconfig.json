@@ -6,10 +6,11 @@
     "module": "Node16",
     "skipLibCheck": true,
     "types": [
-      "@types/expect",
       "@types/mocha",
+      "expect",
+      // "@wdio/globals/types", // TODO to review adding the global wdio types interfere with local types
+      "../../types/standalone.d.ts",
       "../../types/global.d.ts",
-      "@wdio/globals/types",
     ]
   }
 }
