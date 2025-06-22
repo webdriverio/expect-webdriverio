@@ -97,18 +97,29 @@ describe('type assertions', () => {
         })
     })
 
-    describe('boolean type assertions', () => {
-        it('should not have ts errors when typing to void', async () => {
+    describe('toBe', () => {
+        const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
+        const chainableElement = $('findMe')
+
+        it('should not have ts errors when typing to void when actual is boolean', async () => {
             // Expect no ts errors
             const expectToBeIsVoid: void = expect(true).toBe(true)
             const expectNotToBeIsVoid: void = expect(true).not.toBe(true)
         })
 
-        it('should have ts errors when typing to Promise', async () => {
+        it('should have ts errors when typing to Promise when actual is boolean', async () => {
             //@ts-expect-error
             const expectToBeIsNotPromiseVoid: Promise<void> = expect(true).toBe(true)
             //@ts-expect-error
             const expectToBeIsNotPromiseVoid: Promise<void> = expect(true).not.toBe(true)
+        })
+
+        it('should not have ts errors when typing to void when actual is an awaited element or chainable', async () => {
+            const isClickableElement = await element.isClickable()
+            const expectPromiseVoid1: void = expect(isClickableElement).toBe(true)
+
+            const isClickableChainable: boolean = await chainableElement.isClickable()
+            const expectPromiseVoid2: void = expect(isClickableChainable).toBe(true)
         })
     })
 

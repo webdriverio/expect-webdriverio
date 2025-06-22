@@ -7,7 +7,13 @@ type Scenario = import('@wdio/types').Frameworks.Scenario
 type SnapshotResult = import('@vitest/snapshot').SnapshotResult
 type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
 
-interface CustomMatchers<R, T = unknown> extends Record<string, any>{
+
+/**
+ * Note we are defining Matchers outside of the namespace as done in jest library until we can make every typing work correctly.
+ * Once we have all types working, we could check to bring those back into the `ExpectWebdriverIO` namespace.
+ */
+
+interface WdioCustomMatchers<R, T = unknown> extends Record<string, any>{
     // ===== $ or $$ =====
     /**
      * `WebdriverIO.Element` -> `isDisplayed`
@@ -256,7 +262,7 @@ interface CustomMatchers<R, T = unknown> extends Record<string, any>{
  * Those need to be also duplicated in jest.d.ts in order for the typing to correctly overload the matchers (we cannot just extend the Matchers interface)
  * @see 
  */
-interface OverloadedMatchers<R, T> {
+interface WdioOverloadedMatchers<R, T> {
     /**
      * snapshot matcher
      * @param label optional snapshot label
@@ -270,7 +276,7 @@ interface OverloadedMatchers<R, T> {
     toMatchInlineSnapshot(snapshot?: string, label?: string): Promise<R>    
 }
 
-interface WdioMatchers<R, T = unknown> extends CustomMatchers<R, T>, OverloadedMatchers<R, T>  {}
+interface WdioMatchers<R, T = unknown> extends WdioCustomMatchers<R, T>, WdioOverloadedMatchers<R, T>  {}
 
 declare namespace ExpectWebdriverIO {
     function setOptions(options: DefaultOptions): void
@@ -431,6 +437,8 @@ declare namespace ExpectWebdriverIO {
 }
 
 declare module 'expect-webdriverio' {
-    const matchers: CustomMatchers<any>;
+
+    // TODO dprevost should we also have an expect const here too?
+    const matchers: WdioCustomMatchers<any>;
     export = matchers;
 }
