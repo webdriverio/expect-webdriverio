@@ -1,5 +1,5 @@
 /// <reference types="@wdio/globals" />
-/// <reference types="expect-webdriverio" />
+/// <reference types="../../types/expect-webdriverio.d.ts" />
 const elem: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
 const wdioExpect = ExpectWebdriverIO.expect
 

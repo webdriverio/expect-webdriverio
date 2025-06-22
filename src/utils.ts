@@ -16,7 +16,7 @@ const asymmetricMatcher =
       ? Symbol.for('jest.asymmetricMatcher')
       : 0x13_57_a5
 
-export function isAsymmeyricMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
+export function isAsymmetricMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
     return (
         typeof expected === 'object' &&
         typeof expected === 'object' &&
@@ -29,7 +29,7 @@ export function isAsymmeyricMatcher(expected: unknown): expected is ExpectWebdri
 }
 
 function isStringContainingMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
-    return isAsymmeyricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
+    return isAsymmetricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
 }
 
 /**
@@ -178,7 +178,7 @@ export const compareText = (
         }
     }
 
-    if (isAsymmeyricMatcher(expected)) {
+    if (isAsymmetricMatcher(expected)) {
         const result = expected.asymmetricMatch(actual)
         return {
             value: actual,
@@ -272,7 +272,7 @@ export const compareTextWithArray = (
         if (expected instanceof RegExp) {
             return !!actual.match(expected)
         }
-        if (isAsymmeyricMatcher(expected)) {
+        if (isAsymmetricMatcher(expected)) {
             return expected.asymmetricMatch(actual)
         }
         if (containing) {
