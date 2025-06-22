@@ -1,6 +1,6 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
-import { compareText, compareTextWithArray, enhanceError, executeCommand, isAsymmeyricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import { compareText, compareTextWithArray, enhanceError, executeCommand, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 
 async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
@@ -13,7 +13,7 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
      * if value is an asymmetric matcher, no need to split class names
      * into an array and compare each of them
      */
-    if (isAsymmeyricMatcher(value)) {
+    if (isAsymmetricMatcher(value)) {
         return compareText(actualClass, value, options)
     }
 
