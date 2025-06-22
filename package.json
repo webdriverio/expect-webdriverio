@@ -65,9 +65,9 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
-    "@jest/expect": "^30.0.0",
     "@types/jest": "^30.0.0",
     "@types/lodash.isequal": "^4.5.8",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^24.0.3",
     "@vitest/coverage-v8": "^3.2.4",
     "@wdio/eslint": "^0.1.1",
