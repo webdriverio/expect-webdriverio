@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports*/
 /// <reference types="./expect-webdriverio.d.ts"/>
 
-type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
-type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
-
 declare namespace ExpectWebdriverIO {
+
+    interface Matchers<R, T> extends WdioMatchers<R, T>{}
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    interface Expect extends WdioMatchers<any> {}
+
+    interface InverseAsymmetricMatchers extends Expect {}
+
+
     // interface Matchers<R, T> extends Readonly<import('expect').Matchers<R>> {
     //     not: Matchers<R, T>
     //     resolves: Matchers<R, T>

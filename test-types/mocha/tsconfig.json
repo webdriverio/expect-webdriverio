@@ -6,9 +6,10 @@
     "module": "Node16",
     "skipLibCheck": true,
     "types": [
-      "@types/jest",
-      "../../jest.d.ts", // Needed to be after @types/jest to override the toMatchSnapshot typing      
-      "@wdio/globals/types"
+      "@types/expect",
+      "@types/mocha",
+      "../../types/global.d.ts",
+      "@wdio/globals/types",
     ]
   }
 }
