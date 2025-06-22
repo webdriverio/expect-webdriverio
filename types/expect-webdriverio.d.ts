@@ -256,6 +256,11 @@ interface WdioCustomMatchers<R, T = unknown> extends Record<string, any>{
         times: number | ExpectWebdriverIO.NumberOptions,
         options?: ExpectWebdriverIO.NumberOptions
     ): Promise<R>
+
+    /**
+     * Check that `WebdriverIO.Mock` was called with the specific parameters
+     */
+    toBeRequestedWith(requestedWith: RequestedWith, options?: ExpectWebdriverIO.CommandOptions): Promise<R>    
 }
 
 /**
