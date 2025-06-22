@@ -7,7 +7,7 @@ type Scenario = import('@wdio/types').Frameworks.Scenario
 type SnapshotResult = import('@vitest/snapshot').SnapshotResult
 type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
 
-interface CustomMatchers<R> extends Record<string, any>{
+interface CustomMatchers<R, T = unknown> extends Record<string, any>{
     // ===== $ or $$ =====
     /**
      * `WebdriverIO.Element` -> `isDisplayed`
@@ -216,7 +216,7 @@ interface CustomMatchers<R> extends Record<string, any>{
     /**
      * `WebdriverIO.Browser` -> `getUrl`
      */
-    toHaveUrl(url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toHaveUrl: T extends WebdriverIO.Browser ? (url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
 
     /**
      * `WebdriverIO.Browser` -> `getTitle`
@@ -250,6 +250,7 @@ interface CustomMatchers<R> extends Record<string, any>{
         times: number | ExpectWebdriverIO.NumberOptions,
         options?: ExpectWebdriverIO.NumberOptions
     ): Promise<R>
+
     /**
      * snapshot matcher
      * @param label optional snapshot label

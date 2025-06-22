@@ -38,6 +38,11 @@ describe('type assertions', () => {
             // @ts-expect-error
             const expectNotToBeIsVoid: void = expect(element).not.toBeDisabled()
         })
+
+        it('toHaveUrl should not work on element', async () => {
+            // @ts-expect-error
+            await expect(element).toHaveUrl('https://example.com')
+        })
     })
 
     describe('boolean type assertions', () => {
@@ -96,4 +101,18 @@ describe('type assertions', () => {
             const expectRejectsToBeIsVoid: void = expect(booleanPromise).rejects.toBe(true)
         })
     })
+
+    describe('Wdio async toMatchSnapshot', () => {
+        const booleanPromise: Promise<boolean> = Promise.resolve(true)
+
+        it('should not have ts errors when typing to void', async () => {
+            const expectToBeIsPromise: Promise<void> = expect($('.findme')).toMatchSnapshot()
+        })
+
+        it('should not have ts errors when typing to void', async () => {
+            //@ts-expect-error
+            const expectNotToBeVoid: void = expect($('.findme')).toMatchSnapshot()
+        })
+    })
+
 })
