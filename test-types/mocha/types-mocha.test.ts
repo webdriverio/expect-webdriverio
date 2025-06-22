@@ -24,6 +24,7 @@ describe('type assertions', () => {
             await expect(element).toHaveUrl('https://example.com')
         })
 
+        // TODO dprevost find a way to pull @wdio/globals for ChainableElement without affecting local types...
         // it('should have ts errors when actual is an ChainableElement', async () => {
         //     const chainableElement = $('findMe')
         //     // @ts-expect-error
