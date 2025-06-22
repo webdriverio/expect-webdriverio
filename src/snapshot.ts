@@ -1,4 +1,4 @@
-// import { expect } from '@wdio/globals'
+import { expect } from '@wdio/globals'
 import { SnapshotClient, type SnapshotResult, type SnapshotStateOptions, type SnapshotUpdateState } from '@vitest/snapshot'
 import { NodeSnapshotEnvironment } from '@vitest/snapshot/environment'
 
@@ -114,10 +114,9 @@ export class SnapshotService implements Services.ServiceInstance {
         this.#snapshotResults.push(result)
     }
 
-    #isEqual (_received: unknown, _expected: unknown) {
+    #isEqual (received: unknown, expected: unknown) {
         try {
-            // TODO dprevost to uncomment when `Type 'Expect' has no call signatures.ts(2349)` is fixed
-            //expect(received).toBe(expected)
+            expect(received).toBe(expected)
             return true
         } catch {
             return false

@@ -1,8 +1,10 @@
 /// <reference types="./types/expect-webdriverio.d.ts"/>
+
+// TODO dprevost try to type conditional the toMatchSnapshot later...
 /*/// <reference types="@types/jest"/>*/
 
-type ChainablePromiseElement = ReturnType<WebdriverIO.Browser['$']>
-type WdioElementLike = WebdriverIO.Element | ChainablePromiseElement
+// type ChainablePromiseElement = ReturnType<WebdriverIO.Browser['$']>
+// type WdioElementLike = WebdriverIO.Element | ChainablePromiseElement
 
 declare namespace jest {
 
