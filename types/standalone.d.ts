@@ -4,6 +4,7 @@
 
 type ExpectAsymmetricMatchers = import('expect').AsymmetricMatchers;
 type ExpectBaseExpect = import('expect').BaseExpect;
+type ExpectMatchers<R,T> = import('expect').Matchers<R,T>;
 
 // Not exportable from 'expect'
 type Inverse<Matchers> = {
@@ -15,7 +16,7 @@ type Inverse<Matchers> = {
 
 declare namespace ExpectWebdriverIO {
 
-    interface Matchers<R, T> extends WdioMatchers<R, T>{}
+    interface Matchers<R, T> extends WdioMatchers<R, T>, ExpectMatchers<R,T> {}
 
     /**
      * Mostly derived from the types of `jest-expect` but adapted to work with WebdriverIO.
@@ -28,7 +29,7 @@ declare namespace ExpectWebdriverIO {
          *
          * @param actual The value to apply matchers against.
          */
-        <T = unknown>(actual: T): WdioMatchers<void, T> & Inverse<WdioMatchers<void, T>>
+        <T = unknown>(actual: T): Matchers<void, T> & Inverse<Matchers<void, T>>
     }
 
     interface InverseAsymmetricMatchers extends Expect {}
