@@ -41,6 +41,11 @@ export const setDefaultOptions = (options = {}): void => {
 export const setOptions = setDefaultOptions
 
 /**
+ * export snapshot utilities
+ */
+export { SnapshotService } from './snapshot.js'
+
+/**
  * export utils
  */
 export * as utils from './utils.js'
