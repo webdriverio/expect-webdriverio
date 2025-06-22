@@ -7,7 +7,6 @@
     "skipLibCheck": true,
     "types": [
       "@types/jest",
-      "expect-webdriverio/jest",
       "@wdio/globals/types"
     ]
   }
