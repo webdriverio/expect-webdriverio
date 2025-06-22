@@ -46,6 +46,8 @@ const ALL_MATCHERS = [
     // mock
     'toBeRequested',
     'toBeRequestedTimes',
+    'toBeRequestedWith',
+    'toBeRequestedWithResponse',
 
     // snapshot
     'toMatchSnapshot',

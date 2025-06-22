@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 describe('type assertions', () => {
+    const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
+    const chainableElement = $('findMe')
 
     describe('toHaveUrl', () => {
         const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
@@ -19,21 +21,17 @@ describe('type assertions', () => {
         })
 
         it('should have ts errors when actual is an element', async () => {
-            const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
             // @ts-expect-error
             await expect(element).toHaveUrl('https://example.com')
         })
 
         it('should have ts errors when actual is an ChainableElement', async () => {
-            const chainableElement = $('findMe')
             // @ts-expect-error
             await expect(chainableElement).toHaveUrl('https://example.com')
         })
     })
 
     describe('element type assertions', () => {
-        const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
-        const chainableElement = $('findMe')
 
         describe('toBeDisabled', () => {
             it('should not have ts errors and be able to await the promise for element', async () => {
@@ -98,8 +96,6 @@ describe('type assertions', () => {
     })
 
     describe('toBe', () => {
-        const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
-        const chainableElement = $('findMe')
 
         it('should not have ts errors when typing to void when actual is boolean', async () => {
             // Expect no ts errors
@@ -163,4 +159,17 @@ describe('type assertions', () => {
             const expectRejectsToBeIsVoid: void = expect(booleanPromise).rejects.toBe(true)
         })
     })
+
+    // describe('Soft Assertions', () => {
+
+    //     it('should not have ts errors when used with chainable', async () => {
+
+    //         const expectString: string = await $('h1').getText()
+    //         const expectVoid: void = expect.soft(expectString).toEqual('Basketball Shoes')
+    //         // await expect.soft(await $('#price').getText()).toMatch(/€\d+/)
+
+    //         // Regular assertions still throw immediately
+    //         // await expect(await $('.add-to-cart').isClickable()).toBe(true)
+    //     })
+    // })
 })
