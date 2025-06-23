@@ -53,7 +53,6 @@ const waitUntil = async (
     // wait for condition to be truthy
     try {
         const start = Date.now()
-        // eslint-disable-next-line no-constant-condition
         while (true) {
             if (Date.now() - start > wait) {
                 throw new Error('timeout')
