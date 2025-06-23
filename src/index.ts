@@ -1,9 +1,10 @@
 /// <reference types="../types/standalone.d.ts" />
 import { expect as expectLib } from 'expect'
 import type { RawMatcherFn } from './types.js'
-
 import * as wdioMatchers from './matchers.js'
 import { DEFAULT_OPTIONS } from './constants.js'
+import createSoftExpect from './softExpect.js'
+import { SoftAssertService } from './softAssert.js'
 
 export const matchers = new Map<string, RawMatcherFn>()
 const filteredMatchers = {}
@@ -31,22 +32,22 @@ expectLib.extend(filteredMatchers as MatchersObject)
 
 // Extend the expect object with soft assertions
 const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect
-// Object.defineProperty(expectWithSoft, 'soft', {
-//     value: <T = unknown>(actual: T) => createSoftExpect(actual)
-// })
+Object.defineProperty(expectWithSoft, 'soft', {
+    value: <T = unknown>(actual: T) => createSoftExpect(actual)
+})
 
-// // Add soft assertions utility methods
-// Object.defineProperty(expectWithSoft, 'getSoftFailures', {
-//     value: (testId?: string) => SoftAssertService.getInstance().getFailures(testId)
-// })
+// Add soft assertions utility methods
+Object.defineProperty(expectWithSoft, 'getSoftFailures', {
+    value: (testId?: string) => SoftAssertService.getInstance().getFailures(testId)
+})
 
-// Object.defineProperty(expectWithSoft, 'assertSoftFailures', {
-//     value: (testId?: string) => SoftAssertService.getInstance().assertNoFailures(testId)
-// })
+Object.defineProperty(expectWithSoft, 'assertSoftFailures', {
+    value: (testId?: string) => SoftAssertService.getInstance().assertNoFailures(testId)
+})
 
-// Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
-//     value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId)
-// })
+Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
+    value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId)
+})
 
 export const expect = expectWithSoft
 
@@ -60,6 +61,12 @@ export const setDefaultOptions = (options = {}): void => {
     })
 }
 export const setOptions = setDefaultOptions
+
+/**
+ * export soft assertion utilities
+ */
+export { SoftAssertService } from './softAssert.js'
+export { SoftAssertionService, type SoftAssertionServiceOptions } from './softAssertService.js'
 
 /**
  * export snapshot utilities
