@@ -1,10 +1,10 @@
 /// <reference types="./types/expect-webdriverio.d.ts"/>
 
-// TODO dprevost try to type conditional the toMatchSnapshot later...
-/*/// <reference types="@types/jest"/>*/
-
-// type ChainablePromiseElement = ReturnType<WebdriverIO.Browser['$']>
 // type WdioElementLike = WebdriverIO.Element | ChainablePromiseElement
+
+// TODO dprevost - check if we need to add ChainablePromiseElement and or ChainablePromiseArrayElement
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PromiseLikeType = Promise<any>
 
 declare namespace jest {
 
@@ -37,8 +37,36 @@ declare namespace jest {
         toMatchInlineSnapshot(snapshot?: string, label?: string): Promise<R>
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    interface Expect extends WdioMatchers<any> {}
+    type MatcherAndInverse<R, T> = Matchers<R, T> & AndNot<Matchers<R, T>>
+    interface Expect extends WdioMatchers {
+
+        /**
+         * Below are the custom Expect of WebdriverIO.
+         * We need to define them below so that they are correctly typed. We cannot just extend WdioCustomExpect
+         */
+
+        /**
+         * Creates a soft assertion wrapper around standard expect
+         * Soft assertions record failures but don't throw errors immediately
+         * All failures are collected and reported at the end of the test
+         */
+        soft<T = unknown>(actual: T): T extends PromiseLikeType ? MatcherAndInverse<Promise<void>, T> : MatcherAndInverse<void, T>
+
+        /**
+         * Get all current soft assertion failures
+         */
+        getSoftFailures(testId?: string): SoftFailure[]
+
+        /**
+         * Manually assert all soft failures (throws an error if any failures exist)
+         */
+        assertSoftFailures(testId?: string): void
+
+        /**
+         * Clear all current soft assertion failures
+         */
+        clearSoftFailures(testId?: string): void
+    }
 
     interface InverseAsymmetricMatchers extends Expect {}
 }

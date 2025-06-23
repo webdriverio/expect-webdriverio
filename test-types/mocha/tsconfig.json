@@ -8,7 +8,8 @@
     "types": [
       "@types/mocha",
       "expect",
-      "../../types/global.d.ts",
+      "webdriverio",
+      "../../types/standalone-global.d.ts",
       // "@wdio/types",
       // "@wdio/globals/types", // TODO to review adding the global wdio types interfere with local types
     ]
