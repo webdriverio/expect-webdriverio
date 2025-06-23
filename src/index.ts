@@ -63,15 +63,15 @@ export const setDefaultOptions = (options = {}): void => {
 export const setOptions = setDefaultOptions
 
 /**
+ * export snapshot utilities
+ */
+export { SnapshotService } from './snapshot.js'
+
+/**
  * export soft assertion utilities
  */
 export { SoftAssertService } from './softAssert.js'
 export { SoftAssertionService, type SoftAssertionServiceOptions } from './softAssertService.js'
-
-/**
- * export snapshot utilities
- */
-export { SnapshotService } from './snapshot.js'
 
 /**
  * export utils
