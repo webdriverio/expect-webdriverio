@@ -4,7 +4,7 @@ export default wdioEslint.config([
     {
         ignores: [
             'lib',
-            'types'
+            '**/*/dist'
         ]
     },
     /**
