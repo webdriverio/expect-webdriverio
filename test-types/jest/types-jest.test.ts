@@ -140,10 +140,10 @@ describe('type assertions', () => {
 
         it('should have ts errors when typing to Promise when actual is boolean', async () => {
             //@ts-expect-error
-            const expectToBeIsNotPromiseVoid: Promise<void> = expect(true).toBe(true)
+            const expectToBeIsNotPromiseVoid1: Promise<void> = expect(true).toBe(true)
 
             //@ts-expect-error
-            const expectToBeIsNotPromiseVoid: Promise<void> = expect(true).not.toBe(true)
+            const expectToBeIsNotPromiseVoid2: Promise<void> = expect(true).not.toBe(true)
         })
 
         it('should expect void when actual is an awaited element/chainable', async () => {
@@ -189,9 +189,9 @@ describe('type assertions', () => {
 
         it('should have ts errors when typing to Promise', async () => {
             //@ts-expect-error
-            const expectToBeIsNotPromiseVoid: Promise<void> = expect(booleanPromise).toBe(true)
+            const expectToBeIsNotPromiseVoid1: Promise<void> = expect(booleanPromise).toBe(true)
             //@ts-expect-error
-            const expectToBeIsNotPromiseVoid: Promise<void> = expect(await booleanPromise).toBe(true)
+            const expectToBeIsNotPromiseVoid2: Promise<void> = expect(await booleanPromise).toBe(true)
         })
 
         it('should have ts errors when typing resolves and reject is typed to void', async () => {

@@ -7,8 +7,9 @@ import { removeColors, getReceived, getExpected, getExpectMessage } from '../../
 
 vi.mock('@wdio/globals')
 
-class TestMock implements Mock {
-    _calls: Matches[]
+//@ts-ignore TODO fix me
+class TestMock implements WebdriverIO.Mock {
+    _calls: local.NetworkResponseCompletedParameters[]
 
     constructor () {
         this._calls = []
@@ -17,16 +18,17 @@ class TestMock implements Mock {
         return this._calls
     }
     on = vi.fn()
-    abort () { return Promise.resolve() }
-    abortOnce () { return Promise.resolve() }
-    respond () { return Promise.resolve() }
-    respondOnce () { return Promise.resolve() }
-    clear () { return Promise.resolve() }
-    restore () { return Promise.resolve() }
+    abort () { return this }
+    abortOnce () { return this }
+    respond () { return this }
+    respondOnce () { return this }
+    clear () { return this }
+    restore () { return Promise.resolve(this) }
     waitForResponse () { return Promise.resolve(true) }
 }
 
-const mockMatch: Matches = {
+const mockMatch: local.NetworkResponseCompletedParameters = {
+    //@ts-ignore TODO fix me
     body: 'foo',
     url: '/foo/bar',
     method: 'POST',
@@ -39,7 +41,8 @@ const mockMatch: Matches = {
 
 describe('toBeRequestedTimes', () => {
     test('wait for success', async () => {
-        const mock: Mock = new TestMock()
+        //@ts-ignore TODO fix me
+        const mock: WebdriverIO.Mock = new TestMock()
 
         setTimeout(() => {
             mock.calls.push(mockMatch)
@@ -63,7 +66,8 @@ describe('toBeRequestedTimes', () => {
     })
 
     test('wait for success using number options', async () => {
-        const mock: Mock = new TestMock()
+        //@ts-ignore TODO fix me
+        const mock: WebdriverIO.Mock = new TestMock()
 
         setTimeout(() => {
             mock.calls.push(mockMatch)
@@ -76,7 +80,8 @@ describe('toBeRequestedTimes', () => {
     })
 
     test('wait but failure', async () => {
-        const mock: Mock = new TestMock()
+        //@ts-ignore TODO fix me
+        const mock: WebdriverIO.Mock = new TestMock()
         const result = await toBeRequestedTimes.call({}, mock, 1)
         expect(result.pass).toBe(false)
 
@@ -98,7 +103,8 @@ describe('toBeRequestedTimes', () => {
     })
 
     test('not to be called', async () => {
-        const mock: Mock = new TestMock()
+        //@ts-ignore TODO fix me
+        const mock: WebdriverIO.Mock = new TestMock()
 
         // expect(mock).not.toBeRequestedTimes(0) should fail
         const result = await toBeRequestedTimes.call({ isNot: true }, mock, 0)
@@ -120,7 +126,8 @@ describe('toBeRequestedTimes', () => {
     })
 
     test('message', async () => {
-        const mock: Mock = new TestMock()
+        //@ts-ignore TODO fix me
+        const mock: WebdriverIO.Mock = new TestMock()
 
         const result = await toBeRequestedTimes.call({}, mock, 0)
         expect(result.message()).toContain('Expect mock to be called 0 times')

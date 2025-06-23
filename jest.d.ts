@@ -2,10 +2,6 @@
 
 // type WdioElementLike = WebdriverIO.Element | ChainablePromiseElement
 
-// TODO dprevost - check if we need to add ChainablePromiseElement and or ChainablePromiseArrayElement
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type PromiseLikeType = Promise<any>
-
 declare namespace jest {
 
     interface Matchers<R, T> extends WdioMatchers<R, T>{
@@ -55,7 +51,7 @@ declare namespace jest {
         /**
          * Get all current soft assertion failures
          */
-        getSoftFailures(testId?: string): SoftFailure[]
+        getSoftFailures(testId?: string): ExpectWebdriverIO.SoftFailure[]
 
         /**
          * Manually assert all soft failures (throws an error if any failures exist)
