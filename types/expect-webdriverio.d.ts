@@ -7,12 +7,19 @@ type Scenario = import('@wdio/types').Frameworks.Scenario
 type SnapshotResult = import('@vitest/snapshot').SnapshotResult
 type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
 
+// type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
+// type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
+
+// TODO dprevost - check if we need to add ChainablePromiseElement and or ChainablePromiseArrayElement
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PromiseLikeType = Promise<any>
 
 /**
  * Note we are defining Matchers outside of the namespace as done in jest library until we can make every typing work correctly.
  * Once we have all types working, we could check to bring those back into the `ExpectWebdriverIO` namespace.
  */
 
+// TODO dprevost have browser matchers and element matchers separated
 interface WdioCustomMatchers<R, T = unknown> extends Record<string, any>{
     // ===== $ or $$ =====
     /**
@@ -283,6 +290,37 @@ interface WdioOverloadedMatchers<R, T> {
 
 interface WdioMatchers<R, T = unknown> extends WdioCustomMatchers<R, T>, WdioOverloadedMatchers<R, T>  {}
 
+
+/**
+ * expect function declaration, containing two generics:
+ *  - T: the type of the actual value, e.g. any type, not just WebdriverIO.Browser or WebdriverIO.Element
+ *  - R: the type of the return value, e.g. Promise<void> or void
+ */
+interface WdioCustomExpect<R, T = unknown> {
+
+    /**
+     * Creates a soft assertion wrapper around standard expect
+     * Soft assertions record failures but don't throw errors immediately
+     * All failures are collected and reported at the end of the test
+     */
+    soft<T = unknown>(actual: T): T extends PromiseLikeType ? Matchers<Promise<void>, T> : Matchers<void, T>
+
+    /**
+     * Get all current soft assertion failures
+     */
+    getSoftFailures(testId?: string): SoftFailure[]
+
+    /**
+     * Manually assert all soft failures (throws an error if any failures exist)
+     */
+    assertSoftFailures(testId?: string): void
+
+    /**
+     * Clear all current soft assertion failures
+     */
+    clearSoftFailures(testId?: string): void
+}
+
 declare namespace ExpectWebdriverIO {
     function setOptions(options: DefaultOptions): void
     function getConfig(): any
@@ -439,11 +477,17 @@ declare namespace ExpectWebdriverIO {
         asymmetricMatch(...args: any[]): boolean
         toString(): string
     }
+
+    interface SoftFailure {
+        error: Error;
+        matcherName: string;
+        location?: string;
+    }    
 }
 
 declare module 'expect-webdriverio' {
 
     // TODO dprevost should we also have an expect const here too?
-    const matchers: WdioCustomMatchers<any>;
+    const matchers: WdioCustomMatchers;
     export = matchers;
 }

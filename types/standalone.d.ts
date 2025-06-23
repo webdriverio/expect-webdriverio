@@ -18,6 +18,8 @@ declare namespace ExpectWebdriverIO {
 
     interface Matchers<R, T> extends WdioMatchers<R, T>, ExpectMatchers<R,T> {}
 
+    type MatchersAndInverse<R, T> = Matchers<R, T> & Inverse<Matchers<R, T>>;
+
     /**
      * Mostly derived from the types of `jest-expect` but adapted to work with WebdriverIO.
      * @see https://github.com/jestjs/jest/blob/main/packages/jest-expect/src/types.ts
@@ -29,7 +31,29 @@ declare namespace ExpectWebdriverIO {
          *
          * @param actual The value to apply matchers against.
          */
-        <T = unknown>(actual: T): Matchers<void, T> & Inverse<Matchers<void, T>>
+        <T = unknown>(actual: T): MatchersAndInverse<void, T>;
+
+        /**
+         * Creates a soft assertion wrapper around standard expect
+         * Soft assertions record failures but don't throw errors immediately
+         * All failures are collected and reported at the end of the test
+         */
+        soft<T = unknown>(actual: T): T extends PromiseLikeType ? MatchersAndInverse<Promise<void>, T> : MatchersAndInverse<void, T>
+
+        /**
+         * Get all current soft assertion failures
+         */
+        getSoftFailures(testId?: string): SoftFailure[]
+
+        /**
+         * Manually assert all soft failures (throws an error if any failures exist)
+         */
+        assertSoftFailures(testId?: string): void
+
+        /**
+         * Clear all current soft assertion failures
+         */
+        clearSoftFailures(testId?: string): void        
     }
 
     interface InverseAsymmetricMatchers extends Expect {}
