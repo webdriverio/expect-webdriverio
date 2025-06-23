@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "noImplicitAny": true,
+    "target": "ES2020",
+    "module": "Node16",
+    "skipLibCheck": true,
+    "types": [
+      "../../types/jasmine-soft-extend.d.ts",
+      "@types/jasmine",
+      "../../jasmine.d.ts",
+      "@wdio/globals/types"
+    ]
+  }
+}
