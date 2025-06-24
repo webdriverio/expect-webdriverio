@@ -194,6 +194,30 @@ describe('type assertions', async () => {
         })
     })
 
+    describe('Custom matchers', () => {
+        it('should supported correctly a non-promise custom matcher', async () => {
+            expectVoid = expect('test').toBeCustom()
+            expectVoid = expect('test').not.toBeCustom()
+
+            // @ts-expect-error
+            expectPromiseVoid = expect('test').toBeCustom()
+            // @ts-expect-error
+            expectPromiseVoid = expect('test').not.toBeCustom()
+        })
+
+        it('should supported correctly a promise custom matcher with only chainableElement as actual', async () => {
+            expectPromiseVoid = expect(chainableElement).toBeCustomPromise()
+            expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.objectContaining({}))
+
+            // @ts-expect-error
+            expect('test').toBeCustomPromise()
+            // @ts-expect-error
+            expectVoid = expect(chainableElement).toBeCustomPromise()
+            // @ts-expect-error
+            expectVoid = expect(chainableElement).toBeCustomPromise(expect.objectContaining({}))
+        })
+    })
+
     describe('toBe', () => {
 
         it('should expect void type when actual is a boolean', async () => {
