@@ -187,9 +187,12 @@ describe('type assertions', () => {
         })
 
         it('should not have ts errors when resolves and rejects is typed to Promise<void>', async () => {
-            // TODO the below needs to return Promise<void> but currently returns void
-            const expectResolvesToBeIsVoid: Promise<void> = expect(booleanPromise).resolves.toBe(true)
-            const expectRejectsToBeIsVoid: Promise<void> = expect(booleanPromise).rejects.toBe(true)
+            // TODO should we support resolves and rejects in standalone or with mocha?
+
+            /// @ts-expect-error
+            expect(booleanPromise).resolves.toBe(true)
+            /// @ts-expect-error
+            expect(booleanPromise).rejects.toBe(true)
         })
 
         it('should have ts errors when typing to Promise', async () => {

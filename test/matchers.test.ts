@@ -62,8 +62,7 @@ test('allows to add matcher', () => {
     const matcher: any = vi.fn((actual: any, expected: any) => ({ pass: actual === expected }))
     expectLib.extend({ toBeCustom: matcher })
 
-    // TODO dprevost see later if we really the below to expect a ts error since it is not working anymore...
-    //// @ts-expect-error not in types
+    // @ts-expect-error not in types
     expectLib('foo').toBeCustom('foo')
     expect(matchers.keys()).toContain('toBeCustom')
 })
