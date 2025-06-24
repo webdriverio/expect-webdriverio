@@ -351,7 +351,7 @@ declare namespace ExpectWebdriverIO {
          * ```
          */
         toHaveText(
-            text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+            text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher>,
             options?: ExpectWebdriverIO.StringOptions
         ): R
 
