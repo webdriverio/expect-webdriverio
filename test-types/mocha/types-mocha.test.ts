@@ -301,15 +301,15 @@ describe('type assertions', () => {
 
                 it('should have ts error when using await and actual is non-promise type', async () => {
                     // @ts-expect-error
-                    const expectWdioMatcher: WdioMatchers<Promise<void>, string> = expect.soft(expectString)
+                    const expectWdioMatcher: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, string> = expect.soft(expectString)
 
                     // @ts-expect-error
                     const expectVoid: Promise<void> = expect.soft(expectString).toBe('Test Page')
                 })
 
                 it('should not have ts error and need to be awaited/be a promise if actual is a promise type', async () => {
-                // @ts-expect-error
-                    const expectWdioMatcher: WdioMatchers<void, Promise<string>> = expect.soft(expectPromise)
+                    // @ts-expect-error
+                    const expectWdioMatcher: ExpectWebdriverIO.MatchersAndInverse<void, Promise<string>> = expect.soft(expectPromise)
                     // @ts-expect-error
                     const expectVoid: void = expect.soft(expectPromise).toBe('Test Page')
                 })

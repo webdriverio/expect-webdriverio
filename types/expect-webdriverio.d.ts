@@ -7,13 +7,51 @@ type Scenario = import('@wdio/types').Frameworks.Scenario
 type SnapshotResult = import('@vitest/snapshot').SnapshotResult
 type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
 type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
+type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
+type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
 
-// type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
-// type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
+// type PromiseLike = import('expect').PromiseLike
 
-// TODO dprevost - check if we need to add ChainablePromiseElement and or ChainablePromiseArrayElement
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PromiseLikeType = Promise<any>
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
+
+interface WdioBrowserMatchers<R, T = unknown>{
+    /**
+     * `WebdriverIO.Browser` -> `getUrl`
+     */
+    toHaveUrl: T extends WebdriverIO.Browser ? (url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
+
+    /**
+     * `WebdriverIO.Browser` -> `getTitle`
+     */
+    toHaveTitle: T extends WebdriverIO.Browser ? (title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
+
+    /**
+     * `WebdriverIO.Browser` -> `execute`
+     */
+    toHaveClipboardText: T extends WebdriverIO.Browser ? (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
+}
+
+type MockPromise = Promise<WebdriverIO.Mock>
+interface WdioMockMatchers<R, T = unknown> {
+    /**
+     * Check that `WebdriverIO.Mock` was called
+     */
+    toBeRequested: T extends MockPromise ? (options?: ExpectWebdriverIO.CommandOptions) => Promise<R> : never
+    /**
+     * Check that `WebdriverIO.Mock` was called N times
+     */
+    toBeRequestedTimes: T extends MockPromise ? (
+        times: number | ExpectWebdriverIO.NumberOptions,
+        options?: ExpectWebdriverIO.NumberOptions
+    ) => Promise<R> : never
+
+    /**
+     * Check that `WebdriverIO.Mock` was called with the specific parameters
+     */
+    toBeRequestedWith: T extends MockPromise ? (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<R> : never
+}
 
 /**
  * Note we are defining Matchers outside of the namespace as done in jest library until we can make every typing work correctly.
@@ -22,45 +60,59 @@ type PromiseLikeType = Promise<any>
 
 // TODO dprevost have browser matchers and element matchers separated
 // TODO extending extends Record<string, any> remove ts error on unimplemented matchers
-/* eslint-disable @typescript-eslint/no-explicit-any */
-interface WdioCustomMatchers<R, T = unknown> /*extends Record<string, any>*/ {
+
+// TODO dprevost - check if custom matchers (https://webdriver.io/docs/custommatchers/) will still work aka webdriverio/expect-webdriverio#1408
+type ElementOrArrayLike = ElementLike | ElementArrayLike
+type ElementLike = WebdriverIO.Element | ChainablePromiseElement
+type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray
+interface WdioCustomMatchers<R, T = unknown> {
     // ===== $ or $$ =====
     /**
      * `WebdriverIO.Element` -> `isDisplayed`
      */
-    toBeDisplayed(options?: ExpectWebdriverIO.CommandOptions): Promise<R>
+    toBeDisplayed: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.CommandOptions) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `isExisting`
      */
-    toExist(options?: ExpectWebdriverIO.CommandOptions): Promise<R>
+    toExist: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.CommandOptions) => Promise<R> : never
+
     /**
      * `WebdriverIO.Element` -> `isExisting`
      */
-    toBePresent(options?: ExpectWebdriverIO.CommandOptions): Promise<R>
+    toBePresent: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.CommandOptions) => Promise<R> : never
+
     /**
      * `WebdriverIO.Element` -> `isExisting`
      */
-    toBeExisting(options?: ExpectWebdriverIO.CommandOptions): Promise<R>
+    toBeExisting: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.CommandOptions) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getAttribute`
      */
-    toHaveAttribute(
+    toHaveAttribute: T extends ElementOrArrayLike ? (
         attribute: string,
         value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
         options?: ExpectWebdriverIO.StringOptions
-    ): Promise<R>
+    ) => Promise<R> : never
+
     /**
      * `WebdriverIO.Element` -> `getAttribute`
      */
-    toHaveAttr(attribute: string, value?: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toHaveAttr: T extends ElementOrArrayLike ? (
+        attribute: string,
+        value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` class
      * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
      */
-    toHaveClass(className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toHaveClass: T extends ElementOrArrayLike ? (
+        className: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` class
@@ -78,84 +130,103 @@ interface WdioCustomMatchers<R, T = unknown> /*extends Record<string, any>*/ {
      * await expect(element).toHaveElementClass(['btn', 'btn-large']);
      * ```
      */
-    toHaveElementClass(className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toHaveElementClass: T extends ElementOrArrayLike ? (
+        className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getProperty`
      */
-    toHaveElementProperty(
+    toHaveElementProperty: T extends ElementOrArrayLike ? (
         property: string | RegExp | ExpectWebdriverIO.PartialMatcher,
         value?: unknown,
         options?: ExpectWebdriverIO.StringOptions
-    ): Promise<R>
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getProperty` value
      */
-    toHaveValue(value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toHaveValue: T extends ElementOrArrayLike ? (
+        value: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `isClickable`
      */
-    toBeClickable(options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toBeClickable: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.StringOptions) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `!isEnabled`
      */
-    toBeDisabled(options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toBeDisabled: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.StringOptions) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `isDisplayedInViewport`
      */
-    toBeDisplayedInViewport(options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toBeDisplayedInViewport: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.StringOptions) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `isEnabled`
      */
-    toBeEnabled(options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toBeEnabled: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.StringOptions) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `isFocused`
      */
-    toBeFocused(options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toBeFocused: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.StringOptions) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `isSelected`
      */
-    toBeSelected(options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toBeSelected: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.StringOptions) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `isSelected`
      */
-    toBeChecked(options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toBeChecked: T extends ElementOrArrayLike ? (options?: ExpectWebdriverIO.StringOptions) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `$$('./*').length`
      * supports less / greater then or equals to be passed in options
      */
-    toHaveChildren(
+    toHaveChildren: T extends ElementOrArrayLike ? (
         size?: number | ExpectWebdriverIO.NumberOptions,
         options?: ExpectWebdriverIO.NumberOptions
-    ): Promise<R>
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` href
      */
-    toHaveHref(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toHaveHref: T extends ElementOrArrayLike ? (
+        href: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R> : never
+
     /**
      * `WebdriverIO.Element` -> `getAttribute` href
      */
-    toHaveLink(href: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toHaveLink: T extends ElementOrArrayLike ? (
+        href: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getProperty` value
      */
-    toHaveId(id: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toHaveId: T extends ElementOrArrayLike ? (
+        id: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getSize` value
      */
-    toHaveSize(size: { height: number; width: number }, options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toHaveSize: T extends ElementOrArrayLike ? (
+        size: { height: number; width: number },
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getText`
@@ -177,100 +248,80 @@ interface WdioCustomMatchers<R, T = unknown> /*extends Record<string, any>*/ {
      * ```
      */
     toHaveText(
-        text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp> ExpectWebdriverIO.PartialMatcher | ExpectWebdriverIO.PartialMatcher,
-        options?: ExpectWebdriverIO.StringOptions
-    ): Promise<R>
+        text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher>,
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getHTML`
      * Element's html equals the html provided
      */
-    toHaveHTML(html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options?: ExpectWebdriverIO.HTMLOptions): Promise<R>
+    toHaveHTML: T extends ElementOrArrayLike ? (
+        html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+        options?: ExpectWebdriverIO.HTMLOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getComputedLabel`
      * Element's computed label equals the computed label provided
      */
-    toHaveComputedLabel(
+    toHaveComputedLabel: T extends ElementOrArrayLike ? (
         computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
-    ): Promise<R>
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getComputedRole`
      * Element's computed role equals the computed role provided
      */
-    toHaveComputedRole(
+    toHaveComputedRole: T extends ElementOrArrayLike ? (
         computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
-    ): Promise<R>
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getSize('width')`
      * Element's width equals the width provided
      */
-    toHaveWidth(width: number, options?: ExpectWebdriverIO.CommandOptions): Promise<R>
+    toHaveWidth: T extends ElementOrArrayLike ? (
+        width: number,
+        options?: ExpectWebdriverIO.CommandOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getSize('height')`
      * Element's height equals the height provided
      */
-    toHaveHeight(height: number, options?: ExpectWebdriverIO.CommandOptions): Promise<R>
+    toHaveHeight: T extends ElementOrArrayLike ? (
+        height: number,
+        options?: ExpectWebdriverIO.CommandOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getSize()`
      * Element's size equals the size provided
      */
-    toHaveHeight(size: { height: number; width: number }, options?: ExpectWebdriverIO.CommandOptions): Promise<R>
+    toHaveHeight: T extends ElementOrArrayLike ? (
+        size: { height: number; width: number },
+        options?: ExpectWebdriverIO.CommandOptions
+    ) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getAttribute("style")`
      */
-    toHaveStyle(style: { [key: string]: string }, options?: ExpectWebdriverIO.StringOptions): Promise<R>
-
-    // ===== browser only =====
-    /**
-     * `WebdriverIO.Browser` -> `getUrl`
-     */
-    toHaveUrl: T extends WebdriverIO.Browser ? (url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
-
-    /**
-     * `WebdriverIO.Browser` -> `getTitle`
-     */
-    toHaveTitle(title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): Promise<R>
-
-    /**
-     * `WebdriverIO.Browser` -> `execute`
-     */
-    toHaveClipboardText(clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): Promise<R>
+    toHaveStyle: T extends ElementOrArrayLike ? (
+        style: { [key: string]: string },
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R> : never
 
     // ===== $$ only =====
     /**
      * `WebdriverIO.ElementArray` -> `$$('...').length`
      * supports less / greater then or equals to be passed in options
      */
-    toBeElementsArrayOfSize(
+    toBeElementsArrayOfSize: T extends ElementArrayLike ? (
         size: number | ExpectWebdriverIO.NumberOptions,
         options?: ExpectWebdriverIO.NumberOptions
-    ): Promise<R> & Promise<WebdriverIO.ElementArray>;
-
-    // ==== network mock ====
-    /**
-     * Check that `WebdriverIO.Mock` was called
-     */
-    toBeRequested(options?: ExpectWebdriverIO.CommandOptions): Promise<R>
-    /**
-     * Check that `WebdriverIO.Mock` was called N times
-     */
-    toBeRequestedTimes(
-        times: number | ExpectWebdriverIO.NumberOptions,
-        options?: ExpectWebdriverIO.NumberOptions
-    ): Promise<R>
-
-    /**
-     * Check that `WebdriverIO.Mock` was called with the specific parameters
-     */
-    toBeRequestedWith(requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions): Promise<R>
+    ) => Promise<R> & Promise<WebdriverIO.ElementArray> : never
 }
 
 /**
@@ -290,7 +341,7 @@ interface WdioOverloadedMatchers<R> {
     toMatchInlineSnapshot(snapshot?: string, label?: string): Promise<R>
 }
 
-interface WdioMatchers<R, T = unknown> extends WdioCustomMatchers<R, T>, WdioOverloadedMatchers<R, T>  {}
+interface WdioMatchers<R, T = unknown> extends WdioOverloadedMatchers<R, T>, WdioBrowserMatchers<R, T>, WdioCustomMatchers<R, T>, WdioMockMatchers<R, T> {}
 
 /**
  * expect function declaration, containing two generics:
@@ -326,6 +377,7 @@ interface WdioCustomExpect extends ExpectLibAsymmetricMatchers {
 
 declare namespace ExpectWebdriverIO {
     function setOptions(options: DefaultOptions): void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getConfig(): any
 
     interface SnapshotServiceArgs {
@@ -364,6 +416,7 @@ declare namespace ExpectWebdriverIO {
         constructor(serviceOptions?: SoftAssertionServiceOptions, capabilities?: unknown, config?: un)
         beforeTest(test: Test): void
         beforeStep(step: PickleStep, scenario: Scenario): void
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         afterTest(test: Test, context: any, result: TestResult): void
         afterStep(step: PickleStep, scenario: Scenario, result: { passed: boolean, error?: Error }): void
     }
@@ -397,6 +450,7 @@ declare namespace ExpectWebdriverIO {
          * expect(el).toHaveAttribute('attr', 'value', { ... }) // expectedValue is `['attr', 'value]`
          * ```
          */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expectedValue?: any,
         /**
          * Options that the user has passed in, e.g. `expect(el).toHaveText('foo', { ignoreCase: true })` -> `{ ignoreCase: true }`
@@ -536,8 +590,10 @@ declare namespace ExpectWebdriverIO {
     type JsonCompatible = jsonObject | jsonArray
 
     interface PartialMatcher {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         sample?: any
         $$typeof: symbol
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         asymmetricMatch(...args: any[]): boolean
         toString(): string
     }

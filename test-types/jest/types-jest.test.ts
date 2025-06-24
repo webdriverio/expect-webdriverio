@@ -5,38 +5,40 @@ describe('type assertions', () => {
     const chainableElement = $('findMe')
     const chainableArray = $$('ul>li')
 
-    describe('toHaveUrl', () => {
+    describe('Browser', () => {
         const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
-        it('should not have ts errors and be able to await the promise when actual is browser', async () => {
-            const expectPromiseVoid: Promise<void> = expect(browser).toHaveUrl('https://example.com')
-            await expectPromiseVoid
+        describe('toHaveUrl', () => {
+            it('should not have ts errors and be able to await the promise when actual is browser', async () => {
+                const expectPromiseVoid: Promise<void> = expect(browser).toHaveUrl('https://example.com')
+                await expectPromiseVoid
 
-            const expectNotPromiseVoid: Promise<void> = expect(browser).not.toHaveUrl('https://example.com')
-            await expectNotPromiseVoid
-        })
+                const expectNotPromiseVoid: Promise<void> = expect(browser).not.toHaveUrl('https://example.com')
+                await expectNotPromiseVoid
+            })
 
-        it('should have ts errors and not need to await the promise when actual is browser', async () => {
+            it('should have ts errors and not need to await the promise when actual is browser', async () => {
             // @ts-expect-error
-            const expectVoid: void = expect(browser).toHaveUrl('https://example.com')
-            // @ts-expect-error
-            const expectNotVoid: void = expect(browser).not.toHaveUrl('https://example.com')
-        })
+                const expectVoid: void = expect(browser).toHaveUrl('https://example.com')
+                // @ts-expect-error
+                const expectNotVoid: void = expect(browser).not.toHaveUrl('https://example.com')
+            })
 
-        it('should have ts errors when actual is an element', async () => {
+            it('should have ts errors when actual is an element', async () => {
             // @ts-expect-error
-            await expect(element).toHaveUrl('https://example.com')
-        })
+                await expect(element).toHaveUrl('https://example.com')
+            })
 
-        it('should have ts errors when actual is an ChainableElement', async () => {
+            it('should have ts errors when actual is an ChainableElement', async () => {
             // @ts-expect-error
-            await expect(chainableElement).toHaveUrl('https://example.com')
-        })
+                await expect(chainableElement).toHaveUrl('https://example.com')
+            })
 
-        it('should support stringContaining', async () => {
-            const expectVoid1: Promise<void> = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
+            it('should support stringContaining', async () => {
+                const expectVoid1: Promise<void> = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
 
-            // @ts-expect-error
-            const expectVoid2: void = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
+                // @ts-expect-error
+                const expectVoid2: void = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
+            })
         })
     })
 
@@ -227,7 +229,11 @@ describe('type assertions', () => {
             const expectPromise2: Promise<void> = expect(promiseNetworkMock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
             const expectPromise3: Promise<void> = expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
 
-            const expectPromise4: Promise<void> = expect(promiseNetworkMock).toBeRequestedWith({
+            const expectPromise4: Promise<void> = expect(promiseNetworkMock).not.toBeRequested()
+            const expectPromise5: Promise<void> = expect(promiseNetworkMock).not.toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
+            const expectPromise6: Promise<void> = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+
+            const expectPromise7: Promise<void> = expect(promiseNetworkMock).toBeRequestedWith({
                 url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
                 method: 'POST',                                 // [optional] string | array
                 statusCode: 200,                                // [optional] number | array
@@ -236,6 +242,10 @@ describe('type assertions', () => {
                 postData: { title: 'foo', description: 'bar' }, // [optional] object | function | custom matcher
                 response: { success: true },                    // [optional] object | function | custom matcher
             })
+
+            const expectPromise8: Promise<void> = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
+                response: { success: true },                    // [optional] object | function | custom matcher
+            }))
         })
 
         it('should have ts errors when typing to void', async () => {
@@ -247,7 +257,14 @@ describe('type assertions', () => {
             const expectPromise3: void = expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
 
             // @ts-expect-error
-            const expectPromise4: void = expect(promiseNetworkMock).toBeRequestedWith({
+            const expectPromise4: void = expect(promiseNetworkMock).not.toBeRequested()
+            // @ts-expect-error
+            const expectPromise5: void = expect(promiseNetworkMock).not.toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
+            // @ts-expect-error
+            const expectPromise6: void = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+
+            // @ts-expect-error
+            const expectPromise7: void = expect(promiseNetworkMock).toBeRequestedWith({
                 url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
                 method: 'POST',                                 // [optional] string | array
                 statusCode: 200,                                // [optional] number | array
@@ -256,6 +273,11 @@ describe('type assertions', () => {
                 postData: { title: 'foo', description: 'bar' }, // [optional] object | function | custom matcher
                 response: { success: true },                    // [optional] object | function | custom matcher
             })
+
+            // @ts-expect-error
+            const expectPromise8: void = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
+                response: { success: true },                    // [optional] object | function | custom matcher
+            }))
         })
     })
 
@@ -292,15 +314,15 @@ describe('type assertions', () => {
 
                 it('should have ts error when using await and actual is non-promise type', async () => {
                     // @ts-expect-error
-                    const expectWdioMatcher: WdioMatchers<Promise<void>, string> = expect.soft(expectString)
+                    const expectWdioMatcher: jest.MatcherAndInverse<Promise<void>, string> = expect.soft(expectString)
 
                     // @ts-expect-error
                     const expectVoid: Promise<void> = expect.soft(expectString).toBe('Test Page')
                 })
 
                 it('should not have ts error and need to be awaited/be a promise if actual is a promise type', async () => {
-                // @ts-expect-error
-                    const expectWdioMatcher: WdioMatchers<void, Promise<string>> = expect.soft(expectPromise)
+                    // @ts-expect-error
+                    const expectWdioMatcher: jest.MatcherAndInverse<void, Promise<string>> = expect.soft(expectPromise)
                     // @ts-expect-error
                     const expectVoid: void = expect.soft(expectPromise).toBe('Test Page')
                 })
