@@ -13,6 +13,7 @@ export async function toHaveId(
         options,
     })
 
+    // @ts-ignore TODO dprevost fix me
     const result: ExpectWebdriverIO.AssertionResult = await toHaveAttributeAndValue.call(this, el, 'id', expectedValue, options)
 
     await options.afterAssertion?.({
