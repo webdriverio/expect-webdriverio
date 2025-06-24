@@ -6,6 +6,7 @@ type PickleStep = import('@wdio/types').Frameworks.PickleStep
 type Scenario = import('@wdio/types').Frameworks.Scenario
 type SnapshotResult = import('@vitest/snapshot').SnapshotResult
 type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
+type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
 
 // type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
 // type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
@@ -20,8 +21,9 @@ type PromiseLikeType = Promise<any>
  */
 
 // TODO dprevost have browser matchers and element matchers separated
+// TODO extending extends Record<string, any> remove ts error on unimplemented matchers
 /* eslint-disable @typescript-eslint/no-explicit-any */
-interface WdioCustomMatchers<R, T = unknown> extends Record<string, any> {
+interface WdioCustomMatchers<R, T = unknown> /*extends Record<string, any>*/ {
     // ===== $ or $$ =====
     /**
      * `WebdriverIO.Element` -> `isDisplayed`
@@ -295,7 +297,9 @@ interface WdioMatchers<R, T = unknown> extends WdioCustomMatchers<R, T>, WdioOve
  *  - T: the type of the actual value, e.g. any type, not just WebdriverIO.Browser or WebdriverIO.Element
  *  - R: the type of the return value, e.g. Promise<void> or void
  */
-interface WdioCustomExpect {
+// TODO dprevost should we extends Expect from expect lib or just AsyncMatchers?
+// TODO dprevost ExpectLibAsymmetricMatchers add arrayOf and closeTo previously not there! and not was there previously but is no more?
+interface WdioCustomExpect extends ExpectLibAsymmetricMatchers {
 
     /**
      * Creates a soft assertion wrapper around standard expect
@@ -393,7 +397,6 @@ declare namespace ExpectWebdriverIO {
          * expect(el).toHaveAttribute('attr', 'value', { ... }) // expectedValue is `['attr', 'value]`
          * ```
          */
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expectedValue?: any,
         /**
          * Options that the user has passed in, e.g. `expect(el).toHaveText('foo', { ignoreCase: true })` -> `{ ignoreCase: true }`
@@ -533,10 +536,8 @@ declare namespace ExpectWebdriverIO {
     type JsonCompatible = jsonObject | jsonArray
 
     interface PartialMatcher {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         sample?: any
         $$typeof: symbol
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         asymmetricMatch(...args: any[]): boolean
         toString(): string
     }

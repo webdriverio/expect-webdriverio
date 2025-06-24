@@ -32,6 +32,6 @@ declare namespace jasmine {
     }
 
     // type MatcherAndInverse<R, T> = Matchers<R, T>
-    interface AsyncMatchers<T, R> extends WdioCustomMatchers<R, T> {}
+    // interface AsyncMatchers<T, R> extends WdioMatchers<R, T> {}
 }
 
