@@ -31,7 +31,7 @@ declare namespace ExpectWebdriverIO {
         toMatchInlineSnapshot(snapshot?: string, label?: string): Promise<R>
     }
 
-    type MatchersAndInverse<R, T> = Matchers<R, T> & Inverse<Matchers<R, T>>
+    type MatchersAndInverse<R, T> = ExpectWebdriverIO.Matchers<R, T> & Inverse<Matchers<R, T>>
 
     /**
      * Mostly derived from the types of `jest-expect` but adapted to work with WebdriverIO.
@@ -69,5 +69,5 @@ declare namespace ExpectWebdriverIO {
         clearSoftFailures(testId?: string): void
     }
 
-    interface InverseAsymmetricMatchers extends Expect {}
+    interface InverseAsymmetricMatchers extends ExpectWebdriverIO.Expect {}
 }
