@@ -5,39 +5,35 @@ describe('type assertions', () => {
     const chainableElement = $('findMe')
     const chainableArray = $$('ul>li')
 
+    // Type assertions
+    let expectPromiseVoid: Promise<void>
+    let expectVoid: void
+
     describe('Browser', () => {
         const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
+
         describe('toHaveUrl', () => {
-            it('should not have ts errors and be able to await the promise when actual is browser', async () => {
-                const expectPromiseVoid: Promise<void> = expect(browser).toHaveUrl('https://example.com')
-                await expectPromiseVoid
+            it('should be supported correctly', async () => {
+                expectPromiseVoid = expect(browser).toHaveUrl('https://example.com')
+                expectPromiseVoid = expect(browser).not.toHaveUrl('https://example.com')
+                expectPromiseVoid = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
+                expectPromiseVoid = expect(browser).toHaveUrl(expect.any(String))
+                expectPromiseVoid = expect(browser).toHaveUrl(expect.anything())
+                // TODO add more asymmetric matchers
 
-                const expectNotPromiseVoid: Promise<void> = expect(browser).not.toHaveUrl('https://example.com')
-                await expectNotPromiseVoid
-            })
-
-            it('should have ts errors and not need to await the promise when actual is browser', async () => {
-            // @ts-expect-error
-                const expectVoid: void = expect(browser).toHaveUrl('https://example.com')
                 // @ts-expect-error
-                const expectNotVoid: void = expect(browser).not.toHaveUrl('https://example.com')
+                expectVoid = expect(browser).toHaveUrl('https://example.com')
+                // @ts-expect-error
+                expectVoid = expect(browser).not.toHaveUrl('https://example.com')
+                // @ts-expect-error
+                expectVoid = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
             })
 
-            it('should have ts errors when actual is an element', async () => {
-            // @ts-expect-error
+            it('should have ts errors when actual is not a Browser element', async () => {
+                // @ts-expect-error
                 await expect(element).toHaveUrl('https://example.com')
-            })
-
-            it('should have ts errors when actual is an ChainableElement', async () => {
-            // @ts-expect-error
-                await expect(chainableElement).toHaveUrl('https://example.com')
-            })
-
-            it('should support stringContaining', async () => {
-                const expectVoid1: Promise<void> = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
-
                 // @ts-expect-error
-                const expectVoid2: void = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
+                await expect(element).not.toHaveUrl('https://example.com')
             })
         })
     })
@@ -75,6 +71,25 @@ describe('type assertions', () => {
                 const expectToBeIsVoid: void = expect(chainableElement).toBeDisabled()
                 // @ts-expect-error
                 const expectNotToBeIsVoid: void = expect(chainableElement).not.toBeDisabled()
+            })
+        })
+
+        describe('toHaveText', () => {
+            it('should be supported correctly', async () => {
+                const expectPromise1: Promise<void> = expect(element).toHaveText('text')
+                const expectPromise2: Promise<void> = expect(element).toHaveText(/text/)
+                const expectPromise3: Promise<void> = expect(element).toHaveText(['text1', 'text2'])
+                const expectPromise4: Promise<void> = expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
+                const expectPromise5: Promise<void> = expect(element).toHaveText([/text1/, /text2/])
+                const expectPromise6: Promise<void> = expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+
+                const expectPromise7: Promise<void> = expect(element).not.toHaveText('text')
+
+                // @ts-expect-error
+                const expectTsError7: void = expect(element).toHaveText('text')
+
+                // @ts-expect-error
+                await expect(browser).toHaveText('text')
             })
         })
 

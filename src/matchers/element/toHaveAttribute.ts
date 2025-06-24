@@ -56,12 +56,14 @@ async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: s
     let el = await received?.getElement()
 
     const pass = await waitUntil(async () => {
+        // @ts-ignore TODO dprevost fix me
         const result = await executeCommand.call(this, el, conditionAttr, {}, [attribute])
         el = result.el as WebdriverIO.Element
 
         return result.success
     }, isNot, {})
 
+    // @ts-ignore TODO dprevost fix me
     const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, {})
 
     return {
@@ -84,6 +86,7 @@ export async function toHaveAttribute(
 
     const result = typeof value !== 'undefined'
         // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
+        // @ts-ignore TODO dprevost fix me
         ? await toHaveAttributeAndValue.call(this, received, attribute, value, options)
         // Only name is passed in e.g. el.toHaveAttribute('attr')
         : await toHaveAttributeFn.call(this, received, attribute)

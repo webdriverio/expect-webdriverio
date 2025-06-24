@@ -247,9 +247,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
      * ```
      */
-    toHaveText(
-        text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher>,
-    ) => Promise<R> : never
+    toHaveText: T extends ElementOrArrayLike ? (text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher>) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getHTML`

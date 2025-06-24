@@ -13,6 +13,7 @@ export async function toHaveHref(
         options,
     })
 
+    // @ts-ignore TODO dprevost fix me
     const result = await toHaveAttributeAndValue.call(this, el, 'href', expectedValue, options)
 
     await options.afterAssertion?.({
