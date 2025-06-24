@@ -182,9 +182,12 @@ describe('type assertions', () => {
         })
 
         it('should not have ts errors when resolves and rejects is typed to Promise<void>', async () => {
-            // TODO the below needs to return Promise<void> but currently returns void
-            const expectResolvesToBeIsVoid: Promise<void> = expect(booleanPromise).resolves.toBe(true)
-            const expectRejectsToBeIsVoid: Promise<void> = expect(booleanPromise).rejects.toBe(true)
+
+            // @ts-expect-error
+            expect(booleanPromise).resolves.toBe(true)
+
+            // @ts-expect-error
+            expect(booleanPromise).rejects.toBe(true)
         })
 
         it('should have ts errors when typing to Promise', async () => {
@@ -273,18 +276,18 @@ describe('type assertions', () => {
             const expectAny2: any = expect.anything()
         })
 
-        describe('Soft Assertions', async () => {
+        describe('Expect Soft Assertions', async () => {
             const expectString: string = await $('h1').getText()
             const expectPromise: Promise<string> = $('h1').getText()
 
             describe('expect.soft', () => {
                 it('should not have ts error and not need to be awaited/be a promise if actual is non-promise type', async () => {
-                    const expectWdioMatcher: WdioMatchers<void, string> = expect.soft(expectString)
+                    const expectWdioMatcher: jasmine.Matchers<string> = expect.soft(expectString)
                     const expectVoid: void = expect.soft(expectString).toBe('Test Page')
                 })
 
                 it('should not have ts error and need to be awaited/be a promise if actual is a promise type', async () => {
-                    const expectWdioMatcher: WdioMatchers<Promise<void>, Promise<string>> = expect.soft(expectPromise)
+                    const expectWdioMatcher: jasmine.Matchers<Promise<string>> = expect.soft(expectPromise)
                     const expectVoid: Promise<void> = expect.soft(expectPromise).toBe('Test Page')
 
                     await expect.soft(expectPromise).toBe('Test Page')
@@ -306,8 +309,8 @@ describe('type assertions', () => {
                 })
 
                 it('should support chainable element', async () => {
-                    const expectElement: WdioMatchers<void, WebdriverIO.Element> = expect.soft(element)
-                    const expectElementChainable: WdioMatchers<void, typeof chainableElement> = expect.soft(chainableElement)
+                    const expectElement: jasmine.Matchers<WebdriverIO.Element> = expect.soft(element)
+                    const expectElementChainable: jasmine.Matchers<typeof chainableElement> = expect.soft(chainableElement)
 
                     // @ts-expect-error
                     const expectElement2: WdioMatchers<Promise<void>, WebdriverIO.Element> = expect.soft(element)
@@ -385,6 +388,154 @@ describe('type assertions', () => {
                     // @ts-expect-error
                     const expectVoid2: Promise<void> = expect.clearSoftFailures()
                 })
+            })
+        })
+
+        describe('ExpectAsync Soft Assertions', async () => {
+            const expectString: string = await $('h1').getText()
+            const expectPromise: Promise<string> = $('h1').getText()
+
+            describe('expectAsync.soft', () => {
+                it('should not have ts error and not need to be awaited/be a promise if actual is non-promise type', async () => {
+                    const expectWdioMatcher: jasmine.Matchers<string> = expectAsync.soft(expectString)
+                    const expectVoid: void = expectAsync.soft(expectString).toBe('Test Page')
+                })
+
+                it('should not have ts error and need to be awaited/be a promise if actual is a promise type', async () => {
+                    const expectWdioMatcher: jasmine.Matchers<Promise<string>> = expectAsync.soft(expectPromise)
+                    const expectVoid: Promise<void> = expectAsync.soft(expectPromise).toBeResolvedTo('Test Page')
+
+                    await expectAsync.soft(expectPromise).toBeResolvedTo('Test Page')
+                })
+
+                it('should have ts error when using await and actual is non-promise type', async () => {
+                    // @ts-expect-error
+                    const expectWdioMatcher: WdioMatchers<Promise<void>, string> = expect.soft(expectString)
+
+                    // @ts-expect-error
+                    const expectVoid: Promise<void> = expect.soft(expectString).toBe('Test Page')
+                })
+
+                it('should not have ts error and need to be awaited/be a promise if actual is a promise type', async () => {
+                // @ts-expect-error
+                    const expectWdioMatcher: WdioMatchers<void, Promise<string>> = expect.soft(expectPromise)
+                    // @ts-expect-error
+                    const expectVoid: void = expect.soft(expectPromise).toBe('Test Page')
+                })
+
+                it('should support chainable element', async () => {
+                    const expectElement: jasmine.Matchers<WebdriverIO.Element> = expect.soft(element)
+                    const expectElementChainable: jasmine.Matchers<typeof chainableElement> = expect.soft(chainableElement)
+
+                    // @ts-expect-error
+                    const expectElement2: WdioMatchers<Promise<void>, WebdriverIO.Element> = expect.soft(element)
+                    // @ts-expect-error
+                    const expectElementChainable2: WdioMatchers<Promise<void>, typeof chainableElement> = expect.soft(chainableElement)
+                })
+
+                it('should support chainable element with wdio Matchers', async () => {
+                    const expectPromise1: Promise<void> = expect.soft(element).toBeDisplayed()
+                    const expectPromise2: Promise<void> = expect.soft(chainableElement).toBeDisplayed()
+
+                    // @ts-expect-error
+                    const expectPromise3: void = expect.soft(element).toBeDisplayed()
+                    // @ts-expect-error
+                    const expectPromise4: void = expect.soft(chainableElement).toBeDisplayed()
+
+                    await expect.soft(element).toBeDisplayed()
+                    await expect.soft(chainableElement).toBeDisplayed()
+                })
+
+                describe('not', async () => {
+                    it('should support not with chainable', async () => {
+                        const expectPromise1: Promise<void> = expect.soft(element).not.toBeDisplayed()
+                        const expectPromise2: Promise<void> = expect.soft(chainableElement).not.toBeDisplayed()
+
+                        // @ts-expect-error
+                        const expectPromise3: void = expect.soft(element).not.toBeDisplayed()
+                        // @ts-expect-error
+                        const expectPromise4: void = expect.soft(chainableElement).not.toBeDisplayed()
+
+                        await expect.soft(element).not.toBeDisplayed()
+                        await expect.soft(chainableElement).not.toBeDisplayed()
+                    })
+
+                    it('should support not with non-promise', async () => {
+                        const expectVoid1: void = expect.soft(expectString).not.toBe('Test Page')
+
+                        // @ts-expect-error
+                        const expectVoid2: Promise<void> = expect.soft(expectString).not.toBe('Test Page')
+                    })
+
+                    it('should support not with promise', async () => {
+                        const expectPromise1: Promise<void> = expect.soft(expectPromise).not.toBe('Test Page')
+
+                        // @ts-expect-error
+                        const expectPromise2: void = expect.soft(expectPromise).not.toBe('Test Page')
+
+                        await expect.soft(expectPromise).not.toBe('Test Page')
+                    })
+                })
+            })
+
+            describe('expect.getSoftFailures', () => {
+                it('should be of type `SoftFailure`', async () => {
+                    const expectSoftFailure1: ExpectWebdriverIO.SoftFailure[] = expect.getSoftFailures()
+
+                    // @ts-expect-error
+                    const expectSoftFailure2: void = expect.getSoftFailures()
+                })
+            })
+
+            describe('expect.assertSoftFailures', () => {
+                it('should be of type void', async () => {
+                    const expectVoid1: void = expect.assertSoftFailures()
+
+                    // @ts-expect-error
+                    const expectVoid2: Promise<void> = expect.assertSoftFailures()
+                })
+            })
+
+            describe('expect.clearSoftFailures', () => {
+                it('should be of type void', async () => {
+                    const expectVoid1: void = expect.clearSoftFailures()
+
+                    // @ts-expect-error
+                    const expectVoid2: Promise<void> = expect.clearSoftFailures()
+                })
+            })
+        })
+
+        describe('Jasmine', async () => {
+            const string = 'Test Page'
+            const promiseString = Promise.resolve('Test Page')
+
+            it('should correctly support expect.toBe', async () => {
+                const expectNonPromiseMatched1: jasmine.Matchers<string> = expect(string)
+                const expectVoid1: void = expect(string).toBe(string)
+
+                // @ts-expect-error
+                const expectNonPromiseMatched2: jasmine.Matchers<Promise<string>> = expect(string)
+                // @ts-expect-error
+                const expectVoid2: Promise<void> = expect(string).toBe(string)
+
+                // @ts-expect-error
+                expect(string).unimplementedFunction()
+            })
+
+            it('should correctly support expect.toBeResolvedTo', async () => {
+                const expectNonPromiseMatched1: jasmine.AsyncMatchers<string, unknown> = expectAsync(promiseString)
+                const expectVoid1: PromiseLike<void> = expectAsync(promiseString).toBeResolvedTo('Test Page')
+
+                // @ts-expect-error
+                const expectNonPromiseMatched2: jasmine.AsyncMatchers<Promise<string>, unknown> = expectAsync(promiseString)
+                // @ts-expect-error
+                const expectVoid2: void = expectAsync(promiseString).toBeResolvedTo('Test Page')
+
+                await expectAsync(promiseString).toBeResolvedTo('Test Page')
+
+                // @ts-expect-error
+                expectAsync(promiseString).unimplementedFunction()
             })
         })
     })
