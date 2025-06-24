@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-describe('type assertions', () => {
-    const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
-    const chainableElement = $('findMe')
-    const chainableArray = $$('ul>li')
+describe('type assertions', async () => {
+    const chainableElement: ChainablePromiseElement = $('findMe')
+    const chainableArray: ChainablePromiseArray = $$('ul>li')
+    const element: WebdriverIO.Element = await chainableElement?.getElement()
+    // TODO dprevost: Need more test with this type?
+    // const ElementArray: WebdriverIO.ElementArray = await chainableArray?.getElements()
 
     // Type assertions
     let expectPromiseVoid: Promise<void>
@@ -16,6 +18,8 @@ describe('type assertions', () => {
             it('should be supported correctly', async () => {
                 expectPromiseVoid = expect(browser).toHaveUrl('https://example.com')
                 expectPromiseVoid = expect(browser).not.toHaveUrl('https://example.com')
+
+                // Asymmetric matchers
                 expectPromiseVoid = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
                 expectPromiseVoid = expect(browser).toHaveUrl(expect.any(String))
                 expectPromiseVoid = expect(browser).toHaveUrl(expect.anything())
@@ -34,205 +38,278 @@ describe('type assertions', () => {
                 await expect(element).toHaveUrl('https://example.com')
                 // @ts-expect-error
                 await expect(element).not.toHaveUrl('https://example.com')
+                // @ts-expect-error
+                await expect(true).toHaveUrl('https://example.com')
+                // @ts-expect-error
+                await expect(true).not.toHaveUrl('https://example.com')
             })
         })
     })
 
-    describe('element type assertions', () => {
+    describe('element', () => {
 
         describe('toBeDisabled', () => {
-            it('should not have ts errors and be able to await the promise for element', async () => {
-                // expect no ts errors
-                const expectIsPromiseVoid: Promise<void> = expect(element).toBeDisabled()
-                await expectIsPromiseVoid
+            it('should be supported correctly', async () => {
+                // Element
+                expectPromiseVoid = expect(element).toBeDisabled()
+                expectPromiseVoid = expect(element).not.toBeDisabled()
 
-                const expectNotIsPromiseVoid: Promise<void> = expect(element).not.toBeDisabled()
-                await expectNotIsPromiseVoid
+                // Chainable element
+                expectPromiseVoid = expect(chainableElement).toBeDisabled()
+                expectPromiseVoid = expect(chainableElement).not.toBeDisabled()
+
+                // Chainable element array
+                expectPromiseVoid = expect(chainableArray).toBeDisabled()
+                expectPromiseVoid = expect(chainableArray).not.toBeDisabled()
+
+                // @ts-expect-error
+                expectVoid = expect(element).toBeDisabled()
+                // @ts-expect-error
+                expectVoid = expect(element).not.toBeDisabled()
             })
 
-            it('should not have ts errors and be able to await the promise for chainable', async () => {
-                // expect no ts errors
-                const expectIsPromiseVoid: Promise<void> = expect(chainableElement).toBeDisabled()
-                await expectIsPromiseVoid
-
-                const expectNotIsPromiseVoid: Promise<void> = expect(chainableElement).not.toBeDisabled()
-                await expectNotIsPromiseVoid
-            })
-
-            it('should have ts errors when typing to void for element', async () => {
+            it('should have ts errors when actual is not an element', async () => {
                 // @ts-expect-error
-                const expectToBeIsVoid: void = expect(element).toBeDisabled()
+                await expect(browser).toBeDisabled()
                 // @ts-expect-error
-                const expectNotToBeIsVoid: void = expect(element).not.toBeDisabled()
-            })
-
-            it('should have ts errors when typing to void for chainable', async () => {
+                await expect(browser).not.toBeDisabled()
                 // @ts-expect-error
-                const expectToBeIsVoid: void = expect(chainableElement).toBeDisabled()
+                await expect(true).toBeDisabled()
                 // @ts-expect-error
-                const expectNotToBeIsVoid: void = expect(chainableElement).not.toBeDisabled()
+                await expect(true).not.toBeDisabled()
             })
         })
 
         describe('toHaveText', () => {
             it('should be supported correctly', async () => {
-                const expectPromise1: Promise<void> = expect(element).toHaveText('text')
-                const expectPromise2: Promise<void> = expect(element).toHaveText(/text/)
-                const expectPromise3: Promise<void> = expect(element).toHaveText(['text1', 'text2'])
-                const expectPromise4: Promise<void> = expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
-                const expectPromise5: Promise<void> = expect(element).toHaveText([/text1/, /text2/])
-                const expectPromise6: Promise<void> = expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+                expectPromiseVoid = expect(element).toHaveText('text')
+                expectPromiseVoid = expect(element).toHaveText(/text/)
+                expectPromiseVoid = expect(element).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
+                expectPromiseVoid = expect(element).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
 
-                const expectPromise7: Promise<void> = expect(element).not.toHaveText('text')
+                expectPromiseVoid = expect(element).not.toHaveText('text')
 
                 // @ts-expect-error
-                const expectTsError7: void = expect(element).toHaveText('text')
+                expectVoid = expect(element).toHaveText('text')
+                // @ts-expect-error
+                await expect(element).toHaveText(6)
 
                 // @ts-expect-error
                 await expect(browser).toHaveText('text')
+            })
+
+            it('should have ts errors when actual is not an element', async () => {
+                // @ts-expect-error
+                await expect(browser).toHaveText('text')
+                // @ts-expect-error
+                await expect(browser).not.toHaveText('text')
+                // @ts-expect-error
+                await expect(true).toHaveText('text')
+                // @ts-expect-error
+                await expect(true).toHaveText('text')
+            })
+
+            it('should have ts errors when actual is string or Promise<string>', async () => {
+                // @ts-expect-error
+                await expect('text').toHaveText('text')
+                // @ts-expect-error
+                await expect('text').not.toHaveText('text')
+                // @ts-expect-error
+                await expect(Promise.resolve('text')).toHaveText('text')
+                // @ts-expect-error
+                await expect(Promise.resolve('text')).toHaveText('text')
             })
         })
 
         describe('toMatchSnapshot', () => {
 
-            it('should not have ts errors when typing to Promise<void> for an element', async () => {
-                const expectPromise1: Promise<void> = expect(element).toMatchSnapshot()
-                const expectPromise2: Promise<void> = expect(element).toMatchSnapshot('test label')
-            })
+            it('should be supported correctly', async () => {
+                expectPromiseVoid = expect(element).toMatchSnapshot()
+                expectPromiseVoid = expect(element).toMatchSnapshot('test label')
+                expectPromiseVoid = expect(element).not.toMatchSnapshot('test label')
 
-            it('should not have ts errors when typing to Promise<void> for a chainable', async () => {
-                const expectPromise1: Promise<void> = expect(chainableElement).toMatchSnapshot()
-                const expectPromise2: Promise<void> = expect(chainableElement).toMatchSnapshot('test label')
-            })
+                expectPromiseVoid = expect(chainableElement).toMatchSnapshot()
+                expectPromiseVoid = expect(chainableElement).toMatchSnapshot('test label')
+                expectPromiseVoid = expect(chainableElement).not.toMatchSnapshot('test label')
 
-            // We need somehow to exclude the Jest types one for this to success
-            it('should have ts errors when typing to void for an element like', async () => {
                 //@ts-expect-error
-                const expectNotToBeVoid1: void = expect(element).toMatchSnapshot()
+                expectVoid = expect(element).toMatchSnapshot()
                 //@ts-expect-error
-                const expectNotToBeVoid2: void = expect(chainableElement).toMatchSnapshot()
+                expectVoid = expect(element).not.toMatchSnapshot()
+                //@ts-expect-error
+                expectVoid = expect(chainableElement).toMatchSnapshot()
+                //@ts-expect-error
+                expectVoid = expect(chainableElement).not.toMatchSnapshot()
             })
 
-            // TODO - conditional types check on T to have the below match void does not work
-            // it('should not have ts errors when typing to void for a string', async () => {
-            //     const expectNotToBeVoid: void = expect('.findme').toMatchSnapshot()
+            // TODO - since we are overloading the `toMatchSnapshot` of jest.toMatchSnapshot, I wonder if we can achieve the below...
+            // it('should have ts errors when not an element or chainable', async () => {
+            //     //@ts-expect-error
+            //     await expect('.findme').toMatchSnapshot()
             // })
         })
 
         describe('toMatchInlineSnapshot', () => {
 
-            it('should not have ts errors when typing to Promise<void> for an element', async () => {
-                const expectPromise1: Promise<void> = expect(element).toMatchInlineSnapshot()
-                const expectPromise2: Promise<void> = expect(element).toMatchInlineSnapshot('test snapshot')
-                const expectPromise3: Promise<void> = expect(element).toMatchInlineSnapshot('test snapshot', 'test label')
-            })
+            it('should be correctly supported', async () => {
+                expectPromiseVoid = expect(element).toMatchInlineSnapshot()
+                expectPromiseVoid = expect(element).toMatchInlineSnapshot('test snapshot')
+                expectPromiseVoid = expect(element).toMatchInlineSnapshot('test snapshot', 'test label')
 
-            it('should not have ts errors when typing to Promise<void> for a chainable', async () => {
-                const expectPromise1: Promise<void> = expect(chainableElement).toMatchInlineSnapshot()
-                const expectPromise2: Promise<void> = expect(chainableElement).toMatchInlineSnapshot('test snapshot')
-                const expectPromise3: Promise<void> = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
-            })
+                expectPromiseVoid = expect(chainableElement).toMatchInlineSnapshot()
+                expectPromiseVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot')
+                expectPromiseVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
 
-            // We need somehow to exclude the Jest types one for this to success
-            it('should have ts errors when typing to void for an element like', async () => {
                 //@ts-expect-error
-                const expectNotToBeVoid1: void = expect(element).toMatchInlineSnapshot()
+                expectVoid = expect(element).toMatchInlineSnapshot()
                 //@ts-expect-error
-                const expectPromise2: void = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+            })
+        })
+
+        describe('toBeElementsArrayOfSize', async () => {
+
+            it('should work correctly when actual is chainableArray', async () => {
+                expectPromiseVoid = expect(chainableArray).toBeElementsArrayOfSize(5)
+                expectPromiseVoid = expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })
+
+                // @ts-expect-error
+                expectVoid = expect(chainableArray).toBeElementsArrayOfSize(5)
+                // @ts-expect-error
+                expectVoid = expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })
             })
 
-            // TODO - conditional types check on T to have the below match void does not work
-            // it('should not have ts errors when typing to void for a string', async () => {
-            //     const expectNotToBeVoid: void = expect('.findme').toMatchInlineSnapshot()
-            // })
+            it('should not work when actual is not chainableArray', async () => {
+            // @ts-expect-error
+                await expect(chainableElement).toBeElementsArrayOfSize(5)
+                // @ts-expect-error
+                await expect(chainableElement).toBeElementsArrayOfSize({ lte: 10 })
+                // @ts-expect-error
+                await expect(true).toBeElementsArrayOfSize(5)
+                // @ts-expect-error
+                await expect(true).toBeElementsArrayOfSize({ lte: 10 })
+            })
         })
     })
 
     describe('toBe', () => {
 
-        it('should not have ts errors when typing to void when actual is boolean', async () => {
-            const expectToBeIsVoid: void = expect(true).toBe(true)
-            const expectNotToBeIsVoid: void = expect(true).not.toBe(true)
-        })
-
-        it('should have ts errors when typing to Promise when actual is boolean', async () => {
-            //@ts-expect-error
-            const expectToBeIsNotPromiseVoid1: Promise<void> = expect(true).toBe(true)
+        it('should expect void type when actual is a boolean', async () => {
+            expectVoid = expect(true).toBe(true)
+            expectVoid = expect(true).not.toBe(true)
 
             //@ts-expect-error
-            const expectToBeIsNotPromiseVoid2: Promise<void> = expect(true).not.toBe(true)
+            expectPromiseVoid = expect(true).toBe(true)
+            //@ts-expect-error
+            expectPromiseVoid = expect(true).not.toBe(true)
         })
 
-        it('should expect void when actual is an awaited element/chainable', async () => {
-            const isClickableElement = await element.isClickable()
-            const expectPromiseVoid1: void = expect(isClickableElement).toBe(true)
+        it('should not expect Promise when actual is a chainable since toBe is not supported', async () => {
+            expectVoid = expect(chainableElement).toBe(true)
+            expectVoid = expect(chainableElement).not.toBe(true)
 
-            const isClickableChainable: boolean = await chainableElement.isClickable()
-            const expectPromiseVoid2: void = expect(isClickableChainable).toBe(true)
+            //@ts-expect-error
+            expectPromiseVoid = expect(chainableElement).toBe(true)
+            //@ts-expect-error
+            expectPromiseVoid = expect(chainableElement).not.toBe(true)
+        })
 
-            // @ts-expect-error
-            const expectPromiseVoid3: Promise<void> = expect(isClickableElement).toBe(true)
+        it('should still expect void type when actual is a Promise since we do not overload them', async () => {
+            const promiseBoolean = Promise.resolve(true)
 
-            // @ts-expect-error
-            const expectPromiseVoid4: Promise<void> = expect(isClickableChainable).toBe(true)
+            expectVoid = expect(promiseBoolean).toBe(true)
+            expectVoid = expect(promiseBoolean).not.toBe(true)
+
+            //@ts-expect-error
+            expectPromiseVoid = expect(promiseBoolean).toBe(true)
+            //@ts-expect-error
+            expectPromiseVoid = expect(promiseBoolean).toBe(true)
+        })
+
+        it('should work with string', async () => {
+            expectVoid = expect('text').toBe(true)
+            expectVoid = expect('text').not.toBe(true)
+            expectVoid = expect('text').toBe(expect.stringContaining('text'))
+            expectVoid = expect('text').not.toBe(expect.stringContaining('text'))
+
+            //@ts-expect-error
+            expectPromiseVoid = expect('text').toBe(true)
+            //@ts-expect-error
+            expectPromiseVoid = expect('text').not.toBe(true)
+            //@ts-expect-error
+            expectPromiseVoid = expect('text').toBe(expect.stringContaining('text'))
+            //@ts-expect-error
+            expectPromiseVoid = expect('text').not.toBe(expect.stringContaining('text'))
         })
     })
 
-    describe('string type assertions', () => {
-        it('should not have ts errors when typing to void', async () => {
-            // Expect no ts errors
-            const expectToBeIsVoid: void = expect('test').toBe('test')
-        })
+    describe('Jest original Matchers', () => {
+        const propertyMatchers: Partial<{}> = {}
+        const snapshotName: string = 'test-snapshot'
+        describe('toMatchSnapshot', () => {
 
-        it('should have ts errors when typing to Promise', async () => {
-            //@ts-expect-error
-            const expectToBeIsNotPromiseVoid: Promise<void> = expect('test').toBe('test')
+            it('should have original jest Matcher still works', async () => {
+                expectVoid = expect(element).toMatchSnapshot(propertyMatchers)
+                expectVoid = expect(element).toMatchSnapshot(propertyMatchers, snapshotName)
+                expectVoid = expect(element).toMatchInlineSnapshot(propertyMatchers)
+                expectVoid = expect(element).toMatchInlineSnapshot(propertyMatchers, snapshotName)
+
+                expectVoid = expect(element).not.toMatchSnapshot(propertyMatchers)
+                expectVoid = expect(element).not.toMatchSnapshot(propertyMatchers, snapshotName)
+                expectVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers)
+                expectVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).toMatchSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).toMatchSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).toMatchInlineSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).toMatchInlineSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).not.toMatchSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).not.toMatchSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+            })
         })
     })
 
-    describe('Promise<> type assertions', () => {
+    describe('Promise type assertions', () => {
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
-        it('should not have ts errors when typing to void', async () => {
-            const expectToBeIsVoid: void = expect(booleanPromise).toBe(true)
-            const expectAwaitToBeIsVoid: void = expect(await booleanPromise).toBe(true)
-        })
+        it('should expect a Promise of type', async () => {
+            const expectPromiseBoolean1: jest.JestMatchers<Promise<boolean>> = expect(booleanPromise)
+            const expectPromiseBoolean2: jest.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
 
-        it('should not have ts errors when resolves and rejects is typed to Promise<void>', async () => {
-            // TODO the below needs to return Promise<void> but currently returns void
-            const expectResolvesToBeIsVoid: Promise<void> = expect(booleanPromise).resolves.toBe(true)
-            const expectRejectsToBeIsVoid: Promise<void> = expect(booleanPromise).rejects.toBe(true)
-        })
-
-        it('should have ts errors when typing to Promise', async () => {
-            //@ts-expect-error
-            const expectToBeIsNotPromiseVoid1: Promise<void> = expect(booleanPromise).toBe(true)
-            //@ts-expect-error
-            const expectToBeIsNotPromiseVoid2: Promise<void> = expect(await booleanPromise).toBe(true)
-        })
-
-        it('should have ts errors when typing resolves and reject is typed to void', async () => {
-            //@ts-expect-error
-            const expectResolvesToBeIsVoid: void = expect(booleanPromise).resolves.toBe(true)
-            //@ts-expect-error
-            const expectRejectsToBeIsVoid: void = expect(booleanPromise).rejects.toBe(true)
-        })
-    })
-
-    describe('toBeElementsArrayOfSize', async () => {
-
-        it('should not have ts errors when typing to Promise', async () => {
-            const listItems = await chainableArray
-            const expectPromise: Promise<void> = expect(listItems).toBeElementsArrayOfSize(5)
-            const expectPromise1: Promise<void> = expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
-        })
-
-        it('should have ts errors when typing to void', async () => {
-            const listItems = await chainableArray
             // @ts-expect-error
-            const expectPromise: void = expect(listItems).toBeElementsArrayOfSize(5)
-            // @ts-expect-error
-            const expectPromise1: void = expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
+            const expectPromiseBoolean3: jest.JestMatchers<boolean> = expect(booleanPromise)
+            //// @ts-expect-error
+            // const expectPromiseBoolean4: jest.Matchers<void, boolean> = expect(booleanPromise).not
+        })
+
+        it('should work with resolves & rejects correctly', async () => {
+            expectPromiseVoid = expect(booleanPromise).resolves.toBe(true)
+            expectPromiseVoid = expect(booleanPromise).rejects.toBe(true)
+
+            //@ts-expect-error
+            expectVoid = expect(booleanPromise).resolves.toBe(true)
+            //@ts-expect-error
+            expectVoid = expect(booleanPromise).rejects.toBe(true)
+
+        })
+
+        it('should not support chainable and expect PromiseVoid with toBe', async () => {
+            //@ts-expect-error
+            expectPromiseVoid = expect(chainableElement).toBe(true)
+            //@ts-expect-error
+            expectPromiseVoid = expect(chainableElement).not.toBe(true)
         })
     })
 
@@ -240,15 +317,15 @@ describe('type assertions', () => {
         const promiseNetworkMock = browser.mock('**/api/todo*')
 
         it('should not have ts errors when typing to Promise', async () => {
-            const expectPromise1: Promise<void> = expect(promiseNetworkMock).toBeRequested()
-            const expectPromise2: Promise<void> = expect(promiseNetworkMock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
-            const expectPromise3: Promise<void> = expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+            expectPromiseVoid = expect(promiseNetworkMock).toBeRequested()
+            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
+            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
 
-            const expectPromise4: Promise<void> = expect(promiseNetworkMock).not.toBeRequested()
-            const expectPromise5: Promise<void> = expect(promiseNetworkMock).not.toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
-            const expectPromise6: Promise<void> = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+            expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequested()
+            expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
+            expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
 
-            const expectPromise7: Promise<void> = expect(promiseNetworkMock).toBeRequestedWith({
+            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
                 url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
                 method: 'POST',                                 // [optional] string | array
                 statusCode: 200,                                // [optional] number | array
@@ -258,28 +335,28 @@ describe('type assertions', () => {
                 response: { success: true },                    // [optional] object | function | custom matcher
             })
 
-            const expectPromise8: Promise<void> = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
+            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
                 response: { success: true },                    // [optional] object | function | custom matcher
             }))
         })
 
         it('should have ts errors when typing to void', async () => {
             // @ts-expect-error
-            const expectPromise1: void = expect(promiseNetworkMock).toBeRequested()
+            expectVoid = expect(promiseNetworkMock).toBeRequested()
             // @ts-expect-error
-            const expectPromise2: void = expect(promiseNetworkMock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
+            expectVoid = expect(promiseNetworkMock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
             // @ts-expect-error
-            const expectPromise3: void = expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+            expectVoid = expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
 
             // @ts-expect-error
-            const expectPromise4: void = expect(promiseNetworkMock).not.toBeRequested()
+            expectVoid = expect(promiseNetworkMock).not.toBeRequested()
             // @ts-expect-error
-            const expectPromise5: void = expect(promiseNetworkMock).not.toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
+            expectVoid = expect(promiseNetworkMock).not.toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
             // @ts-expect-error
-            const expectPromise6: void = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+            expectVoid = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
 
             // @ts-expect-error
-            const expectPromise7: void = expect(promiseNetworkMock).toBeRequestedWith({
+            expectVoid = expect(promiseNetworkMock).toBeRequestedWith({
                 url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
                 method: 'POST',                                 // [optional] string | array
                 statusCode: 200,                                // [optional] number | array
@@ -290,7 +367,7 @@ describe('type assertions', () => {
             })
 
             // @ts-expect-error
-            const expectPromise8: void = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
+            expectVoid = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
                 response: { success: true },                    // [optional] object | function | custom matcher
             }))
         })
@@ -302,44 +379,65 @@ describe('type assertions', () => {
             expect.unimplementedFunction()
         })
 
-        it('should support stringContaining, anything', async () => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const expectAny1: any = expect.stringContaining('WebdriverIO')
+        it('should support stringContaining, anything and more', async () => {
+            expect.stringContaining('WebdriverIO')
+            expect.arrayContaining(['WebdriverIO', 'Test'])
+            expect.objectContaining({ name: 'WebdriverIO' })
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const expectAny2: any = expect.anything()
+            expect.anything()
+            expect.any(Function)
+            expect.any(Number)
+            expect.any(Boolean)
+            expect.any(String)
+            expect.any(Symbol)
+            expect.any(Date)
+            expect.any(Error)
+
+            expect.not.stringContaining('WebdriverIO')
+            expect.not.arrayContaining(['WebdriverIO', 'Test'])
+            expect.not.objectContaining({ name: 'WebdriverIO' })
+
+            expect.not.anything()
+            expect.not.any(Function)
+            expect.not.any(Number)
+            expect.not.any(Boolean)
+            expect.not.any(String)
+            expect.not.any(Symbol)
+            expect.not.any(Date)
+            expect.not.any(Error)
         })
 
         describe('Soft Assertions', async () => {
-            const expectString: string = await $('h1').getText()
-            const expectPromise: Promise<string> = $('h1').getText()
+            const actualString: string = await $('h1').getText()
+            const actualPromiseString: Promise<string> = $('h1').getText()
 
             describe('expect.soft', () => {
-                it('should not have ts error and not need to be awaited/be a promise if actual is non-promise type', async () => {
-                    const expectWdioMatcher: WdioMatchers<void, string> = expect.soft(expectString)
-                    const expectVoid: void = expect.soft(expectString).toBe('Test Page')
+                it('should not need to be awaited/be a promise if actual is non-promise type', async () => {
+                    const expectWdioMatcher1: WdioMatchers<void, string> = expect.soft(actualString)
+                    expectVoid = expect.soft(actualString).toBe('Test Page')
+                    expectVoid = expect.soft(actualString).not.toBe('Test Page')
+                    expectVoid = expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))
+
+                    // @ts-expect-error
+                    expectPromiseVoid = expect.soft(actualString).toBe('Test Page')
+                    // @ts-expect-error
+                    expectPromiseVoid = expect.soft(actualString).not.toBe('Test Page')
+                    // @ts-expect-error
+                    expectPromiseVoid = expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))
                 })
 
-                it('should not have ts error and need to be awaited/be a promise if actual is a promise type', async () => {
-                    const expectWdioMatcher: WdioMatchers<Promise<void>, Promise<string>> = expect.soft(expectPromise)
-                    const expectVoid: Promise<void> = expect.soft(expectPromise).toBe('Test Page')
-
-                    await expect.soft(expectPromise).toBe('Test Page')
-                })
-
-                it('should have ts error when using await and actual is non-promise type', async () => {
-                    // @ts-expect-error
-                    const expectWdioMatcher: jest.MatcherAndInverse<Promise<void>, string> = expect.soft(expectString)
+                it('should need to be awaited/be a promise if actual is promise type', async () => {
+                    const expectWdioMatcher1: jest.MatcherAndInverse<Promise<void>, Promise<string>> = expect.soft(actualPromiseString)
+                    expectPromiseVoid = expect.soft(actualPromiseString).toBe('Test Page')
+                    expectPromiseVoid = expect.soft(actualPromiseString).not.toBe('Test Page')
+                    expectPromiseVoid = expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))
 
                     // @ts-expect-error
-                    const expectVoid: Promise<void> = expect.soft(expectString).toBe('Test Page')
-                })
-
-                it('should not have ts error and need to be awaited/be a promise if actual is a promise type', async () => {
+                    expectVoid = expect.soft(actualPromiseString).toBe('Test Page')
                     // @ts-expect-error
-                    const expectWdioMatcher: jest.MatcherAndInverse<void, Promise<string>> = expect.soft(expectPromise)
+                    expectVoid = expect.soft(actualPromiseString).not.toBe('Test Page')
                     // @ts-expect-error
-                    const expectVoid: void = expect.soft(expectPromise).toBe('Test Page')
+                    expectVoid = expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))
                 })
 
                 it('should support chainable element', async () => {
@@ -353,47 +451,33 @@ describe('type assertions', () => {
                 })
 
                 it('should support chainable element with wdio Matchers', async () => {
-                    const expectPromise1: Promise<void> = expect.soft(element).toBeDisplayed()
-                    const expectPromise2: Promise<void> = expect.soft(chainableElement).toBeDisplayed()
-
-                    // @ts-expect-error
-                    const expectPromise3: void = expect.soft(element).toBeDisplayed()
-                    // @ts-expect-error
-                    const expectPromise4: void = expect.soft(chainableElement).toBeDisplayed()
-
+                    expectPromiseVoid = expect.soft(element).toBeDisplayed()
+                    expectPromiseVoid = expect.soft(chainableElement).toBeDisplayed()
+                    expectPromiseVoid = expect.soft(chainableArray).toBeDisplayed()
                     await expect.soft(element).toBeDisplayed()
                     await expect.soft(chainableElement).toBeDisplayed()
-                })
+                    await expect.soft(chainableArray).toBeDisplayed()
 
-                describe('not', async () => {
-                    it('should support not with chainable', async () => {
-                        const expectPromise1: Promise<void> = expect.soft(element).not.toBeDisplayed()
-                        const expectPromise2: Promise<void> = expect.soft(chainableElement).not.toBeDisplayed()
+                    expectPromiseVoid = expect.soft(element).not.toBeDisplayed()
+                    expectPromiseVoid = expect.soft(chainableElement).not.toBeDisplayed()
+                    expectPromiseVoid = expect.soft(chainableArray).not.toBeDisplayed()
+                    await expect.soft(element).not.toBeDisplayed()
+                    await expect.soft(chainableElement).not.toBeDisplayed()
+                    await expect.soft(chainableArray).not.toBeDisplayed()
 
-                        // @ts-expect-error
-                        const expectPromise3: void = expect.soft(element).not.toBeDisplayed()
-                        // @ts-expect-error
-                        const expectPromise4: void = expect.soft(chainableElement).not.toBeDisplayed()
+                    // @ts-expect-error
+                    expectVoid = expect.soft(element).toBeDisplayed()
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toBeDisplayed()
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableArray).toBeDisplayed()
 
-                        await expect.soft(element).not.toBeDisplayed()
-                        await expect.soft(chainableElement).not.toBeDisplayed()
-                    })
-
-                    it('should support not with non-promise', async () => {
-                        const expectVoid1: void = expect.soft(expectString).not.toBe('Test Page')
-
-                        // @ts-expect-error
-                        const expectVoid2: Promise<void> = expect.soft(expectString).not.toBe('Test Page')
-                    })
-
-                    it('should support not with promise', async () => {
-                        const expectPromise1: Promise<void> = expect.soft(expectPromise).not.toBe('Test Page')
-
-                        // @ts-expect-error
-                        const expectPromise2: void = expect.soft(expectPromise).not.toBe('Test Page')
-
-                        await expect.soft(expectPromise).not.toBe('Test Page')
-                    })
+                    // @ts-expect-error
+                    expectVoid = expect.soft(element).not.toBeDisplayed()
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).not.toBeDisplayed()
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableArray).not.toBeDisplayed()
                 })
             })
 
@@ -402,25 +486,25 @@ describe('type assertions', () => {
                     const expectSoftFailure1: ExpectWebdriverIO.SoftFailure[] = expect.getSoftFailures()
 
                     // @ts-expect-error
-                    const expectSoftFailure2: void = expect.getSoftFailures()
+                    expectVoid = expect.getSoftFailures()
                 })
             })
 
             describe('expect.assertSoftFailures', () => {
                 it('should be of type void', async () => {
-                    const expectVoid1: void = expect.assertSoftFailures()
+                    expectVoid = expect.assertSoftFailures()
 
                     // @ts-expect-error
-                    const expectVoid2: Promise<void> = expect.assertSoftFailures()
+                    expectPromiseVoid = expect.assertSoftFailures()
                 })
             })
 
             describe('expect.clearSoftFailures', () => {
                 it('should be of type void', async () => {
-                    const expectVoid1: void = expect.clearSoftFailures()
+                    expectVoid = expect.clearSoftFailures()
 
                     // @ts-expect-error
-                    const expectVoid2: Promise<void> = expect.clearSoftFailures()
+                    expectPromiseVoid = expect.clearSoftFailures()
                 })
             })
         })
