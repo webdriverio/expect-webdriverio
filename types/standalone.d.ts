@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-imports*/
 /// <reference types="./expect-webdriverio.js"/>
 
 type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement<WebdriverIO.Element>
@@ -22,7 +21,6 @@ declare namespace ExpectWebdriverIO {
     } & AsymmetricMatchers
 
     interface AsymmetricMatchers {
-        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         any(expectedObject: any): PartialMatcher
         anything(): PartialMatcher
         arrayContaining(sample: Array<unknown>): PartialMatcher

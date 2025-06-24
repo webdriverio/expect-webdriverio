@@ -9,7 +9,7 @@ describe('refetchElements', () => {
     let els: WebdriverIO.ElementArray
 
     beforeEach(async () => {
-        els = (await $$('parent')) as unknown as WebdriverIO.ElementArray
+        els = await $$('parent')
         // @ts-ignore
         els.parent._length = 5
     })

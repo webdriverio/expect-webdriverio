@@ -45,7 +45,7 @@
     "clean": "run-p clean:*",
     "clean:build": "rimraf ./lib",
     "clean:tests": "rimraf test-types/**/node_modules && rimraf test-types/**/dist",
-    "compile": "tsc --build tsconfig.json",
+    "compile": "tsc --build tsconfig.build.json",
     "test": "run-s test:*",
     "test:lint": "eslint .",
     "test:unit": "vitest --run",

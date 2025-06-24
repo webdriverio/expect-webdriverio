@@ -1,5 +1,4 @@
 import { vi, test, describe, expect } from 'vitest'
-// @ts-ignore TODO fix me
 import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'

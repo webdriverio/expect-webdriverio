@@ -1,16 +1,14 @@
-/* eslint-disable @typescript-eslint/consistent-type-imports*/
-type ServiceInstance =  import('@wdio/types').Services.ServiceInstance
-type Test = import('@wdio/types').Frameworks.Test
-type TestResult = import('@wdio/types').Frameworks.TestResult
-type PickleStep = import('@wdio/types').Frameworks.PickleStep
-type Scenario = import('@wdio/types').Frameworks.Scenario
-type SnapshotResult = import('@vitest/snapshot').SnapshotResult
-type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
+type ServiceInstance =  import('@wdio/types').Services.ServiceInstance;
+type Test = import('@wdio/types').Frameworks.Test;
+type TestResult = import('@wdio/types').Frameworks.TestResult;
+type PickleStep = import('@wdio/types').Frameworks.PickleStep;
+type Scenario = import('@wdio/types').Frameworks.Scenario;
+type SnapshotResult = import('@vitest/snapshot').SnapshotResult;
+type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState;
 
 declare namespace ExpectWebdriverIO {
     const expect: ExpectWebdriverIO.Expect
     function setOptions(options: DefaultOptions): void
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getConfig(): any
 
     interface SnapshotServiceArgs {
@@ -25,34 +23,32 @@ declare namespace ExpectWebdriverIO {
     }
 
     interface SoftFailure {
-        error: Error
-        matcherName: string
-        location?: string
+        error: Error;
+        matcherName: string;
+        location?: string;
     }
 
     class SoftAssertService {
-        static getInstance(): SoftAssertService
-        setCurrentTest(testId: string, testName?: string, testFile?: string): void
-        clearCurrentTest(): void
-        getCurrentTestId(): string | null
-        addFailure(error: Error, matcherName: string): void
-        getFailures(testId?: string): SoftFailure[]
-        clearFailures(testId?: string): void
-        assertNoFailures(testId?: string): void
+        static getInstance(): SoftAssertService;
+        setCurrentTest(testId: string, testName?: string, testFile?: string): void;
+        clearCurrentTest(): void;
+        getCurrentTestId(): string | null;
+        addFailure(error: Error, matcherName: string): void;
+        getFailures(testId?: string): SoftFailure[];
+        clearFailures(testId?: string): void;
+        assertNoFailures(testId?: string): void;
     }
 
     interface SoftAssertionServiceOptions {
-        autoAssertOnTestEnd?: boolean
+        autoAssertOnTestEnd?: boolean;
     }
 
     class SoftAssertionService implements ServiceInstance {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        constructor(serviceOptions?: SoftAssertionServiceOptions, capabilities?: any, config?: any)
-        beforeTest(test: Test): void
-        beforeStep(step: PickleStep, scenario: Scenario): void
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        afterTest(test: Test, context: any, result: TestResult): void
-        afterStep(step: PickleStep, scenario: Scenario, result: { passed: boolean, error?: Error }): void
+        constructor(serviceOptions?: SoftAssertionServiceOptions, capabilities?: any, config?: any);
+        beforeTest(test: Test): void;
+        beforeStep(step: PickleStep, scenario: Scenario): void;
+        afterTest(test: Test, context: any, result: TestResult): void;
+        afterStep(step: PickleStep, scenario: Scenario, result: { passed: boolean, error?: Error }): void;
     }
 
     interface AssertionResult {
@@ -63,9 +59,7 @@ declare namespace ExpectWebdriverIO {
     const matchers: Map<
         string,
         (
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             actual: any,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             ...expected: any[]
         ) => Promise<AssertionResult>
     >
@@ -85,7 +79,6 @@ declare namespace ExpectWebdriverIO {
          * expect(el).toHaveAttribute('attr', 'value', { ... }) // expectedValue is `['attr', 'value]`
          * ```
          */
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expectedValue?: any,
         /**
          * Options that the user has passed in, e.g. `expect(el).toHaveText('foo', { ignoreCase: true })` -> `{ ignoreCase: true }`
@@ -245,10 +238,10 @@ declare namespace ExpectWebdriverIO {
          * **Usage**
          * ```js
          * // Check if an element has the class 'btn'
-         * await expect(element).toHaveElementClass('btn')
+         * await expect(element).toHaveElementClass('btn');
          *
          * // Check if an element has any of the specified classes
-         * await expect(element).toHaveElementClass(['btn', 'btn-large'])
+         * await expect(element).toHaveElementClass(['btn', 'btn-large']);
          * ```
          */
         toHaveElementClass(className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
@@ -258,7 +251,6 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveElementProperty(
             property: string | RegExp | ExpectWebdriverIO.PartialMatcher,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             value?: any,
             options?: ExpectWebdriverIO.StringOptions
         ): R
@@ -426,7 +418,7 @@ declare namespace ExpectWebdriverIO {
         toBeElementsArrayOfSize(
             size: number | ExpectWebdriverIO.NumberOptions,
             options?: ExpectWebdriverIO.NumberOptions
-        ): R & Promise<WebdriverIO.ElementArray>
+        ): R & Promise<WebdriverIO.ElementArray>;
 
         // ==== network mock ====
         /**
@@ -487,10 +479,8 @@ declare namespace ExpectWebdriverIO {
     type JsonCompatible = jsonObject | jsonArray
 
     interface PartialMatcher {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         sample?: any
         $$typeof: symbol
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         asymmetricMatch(...args: any[]): boolean
         toString(): string
     }
@@ -537,7 +527,6 @@ declare namespace ExpectWebdriverIO {
     }
 
     interface AsymmetricMatchers {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         any(expectedObject: any): PartialMatcher
         anything(): PartialMatcher
         arrayContaining(sample: Array<unknown>): PartialMatcher
