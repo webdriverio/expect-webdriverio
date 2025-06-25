@@ -5,16 +5,11 @@
     "target": "ES2020",
     "module": "Node16",
     "skipLibCheck": true,
-    "typeRoots": [
-      "../../node_modules/",
-      "../../",
-      "./customMatchers",
-    ],    
     "types": [
       "@types/jest",
-      "jest.d.ts", // Needed to be after @types/jest to override the toMatchSnapshot typing
+      "../../jest.d.ts", // Needed to be after @types/jest to override the toMatchSnapshot typing
       "@wdio/globals/types",
-      "customMatchers.d.ts",
+      "./customMatchers/customMatchers.d.ts",
     ],
   }
 }
