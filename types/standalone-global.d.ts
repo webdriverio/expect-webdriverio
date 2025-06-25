@@ -1,7 +1,7 @@
 /// <reference types="./standalone.js"/>
 
-// On IDE restart, it seems to conflict with one defined in `types/jest`
-// @ts-ignore
+// We override the existing one, probably coming from `types/jest`
+// @ts-expect-error
 declare const expect: ExpectWebdriverIO.Expect
 
 declare namespace NodeJS {
