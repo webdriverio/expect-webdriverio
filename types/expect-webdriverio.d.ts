@@ -11,8 +11,6 @@ type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
 type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
 type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
 
-// type PromiseLike = import('expect').PromiseLike
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PromiseLikeType = Promise<any>
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T

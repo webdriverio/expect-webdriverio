@@ -1,4 +1,3 @@
-// Name jest is required to augment the jest.Matchers interface
 declare namespace ExpectWebdriverIO {
     interface AsymmetricMatchers {
         toBeCustom(): void;
