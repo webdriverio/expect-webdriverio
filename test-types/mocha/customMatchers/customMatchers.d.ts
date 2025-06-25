@@ -1,6 +1,5 @@
-// TODO dprevost should we review this to have the wdio namespace or maybe the expect namespace?
 // Name jest is required to augment the jest.Matchers interface
-declare namespace jest {
+declare namespace ExpectWebdriverIO {
     interface AsymmetricMatchers {
         toBeCustom(): void;
     }

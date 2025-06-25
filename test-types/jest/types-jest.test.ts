@@ -207,14 +207,14 @@ describe('type assertions', async () => {
 
         it('should supported correctly a promise custom matcher with only chainableElement as actual', async () => {
             expectPromiseVoid = expect(chainableElement).toBeCustomPromise()
-            expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.objectContaining({}))
+            expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
 
             // @ts-expect-error
             expect('test').toBeCustomPromise()
             // @ts-expect-error
             expectVoid = expect(chainableElement).toBeCustomPromise()
             // @ts-expect-error
-            expectVoid = expect(chainableElement).toBeCustomPromise(expect.objectContaining({}))
+            expectVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
         })
     })
 
@@ -266,42 +266,6 @@ describe('type assertions', async () => {
             expectPromiseVoid = expect('text').toBe(expect.stringContaining('text'))
             //@ts-expect-error
             expectPromiseVoid = expect('text').not.toBe(expect.stringContaining('text'))
-        })
-    })
-
-    describe('Jest original Matchers', () => {
-        const propertyMatchers: Partial<{}> = {}
-        const snapshotName: string = 'test-snapshot'
-        describe('toMatchSnapshot', () => {
-
-            it('should have original jest Matcher still works', async () => {
-                expectVoid = expect(element).toMatchSnapshot(propertyMatchers)
-                expectVoid = expect(element).toMatchSnapshot(propertyMatchers, snapshotName)
-                expectVoid = expect(element).toMatchInlineSnapshot(propertyMatchers)
-                expectVoid = expect(element).toMatchInlineSnapshot(propertyMatchers, snapshotName)
-
-                expectVoid = expect(element).not.toMatchSnapshot(propertyMatchers)
-                expectVoid = expect(element).not.toMatchSnapshot(propertyMatchers, snapshotName)
-                expectVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers)
-                expectVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
-
-                // @ts-expect-error
-                expectPromiseVoid = expect(element).toMatchSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = expect(element).toMatchSnapshot(propertyMatchers, snapshotName)
-                // @ts-expect-error
-                expectPromiseVoid = expect(element).toMatchInlineSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = expect(element).toMatchInlineSnapshot(propertyMatchers, snapshotName)
-                // @ts-expect-error
-                expectPromiseVoid = expect(element).not.toMatchSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = expect(element).not.toMatchSnapshot(propertyMatchers, snapshotName)
-                // @ts-expect-error
-                expectPromiseVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
-            })
         })
     })
 
@@ -530,6 +494,42 @@ describe('type assertions', async () => {
                     // @ts-expect-error
                     expectPromiseVoid = expect.clearSoftFailures()
                 })
+            })
+        })
+    })
+
+    describe('@types/jest only - original Matchers', () => {
+        const propertyMatchers: Partial<{}> = {}
+        const snapshotName: string = 'test-snapshot'
+        describe('toMatchSnapshot', () => {
+
+            it('should have original jest Matcher still works', async () => {
+                expectVoid = expect(element).toMatchSnapshot(propertyMatchers)
+                expectVoid = expect(element).toMatchSnapshot(propertyMatchers, snapshotName)
+                expectVoid = expect(element).toMatchInlineSnapshot(propertyMatchers)
+                expectVoid = expect(element).toMatchInlineSnapshot(propertyMatchers, snapshotName)
+
+                expectVoid = expect(element).not.toMatchSnapshot(propertyMatchers)
+                expectVoid = expect(element).not.toMatchSnapshot(propertyMatchers, snapshotName)
+                expectVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers)
+                expectVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).toMatchSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).toMatchSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).toMatchInlineSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).toMatchInlineSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).not.toMatchSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).not.toMatchSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = expect(element).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
             })
         })
     })
