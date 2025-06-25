@@ -7,11 +7,11 @@ type ExpectBaseExpect = import('expect').BaseExpect
 type ExpectMatchers<R, T> = import('expect').Matchers<R, T>
 
 // Not exportable from 'expect'
-type Inverse<Matchers> = {
+type Inverse<M> = {
     /**
      * Inverse next matcher. If you know how to test something, `.not` lets you test its opposite.
      */
-    not: Matchers;
+    not: M;
 }
 
 declare namespace ExpectWebdriverIO {
@@ -31,7 +31,7 @@ declare namespace ExpectWebdriverIO {
         toMatchInlineSnapshot(snapshot?: string, label?: string): Promise<R>
     }
 
-    type MatchersAndInverse<R, T> = ExpectWebdriverIO.Matchers<R, T> & Inverse<Matchers<R, T>>
+    type MatchersAndInverse<R, T> = ExpectWebdriverIO.Matchers<R, T> & Inverse<ExpectWebdriverIO.Matchers<R, T>>
 
     /**
      * Mostly derived from the types of `jest-expect` but adapted to work with WebdriverIO.
