@@ -8,13 +8,13 @@ vi.mock('@wdio/globals')
 describe('elementsUtil', () => {
     describe('wrapExpectedWithArray', () => {
         test('is not array ', async () => {
-            const el = await $('sel')
+            const el = (await $('sel')) as unknown as WebdriverIO.Element
             const actual = wrapExpectedWithArray(el, 'Test Actual', 'Test Expected')
             expect(actual).toEqual('Test Expected')
         })
 
         test('is array ', async () => {
-            const els = await $$('sel')
+            const els = (await $$('sel')) as unknown as WebdriverIO.ElementArray
             const actual = wrapExpectedWithArray(els, ['Test Actual', 'Test Actual'], 'Test Expected')
             expect(actual).toEqual(['Test Expected'])
         })

@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "exclude": [
+    // Warning: not excluding test folder change the release folder root structure
     "./test/**/*.ts"
   ]
 }

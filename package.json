@@ -48,6 +48,7 @@
     "compile": "tsc --build tsconfig.build.json",
     "tsc:root-types": "tsc jasmine.d.ts jest.d.ts",
     "test": "run-s test:*",
+    "test:tsc": "tsc --project tsconfig.json --noEmit",
     "test:lint": "eslint .",
     "test:unit": "vitest --run",
     "test:types": "node test-types/copy && npm run ts && npm run clean:tests && npm run tsc:root-types",
