@@ -1,7 +1,7 @@
 /// <reference types="./expect-webdriverio.js"/>
 
-type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement<WebdriverIO.Element>
-type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray<WebdriverIO.Element>
+type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
+type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
 
 declare namespace ExpectWebdriverIO {
     interface Matchers<R extends void | Promise<void>, T> extends Readonly<import('expect').Matchers<R>> {
