@@ -17,7 +17,7 @@ async function conditionAttr(el: WebdriverIO.Element, attribute: string) {
 
 }
 
-async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
+async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
     const attr = await el.getAttribute(attribute)
     if (typeof attr !== 'string') {
         return { result: false, value: attr }
@@ -26,7 +26,7 @@ async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string,
     return compareText(attr, value, options)
 }
 
-export async function toHaveAttributeAndValue(received: WdioElementMaybePromise, attribute: string, value: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
+export async function toHaveAttributeAndValue(received: WdioElementMaybePromise, attribute: string, value: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
@@ -75,7 +75,7 @@ async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: s
 export async function toHaveAttribute(
     received: WdioElementMaybePromise,
     attribute: string,
-    value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    value?: string | RegExp | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     await options.beforeAssertion?.({

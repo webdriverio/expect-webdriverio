@@ -24,9 +24,10 @@ describe('type assertions', () => {
                 expectPromiseVoid = expect(browser).not.toHaveUrl('https://example.com')
 
                 // Asymmetric matchers - TODO dprevost to fix
-                // expectPromiseVoid = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
-                // expectPromiseVoid = expect(browser).toHaveUrl(expect.any(String))
-                // expectPromiseVoid = expect(browser).toHaveUrl(expect.anything())
+                expectPromiseVoid = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
+                expectPromiseVoid = expect(browser).toHaveUrl(expect.not.stringContaining('WebdriverIO'))
+                expectPromiseVoid = expect(browser).toHaveUrl(expect.any(String))
+                expectPromiseVoid = expect(browser).toHaveUrl(expect.anything())
                 // TODO add more asymmetric matchers
 
                 // @ts-expect-error
@@ -35,6 +36,11 @@ describe('type assertions', () => {
                 expectVoid = expect(browser).not.toHaveUrl('https://example.com')
                 // @ts-expect-error
                 expectVoid = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
+
+                // @ts-expect-error
+                await expect(browser).toHaveUrl(6)
+                //// @ts-expect-error TODO dprevost can we make the below fail?
+                // await expect(browser).toHaveUrl(expect.objectContaining({}))
             })
 
             it('should have ts errors when actual is not a Browser element', async () => {
@@ -46,6 +52,37 @@ describe('type assertions', () => {
                 await expect(true).toHaveUrl('https://example.com')
                 // @ts-expect-error
                 await expect(true).not.toHaveUrl('https://example.com')
+            })
+        })
+
+        describe('toHaveTitle', () => {
+            it('should be supported correctly', async () => {
+                expectPromiseVoid = expect(browser).toHaveTitle('https://example.com')
+                expectPromiseVoid = expect(browser).not.toHaveTitle('https://example.com')
+
+                // Asymmetric matchers
+                expectPromiseVoid = expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+                expectPromiseVoid = expect(browser).toHaveTitle(expect.any(String))
+                expectPromiseVoid = expect(browser).toHaveTitle(expect.anything())
+                // TODO add more asymmetric matchers
+
+                // @ts-expect-error
+                expectVoid = expect(browser).toHaveTitle('https://example.com')
+                // @ts-expect-error
+                expectVoid = expect(browser).not.toHaveTitle('https://example.com')
+                // @ts-expect-error
+                expectVoid = expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+            })
+
+            it('should have ts errors when actual is not a Browser element', async () => {
+                // @ts-expect-error
+                await expect(element).toHaveTitle('https://example.com')
+                // @ts-expect-error
+                await expect(element).not.toHaveTitle('https://example.com')
+                // @ts-expect-error
+                await expect(true).toHaveTitle('https://example.com')
+                // @ts-expect-error
+                await expect(true).not.toHaveTitle('https://example.com')
             })
         })
     })
@@ -89,10 +126,9 @@ describe('type assertions', () => {
                 expectPromiseVoid = expect(element).toHaveText('text')
                 expectPromiseVoid = expect(element).toHaveText(/text/)
                 expectPromiseVoid = expect(element).toHaveText(['text1', 'text2'])
-                // TODO dprevost: to fix
-                // expectPromiseVoid = expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
-                // expectPromiseVoid = expect(element).toHaveText([/text1/, /text2/])
-                // expectPromiseVoid = expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+                expectPromiseVoid = expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
+                expectPromiseVoid = expect(element).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
 
                 expectPromiseVoid = expect(element).not.toHaveText('text')
 
@@ -214,7 +250,7 @@ describe('type assertions', () => {
         it('should supported correctly a promise custom matcher with only chainableElement as actual', async () => {
             expectPromiseVoid = expect(chainableElement).toBeCustomPromise()
             // TODO dprevost: to fix
-            // expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
+            expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
 
             // @ts-expect-error
             expect('test').toBeCustomPromise()
@@ -222,6 +258,8 @@ describe('type assertions', () => {
             expectVoid = expect(chainableElement).toBeCustomPromise()
             // @ts-expect-error
             expectVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
+            // @ts-expect-error
+            expect(chainableElement).toBeCustomPromise(expect.stringContaining(6))
         })
     })
 
@@ -322,19 +360,29 @@ describe('type assertions', () => {
             expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
 
             expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
-                url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
-                method: 'POST',                                 // [optional] string | array
-                statusCode: 200,                                // [optional] number | array
-                requestHeaders: { Authorization: 'foo' },       // [optional] object | function | custom matcher
-                responseHeaders: { Authorization: 'bar' },      // [optional] object | function | custom matcher
-                postData: { title: 'foo', description: 'bar' }, // [optional] object | function | custom matcher
-                response: { success: true },                    // [optional] object | function | custom matcher
+                url: 'http://localhost:8080/api/todo',
+                method: 'POST',
+                statusCode: 200,
+                requestHeaders: { Authorization: 'foo' },
+                responseHeaders: { Authorization: 'bar' },
+                postData: { title: 'foo', description: 'bar' },
+                response: { success: true },
             })
 
-            // TODO dprevost: to fix
+            // TODO dprevost: Asymmetric matcher is not defined on the entire object in the .d.ts file, it is a bug?
             // expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
             //     response: { success: true },                    // [optional] object | function | custom matcher
             // }))
+
+            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
+                url: expect.stringContaining('test'),
+                method: 'POST',
+                statusCode: 200,
+                requestHeaders: expect.objectContaining({ Authorization: 'foo' }),
+                responseHeaders: expect.objectContaining({ Authorization: 'bar' }),
+                postData: expect.objectContaining({ title: 'foo', description: 'bar' }),
+                response: expect.objectContaining({ success: true }),
+            })
         })
 
         it('should have ts errors when typing to void', async () => {
