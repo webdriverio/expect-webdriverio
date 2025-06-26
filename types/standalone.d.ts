@@ -2,9 +2,9 @@
 /// <reference types="./expect-webdriverio.d.ts"/>
 /// <reference types="expect"/>
 
-type ExpectAsymmetricMatchers = import('expect').AsymmetricMatchers
 type ExpectBaseExpect = import('expect').BaseExpect
 type ExpectMatchers<R, T> = import('expect').Matchers<R, T>
+type ExpectLibExpect = import('expect').Expect
 
 // Not exportable from 'expect'
 type Inverse<M> = {
@@ -37,7 +37,7 @@ declare namespace ExpectWebdriverIO {
      * Mostly derived from the types of `jest-expect` but adapted to work with WebdriverIO.
      * @see https://github.com/jestjs/jest/blob/main/packages/jest-expect/src/types.ts
      */
-    interface Expect extends ExpectBaseExpect, ExpectAsymmetricMatchers, Inverse<Omit<ExpectAsymmetricMatchers, 'any' | 'anything'>> {
+    interface Expect extends ExpectLibExpect {
         /**
          * The `expect` function is used every time you want to test a value.
          * You will rarely call `expect` by itself.

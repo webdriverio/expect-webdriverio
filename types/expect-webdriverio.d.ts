@@ -9,6 +9,7 @@ type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
 type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
 type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
 type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
+type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
 
 // type PromiseLike = import('expect').PromiseLike
 
@@ -20,17 +21,17 @@ interface WdioBrowserMatchers<R, T = unknown>{
     /**
      * `WebdriverIO.Browser` -> `getUrl`
      */
-    toHaveUrl: T extends WebdriverIO.Browser ? (url: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
+    toHaveUrl: T extends WebdriverIO.Browser ? (url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
 
     /**
      * `WebdriverIO.Browser` -> `getTitle`
      */
-    toHaveTitle: T extends WebdriverIO.Browser ? (title: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
+    toHaveTitle: T extends WebdriverIO.Browser ? (title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
 
     /**
      * `WebdriverIO.Browser` -> `execute`
      */
-    toHaveClipboardText: T extends WebdriverIO.Browser ? (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
+    toHaveClipboardText: T extends WebdriverIO.Browser ? (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>: never;
 }
 
 type MockPromise = Promise<WebdriverIO.Mock>
@@ -92,7 +93,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      */
     toHaveAttribute: T extends ElementOrArrayLike ? (
         attribute: string,
-        value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -101,7 +102,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      */
     toHaveAttr: T extends ElementOrArrayLike ? (
         attribute: string,
-        value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -110,7 +111,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
      */
     toHaveClass: T extends ElementOrArrayLike ? (
-        className: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -131,7 +132,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * ```
      */
     toHaveElementClass: T extends ElementOrArrayLike ? (
-        className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher,
+        className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -139,7 +140,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getProperty`
      */
     toHaveElementProperty: T extends ElementOrArrayLike ? (
-        property: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        property: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         value?: unknown,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
@@ -148,7 +149,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getProperty` value
      */
     toHaveValue: T extends ElementOrArrayLike ? (
-        value: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -200,7 +201,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getAttribute` href
      */
     toHaveHref: T extends ElementOrArrayLike ? (
-        href: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -208,7 +209,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getAttribute` href
      */
     toHaveLink: T extends ElementOrArrayLike ? (
-        href: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -216,7 +217,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getProperty` value
      */
     toHaveId: T extends ElementOrArrayLike ? (
-        id: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        id: string | RegExp | ExpectWebdriverIO.PartialMatche<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -247,14 +248,14 @@ interface WdioCustomMatchers<R, T = unknown> {
      * await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
      * ```
      */
-    toHaveText: T extends ElementOrArrayLike ? (text: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher>) => Promise<R> : never
+    toHaveText: T extends ElementOrArrayLike ? (text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>) => Promise<R> : never
 
     /**
      * `WebdriverIO.Element` -> `getHTML`
      * Element's html equals the html provided
      */
     toHaveHTML: T extends ElementOrArrayLike ? (
-        html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+        html: string | RegExp | ExpectWebdriverIO.PartialMatcher<T> | Array<string | RegExp>,
         options?: ExpectWebdriverIO.HTMLOptions
     ) => Promise<R> : never
 
@@ -263,7 +264,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * Element's computed label equals the computed label provided
      */
     toHaveComputedLabel: T extends ElementOrArrayLike ? (
-        computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+        computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher<T>| Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -272,7 +273,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * Element's computed role equals the computed role provided
      */
     toHaveComputedRole: T extends ElementOrArrayLike ? (
-        computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+        computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher<T>| Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -341,6 +342,17 @@ interface WdioOverloadedMatchers<R> {
 
 interface WdioMatchers<R, T = unknown> extends WdioOverloadedMatchers<R, T>, WdioBrowserMatchers<R, T>, WdioCustomMatchers<R, T>, WdioMockMatchers<R, T> {}
 
+type WdioAsymmetricMatchers = ExpectLibAsymmetricMatchers
+
+/**
+ * Implementation of the asymmetric matcher. Equivalent as he PartialMatcher but with sample used by implementations.
+ * // TODO dprevost - might be needed in the namespace for custom matchers implementation?
+ */
+type WdioAsymmetricMatcher<T> = ExpectWebdriverIO.PartialMatcher<T> & {
+    // Overwrite protected properties of expect.AsymmetricMatcher to access them
+    sample: T;
+}
+
 /**
  * expect function declaration, containing two generics:
  *  - T: the type of the actual value, e.g. any type, not just WebdriverIO.Browser or WebdriverIO.Element
@@ -348,8 +360,7 @@ interface WdioMatchers<R, T = unknown> extends WdioOverloadedMatchers<R, T>, Wdi
  */
 // TODO dprevost should we extends Expect from expect lib or just AsyncMatchers?
 // TODO dprevost ExpectLibAsymmetricMatchers add arrayOf and closeTo previously not there! and not was there previously but is no more?
-interface WdioCustomExpect extends ExpectLibAsymmetricMatchers {
-
+interface WdioCustomExpect extends WdioAsymmetricMatchers {
     /**
      * Creates a soft assertion wrapper around standard expect
      * Soft assertions record failures but don't throw errors immediately
@@ -559,25 +570,25 @@ declare namespace ExpectWebdriverIO {
     }
 
     type RequestedWith = {
-        url?: string | ExpectWebdriverIO.PartialMatcher | ((url: string) => boolean)
+        url?: string | ExpectWebdriverIO.PartialMatcher<string>| ((url: string) => boolean)
         method?: string | Array<string>
         statusCode?: number | Array<number>
         requestHeaders?:
             | Record<string, string>
-            | ExpectWebdriverIO.PartialMatcher
+            | ExpectWebdriverIO.PartialMatcher<Record<string, string>>
             | ((headers: Record<string, string>) => boolean)
         responseHeaders?:
             | Record<string, string>
-            | ExpectWebdriverIO.PartialMatcher
+            | ExpectWebdriverIO.PartialMatcher<Record<string, string>>
             | ((headers: Record<string, string>) => boolean)
         postData?:
             | string
             | ExpectWebdriverIO.JsonCompatible
-            | ExpectWebdriverIO.PartialMatcher
+            | ExpectWebdriverIO.PartialMatcher<string | ExpectWebdriverIO.JsonCompatible>
             | ((r: string | undefined) => boolean)
         response?:
             | string
-            | ExpectWebdriverIO.JsonCompatible
+            | ExpectWebdriverIO.JsonCompatible<string | JsonCompatible>
             | ExpectWebdriverIO.PartialMatcher
             | ((r: string) => boolean)
     }
@@ -587,14 +598,11 @@ declare namespace ExpectWebdriverIO {
     type jsonArray = Array<jsonPrimitive | jsonObject | jsonArray>
     type JsonCompatible = jsonObject | jsonArray
 
-    interface PartialMatcher {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        sample?: any
-        $$typeof: symbol
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        asymmetricMatch(...args: any[]): boolean
-        toString(): string
-    }
+    /**
+     * Allow to partially matches value. Same as asymmetric matcher in jest.
+     * Some properties are omitted for the type check to work correctly.
+     */
+    type PartialMatcher<T> = Omit<ExpectLibAsymmetricMatcher<T>, 'sample' | 'inverse' | '$$typeof'>
 }
 
 declare module 'expect-webdriverio' {

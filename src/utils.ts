@@ -16,7 +16,7 @@ const asymmetricMatcher =
       ? Symbol.for('jest.asymmetricMatcher')
       : 0x13_57_a5
 
-export function isAsymmetricMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
+export function isAsymmetricMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> {
     return (
         typeof expected === 'object' &&
         typeof expected === 'object' &&
@@ -28,7 +28,7 @@ export function isAsymmetricMatcher(expected: unknown): expected is ExpectWebdri
     ) as boolean
 }
 
-function isStringContainingMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
+function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> {
     return isAsymmetricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
 }
 
@@ -143,7 +143,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareText = (
     actual: string,
-    expected: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    expected: string | RegExp | WdioAsymmetricMatcher<string>,
     {
         ignoreCase = false,
         trim = true,
@@ -174,7 +174,7 @@ export const compareText = (
         } else if (isStringContainingMatcher(expected)) {
             expected = (expected.toString() === 'StringContaining'
                 ? expect.stringContaining(expected.sample?.toString().toLowerCase())
-                : expect.not.stringContaining(expected.sample?.toString().toLowerCase())) as ExpectWebdriverIO.PartialMatcher
+                : expect.not.stringContaining(expected.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>
         }
     }
 
@@ -229,7 +229,7 @@ export const compareText = (
 
 export const compareTextWithArray = (
     actual: string,
-    expectedArray: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher>,
+    expectedArray: Array<string | RegExp | WdioAsymmetricMatcher<string>>,
     {
         ignoreCase = false,
         trim = false,
@@ -262,7 +262,7 @@ export const compareTextWithArray = (
             if (isStringContainingMatcher(item)) {
                 return (item.toString() === 'StringContaining'
                     ? expect.stringContaining(item.sample?.toString().toLowerCase())
-                    : expect.not.stringContaining(item.sample?.toString().toLowerCase())) as ExpectWebdriverIO.PartialMatcher
+                    : expect.not.stringContaining(item.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>
             }
             return item
         })
