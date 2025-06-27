@@ -5,6 +5,7 @@ import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio
 
 describe('type assertions', () => {
     const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
+    const elementArray: WebdriverIO.ElementArray = [] as unknown as WebdriverIO.ElementArray
     const chainableElement = {} as unknown as ChainablePromiseElement
     const chainableArray = {} as ChainablePromiseArray
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
@@ -95,6 +96,10 @@ describe('type assertions', () => {
                 expectPromiseVoid = expect(element).toBeDisabled()
                 expectPromiseVoid = expect(element).not.toBeDisabled()
 
+                // Element array
+                expectPromiseVoid = expect(elementArray).toBeDisabled()
+                expectPromiseVoid = expect(elementArray).not.toBeDisabled()
+
                 // Chainable element
                 expectPromiseVoid = expect(chainableElement).toBeDisabled()
                 expectPromiseVoid = expect(chainableElement).not.toBeDisabled()
@@ -136,6 +141,48 @@ describe('type assertions', () => {
                 expectVoid = expect(element).toHaveText('text')
                 // @ts-expect-error
                 await expect(element).toHaveText(6)
+
+                expectPromiseVoid = expect(chainableElement).toHaveText('text')
+                expectPromiseVoid = expect(chainableElement).toHaveText(/text/)
+                expectPromiseVoid = expect(chainableElement).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expect(chainableElement).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
+                expectPromiseVoid = expect(chainableElement).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expect(chainableElement).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+
+                expectPromiseVoid = expect(chainableElement).not.toHaveText('text')
+
+                // @ts-expect-error
+                expectVoid = expect(chainableElement).toHaveText('text')
+                // @ts-expect-error
+                await expect(chainableElement).toHaveText(6)
+
+                expectPromiseVoid = expect(elementArray).toHaveText('text')
+                expectPromiseVoid = expect(elementArray).toHaveText(/text/)
+                expectPromiseVoid = expect(elementArray).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expect(elementArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
+                expectPromiseVoid = expect(elementArray).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expect(elementArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+
+                expectPromiseVoid = expect(elementArray).not.toHaveText('text')
+
+                // @ts-expect-error
+                expectVoid = expect(elementArray).toHaveText('text')
+                // @ts-expect-error
+                await expect(elementArray).toHaveText(6)
+
+                expectPromiseVoid = expect(chainableArray).toHaveText('text')
+                expectPromiseVoid = expect(chainableArray).toHaveText(/text/)
+                expectPromiseVoid = expect(chainableArray).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expect(chainableArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
+                expectPromiseVoid = expect(chainableArray).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expect(chainableArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+
+                expectPromiseVoid = expect(chainableArray).not.toHaveText('text')
+
+                // @ts-expect-error
+                expectVoid = expect(chainableArray).toHaveText('text')
+                // @ts-expect-error
+                await expect(chainableArray).toHaveText(6)
 
                 // @ts-expect-error
                 await expect(browser).toHaveText('text')
