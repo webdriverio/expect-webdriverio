@@ -84,7 +84,6 @@ export async function toHaveElementClass(
  * @deprecated
  */
 export function toHaveClassContaining(el: WebdriverIO.Element, className: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
-    // @ts-ignore TODO dprevost fix me
     return toHaveAttributeAndValue.call(this, el, 'class', className, {
         ...options,
         containing: true
