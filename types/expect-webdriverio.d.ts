@@ -416,7 +416,7 @@ declare namespace ExpectWebdriverIO {
     }
 
     interface SoftAssertionServiceOptions {
-        autoAssertOnTestEnd?: boolean;
+        autoAssertOnTestEnd?: boolean
     }
 
     class SoftAssertionService implements ServiceInstance {
