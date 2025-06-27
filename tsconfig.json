@@ -20,6 +20,5 @@
   "include": [
     "./test/**/*.ts",
     "./src/**/*.ts",
-    "./src/matcher/mock/**/*.ts",
   ]
 }
