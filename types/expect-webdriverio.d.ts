@@ -4,12 +4,20 @@ type Test = import('@wdio/types').Frameworks.Test
 type TestResult = import('@wdio/types').Frameworks.TestResult
 type PickleStep = import('@wdio/types').Frameworks.PickleStep
 type Scenario = import('@wdio/types').Frameworks.Scenario
+
 type SnapshotResult = import('@vitest/snapshot').SnapshotResult
 type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
-type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
+
 type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
 type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
+
+type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
 type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
+
+type WdioPromiseLike<T = unknown> = PromiseLike<T> | ChainablePromiseElement | ChainablePromiseArray
+type ElementPromise = Promise<WebdriverIO.Element>
+type ElementArrayPromise = Promise<WebdriverIO.ElementArray>
+type WdioOnlyPromiseLike = ElementPromise | ElementArrayPromise | ChainablePromiseElement | ChainablePromiseArray
 
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
 
@@ -55,10 +63,9 @@ interface WdioMockMatchers<R, T = unknown> {
  * Once we have all types working, we could check to bring those back into the `ExpectWebdriverIO` namespace.
  */
 
-// TODO dprevost have browser matchers and element matchers separated
-// TODO extending extends Record<string, any> remove ts error on unimplemented matchers
-
 // TODO dprevost - check if custom matchers (https://webdriver.io/docs/custommatchers/) will still work aka webdriverio/expect-webdriverio#1408
+
+// TODO dprevost - can we be better and return void for Element/ElementArray but Promise<void> for ElementPromise/ElementArrayPromise?
 type ElementOrArrayLike = ElementLike | ElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
 type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray
@@ -213,7 +220,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getProperty` value
      */
     toHaveId: T extends ElementOrArrayLike ? (
-        id: string | RegExp | ExpectWebdriverIO.PartialMatche<string>,
+        id: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R> : never
 
@@ -338,17 +345,6 @@ interface WdioOverloadedMatchers<R> {
 
 interface WdioMatchers<R, T = unknown> extends WdioOverloadedMatchers<R, T>, WdioBrowserMatchers<R, T>, WdioCustomMatchers<R, T>, WdioMockMatchers<R, T> {}
 
-type WdioAsymmetricMatchers = ExpectLibAsymmetricMatchers
-
-/**
- * Implementation of the asymmetric matcher. Equivalent as he PartialMatcher but with sample used by implementations.
- * // TODO dprevost - might be needed in the namespace for custom matchers implementation?
- */
-type WdioAsymmetricMatcher<T> = ExpectWebdriverIO.PartialMatcher<T> & {
-    // Overwrite protected properties of expect.AsymmetricMatcher to access them
-    sample: T;
-}
-
 /**
  * expect function declaration, containing two generics:
  *  - T: the type of the actual value, e.g. any type, not just WebdriverIO.Browser or WebdriverIO.Element
@@ -356,7 +352,7 @@ type WdioAsymmetricMatcher<T> = ExpectWebdriverIO.PartialMatcher<T> & {
  */
 // TODO dprevost should we extends Expect from expect lib or just AsyncMatchers?
 // TODO dprevost ExpectLibAsymmetricMatchers add arrayOf and closeTo previously not there! and not was there previously but is no more?
-interface WdioCustomExpect extends WdioAsymmetricMatchers {
+interface WdioCustomExpect extends ExpectLibAsymmetricMatchers {
     /**
      * Creates a soft assertion wrapper around standard expect
      * Soft assertions record failures but don't throw errors immediately
@@ -378,6 +374,15 @@ interface WdioCustomExpect extends WdioAsymmetricMatchers {
      * Clear all current soft assertion failures
      */
     clearSoftFailures(testId?: string): void
+}
+
+/**
+ * Implementation of the asymmetric matcher. Equivalent as the PartialMatcher but with sample used by implementations.
+ * For the runtime but not the typing.
+ */
+type WdioAsymmetricMatcher<T> = ExpectWebdriverIO.PartialMatcher<T> & {
+    // Overwrite protected properties of expect.AsymmetricMatcher to access them
+    sample: T;
 }
 
 declare namespace ExpectWebdriverIO {

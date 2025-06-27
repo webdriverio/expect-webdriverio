@@ -167,18 +167,18 @@ describe('type assertions', () => {
         describe('toMatchSnapshot', () => {
 
             it('should be supported correctly', async () => {
-                expectPromiseVoid = expect(element).toMatchSnapshot()
-                expectPromiseVoid = expect(element).toMatchSnapshot('test label')
-                expectPromiseVoid = expect(element).not.toMatchSnapshot('test label')
+                expectVoid = expect(element).toMatchSnapshot()
+                expectVoid = expect(element).toMatchSnapshot('test label')
+                expectVoid = expect(element).not.toMatchSnapshot('test label')
 
                 expectPromiseVoid = expect(chainableElement).toMatchSnapshot()
                 expectPromiseVoid = expect(chainableElement).toMatchSnapshot('test label')
                 expectPromiseVoid = expect(chainableElement).not.toMatchSnapshot('test label')
 
                 //@ts-expect-error
-                expectVoid = expect(element).toMatchSnapshot()
+                expectPromiseVoid = expect(element).toMatchSnapshot()
                 //@ts-expect-error
-                expectVoid = expect(element).not.toMatchSnapshot()
+                expectPromiseVoid = expect(element).not.toMatchSnapshot()
                 //@ts-expect-error
                 expectVoid = expect(chainableElement).toMatchSnapshot()
                 //@ts-expect-error
@@ -195,16 +195,16 @@ describe('type assertions', () => {
         describe('toMatchInlineSnapshot', () => {
 
             it('should be correctly supported', async () => {
-                expectPromiseVoid = expect(element).toMatchInlineSnapshot()
-                expectPromiseVoid = expect(element).toMatchInlineSnapshot('test snapshot')
-                expectPromiseVoid = expect(element).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectVoid = expect(element).toMatchInlineSnapshot()
+                expectVoid = expect(element).toMatchInlineSnapshot('test snapshot')
+                expectVoid = expect(element).toMatchInlineSnapshot('test snapshot', 'test label')
 
                 expectPromiseVoid = expect(chainableElement).toMatchInlineSnapshot()
                 expectPromiseVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot')
                 expectPromiseVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
 
                 //@ts-expect-error
-                expectVoid = expect(element).toMatchInlineSnapshot()
+                expectPromiseVoid = expect(element).toMatchInlineSnapshot()
                 //@ts-expect-error
                 expectVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
             })
