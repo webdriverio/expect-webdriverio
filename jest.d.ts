@@ -2,15 +2,16 @@
 
 declare namespace jest {
 
-    interface Matchers<R, T> extends WdioMatchers<R, T>, WdioJestOverloadedMatchers<R, T> {
+    interface Matchers<R, T> extends ExpectWebdriverIO.Matchers<R, T> {
 
         /**
          * Below are overloaded Jest's matchers not part of `expect` but of `jest-snapshot`.
-         * We need to define them below so that they are correctly typed overloaded
          * @see https://github.com/jestjs/jest/blob/73dbef5d2d3195a1e55fb254c54cce70d3036252/packages/jest-snapshot/src/types.ts#L37
+         *
+         *  Note: We need to define them below so that they are correctly typed overloaded.
+         *  Else even when extending `WdioJestOverloadedMatchers` we have typing errors.
          */
 
-        // TODO dprevost: how can we make both Wdio snapshot and Jest snapshot work together?
         /**
          * snapshot matcher
          * @param label optional snapshot label
@@ -25,16 +26,7 @@ declare namespace jest {
         toMatchInlineSnapshot(snapshot?: string, label?: string): T extends WdioPromiseLike ? Promise<R> : R;
     }
 
-    type MatcherAndInverse<R, T> = Matchers<R, T> & AndNot<Matchers<R, T>>
-    interface Expect extends ExpectWebdriverIO.Expect {
+    interface Expect extends ExpectWebdriverIO.Expect {}
 
-        /**
-         * Creates a soft assertion wrapper around standard expect
-         * Soft assertions record failures but don't throw errors immediately
-         * All failures are collected and reported at the end of the test
-         */
-        soft<T = unknown>(actual: T): T extends PromiseLike<unknown> ? MatcherAndInverse<Promise<void>, T> : MatcherAndInverse<void, T>
-    }
-
-    interface InverseAsymmetricMatchers extends Expect {}
+    interface InverseAsymmetricMatchers extends ExpectWebdriverIO.Expect {}
 }

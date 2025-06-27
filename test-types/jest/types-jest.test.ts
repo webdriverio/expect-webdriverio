@@ -1,11 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 describe('type assertions', async () => {
-    const chainableElement: ChainablePromiseElement = $('findMe')
-    const chainableArray: ChainablePromiseArray = $$('ul>li')
+    // TODO dprevost: using @wdio/globals/types overlap with the local types/expect-webdriverio.d.ts, find how to work with this
+    // const chainableElement: ChainablePromiseElement = $('findMe')
+    // const chainableArray: ChainablePromiseArray = $$('ul>li')
 
-    const element: WebdriverIO.Element = await chainableElement?.getElement()
-    const elementArray: WebdriverIO.ElementArray = await chainableArray?.getElements()
+    // const element: WebdriverIO.Element = await chainableElement?.getElement()
+    // const elementArray: WebdriverIO.ElementArray = await chainableArray?.getElements()
+
+    const chainableElement = {} as unknown as ChainablePromiseElement
+    const chainableArray = {} as ChainablePromiseArray
+
+    const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
+    const elementArray: WebdriverIO.ElementArray = [] as unknown as WebdriverIO.ElementArray
+
+    const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
 
     // Type assertions
     let expectPromiseVoid: Promise<void>
@@ -406,7 +415,8 @@ describe('type assertions', async () => {
     })
 
     describe('Network Matchers', () => {
-        const promiseNetworkMock = browser.mock('**/api/todo*')
+        // const promiseNetworkMock = browser.mock('**/api/todo*')
+        const promiseNetworkMock = Promise.resolve(networkMock)
 
         it('should not have ts errors when typing to Promise', async () => {
             expectPromiseVoid = expect(promiseNetworkMock).toBeRequested()
@@ -529,8 +539,8 @@ describe('type assertions', async () => {
         })
 
         describe('Soft Assertions', async () => {
-            const actualString: string = await $('h1').getText()
-            const actualPromiseString: Promise<string> = $('h1').getText()
+            const actualString: string = 'test'
+            const actualPromiseString: Promise<string> = Promise.resolve('test')
 
             describe('expect.soft', () => {
                 it('should not need to be awaited/be a promise if actual is non-promise type', async () => {
@@ -548,7 +558,7 @@ describe('type assertions', async () => {
                 })
 
                 it('should need to be awaited/be a promise if actual is promise type', async () => {
-                    const expectWdioMatcher1: jest.MatcherAndInverse<Promise<void>, Promise<string>> = expect.soft(actualPromiseString)
+                    const expectWdioMatcher1: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>> = expect.soft(actualPromiseString)
                     expectPromiseVoid = expect.soft(actualPromiseString).toBe('Test Page')
                     expectPromiseVoid = expect.soft(actualPromiseString).not.toBe('Test Page')
                     expectPromiseVoid = expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))
