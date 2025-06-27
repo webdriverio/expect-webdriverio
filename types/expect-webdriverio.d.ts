@@ -17,6 +17,8 @@ type ExpectLibBaseExpect = import('expect').BaseExpect
 type ExpectLibMatchers<R, T> = import('expect').Matchers<R, T>
 type ExpectLibExpect = import('expect').Expect
 
+// TODO dprevost: a suggestion would be to move any code outside of the namespace to separate types.ts file, so that we can import the types.
+
 // To remove when exportable from 'expect'. See https://github.com/jestjs/jest/pull/15704 (already merged)
 type Inverse<M> = {
     /**

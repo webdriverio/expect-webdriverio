@@ -1,10 +1,8 @@
 /// <reference types="./types/expect-webdriverio.d.ts"/>
 
-// type WdioElementLike = WebdriverIO.Element | ChainablePromiseElement
-
 declare namespace jest {
 
-    interface Matchers<R, T> extends WdioCustomMatchers<R, T>{
+    interface Matchers<R, T> extends WdioMatchers<R, T>, WdioJestOverloadedMatchers<R, T> {
 
         /**
          * Below are overloaded Jest's matchers not part of `expect` but of `jest-snapshot`.
@@ -28,12 +26,7 @@ declare namespace jest {
     }
 
     type MatcherAndInverse<R, T> = Matchers<R, T> & AndNot<Matchers<R, T>>
-    interface Expect extends WdioCustomMatchers {
-
-        /**
-         * Below are the custom Expect of WebdriverIO.
-         * We need to define them below so that they are correctly typed. We cannot just extend WdioCustomExpect
-         */
+    interface Expect extends ExpectWebdriverIO.Expect {
 
         /**
          * Creates a soft assertion wrapper around standard expect
@@ -41,21 +34,6 @@ declare namespace jest {
          * All failures are collected and reported at the end of the test
          */
         soft<T = unknown>(actual: T): T extends PromiseLike<unknown> ? MatcherAndInverse<Promise<void>, T> : MatcherAndInverse<void, T>
-
-        /**
-         * Get all current soft assertion failures
-         */
-        getSoftFailures(testId?: string): ExpectWebdriverIO.SoftFailure[]
-
-        /**
-         * Manually assert all soft failures (throws an error if any failures exist)
-         */
-        assertSoftFailures(testId?: string): void
-
-        /**
-         * Clear all current soft assertion failures
-         */
-        clearSoftFailures(testId?: string): void
     }
 
     interface InverseAsymmetricMatchers extends Expect {}
