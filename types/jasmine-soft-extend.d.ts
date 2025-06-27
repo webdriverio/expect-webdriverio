@@ -18,7 +18,7 @@ declare global {
          * All failures are collected and reported at the end of the test
          */
         function soft<T>(actual: T): jasmine.Matchers<T>
-        // soft<T = unknown>(actual: T): T extends PromiseLikeType ? Matchers<Promise<void>, T> : Matchers<void, T>
+        // soft<T = unknown>(actual: T): T extends PromiseLike ? Matchers<Promise<void>, T> : Matchers<void, T>
 
         /**
          * Get all current soft assertion failures
@@ -36,14 +36,14 @@ declare global {
         function clearSoftFailures(testId?: string): void
 
         /** Expect Asymmetric Matchers */
-        function any(sample: unknown): AsyncMatcher
-        function anything(): AsyncMatcher
-        function arrayContaining(sample: Array<unknown>): AsyncMatcher
-        function arrayOf(sample: unknown): AsyncMatcher
-        function closeTo(sample: number, precision?: number): AsyncMatcher
-        function objectContaining(sample: Record<string, unknown>): AsyncMatcher
-        function stringContaining(sample: string): AsyncMatcher
-        function stringMatching(sample: string | RegExp): AsyncMatcher
+        // function any(sample: unknown): AsyncMatcher
+        // function anything(): AsyncMatcher
+        // function arrayContaining(sample: Array<unknown>): AsyncMatcher
+        // function arrayOf(sample: unknown): AsyncMatcher
+        // function closeTo(sample: number, precision?: number): AsyncMatcher
+        // function objectContaining(sample: Record<string, unknown>): AsyncMatcher
+        // function stringContaining(sample: string): AsyncMatcher
+        // function stringMatching(sample: string | RegExp): AsyncMatcher
     }
 
     namespace expectAsync {
@@ -56,7 +56,7 @@ declare global {
          * All failures are collected and reported at the end of the test
          */
         function soft<T>(actual: T): jasmine.Matchers<T>
-        // soft<T = unknown>(actual: T): T extends PromiseLikeType ? Matchers<Promise<void>, T> : Matchers<void, T>
+        // soft<T = unknown>(actual: T): T extends PromiseLike ? Matchers<Promise<void>, T> : Matchers<void, T>
 
         /**
          * Get all current soft assertion failures
@@ -74,14 +74,14 @@ declare global {
         function clearSoftFailures(testId?: string): void
 
         /** Expect Asymmetric Matchers */
-        function any(sample: unknown): AsyncMatcher
-        function anything(): AsyncMatcher
-        function arrayContaining(sample: Array<unknown>): AsyncMatcher
-        function arrayOf(sample: unknown): AsyncMatcher
-        function closeTo(sample: number, precision?: number): AsyncMatcher
-        function objectContaining(sample: Record<string, unknown>): AsyncMatcher
-        function stringContaining(sample: string): AsyncMatcher
-        function stringMatching(sample: string | RegExp): AsyncMatcher
+        // function any(sample: unknown): AsyncMatcher
+        // function anything(): AsyncMatcher
+        // function arrayContaining(sample: Array<unknown>): AsyncMatcher
+        // function arrayOf(sample: unknown): AsyncMatcher
+        // function closeTo(sample: number, precision?: number): AsyncMatcher
+        // function objectContaining(sample: Record<string, unknown>): AsyncMatcher
+        // function stringContaining(sample: string): AsyncMatcher
+        // function stringMatching(sample: string | RegExp): AsyncMatcher
     }
 }
 

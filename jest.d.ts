@@ -46,7 +46,7 @@ declare namespace jest {
          * Soft assertions record failures but don't throw errors immediately
          * All failures are collected and reported at the end of the test
          */
-        soft<T = unknown>(actual: T): T extends PromiseLikeType ? MatcherAndInverse<Promise<void>, T> : MatcherAndInverse<void, T>
+        soft<T = unknown>(actual: T): T extends PromiseLike<unknown> ? MatcherAndInverse<Promise<void>, T> : MatcherAndInverse<void, T>
 
         /**
          * Get all current soft assertion failures

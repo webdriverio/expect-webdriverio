@@ -51,7 +51,7 @@ declare namespace ExpectWebdriverIO {
          * Soft assertions record failures but don't throw errors immediately
          * All failures are collected and reported at the end of the test
          */
-        soft<T = unknown>(actual: T): T extends PromiseLikeType ? MatchersAndInverse<Promise<void>, T> : MatchersAndInverse<void, T>
+        soft<T = unknown>(actual: T): T extends PromiseLike<unknown> ? MatchersAndInverse<Promise<void>, T> : MatchersAndInverse<void, T>
 
         /**
          * Get all current soft assertion failures
