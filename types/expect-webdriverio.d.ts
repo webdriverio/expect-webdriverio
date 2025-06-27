@@ -695,6 +695,15 @@ declare namespace ExpectWebdriverIO {
      * Some properties are omitted for the type check to work correctly.
      */
     type PartialMatcher<T> = Omit<ExpectLibAsymmetricMatcher<T>, 'sample' | 'inverse' | '$$typeof'>
+
+    //TODO dprevost: ensure we do not break custom AsymmetricMatchers from expect library
+    // declare global {
+    //   namespace ExpectWebdriverIO {
+    //     interface AsymmetricMatchers {
+    //       myCustomMatcher(value: string): ExpectWebdriverIO.PartialMatcher;
+    //     }
+    //   }
+    // }
 }
 
 declare module 'expect-webdriverio' {
