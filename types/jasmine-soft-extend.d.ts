@@ -1,7 +1,5 @@
 /// <reference types="./expect-webdriverio.d.ts"/>
 
-type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
-
 declare global {
 
     // TODO dprevost might need to override the Array too (and more?)
