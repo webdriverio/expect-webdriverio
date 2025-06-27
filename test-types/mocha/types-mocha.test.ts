@@ -535,7 +535,7 @@ describe('type assertions', () => {
 
             describe('expect.soft', () => {
                 it('should not need to be awaited/be a promise if actual is non-promise type', async () => {
-                    const expectWdioMatcher1: WdioMatchers<void, string> = expect.soft(actualString)
+                    const expectWdioMatcher1: WdioCustomMatchers<void, string> = expect.soft(actualString)
                     expectVoid = expect.soft(actualString).toBe('Test Page')
                     expectVoid = expect.soft(actualString).not.toBe('Test Page')
                     expectVoid = expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))
@@ -549,7 +549,7 @@ describe('type assertions', () => {
                 })
 
                 it('should need to be awaited/be a promise if actual is promise type', async () => {
-                    const expectWdioMatcher1: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>> = expect.soft(actualPromiseString)
+                    const expectWdioMatcher1: WdioMatchersAndInverse<Promise<void>, Promise<string>> = expect.soft(actualPromiseString)
                     expectPromiseVoid = expect.soft(actualPromiseString).toBe('Test Page')
                     expectPromiseVoid = expect.soft(actualPromiseString).not.toBe('Test Page')
                     expectPromiseVoid = expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))
@@ -563,13 +563,13 @@ describe('type assertions', () => {
                 })
 
                 it('should support chainable element', async () => {
-                    const expectElement: WdioMatchers<void, WebdriverIO.Element> = expect.soft(element)
-                    const expectElementChainable: WdioMatchers<void, typeof chainableElement> = expect.soft(chainableElement)
+                    const expectElement: WdioCustomMatchers<void, WebdriverIO.Element> = expect.soft(element)
+                    const expectElementChainable: WdioCustomMatchers<void, typeof chainableElement> = expect.soft(chainableElement)
 
                     // @ts-expect-error
-                    const expectElement2: WdioMatchers<Promise<void>, WebdriverIO.Element> = expect.soft(element)
+                    const expectElement2: WdioCustomMatchers<Promise<void>, WebdriverIO.Element> = expect.soft(element)
                     // @ts-expect-error
-                    const expectElementChainable2: WdioMatchers<Promise<void>, typeof chainableElement> = expect.soft(chainableElement)
+                    const expectElementChainable2: WdioCustomMatchers<Promise<void>, typeof chainableElement> = expect.soft(chainableElement)
                 })
 
                 it('should support chainable element with wdio Matchers', async () => {

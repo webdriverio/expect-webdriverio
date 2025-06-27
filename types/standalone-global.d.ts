@@ -1,4 +1,4 @@
-/// <reference types="./standalone.js"/>
+/// <reference types="./expect-webdriverio.d.ts"/>
 
 // We override the existing one, probably coming from `types/jest`
 // @ts-expect-error
