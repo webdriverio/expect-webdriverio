@@ -377,11 +377,13 @@ interface WdioElementArrayOnlyMatchers<R, ActualT = unknown> {
 
 /**
  * Matchers supporting basic snapshot tests as well as DOM snapshot testing.
- * Warning: these matchers overload the similar matchers from jest-expect library.
  * When the actual is a WebdriverIO.Element, we need to await the `outerHTML` therefore the return type is a Promise.
- * TODO dprevost: Review for better typings...
  *
- * Those need to be also duplicated in jest.d.ts in order for the typing to correctly overload the matchers (we cannot just extend the Matchers interface)
+ * ⚠️ these matchers overload the similar matchers from jest-expect library.
+ * Therefore, they also need to be redefined in the jest.d.ts file so correctly overload the matchers from the Jest namespace.
+ * @see jest.d.ts
+ *
+ * TODO dprevost: Review for better typings...
  */
 interface WdioJestOverloadedMatchers<R, ActualT> {
     /**
