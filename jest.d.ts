@@ -4,7 +4,7 @@
 
 declare namespace jest {
 
-    interface Matchers<R, T> extends WdioMatchers<R, T>{
+    interface Matchers<R, T> extends WdioCustomMatchers<R, T>{
 
         /**
          * Below are overloaded Jest's matchers not part of `expect` but of `jest-snapshot`.
@@ -28,7 +28,7 @@ declare namespace jest {
     }
 
     type MatcherAndInverse<R, T> = Matchers<R, T> & AndNot<Matchers<R, T>>
-    interface Expect extends WdioMatchers {
+    interface Expect extends WdioCustomMatchers {
 
         /**
          * Below are the custom Expect of WebdriverIO.

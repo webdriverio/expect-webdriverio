@@ -11,7 +11,6 @@
       "webdriverio",
       "../../types/standalone-global.d.ts",
       "./customMatchers/customMatchers.d.ts"
-      // "@wdio/types",
       // "@wdio/globals/types", // TODO to review adding the global wdio types interfere with local types
     ]
   }

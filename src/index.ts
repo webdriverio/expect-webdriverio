@@ -1,4 +1,4 @@
-/// <reference types="../types/standalone.d.ts" />
+/// <reference types="../types/expect-webdriverio.d.ts" />
 import { expect as expectLib } from 'expect'
 import type { RawMatcherFn } from './types.js'
 import * as wdioMatchers from './matchers.js'

@@ -13,6 +13,17 @@ type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
 
 type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
 type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
+type ExpectLibBaseExpect = import('expect').BaseExpect
+type ExpectLibMatchers<R, T> = import('expect').Matchers<R, T>
+type ExpectLibExpect = import('expect').Expect
+
+// To remove when exportable from 'expect'. See https://github.com/jestjs/jest/pull/15704 (already merged)
+type Inverse<M> = {
+    /**
+     * Inverse next matcher. If you know how to test something, `.not` lets you test its opposite.
+     */
+    not: M;
+}
 
 /**
  * Real Promise and wdio chainable promise types.
@@ -45,83 +56,96 @@ type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
  * Once we have all types working, we could check to bring those back into the `ExpectWebdriverIO` namespace.
  */
 
+/**
+ * Type helpers to be able to targets specific types mostly user in conjunctions with the Type of the `actual` parameter of the `expect`
+ */
 type ElementOrArrayLike = ElementLike | ElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
 type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray
 type MockPromise = Promise<WebdriverIO.Mock>
 
 /**
- * Helper so the return type is a Promise only when needed to avoid using `await` when not a promise.
+ * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
  */
-type Promise<R> = T extends WdioPromiseLike<T> ? Promise<R> : R
-// type WdioPromiseVoidLike<T> = T extends (WdioPromiseLike<T> | WdioOnlyPromiseLike) ? Promise<void> : never
-// type WdioVoidLike<T> = WdioPromiseVoidLike<T> extends never ? void : never
+type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser ? Fn : never
+type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise ? Fn : never
+type FnWhenElementOrArrayLike<ActualT, Fn> = ActualT extends ElementOrArrayLike ? Fn : never
+type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn : never
 
 /**
- * Helpers function allowing to use the function when the expect(actual: T) is of the expected type T.
+ * Matchers dedicated to Wdio Browser.
+ * When asserting on a browser's properties requiring to be awaited, the return type is a Promise.
+ * When actual is not a browser, the return type is never, so the function cannot be used.
  */
-type FnWhenBrowser<T, Fn> = T extends WebdriverIO.Browser ? Fn : never
-type FnWhenMock<T, Fn> = T extends MockPromise ? Fn : never
-type FnWhenElementOrArrayLike<T, Fn> = T extends ElementOrArrayLike ? Fn : never
-type FnWhenElementArrayLike<T, Fn> = T extends ElementArrayLike ? Fn : never
-interface WdioBrowserMatchers<R, T = unknown>{
+interface WdioBrowserMatchers<R, ActualT = unknown>{
     /**
      * `WebdriverIO.Browser` -> `getUrl`
      */
-    toHaveUrl: FnWhenBrowser<T, (url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toHaveUrl: FnWhenBrowser<ActualT, (url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Browser` -> `getTitle`
      */
-    toHaveTitle: FnWhenBrowser<T, (title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toHaveTitle: FnWhenBrowser<ActualT, (title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Browser` -> `execute`
      */
-    toHaveClipboardText: FnWhenBrowser<T, (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toHaveClipboardText: FnWhenBrowser<ActualT, (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
 }
 
-interface WdioMockMatchers<R, T = unknown> {
+/**
+ * Matchers dedicated to Network Mocking.
+ * When asserting we wait for the result with `await waitUntil()`, therefore the return type needs to be a Promise.
+ * When actual is not a WebdriverIO.Mock, the return type is never, so the function cannot be used.
+ */
+interface WdioNetworkMatchers<R, ActualT = unknown> {
     /**
      * Check that `WebdriverIO.Mock` was called
      */
-    toBeRequested: FnWhenMock<T, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeRequested: FnWhenMock<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
     /**
      * Check that `WebdriverIO.Mock` was called N times
      */
-    toBeRequestedTimes: FnWhenMock<T, (times: number | ExpectWebdriverIO.NumberOptions, options?: ExpectWebdriverIO.NumberOptions) => Promise<R>>
+    toBeRequestedTimes: FnWhenMock<ActualT, (times: number | ExpectWebdriverIO.NumberOptions, options?: ExpectWebdriverIO.NumberOptions) => Promise<R>>
 
     /**
      * Check that `WebdriverIO.Mock` was called with the specific parameters
      */
-    toBeRequestedWith: FnWhenMock<T, (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeRequestedWith: FnWhenMock<ActualT, (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 }
-interface WdioCustomMatchers<R, T = unknown> {
+
+/**
+ * Matchers dedicated to WebdriverIO Element or ElementArray (or chainable).
+ * When asserting on an element or element array's properties requiring to be awaited, the return type is a Promise.
+ * When actual is neither of WebdriverIO.Element, WebdriverIO.ElementArray, ChainableElement, ChainableElementArray, the return type is never, so the function cannot be used.
+ */
+interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     // ===== $ or $$ =====
     /**
      * `WebdriverIO.Element` -> `isDisplayed`
      */
-    toBeDisplayed: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeDisplayed: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isExisting`
      */
-    toExist: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toExist: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isExisting`
      */
-    toBePresent: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBePresent: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isExisting`
      */
-    toBeExisting: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeExisting: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute`
      */
-    toHaveAttribute: FnWhenElementOrArrayLike<T, (
+    toHaveAttribute: FnWhenElementOrArrayLike<ActualT, (
         attribute: string, value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions)
     => Promise<R>>
@@ -129,7 +153,7 @@ interface WdioCustomMatchers<R, T = unknown> {
     /**
      * `WebdriverIO.Element` -> `getAttribute`
      */
-    toHaveAttr: FnWhenElementOrArrayLike<T, (
+    toHaveAttr: FnWhenElementOrArrayLike<ActualT, (
         attribute: string, value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
@@ -138,7 +162,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getAttribute` class
      * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
      */
-    toHaveClass: FnWhenElementOrArrayLike<T, (
+    toHaveClass: FnWhenElementOrArrayLike<ActualT, (
         className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
@@ -159,7 +183,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * await expect(element).toHaveElementClass(['btn', 'btn-large']);
      * ```
      */
-    toHaveElementClass: FnWhenElementOrArrayLike<T, (
+    toHaveElementClass: FnWhenElementOrArrayLike<ActualT, (
         className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
@@ -167,7 +191,7 @@ interface WdioCustomMatchers<R, T = unknown> {
     /**
      * `WebdriverIO.Element` -> `getProperty`
      */
-    toHaveElementProperty: FnWhenElementOrArrayLike<T, (
+    toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, (
         property: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         value?: unknown,
         options?: ExpectWebdriverIO.StringOptions
@@ -176,7 +200,7 @@ interface WdioCustomMatchers<R, T = unknown> {
     /**
      * `WebdriverIO.Element` -> `getProperty` value
      */
-    toHaveValue: FnWhenElementOrArrayLike<T, (
+    toHaveValue: FnWhenElementOrArrayLike<ActualT, (
         value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
@@ -184,43 +208,43 @@ interface WdioCustomMatchers<R, T = unknown> {
     /**
      * `WebdriverIO.Element` -> `isClickable`
      */
-    toBeClickable: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeClickable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `!isEnabled`
      */
-    toBeDisabled: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeDisabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isDisplayedInViewport`
      */
-    toBeDisplayedInViewport: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeDisplayedInViewport: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isEnabled`
      */
-    toBeEnabled: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeEnabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isFocused`
      */
-    toBeFocused: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeFocused: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isSelected`
      */
-    toBeSelected: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isSelected`
      */
-    toBeChecked: FnWhenElementOrArrayLike<T, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeChecked: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `$$('./*').length`
      * supports less / greater then or equals to be passed in options
      */
-    toHaveChildren: FnWhenElementOrArrayLike<T, (
+    toHaveChildren: FnWhenElementOrArrayLike<ActualT, (
         size?: number | ExpectWebdriverIO.NumberOptions,
         options?: ExpectWebdriverIO.NumberOptions
     ) => Promise<R>>
@@ -228,7 +252,7 @@ interface WdioCustomMatchers<R, T = unknown> {
     /**
      * `WebdriverIO.Element` -> `getAttribute` href
      */
-    toHaveHref: FnWhenElementOrArrayLike<T, (
+    toHaveHref: FnWhenElementOrArrayLike<ActualT, (
         href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
@@ -236,7 +260,7 @@ interface WdioCustomMatchers<R, T = unknown> {
     /**
      * `WebdriverIO.Element` -> `getAttribute` href
      */
-    toHaveLink: FnWhenElementOrArrayLike<T, (
+    toHaveLink: FnWhenElementOrArrayLike<ActualT, (
         href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
@@ -244,7 +268,7 @@ interface WdioCustomMatchers<R, T = unknown> {
     /**
      * `WebdriverIO.Element` -> `getProperty` value
      */
-    toHaveId: FnWhenElementOrArrayLike<T, (
+    toHaveId: FnWhenElementOrArrayLike<ActualT, (
         id: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
@@ -252,7 +276,7 @@ interface WdioCustomMatchers<R, T = unknown> {
     /**
      * `WebdriverIO.Element` -> `getSize` value
      */
-    toHaveSize: FnWhenElementOrArrayLike<T, (
+    toHaveSize: FnWhenElementOrArrayLike<ActualT, (
         size: { height: number; width: number },
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
@@ -276,7 +300,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
      * ```
      */
-    toHaveText: FnWhenElementOrArrayLike<T, (
+    toHaveText: FnWhenElementOrArrayLike<ActualT, (
         text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
@@ -285,7 +309,7 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getHTML`
      * Element's html equals the html provided
      */
-    toHaveHTML: FnWhenElementOrArrayLike<T, (
+    toHaveHTML: FnWhenElementOrArrayLike<ActualT, (
         html: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
@@ -294,8 +318,8 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getComputedLabel`
      * Element's computed label equals the computed label provided
      */
-    toHaveComputedLabel: FnWhenElementOrArrayLike<T, (
-        computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher<T>| Array<string | RegExp>,
+    toHaveComputedLabel: FnWhenElementOrArrayLike<ActualT, (
+        computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher<ActualT>| Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
 
@@ -303,8 +327,8 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getComputedRole`
      * Element's computed role equals the computed role provided
      */
-    toHaveComputedRole: FnWhenElementOrArrayLike<T, (
-        computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher<T>| Array<string | RegExp>,
+    toHaveComputedRole: FnWhenElementOrArrayLike<ActualT, (
+        computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher<ActualT>| Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
 
@@ -312,69 +336,87 @@ interface WdioCustomMatchers<R, T = unknown> {
      * `WebdriverIO.Element` -> `getSize('width')`
      * Element's width equals the width provided
      */
-    toHaveWidth: FnWhenElementOrArrayLike<T, (width: number, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toHaveWidth: FnWhenElementOrArrayLike<ActualT, (width: number, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `getSize('height')`
      * Element's height equals the height provided
      */
-    toHaveHeight: FnWhenElementOrArrayLike<T, (height: number, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toHaveHeight: FnWhenElementOrArrayLike<ActualT, (height: number, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `getSize()`
      * Element's size equals the size provided
      */
-    toHaveHeight: FnWhenElementOrArrayLike<T, (size: { height: number; width: number }, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toHaveHeight: FnWhenElementOrArrayLike<ActualT, (size: { height: number; width: number }, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute("style")`
      */
-    toHaveStyle: FnWhenElementOrArrayLike<T, (style: { [key: string]: string }, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toHaveStyle: FnWhenElementOrArrayLike<ActualT, (style: { [key: string]: string }, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+}
 
+/**
+ * Matchers dedicated to WebdriverIO ElementArray (or its chainable).
+ * When asserting on each element's properties requiring awaiting, then return type is a Promise.
+ * When actual is not of WebdriverIO.ElementArray nor ChainableElementArray, the return type is never, so the function cannot be used.
+ */
+interface WdioElementArrayOnlyMatchers<R, ActualT = unknown> {
     // ===== $$ only =====
     /**
      * `WebdriverIO.ElementArray` -> `$$('...').length`
      * supports less / greater then or equals to be passed in options
      */
-    toBeElementsArrayOfSize: FnWhenElementArrayLike<T, (
+    toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, (
         size: number | ExpectWebdriverIO.NumberOptions,
         options?: ExpectWebdriverIO.NumberOptions
     ) => Promise<R> & Promise<WebdriverIO.ElementArray>>
 }
 
 /**
+ * Matchers supporting basic snapshot tests as well as DOM snapshot testing.
+ * Warning: these matchers overload the similar matchers from jest-expect library.
+ * When the actual is a WebdriverIO.Element, we need to await the `outerHTML` therefore the return type is a Promise.
+ * TODO dprevost: Review for better typings...
+ *
  * Those need to be also duplicated in jest.d.ts in order for the typing to correctly overload the matchers (we cannot just extend the Matchers interface)
  */
-interface WdioOverloadedMatchers<R> {
+interface WdioJestOverloadedMatchers<R, ActualT> {
     /**
      * snapshot matcher
      * @param label optional snapshot label
      */
-    toMatchSnapshot(label?: string): Promise<R>
+    toMatchSnapshot(label?: string): ActualT extends WdioPromiseLike ? Promise<R> : R;
     /**
      * inline snapshot matcher
      * @param snapshot snapshot string (autogenerated if not specified)
      * @param label optional snapshot label
      */
-    toMatchInlineSnapshot(snapshot?: string, label?: string): Promise<R>
+    toMatchInlineSnapshot(snapshot?: string, label?: string): ActualT extends WdioPromiseLike ? Promise<R> : R;
 }
 
-interface WdioMatchers<R, T = unknown> extends WdioOverloadedMatchers<R, T>, WdioBrowserMatchers<R, T>, WdioCustomMatchers<R, T>, WdioMockMatchers<R, T> {}
+/**
+ * All the specific WebDriverIO only matchers, excluding the generic matchers from the expect library.
+ */
+type WdioCustomMatchers<R, ActualT> = WdioJestOverloadedMatchers<R, ActualT> & WdioBrowserMatchers<R, ActualT> & WdioElementOrArrayMatchers<R, ActualT> & WdioElementArrayOnlyMatchers<R, ActualT> & WdioNetworkMatchers<R, ActualT>
 
 /**
- * expect function declaration, containing two generics:
- *  - T: the type of the actual value, e.g. any type, not just WebdriverIO.Browser or WebdriverIO.Element
- *  - R: the type of the return value, e.g. Promise<void> or void
+ * All the matchers that WebdriverIO Library supports including the generic matchers from the expect library.
  */
-// TODO dprevost should we extends Expect from expect lib or just AsyncMatchers?
-// TODO dprevost ExpectLibAsymmetricMatchers add arrayOf and closeTo previously not there! and not was there previously but is no more?
-interface WdioCustomExpect extends ExpectLibAsymmetricMatchers {
+type WdioMatchers<R, ActualT> = WdioCustomMatchers<R, ActualT> & ExpectLibMatchers<R, ActualT>
+
+type WdioMatchersAndInverse<R, ActualT> = WdioMatchers<R, ActualT> & Inverse<WdioMatchers<R, ActualT>>
+
+/**
+ * Expects specific to WebdriverIO, excluding the generic expect matchers.
+ */
+interface WdioCustomExpect extends ExpectLibBaseExpect {
     /**
      * Creates a soft assertion wrapper around standard expect
      * Soft assertions record failures but don't throw errors immediately
      * All failures are collected and reported at the end of the test
      */
-    soft<T = unknown>(actual: T): T extends PromiseLike ? Matchers<Promise<void>, T> : Matchers<void, T>
+    soft<T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<Promise<void>, T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
 
     /**
      * Get all current soft assertion failures
@@ -393,18 +435,47 @@ interface WdioCustomExpect extends ExpectLibAsymmetricMatchers {
 }
 
 /**
+ * Expects supported by the expect-webdriverio library, including the generic expect matchers.
+ */
+type WdioExpect = ExpectLibExpect & WdioCustomExpect
+
+/**
  * Implementation of the asymmetric matcher. Equivalent as the PartialMatcher but with sample used by implementations.
  * For the runtime but not the typing.
  */
-type WdioAsymmetricMatcher<T> = ExpectWebdriverIO.PartialMatcher<T> & {
+type WdioAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
     // Overwrite protected properties of expect.AsymmetricMatcher to access them
-    sample: T;
+    sample: R;
 }
 
 declare namespace ExpectWebdriverIO {
     function setOptions(options: DefaultOptions): void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getConfig(): any
+
+    /**
+     * Supported Matchers for expect-webdriverio.
+     * The Type T (ActualT) needs to keep it's name to overload the Matchers from the expect library.
+     */
+    interface Matchers<R, T> extends WdioMatchers<R, T> {}
+
+    type MatchersAndInverse<R, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & Inverse<ExpectWebdriverIO.Matchers<R, ActualT>>
+
+    interface Expect extends WdioExpect {
+        /**
+         * The `expect` function is used every time you want to test a value.
+         * You will rarely call `expect` by itself.
+         *
+         * expect function declaration contains two generics:
+         *  - T: the type of the actual value, e.g. any type, not just WebdriverIO.Browser or WebdriverIO.Element
+         *  - R: the type of the return value, e.g. Promise<void> or void
+         *
+         * Note: The function must stay here in the namespace to overwrite correctly the expect function from the expect library.
+         *
+         * @param actual The value to apply matchers against.
+         */
+        <T = unknown>(actual: T): ExpectWebdriverIO.MatchersAndInverse<void, T>;
+    }
 
     interface SnapshotServiceArgs {
         updateState?: SnapshotUpdateState
