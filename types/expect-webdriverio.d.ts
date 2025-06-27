@@ -276,13 +276,19 @@ interface WdioCustomMatchers<R, T = unknown> {
      * await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
      * ```
      */
-    toHaveText: FnWhenElementOrArrayLike<T, (text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>) => Promise<R>>
+    toHaveText: FnWhenElementOrArrayLike<T, (
+        text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `getHTML`
      * Element's html equals the html provided
      */
-    toHaveHTML: FnWhenElementOrArrayLike<T, (html: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>) => Promise<R>>
+    toHaveHTML: FnWhenElementOrArrayLike<T, (
+        html: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `getComputedLabel`
@@ -446,12 +452,12 @@ declare namespace ExpectWebdriverIO {
         message(): string
     }
 
-    // TODO dprevost - to review
+    // TODO dprevost: what is this, I'm unable to find it in the codebase, was a function before, seems to override something from Jasmine in the past?
     // const matchers: Map<
     //     string,
     //     (
-    //         actual: any,
-    //         ...expected: any[]
+    //         actual: unknown,
+    //         ...expected: unknown[]
     //     ) => Promise<AssertionResult>
     // >
 
