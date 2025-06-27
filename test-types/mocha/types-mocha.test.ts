@@ -4,10 +4,12 @@
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 
 describe('type assertions', () => {
-    const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
-    const elementArray: WebdriverIO.ElementArray = [] as unknown as WebdriverIO.ElementArray
     const chainableElement = {} as unknown as ChainablePromiseElement
     const chainableArray = {} as ChainablePromiseArray
+
+    const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
+    const elementArray: WebdriverIO.ElementArray = [] as unknown as WebdriverIO.ElementArray
+
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
 
     // Type assertions

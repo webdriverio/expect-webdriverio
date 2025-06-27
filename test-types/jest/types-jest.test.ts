@@ -3,9 +3,9 @@
 describe('type assertions', async () => {
     const chainableElement: ChainablePromiseElement = $('findMe')
     const chainableArray: ChainablePromiseArray = $$('ul>li')
+
     const element: WebdriverIO.Element = await chainableElement?.getElement()
-    // TODO dprevost: Need more test with this type?
-    // const ElementArray: WebdriverIO.ElementArray = await chainableArray?.getElements()
+    const elementArray: WebdriverIO.ElementArray = await chainableArray?.getElements()
 
     // Type assertions
     let expectPromiseVoid: Promise<void>
@@ -21,9 +21,9 @@ describe('type assertions', async () => {
 
                 // Asymmetric matchers
                 expectPromiseVoid = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
+                expectPromiseVoid = expect(browser).toHaveUrl(expect.not.stringContaining('WebdriverIO'))
                 expectPromiseVoid = expect(browser).toHaveUrl(expect.any(String))
                 expectPromiseVoid = expect(browser).toHaveUrl(expect.anything())
-                // TODO add more asymmetric matchers
 
                 // @ts-expect-error
                 expectVoid = expect(browser).toHaveUrl('https://example.com')
@@ -31,6 +31,11 @@ describe('type assertions', async () => {
                 expectVoid = expect(browser).not.toHaveUrl('https://example.com')
                 // @ts-expect-error
                 expectVoid = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
+
+                // @ts-expect-error
+                await expect(browser).toHaveUrl(6)
+                //// @ts-expect-error TODO dprevost can we make the below fail?
+                // await expect(browser).toHaveUrl(expect.objectContaining({}))
             })
 
             it('should have ts errors when actual is not a Browser element', async () => {
@@ -44,6 +49,36 @@ describe('type assertions', async () => {
                 await expect(true).not.toHaveUrl('https://example.com')
             })
         })
+
+        describe('toHaveTitle', () => {
+            it('should be supported correctly', async () => {
+                expectPromiseVoid = expect(browser).toHaveTitle('https://example.com')
+                expectPromiseVoid = expect(browser).not.toHaveTitle('https://example.com')
+
+                // Asymmetric matchers
+                expectPromiseVoid = expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+                expectPromiseVoid = expect(browser).toHaveTitle(expect.any(String))
+                expectPromiseVoid = expect(browser).toHaveTitle(expect.anything())
+
+                // @ts-expect-error
+                expectVoid = expect(browser).toHaveTitle('https://example.com')
+                // @ts-expect-error
+                expectVoid = expect(browser).not.toHaveTitle('https://example.com')
+                // @ts-expect-error
+                expectVoid = expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+            })
+
+            it('should have ts errors when actual is not a Browser element', async () => {
+                // @ts-expect-error
+                await expect(element).toHaveTitle('https://example.com')
+                // @ts-expect-error
+                await expect(element).not.toHaveTitle('https://example.com')
+                // @ts-expect-error
+                await expect(true).toHaveTitle('https://example.com')
+                // @ts-expect-error
+                await expect(true).not.toHaveTitle('https://example.com')
+            })
+        })
     })
 
     describe('element', () => {
@@ -53,6 +88,10 @@ describe('type assertions', async () => {
                 // Element
                 expectPromiseVoid = expect(element).toBeDisabled()
                 expectPromiseVoid = expect(element).not.toBeDisabled()
+
+                // Element array
+                expectPromiseVoid = expect(elementArray).toBeDisabled()
+                expectPromiseVoid = expect(elementArray).not.toBeDisabled()
 
                 // Chainable element
                 expectPromiseVoid = expect(chainableElement).toBeDisabled()
@@ -88,6 +127,12 @@ describe('type assertions', async () => {
                 expectPromiseVoid = expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
                 expectPromiseVoid = expect(element).toHaveText([/text1/, /text2/])
                 expectPromiseVoid = expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+                await expect(element).toHaveText(
+                    'My-Ex-Am-Ple',
+                    {
+                        replace: [[/-/g, ' '], [/[A-Z]+/g, (match: string) => match.toLowerCase()]]
+                    }
+                )
 
                 expectPromiseVoid = expect(element).not.toHaveText('text')
 
@@ -95,6 +140,48 @@ describe('type assertions', async () => {
                 expectVoid = expect(element).toHaveText('text')
                 // @ts-expect-error
                 await expect(element).toHaveText(6)
+
+                expectPromiseVoid = expect(chainableElement).toHaveText('text')
+                expectPromiseVoid = expect(chainableElement).toHaveText(/text/)
+                expectPromiseVoid = expect(chainableElement).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expect(chainableElement).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
+                expectPromiseVoid = expect(chainableElement).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expect(chainableElement).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+
+                expectPromiseVoid = expect(chainableElement).not.toHaveText('text')
+
+                // @ts-expect-error
+                expectVoid = expect(chainableElement).toHaveText('text')
+                // @ts-expect-error
+                await expect(chainableElement).toHaveText(6)
+
+                expectPromiseVoid = expect(elementArray).toHaveText('text')
+                expectPromiseVoid = expect(elementArray).toHaveText(/text/)
+                expectPromiseVoid = expect(elementArray).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expect(elementArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
+                expectPromiseVoid = expect(elementArray).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expect(elementArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+
+                expectPromiseVoid = expect(elementArray).not.toHaveText('text')
+
+                // @ts-expect-error
+                expectVoid = expect(elementArray).toHaveText('text')
+                // @ts-expect-error
+                await expect(elementArray).toHaveText(6)
+
+                expectPromiseVoid = expect(chainableArray).toHaveText('text')
+                expectPromiseVoid = expect(chainableArray).toHaveText(/text/)
+                expectPromiseVoid = expect(chainableArray).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expect(chainableArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
+                expectPromiseVoid = expect(chainableArray).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expect(chainableArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+
+                expectPromiseVoid = expect(chainableArray).not.toHaveText('text')
+
+                // @ts-expect-error
+                expectVoid = expect(chainableArray).toHaveText('text')
+                // @ts-expect-error
+                await expect(chainableArray).toHaveText(6)
 
                 // @ts-expect-error
                 await expect(browser).toHaveText('text')
@@ -167,6 +254,21 @@ describe('type assertions', async () => {
                 //@ts-expect-error
                 expectVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
             })
+
+            it('should be correctly supported with getCSSProperty()', async () => {
+                expectPromiseVoid = expect(element.getCSSProperty('test')).toMatchInlineSnapshot()
+                expectPromiseVoid = expect(element.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')
+                expectPromiseVoid = expect(element.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')
+
+                expectPromiseVoid = expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot()
+                expectPromiseVoid = expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')
+                expectPromiseVoid = expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')
+
+                //@ts-expect-error
+                expectPromiseVoid = expect(element).toMatchInlineSnapshot()
+                //@ts-expect-error
+                expectVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+            })
         })
 
         describe('toBeElementsArrayOfSize', async () => {
@@ -215,6 +317,8 @@ describe('type assertions', async () => {
             expectVoid = expect(chainableElement).toBeCustomPromise()
             // @ts-expect-error
             expectVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
+            // @ts-expect-error
+            expect(chainableElement).toBeCustomPromise(expect.stringContaining(6))
         })
     })
 
@@ -230,7 +334,7 @@ describe('type assertions', async () => {
             expectPromiseVoid = expect(true).not.toBe(true)
         })
 
-        it('should not expect Promise when actual is a chainable since toBe is not supported', async () => {
+        it('should not expect Promise when actual is a chainable since toBe does not need to be awaited', async () => {
             expectVoid = expect(chainableElement).toBe(true)
             expectVoid = expect(chainableElement).not.toBe(true)
 
@@ -306,26 +410,46 @@ describe('type assertions', async () => {
 
         it('should not have ts errors when typing to Promise', async () => {
             expectPromiseVoid = expect(promiseNetworkMock).toBeRequested()
-            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
-            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedTimes(2)
+            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 })
 
             expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequested()
-            expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
-            expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+            expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes(2)
+            expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 })
 
             expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
-                url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
-                method: 'POST',                                 // [optional] string | array
-                statusCode: 200,                                // [optional] number | array
-                requestHeaders: { Authorization: 'foo' },       // [optional] object | function | custom matcher
-                responseHeaders: { Authorization: 'bar' },      // [optional] object | function | custom matcher
-                postData: { title: 'foo', description: 'bar' }, // [optional] object | function | custom matcher
-                response: { success: true },                    // [optional] object | function | custom matcher
+                url: 'http://localhost:8080/api/todo',
+                method: 'POST',
+                statusCode: 200,
+                requestHeaders: { Authorization: 'foo' },
+                responseHeaders: { Authorization: 'bar' },
+                postData: { title: 'foo', description: 'bar' },
+                response: { success: true },
             })
 
-            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
-                response: { success: true },                    // [optional] object | function | custom matcher
-            }))
+            // TODO dprevost: Asymmetric matcher is not defined on the entire object in the .d.ts file, it is a bug?
+            // expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
+            //     response: { success: true },                    // [optional] object | function | custom matcher
+            // }))
+
+            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
+                url: expect.stringContaining('test'),
+                method: 'POST',
+                statusCode: 200,
+                requestHeaders: expect.objectContaining({ Authorization: 'foo' }),
+                responseHeaders: expect.objectContaining({ Authorization: 'bar' }),
+                postData: expect.objectContaining({ title: 'foo', description: 'bar' }),
+                response: expect.objectContaining({ success: true }),
+            })
+
+            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
+                url: expect.stringMatching(/.*\/api\/.*/i),
+                method: ['POST', 'PUT'],
+                statusCode: [401, 403],
+                requestHeaders: headers => headers.Authorization.startsWith('Bearer '),
+                postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
+                response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
+            })
         })
 
         it('should have ts errors when typing to void', async () => {
@@ -345,18 +469,18 @@ describe('type assertions', async () => {
 
             // @ts-expect-error
             expectVoid = expect(promiseNetworkMock).toBeRequestedWith({
-                url: 'http://localhost:8080/api/todo',          // [optional] string | function | custom matcher
-                method: 'POST',                                 // [optional] string | array
-                statusCode: 200,                                // [optional] number | array
-                requestHeaders: { Authorization: 'foo' },       // [optional] object | function | custom matcher
-                responseHeaders: { Authorization: 'bar' },      // [optional] object | function | custom matcher
-                postData: { title: 'foo', description: 'bar' }, // [optional] object | function | custom matcher
-                response: { success: true },                    // [optional] object | function | custom matcher
+                url: 'http://localhost:8080/api/todo',
+                method: 'POST',
+                statusCode: 200,
+                requestHeaders: { Authorization: 'foo' },
+                responseHeaders: { Authorization: 'bar' },
+                postData: { title: 'foo', description: 'bar' },
+                response: { success: true },
             })
 
             // @ts-expect-error
             expectVoid = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
-                response: { success: true },                    // [optional] object | function | custom matcher
+                response: { success: true },
             }))
         })
     })
@@ -369,8 +493,14 @@ describe('type assertions', async () => {
 
         it('should support stringContaining, anything and more', async () => {
             expect.stringContaining('WebdriverIO')
+            expect.stringMatching(/WebdriverIO/)
             expect.arrayContaining(['WebdriverIO', 'Test'])
             expect.objectContaining({ name: 'WebdriverIO' })
+            // Was not there but works!
+            expect.closeTo(5, 10)
+            expect.arrayContaining(['WebdriverIO', 'Test'])
+            // New from jest 30!!
+            expect.arrayOf(expect.stringContaining('WebdriverIO'))
 
             expect.anything()
             expect.any(Function)
@@ -382,9 +512,12 @@ describe('type assertions', async () => {
             expect.any(Error)
 
             expect.not.stringContaining('WebdriverIO')
+            expect.not.stringMatching(/WebdriverIO/)
             expect.not.arrayContaining(['WebdriverIO', 'Test'])
             expect.not.objectContaining({ name: 'WebdriverIO' })
-
+            expect.not.closeTo(5, 10)
+            expect.not.arrayContaining(['WebdriverIO', 'Test'])
+            expect.not.arrayOf(expect.stringContaining('WebdriverIO'))
             expect.not.anything()
             expect.not.any(Function)
             expect.not.any(Number)
@@ -467,6 +600,12 @@ describe('type assertions', async () => {
                     // @ts-expect-error
                     expectVoid = expect.soft(chainableArray).not.toBeDisplayed()
                 })
+
+                it('should have ts (or lint) errors when actual is a chainable not awaited', async () => {
+                    // TODO dprevost: see if an eslint rule could help us here to detect missing await when not using wdio matchers
+                    // expectPromiseVoid = expect.soft(chainableElement.getText()).toEqual('Basketball Shoes')
+                    // expectPromiseVoid = expect.soft(chainableElement.getText()).toMatch(/€\d+/)
+                })
             })
 
             describe('expect.getSoftFailures', () => {
@@ -495,6 +634,23 @@ describe('type assertions', async () => {
                     expectPromiseVoid = expect.clearSoftFailures()
                 })
             })
+        })
+    })
+
+    describe('Asymmetric matchers', () => {
+        const string: string = 'WebdriverIO is a test framework'
+        const array: string[] = ['WebdriverIO', 'Test']
+        const object: { name: string } = { name: 'WebdriverIO' }
+        const number: number = 1
+
+        it('should have no ts error using asymmetric matchers', async () => {
+            expect(string).toEqual(expect.stringContaining('WebdriverIO'))
+            expect(array).toEqual(expect.arrayContaining(['WebdriverIO', 'Test']))
+            expect(object).toEqual(expect.objectContaining({ name: 'WebdriverIO' }))
+            // This one is tested and is working correctly, surprisingly!
+            expect(number).toEqual(expect.closeTo(1.0001, 0.0001))
+            // New from jest 30, should work!
+            expect(['apple', 'banana', 'cherry']).toEqual(expect.arrayOf(expect.any(String)))
         })
     })
 
