@@ -130,6 +130,12 @@ describe('type assertions', () => {
                 expectPromiseVoid = expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
                 expectPromiseVoid = expect(element).toHaveText([/text1/, /text2/])
                 expectPromiseVoid = expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+                await expect(element).toHaveText(
+                    'My-Ex-Am-Ple',
+                    {
+                        replace: [[/-/g, ' '], [/[A-Z]+/g, (match: string) => match.toLowerCase()]]
+                    }
+                )
 
                 expectPromiseVoid = expect(element).not.toHaveText('text')
 
