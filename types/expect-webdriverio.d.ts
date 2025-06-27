@@ -11,8 +11,6 @@ type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
 type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
 type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type PromiseLikeType = Promise<any>
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
 
 interface WdioBrowserMatchers<R, T = unknown>{
@@ -364,7 +362,7 @@ interface WdioCustomExpect extends WdioAsymmetricMatchers {
      * Soft assertions record failures but don't throw errors immediately
      * All failures are collected and reported at the end of the test
      */
-    soft<T = unknown>(actual: T): T extends PromiseLikeType ? Matchers<Promise<void>, T> : Matchers<void, T>
+    soft<T = unknown>(actual: T): T extends PromiseLike ? Matchers<Promise<void>, T> : Matchers<void, T>
 
     /**
      * Get all current soft assertion failures
