@@ -21,6 +21,7 @@ export function isAsymmetricMatcher(expected: unknown): expected is WdioAsymmetr
         typeof expected === 'object' &&
         typeof expected === 'object' &&
         expected &&
+        // TODO dprevost will this one still work?
         '$$typeof' in expected &&
         'asymmetricMatch' in expected &&
         expected.$$typeof === asymmetricMatcher &&
