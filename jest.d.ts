@@ -1,5 +1,10 @@
 /// <reference types="./types/expect-webdriverio.d.ts"/>
 
+/**
+ * Augment the Jest namespace to include the matchers from expect-webdriverio.
+ * When Jest Library is used, it specifies `expect-webdriverio/jest` for this file in the tsconfig.json's types.
+ */
+
 declare namespace jest {
 
     interface Matchers<R, T> extends ExpectWebdriverIO.Matchers<R, T> {
