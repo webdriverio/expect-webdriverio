@@ -45,7 +45,7 @@
     "clean": "run-p clean:*",
     "clean:build": "rimraf ./lib",
     "compile": "tsc --build tsconfig.build.json",
-    "tsc:root-types": "echo 'TODO dprevost to bring back' && exit 0 && tsc jasmine.d.ts jest.d.ts",
+    "tsc:root-types": "node types-checks-filter-out-node_modules.js",
     "test": "run-s test:*",
     "test:tsc": "tsc --project tsconfig.json --noEmit",
     "test:lint": "eslint .",
