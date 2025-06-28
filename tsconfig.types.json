@@ -1,0 +1,32 @@
+{
+  /**
+   * TypeScript configuration for the type files.
+   *
+   * Running tsc on types is extremely sensible to the node_modules folder so we wrap the tsc command in a script
+   * @see types-checks-filter-out-node_modules.js
+   */
+  "compilerOptions": {
+    "target": "ES2022",
+    "strictBindCallApply": true,
+    "noImplicitAny": true,
+    
+    // Must stay commented to ensure that the types are actually validated
+    // "skipLibCheck": true, 
+
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "@wdio/types",
+    ],
+    "moduleResolution": "node",
+    "noEmit": true,
+  },
+  
+  "include": ["jest.d.ts", 
+  /*"jasmine.d.ts",*/ // TODO dprevost: bring back
+  "expect-webdriverio.d.ts"],
+  "exclude": [
+    "**/urlpattern-polyfill/**"
+  ]  
+}
