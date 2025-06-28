@@ -49,8 +49,6 @@ type WdioOnlyMaybePromiseLike = ElementPromise | ElementArrayPromise | Chainable
  */
 type WdioMaybePromise = PromiseLike<T> | WdioOnlyMaybePromiseLike
 
-type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
-
 // TODO dprevost - check if custom matchers (https://webdriver.io/docs/custommatchers/) will still work aka webdriverio/expect-webdriverio#1408
 
 /**
