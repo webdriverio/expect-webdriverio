@@ -14,7 +14,7 @@ type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
 type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
 type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
 type ExpectLibBaseExpect = import('expect').BaseExpect
-type ExpectLibMatchers<R, T> = import('expect').Matchers<R, T>
+type ExpectLibMatchers<R extends void | Promise<void>, T> = import('expect').Matchers<R, T>
 type ExpectLibExpect = import('expect').Expect
 
 // TODO dprevost: a suggestion would be to move any code outside of the namespace to separate types.ts file, so that we can import the types.
@@ -43,11 +43,6 @@ type WdioOnlyPromiseLike = ElementPromise | ElementArrayPromise | ChainablePromi
  * Only wdio real promise or potential promise usage on element or element array or browser
  */
 type WdioOnlyMaybePromiseLike = ElementPromise | ElementArrayPromise | ChainablePromiseElement | ChainablePromiseArray | WebdriverIO.Browser | WebdriverIO.Element | WebdriverIO.ElementArray
-
-/**
- * Type potentially leading to a promise
- */
-type WdioMaybePromise = PromiseLike<T> | WdioOnlyMaybePromiseLike
 
 // TODO dprevost - check if custom matchers (https://webdriver.io/docs/custommatchers/) will still work aka webdriverio/expect-webdriverio#1408
 
@@ -339,16 +334,22 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveWidth: FnWhenElementOrArrayLike<ActualT, (width: number, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
-     * `WebdriverIO.Element` -> `getSize('height')`
-     * Element's height equals the height provided
+     * `WebdriverIO.Element` -> `getSize('height')` or `getSize()`
+     * Checks if the element's height equals the given number, or its size equals the given object.
+     *
+     * @param heightOrSize - Either a number (height) or an object with height and width.
+     * @param options - Optional command options.
+     *
+     * **Usage Example:**
+     * ```js
+     * await expect(element).toHaveHeight(42)
+     * await expect(element).toHaveHeight({ height: 42, width: 42 })
+     * ```
      */
-    toHaveHeight: FnWhenElementOrArrayLike<ActualT, (height: number, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
-
-    /**
-     * `WebdriverIO.Element` -> `getSize()`
-     * Element's size equals the size provided
-     */
-    toHaveHeight: FnWhenElementOrArrayLike<ActualT, (size: { height: number; width: number }, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toHaveHeight: FnWhenElementOrArrayLike<ActualT, (
+        heightOrSize: number | { height: number; width: number },
+        options?: ExpectWebdriverIO.CommandOptions
+    ) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute("style")`
@@ -405,9 +406,9 @@ type WdioCustomMatchers<R, ActualT> = WdioJestOverloadedMatchers<R, ActualT> & W
 /**
  * All the matchers that WebdriverIO Library supports including the generic matchers from the expect library.
  */
-type WdioMatchers<R, ActualT> = WdioCustomMatchers<R, ActualT> & ExpectLibMatchers<R, ActualT>
+type WdioMatchers<R extends void | Promise<void>, ActualT> = WdioCustomMatchers<R, ActualT> & ExpectLibMatchers<R, ActualT>
 
-type WdioMatchersAndInverse<R, ActualT> = WdioMatchers<R, ActualT> & Inverse<WdioMatchers<R, ActualT>>
+type WdioMatchersAndInverse<R extends void | Promise<void>, ActualT> = WdioMatchers<R, ActualT> & Inverse<WdioMatchers<R, ActualT>>
 
 /**
  * Expects specific to WebdriverIO, excluding the generic expect matchers.
@@ -423,7 +424,7 @@ interface WdioCustomExpect extends ExpectLibBaseExpect {
     /**
      * Get all current soft assertion failures
      */
-    getSoftFailures(testId?: string): SoftFailure[]
+    getSoftFailures(testId?: string): ExpectWebdriverIO.SoftFailure[]
 
     /**
      * Manually assert all soft failures (throws an error if any failures exist)
@@ -459,9 +460,9 @@ declare namespace ExpectWebdriverIO {
      * Supported Matchers for expect-webdriverio.
      * The Type T (ActualT) needs to keep it's name to overload the Matchers from the expect library.
      */
-    interface Matchers<R, T> extends WdioMatchers<R, T> {}
+    interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
 
-    type MatchersAndInverse<R, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & Inverse<ExpectWebdriverIO.Matchers<R, ActualT>>
+    type MatchersAndInverse<R extends void | Promise<void>, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & Inverse<ExpectWebdriverIO.Matchers<R, ActualT>>
 
     interface Expect extends WdioExpect {
         /**
@@ -512,7 +513,8 @@ declare namespace ExpectWebdriverIO {
     }
 
     class SoftAssertionService implements ServiceInstance {
-        constructor(serviceOptions?: SoftAssertionServiceOptions, capabilities?: unknown, config?: un)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        constructor(serviceOptions?: SoftAssertionServiceOptions, capabilities?: unknown, config?: any)
         beforeTest(test: Test): void
         beforeStep(step: PickleStep, scenario: Scenario): void
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -675,12 +677,12 @@ declare namespace ExpectWebdriverIO {
             | string
             | ExpectWebdriverIO.JsonCompatible
             | ExpectWebdriverIO.PartialMatcher<string | ExpectWebdriverIO.JsonCompatible>
-            | ((r: string | undefined) => boolean)
+            | ((postData: string | undefined) => boolean)
         response?:
             | string
-            | ExpectWebdriverIO.JsonCompatible<string | JsonCompatible>
-            | ExpectWebdriverIO.PartialMatcher
-            | ((r: string) => boolean)
+            | ExpectWebdriverIO.JsonCompatible
+            | ExpectWebdriverIO.PartialMatcher<string | ExpectWebdriverIO.JsonCompatible>
+            | ((response: unknown) => boolean)
     }
 
     type jsonPrimitive = string | number | boolean | null
