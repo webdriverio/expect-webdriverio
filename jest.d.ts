@@ -33,5 +33,5 @@ declare namespace jest {
 
     interface Expect extends ExpectWebdriverIO.Expect {}
 
-    interface InverseAsymmetricMatchers extends ExpectWebdriverIO.Expect {}
+    interface InverseAsymmetricMatchers extends ExpectWebdriverIO.AsymmetricMatchers {}
 }
