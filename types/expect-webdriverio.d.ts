@@ -440,7 +440,13 @@ interface WdioCustomExpect extends ExpectLibBaseExpect {
 /**
  * Expects supported by the expect-webdriverio library, including the generic expect matchers.
  */
-type WdioExpect = ExpectLibExpect & WdioCustomExpect
+type WdioExpect = WdioCustomExpect & ExpectLibExpect
+
+/**
+ * Asymmetric matchers supported by the expect-webdriverio library.
+ * The type is the same as the one from the expect library, but we need to redefine it to have it available in the `ExpectWebdriverIO` namespace.
+ */
+type WdioAsymmetricMatchers = ExpectLibAsymmetricMatchers
 
 /**
  * Implementation of the asymmetric matcher. Equivalent as the PartialMatcher but with sample used by implementations.
@@ -456,6 +462,7 @@ declare namespace ExpectWebdriverIO {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getConfig(): any
 
+    /** expect lib type/interface override to have everything under the ExpectWebDriverIO namespace */
     /**
      * Supported Matchers for expect-webdriverio.
      * The Type T (ActualT) needs to keep it's name to overload the Matchers from the expect library.
@@ -464,7 +471,11 @@ declare namespace ExpectWebdriverIO {
 
     type MatchersAndInverse<R extends void | Promise<void>, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & Inverse<ExpectWebdriverIO.Matchers<R, ActualT>>
 
-    interface Expect extends WdioExpect {
+    /**
+     * Overloaded from `expect` library to allow using the `ExpectWebdriverIO` namespace to define custom asymmetric matchers.
+     */
+    type AsymmetricMatchers = WdioAsymmetricMatchers
+    interface Expect extends AsymmetricMatchers, WdioExpect {
         /**
          * The `expect` function is used every time you want to test a value.
          * You will rarely call `expect` by itself.
@@ -696,6 +707,7 @@ declare namespace ExpectWebdriverIO {
      */
     type PartialMatcher<T> = Omit<ExpectLibAsymmetricMatcher<T>, 'sample' | 'inverse' | '$$typeof'>
 
+    // interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
     //TODO dprevost: ensure we do not break custom AsymmetricMatchers from expect library
     // declare global {
     //   namespace ExpectWebdriverIO {

@@ -219,6 +219,44 @@ describe('type assertions', async () => {
             })
         })
 
+        describe('toHaveHeight', () => {
+            it('should be supported correctly', async () => {
+                expectPromiseVoid = expect(element).toHaveHeight(100)
+                expectPromiseVoid = expect(element).toHaveHeight(100, { message: 'Custom error message' })
+                expectPromiseVoid = expect(element).not.toHaveHeight(100)
+                expectPromiseVoid = expect(element).not.toHaveHeight(100, { message: 'Custom error message' })
+
+                expectPromiseVoid = expect(element).toHaveHeight({ width: 100, height: 200 })
+                expectPromiseVoid = expect(element).toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })
+                expectPromiseVoid = expect(element).not.toHaveHeight({ width: 100, height: 200 })
+                expectPromiseVoid = expect(element).not.toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })
+
+                // @ts-expect-error
+                expectVoid = expect(element).toHaveHeight(100)
+                // @ts-expect-error
+                expectVoid = expect(element).not.toHaveHeight(100)
+
+                // @ts-expect-error
+                expectVoid = expect(element).toHaveHeight({ width: 100, height: 200 })
+                // @ts-expect-error
+                expectVoid = expect(element).not.toHaveHeight({ width: 100, height: 200 })
+
+                // @ts-expect-error
+                await expect(browser).toHaveHeight(100)
+            })
+
+            it('should have ts errors when actual is string or Promise<string>', async () => {
+                // @ts-expect-error
+                await expect('text').toHaveText('text')
+                // @ts-expect-error
+                await expect('text').not.toHaveText('text')
+                // @ts-expect-error
+                await expect(Promise.resolve('text')).toHaveText('text')
+                // @ts-expect-error
+                await expect(Promise.resolve('text')).toHaveText('text')
+            })
+        })
+
         describe('toMatchSnapshot', () => {
 
             it('should be supported correctly', async () => {
