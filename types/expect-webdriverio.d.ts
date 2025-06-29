@@ -13,19 +13,10 @@ type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
 
 type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
 type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
-type ExpectLibBaseExpect = import('expect').BaseExpect
 type ExpectLibMatchers<R extends void | Promise<void>, T> = import('expect').Matchers<R, T>
 type ExpectLibExpect = import('expect').Expect
 
 // TODO dprevost: a suggestion would be to move any code outside of the namespace to separate types.ts file, so that we can import the types.
-
-// To remove when exportable from 'expect'. See https://github.com/jestjs/jest/pull/15704 (already merged)
-type Inverse<M> = {
-    /**
-     * Inverse next matcher. If you know how to test something, `.not` lets you test its opposite.
-     */
-    not: M;
-}
 
 /**
  * Real Promise and wdio chainable promise types.
@@ -408,12 +399,10 @@ type WdioCustomMatchers<R, ActualT> = WdioJestOverloadedMatchers<R, ActualT> & W
  */
 type WdioMatchers<R extends void | Promise<void>, ActualT> = WdioCustomMatchers<R, ActualT> & ExpectLibMatchers<R, ActualT>
 
-type WdioMatchersAndInverse<R extends void | Promise<void>, ActualT> = WdioMatchers<R, ActualT> & Inverse<WdioMatchers<R, ActualT>>
-
 /**
  * Expects specific to WebdriverIO, excluding the generic expect matchers.
  */
-interface WdioCustomExpect extends ExpectLibBaseExpect {
+interface WdioCustomExpect {
     /**
      * Creates a soft assertion wrapper around standard expect
      * Soft assertions record failures but don't throw errors immediately
@@ -463,17 +452,18 @@ declare namespace ExpectWebdriverIO {
     function getConfig(): any
 
     /**
-     * This block are overloaded types from the expect library.
-     * They are required to show function under the `ExpectWebdriverIO` namespace.
+     * The below block are overloaded types from the expect library.
+     * They are required to show "everything" under the `ExpectWebdriverIO` namespace.
      * They are also required to be be able to declare custom asymmetric/normal matchers under the `ExpectWebdriverIO` namespace.
      * The type `T` must stay named `T` to correctly overload the expect function from the expect library.
      */
 
     /**
      * Expect defining the custom wdio expect and also pulling on asymmetric matchers.
-     * T needs to stay named T to correctly overload the expect function from the expect library.
+     * `AsymmetricMatchers` and `Inverse<AsymmetricMatchers>` needs to be defined and be before the `expect` library Expect (aka `WdioExpect`).
+     * The above allows to have custom asymmetric matchers under the `ExpectWebdriverIO` namespace.
      */
-    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, WdioExpect {
+    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, Inverse<Omit<ExpectWebdriverIO.AsymmetricMatchers, 'any' | 'anything'>>, WdioExpect {
         /**
          * The `expect` function is used every time you want to test a value.
          * You will rarely call `expect` by itself.
@@ -489,16 +479,17 @@ declare namespace ExpectWebdriverIO {
         <T = unknown>(actual: T): ExpectWebdriverIO.MatchersAndInverse<void, T>;
     }
 
-    /**
-     * Supported Matchers for expect-webdriverio.
-     * The Type T (ActualT) needs to keep it's name to overload the Matchers from the expect library.
-     */
     interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
 
-    /**
-     * Overloaded from `expect` library to allow using the `ExpectWebdriverIO` namespace to define custom asymmetric matchers.
-     */
-    type AsymmetricMatchers = WdioAsymmetricMatchers
+    // To remove when exportable from 'expect'. See https://github.com/jestjs/jest/pull/15704 (already merged)
+    interface Inverse<Matchers> {
+        /**
+         * Inverse next matcher. If you know how to test something, `.not` lets you test its opposite.
+         */
+        not: Matchers;
+    }
+
+    interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
 
     /**
      * End of block overloading types from the expect library.
@@ -720,17 +711,8 @@ declare namespace ExpectWebdriverIO {
      * Allow to partially matches value. Same as asymmetric matcher in jest.
      * Some properties are omitted for the type check to work correctly.
      */
+    // TODO dprevost: verify if we do breaking changes on this PartialMatcher, since before it was the AsymmetricMatcher interface used everywhere.
     type PartialMatcher<T> = Omit<ExpectLibAsymmetricMatcher<T>, 'sample' | 'inverse' | '$$typeof'>
-
-    // interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
-    //TODO dprevost: ensure we do not break custom AsymmetricMatchers from expect library
-    // declare global {
-    //   namespace ExpectWebdriverIO {
-    //     interface AsymmetricMatchers {
-    //       myCustomMatcher(value: string): ExpectWebdriverIO.PartialMatcher;
-    //     }
-    //   }
-    // }
 }
 
 declare module 'expect-webdriverio' {
