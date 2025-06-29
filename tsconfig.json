@@ -1,16 +1,21 @@
 {
+  /**
+  * Let's keep aligned with the WebdriverIO tsconfig.json.
+  * @see https://github.com/webdriverio/webdriverio/blob/main/tsconfig.json#L5
+  * TODO: dprevost, why using moduleResolution node16 in the above link?
+  */
   "compilerOptions": {
     "outDir": "./lib/",
-    "module": "ESNext",
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM"],
+    "module": "esnext",
+    "target": "es2022",
+    "lib": ["ES2022", "DOM"],
     "strictBindCallApply": true,
     "removeComments": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "node", // node is actually node10, this should be reviewed but node16 as in WebdriverIO main project does not work.
     "allowSyntheticDefaultImports": true,
     "types": [
       "node",

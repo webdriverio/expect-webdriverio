@@ -5,6 +5,7 @@
  * One example is mocha without the chai expect library.
  */
 
+//// @ts-expect-error: IDE might flags this one but just does be concerned by it. This way the `tsc:root-types` can pass!
 declare const expect: ExpectWebdriverIO.Expect
 
 declare namespace NodeJS {

@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
+    "noEmit": true,
     "noImplicitAny": true,
-    "target": "ES2020",
-    "module": "Node16",
+    "target": "es2022",
+    "module": "node18",
     "skipLibCheck": true,
     "types": [
       "@types/mocha",

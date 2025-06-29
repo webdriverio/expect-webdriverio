@@ -52,9 +52,9 @@
     "test:unit": "vitest --run",
     "test:types": "npm run ts && npm run tsc:root-types",
     "ts": "run-s ts:*",
-    "ts:jest": "cd test-types/jest && tsc --project ./tsconfig.json --noEmit",
-    "ts:mocha": "cd test-types/mocha && tsc --project ./tsconfig.json --noEmit",
-    "ts:jasmine": "echo 'TODO dprevost to bring back' && exit 0 && cd test-types/jasmine && tsc --project ./tsconfig.json --noEmit",
+    "ts:jest": "cd test-types/jest && tsc --project ./tsconfig.json",
+    "ts:mocha": "cd test-types/mocha && tsc --project ./tsconfig.json",
+    "ts:jasmine": "echo 'TODO dprevost to bring back' && exit 0 && cd test-types/jasmine && tsc --project ./tsconfig.json",
     "watch": "npm run compile -- --watch",
     "prepare": "husky install"
   },
