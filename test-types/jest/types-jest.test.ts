@@ -344,28 +344,138 @@ describe('type assertions', async () => {
     })
 
     describe('Custom matchers', () => {
-        it('should supported correctly a non-promise custom matcher', async () => {
-            expectVoid = expect('test').toBeCustom()
-            expectVoid = expect('test').not.toBeCustom()
+        describe('using `ExpectWebdriverIO` namespace augmentation', () => {
+            it('should supported correctly a non-promise custom matcher', async () => {
+                expectVoid = expect('test').toBeCustom()
+                expectVoid = expect('test').not.toBeCustom()
 
-            // @ts-expect-error
-            expectPromiseVoid = expect('test').toBeCustom()
-            // @ts-expect-error
-            expectPromiseVoid = expect('test').not.toBeCustom()
+                // @ts-expect-error
+                expectPromiseVoid = expect('test').toBeCustom()
+                // @ts-expect-error
+                expectPromiseVoid = expect('test').not.toBeCustom()
+
+                expectVoid = expect(1).toBeWithinRange(0, 2)
+            })
+
+            it('should supported correctly a promise custom matcher with only chainableElement as actual', async () => {
+                expectPromiseVoid = expect(chainableElement).toBeCustomPromise()
+                expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
+                expectPromiseVoid = expect(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('test'))
+
+                // @ts-expect-error
+                expect('test').toBeCustomPromise()
+                // @ts-expect-error
+                expectVoid = expect(chainableElement).toBeCustomPromise()
+                // @ts-expect-error
+                expectVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
+                // @ts-expect-error
+                expectVoid = expect(chainableElement).not.toBeCustomPromise(expect.stringContaining('test'))
+                // @ts-expect-error
+                expect(chainableElement).toBeCustomPromise(expect.stringContaining(6))
+            })
+
+            it('should support custom asymmetric matcher', async () => {
+                const expectString1 : ExpectWebdriverIO.PartialMatcher<string> = expect.toBeCustom()
+                const expectString2 : ExpectWebdriverIO.PartialMatcher<string> = expect.not.toBeCustom()
+
+                expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.toBeCustom())
+
+                // @ts-expect-error
+                expectPromiseVoid = expect.toBeCustom()
+                // @ts-expect-error
+                expectPromiseVoid = expect.not.toBeCustom()
+
+                //@ts-expect-error
+                expectVoid = expect(chainableElement).toBeCustomPromise(expect.toBeCustom())
+            })
         })
 
-        it('should supported correctly a promise custom matcher with only chainableElement as actual', async () => {
-            expectPromiseVoid = expect(chainableElement).toBeCustomPromise()
-            expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
+        describe('using `expect` module declaration', () => {
 
-            // @ts-expect-error
-            expect('test').toBeCustomPromise()
-            // @ts-expect-error
-            expectVoid = expect(chainableElement).toBeCustomPromise()
-            // @ts-expect-error
-            expectVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
-            // @ts-expect-error
-            expect(chainableElement).toBeCustomPromise(expect.stringContaining(6))
+            it('should support a simple matcher', async () => {
+                expectVoid = expect(5).toBeWithinRange(1, 10)
+
+                // Or as an asymmetric matcher:
+                expectVoid = expect({ value: 5 }).toEqual({
+                    value: expect.toBeWithinRange(1, 10)
+                })
+
+                // @ts-expect-error
+                expectVoid = expect(5).toBeWithinRange(1, '10')
+                // @ts-expect-error
+                expectPromiseVoid = expect(5).toBeWithinRange('1')
+            })
+
+            it('should support a simple custom matcher with a chainable element matcher with promise', async () => {
+                expectPromiseVoid = expect(chainableElement).toHaveSimpleCustomProperty('text')
+                expectPromiseVoid = expect(chainableElement).toHaveSimpleCustomProperty(expect.stringContaining('text'))
+                expectPromiseVoid = expect(chainableElement).not.toHaveSimpleCustomProperty(expect.not.stringContaining('text'))
+
+                // Or as a custom asymmetric matcher:
+                expectPromiseVoid = expect(chainableElement).toHaveSimpleCustomProperty(
+                    expect.toHaveSimpleCustomProperty('string')
+                )
+                const expectString1:string = expect.toHaveSimpleCustomProperty('string')
+                const expectString2:string = expect.not.toHaveSimpleCustomProperty('string')
+
+                // TODO how to make the below fails when the await is missing inf front of the expect from the asymmetric matcher?
+                // expectPromiseVoid = expect(chainableElement).toHaveCustomProperty(
+                //     expect.toHaveCustomProperty(chainableElement)
+                // )
+
+                // @ts-expect-error
+                expectVoid = expect.toHaveSimpleCustomProperty(chainableElement)
+                // @ts-expect-error
+                expectVoid = expect.not.toHaveSimpleCustomProperty(chainableElement)
+
+                // @ts-expect-error
+                expectVoid = expect.toHaveSimpleCustomProperty(chainableElement)
+            })
+
+            it('should support a chainable element matcher with promise', async () => {
+                expectPromiseVoid = expect(chainableElement).toHaveCustomProperty('text')
+                expectPromiseVoid = expect(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))
+                expectPromiseVoid = expect(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))
+
+                // Or as a custom asymmetric matcher:
+                expectPromiseVoid = expect(chainableElement).toHaveCustomProperty(
+                    await expect.toHaveCustomProperty(chainableElement)
+                )
+                const expectPromiseWdioElement1: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.toHaveCustomProperty(chainableElement)
+                const expectPromiseWdioElement2: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.not.toHaveCustomProperty(chainableElement)
+
+                // TODO how to make the below fails when the await is missing inf front of the expect from the asymmetric matcher?
+                // expectPromiseVoid = expect(chainableElement).toHaveCustomProperty(
+                //     expect.toHaveCustomProperty(chainableElement)
+                // )
+
+                // @ts-expect-error
+                expectVoid = expect.toHaveCustomProperty(chainableElement)
+                // @ts-expect-error
+                expectVoid = expect.not.toHaveCustomProperty(chainableElement)
+
+                // @ts-expect-error
+                expectVoid = expect.toHaveCustomProperty(chainableElement)
+                // @ts-expect-error
+                expect.toHaveCustomProperty('test')
+
+                await expect(chainableElement).toHaveCustomProperty(
+                    await expect.toHaveCustomProperty(chainableElement)
+                )
+            })
+
+            // TODO this is not supported in Wdio right now, maybe one day we can support it
+            // it('should support an async asymmetric matcher on a non async matcher', async () => {
+            //     expectPromiseVoid = expect({ value: 5 }).toEqual({
+            //         value: expect.toHaveCustomProperty(chainableElement)
+            //     })
+
+            //     // @ts-expect-error
+            //     expectVoid = expect({ value: 5 }).toEqual({
+            //         value: expect.toHaveCustomProperty(chainableElement)
+            //     })
+
+            // })
         })
     })
 
@@ -653,6 +763,82 @@ describe('type assertions', async () => {
                     // TODO dprevost: see if an eslint rule could help us here to detect missing await when not using wdio matchers
                     // expectPromiseVoid = expect.soft(chainableElement.getText()).toEqual('Basketball Shoes')
                     // expectPromiseVoid = expect.soft(chainableElement.getText()).toMatch(/€\d+/)
+                })
+
+                it('should work with custom matcher and custom asymmetric matchers from `expect` module', async () => {
+                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty('text')
+                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))
+                    expectPromiseVoid = expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))
+                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty(
+                        expect.toHaveCustomProperty(chainableElement)
+                    )
+
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty('text')
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty(
+                        expect.toHaveCustomProperty(chainableElement)
+                    )
+
+                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty('text')
+                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))
+                    expectPromiseVoid = expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))
+                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty(
+                        expect.toHaveCustomProperty(chainableElement)
+                    )
+
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty('text')
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty(
+                        expect.toHaveCustomProperty(chainableElement)
+                    )
+                })
+
+                it('should work with custom matcher and custom asymmetric matchers from `ExpectWebDriverIO` namespace', async () => {
+                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise('text')
+                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))
+                    expectPromiseVoid = expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))
+                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise(
+                        expect.toBeCustomPromise(chainableElement)
+                    )
+
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toBeCustomPromise('text')
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toBeCustomPromise(
+                        expect.toBeCustomPromise(chainableElement)
+                    )
+
+                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise('text')
+                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))
+                    expectPromiseVoid = expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))
+                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise(
+                        expect.toBeCustomPromise(chainableElement)
+                    )
+
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toBeCustomPromise('text')
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))
+                    // @ts-expect-error
+                    expectVoid = expect.soft(chainableElement).toBeCustomPromise(
+                        expect.toBeCustomPromise(chainableElement)
+                    )
                 })
             })
 
