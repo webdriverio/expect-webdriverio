@@ -462,20 +462,18 @@ declare namespace ExpectWebdriverIO {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getConfig(): any
 
-    /** expect lib type/interface override to have everything under the ExpectWebDriverIO namespace */
     /**
-     * Supported Matchers for expect-webdriverio.
-     * The Type T (ActualT) needs to keep it's name to overload the Matchers from the expect library.
+     * This block are overloaded types from the expect library.
+     * They are required to show function under the `ExpectWebdriverIO` namespace.
+     * They are also required to be be able to declare custom asymmetric/normal matchers under the `ExpectWebdriverIO` namespace.
+     * The type `T` must stay named `T` to correctly overload the expect function from the expect library.
      */
-    interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
-
-    type MatchersAndInverse<R extends void | Promise<void>, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & Inverse<ExpectWebdriverIO.Matchers<R, ActualT>>
 
     /**
-     * Overloaded from `expect` library to allow using the `ExpectWebdriverIO` namespace to define custom asymmetric matchers.
+     * Expect defining the custom wdio expect and also pulling on asymmetric matchers.
+     * T needs to stay named T to correctly overload the expect function from the expect library.
      */
-    type AsymmetricMatchers = WdioAsymmetricMatchers
-    interface Expect extends AsymmetricMatchers, WdioExpect {
+    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, WdioExpect {
         /**
          * The `expect` function is used every time you want to test a value.
          * You will rarely call `expect` by itself.
@@ -490,6 +488,23 @@ declare namespace ExpectWebdriverIO {
          */
         <T = unknown>(actual: T): ExpectWebdriverIO.MatchersAndInverse<void, T>;
     }
+
+    /**
+     * Supported Matchers for expect-webdriverio.
+     * The Type T (ActualT) needs to keep it's name to overload the Matchers from the expect library.
+     */
+    interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
+
+    /**
+     * Overloaded from `expect` library to allow using the `ExpectWebdriverIO` namespace to define custom asymmetric matchers.
+     */
+    type AsymmetricMatchers = WdioAsymmetricMatchers
+
+    /**
+     * End of block overloading types from the expect library.
+     */
+
+    type MatchersAndInverse<R extends void | Promise<void>, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & Inverse<ExpectWebdriverIO.Matchers<R, ActualT>>
 
     interface SnapshotServiceArgs {
         updateState?: SnapshotUpdateState
