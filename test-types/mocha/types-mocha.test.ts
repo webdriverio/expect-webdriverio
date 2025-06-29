@@ -371,8 +371,8 @@ describe('type assertions', () => {
             })
 
             it('should support custom asymmetric matcher', async () => {
-                const expectString1 : string = expect.toBeCustom()
-                const expectString2 : string = expect.not.toBeCustom()
+                const expectString1 : ExpectWebdriverIO.PartialMatcher<string> = expect.toBeCustom()
+                const expectString2 : ExpectWebdriverIO.PartialMatcher<string> = expect.not.toBeCustom()
 
                 expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.toBeCustom())
 
@@ -437,8 +437,8 @@ describe('type assertions', () => {
                 expectPromiseVoid = expect(chainableElement).toHaveCustomProperty(
                     await expect.toHaveCustomProperty(chainableElement)
                 )
-                const expectPromiseWdioElement1: Promise<string> = expect.toHaveCustomProperty(chainableElement)
-                const expectPromiseWdioElement2: Promise<string> = expect.not.toHaveCustomProperty(chainableElement)
+                const expectPromiseWdioElement1: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.toHaveCustomProperty(chainableElement)
+                const expectPromiseWdioElement2: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.not.toHaveCustomProperty(chainableElement)
 
                 // TODO how to make the below fails when the await is missing inf front of the expect from the asymmetric matcher?
                 // expectPromiseVoid = expect(chainableElement).toHaveCustomProperty(
