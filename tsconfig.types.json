@@ -23,10 +23,11 @@
     "noEmit": true,
   },
   
-  "include": ["jest.d.ts", 
-  /*"jasmine.d.ts",*/ // TODO dprevost: bring back
-  "expect-webdriverio.d.ts"],
+  "include": ["*.d.ts",
+  "./types/*.d.ts"],
   "exclude": [
-    "**/urlpattern-polyfill/**"
+    "**/urlpattern-polyfill/**",
+    "jasmine.d.ts", // TODO dprevost: to remove
+    "types/jasmine-soft-extend.d.ts", // TODO dprevost: to remove
   ]  
 }
