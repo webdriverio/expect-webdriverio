@@ -1,5 +1,9 @@
 import 'expect'
 
+/**
+ * Custom matchers under the `expect` module.
+ * @see {@link https://jestjs.io/docs/expect#expectextendmatchers}
+ */
 declare module 'expect' {
     interface AsymmetricMatchers {
         toBeWithinRange(floor: number, ceiling: number): void

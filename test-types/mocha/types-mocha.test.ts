@@ -371,15 +371,18 @@ describe('type assertions', () => {
             })
 
             it('should support custom asymmetric matcher', async () => {
-                expectVoid = expect.toBeCustom()
-                // TODO dprevost: to fix
-                //expectVoid = expect.not.toBeCustom()
+                const expectString1 : string = expect.toBeCustom()
+                const expectString2 : string = expect.not.toBeCustom()
+
+                expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.toBeCustom())
 
                 // @ts-expect-error
                 expectPromiseVoid = expect.toBeCustom()
                 // @ts-expect-error
                 expectPromiseVoid = expect.not.toBeCustom()
 
+                //@ts-expect-error
+                expectVoid = expect(chainableElement).toBeCustomPromise(expect.toBeCustom())
             })
         })
 
@@ -696,7 +699,7 @@ describe('type assertions', () => {
                 })
 
                 it('should need to be awaited/be a promise if actual is promise type', async () => {
-                    const expectWdioMatcher1: WdioMatchersAndInverse<Promise<void>, Promise<string>> = expect.soft(actualPromiseString)
+                    const expectWdioMatcher1: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>> = expect.soft(actualPromiseString)
                     expectPromiseVoid = expect.soft(actualPromiseString).toBe('Test Page')
                     expectPromiseVoid = expect.soft(actualPromiseString).not.toBe('Test Page')
                     expectPromiseVoid = expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))
