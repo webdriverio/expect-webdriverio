@@ -1,8 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/// <reference types="webdriverio"/>
-
-import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
-
 describe('type assertions', () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
     const chainableArray = {} as ChainablePromiseArray

@@ -447,6 +447,15 @@ type WdioAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
 }
 
 declare namespace ExpectWebdriverIO {
+    /**
+     * When importing expect from 'expect-webdriverio', instead of using globals this is the one used.
+     * Note: Using a const instead of a function, else we cannot use asymmetric matcher like expect.anything().
+     */
+    const expect: ExpectWebdriverIO.Expect
+
+    /**
+     * Used by the webdriverio main project to configure the matchers in the runner.
+     */
     function setOptions(options: DefaultOptions): void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getConfig(): any

@@ -6,8 +6,8 @@
     "module": "node18",
     "skipLibCheck": true,
     "types": [
-      "../../jasmine.d.ts", // Needs to be before "@types/jasmine" to ensure globals are the one of expect-webdriverio
-      "@types/jasmine",
-    ]
+      "@jest/globals",
+      "../../jest.d.ts",
+      ],
   }
 }
