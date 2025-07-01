@@ -12,10 +12,10 @@ We can pair `expect-webdriver` with Jest, mocha, Jasmine.
 We can use `expect-webdriver` with Jest with either the `@jest/global` (preferred) or the `@types/jest` (have global imports support)
   - Note: Jest maintainer does not support `@types/jest`. In case this library gets out of date or has problems, support might be dropped.
 
-In each case, when used outside of [WDIO Testrunner](https://webdriver.io/docs/clioptions), types are required to be added in your `tsconfig.ts`
+In each case, when used  <u>**outside of [WDIO Testrunner](https://webdriver.io/docs/clioptions)**</u>, types are required to be added in your `tsconfig.ts`
   - Note: With Jest the matcher `toMatchSnapshot` and `toMatchInlineSnapshot` were overloaded. To resolved correctly the types `expect-webdriverio/jest` must be last.
 
-#### @jest/global
+#### With `@jest/global`
 When paired with Jest and the `@jest/global`, we should `import` the `expect` keyword from `expect-webdriverio`
 
 ```ts
@@ -31,16 +31,17 @@ describe('My tests', async () => {
 })        
 ```
 
-Expected `tsconfig.ts`:
+No `types` is expected in `tsconfig.ts`
+Optionally, to not need `import { expect } from 'expect-webdriverio'` you can use the bellow
 ```json
-    "types": [
-      "@jest/globals",
-      "expect-webdriverio/jest",
-      ],
-```  
+{
+  "compilerOptions": {
+    "types": ["expect-webdriverio/types"]
+  }
+}
+```    
 
-
-#### @type/jest
+#### With `@type/jest`
 When paired with Jest and the `@types/jest`, no imports are required. Global one are already defined correctly
 
 ```ts
@@ -53,12 +54,16 @@ describe('My tests', async () => {
 })     
 ```
 
-Expected `tsconfig.ts`:
+Expected in `tsconfig.ts`:
 ```json
+{
+  "compilerOptions": {
     "types": [
-      "@types/jest",
-      "expect-webdriverio/jest",
+        "@types/jest",
+        "expect-webdriverio/jest", // Must be after for overloaded matcher `toMatchSnapshot` and `toMatchInlineSnapshot` 
       ],
+  }
+}
 ```
     
 ### Mocha
@@ -77,12 +82,16 @@ describe('My tests', async () => {
 })     
 ```
 
-Expected `tsconfig.ts`:
+Expected in `tsconfig.ts`:
 ```json
+{
+  "compilerOptions": {
     "types": [
-      "@types/mocha",
-      "expect-webdriverio",
-    ]
+        "@types/mocha",
+        "expect-webdriverio",
+      ],
+  }
+}
 ```
 
 ### Chai
@@ -91,11 +100,11 @@ TODO
 ### Jasmine
 When paired with Jasmine, it must also be used with `@wdio/jasmine-framework` from [webdriverio](https://github.com/webdriverio/webdriverio) since multiple configuration must be done prior to be runnable. For example, we actually force the `expect` being used to be the `expectAsync` instance so the promises resolved correctly.
 
-Expected `tsconfig.ts`:
+Expected in `tsconfig.ts`:
   - Note `expect-webdriverio/jasmine` must be before `@types/jasmine` to use the correct `expect` type of WebDriverIO globally
 ```json
     "types": [
-      "expect-webdriverio/jasmine",
+      "expect-webdriverio/jasmine", // Must be before for the global to apply correctly
       "@types/jasmine",
     ]
 ```

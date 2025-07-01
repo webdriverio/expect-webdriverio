@@ -192,37 +192,37 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     /**
      * `WebdriverIO.Element` -> `isClickable`
      */
-    toBeClickable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeClickable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `!isEnabled`
      */
-    toBeDisabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeDisabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isDisplayedInViewport`
      */
-    toBeDisplayedInViewport: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeDisplayedInViewport: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isEnabled`
      */
-    toBeEnabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeEnabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isFocused`
      */
-    toBeFocused: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeFocused: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isSelected`
      */
-    toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `isSelected`
      */
-    toBeChecked: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toBeChecked: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
 
     /**
      * `WebdriverIO.Element` -> `$$('./*').length`
@@ -303,7 +303,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
      * Element's computed label equals the computed label provided
      */
     toHaveComputedLabel: FnWhenElementOrArrayLike<ActualT, (
-        computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher<ActualT>| Array<string | RegExp>,
+        computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
 
@@ -312,7 +312,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
      * Element's computed role equals the computed role provided
      */
     toHaveComputedRole: FnWhenElementOrArrayLike<ActualT, (
-        computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher<ActualT>| Array<string | RegExp>,
+        computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<R>>
 
@@ -721,6 +721,7 @@ declare namespace ExpectWebdriverIO {
      * Some properties are omitted for the type check to work correctly.
      */
     // TODO dprevost: verify if we do breaking changes on this PartialMatcher, since before it was the AsymmetricMatcher interface used everywhere.
+    // TODO dprevost: verify if we should restrict to possible asymmetric matchers used!
     type PartialMatcher<T> = Omit<ExpectLibAsymmetricMatcher<T>, 'sample' | 'inverse' | '$$typeof'>
 }
 
