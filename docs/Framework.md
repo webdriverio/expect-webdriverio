@@ -16,7 +16,7 @@ In each case, when used outside of [WDIO Testrunner](https://webdriver.io/docs/c
   - Note: With Jest the matcher `toMatchSnapshot` and `toMatchInlineSnapshot` were overloaded. To resolved correctly the types `expect-webdriverio/jest` must be last.
 
 #### @jest/global
-When paired with Jest and the `@jest/global`, we should use imports specifically
+When paired with Jest and the `@jest/global`, we should `import` the `expect` keyword from `expect-webdriverio`
 
 ```ts
 import { expect } from 'expect-webdriverio'

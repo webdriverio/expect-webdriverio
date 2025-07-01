@@ -23,7 +23,7 @@
   "exports": {
     ".": [
       {
-        "types": "./types/standalone.d.ts",
+        "types": "./types/expect-webdriverio.d.ts",
         "import": "./lib/index.js"
       },
       "./lib/index.js"
@@ -33,9 +33,9 @@
         "types": "./jest.d.ts"
       }
     ],
-    "./types": "./types/jest-global.d.ts"
+    "./types": "./types/expect-global.d.ts"
   },
-  "types": "./types/standalone.d.ts",
+  "types": "./types/expect-webdriverio.d.ts",
   "typeScriptVersion": "3.8.3",
   "engines": {
     "node": ">=18 || >=20 || >=22"

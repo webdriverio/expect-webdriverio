@@ -35,15 +35,13 @@ type WdioOnlyPromiseLike = ElementPromise | ElementArrayPromise | ChainablePromi
  */
 type WdioOnlyMaybePromiseLike = ElementPromise | ElementArrayPromise | ChainablePromiseElement | ChainablePromiseArray | WebdriverIO.Browser | WebdriverIO.Element | WebdriverIO.ElementArray
 
-// TODO dprevost - check if custom matchers (https://webdriver.io/docs/custommatchers/) will still work aka webdriverio/expect-webdriverio#1408
-
 /**
  * Note we are defining Matchers outside of the namespace as done in jest library until we can make every typing work correctly.
  * Once we have all types working, we could check to bring those back into the `ExpectWebdriverIO` namespace.
  */
 
 /**
- * Type helpers to be able to targets specific types mostly user in conjunctions with the Type of the `actual` parameter of the `expect`
+ * Type helpers to be able to targets specific types mostly used in conjunctions with the Type of the `actual` parameter of the `expect`
  */
 type ElementOrArrayLike = ElementLike | ElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement

@@ -1,6 +1,6 @@
 {
   /**
-  * Let's keep aligned with the WebdriverIO tsconfig.json.
+  * Let's aligned with the WebdriverIO tsconfig.json.
   * @see https://github.com/webdriverio/webdriverio/blob/main/tsconfig.json#L5
   * TODO: dprevost, why using moduleResolution node16 in the above link?
   */
