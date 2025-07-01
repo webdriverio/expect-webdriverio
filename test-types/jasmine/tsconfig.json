@@ -6,10 +6,8 @@
     "module": "node18",
     "skipLibCheck": true,
     "types": [
-      "../../types/jasmine-soft-extend.d.ts",
+      "../../types/standalone-global.d.ts",
       "@types/jasmine",
-      "../../jasmine.d.ts",
-      "@wdio/globals/types"
     ]
   }
 }
