@@ -5,9 +5,5 @@
     "target": "es2022",
     "module": "node18",
     "skipLibCheck": true,
-    "types": [
-      "@jest/globals",
-      "../../jest.d.ts",
-      ],
   }
 }
