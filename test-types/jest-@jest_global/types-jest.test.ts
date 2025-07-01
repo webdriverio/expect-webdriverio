@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 
-describe('type assertions', () => {
+import { expect } from 'expect-webdriverio'
+import { describe, it, expect as jestExpect } from '@jest/globals'
+
+describe('type assertions', async () => {
+    // TODO dprevost: using @wdio/globals/types overlap with the local types/expect-webdriverio.d.ts, find how to work with this
+    // const chainableElement: ChainablePromiseElement = $('findMe')
+    // const chainableArray: ChainablePromiseArray = $$('ul>li')
+
+    // const element: WebdriverIO.Element = await chainableElement?.getElement()
+    // const elementArray: WebdriverIO.ElementArray = await chainableArray?.getElements()
+
     const chainableElement = {} as unknown as ChainablePromiseElement
     const chainableArray = {} as ChainablePromiseArray
 
@@ -529,11 +538,16 @@ describe('type assertions', () => {
 
         it('should expect a Promise of type', async () => {
             const expectPromiseBoolean1: ExpectWebdriverIO.MatchersAndInverse<void, Promise<boolean>> = expect(booleanPromise)
-            const expectPromiseBoolean2: ExpectWebdriverIO.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
+            const expectPromiseBoolean2: jest.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
+
+            // @ts-expect-error
+            const expectPromiseBoolean3: jest.JestMatchers<boolean> = expect(booleanPromise)
+            //// @ts-expect-error
+            // const expectPromiseBoolean4: jest.Matchers<void, boolean> = expect(booleanPromise).not
         })
 
         it('should work with resolves & rejects correctly', async () => {
-            // TODO dprevost should we support this in Wdio since we do not even use it or document it?
+            // TODO dprevost should we bring back the support for this?
             // expectPromiseVoid = expect(booleanPromise).resolves.toBe(true)
             // expectPromiseVoid = expect(booleanPromise).rejects.toBe(true)
 
@@ -553,6 +567,7 @@ describe('type assertions', () => {
     })
 
     describe('Network Matchers', () => {
+        // const promiseNetworkMock = browser.mock('**/api/todo*')
         const promiseNetworkMock = Promise.resolve(networkMock)
 
         it('should not have ts errors when typing to Promise', async () => {
@@ -666,20 +681,27 @@ describe('type assertions', () => {
             expect.not.arrayContaining(['WebdriverIO', 'Test'])
             expect.not.arrayOf(expect.stringContaining('WebdriverIO'))
 
-            // TODO dprevost: Should we support these?
-            // expect.not.anything()
-            // expect.not.any(Function)
-            // expect.not.any(Number)
-            // expect.not.any(Boolean)
-            // expect.not.any(String)
-            // expect.not.any(Symbol)
-            // expect.not.any(Date)
-            // expect.not.any(Error)
+            //@ts-expect-error
+            expect.not.anything()
+            //@ts-expect-error
+            expect.not.any(Function)
+            //@ts-expect-error
+            expect.not.any(Number)
+            //@ts-expect-error
+            expect.not.any(Boolean)
+            //@ts-expect-error
+            expect.not.any(String)
+            //@ts-expect-error
+            expect.not.any(Symbol)
+            //@ts-expect-error
+            expect.not.any(Date)
+            //@ts-expect-error
+            expect.not.any(Error)
         })
 
         describe('Soft Assertions', async () => {
-            const actualString: string = 'Test Page'
-            const actualPromiseString: Promise<string> = Promise.resolve('Test Page')
+            const actualString: string = 'test'
+            const actualPromiseString: Promise<string> = Promise.resolve('test')
 
             describe('expect.soft', () => {
                 it('should not need to be awaited/be a promise if actual is non-promise type', async () => {
@@ -876,6 +898,97 @@ describe('type assertions', () => {
             expect(number).toEqual(expect.closeTo(1.0001, 0.0001))
             // New from jest 30, should work!
             expect(['apple', 'banana', 'cherry']).toEqual(expect.arrayOf(expect.any(String)))
+        })
+    })
+
+    describe('@types/jest only - original Matchers', () => {
+
+        it('should support mock matchers existing only on JestExpect', () => {
+            const mockFn = () => {}
+
+            // Jest-specific mock matchers
+            expect(mockFn).toHaveBeenCalled()
+        })
+
+        describe('Jest-specific Promise matchers', () => {
+            it('should support resolves and rejects', async () => {
+                const stringPromise = Promise.resolve('Hello Jest')
+                const rejectedPromise = Promise.reject(new Error('Failed'))
+
+                expectPromiseVoid = jestExpect(stringPromise).resolves.toBe('Hello Jest')
+                expectPromiseVoid = jestExpect(rejectedPromise).rejects.toThrow('Failed')
+
+                // @ts-expect-error
+                expectVoid = jestExpect(stringPromise).resolves.toBe('Hello Jest')
+                // @ts-expect-error
+                expectVoid = jestExpect(rejectedPromise).rejects.toThrow('Failed')
+            })
+        })
+
+        describe('toMatchSnapshot & toMatchInlineSnapshot', () => {
+            const snapshotName: string = 'test-snapshot'
+
+            it('should work with string', async () => {
+                const jsonString: string = '{}'
+                const propertyMatchers = 'test'
+                expectVoid = jestExpect(jsonString).toMatchSnapshot(propertyMatchers)
+                expectVoid = jestExpect(jsonString).toMatchSnapshot(propertyMatchers, snapshotName)
+                expectVoid = jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers)
+                expectVoid = jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers, snapshotName)
+
+                expectVoid = jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers)
+                expectVoid = jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers, snapshotName)
+                expectVoid = jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers)
+                expectVoid = jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(jsonString).toMatchSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(jsonString).toMatchSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+            })
+
+            it('should with object', async () => {
+                const treeObject = { 1: 'test', 2: 'test2' }
+                const propertyMatchers = { 1: 'test' }
+                expectVoid = jestExpect(treeObject).toMatchSnapshot(propertyMatchers)
+                expectVoid = jestExpect(treeObject).toMatchSnapshot(propertyMatchers, snapshotName)
+                expectVoid = jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers)
+                expectVoid = jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers, snapshotName)
+
+                expectVoid = jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers)
+                expectVoid = jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers, snapshotName)
+                expectVoid = jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers)
+                expectVoid = jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(treeObject).toMatchSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(treeObject).toMatchSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers, snapshotName)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers)
+                // @ts-expect-error
+                expectPromiseVoid = jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+            })
         })
     })
 })

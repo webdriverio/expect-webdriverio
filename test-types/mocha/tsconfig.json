@@ -6,12 +6,8 @@
     "module": "node18",
     "skipLibCheck": true,
     "types": [
-      "../../types/expect-global.d.ts",
       "@types/mocha",
-      "expect",
-      "webdriverio",
-      
-      // "@wdio/globals/types", // TODO to review adding the global wdio types interfere with local types
+      "../../types/expect-global.d.ts",      
     ]
   }
 }

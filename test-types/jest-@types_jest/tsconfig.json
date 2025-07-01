@@ -8,7 +8,6 @@
     "types": [
       "@types/jest",
       "../../jest.d.ts", // Needed to be after @types/jest to override the toMatchSnapshot typing
-      // "@wdio/globals/types", // This types interfere with the local types see how to workaround this
     ],
   }
 }
