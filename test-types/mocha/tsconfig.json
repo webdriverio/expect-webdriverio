@@ -6,7 +6,7 @@
     "module": "node18",
     "skipLibCheck": true,
     "types": [
-      "../../types/standalone-global.d.ts",
+      "../../types/expect-global.d.ts",
       "@types/mocha",
       "expect",
       "webdriverio",
