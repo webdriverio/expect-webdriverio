@@ -881,22 +881,29 @@ describe('type assertions', () => {
         })
     })
 
-    describe('Jasmine Matchers', () => {
+    describe('Jasmine only cases', () => {
         let expectPromiseLikeVoid: PromiseLike<void>
         it('should support expectAsync correctly for non wdio types', async () => {
             expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).toBeResolved()
+            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).toBeResolvedTo(expect.stringContaining('test error'))
+            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).not.toBeResolvedTo(expect.not.stringContaining('test error'))
             expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).toBeRejected()
-            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).toBeRejectedWith('test error')
-            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).toBeRejectedWithError('test error')
+            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).not.toBeResolved()
+            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).not.toBeRejected()
 
             // @ts-expect-error
             expectVoid = expectAsync(Promise.resolve('test')).toBeResolved()
             // @ts-expect-error
             expectVoid = expectAsync(Promise.resolve('test')).toBeRejected()
+
             // @ts-expect-error
-            expectVoid = expectAsync(Promise.resolve('test')).toBeRejectedWith('test error')
-            // @ts-expect-error
-            expectVoid = expectAsync(Promise.resolve('test')).toBeRejectedWithError('test error')
+            expectVoid = expectAsync(Promise.resolve('test')).toBeResolved()
         })
+        it('jasmine special asymmetric matcher', async () => {
+            // TODO dprevost: Is this valid since expect is from WebdriverIO and we force it to be `expectAsync` in the main project?
+            expect({}).toEqual(jasmine.any(Object))
+            expect(12).toEqual(jasmine.any(Number))
+        })
+
     })
 })

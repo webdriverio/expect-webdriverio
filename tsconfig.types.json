@@ -23,11 +23,8 @@
     "noEmit": true,
   },
   
-  "include": ["*.d.ts",
-  "./types/*.d.ts"],
-  "exclude": [
-    "**/urlpattern-polyfill/**",
-    "jasmine.d.ts", // TODO dprevost: to remove
-    "types/jasmine-soft-extend.d.ts", // TODO dprevost: to remove
-  ]  
+  "include": [
+    "*.d.ts",
+    "./types/*.d.ts"
+  ],
 }
