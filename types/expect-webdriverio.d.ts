@@ -544,14 +544,16 @@ declare namespace ExpectWebdriverIO {
         message(): string
     }
 
-    // TODO dprevost: what is this, I'm unable to find it in the codebase, was a function before, seems to override something from Jasmine in the past?
-    // const matchers: Map<
-    //     string,
-    //     (
-    //         actual: unknown,
-    //         ...expected: unknown[]
-    //     ) => Promise<AssertionResult>
-    // >
+    /**
+     * Used by the wdio main project to configure the matchers in the runner when using Jasmine.
+     */
+    const matchers: Map<
+        string,
+        (
+            actual: unknown,
+            ...expected: unknown[]
+        ) => Promise<AssertionResult>
+    >
 
     interface AssertionHookParams {
         /**
