@@ -36,7 +36,7 @@ Optionally, to not need `import { expect } from 'expect-webdriverio'` you can us
 ```json
 {
   "compilerOptions": {
-    "types": ["expect-webdriverio/types"]
+    "types": ["expect-webdriverio/expect-global"]
   }
 }
 ```    
@@ -88,7 +88,7 @@ Expected in `tsconfig.json`:
   "compilerOptions": {
     "types": [
         "@types/mocha",
-        "expect-webdriverio/types"
+        "expect-webdriverio/expect-global"
       ]
   }
 }
@@ -131,7 +131,7 @@ Expected in `tsconfig.json`:
 It is preferable to use the `expect` from `expect-webdriverio` to guarantee future compatibility 
 
 ```ts
-// Required if we do not force the 'expect-webdriverio' expect globally with `"expect-webdriverio/types"`
+// Required if we do not force the 'expect-webdriverio' expect globally with `"expect-webdriverio/expect-global"`
 import { expect as wdioExpect } from 'expect-webdriverio'
 
 describe('My tests', async () => {
@@ -149,7 +149,7 @@ Expected in `tsconfig.json`:
   "compilerOptions": {
     "types": [
         "@types/jasmine",
-        "expect-webdriverio/types", // Force expect to be the 'expect-webdriverio', to comment and use the import above if it conflict with Jasmine
+        "expect-webdriverio/expect-global", // Force expect to be the 'expect-webdriverio', to comment and use the import above if it conflict with Jasmine
       ]
   }
 }
