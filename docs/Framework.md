@@ -98,18 +98,74 @@ Expected in `tsconfig.json`:
 TODO - Integration with [Chai](https://www.chaijs.com/) assertion library
 
 ### Jasmine
-When paired with [Jasmine](https://jasmine.github.io/), it must also be used with [`@wdio/jasmine-framework`](https://www.npmjs.com/package/@wdio/jasmine-framework) from [webdriverio](https://github.com/webdriverio/webdriverio) since multiple configurations must be done prior to being runnable. For example, we actually force the `expect` being used to be the `expectAsync` instance so the promises resolve correctly.
+When paired with [Jasmine](https://jasmine.github.io/), [`@wdio/jasmine-framework`](https://www.npmjs.com/package/@wdio/jasmine-framework) is also required to have it configured correctly as it needs to force the `expect` to be `expectAsync` and also to register the wdio matchers with `addAsyncMatcher` since `expect-webdriverio` only supports the jest style `expect.extend` version.
+
+The types `expect-webdriverio/jasmine` is still offers but subject to removal or to be moved into `@wdio/jasmine-framework`. The usage of `expectAsync` is also subject to future removal.
+
+#### Jasmine `expectAsync`
+Since the above types augment the `AsyncMatcher` of `Jasmine` then with this library alone it look like the below even though it is not runnable since the matcher are not registered
+
+```ts
+describe('My tests', async () => {
+
+    it('should verify my browser to have the expected url', async () => {
+        const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
+        await expectAsync(browser).toHaveUrl('https://example.com')
+    })
+})     
+```
 
 Expected in `tsconfig.json`:
-  - Note: `expect-webdriverio/jasmine` must be before `@types/jasmine` to use the correct `expect` type of WebDriverIO globally
 ```json
 {
   "compilerOptions": {
     "types": [
-      "expect-webdriverio/jasmine", // Must be before for the global to apply correctly
-      "@types/jasmine"
-    ]
+        "@types/jasmine",
+        "expect-webdriverio/jasmine"
+      ]
   }
 }
 ```
+
+#### `expect` of `expect-webdriverio`
+It is preferable to use the `expect` from `expect-webdriverio` to guarantee future compatibility 
+
+```ts
+// Required if we do not force the 'expect-webdriverio' expect globally with `"expect-webdriverio/types"`
+import { expect as wdioExpect } from 'expect-webdriverio'
+
+describe('My tests', async () => {
+
+    it('should verify my browser to have the expected url', async () => {
+        const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
+        await wdioExpect(browser).toHaveUrl('https://example.com')
+    })
+})     
+```
+
+Expected in `tsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "types": [
+        "@types/jasmine",
+        "expect-webdriverio/types", // Force expect to be the 'expect-webdriverio', to comment and use the import above if it conflict with Jasmine
+      ]
+  }
+}
+```
+
+#### Asymmetric matcher 
+Asymmetric matcher has limited support, even though `jasmine.stringContaining` has not error it is potential not working even with `@wdio/jasmine-framework`, but the below should:
+
+```ts
+describe('My tests', async () => {
+
+    it('should verify my browser to have the expected url', async () => {
+        const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
+        await expectAsync(browser).toHaveUrl(wdioExpect.stringContaining('WebdriverIO'))
+    })
+})     
+```
+
 

@@ -33,7 +33,8 @@
         "types": "./jest.d.ts"
       }
     ],
-    "./types": "./types/expect-global.d.ts"
+    "./types": "./types/expect-global.d.ts",
+    "./expect-global": "./types/expect-global.d.ts"
   },
   "types": "./types/expect-webdriverio.d.ts",
   "typeScriptVersion": "3.8.3",
