@@ -712,13 +712,13 @@ describe('type assertions', () => {
                 })
 
                 it('should support chainable element', async () => {
-                    const expectElement: WdioCustomMatchers<void, WebdriverIO.Element> = wdioExpect.soft(element)
-                    const expectElementChainable: WdioCustomMatchers<void, typeof chainableElement> = wdioExpect.soft(chainableElement)
+                    const expectElement: ExpectWebdriverIO.MatchersAndInverse<void, WebdriverIO.Element> = wdioExpect.soft(element)
+                    const expectElementChainable: ExpectWebdriverIO.MatchersAndInverse<void, typeof chainableElement> = wdioExpect.soft(chainableElement)
 
                     // @ts-expect-error
-                    const expectElement2: WdioCustomMatchers<Promise<void>, WebdriverIO.Element> = wdioExpect.soft(element)
+                    const expectElement2: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, WebdriverIO.Element> = wdioExpect.soft(element)
                     // @ts-expect-error
-                    const expectElementChainable2: WdioCustomMatchers<Promise<void>, typeof chainableElement> = wdioExpect.soft(chainableElement)
+                    const expectElementChainable2: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, typeof chainableElement> = wdioExpect.soft(chainableElement)
                 })
 
                 it('should support chainable element with wdio Matchers', async () => {
