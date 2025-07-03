@@ -52,30 +52,34 @@ type MockPromise = Promise<WebdriverIO.Mock>
  * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
  */
 type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser ? Fn : never
-type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise ? Fn : never
 type FnWhenElementOrArrayLike<ActualT, Fn> = ActualT extends ElementOrArrayLike ? Fn : never
 type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn : never
+
+/**
+ * Same as the other but because of Jasmine and it's expectAsync typing which does not force T to be a promise, then we need to account for `WebdriverIO.Mock`
+ */
+type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
 
 /**
  * Matchers dedicated to Wdio Browser.
  * When asserting on a browser's properties requiring to be awaited, the return type is a Promise.
  * When actual is not a browser, the return type is never, so the function cannot be used.
  */
-interface WdioBrowserMatchers<R, ActualT = unknown>{
+interface WdioBrowserMatchers<_R, ActualT>{
     /**
      * `WebdriverIO.Browser` -> `getUrl`
      */
-    toHaveUrl: FnWhenBrowser<ActualT, (url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toHaveUrl: FnWhenBrowser<ActualT, (url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Browser` -> `getTitle`
      */
-    toHaveTitle: FnWhenBrowser<ActualT, (title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toHaveTitle: FnWhenBrowser<ActualT, (title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Browser` -> `execute`
      */
-    toHaveClipboardText: FnWhenBrowser<ActualT, (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toHaveClipboardText: FnWhenBrowser<ActualT, (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
 }
 
 /**
@@ -83,20 +87,20 @@ interface WdioBrowserMatchers<R, ActualT = unknown>{
  * When asserting we wait for the result with `await waitUntil()`, therefore the return type needs to be a Promise.
  * When actual is not a WebdriverIO.Mock, the return type is never, so the function cannot be used.
  */
-interface WdioNetworkMatchers<R, ActualT = unknown> {
+interface WdioNetworkMatchers<_R, ActualT> {
     /**
      * Check that `WebdriverIO.Mock` was called
      */
-    toBeRequested: FnWhenMock<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeRequested: FnWhenMock<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
     /**
      * Check that `WebdriverIO.Mock` was called N times
      */
-    toBeRequestedTimes: FnWhenMock<ActualT, (times: number | ExpectWebdriverIO.NumberOptions, options?: ExpectWebdriverIO.NumberOptions) => Promise<R>>
+    toBeRequestedTimes: FnWhenMock<ActualT, (times: number | ExpectWebdriverIO.NumberOptions, options?: ExpectWebdriverIO.NumberOptions) => Promise<void>>
 
     /**
      * Check that `WebdriverIO.Mock` was called with the specific parameters
      */
-    toBeRequestedWith: FnWhenMock<ActualT, (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeRequestedWith: FnWhenMock<ActualT, (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 }
 
 /**
@@ -104,27 +108,27 @@ interface WdioNetworkMatchers<R, ActualT = unknown> {
  * When asserting on an element or element array's properties requiring to be awaited, the return type is a Promise.
  * When actual is neither of WebdriverIO.Element, WebdriverIO.ElementArray, ChainableElement, ChainableElementArray, the return type is never, so the function cannot be used.
  */
-interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
+interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     // ===== $ or $$ =====
     /**
      * `WebdriverIO.Element` -> `isDisplayed`
      */
-    toBeDisplayed: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeDisplayed: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `isExisting`
      */
-    toExist: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toExist: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `isExisting`
      */
-    toBePresent: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBePresent: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `isExisting`
      */
-    toBeExisting: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeExisting: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute`
@@ -132,7 +136,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveAttribute: FnWhenElementOrArrayLike<ActualT, (
         attribute: string, value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions)
-    => Promise<R>>
+    => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute`
@@ -140,7 +144,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveAttr: FnWhenElementOrArrayLike<ActualT, (
         attribute: string, value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` class
@@ -149,7 +153,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveClass: FnWhenElementOrArrayLike<ActualT, (
         className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` class
@@ -170,7 +174,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveElementClass: FnWhenElementOrArrayLike<ActualT, (
         className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getProperty`
@@ -179,7 +183,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
         property: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         value?: unknown,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getProperty` value
@@ -187,42 +191,42 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveValue: FnWhenElementOrArrayLike<ActualT, (
         value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `isClickable`
      */
-    toBeClickable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeClickable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `!isEnabled`
      */
-    toBeDisabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeDisabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `isDisplayedInViewport`
      */
-    toBeDisplayedInViewport: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeDisplayedInViewport: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `isEnabled`
      */
-    toBeEnabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeEnabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `isFocused`
      */
-    toBeFocused: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeFocused: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `isSelected`
      */
-    toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `isSelected`
      */
-    toBeChecked: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toBeChecked: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `$$('./*').length`
@@ -231,7 +235,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveChildren: FnWhenElementOrArrayLike<ActualT, (
         size?: number | ExpectWebdriverIO.NumberOptions,
         options?: ExpectWebdriverIO.NumberOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` href
@@ -239,7 +243,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveHref: FnWhenElementOrArrayLike<ActualT, (
         href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` href
@@ -247,7 +251,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveLink: FnWhenElementOrArrayLike<ActualT, (
         href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getProperty` value
@@ -255,7 +259,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveId: FnWhenElementOrArrayLike<ActualT, (
         id: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getSize` value
@@ -263,7 +267,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveSize: FnWhenElementOrArrayLike<ActualT, (
         size: { height: number; width: number },
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getText`
@@ -287,7 +291,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveText: FnWhenElementOrArrayLike<ActualT, (
         text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getHTML`
@@ -296,7 +300,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveHTML: FnWhenElementOrArrayLike<ActualT, (
         html: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getComputedLabel`
@@ -305,7 +309,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveComputedLabel: FnWhenElementOrArrayLike<ActualT, (
         computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getComputedRole`
@@ -314,13 +318,13 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveComputedRole: FnWhenElementOrArrayLike<ActualT, (
         computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
         options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getSize('width')`
      * Element's width equals the width provided
      */
-    toHaveWidth: FnWhenElementOrArrayLike<ActualT, (width: number, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>>
+    toHaveWidth: FnWhenElementOrArrayLike<ActualT, (width: number, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getSize('height')` or `getSize()`
@@ -338,12 +342,12 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
     toHaveHeight: FnWhenElementOrArrayLike<ActualT, (
         heightOrSize: number | { height: number; width: number },
         options?: ExpectWebdriverIO.CommandOptions
-    ) => Promise<R>>
+    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute("style")`
      */
-    toHaveStyle: FnWhenElementOrArrayLike<ActualT, (style: { [key: string]: string }, options?: ExpectWebdriverIO.StringOptions) => Promise<R>>
+    toHaveStyle: FnWhenElementOrArrayLike<ActualT, (style: { [key: string]: string }, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
 }
 
 /**
@@ -351,7 +355,7 @@ interface WdioElementOrArrayMatchers<R, ActualT = unknown> {
  * When asserting on each element's properties requiring awaiting, then return type is a Promise.
  * When actual is not of WebdriverIO.ElementArray nor ChainableElementArray, the return type is never, so the function cannot be used.
  */
-interface WdioElementArrayOnlyMatchers<R, ActualT = unknown> {
+interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
     // ===== $$ only =====
     /**
      * `WebdriverIO.ElementArray` -> `$$('...').length`
@@ -360,7 +364,7 @@ interface WdioElementArrayOnlyMatchers<R, ActualT = unknown> {
     toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, (
         size: number | ExpectWebdriverIO.NumberOptions,
         options?: ExpectWebdriverIO.NumberOptions
-    ) => Promise<R> & Promise<WebdriverIO.ElementArray>>
+    ) => Promise<void> & Promise<WebdriverIO.ElementArray>>
 }
 
 /**
@@ -373,18 +377,18 @@ interface WdioElementArrayOnlyMatchers<R, ActualT = unknown> {
  *
  * TODO dprevost: Review for better typings...
  */
-interface WdioJestOverloadedMatchers<R, ActualT> {
+interface WdioJestOverloadedMatchers<_R, ActualT> {
     /**
      * snapshot matcher
      * @param label optional snapshot label
      */
-    toMatchSnapshot(label?: string): ActualT extends WdioPromiseLike ? Promise<R> : R;
+    toMatchSnapshot(label?: string): ActualT extends WdioPromiseLike ? Promise<void> : R;
     /**
      * inline snapshot matcher
      * @param snapshot snapshot string (autogenerated if not specified)
      * @param label optional snapshot label
      */
-    toMatchInlineSnapshot(snapshot?: string, label?: string): ActualT extends WdioPromiseLike ? Promise<R> : R;
+    toMatchInlineSnapshot(snapshot?: string, label?: string): ActualT extends WdioPromiseLike ? Promise<void> : R;
 }
 
 /**
