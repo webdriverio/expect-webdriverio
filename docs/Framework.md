@@ -95,7 +95,8 @@ Expected in `tsconfig.json`:
 ```
 
 #### Chai
-TODO - Integration with [Chai](https://www.chaijs.com/) assertion library. See [`@types/chai`](https://www.npmjs.com/package/@types/chai) for type definitions.
+`expect-webdriverio` can coexist with [Chai](https://www.chaijs.com/) assertion library, by importing both library explicitly.
+See also this [documentation](https://webdriver.io/docs/assertion/#migrating-from-chai)
 
 ### Jasmine
 When paired with [Jasmine](https://jasmine.github.io/), [`@wdio/jasmine-framework`](https://www.npmjs.com/package/@wdio/jasmine-framework) is also required to have it configured correctly as it needs to force the `expect` to be `expectAsync` and also to register the wdio matchers with `addAsyncMatcher` since `expect-webdriverio` only supports the jest style `expect.extend` version.
