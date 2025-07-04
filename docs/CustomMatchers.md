@@ -3,7 +3,7 @@
 Similar to how `expect-webdriverio` extends Jasmine/Jest matchers it's possible to add custom matchers.
 
 - [Jasmine](https://jasmine.github.io/) see [custom matchers](https://jasmine.github.io/tutorials/custom_matchers) doc
-- Everyone else see [Jest's expect.extend](https://jestjs.io/docs/en/expect#expectextendmatchers)
+- Everyone else see [Jest's expect.extend](https://jestjs.io/docs/expect#expectextendmatchers)
 
 Custom matchers should be added in wdio `before` hook
 
