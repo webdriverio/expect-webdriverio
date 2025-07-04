@@ -1,13 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 describe('type assertions', async () => {
-    // TODO dprevost: using @wdio/globals/types overlap with the local types/expect-webdriverio.d.ts, find how to work with this
-    // const chainableElement: ChainablePromiseElement = $('findMe')
-    // const chainableArray: ChainablePromiseArray = $$('ul>li')
-
-    // const element: WebdriverIO.Element = await chainableElement?.getElement()
-    // const elementArray: WebdriverIO.ElementArray = await chainableArray?.getElements()
-
     const chainableElement = {} as unknown as ChainablePromiseElement
     const chainableArray = {} as ChainablePromiseArray
 
@@ -275,12 +268,6 @@ describe('type assertions', async () => {
                 //@ts-expect-error
                 expectVoid = expect(chainableElement).not.toMatchSnapshot()
             })
-
-            // TODO - since we are overloading the `toMatchSnapshot` of jest.toMatchSnapshot, I wonder if we can achieve the below...
-            // it('should have ts errors when not an element or chainable', async () => {
-            //     //@ts-expect-error
-            //     await expect('.findme').toMatchSnapshot()
-            // })
         })
 
         describe('toMatchInlineSnapshot', () => {
@@ -416,11 +403,6 @@ describe('type assertions', async () => {
                 const expectString1:string = expect.toHaveSimpleCustomProperty('string')
                 const expectString2:string = expect.not.toHaveSimpleCustomProperty('string')
 
-                // TODO how to make the below fails when the await is missing inf front of the expect from the asymmetric matcher?
-                // expectPromiseVoid = expect(chainableElement).toHaveCustomProperty(
-                //     expect.toHaveCustomProperty(chainableElement)
-                // )
-
                 // @ts-expect-error
                 expectVoid = expect.toHaveSimpleCustomProperty(chainableElement)
                 // @ts-expect-error
@@ -442,11 +424,6 @@ describe('type assertions', async () => {
                 const expectPromiseWdioElement1: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.toHaveCustomProperty(chainableElement)
                 const expectPromiseWdioElement2: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.not.toHaveCustomProperty(chainableElement)
 
-                // TODO how to make the below fails when the await is missing inf front of the expect from the asymmetric matcher?
-                // expectPromiseVoid = expect(chainableElement).toHaveCustomProperty(
-                //     expect.toHaveCustomProperty(chainableElement)
-                // )
-
                 // @ts-expect-error
                 expectVoid = expect.toHaveCustomProperty(chainableElement)
                 // @ts-expect-error
@@ -461,19 +438,6 @@ describe('type assertions', async () => {
                     await expect.toHaveCustomProperty(chainableElement)
                 )
             })
-
-            // TODO this is not supported in Wdio right now, maybe one day we can support it
-            // it('should support an async asymmetric matcher on a non async matcher', async () => {
-            //     expectPromiseVoid = expect({ value: 5 }).toEqual({
-            //         value: expect.toHaveCustomProperty(chainableElement)
-            //     })
-
-            //     // @ts-expect-error
-            //     expectVoid = expect({ value: 5 }).toEqual({
-            //         value: expect.toHaveCustomProperty(chainableElement)
-            //     })
-
-            // })
         })
     })
 
@@ -582,11 +546,6 @@ describe('type assertions', async () => {
                 postData: { title: 'foo', description: 'bar' },
                 response: { success: true },
             })
-
-            // TODO dprevost: Asymmetric matcher is not defined on the entire object in the .d.ts file, it is a bug?
-            // expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
-            //     response: { success: true },                    // [optional] object | function | custom matcher
-            // }))
 
             expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
                 url: expect.stringContaining('test'),
@@ -755,12 +714,6 @@ describe('type assertions', async () => {
                     expectVoid = expect.soft(chainableElement).not.toBeDisplayed()
                     // @ts-expect-error
                     expectVoid = expect.soft(chainableArray).not.toBeDisplayed()
-                })
-
-                it('should have ts (or lint) errors when actual is a chainable not awaited', async () => {
-                    // TODO dprevost: see if an eslint rule could help us here to detect missing await when not using wdio matchers
-                    // expectPromiseVoid = expect.soft(chainableElement.getText()).toEqual('Basketball Shoes')
-                    // expectPromiseVoid = expect.soft(chainableElement.getText()).toMatch(/€\d+/)
                 })
 
                 it('should work with custom matcher and custom asymmetric matchers from `expect` module', async () => {
