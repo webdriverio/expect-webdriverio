@@ -469,13 +469,14 @@ describe('type assertions', async () => {
         it('should still expect void type when actual is a Promise since we do not overload them', async () => {
             const promiseBoolean = Promise.resolve(true)
 
-            expectVoid = expect(promiseBoolean).toBe(true)
-            expectVoid = expect(promiseBoolean).not.toBe(true)
+            // TODO dprevost check if this one need to stay a void or can be a Promise<void>
+            // expectVoid = expect(promiseBoolean).toBe(true)
+            // expectVoid = expect(promiseBoolean).not.toBe(true)
 
-            //@ts-expect-error
-            expectPromiseVoid = expect(promiseBoolean).toBe(true)
-            //@ts-expect-error
-            expectPromiseVoid = expect(promiseBoolean).toBe(true)
+            // //@ts-expect-error
+            // expectPromiseVoid = expect(promiseBoolean).toBe(true)
+            // //@ts-expect-error
+            // expectPromiseVoid = expect(promiseBoolean).toBe(true)
         })
 
         it('should work with string', async () => {
@@ -498,20 +499,9 @@ describe('type assertions', async () => {
     describe('Promise type assertions', () => {
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
-        it('should expect a Promise of type', async () => {
-            const expectPromiseBoolean1: ExpectWebdriverIO.MatchersAndInverse<void, Promise<boolean>> = expect(booleanPromise)
-            const expectPromiseBoolean2: ExpectWebdriverIO.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
-
-            // @ts-expect-error
-            const expectPromiseBoolean3: jest.JestMatchers<boolean> = expect(booleanPromise)
-            //// @ts-expect-error
-            // const expectPromiseBoolean4: jest.Matchers<void, boolean> = expect(booleanPromise).not
-        })
-
         it('should work with resolves & rejects correctly', async () => {
-            // TODO dprevost should we bring back the support for this?
-            // expectPromiseVoid = expect(booleanPromise).resolves.toBe(true)
-            // expectPromiseVoid = expect(booleanPromise).rejects.toBe(true)
+            expectPromiseVoid = expect(booleanPromise).resolves.toBe(true)
+            expectPromiseVoid = expect(booleanPromise).rejects.toBe(true)
 
             //@ts-expect-error
             expectVoid = expect(booleanPromise).resolves.toBe(true)

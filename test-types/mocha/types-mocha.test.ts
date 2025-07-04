@@ -474,13 +474,13 @@ describe('type assertions', () => {
         it('should still expect void type when actual is a Promise since we do not overload them', async () => {
             const promiseBoolean = Promise.resolve(true)
 
-            expectVoid = expect(promiseBoolean).toBe(true)
-            expectVoid = expect(promiseBoolean).not.toBe(true)
+            expectPromiseVoid = expect(promiseBoolean).toBe(true)
+            expectPromiseVoid = expect(promiseBoolean).not.toBe(true)
 
             //@ts-expect-error
-            expectPromiseVoid = expect(promiseBoolean).toBe(true)
+            expectVoid = expect(promiseBoolean).toBe(true)
             //@ts-expect-error
-            expectPromiseVoid = expect(promiseBoolean).toBe(true)
+            expectVoid = expect(promiseBoolean).toBe(true)
         })
 
         it('should work with string', async () => {
@@ -503,21 +503,24 @@ describe('type assertions', () => {
     describe('Promise type assertions', () => {
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
-        it('should expect a Promise of type', async () => {
-            const expectPromiseBoolean1: ExpectWebdriverIO.MatchersAndInverse<void, Promise<boolean>> = expect(booleanPromise)
-            const expectPromiseBoolean2: ExpectWebdriverIO.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
+        it('should have expect return Matchers with a Promise', async () => {
+            const expectPromiseBoolean1: ExpectWebdriverIO.Matchers<Promise<void>, Promise<boolean>> & ExpectLibInverse<ExpectWebdriverIO.Matchers<Promise<void>, Promise<boolean>>> & ExpectWebdriverIO.PromiseMatchers<Promise<boolean>> = expect(booleanPromise)
+            const expectPromiseBoolean2: ExpectWebdriverIO.Matchers<Promise<void>, Promise<boolean>> = expect(booleanPromise).not
         })
 
         it('should work with resolves & rejects correctly', async () => {
-            // TODO dprevost should we support this in Wdio since we do not even use it or document it?
-            // expectPromiseVoid = expect(booleanPromise).resolves.toBe(true)
-            // expectPromiseVoid = expect(booleanPromise).rejects.toBe(true)
+            expectPromiseVoid = expect(booleanPromise).resolves.toBe(true)
+            expectPromiseVoid = expect(booleanPromise).rejects.toBe(true)
 
             //@ts-expect-error
             expectVoid = expect(booleanPromise).resolves.toBe(true)
             //@ts-expect-error
             expectVoid = expect(booleanPromise).rejects.toBe(true)
 
+            //@ts-expect-error
+            expect(true).resolves.toBe(true)
+            //@ts-expect-error
+            expect(true).rejects.toBe(true)
         })
 
         it('should not support chainable and expect PromiseVoid with toBe', async () => {

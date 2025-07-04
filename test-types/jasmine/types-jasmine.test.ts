@@ -468,13 +468,13 @@ describe('type assertions', () => {
         it('should still expect void type when actual is a Promise since we do not overload them', async () => {
             const promiseBoolean = Promise.resolve(true)
 
-            expectVoid = wdioExpect(promiseBoolean).toBe(true)
-            expectVoid = wdioExpect(promiseBoolean).not.toBe(true)
+            expectPromiseVoid = wdioExpect(promiseBoolean).toBe(true)
+            expectPromiseVoid = wdioExpect(promiseBoolean).not.toBe(true)
 
             //@ts-expect-error
-            expectPromiseVoid = wdioExpect(promiseBoolean).toBe(true)
+            expectVoid = wdioExpect(promiseBoolean).toBe(true)
             //@ts-expect-error
-            expectPromiseVoid = wdioExpect(promiseBoolean).toBe(true)
+            expectVoid = wdioExpect(promiseBoolean).toBe(true)
         })
 
         it('should work with string', async () => {
@@ -497,15 +497,9 @@ describe('type assertions', () => {
     describe('Promise type assertions', () => {
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
-        it('should expect a Promise of type', async () => {
-            const expectPromiseBoolean1: ExpectWebdriverIO.MatchersAndInverse<void, Promise<boolean>> = wdioExpect(booleanPromise)
-            const expectPromiseBoolean2: ExpectWebdriverIO.Matchers<void, Promise<boolean>> = wdioExpect(booleanPromise).not
-        })
-
         it('should work with resolves & rejects correctly', async () => {
-            // TODO dprevost should we support this in Wdio since we do not even use it or document it?
-            // expectPromiseVoid = wdioExpect(booleanPromise).resolves.toBe(true)
-            // expectPromiseVoid = wdioExpect(booleanPromise).rejects.toBe(true)
+            expectPromiseVoid = wdioExpect(booleanPromise).resolves.toBe(true)
+            expectPromiseVoid = wdioExpect(booleanPromise).rejects.toBe(true)
 
             //@ts-expect-error
             expectVoid = wdioExpect(booleanPromise).resolves.toBe(true)

@@ -409,7 +409,7 @@ interface WdioCustomExpect {
      * Soft assertions record failures but don't throw errors immediately
      * All failures are collected and reported at the end of the test
      */
-    soft<T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<Promise<void>, T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
+    soft<T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<Promise<void>, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
 
     /**
      * Get all current soft assertion failures
@@ -486,7 +486,7 @@ declare namespace ExpectWebdriverIO {
          *
          * @param actual The value to apply matchers against.
          */
-        <T = unknown>(actual: T): ExpectWebdriverIO.MatchersAndInverse<void, T>;
+        <T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<Promise<void>, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
     }
 
     interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
@@ -499,6 +499,21 @@ declare namespace ExpectWebdriverIO {
 
     type MatchersAndInverse<R extends void | Promise<void>, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibInverse<ExpectWebdriverIO.Matchers<R, ActualT>>
 
+    /**
+     * Take from expect library
+     */
+    type PromiseMatchers<T = unknown> = {
+        /**
+         * Unwraps the reason of a rejected promise so any other matcher can be chained.
+         * If the promise is fulfilled the assertion fails.
+         */
+        rejects: MatchersAndInverse<Promise<void>, T>;
+        /**
+         * Unwraps the value of a fulfilled promise so any other matcher can be chained.
+         * If the promise is rejected the assertion fails.
+         */
+        resolves: MatchersAndInverse<Promise<void>, T>;
+    }
     interface SnapshotServiceArgs {
         updateState?: SnapshotUpdateState
         resolveSnapshotPath?: (path: string, extension: string) => string
