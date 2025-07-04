@@ -1,21 +1,17 @@
 /// <reference types="./types/expect-webdriverio.d.ts"/>
 
-/**
- * Utility type that wraps non-Promise types in a Promise for Jasmine async matchers.
- * If U is already a Promise, PromiseLike, or Chainable, return U as-is.
- * Otherwise, wrap U in a Promise<U>.
- */
-type EnsurePromise<U extends void | Promise<void>> = U extends Promise<unknown> | PromiseLike<unknown> | WdioPromiseLike<unknown> ? U : Promise<U>
-
 declare namespace jasmine {
 
     /**
      * Async matchers for Jasmine to allow the typing of `expectAsync` with WebDriverIO matchers.
      * T is the type of the actual value
-     * U is the type of the expected value, which will be wrapped in a Promise if it's not already one
+     * U is the type of the expected value
      * Both T,U must stay named as they are to override the default `AsyncMatchers` type from Jasmine.
+     *
+     * We force Matchers to return a `Promise<void>` since Jasmine's `expectAsync` expects a promise in all cases (different from Jest)
      */
-    interface AsyncMatchers<T, U extends void | Promise<void>> extends Omit<ExpectWebdriverIO.Matchers<EnsurePromise<U>, T>, 'toMatchSnapshot' | 'toMatchInlineSnapshot'> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface AsyncMatchers<T, U> extends Omit<ExpectWebdriverIO.Matchers<Promise<void>, T>, 'toMatchSnapshot' | 'toMatchInlineSnapshot'> {
         /**
          * snapshot matcher
          * @param label optional snapshot label
