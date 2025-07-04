@@ -453,13 +453,10 @@ describe('type assertions', () => {
 
     describe('toBe', () => {
         it('should expect void type when actual is a boolean', async () => {
-            // TODO dprevost we migth need to be a Promise here because of the expectAsync of wdio
             expectVoid = expect(true).toBe(true)
             expectVoid = expect(true).not.toBe(true)
 
-            //@ts-expect-error
             expectPromiseVoid = expectAsync(true).toBe(true)
-            //@ts-expect-error
             expectPromiseVoid = expectAsync(true).not.toBe(true)
         })
 
@@ -480,9 +477,7 @@ describe('type assertions', () => {
             expectPromiseUnknown = expectAsync(promiseBoolean).toBe(true)
             expectPromiseUnknown = expectAsync(promiseBoolean).not.toBe(true)
 
-            //@ts-expect-error
             expectPromiseVoid = expectAsync(promiseBoolean).toBe(true)
-            //@ts-expect-error
             expectPromiseVoid = expectAsync(promiseBoolean).toBe(true)
         })
 
@@ -492,13 +487,9 @@ describe('type assertions', () => {
             expectPromiseUnknown = expectAsync('text').toBe(wdioExpect.stringContaining('text'))
             expectPromiseUnknown = expectAsync('text').not.toBe(wdioExpect.stringContaining('text'))
 
-            //@ts-expect-error
             expectPromiseVoid = expectAsync('text').toBe(true)
-            //@ts-expect-error
             expectPromiseVoid = expectAsync('text').not.toBe(true)
-            //@ts-expect-error
             expectPromiseVoid = expectAsync('text').toBe(wdioExpect.stringContaining('text'))
-            //@ts-expect-error
             expectPromiseVoid = expectAsync('text').not.toBe(wdioExpect.stringContaining('text'))
         })
     })
@@ -520,9 +511,7 @@ describe('type assertions', () => {
         })
 
         it('should not support chainable and expect PromiseVoid with toBe', async () => {
-            //@ts-expect-error
             expectPromiseVoid = expectAsync(chainableElement).toBe(true)
-            //@ts-expect-error
             expectPromiseVoid = expectAsync(chainableElement).not.toBe(true)
         })
     })
