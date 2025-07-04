@@ -519,7 +519,6 @@ describe('type assertions', async () => {
     })
 
     describe('Network Matchers', () => {
-        // const promiseNetworkMock = browser.mock('**/api/todo*')
         const promiseNetworkMock = Promise.resolve(networkMock)
 
         it('should not have ts errors when typing to Promise', async () => {
@@ -532,7 +531,7 @@ describe('type assertions', async () => {
             expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 })
 
             expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
-                url: 'http://localhost:8080/api/todo',
+                url: 'http://localhost:8080/api',
                 method: 'POST',
                 statusCode: 200,
                 requestHeaders: { Authorization: 'foo' },
@@ -578,7 +577,7 @@ describe('type assertions', async () => {
 
             // @ts-expect-error
             expectVoid = expect(promiseNetworkMock).toBeRequestedWith({
-                url: 'http://localhost:8080/api/todo',
+                url: 'http://localhost:8080/api',
                 method: 'POST',
                 statusCode: 200,
                 requestHeaders: { Authorization: 'foo' },

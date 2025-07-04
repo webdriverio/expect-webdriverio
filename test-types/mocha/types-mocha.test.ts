@@ -544,7 +544,7 @@ describe('type assertions', () => {
             expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 })
 
             expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
-                url: 'http://localhost:8080/api/todo',
+                url: 'http://localhost:8080/api',
                 method: 'POST',
                 statusCode: 200,
                 requestHeaders: { Authorization: 'foo' },
@@ -590,7 +590,7 @@ describe('type assertions', () => {
 
             // @ts-expect-error
             expectVoid = expect(promiseNetworkMock).toBeRequestedWith({
-                url: 'http://localhost:8080/api/todo',
+                url: 'http://localhost:8080/api',
                 method: 'POST',
                 statusCode: 200,
                 requestHeaders: { Authorization: 'foo' },

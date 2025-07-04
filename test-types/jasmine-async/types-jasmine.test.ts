@@ -37,8 +37,6 @@ describe('type assertions', () => {
 
                 // @ts-expect-error
                 await expectAsync(browser).toHaveUrl(6)
-                //// @ts-expect-error TODO dprevost can we make the below fail?
-                // await expectAsync(browser).toHaveUrl(wdioExpect.objectContaining({}))
             })
 
             it('should have ts errors when actual is not a Browser element', async () => {
@@ -500,7 +498,7 @@ describe('type assertions', () => {
             expectPromiseVoid = expectAsync(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 })
 
             expectPromiseVoid = expectAsync(promiseNetworkMock).toBeRequestedWith({
-                url: 'http://localhost:8080/api/todo',
+                url: 'http://localhost:8080/api',
                 method: 'POST',
                 statusCode: 200,
                 requestHeaders: { Authorization: 'foo' },
@@ -546,7 +544,7 @@ describe('type assertions', () => {
 
             // @ts-expect-error
             expectVoid = expectAsync(promiseNetworkMock).toBeRequestedWith({
-                url: 'http://localhost:8080/api/todo',
+                url: 'http://localhost:8080/api',
                 method: 'POST',
                 statusCode: 200,
                 requestHeaders: { Authorization: 'foo' },
