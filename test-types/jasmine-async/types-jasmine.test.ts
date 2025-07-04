@@ -255,9 +255,9 @@ describe('type assertions', () => {
         describe('toMatchSnapshot', () => {
 
             it('should be supported correctly', async () => {
-                expectVoid = expectAsync(element).toMatchSnapshot()
-                expectVoid = expectAsync(element).toMatchSnapshot('test label')
-                expectVoid = expectAsync(element).not.toMatchSnapshot('test label')
+                expectPromiseVoid = expectAsync(element).toMatchSnapshot()
+                expectPromiseVoid = expectAsync(element).toMatchSnapshot('test label')
+                expectPromiseVoid = expectAsync(element).not.toMatchSnapshot('test label')
 
                 expectPromiseVoid = expectAsync(chainableElement).toMatchSnapshot()
                 expectPromiseVoid = expectAsync(chainableElement).toMatchSnapshot('test label')
@@ -274,9 +274,9 @@ describe('type assertions', () => {
         describe('toMatchInlineSnapshot', () => {
 
             it('should be correctly supported', async () => {
-                expectVoid = expectAsync(element).toMatchInlineSnapshot()
-                expectVoid = expectAsync(element).toMatchInlineSnapshot('test snapshot')
-                expectVoid = expectAsync(element).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectPromiseVoid = expectAsync(element).toMatchInlineSnapshot()
+                expectPromiseVoid = expectAsync(element).toMatchInlineSnapshot('test snapshot')
+                expectPromiseVoid = expectAsync(element).toMatchInlineSnapshot('test snapshot', 'test label')
 
                 expectPromiseVoid = expectAsync(chainableElement).toMatchInlineSnapshot()
                 expectPromiseVoid = expectAsync(chainableElement).toMatchInlineSnapshot('test snapshot')
@@ -453,6 +453,7 @@ describe('type assertions', () => {
 
     describe('toBe', () => {
         it('should expect void type when actual is a boolean', async () => {
+            // TODO dprevost we migth need to be a Promise here because of the expectAsync of wdio
             expectVoid = expect(true).toBe(true)
             expectVoid = expect(true).not.toBe(true)
 
@@ -506,20 +507,16 @@ describe('type assertions', () => {
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
         it('should expect a Promise of type', async () => {
-            const expectPromiseBoolean1: ExpectWebdriverIO.MatchersAndInverse<void, Promise<boolean>> = expectAsync(booleanPromise)
-            const expectPromiseBoolean2: ExpectWebdriverIO.Matchers<void, Promise<boolean>> = expectAsync(booleanPromise).not
+            const expectPromiseBoolean1: jasmine.AsyncMatchers<boolean, void> = expectAsync(booleanPromise)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const expectPromiseBoolean2: jasmine.AsyncMatchers<boolean, any> = expectAsync(booleanPromise).not
         })
 
         it('should work with resolves & rejects correctly', async () => {
-            // TODO dprevost should we support this in Wdio since we do not even use it or document it?
-            // expectPromiseVoid = expectAsync(booleanPromise).resolves.toBe(true)
-            // expectPromiseVoid = expectAsync(booleanPromise).rejects.toBe(true)
-
             //@ts-expect-error
-            expectVoid = expectAsync(booleanPromise).resolves.toBe(true)
+            expectAsync(booleanPromise).resolves.toBe(true)
             //@ts-expect-error
-            expectVoid = expectAsync(booleanPromise).rejects.toBe(true)
-
+            expectAsync(booleanPromise).rejects.toBe(true)
         })
 
         it('should not support chainable and expect PromiseVoid with toBe', async () => {

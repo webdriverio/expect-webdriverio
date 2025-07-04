@@ -33,6 +33,11 @@
         "types": "./jest.d.ts"
       }
     ],
+    "./jasmine": [
+      {
+        "types": "./jasmine.d.ts"
+      }
+    ],
     "./types": "./types/expect-global.d.ts",
     "./expect-global": "./types/expect-global.d.ts"
   },
@@ -57,6 +62,7 @@
     "ts:jest:@types-jest": "cd test-types/jest-@types_jest && tsc --project ./tsconfig.json",
     "ts:mocha": "cd test-types/mocha && tsc --project ./tsconfig.json",
     "ts:jasmine": "cd test-types/jasmine && tsc --project ./tsconfig.json",
+    "ts:jasmine-async": "cd test-types/jasmine-async && tsc --project ./tsconfig.json",
     "watch": "npm run compile -- --watch",
     "prepare": "husky install"
   },
