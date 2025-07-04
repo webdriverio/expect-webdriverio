@@ -15,7 +15,7 @@ type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
 type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
 type ExpectLibMatchers<R extends void | Promise<void>, T> = import('expect').Matchers<R, T>
 type ExpectLibExpect = import('expect').Expect
-type ExpectLibInverse<Matcher> = import('expect').Inverse<Matcher>
+type ExpectLibInverse<Matchers> = import('expect').Inverse<Matchers>
 
 // TODO dprevost: a suggestion would be to move any code outside of the namespace to separate types.ts file, so that we can import the types.
 
@@ -375,8 +375,6 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
  * ⚠️ these matchers overload the similar matchers from jest-expect library.
  * Therefore, they also need to be redefined in the jest.d.ts file so correctly overload the matchers from the Jest namespace.
  * @see jest.d.ts
- *
- * TODO dprevost: Review for better typings...
  */
 interface WdioJestOverloadedMatchers<_R, ActualT> {
     /**
@@ -475,7 +473,7 @@ declare namespace ExpectWebdriverIO {
      * `AsymmetricMatchers` and `Inverse<AsymmetricMatchers>` needs to be defined and be before the `expect` library Expect (aka `WdioExpect`).
      * The above allows to have custom asymmetric matchers under the `ExpectWebdriverIO` namespace.
      */
-    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, ExpectLibInverse<Omit<ExpectWebdriverIO.AsymmetricMatchers, 'any' | 'anything'>>, WdioExpect {
+    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, ExpectLibInverse<Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any'>>, WdioExpect {
         /**
          * The `expect` function is used every time you want to test a value.
          * You will rarely call `expect` by itself.
@@ -717,8 +715,6 @@ declare namespace ExpectWebdriverIO {
      * Allow to partially matches value. Same as asymmetric matcher in jest.
      * Some properties are omitted for the type check to work correctly.
      */
-    // TODO dprevost: verify if we do breaking changes on this PartialMatcher, since before it was the AsymmetricMatcher interface used everywhere.
-    // TODO dprevost: verify if we should restrict to possible asymmetric matchers used!
     type PartialMatcher<T> = Omit<ExpectLibAsymmetricMatcher<T>, 'sample' | 'inverse' | '$$typeof'>
 }
 
