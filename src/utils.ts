@@ -36,7 +36,7 @@ function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetri
 /**
  * wait for expectation to succeed
  * @param condition function
- * @param isNot     https://jestjs.io/docs/en/expect#thisisnot
+ * @param isNot     https://jestjs.io/docs/expect#thisisnot
  * @param options   wait, interval, etc
  */
 const waitUntil = async (
