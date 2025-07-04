@@ -15,6 +15,7 @@ type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
 type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
 type ExpectLibMatchers<R extends void | Promise<void>, T> = import('expect').Matchers<R, T>
 type ExpectLibExpect = import('expect').Expect
+type ExpectLibInverse<Matcher> = import('expect').Inverse<Matcher>
 
 // TODO dprevost: a suggestion would be to move any code outside of the namespace to separate types.ts file, so that we can import the types.
 
@@ -474,7 +475,7 @@ declare namespace ExpectWebdriverIO {
      * `AsymmetricMatchers` and `Inverse<AsymmetricMatchers>` needs to be defined and be before the `expect` library Expect (aka `WdioExpect`).
      * The above allows to have custom asymmetric matchers under the `ExpectWebdriverIO` namespace.
      */
-    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, Inverse<Omit<ExpectWebdriverIO.AsymmetricMatchers, 'any' | 'anything'>>, WdioExpect {
+    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, ExpectLibInverse<Omit<ExpectWebdriverIO.AsymmetricMatchers, 'any' | 'anything'>>, WdioExpect {
         /**
          * The `expect` function is used every time you want to test a value.
          * You will rarely call `expect` by itself.
@@ -492,21 +493,13 @@ declare namespace ExpectWebdriverIO {
 
     interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
 
-    // To remove when exportable from 'expect'. See https://github.com/jestjs/jest/pull/15704 (already merged)
-    interface Inverse<Matchers> {
-        /**
-         * Inverse next matcher. If you know how to test something, `.not` lets you test its opposite.
-         */
-        not: Matchers;
-    }
-
     interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
 
     /**
      * End of block overloading types from the expect library.
      */
 
-    type MatchersAndInverse<R extends void | Promise<void>, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & Inverse<ExpectWebdriverIO.Matchers<R, ActualT>>
+    type MatchersAndInverse<R extends void | Promise<void>, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibInverse<ExpectWebdriverIO.Matchers<R, ActualT>>
 
     interface SnapshotServiceArgs {
         updateState?: SnapshotUpdateState
