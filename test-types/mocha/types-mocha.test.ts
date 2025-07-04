@@ -37,8 +37,6 @@ describe('type assertions', () => {
 
                 // @ts-expect-error
                 await expect(browser).toHaveUrl(6)
-                //// @ts-expect-error TODO dprevost can we make the below fail?
-                // await expect(browser).toHaveUrl(expect.objectContaining({}))
             })
 
             it('should have ts errors when actual is not a Browser element', async () => {
@@ -581,11 +579,6 @@ describe('type assertions', () => {
                 response: { success: true },
             })
 
-            // TODO dprevost: Asymmetric matcher is not defined on the entire object in the .d.ts file, it is a bug?
-            // expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
-            //     response: { success: true },                    // [optional] object | function | custom matcher
-            // }))
-
             expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
                 url: expect.stringContaining('test'),
                 method: 'POST',
@@ -673,7 +666,7 @@ describe('type assertions', () => {
             expect.not.arrayContaining(['WebdriverIO', 'Test'])
             expect.not.arrayOf(expect.stringContaining('WebdriverIO'))
 
-            // TODO dprevost: Should we support these?
+            // TODO dprevost to review
             // expect.not.anything()
             // expect.not.any(Function)
             // expect.not.any(Number)

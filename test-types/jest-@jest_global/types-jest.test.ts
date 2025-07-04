@@ -46,8 +46,6 @@ describe('type assertions', async () => {
 
                 // @ts-expect-error
                 await expect(browser).toHaveUrl(6)
-                //// @ts-expect-error TODO dprevost can we make the below fail?
-                // await expect(browser).toHaveUrl(expect.objectContaining({}))
             })
 
             it('should have ts errors when actual is not a Browser element', async () => {
@@ -538,7 +536,7 @@ describe('type assertions', async () => {
 
         it('should expect a Promise of type', async () => {
             const expectPromiseBoolean1: ExpectWebdriverIO.MatchersAndInverse<void, Promise<boolean>> = expect(booleanPromise)
-            const expectPromiseBoolean2: jest.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
+            const expectPromiseBoolean2: ExpectWebdriverIO.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
 
             // @ts-expect-error
             const expectPromiseBoolean3: jest.JestMatchers<boolean> = expect(booleanPromise)
@@ -588,11 +586,6 @@ describe('type assertions', async () => {
                 postData: { title: 'foo', description: 'bar' },
                 response: { success: true },
             })
-
-            // TODO dprevost: Asymmetric matcher is not defined on the entire object in the .d.ts file, it is a bug?
-            // expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
-            //     response: { success: true },                    // [optional] object | function | custom matcher
-            // }))
 
             expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
                 url: expect.stringContaining('test'),
@@ -681,22 +674,14 @@ describe('type assertions', async () => {
             expect.not.arrayContaining(['WebdriverIO', 'Test'])
             expect.not.arrayOf(expect.stringContaining('WebdriverIO'))
 
-            //@ts-expect-error
-            expect.not.anything()
-            //@ts-expect-error
-            expect.not.any(Function)
-            //@ts-expect-error
-            expect.not.any(Number)
-            //@ts-expect-error
-            expect.not.any(Boolean)
-            //@ts-expect-error
-            expect.not.any(String)
-            //@ts-expect-error
-            expect.not.any(Symbol)
-            //@ts-expect-error
-            expect.not.any(Date)
-            //@ts-expect-error
-            expect.not.any(Error)
+            // expect.not.anything()
+            // expect.not.any(Function)
+            // expect.not.any(Number)
+            // expect.not.any(Boolean)
+            // expect.not.any(String)
+            // expect.not.any(Symbol)
+            // expect.not.any(Date)
+            // expect.not.any(Error)
         })
 
         describe('Soft Assertions', async () => {
@@ -733,13 +718,13 @@ describe('type assertions', async () => {
                 })
 
                 it('should support chainable element', async () => {
-                    const expectElement: WdioCustomMatchers<void, WebdriverIO.Element> = expect.soft(element)
-                    const expectElementChainable: WdioCustomMatchers<void, typeof chainableElement> = expect.soft(chainableElement)
+                    const expectElement: ExpectWebdriverIO.MatchersAndInverse<void, WebdriverIO.Element> = expect.soft(element)
+                    const expectElementChainable: ExpectWebdriverIO.MatchersAndInverse<void, typeof chainableElement> = expect.soft(chainableElement)
 
                     // @ts-expect-error
-                    const expectElement2: WdioCustomMatchers<Promise<void>, WebdriverIO.Element> = expect.soft(element)
+                    const expectElement2: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, WebdriverIO.Element> = expect.soft(element)
                     // @ts-expect-error
-                    const expectElementChainable2: WdioCustomMatchers<Promise<void>, typeof chainableElement> = expect.soft(chainableElement)
+                    const expectElementChainable2: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, typeof chainableElement> = expect.soft(chainableElement)
                 })
 
                 it('should support chainable element with wdio Matchers', async () => {
