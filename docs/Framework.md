@@ -9,8 +9,8 @@ We can pair `expect-webdriverio` with [Jest](https://jestjs.io/), [Mocha](https:
   - When `expect` is defined globally, we usually overwrite it with the one from `expect-webdriverio` to have our defined assertions work out of the box.
 
 ### Jest
-We can use `expect-webdriverio` with [Jest](https://jestjs.io/) using either [`@jest/globals`](https://www.npmjs.com/package/@jest/globals) (preferred) or [`@types/jest`](https://www.npmjs.com/package/@types/jest) (has global imports support).
-  - Note: Jest maintainers do not support [`@types/jest`](https://www.npmjs.com/package/@types/jest). In case this library gets out of date or has problems, support might be dropped.
+We can use `expect-webdriverio` with [Jest](https://jestjs.io/) using either [`@jest/globals`](https://www.npmjs.com/package/@jest/globals) (preferred) or [`@types/jest`](https://www.npmjs.com/package/@types/jest) (which has global imports support).
+  - Note: Jest maintainers do not support [`@types/jest`](https://www.npmjs.com/package/@types/jest). If this library gets out of date or has problems, support might be dropped.
 
 In each case, when used <u>**outside of [WDIO Testrunner](https://webdriver.io/docs/clioptions)**</u>, types need to be added to your [`tsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
   - Note: With Jest, the matchers `toMatchSnapshot` and `toMatchInlineSnapshot` are overloaded. To resolve the types correctly, `expect-webdriverio/jest` must be last.
@@ -47,8 +47,25 @@ This [Jest issue](https://github.com/jestjs/jest/issues/12424) seems to target t
 
 
 #### With `@types/jest`
-When paired with [Jest](https://jestjs.io/) and [`@types/jest`](https://www.npmjs.com/package/@types/jest), no imports are required. Global types are already defined correctly.
+When also paired with [`@types/jest`](https://www.npmjs.com/package/@types/jest), no imports are required. Global types are already defined correctly and you can simply use Jest's `expect` directly.
 
+Optional: If you are NOT using WDIO Testrunner, it might be required to correctly register the WDIO matchers on Jest's `expect` as shown below:
+```ts
+import { matchers } from "expect-webdriverio";
+
+// Import and extend Jest's expect with WebdriverIO matchers
+beforeAll(async () => { 
+  // Convert the Map to a plain object and extend Jest's expect
+  const matchersObject: Record<string, any> = {};
+  matchers.forEach((matcher, name) => {
+    matchersObject[name] = matcher;
+  });
+  
+  expect.extend(matchersObject); 
+});
+```
+
+As shown below, no imports are required and we can use WDIO matchers directly on Jest's `expect`:
 ```ts
 describe('My tests', async () => {
 
@@ -65,7 +82,7 @@ Expected in `tsconfig.json`:
   "compilerOptions": {
     "types": [
         "@types/jest",
-        "expect-webdriverio/jest" // Must be after for overloaded matchers `toMatchSnapshot` and `toMatchInlineSnapshot` 
+        "expect-webdriverio/jest" // Must be last for overloaded matchers `toMatchSnapshot` and `toMatchInlineSnapshot` 
       ]
   }
 }
