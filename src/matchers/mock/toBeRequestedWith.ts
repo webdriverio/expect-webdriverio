@@ -122,7 +122,7 @@ const statusCodeMatcher = (statusCode: number, expected?: number | Array<number>
  */
 const urlMatcher = (
     url: string,
-    expected?: string | ExpectWebdriverIO.PartialMatcher | ((url: string) => boolean)
+    expected?: string | ExpectWebdriverIO.PartialMatcher<string> | ((url: string) => boolean)
 ) => {
     if (typeof expected === 'undefined') {
         return true
@@ -140,7 +140,7 @@ const headersMatcher = (
     headers: Record<string, string>,
     expected?:
         | Record<string, string>
-        | ExpectWebdriverIO.PartialMatcher
+        | ExpectWebdriverIO.PartialMatcher<Record<string, string>>
         | ((headers: Record<string, string>) => boolean)
 ) => {
     /**
@@ -215,7 +215,7 @@ const headersMatcher = (
 
 //     // get matcher sample if expected value is a special matcher like `expect.objectContaining({ foo: 'bar })`
 //     const actualSample = isMatcher(expected)
-//         ? (expected as ExpectWebdriverIO.PartialMatcher).sample
+//         ? (expected as WdioAsymmetricMatcher).sample
 //         : expected
 
 //     return (
@@ -315,7 +315,7 @@ const requestedWithParamToString = (
     param:
         | string
         | ExpectWebdriverIO.JsonCompatible
-        | ExpectWebdriverIO.PartialMatcher
+        | ExpectWebdriverIO.PartialMatcher<string>
         | Function
         | undefined,
     transformFn?: (param: ExpectWebdriverIO.JsonCompatible) => ExpectWebdriverIO.JsonCompatible | string
@@ -330,7 +330,7 @@ const requestedWithParamToString = (
         return (
             param.constructor.name +
             ' ' +
-            (JSON.stringify((param as ExpectWebdriverIO.PartialMatcher).sample) || '')
+            (JSON.stringify((param as WdioAsymmetricMatcher<string>).sample) || '')
         )
     } else if (transformFn && typeof param === 'object' && param !== null) {
         param = transformFn(param as ExpectWebdriverIO.JsonCompatible)

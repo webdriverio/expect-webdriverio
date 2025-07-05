@@ -9,7 +9,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, html: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions) {
+async function condition(el: WebdriverIO.Element, html: string | RegExp | WdioAsymmetricMatcher<string> | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions) {
     const actualHTML = await el.getHTML(options)
     if (Array.isArray(html)) {
         return compareTextWithArray(actualHTML, html, options)
@@ -19,7 +19,7 @@ async function condition(el: WebdriverIO.Element, html: string | RegExp | Expect
 
 export async function toHaveHTML(
     received: ChainablePromiseArray | ChainablePromiseElement,
-    expectedValue: string | RegExp | ExpectWebdriverIO.PartialMatcher | Array<string | RegExp>,
+    expectedValue: string | RegExp | WdioAsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot

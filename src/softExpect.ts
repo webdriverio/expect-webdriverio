@@ -76,7 +76,8 @@ const createSoftMatcher = <T>(
     return async (...args: unknown[]) => {
         try {
             // Build the expectation chain
-            let expectChain = expect(actual)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let expectChain: any = expect(actual)
 
             if (prefix === 'not') {
                 expectChain = expectChain.not
@@ -86,6 +87,7 @@ const createSoftMatcher = <T>(
                 expectChain = expectChain.rejects
             }
 
+            // TODO ddprevost might need to review this await since not all expect requires to be awaited
             return await ((expectChain as unknown) as Record<string, (...args: unknown[]) => Promise<ExpectWebdriverIO.AssertionResult>>)[matcherName](...args)
 
         } catch (error) {

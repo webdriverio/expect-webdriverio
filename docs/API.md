@@ -667,7 +667,7 @@ await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at 
 
 Checks that mock was called according to the expected options.
 
-Most of the options supports expect/jasmine partial matchers like [expect.objectContaining](https://jestjs.io/docs/en/expect#expectobjectcontainingobject)
+Most of the options supports expect/jasmine partial matchers like [expect.objectContaining](https://jestjs.io/docs/expect#expectobjectcontainingobject)
 
 ##### Usage
 
@@ -858,7 +858,7 @@ await expect(elem).toHaveElementClass(/Container/i)
 
 ## Default Matchers
 
-In addition to the `expect-webdriverio` matchers you can use builtin Jest's [expect](https://jestjs.io/docs/en/expect) assertions or [expect/expectAsync](https://jasmine.github.io/api/3.5/global.html#expect) for Jasmine.
+In addition to the `expect-webdriverio` matchers you can use builtin Jest's [expect](https://jestjs.io/docs/expect) assertions or [expect/expectAsync](https://jasmine.github.io/api/edge/global.html#expect) for Jasmine.
 
 ## Asymmetric Matchers
 
