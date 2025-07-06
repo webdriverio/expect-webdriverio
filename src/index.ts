@@ -32,7 +32,7 @@ type MatchersObject = Parameters<typeof expectLib.extend>[0]
 expectLib.extend(filteredMatchers as MatchersObject)
 
 // Extend the expect object with soft assertions
-const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect
+const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect & SoftHelpers
 
 type SoftHelpers = {
     soft: <T = unknown>(actual: T) => ReturnType<typeof createSoftExpect>
