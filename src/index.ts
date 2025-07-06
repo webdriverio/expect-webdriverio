@@ -33,22 +33,33 @@ expectLib.extend(filteredMatchers as MatchersObject)
 
 // Extend the expect object with soft assertions
 const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect
-Object.defineProperty(expectWithSoft, 'soft', {
-    value: <T = unknown>(actual: T) => createSoftExpect(actual)
-})
 
-// Add soft assertions utility methods
-Object.defineProperty(expectWithSoft, 'getSoftFailures', {
-    value: (testId?: string) => SoftAssertService.getInstance().getFailures(testId)
-})
+type SoftHelpers = {
+    soft: <T = unknown>(actual: T) => ReturnType<typeof createSoftExpect>
+    getSoftFailures: (testId?: string) => ReturnType<SoftAssertService['getFailures']>
+    assertSoftFailures: (testId?: string) => void
+    clearSoftFailures: (testId?: string) => void
+}
 
-Object.defineProperty(expectWithSoft, 'assertSoftFailures', {
-    value: (testId?: string) => SoftAssertService.getInstance().assertNoFailures(testId)
-})
+const helperFactories: SoftHelpers = {
+    soft:  <T = unknown>(actual: T) => createSoftExpect(actual),
 
-Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
-    value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId)
-})
+    getSoftFailures: (testId?: string) =>
+        SoftAssertService.getInstance().getFailures(testId),
+
+    assertSoftFailures: (testId?: string) =>
+        SoftAssertService.getInstance().assertNoFailures(testId),
+
+    clearSoftFailures: (testId?: string) =>
+        SoftAssertService.getInstance().clearFailures(testId)
+}
+
+for (const [name, fn] of Object.entries(helperFactories)) {
+    if (!(name in expectWithSoft)) {
+        Object.defineProperty(expectWithSoft, name, { value: fn })
+    }
+}
+
 
 export const expect = expectWithSoft
 
