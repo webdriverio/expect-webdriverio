@@ -5,18 +5,19 @@ Expect-WebDriverIO is inspired by [`expect`](https://www.npmjs.com/package/expec
 
 ## Compatibility
 
-We can pair `expect-webdriverio` with [Jest](https://jestjs.io/), [Mocha](https://mochajs.org/), and [Jasmine](https://jasmine.github.io/).
-  - When `expect` is defined globally, we usually overwrite it with the one from `expect-webdriverio` to have our defined assertions work out of the box.
+We can pair `expect-webdriverio` with [Jest](https://jestjs.io/), [Mocha](https://mochajs.org/), and even [Jasmine](https://jasmine.github.io/). 
+
+It is highly recommended to use it with a [WDIO Testrunner](https://webdriver.io/docs/clioptions) which provides additional auto-configuration for a plug-and-play experience.
+
+When used <u>**outside of [WDIO Testrunner](https://webdriver.io/docs/clioptions)**</u>, types need to be added to your [`tsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 
 ### Jest
-We can use `expect-webdriverio` with [Jest](https://jestjs.io/) using either [`@jest/globals`](https://www.npmjs.com/package/@jest/globals) (preferred) or [`@types/jest`](https://www.npmjs.com/package/@types/jest) (which has global imports support).
+We can use `expect-webdriverio` with [Jest](https://jestjs.io/) using [`@jest/globals`](https://www.npmjs.com/package/@jest/globals) alone (preferred) and optionally [`@types/jest`](https://www.npmjs.com/package/@types/jest) (which has global ambient support).
   - Note: Jest maintainers do not support [`@types/jest`](https://www.npmjs.com/package/@types/jest). If this library gets out of date or has problems, support might be dropped.
-
-In each case, when used <u>**outside of [WDIO Testrunner](https://webdriver.io/docs/clioptions)**</u>, types need to be added to your [`tsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
   - Note: With Jest, the matchers `toMatchSnapshot` and `toMatchInlineSnapshot` are overloaded. To resolve the types correctly, `expect-webdriverio/jest` must be last.
 
 #### With `@jest/globals`
-When paired with [Jest](https://jestjs.io/) and [`@jest/globals`](https://www.npmjs.com/package/@jest/globals), we should `import` the `expect` function from `expect-webdriverio`.
+When paired only with [`@jest/globals`](https://www.npmjs.com/package/@jest/globals), we should `import` the `expect` function from `expect-webdriverio`.
 
 ```ts
 import { expect } from 'expect-webdriverio'
@@ -40,28 +41,22 @@ Optionally, to avoid needing `import { expect } from 'expect-webdriverio'`, you 
   }
 }
 ```   
-##### Augmenting Jest's `expect`
-Multiple attempts were made to augment `@jest/globals` to support `expect-webdriverio` matchers directly on Jest's `expect`. However, no namespace is available to augment it; therefore, only module augmentation can be used. This method does not allow adding matchers with the `extends` keyword; instead, they need to be added directly in the interface of the module declaration augmentation, which would create a lot of code duplication.
+##### Augmenting `@jest/globals` JestMatchers
+Multiple attempts were made to augment `@jest/globals` to support `expect-webdriverio` matchers directly on JestMatchers. However, no namespace is available to augment it; therefore, only module augmentation can be used. This method does not allow adding matchers with the `extends` keyword; instead, they need to be added directly in the interface of the module declaration augmentation, which would create a lot of code duplication.
 
 This [Jest issue](https://github.com/jestjs/jest/issues/12424) seems to target this problem, but it is still in progress.
 
 
 #### With `@types/jest`
-When also paired with [`@types/jest`](https://www.npmjs.com/package/@types/jest), no imports are required. Global types are already defined correctly and you can simply use Jest's `expect` directly.
+When also paired with [`@types/jest`](https://www.npmjs.com/package/@types/jest), no imports are required. Global ambient types are already defined correctly and you can simply use Jest's `expect` directly.
 
-Optional: If you are NOT using WDIO Testrunner, it might be required to correctly register the WDIO matchers on Jest's `expect` as shown below:
+If you are NOT using WDIO Testrunner, it may be required to correctly register the WDIO matchers on Jest's `expect` as shown below:
 ```ts
+import { expect } from "@jest/globals";
 import { matchers } from "expect-webdriverio";
 
-// Import and extend Jest's expect with WebdriverIO matchers
 beforeAll(async () => { 
-  // Convert the Map to a plain object and extend Jest's expect
-  const matchersObject: Record<string, any> = {};
-  matchers.forEach((matcher, name) => {
-    matchersObject[name] = matcher;
-  });
-  
-  expect.extend(matchersObject); 
+  expect.extend(matchers);  
 });
 ```
 
@@ -178,8 +173,8 @@ Expected in `tsconfig.json`:
 }
 ```
 
-#### Asymmetric matcher 
-Asymmetric matchers have limited support. Even though `jasmine.stringContaining` has no error, it is potentially not working even with `@wdio/jasmine-framework`, but the below should work:
+#### Asymmetric matchers 
+Asymmetric matchers have limited support. Even though `jasmine.stringContaining` has no error, it potentially does not work even with `@wdio/jasmine-framework`, but the example below should work:
 
 ```ts
 describe('My tests', async () => {

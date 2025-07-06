@@ -16,8 +16,18 @@ type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
 type ExpectLibMatchers<R extends void | Promise<void>, T> = import('expect').Matchers<R, T>
 type ExpectLibExpect = import('expect').Expect
 type ExpectLibInverse<Matchers> = import('expect').Inverse<Matchers>
+type ExpectLibSyncExpectationResult = import('expect').SyncExpectationResult
+type ExpectLibAsyncExpectationResult = import('expect').AsyncExpectationResult
+type ExpectLibExpectationResult = import('expect').ExpectationResult
+type ExpectLibMatcherContext = import('expect').MatcherContext
 
 // TODO dprevost: a suggestion would be to move any code outside of the namespace to separate types.ts file, so that we can import the types.
+
+// Extracted from the expect library, this is the type of the matcher function used in the expect library.
+type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult;
+}
 
 /**
  * Real Promise and wdio chainable promise types.
@@ -556,21 +566,15 @@ declare namespace ExpectWebdriverIO {
         afterStep(step: PickleStep, scenario: Scenario, result: { passed: boolean, error?: Error }): void
     }
 
-    interface AssertionResult {
-        pass: boolean
-        message(): string
-    }
+    interface AssertionResult extends ExpectLibSyncExpectationResult {}
+    type AsyncAssertionResult = ExpectLibAsyncExpectationResult
 
     /**
-     * Used by the wdio main project to configure the matchers in the runner when using Jasmine.
+     * Used by the wdio main project to configure the matchers in the runner when using Jasmine or Jest.
+     * Equivalent as `MatchersObject` from the expect library.
+     * @see https://github.com/jestjs/jest/blob/fd3d6cf9fe416b549a74b6577e5e1ea1130e3659/packages/expect/src/types.ts#L43C13-L43C27
      */
-    const matchers: Map<
-        string,
-        (
-            actual: unknown,
-            ...expected: unknown[]
-        ) => Promise<AssertionResult>
-    >
+    const matchers: Record<string, RawMatcherFn>
 
     interface AssertionHookParams {
         /**
