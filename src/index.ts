@@ -60,7 +60,6 @@ for (const [name, fn] of Object.entries(helperFactories)) {
     }
 }
 
-
 export const expect = expectWithSoft
 
 export const getConfig = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
