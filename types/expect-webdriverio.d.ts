@@ -418,6 +418,7 @@ interface WdioCustomExpect {
      * Creates a soft assertion wrapper around standard expect
      * Soft assertions record failures but don't throw errors immediately
      * All failures are collected and reported at the end of the test
+     * Note: Until fixed, soft only support wdio custom matchers, and not the `expect` library matchers. Moreover, it is always returns a Promise.
      */
     soft<T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<Promise<void>, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
 

@@ -87,7 +87,6 @@ const createSoftMatcher = <T>(
                 expectChain = expectChain.rejects
             }
 
-            // TODO ddprevost might need to review this await since not all expect requires to be awaited
             return await ((expectChain as unknown) as Record<string, (...args: unknown[]) => ExpectWebdriverIO.AsyncAssertionResult>)[matcherName](...args)
 
         } catch (error) {

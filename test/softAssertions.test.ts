@@ -7,7 +7,7 @@ vi.mock('@wdio/globals')
 
 describe('Soft Assertions', () => {
     // Setup a mock element for testing
-    let el: any
+    let el: ChainablePromiseElement
 
     beforeEach(async () => {
         el = $('sel')
@@ -106,6 +106,20 @@ describe('Soft Assertions', () => {
             // Should be no failures now
             expect(expectWdio.getSoftFailures().length).toBe(0)
         })
+
+        // TODO: Soft are currently not supporting basic matchers like toBe or toEqual.To fix one day!
+        it.skip('should support basic text matching', async () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('test-7', 'test name', 'test file')
+            const text = await el.getText()
+
+            expectWdio.soft(text).toEqual('!Actual Text')
+
+            const failures = expectWdio.getSoftFailures()
+            expect(failures.length).toBe(1)
+            expect(failures[0].matcherName).toBe('toHaveText')
+        })
+
     })
 
     describe('SoftAssertService hooks', () => {
