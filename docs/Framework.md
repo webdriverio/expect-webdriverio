@@ -68,10 +68,33 @@ beforeAll(async () => {
     expect.extend(matchers as Record<string, any>);
 });
 ```
-For the soft assertion, it needs to expose the `createSoftExpect` first.
 
+For the soft assertion, the `createSoftExpect` is currently not correctly exposed but the below works:
+```ts
+// @ts-ignore
+import * as createSoftExpect from "expect-webdriverio/lib/softExpect";
 
-As shown below, no imports are required and we can use WDIO matchers directly on Jest's `expect`:
+beforeAll(async () => {
+  Object.defineProperty(expect, "soft", {
+    value: <T = unknown>(actual: T) => createSoftExpect.default(actual),
+  });
+
+  // Add soft assertions utility methods
+  Object.defineProperty(expect, "getSoftFailures", {
+    value: (testId?: string) => SoftAssertService.getInstance().getFailures(testId),
+  });
+
+  Object.defineProperty(expect, "assertSoftFailures", {
+    value: (testId?: string) => SoftAssertService.getInstance().assertNoFailures(testId),
+  });
+
+  Object.defineProperty(expect, "clearSoftFailures", {
+    value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId),
+  });
+});
+```
+
+Then as shown below, no imports are required and we can use WDIO matchers directly on Jest's `expect`:
 ```ts
 describe('My tests', async () => {
 
