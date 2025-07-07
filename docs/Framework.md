@@ -9,7 +9,7 @@ We can pair `expect-webdriverio` with [Jest](https://jestjs.io/), [Mocha](https:
 
 It is highly recommended to use it with a [WDIO Testrunner](https://webdriver.io/docs/clioptions) which provides additional auto-configuration for a plug-and-play experience.
 
-When used <u>**outside of [WDIO Testrunner](https://webdriver.io/docs/clioptions)**</u>, types need to be added to your [`tsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
+When used <u>**outside of [WDIO Testrunner](https://webdriver.io/docs/clioptions)**</u>, types need to be added to your [`tsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html), and some additional configuration for WDIO matchers, soft assertions, and snapshot service is required.
 
 ### Jest
 We can use `expect-webdriverio` with [Jest](https://jestjs.io/) using [`@jest/globals`](https://www.npmjs.com/package/@jest/globals) alone (preferred) and optionally [`@types/jest`](https://www.npmjs.com/package/@types/jest) (which has global ambient support).
@@ -50,15 +50,26 @@ This [Jest issue](https://github.com/jestjs/jest/issues/12424) seems to target t
 #### With `@types/jest`
 When also paired with [`@types/jest`](https://www.npmjs.com/package/@types/jest), no imports are required. Global ambient types are already defined correctly and you can simply use Jest's `expect` directly.
 
-If you are NOT using WDIO Testrunner, it may be required to correctly register the WDIO matchers on Jest's `expect` as shown below:
+If you are NOT using WDIO Testrunner, some prerequisite configuration is required.
+
+Option 1: Replace the expect globally with the `expect-webdriverio` one:
 ```ts
+import { expect } from "expect-webdriverio";
+(globalThis as any).expect = expect;
+```
+
+Option 2: Reconfigure Jest's expect with the custom matchers and the soft assertion:
+```ts
+// Configure the custom matchers:
 import { expect } from "@jest/globals";
 import { matchers } from "expect-webdriverio";
 
 beforeAll(async () => { 
-  expect.extend(matchers);  
+    expect.extend(matchers as Record<string, any>);
 });
 ```
+For the soft assertion, it needs to expose the `createSoftExpect` first.
+
 
 As shown below, no imports are required and we can use WDIO matchers directly on Jest's `expect`:
 ```ts
