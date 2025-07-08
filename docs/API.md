@@ -111,6 +111,12 @@ When set to `true` (default), the service will automatically assert all soft ass
 
 This is useful if you want full control over when soft assertions are verified or if you want to handle soft assertion failures in a custom way.
 
+### Known limitations
+
+Soft assertion currently works only on custom wdio matchers and not on the basic ones like `toBe` or `toEqual`
+Jasmine, even with `@wdio/jasmine-framework`, is not auto-configure to use it.
+
+
 ## Default Options
 
 These default options below are connected to the [`waitforTimeout`](https://webdriver.io/docs/options#waitfortimeout) and [`waitforInterval`](https://webdriver.io/docs/options#waitforinterval) options set in the config.
