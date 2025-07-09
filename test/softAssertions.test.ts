@@ -107,7 +107,10 @@ describe('Soft Assertions', () => {
             expect(expectWdio.getSoftFailures().length).toBe(0)
         })
 
-        // TODO: Soft are currently not supporting basic matchers like toBe or toEqual.To fix one day!
+        /**
+         * TODO: Skipped since soft assertions are currently not supporting basic matchers like toBe or toEqual. To fix one day!
+         * @see https://github.com/webdriverio/expect-webdriverio/issues/1887
+         */
         it.skip('should support basic text matching', async () => {
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('test-7', 'test name', 'test file')

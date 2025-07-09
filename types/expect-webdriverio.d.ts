@@ -21,8 +21,6 @@ type ExpectLibAsyncExpectationResult = import('expect').AsyncExpectationResult
 type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
 
-// TODO dprevost: a suggestion would be to move any code outside of the namespace to separate types.ts file, so that we can import the types.
-
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

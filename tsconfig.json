@@ -2,7 +2,6 @@
   /**
   * Let's aligned with the WebdriverIO tsconfig.json.
   * @see https://github.com/webdriverio/webdriverio/blob/main/tsconfig.json#L5
-  * TODO: dprevost, why using moduleResolution node16 in the above link?
   */
   "compilerOptions": {
     "outDir": "./lib/",
@@ -15,7 +14,7 @@
     "skipLibCheck": true,
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
-    "moduleResolution": "node", // node is actually node10, this should be reviewed but node16 as in WebdriverIO main project does not work.
+    "moduleResolution": "node", // To review since this is equivalent to node10
     "allowSyntheticDefaultImports": true,
     "types": [
       "node",
