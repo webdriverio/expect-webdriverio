@@ -30,13 +30,13 @@ async function condition(
     }
 
     prop = prop.toString()
-    return compareText(prop as string, value as string | RegExp | ExpectWebdriverIO.PartialMatcher, options)
+    return compareText(prop as string, value as string | RegExp | WdioAsymmetricMatcher<string>, options)
 }
 
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
-    value?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    value?: string | RegExp | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot

@@ -111,6 +111,12 @@ When set to `true` (default), the service will automatically assert all soft ass
 
 This is useful if you want full control over when soft assertions are verified or if you want to handle soft assertion failures in a custom way.
 
+### Known limitations
+
+Soft assertion currently works only on custom wdio matchers and not on the basic ones like `toBe` or `toEqual`
+Jasmine, even with `@wdio/jasmine-framework`, is not auto-configure to use it.
+
+
 ## Default Options
 
 These default options below are connected to the [`waitforTimeout`](https://webdriver.io/docs/options#waitfortimeout) and [`waitforInterval`](https://webdriver.io/docs/options#waitforinterval) options set in the config.
@@ -667,7 +673,7 @@ await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at 
 
 Checks that mock was called according to the expected options.
 
-Most of the options supports expect/jasmine partial matchers like [expect.objectContaining](https://jestjs.io/docs/en/expect#expectobjectcontainingobject)
+Most of the options supports expect/jasmine partial matchers like [expect.objectContaining](https://jestjs.io/docs/expect#expectobjectcontainingobject)
 
 ##### Usage
 
@@ -858,7 +864,7 @@ await expect(elem).toHaveElementClass(/Container/i)
 
 ## Default Matchers
 
-In addition to the `expect-webdriverio` matchers you can use builtin Jest's [expect](https://jestjs.io/docs/en/expect) assertions or [expect/expectAsync](https://jasmine.github.io/api/3.5/global.html#expect) for Jasmine.
+In addition to the `expect-webdriverio` matchers you can use builtin Jest's [expect](https://jestjs.io/docs/expect) assertions or [expect/expectAsync](https://jasmine.github.io/api/edge/global.html#expect) for Jasmine.
 
 ## Asymmetric Matchers
 

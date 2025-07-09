@@ -1,9 +1,9 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
-import { compareText, compareTextWithArray, enhanceError, executeCommand, isAsymmeyricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import { compareText, compareTextWithArray, enhanceError, executeCommand, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 
-async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions) {
+async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp | Array<string | RegExp> | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
     const actualClass = await el.getAttribute(attribute)
     if (typeof actualClass !== 'string') {
         return { result: false }
@@ -13,7 +13,7 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
      * if value is an asymmetric matcher, no need to split class names
      * into an array and compare each of them
      */
-    if (isAsymmeyricMatcher(value)) {
+    if (isAsymmetricMatcher(value)) {
         return compareText(actualClass, value, options)
     }
 
@@ -39,7 +39,7 @@ export function toHaveClass(...args: unknown[]) {
 
 export async function toHaveElementClass(
     received: WdioElementMaybePromise,
-    expectedValue: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher,
+    expectedValue: string | RegExp | Array<string | RegExp> | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot
@@ -83,7 +83,7 @@ export async function toHaveElementClass(
 /**
  * @deprecated
  */
-export function toHaveClassContaining(el: WebdriverIO.Element, className: string | RegExp | ExpectWebdriverIO.PartialMatcher, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
+export function toHaveClassContaining(el: WebdriverIO.Element, className: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     return toHaveAttributeAndValue.call(this, el, 'class', className, {
         ...options,
         containing: true
