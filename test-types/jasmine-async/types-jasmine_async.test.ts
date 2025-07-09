@@ -358,16 +358,15 @@ describe('type assertions', () => {
             it('should support a simple matcher', async () => {
                 expectPromiseVoid = expectAsync(5).toBeWithinRange(1, 10)
 
-                // TODO dprevost this one seems to be a problem, it should be a promise!!!!!
                 // Or as an asymmetric matcher:
-                expectVoid = expect({ value: 5 }).toEqual({
+                expectPromiseVoid = expectAsync({ value: 5 }).toEqual({
                     value: wdioExpect.toBeWithinRange(1, 10)
                 })
 
                 // @ts-expect-error
                 expectVoid = expectAsync(5).toBeWithinRange(1, '10')
                 // @ts-expect-error
-                expectPromiseVoid = expectAsync(5).toBeWithinRange('1')
+                expectAsync(5).toBeWithinRange('1')
             })
 
             it('should support a simple custom matcher with a chainable element matcher with promise', async () => {
@@ -429,16 +428,10 @@ describe('type assertions', () => {
             expectPromiseVoid = expectAsync(true).not.toBe(true)
         })
 
-        // // TODO dprevost: Is this a valid use case? Should we support it?
-        // it('should expect Promise when actual is a chainable since toBe does not need to be awaited', async () => {
-        //     expectPromiseVoid = expectAsync(chainableElement).toBe(true)
-        //     expectPromiseVoid = expectAsync(chainableElement).not.toBe(true)
-
-        //     //@ts-expect-error
-        //     expectPromiseVoid = expectAsync(chainableElement).toBe(true)
-        //     //@ts-expect-error
-        //     expectPromiseVoid = expectAsync(chainableElement).not.toBe(true)
-        // })
+        it('should expect Promise when actual is a chainable since toBe does not need to be awaited', async () => {
+            expectPromiseVoid = expectAsync(chainableElement).toBe(true)
+            expectPromiseVoid = expectAsync(chainableElement).not.toBe(true)
+        })
 
         it('should still expect void type when actual is a Promise since we do not overload them', async () => {
             const promiseBoolean = Promise.resolve(true)
@@ -593,16 +586,6 @@ describe('type assertions', () => {
             wdioExpect.not.closeTo(5, 10)
             wdioExpect.not.arrayContaining(['WebdriverIO', 'Test'])
             wdioExpect.not.arrayOf(wdioExpect.stringContaining('WebdriverIO'))
-
-            // TODO dprevost: Should we support these?
-            // wdioExpect.not.anything()
-            // wdioExpect.not.any(Function)
-            // wdioExpect.not.any(Number)
-            // wdioExpect.not.any(Boolean)
-            // wdioExpect.not.any(String)
-            // wdioExpect.not.any(Symbol)
-            // wdioExpect.not.any(Date)
-            // wdioExpect.not.any(Error)
         })
 
         describe('Soft Assertions', async () => {

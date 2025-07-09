@@ -13,17 +13,6 @@ const service = SnapshotService.initiate({
     resolveSnapshotPath: (path, extension) => path + extension
 })
 
-// TODO dprevost the below is missing in the snapshot.test.ts.snap file
-// exports[`parent > test 2`] = `
-// {
-//   "deep": {
-//     "nested": {
-//       "object": "value",
-//     },
-//   },
-// }
-// `;
-
 test('supports snapshot testing', async () => {
     await service.beforeTest({
         title: 'test',
