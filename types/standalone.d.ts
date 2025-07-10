@@ -8,7 +8,7 @@ declare namespace ExpectWebdriverIO {
     }
 
     type Expect = {
-        <T = unknown>(actual: T): Matchers<void, T>
+        <T = unknown>(actual: T): Matchers<Promise<void>, T>
         extend(map: Record<string, Function>): void
     } & AsymmetricMatchers
 
