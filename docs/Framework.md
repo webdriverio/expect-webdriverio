@@ -26,7 +26,6 @@ import { describe, it, expect as jestExpect } from '@jest/globals'
 describe('My tests', async () => {
 
     it('should verify my browser to have the expected url', async () => {
-        const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
         await expect(browser).toHaveUrl('https://example.com')
     })
 })        
@@ -69,7 +68,7 @@ beforeAll(async () => {
 });
 ```
 
-For the soft assertion, the `createSoftExpect` is currently not correctly exposed but the below works:
+[Optional] For the soft assertion, the `createSoftExpect` is currently not correctly exposed but the below works:
 ```ts
 // @ts-ignore
 import * as createSoftExpect from "expect-webdriverio/lib/softExpect";
@@ -99,7 +98,6 @@ Then as shown below, no imports are required and we can use WDIO matchers direct
 describe('My tests', async () => {
 
     it('should verify my browser to have the expected url', async () => {
-        const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
         await expect(browser).toHaveUrl('https://example.com')
     })
 })     
@@ -127,7 +125,6 @@ No import is required; everything is set globally.
 describe('My tests', async () => {
 
     it('should verify my browser to have the expected url', async () => {
-        const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
         await expect(browser).toHaveUrl('https://example.com')
     })
 })     
@@ -162,7 +159,6 @@ When not using `@wdio/globals/types` or having `@types/jasmine` before it, the J
 describe('My tests', async () => {
 
     it('should verify my browser to have the expected url', async () => {
-        const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
         await expectAsync(browser).toHaveUrl('https://example.com')
     })
 })     
@@ -190,7 +186,6 @@ import { expect as wdioExpect } from 'expect-webdriverio'
 describe('My tests', async () => {
 
     it('should verify my browser to have the expected url', async () => {
-        const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
         await wdioExpect(browser).toHaveUrl('https://example.com')
     })
 })     
@@ -215,10 +210,12 @@ Asymmetric matchers have limited support. Even though `jasmine.stringContaining`
 describe('My tests', async () => {
 
     it('should verify my browser to have the expected url', async () => {
-        const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
         await expectAsync(browser).toHaveUrl(wdioExpect.stringContaining('WebdriverIO'))
     })
 })     
 ```
 
+### Jest & Jasmine Augmentation Notes
 
+When already using Jest or Jasmine globally, then using `import { expect } from 'expect-webdriverio'` is the most compatible approach even though augmentation exists.
+It would be recommended to build your project on the above instead of augmentation to ensure future compatibility while sorting out augmentation limitations. See [this issue](https://github.com/webdriverio/expect-webdriverio/issues/1893) for more information.
