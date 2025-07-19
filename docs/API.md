@@ -113,9 +113,8 @@ This is useful if you want full control over when soft assertions are verified o
 
 ### Known limitations
 
-Soft assertion currently works only on custom wdio matchers and not on the basic ones like `toBe` or `toEqual`
-Jasmine, even with `@wdio/jasmine-framework`, is not auto-configure to use it.
-
+For Jasmine, using `wdio-jasmine-framework` will give a better plug-and-play experiences, else without it, the soft assertion service and custom matchers might not work/be registered correctly.
+Moreover, if Jasmine augmentation is used, the soft assertion function are not exposed in the typing, but could still work depending of your configuration. See [this issue](https://github.com/webdriverio/expect-webdriverio/issues/1893) for more details.
 
 ## Default Options
 
