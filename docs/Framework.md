@@ -5,7 +5,7 @@ Expect-WebDriverIO is inspired by [`expect`](https://www.npmjs.com/package/expec
 
 ## Compatibility
 
-We can pair `expect-webdriverio` with [Jest](https://jestjs.io/), [Mocha](https://mochajs.org/), and even [Jasmine](https://jasmine.github.io/). 
+We can pair `expect-webdriverio` with [Jest](https://jestjs.io/), [Mocha](https://mochajs.org/), and [Jasmine](https://jasmine.github.io/) and even [Cucumber](https://www.npmjs.com/package/@cucumber/cucumber)
 
 It is highly recommended to use it with a [WDIO Testrunner](https://webdriver.io/docs/clioptions) which provides additional auto-configuration for a plug-and-play experience.
 
@@ -189,7 +189,7 @@ describe('My tests', async () => {
         await wdioExpect(browser).toHaveUrl('https://example.com')
     })
 })     
-```
+
 
 Expected in `tsconfig.json`:
 ```json
@@ -203,8 +203,9 @@ Expected in `tsconfig.json`:
 }
 ```
 
-#### Asymmetric matchers 
-Asymmetric matchers have limited support. Even though `jasmine.stringContaining` has no error, it potentially does not work even with `@wdio/jasmine-framework`, but the example below should work:
+
+#### Asymmetric matchers
+Asymmetric matchers have limited support. Even though `jasmine.stringContaining` does not produce a typing error, it may not work even with `@wdio/jasmine-framework`. However, the example below should work:
 
 ```ts
 describe('My tests', async () => {
@@ -215,7 +216,12 @@ describe('My tests', async () => {
 })     
 ```
 
+
 ### Jest & Jasmine Augmentation Notes
 
-When already using Jest or Jasmine globally, then using `import { expect } from 'expect-webdriverio'` is the most compatible approach even though augmentation exists.
-It would be recommended to build your project on the above instead of augmentation to ensure future compatibility while sorting out augmentation limitations. See [this issue](https://github.com/webdriverio/expect-webdriverio/issues/1893) for more information.
+If you are already using Jest or Jasmine globally, using `import { expect } from 'expect-webdriverio'` is the most compatible approach, even though augmentation exists.
+It is recommended to build your project using this approach instead of relying on augmentation, to ensure future compatibility and avoid augmentation limitations. See [this issue](https://github.com/webdriverio/expect-webdriverio/issues/1893) for more information.
+
+### Cucumber
+
+More details to come. In short, when paired with `@wdio/cucumber-framework`, you can use WDIO's expect with Cucumber and even [Gherkin](https://www.npmjs.com/package/@cucumber/gherkin).
