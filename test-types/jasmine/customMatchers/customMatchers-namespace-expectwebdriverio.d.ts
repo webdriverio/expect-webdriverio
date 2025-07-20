@@ -9,6 +9,6 @@ declare namespace ExpectWebdriverIO {
     }
     interface Matchers<R, T> {
         toBeCustom(): R;
-        toBeCustomPromise: T extends ChainablePromiseElement ? (expected?: string | ExpectWebdriverIO.PartialMatcher<string> | Promise<ExpectWebdriverIO.PartialMatcher<string>>) => Promise<R> : never;
+        toBeCustomPromise: T extends ChainablePromiseElement ? (expected?: string | ExpectWebdriverIO.PartialMatcher<string> | Promise<ExpectWebdriverIO.PartialMatcher<string>>) => R : never;
     }
 }

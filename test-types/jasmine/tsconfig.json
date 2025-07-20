@@ -7,7 +7,8 @@
     "skipLibCheck": true,
     "types": [
       "@types/jasmine",
-      "../../jasmine.d.ts"
+      "../../jasmine.d.ts",
+      "../../expect-global-jasmine-async.d.ts"
     ]
   }
 }

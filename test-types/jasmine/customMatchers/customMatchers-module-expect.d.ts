@@ -13,7 +13,7 @@ declare module 'expect' {
 
     interface Matchers<R, T> {
         toBeWithinRange(floor: number, ceiling: number): R
-        toHaveSimpleCustomProperty(string: string | ExpectWebdriverIO.PartialMatcher<string>): Promise<R>
+        toHaveSimpleCustomProperty(string: string | ExpectWebdriverIO.PartialMatcher<string>): R
         toHaveCustomProperty:
         // Useful to typecheck the custom matcher so it is only used on elements
         T extends ChainablePromiseElement | WebdriverIO.Element ?
@@ -21,6 +21,6 @@ declare module 'expect' {
             // Needed for the custom asymmetric matcher defined above to be typed correctly
             Promise<ExpectWebdriverIO.PartialMatcher<string>>)
             // Using `never` blocks the call on non-element types
-            => Promise<R> : never;
+            => R : never;
     }
 }
