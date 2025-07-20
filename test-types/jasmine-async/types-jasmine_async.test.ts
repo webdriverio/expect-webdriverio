@@ -433,7 +433,7 @@ describe('type assertions', () => {
             expectPromiseVoid = expectAsync(chainableElement).not.toBe(true)
         })
 
-        it('should still expect void type when actual is a Promise since we do not overload them', async () => {
+        it('should expect Promise type when actual is a Promise since it is expectAsync', async () => {
             const promiseBoolean = Promise.resolve(true)
 
             expectPromiseUnknown = expectAsync(promiseBoolean).toBe(true)

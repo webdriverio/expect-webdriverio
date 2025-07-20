@@ -495,7 +495,7 @@ declare namespace ExpectWebdriverIO {
          *
          * @param actual The value to apply matchers against.
          */
-        <T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<Promise<void>, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
+        <T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<void, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
     }
 
     interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}

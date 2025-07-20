@@ -469,14 +469,13 @@ describe('type assertions', async () => {
         it('should still expect void type when actual is a Promise since we do not overload them', async () => {
             const promiseBoolean = Promise.resolve(true)
 
-            // TODO dprevost check if this one need to stay a void or can be a Promise<void>
-            // expectVoid = expect(promiseBoolean).toBe(true)
-            // expectVoid = expect(promiseBoolean).not.toBe(true)
+            expectVoid = expect(promiseBoolean).toBeDefined()
+            expectVoid = expect(promiseBoolean).not.toBeDefined()
 
-            // //@ts-expect-error
-            // expectPromiseVoid = expect(promiseBoolean).toBe(true)
-            // //@ts-expect-error
-            // expectPromiseVoid = expect(promiseBoolean).toBe(true)
+            //@ts-expect-error
+            expectPromiseVoid = expect(promiseBoolean).toBeDefined()
+            //@ts-expect-error
+            expectPromiseVoid = expect(promiseBoolean).toBe(true)
         })
 
         it('should work with string', async () => {
