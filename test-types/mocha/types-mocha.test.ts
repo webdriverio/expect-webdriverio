@@ -641,16 +641,6 @@ describe('type assertions', () => {
             expect.not.closeTo(5, 10)
             expect.not.arrayContaining(['WebdriverIO', 'Test'])
             expect.not.arrayOf(expect.stringContaining('WebdriverIO'))
-
-            // TODO dprevost to review
-            // expect.not.anything()
-            // expect.not.any(Function)
-            // expect.not.any(Number)
-            // expect.not.any(Boolean)
-            // expect.not.any(String)
-            // expect.not.any(Symbol)
-            // expect.not.any(Date)
-            // expect.not.any(Error)
         })
 
         describe('Soft Assertions', async () => {

@@ -625,16 +625,6 @@ describe('type assertions', () => {
             wdioExpect.not.closeTo(5, 10)
             wdioExpect.not.arrayContaining(['WebdriverIO', 'Test'])
             wdioExpect.not.arrayOf(wdioExpect.stringContaining('WebdriverIO'))
-
-            // TODO dprevost: Should we support these?
-            // wdioExpect.not.anything()
-            // wdioExpect.not.any(Function)
-            // wdioExpect.not.any(Number)
-            // wdioExpect.not.any(Boolean)
-            // wdioExpect.not.any(String)
-            // wdioExpect.not.any(Symbol)
-            // wdioExpect.not.any(Date)
-            // wdioExpect.not.any(Error)
         })
 
         describe('Soft Assertions', async () => {
