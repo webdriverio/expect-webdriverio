@@ -160,6 +160,8 @@ describe('My tests', async () => {
 
     it('should verify my browser to have the expected url', async () => {
         await expectAsync(browser).toHaveUrl('https://example.com')
+
+        await expectAsync(true).toBe(true)
     })
 })     
 ```
@@ -176,6 +178,35 @@ Expected in `tsconfig.json`:
 }
 ```
 
+#### Global `expectAsync` force as `expect`
+When the global ambiant is the `expect` of wdio but forced to be `expectAsync` under the hood, like when using `@wdio/jasmine-framework`, then even the basic matchers need to be awaited 
+
+```ts
+describe('My tests', async () => {
+
+    it('should verify my browser to have the expected url', async () => {
+        await expect(browser).toHaveUrl('https://example.com')
+
+        // Even basic matchers requires expect since they are promises underneath
+        await expect(true).toBe(true)
+    })
+})     
+```
+
+Expected in `tsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "types": [
+      "@wdio/globals/types",
+      "@wdio/jasmine-framework",
+      "@types/jasmine",
+      "expect-webdriverio/jasmine-expect-async", // Force expect to return Promises
+      ]
+  }
+}
+```
+
 #### `expect` of `expect-webdriverio`
 It is preferable to use the `expect` from `expect-webdriverio` to guarantee future compatibility. 
 
@@ -187,6 +218,9 @@ describe('My tests', async () => {
 
     it('should verify my browser to have the expected url', async () => {
         await wdioExpect(browser).toHaveUrl('https://example.com')
+
+        // No required await
+        wdioExpect(true).toBe(true)        
     })
 })     
 
@@ -197,7 +231,7 @@ Expected in `tsconfig.json`:
   "compilerOptions": {
     "types": [
         "@types/jasmine",
-        "expect-webdriverio/expect-global", // Force expect to be the 'expect-webdriverio'; comment out and use the import above if it conflicts with Jasmine
+        // "expect-webdriverio/expect-global", // Optional to have the global ambient expect the one of wdio
       ]
   }
 }
