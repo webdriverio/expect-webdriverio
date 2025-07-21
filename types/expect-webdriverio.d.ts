@@ -573,7 +573,7 @@ declare namespace ExpectWebdriverIO {
      * Equivalent as `MatchersObject` from the expect library.
      * @see https://github.com/jestjs/jest/blob/fd3d6cf9fe416b549a74b6577e5e1ea1130e3659/packages/expect/src/types.ts#L43C13-L43C27
      */
-    const matchers: Record<string, RawMatcherFn>
+    const matchers: Map<string, RawMatcherFn>
 
     interface AssertionHookParams {
         /**
