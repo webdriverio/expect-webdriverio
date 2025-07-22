@@ -1,7 +1,6 @@
 # Expect-WebDriverIO Framework
 
-Expect-WebDriverIO is inspired by [`expect`](https://www.npmjs.com/package/expect) but also extends it. Therefore, we can use everything provided by the expect API with some WebDriverIO enhancements.
-  - Note: Yes, this is a package of Jest but it is usable without Jest.
+Expect-WebDriverIO is inspired by [`expect`](https://www.npmjs.com/package/expect) but also extends it. Therefore, we can use everything provided by the expect API with some WebDriverIO enhancements. Yes, this is a package of Jest but it is usable without Jest.
 
 ## Compatibility
 
