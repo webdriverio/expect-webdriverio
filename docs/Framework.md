@@ -212,7 +212,6 @@ It is preferable to use the `expect` from `expect-webdriverio` to guarantee futu
 import { expect as wdioExpect } from 'expect-webdriverio'
 
 describe('My tests', async () => {
-
     it('should verify my browser to have the expected url', async () => {
         await wdioExpect(browser).toHaveUrl('https://example.com')
 
