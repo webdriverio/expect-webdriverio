@@ -181,7 +181,6 @@ When the global ambiant is the `expect` of wdio but forced to be `expectAsync` u
 
 ```ts
 describe('My tests', async () => {
-
     it('should verify my browser to have the expected url', async () => {
         await expect(browser).toHaveUrl('https://example.com')
 
