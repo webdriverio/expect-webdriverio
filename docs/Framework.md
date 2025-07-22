@@ -199,7 +199,7 @@ Expected in `tsconfig.json`:
       "@wdio/jasmine-framework",
       "@types/jasmine",
       "expect-webdriverio/jasmine-wdio-expect-async", // Force expect to return Promises
-      ]
+    ]
   }
 }
 ```
