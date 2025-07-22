@@ -29,10 +29,10 @@ export async function toBeDisplayed(
     received: WdioElementMaybePromise,
     options: ExpectWebdriverIO.CommandOptions & ToBeDisplayedOptions = DEFAULT_OPTIONS
 ) {
-    options.withinViewport ??= false;
-    options.contentVisibilityAuto ??= true;
-    options.opacityProperty ??= true;
-    options.visibilityProperty ??= true;
+    options.withinViewport ??= false
+    options.contentVisibilityAuto ??= true
+    options.opacityProperty ??= true
+    options.visibilityProperty ??= true
 
     this.expectation = this.expectation || 'displayed'
 
