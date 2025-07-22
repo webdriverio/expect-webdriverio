@@ -156,7 +156,6 @@ describe('My tests', async () => {
 
     it('should verify my browser to have the expected url', async () => {
         await expectAsync(browser).toHaveUrl('https://example.com')
-
         await expectAsync(true).toBe(true)
     })
 })     
