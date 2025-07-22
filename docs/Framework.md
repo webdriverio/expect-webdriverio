@@ -44,7 +44,6 @@ Multiple attempts were made to augment `@jest/globals` to support `expect-webdri
 
 This [Jest issue](https://github.com/jestjs/jest/issues/12424) seems to target this problem, but it is still in progress.
 
-
 #### With `@types/jest`
 When also paired with [`@types/jest`](https://www.npmjs.com/package/@types/jest), no imports are required. Global ambient types are already defined correctly and you can simply use Jest's `expect` directly.
 
