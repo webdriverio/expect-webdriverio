@@ -121,7 +121,6 @@ No import is required; everything is set globally.
 
 ```ts
 describe('My tests', async () => {
-
     it('should verify my browser to have the expected url', async () => {
         await expect(browser).toHaveUrl('https://example.com')
     })
