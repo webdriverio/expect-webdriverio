@@ -149,8 +149,7 @@ When paired with [Jasmine](https://jasmine.github.io/), [`@wdio/jasmine-framewor
 The types `expect-webdriverio/jasmine` are still offered but are subject to removal or being moved into `@wdio/jasmine-framework`. The usage of `expectAsync` is also subject to future removal.
 
 #### Jasmine `expectAsync`
-When not using `@wdio/globals/types` or having `@types/jasmine` before it, the Jasmine expect is shown as the global ambient type. Therefore, when also defining `expect-webdriverio/jasmine`, we can use WDIO custom matchers on the `expectAsync`.
-  - Note: Without `@wdio/jasmine-framework`, matchers will need to be registered manually.
+When not using `@wdio/globals/types` or having `@types/jasmine` before it, the Jasmine expect is shown as the global ambient type. Therefore, when also defining `expect-webdriverio/jasmine`, we can use WDIO custom matchers on the `expectAsync`. Without `@wdio/jasmine-framework`, matchers will need to be registered manually.
 
 ```ts
 describe('My tests', async () => {
