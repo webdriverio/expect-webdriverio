@@ -27,13 +27,9 @@ interface ToBeDisplayedOptions {
 
 export async function toBeDisplayed(
     received: WdioElementMaybePromise,
-    options: ExpectWebdriverIO.CommandOptions & ToBeDisplayedOptions = DEFAULT_OPTIONS
+    { withinViewport = false, contentVisibilityAuto = true, opacityProperty = true, visibilityProperty = true }: ToBeDisplayedOptions = {},
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    options.withinViewport ??= false
-    options.contentVisibilityAuto ??= true
-    options.opacityProperty ??= true
-    options.visibilityProperty ??= true
-
     this.expectation = this.expectation || 'displayed'
 
     await options.beforeAssertion?.({
@@ -41,7 +37,7 @@ export async function toBeDisplayed(
         options,
     })
 
-    const result = await executeCommandBe.call(this, received, el => el?.isDisplayed(), options)
+    const result = await executeCommandBe.call(this, received, el => el?.isDisplayed({ withinViewport, contentVisibilityAuto, opacityProperty, visibilityProperty }), options)
 
     await options.afterAssertion?.({
         matcherName: 'toBeDisplayed',
