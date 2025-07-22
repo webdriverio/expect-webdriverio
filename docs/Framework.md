@@ -32,6 +32,7 @@ describe('My tests', async () => {
 No `types` are expected in `tsconfig.json`.
 Optionally, to avoid needing `import { expect } from 'expect-webdriverio'`, you can use the following:
 
+
 ```json
 {
   "compilerOptions": {
