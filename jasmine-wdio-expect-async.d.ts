@@ -4,7 +4,6 @@
  * Overrides the default wdio `expect` for Jasmine case specifically since the `expect` is now completely asynchronous which is not the case under Jest or standalone.
  */
 declare namespace ExpectWebdriverIO {
-
     interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, ExpectLibInverse<ExpectWebdriverIO.InverseAsymmetricMatchers>, WdioExpect {
         /**
          * The `expect` function is used every time you want to test a value.
