@@ -5,7 +5,7 @@
  */
 declare namespace ExpectWebdriverIO {
 
-    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, ExpectLibInverse<Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any'>>, WdioExpect {
+    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, ExpectLibInverse<ExpectWebdriverIO.InverseAsymmetricMatchers>, WdioExpect {
         /**
          * The `expect` function is used every time you want to test a value.
          * You will rarely call `expect` by itself.

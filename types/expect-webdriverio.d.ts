@@ -482,7 +482,7 @@ declare namespace ExpectWebdriverIO {
      * `AsymmetricMatchers` and `Inverse<AsymmetricMatchers>` needs to be defined and be before the `expect` library Expect (aka `WdioExpect`).
      * The above allows to have custom asymmetric matchers under the `ExpectWebdriverIO` namespace.
      */
-    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, ExpectLibInverse<Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any'>>, WdioExpect {
+    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, ExpectLibInverse<ExpectWebdriverIO.InverseAsymmetricMatchers>, WdioExpect {
         /**
          * The `expect` function is used every time you want to test a value.
          * You will rarely call `expect` by itself.
@@ -501,6 +501,8 @@ declare namespace ExpectWebdriverIO {
     interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
 
     interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
+
+    interface InverseAsymmetricMatchers extends Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any'> {}
 
     /**
      * End of block overloading types from the expect library.
