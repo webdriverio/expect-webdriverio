@@ -94,7 +94,6 @@ beforeAll(async () => {
 Then as shown below, no imports are required and we can use WDIO matchers directly on Jest's `expect`:
 ```ts
 describe('My tests', async () => {
-
     it('should verify my browser to have the expected url', async () => {
         await expect(browser).toHaveUrl('https://example.com')
     })
