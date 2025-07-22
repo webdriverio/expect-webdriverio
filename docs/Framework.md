@@ -239,7 +239,6 @@ Asymmetric matchers have limited support. Even though `jasmine.stringContaining`
 
 ```ts
 describe('My tests', async () => {
-
     it('should verify my browser to have the expected url', async () => {
         await expectAsync(browser).toHaveUrl(wdioExpect.stringContaining('WebdriverIO'))
     })
