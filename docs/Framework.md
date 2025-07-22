@@ -24,7 +24,6 @@ import { expect } from 'expect-webdriverio'
 import { describe, it, expect as jestExpect } from '@jest/globals'
 
 describe('My tests', async () => {
-
     it('should verify my browser to have the expected url', async () => {
         await expect(browser).toHaveUrl('https://example.com')
     })
