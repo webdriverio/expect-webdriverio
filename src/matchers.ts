@@ -1,4 +1,5 @@
 export * from './matchers/browser/toHaveClipboardText.js'
+export * from './matchers/browser/toHaveLocalStorageItem.js'
 export * from './matchers/browser/toHaveTitle.js'
 export * from './matchers/browser/toHaveUrl.js'
 export * from './matchers/element/toBeClickable.js'
