@@ -62,13 +62,11 @@
   "dependencies": {
     "@vitest/snapshot": "^3.2.4",
     "expect": "^30.0.0",
-    "jest-matcher-utils": "^30.0.0",
-    "lodash.isequal": "^4.5.0"
+    "jest-matcher-utils": "^30.0.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
     "@types/jest": "^30.0.0",
-    "@types/lodash.isequal": "^4.5.8",
     "@types/node": "^24.0.3",
     "@vitest/coverage-v8": "^3.2.4",
     "@wdio/eslint": "^0.1.1",

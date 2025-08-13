@@ -1,4 +1,5 @@
-import isEqual from 'lodash.isequal'
+import { isDeepStrictEqual } from 'node:util'
+
 import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
@@ -305,7 +306,7 @@ export const compareObject = (actual: object | number, expected: string | number
 
     return {
         value: actual,
-        result: isEqual(actual, expected),
+        result: isDeepStrictEqual(actual, expected),
     }
 }
 
