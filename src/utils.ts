@@ -1,5 +1,4 @@
-import { isDeepStrictEqual } from 'node:util'
-
+import deepEql from 'deep-eql'
 import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
@@ -306,7 +305,7 @@ export const compareObject = (actual: object | number, expected: string | number
 
     return {
         value: actual,
-        result: isDeepStrictEqual(actual, expected),
+        result: deepEql(actual, expected),
     }
 }
 

@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "@vitest/snapshot": "^3.2.4",
+    "deep-eql": "^5.0.2",
     "expect": "^30.0.0",
     "jest-matcher-utils": "^30.0.0"
   },
