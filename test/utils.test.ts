@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { compareNumbers, compareText, compareTextWithArray } from '../src/utils.js'
+import { compareNumbers, compareObject, compareText, compareTextWithArray } from '../src/utils.js'
 
 describe('utils', () => {
     describe('compareText', () => {
@@ -133,6 +133,29 @@ describe('utils', () => {
             const lte = 9
             const gte = 1
             expect(compareNumbers(actual, { lte, gte })).toBe(false)
+        })
+    })
+
+    describe('compareObject', () => {
+        test('should pass if the objects are equal', () => {
+            expect(compareObject({ 'foo': 'bar' }, { 'foo': 'bar' }).result).toBe(true)
+        })
+
+        test('should pass if the objects are deep equal', () => {
+            expect(compareObject({ 'foo': { 'bar': 'baz' } }, { 'foo': { 'bar': 'baz' } }).result).toBe(true)
+        })
+
+        test('should fail if the objects are not equal', () => {
+            expect(compareObject({ 'foo': 'bar' }, { 'baz': 'quux' }).result).toBe(false)
+        })
+
+        test('should fail if the objects are only shallow equal', () => {
+            expect(compareObject({ 'foo': { 'bar': 'baz' } }, { 'foo': { 'baz': 'quux' } }).result).toBe(false)
+        })
+
+        test('should fail if the actual value is a number or array', () => {
+            expect(compareObject(10, { 'foo': 'bar' }).result).toBe(false)
+            expect(compareObject([{ 'foo': 'bar' }], { 'foo': 'bar' }).result).toBe(false)
         })
     })
 })
