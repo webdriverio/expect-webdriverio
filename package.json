@@ -1,6 +1,6 @@
 {
   "name": "expect-webdriverio",
-  "version": "5.4.0",
+  "version": "5.4.2",
   "author": "Mykola Grybyk <mykola.grybyk@gmail.com>",
   "description": "WebdriverIO Assertion Library",
   "license": "MIT",
@@ -68,17 +68,16 @@
   },
   "dependencies": {
     "@vitest/snapshot": "^3.2.4",
+    "deep-eql": "^5.0.2",
     "expect": "^30.0.4",
-    "jest-matcher-utils": "^30.0.4",
-    "lodash.isequal": "^4.5.0"
+    "jest-matcher-utils": "^30.0.4"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
     "@types/jasmine": "^5.1.8",
     "@types/jest": "^30.0.0",
-    "@types/lodash.isequal": "^4.5.8",
-    "@types/mocha": "^10.0.10",
     "@types/node": "^24.0.3",
+    "@types/mocha": "^10.0.10",
     "@jest/globals": "^30.0.4",
     "@vitest/coverage-v8": "^3.2.4",
     "@wdio/eslint": "^0.1.1",

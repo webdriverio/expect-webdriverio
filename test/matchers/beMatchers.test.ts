@@ -5,7 +5,7 @@ import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
 
-const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeDisabled', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith']
+const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeDisabled', 'toBeDisplayed', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith']
 const beMatchers = [
     ...Object.keys(Matchers).filter(name => name.startsWith('toBe') && !ignoredMatchers.includes(name)),
     'toExist'
