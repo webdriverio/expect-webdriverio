@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "noImplicitAny": true,
+    "target": "es2022",
+    "module": "node18",
+    "skipLibCheck": true,
+    "types": [
+      "@types/jest",
+      "../../jest.d.ts", // Needed to be after @types/jest to override the toMatchSnapshot typing
+    ],
+  }
+}

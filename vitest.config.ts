@@ -23,13 +23,16 @@ export default defineConfig({
                 '.eslintrc.cjs',
                 'jasmine.d.ts',
                 'jest.d.ts',
-                'types'
+                'types',
+                'eslint.config.mjs',
+                'vitest.config.ts',
+                'types-checks-filter-out-node_modules.js',
             ],
             thresholds: {
-                lines: 87,
-                functions: 86,
-                statements: 87,
-                branches: 88
+                lines: 89.8,
+                functions: 86.7,
+                statements: 89.8,
+                branches: 88.7,
             }
         }
     }
