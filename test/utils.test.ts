@@ -114,7 +114,7 @@ describe('utils', () => {
             expect(compareNumbers(actual, { lte })).toBe(true)
         })
 
-        test('should pass when usin lte and gte and number is in between', () => {
+        test('should pass when using lte and gte and number is in between', () => {
             const actual = 10
             const lte = 20
             const gte = 1
