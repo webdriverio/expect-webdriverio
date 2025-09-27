@@ -353,7 +353,7 @@ const shortenJson = (
     keyLimit = KEY_LIMIT
 ): ExpectWebdriverIO.JsonCompatible => {
     if (JSON.stringify(obj).length < lengthLimit) {
-        return obj as ExpectWebdriverIO.JsonCompatible
+        return obj
     }
 
     if (Array.isArray(obj)) {
