@@ -186,7 +186,6 @@ export const compareText = (
         }
     }
 
-    expected = expected as string | RegExp
     if (expected instanceof RegExp) {
         return {
             value: actual,
