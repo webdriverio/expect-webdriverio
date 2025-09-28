@@ -231,21 +231,21 @@ const headersMatcher = (
  *
  * Jest and Jasmine support special matchers like `jasmine.objectContaining`, `expect.arrayContaining`, etc.
  *
- * All these kind of objects have `sample` and `asymmetricMatch` function in __proto__
- * `expect.objectContaining({ foo: 'bar })` -> `{ sample: { foo: 'bar' }, __proto__: asymmetricMatch() {} }`
+ * All these kind of objects have `sample` and `asymmetricMatch` function in their prototype
+ * `expect.objectContaining({ foo: 'bar })` -> `{ sample: { foo: 'bar' }, [prototype]: asymmetricMatch() {} }`
  *
  * jasmine.any and jasmine.anything don't have `sample` property
  * @param filter
  */
 const isMatcher = (filter: unknown) => {
+    const proto = Object.getPrototypeOf(filter)
     return (
         typeof filter === 'object' &&
         filter !== null &&
-        '__proto__' in filter &&
-        typeof filter.__proto__ === 'object' &&
-        filter.__proto__ &&
-        'asymmetricMatch' in filter.__proto__ &&
-        typeof filter.__proto__.asymmetricMatch === 'function'
+        typeof proto === 'object' &&
+        proto &&
+        'asymmetricMatch' in proto &&
+        typeof proto.asymmetricMatch === 'function'
     )
 }
 
