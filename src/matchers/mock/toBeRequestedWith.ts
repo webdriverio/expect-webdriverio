@@ -88,7 +88,7 @@ export async function toBeRequestedWith(
  * is actual method matching an expected method or methods
  */
 const methodMatcher = (method: string, expected?: string | Array<string>) => {
-    if (typeof expected === 'undefined') {
+    if (expected === undefined) {
         return true
     }
     if (!Array.isArray(expected)) {
@@ -108,7 +108,7 @@ const methodMatcher = (method: string, expected?: string | Array<string>) => {
  * is actual statusCode matching an expected statusCode or statusCodes
  */
 const statusCodeMatcher = (statusCode: number, expected?: number | Array<number>) => {
-    if (typeof expected === 'undefined') {
+    if (expected === undefined) {
         return true
     }
     if (!Array.isArray(expected)) {
@@ -124,7 +124,7 @@ const urlMatcher = (
     url: string,
     expected?: string | ExpectWebdriverIO.PartialMatcher | ((url: string) => boolean)
 ) => {
-    if (typeof expected === 'undefined') {
+    if (expected === undefined) {
         return true
     }
     if (typeof expected === 'function') {
@@ -148,7 +148,7 @@ const headersMatcher = (
      * if header matcher is an empty object, match with no headers
      */
     if (
-        typeof expected === 'undefined' ||
+        expected === undefined ||
         typeof expected === 'object' && Object.keys(expected).length === 0
     ) {
         return true
@@ -267,7 +267,7 @@ const minifyRequestMock = (
     },
     requestedWith?: ExpectWebdriverIO.RequestedWith
 ) => {
-    if (typeof requestMock === 'undefined') {
+    if (requestMock === undefined) {
         return requestMock
     }
 
@@ -320,7 +320,7 @@ const requestedWithParamToString = (
         | undefined,
     transformFn?: (param: ExpectWebdriverIO.JsonCompatible) => ExpectWebdriverIO.JsonCompatible | string
 ) => {
-    if (typeof param === 'undefined') {
+    if (param === undefined) {
         return
     }
 
@@ -394,7 +394,7 @@ const shortenString = (str: string, limit = STR_LIMIT) => {
 
 const deleteUndefinedValues = (obj: Record<string, unknown>, baseline = obj) => {
     Object.keys(obj).forEach((k) => {
-        if (typeof baseline[k] === 'undefined') {
+        if (baseline[k] === undefined) {
             delete obj[k]
         }
     })
