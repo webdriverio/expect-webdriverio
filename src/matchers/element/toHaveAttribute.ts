@@ -82,7 +82,7 @@ export async function toHaveAttribute(
         options,
     })
 
-    const result = typeof value !== 'undefined'
+    const result = value !== undefined
         // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
         ? await toHaveAttributeAndValue.call(this, received, attribute, value, options)
         // Only name is passed in e.g. el.toHaveAttribute('attr')
