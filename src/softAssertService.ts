@@ -1,5 +1,4 @@
-import type { Services } from '@wdio/types'
-import type { Frameworks } from '@wdio/types'
+import type { Services, Frameworks } from '@wdio/types'
 import { SoftAssertService } from './softAssert.js'
 
 export interface SoftAssertionServiceOptions {
