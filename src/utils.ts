@@ -19,7 +19,6 @@ const asymmetricMatcher =
 export function isAsymmeyricMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
     return (
         typeof expected === 'object' &&
-        typeof expected === 'object' &&
         expected &&
         '$$typeof' in expected &&
         'asymmetricMatch' in expected &&
