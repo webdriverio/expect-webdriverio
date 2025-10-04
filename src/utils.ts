@@ -57,7 +57,6 @@ const waitUntil = async (
                 throw new Error('timeout')
             }
 
-            error = undefined
             try {
                 const result = isNot !== (await condition())
                 error = undefined
