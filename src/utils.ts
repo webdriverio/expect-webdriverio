@@ -309,7 +309,15 @@ export const compareObject = (actual: object | number, expected: string | number
 export const compareStyle = async (
     actualEl: WebdriverIO.Element,
     style: { [key: string]: string },
-    { ignoreCase = true, trim = false }
+    {
+        ignoreCase = false,
+        trim = true,
+        containing = false,
+        atStart = false,
+        atEnd = false,
+        atIndex,
+        replace,
+    }: ExpectWebdriverIO.StringOptions
 ) => {
     let result = true
     const actual: Record<string, string | undefined> = {}
@@ -317,7 +325,7 @@ export const compareStyle = async (
     for (const key in style) {
         const css: ParsedCSSValue = await actualEl.getCSSProperty(key)
 
-        let actualVal: string = css.value as string
+        let actualVal: string = String(css.value || '')
         let expectedVal: string = style[key]
 
         if (trim) {
@@ -329,8 +337,26 @@ export const compareStyle = async (
             expectedVal = expectedVal.toLowerCase()
         }
 
-        result = result && actualVal === expectedVal
-        actual[key] = css.value
+        if (containing) {
+            result = actualVal.includes(expectedVal)
+            actual[key] = actualVal
+        } else if (atStart) {
+            result = actualVal.startsWith(expectedVal)
+            actual[key] = actualVal
+        } else if (atEnd) {
+            result = actualVal.endsWith(expectedVal)
+            actual[key] = actualVal
+        } else if (atIndex) {
+            result = actualVal.substring(atIndex, actualVal.length).startsWith(expectedVal)
+            actual[key] = actualVal
+        } else if (replace){
+            const replacedActual = replaceActual(replace, actualVal)
+            result = replacedActual === expectedVal
+            actual[key] = replacedActual
+        } else {
+            result = result && actualVal === expectedVal
+            actual[key] = css.value
+        }
     }
 
     return {
