@@ -503,7 +503,7 @@ await expect(elem).toHaveId('elem')
 
 ### toHaveStyle
 
-Checks if an element has specific `CSS` properties.
+Checks if an element has specific `CSS` properties. By default, values must match exactly. Only the `CSS` properties you specify are validated; other properties on the element are ignored.
 
 ##### Usage
 
