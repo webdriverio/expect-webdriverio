@@ -12,9 +12,9 @@ import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const asymmetricMatcher =
-  typeof Symbol === 'function' && Symbol.for
-      ? Symbol.for('jest.asymmetricMatcher')
-      : 0x13_57_a5
+    typeof Symbol === 'function' && Symbol.for
+        ? Symbol.for('jest.asymmetricMatcher')
+        : 0x13_57_a5
 
 export function isAsymmeyricMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
     return (
