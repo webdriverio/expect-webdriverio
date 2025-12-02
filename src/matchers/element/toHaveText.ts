@@ -8,7 +8,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp> | WdioAsymmetricMatcher<string> | Array<string | RegExp>, options: ExpectWebdriverIO.StringOptions) {
+async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp> | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
     const actualTextArray: string[] = []
     const resultArray: boolean[] = []
     let checkAllValuesMatchCondition: boolean
