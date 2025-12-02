@@ -224,4 +224,132 @@ describe('toHaveStyle', () => {
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
+
+    test('sucess if style matches with containing', async () => {
+        const el: any = await $('sel')
+        el._attempts = 0
+        let counter = 0
+
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
+            counter++
+            if (counter === Object.keys(mockStyle).length) {
+                counter = 0
+                el._attempts++
+            }
+            return { value: mockStyle[property] }
+        })
+
+        const result = await toHaveStyle.call(
+            {},
+            el,
+            {
+                'font-family': 'Faktum',
+                'font-size': '26',
+                color: '000',
+            },
+            { containing: true }
+        )
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
+    test('sucess if style matches with atStart', async () => {
+        const el: any = await $('sel')
+        el._attempts = 0
+        let counter = 0
+
+        const actualStyle: { [key: string]: string } = {
+            'font-family': 'Faktum Lorem ipsum dolor sit amet',
+            'text-rendering': 'optimizeLegibility',
+            'overflow-wrap': 'break-word',
+        }
+
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
+            counter++
+            if (counter === Object.keys(actualStyle).length) {
+                counter = 0
+                el._attempts++
+            }
+            return { value: actualStyle[property] }
+        })
+
+        const result = await toHaveStyle.call(
+            {},
+            el,
+            {
+                'font-family': 'Faktum',
+                'text-rendering': 'optimize',
+                'overflow-wrap': 'break',
+            },
+            { atStart: true }
+        )
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
+    test('sucess if style matches with atEnd', async () => {
+        const el: any = await $('sel')
+        el._attempts = 0
+        let counter = 0
+
+        const actualStyle: { [key: string]: string } = {
+            'font-family': 'Faktum Lorem ipsum dolor sit amet',
+            'text-rendering': 'optimizeLegibility',
+            'overflow-wrap': 'break-word',
+        }
+
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
+            counter++
+            if (counter === Object.keys(actualStyle).length) {
+                counter = 0
+                el._attempts++
+            }
+            return { value: actualStyle[property] }
+        })
+
+        const result = await toHaveStyle.call(
+            {},
+            el,
+            {
+                'font-family': 'sit amet',
+                'text-rendering': 'Legibility',
+                'overflow-wrap': '-word',
+            },
+            { atEnd: true }
+        )
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
+    test('sucess if style matches with atIndex', async () => {
+        const el: any = await $('sel')
+        el._attempts = 0
+        let counter = 0
+
+        const actualStyle: { [key: string]: string } = {
+            'font-family': 'Faktum Lorem ipsum dolor sit amet',
+            'text-rendering': 'optimizeLegibility',
+            'overflow-wrap': 'break-word',
+        }
+
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
+            counter++
+            if (counter === Object.keys(actualStyle).length) {
+                counter = 0
+                el._attempts++
+            }
+            return { value: actualStyle[property] }
+        })
+
+        const result = await toHaveStyle.call({}, el,
+            {
+                'font-family': 'tum Lorem ipsum dolor sit amet',
+                'text-rendering': 'imizeLegibility',
+                'overflow-wrap': 'ak-word',
+            },
+            { atIndex: 3 })
+        expect(result.pass).toBe(true)
+        expect(el._attempts).toBe(1)
+    })
+
 })

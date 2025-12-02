@@ -506,6 +506,21 @@ const elem = await $('#elem')
 await expect(elem).toHaveId('elem')
 ```
 
+### toHaveStyle
+
+Checks if an element has specific `CSS` properties. By default, values must match exactly. Only the `CSS` properties you specify are validated; other properties on the element are ignored.
+
+##### Usage
+
+```js
+const elem = await $('#elem')
+await expect(elem).toHaveStyle({
+  'font-family': 'Faktum',
+  'font-weight': '500',
+  'font-size': '12px',
+})
+```
+
 ### toHaveText
 
 Checks if element has a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
@@ -585,7 +600,7 @@ await expect(list).toHaveChildren() // the list has at least one item
 await expect(list).toHaveChildren({ gte: 1 })
 
 await expect(list).toHaveChildren(3) // the list has 3 items
-// same as 
+// same as
 await expect(list).toHaveChildren({ eq: 3 })
 ```
 

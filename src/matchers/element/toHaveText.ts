@@ -22,7 +22,7 @@ async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, tex
                 : compareText(actualText, text, options).result
             resultArray.push(result)
         }
-        checkAllValuesMatchCondition = resultArray.every(result => result)
+        checkAllValuesMatchCondition = resultArray.every(Boolean)
     } else {
         const actualText = await (el as WebdriverIO.Element).getText()
         actualTextArray.push(actualText)

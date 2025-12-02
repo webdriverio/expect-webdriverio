@@ -88,7 +88,7 @@ export async function toBeRequestedWith(
  * is actual method matching an expected method or methods
  */
 const methodMatcher = (method: string, expected?: string | Array<string>) => {
-    if (typeof expected === 'undefined') {
+    if (expected === undefined) {
         return true
     }
     if (!Array.isArray(expected)) {
@@ -108,7 +108,7 @@ const methodMatcher = (method: string, expected?: string | Array<string>) => {
  * is actual statusCode matching an expected statusCode or statusCodes
  */
 const statusCodeMatcher = (statusCode: number, expected?: number | Array<number>) => {
-    if (typeof expected === 'undefined') {
+    if (expected === undefined) {
         return true
     }
     if (!Array.isArray(expected)) {
@@ -124,7 +124,7 @@ const urlMatcher = (
     url: string,
     expected?: string | ExpectWebdriverIO.PartialMatcher<string> | ((url: string) => boolean)
 ) => {
-    if (typeof expected === 'undefined') {
+    if (expected === undefined) {
         return true
     }
     if (typeof expected === 'function') {
@@ -148,7 +148,7 @@ const headersMatcher = (
      * if header matcher is an empty object, match with no headers
      */
     if (
-        typeof expected === 'undefined' ||
+        expected === undefined ||
         typeof expected === 'object' && Object.keys(expected).length === 0
     ) {
         return true
@@ -231,21 +231,21 @@ const headersMatcher = (
  *
  * Jest and Jasmine support special matchers like `jasmine.objectContaining`, `expect.arrayContaining`, etc.
  *
- * All these kind of objects have `sample` and `asymmetricMatch` function in __proto__
- * `expect.objectContaining({ foo: 'bar })` -> `{ sample: { foo: 'bar' }, __proto__: asymmetricMatch() {} }`
+ * All these kind of objects have `sample` and `asymmetricMatch` function in their prototype
+ * `expect.objectContaining({ foo: 'bar })` -> `{ sample: { foo: 'bar' }, [prototype]: asymmetricMatch() {} }`
  *
  * jasmine.any and jasmine.anything don't have `sample` property
  * @param filter
  */
 const isMatcher = (filter: unknown) => {
+    const proto = Object.getPrototypeOf(filter)
     return (
         typeof filter === 'object' &&
         filter !== null &&
-        '__proto__' in filter &&
-        typeof filter.__proto__ === 'object' &&
-        filter.__proto__ &&
-        'asymmetricMatch' in filter.__proto__ &&
-        typeof filter.__proto__.asymmetricMatch === 'function'
+        typeof proto === 'object' &&
+        proto &&
+        'asymmetricMatch' in proto &&
+        typeof proto.asymmetricMatch === 'function'
     )
 }
 
@@ -267,7 +267,7 @@ const minifyRequestMock = (
     },
     requestedWith?: ExpectWebdriverIO.RequestedWith
 ) => {
-    if (typeof requestMock === 'undefined') {
+    if (requestMock === undefined) {
         return requestMock
     }
 
@@ -320,7 +320,7 @@ const requestedWithParamToString = (
         | undefined,
     transformFn?: (param: ExpectWebdriverIO.JsonCompatible) => ExpectWebdriverIO.JsonCompatible | string
 ) => {
-    if (typeof param === 'undefined') {
+    if (param === undefined) {
         return
     }
 
@@ -353,7 +353,7 @@ const shortenJson = (
     keyLimit = KEY_LIMIT
 ): ExpectWebdriverIO.JsonCompatible => {
     if (JSON.stringify(obj).length < lengthLimit) {
-        return obj as ExpectWebdriverIO.JsonCompatible
+        return obj
     }
 
     if (Array.isArray(obj)) {
@@ -394,7 +394,7 @@ const shortenString = (str: string, limit = STR_LIMIT) => {
 
 const deleteUndefinedValues = (obj: Record<string, unknown>, baseline = obj) => {
     Object.keys(obj).forEach((k) => {
-        if (typeof baseline[k] === 'undefined') {
+        if (baseline[k] === undefined) {
             delete obj[k]
         }
     })
