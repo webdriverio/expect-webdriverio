@@ -68,7 +68,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.12",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.0.3",
     "@vitest/coverage-v8": "^4.0.16",
     "@wdio/eslint": "^0.1.2",
     "@wdio/types": "^9.20.0",
