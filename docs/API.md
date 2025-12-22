@@ -245,6 +245,33 @@ await expect(browser).toHaveClipboardText('some clipboard text')
 await expect(browser).toHaveClipboardText(expect.stringContaining('clipboard text'))
 ```
 
+### toHaveLocalStorageItem
+
+Checks if browser has a specific item in localStorage with an optional value.
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+// Check if localStorage item exists
+await expect(browser).toHaveLocalStorageItem('existingKey')
+
+// Check localStorage item with exact value
+await expect(browser).toHaveLocalStorageItem('someLocalStorageKey', 'someLocalStorageValue')
+
+// Check with case insensitive
+await expect(browser).toHaveLocalStorageItem('key', 'uppercase', { ignoreCase: true })
+
+// Check with trim
+await expect(browser).toHaveLocalStorageItem('key', 'value', { trim: true })
+
+// Check with containing
+await expect(browser).toHaveLocalStorageItem('key', 'long', { containing: true })
+
+// Check with regex
+await expect(browser).toHaveLocalStorageItem('userId', /^user_\d+$/)
+```
+
 ## Element Matchers
 
 ### toBeDisplayed

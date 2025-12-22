@@ -418,7 +418,13 @@ declare namespace ExpectWebdriverIO {
          */
         toHaveClipboardText(clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
 
-        // ===== $$ only =====
+        /**
+         * `WebdriverIO.Browser` -> `execute`
+         * Checks if a localStorage item exists and optionally validates its value
+         */
+        toHaveLocalStorageItem(key: string, expectedValue?: string | RegExp | ExpectWebdriverIO.PartialMatcher, options?: ExpectWebdriverIO.StringOptions): R
+
+        // ===== $ only =====
         /**
          * `WebdriverIO.ElementArray` -> `$$('...').length`
          * supports less / greater then or equals to be passed in options
