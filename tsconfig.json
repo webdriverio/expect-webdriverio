@@ -14,7 +14,7 @@
     "skipLibCheck": true,
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
-    "moduleResolution": "node", // To review since this is equivalent to node10
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "types": [
       "node",

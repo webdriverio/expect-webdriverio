@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { $ } from '@wdio/globals'
 import { expect as expectWdio, SoftAssertionService, SoftAssertService } from '../src/index.js'
-import type { TestResult } from '@wdio/types/build/Frameworks'
 
 vi.mock('@wdio/globals')
 
