@@ -16,7 +16,7 @@ const asymmetricMatcher =
         ? Symbol.for('jest.asymmetricMatcher')
         : 0x13_57_a5
 
-export function isAsymmeyricMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
+export function isAsymmetricMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> {
     return (
         typeof expected === 'object' &&
         expected &&
@@ -27,14 +27,14 @@ export function isAsymmeyricMatcher(expected: unknown): expected is ExpectWebdri
     ) as boolean
 }
 
-function isStringContainingMatcher(expected: unknown): expected is ExpectWebdriverIO.PartialMatcher {
-    return isAsymmeyricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
+function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> {
+    return isAsymmetricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
 }
 
 /**
  * wait for expectation to succeed
  * @param condition function
- * @param isNot     https://jestjs.io/docs/en/expect#thisisnot
+ * @param isNot     https://jestjs.io/docs/expect#thisisnot
  * @param options   wait, interval, etc
  */
 const waitUntil = async (
@@ -88,7 +88,7 @@ async function executeCommandBe(
     received: WdioElementMaybePromise,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult> {
+): ExpectWebdriverIO.AsyncAssertionResult {
     const { isNot, expectation, verb = 'be' } = this
 
     let el = await received?.getElement()
@@ -141,7 +141,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareText = (
     actual: string,
-    expected: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    expected: string | RegExp | WdioAsymmetricMatcher<string>,
     {
         ignoreCase = false,
         trim = true,
@@ -172,11 +172,11 @@ export const compareText = (
         } else if (isStringContainingMatcher(expected)) {
             expected = (expected.toString() === 'StringContaining'
                 ? expect.stringContaining(expected.sample?.toString().toLowerCase())
-                : expect.not.stringContaining(expected.sample?.toString().toLowerCase())) as ExpectWebdriverIO.PartialMatcher
+                : expect.not.stringContaining(expected.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>
         }
     }
 
-    if (isAsymmeyricMatcher(expected)) {
+    if (isAsymmetricMatcher(expected)) {
         const result = expected.asymmetricMatch(actual)
         return {
             value: actual,
@@ -226,7 +226,7 @@ export const compareText = (
 
 export const compareTextWithArray = (
     actual: string,
-    expectedArray: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher>,
+    expectedArray: Array<string | RegExp | WdioAsymmetricMatcher<string>>,
     {
         ignoreCase = false,
         trim = false,
@@ -259,7 +259,7 @@ export const compareTextWithArray = (
             if (isStringContainingMatcher(item)) {
                 return (item.toString() === 'StringContaining'
                     ? expect.stringContaining(item.sample?.toString().toLowerCase())
-                    : expect.not.stringContaining(item.sample?.toString().toLowerCase())) as ExpectWebdriverIO.PartialMatcher
+                    : expect.not.stringContaining(item.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>
             }
             return item
         })
@@ -269,7 +269,7 @@ export const compareTextWithArray = (
         if (expected instanceof RegExp) {
             return !!actual.match(expected)
         }
-        if (isAsymmeyricMatcher(expected)) {
+        if (isAsymmetricMatcher(expected)) {
             return expected.asymmetricMatch(actual)
         }
         if (containing) {

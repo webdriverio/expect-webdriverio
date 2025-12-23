@@ -3,7 +3,7 @@ import type { AssertionError } from 'node:assert'
 
 import { expect } from 'expect'
 import { stripSnapshotIndentation } from '@vitest/snapshot'
-import { SnapshotService } from '../snapshot.js'
+import { SnapshotService } from '../snapshot'
 
 interface InlineSnapshotOptions {
     inlineSnapshot: string

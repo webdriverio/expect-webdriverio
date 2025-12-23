@@ -59,7 +59,7 @@ function asymmetricMatch(a: any, b: any) {
 }
 
 // Equality function lovingly adapted from isEqual in
-//   [Underscore](http://underscorejs.org)
+//   [Underscore](https://underscorejs.org)
 function eq(
     a: any,
     b: any,

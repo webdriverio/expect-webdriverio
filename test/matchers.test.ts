@@ -61,7 +61,13 @@ test('matchers', () => {
 test('allows to add matcher', () => {
     const matcher: any = vi.fn((actual: any, expected: any) => ({ pass: actual === expected }))
     expectLib.extend({ toBeCustom: matcher })
+
     // @ts-expect-error not in types
     expectLib('foo').toBeCustom('foo')
     expect(matchers.keys()).toContain('toBeCustom')
+})
+
+test('Generic asymmetric matchers from Expect library should work', () => {
+    expectLib(1).toEqual(expectLib.closeTo(1.0001, 0.0001))
+    expectLib(['apple', 'banana', 'cherry']).toEqual(expectLib.arrayOf(expectLib.any(String)))
 })

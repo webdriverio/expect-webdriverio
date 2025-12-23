@@ -3,6 +3,7 @@
 !lib/**/*.js
 !types/**/*.d.ts
 !jasmine.d.ts
+!jasmine-wdio-expect-async.d.ts
 !jest.d.ts
 !LICENSE
 !package.json
