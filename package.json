@@ -63,6 +63,7 @@
     "ts:mocha": "cd test-types/mocha && tsc --project ./tsconfig.json",
     "ts:jasmine": "cd test-types/jasmine && tsc --project ./tsconfig.json",
     "ts:jasmine-async": "cd test-types/jasmine-async && tsc --project ./tsconfig.json",
+    "checks:all": "npm run build && npm run compile && npm run tsc:root-types && npm run test && npm run ts",
     "watch": "npm run compile -- --watch",
     "prepare": "husky install"
   },
