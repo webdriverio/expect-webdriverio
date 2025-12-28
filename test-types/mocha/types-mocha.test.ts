@@ -7,6 +7,7 @@ describe('type assertions', () => {
 
     const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
     const elementArray: WebdriverIO.ElementArray = [] as unknown as WebdriverIO.ElementArray
+    const elements: WebdriverIO.Element[] = [] as unknown as WebdriverIO.Element[]
 
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
 
@@ -321,6 +322,26 @@ describe('type assertions', () => {
                 expectVoid = expect(chainableArray).toBeElementsArrayOfSize(5)
                 // @ts-expect-error
                 expectVoid = expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })
+            })
+
+            it('should work correctly when actual is element array', async () => {
+                expectPromiseVoid = expect(elementArray).toBeElementsArrayOfSize(5)
+                expectPromiseVoid = expect(elementArray).toBeElementsArrayOfSize({ lte: 10 })
+
+                // @ts-expect-error
+                expectVoid = expect(elementArray).toBeElementsArrayOfSize(5)
+                // @ts-expect-error
+                expectVoid = expect(elementArray).toBeElementsArrayOfSize({ lte: 10 })
+            })
+
+            it('should work correctly when actual is element[]', async () => {
+                expectPromiseVoid = expect(elements).toBeElementsArrayOfSize(5)
+                expectPromiseVoid = expect(elements).toBeElementsArrayOfSize({ lte: 10 })
+
+                // @ts-expect-error
+                expectVoid = expect(elements).toBeElementsArrayOfSize(5)
+                // @ts-expect-error
+                expectVoid = expect(elements).toBeElementsArrayOfSize({ lte: 10 })
             })
 
             it('should not work when actual is not chainableArray', async () => {
