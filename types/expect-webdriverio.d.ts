@@ -122,7 +122,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     /**
      * `WebdriverIO.Element` -> `isDisplayed`
      */
-    toBeDisplayed: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+    toBeDisplayed: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.ToBeDisplayedOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `isExisting`
@@ -700,6 +700,32 @@ declare namespace ExpectWebdriverIO {
          * greater than or equals
          */
         gte?: number
+    }
+
+    interface ToBeDisplayedOptions extends CommandOptions {
+        /**
+         * `true` to check if the element is within the viewport. false by default.
+         */
+        withinViewport?: boolean
+
+        /**
+         * `true` to check if the element content-visibility property has (or inherits) the value auto,
+         * and it is currently skipping its rendering. `true` by default.
+         * @default true
+         */
+        contentVisibilityAuto?: boolean
+
+        /**
+         * `true` to check if the element opacity property has (or inherits) a value of 0. `true` by default.
+         * @default true
+         */
+        opacityProperty?: boolean
+
+        /**
+         * `true` to check if the element is invisible due to the value of its visibility property. `true` by default.
+         * @default true
+         */
+        visibilityProperty?: boolean
     }
 
     type RequestedWith = {
