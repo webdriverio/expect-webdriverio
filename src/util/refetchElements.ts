@@ -1,19 +1,19 @@
 import { DEFAULT_OPTIONS } from '../constants.js'
+import type { WdioElements } from '../types.js'
+import { isElementArray } from './elementsUtil.js'
 
 /**
- * refetch elements array
- * @param elements WebdriverIO.ElementArray
+ * Refetch elements array or return when elements is not of type WebdriverIO.ElementArray
+ * @param elements WebdriverIO.ElementArray | WebdriverIO.Element[]
  */
 export const refetchElements = async (
-    elements: WebdriverIO.ElementArray,
+    elements: WdioElements,
     wait = DEFAULT_OPTIONS.wait,
     full = false
-): Promise<WebdriverIO.ElementArray> => {
-    if (elements) {
-        if (wait > 0 && (elements.length === 0 || full)) {
-            // @ts-ignore
-            elements = (await elements.parent[elements.foundWith](elements.selector, ...elements.props) as WebdriverIO.ElementArray)
-        }
+): Promise<WdioElements> => {
+    if (elements && wait > 0 && (elements.length === 0 || full) && isElementArray(elements) && elements.parent && elements.foundWith && elements.foundWith in elements.parent) {
+        const fetchFunction = elements.parent[elements.foundWith as keyof typeof elements.parent] as Function
+        elements = await fetchFunction(elements.selector, ...elements.props)
     }
     return elements
 }

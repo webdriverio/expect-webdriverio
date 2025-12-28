@@ -1,5 +1,7 @@
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
+import type { WdioElements } from '../types.js'
+import { isElementArray } from './elementsUtil.js'
 
 const EXPECTED_LABEL = 'Expected'
 const RECEIVED_LABEL = 'Received'
@@ -15,15 +17,15 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) 
     return result
 }
 
-export const getSelectors = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
+export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
     const selectors = []
-    let parent: WebdriverIO.Element | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | undefined
+    let parent: WebdriverIO.ElementArray['parent'] | undefined
 
-    if (Array.isArray(el)) {
-        selectors.push(`${(el as WebdriverIO.ElementArray).foundWith}(\`${getSelector(el)}\`)`)
+    if (isElementArray(el)) {
+        selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)
         parent = el.parent
-    } else {
-        parent = el as WebdriverIO.Element
+    } else if (!Array.isArray(el)) {
+        parent = el
     }
 
     while (parent && 'selector' in parent) {
@@ -42,7 +44,7 @@ export const not = (isNot: boolean): string => {
 }
 
 export const enhanceError = (
-    subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
+    subject: string | WebdriverIO.Element | WdioElements,
     expected: unknown,
     actual: unknown,
     context: { isNot: boolean },

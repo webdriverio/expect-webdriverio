@@ -11,3 +11,7 @@ export const wrapExpectedWithArray = (el: WebdriverIO.Element | WebdriverIO.Elem
     }
     return expected
 }
+
+export const isElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
+    return obj !== null && typeof obj === 'object' && 'selector' in obj && 'foundWith' in obj && 'parent' in obj
+}
