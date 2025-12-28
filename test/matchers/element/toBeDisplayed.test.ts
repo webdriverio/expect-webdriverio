@@ -67,7 +67,7 @@ describe('toBeDisplayed', () => {
         el._value = function (): boolean {
             return true
         }
-        const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 1, withinViewport: true })
+        const result = await toBeDisplayed.call({}, el, { wait: 1, withinViewport: true })
 
         expect(el.isDisplayed).toHaveBeenCalledWith(
             {
