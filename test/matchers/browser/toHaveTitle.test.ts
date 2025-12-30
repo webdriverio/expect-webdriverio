@@ -123,6 +123,49 @@ Received: "some Wrong Title text"`
                 )
             })
         })
+
+        describe('given multiple remote browsers', async () => {
+            const goodTitles = [goodTitle, goodTitle]
+
+            beforeEach(async () => {
+                multiremotebrowser.getTitle = vi.fn().mockResolvedValue(goodTitles)
+            })
+
+            test('when success', async () => {
+                const result = await defaultContext.toHaveTitle(multiremotebrowser, goodTitle)
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('when failure for one browser', async () => {
+                multiremotebrowser.getTitle = vi.fn().mockResolvedValue([wrongTitle, goodTitle])
+                const result = await defaultContext.toHaveTitle(multiremotebrowser, goodTitle)
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`Expect window to have title
+
+Expected: "some Title text"
+Received: "some Wrong Title text"`
+                )
+            })
+
+            test('when failure for multiple browsers', async () => {
+                multiremotebrowser.getTitle = vi.fn().mockResolvedValue([wrongTitle, wrongTitle])
+                const result = await defaultContext.toHaveTitle(multiremotebrowser, goodTitle)
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`Expect window to have title
+
+Expected: "some Title text"
+Received: "some Wrong Title text"
+
+Expect window to have title
+
+Expected: "some Title text"
+Received: "some Wrong Title text"`
+                )
+            })
+        })
         describe('given before/after assertion hooks and options', async () => {
             const options = {
                 ignoreCase: true,

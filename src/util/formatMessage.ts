@@ -136,10 +136,10 @@ export const enhanceMultiRemoteError = (
             arg2 = ` ${arg2}`
         }
 
-        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}\n\n${diffString}`
+        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}\n\n${diffString}\n\n`
 
     }
-    return msg
+    return msg.trim()
 }
 
 export const enhanceErrorBe = (
