@@ -93,7 +93,6 @@ export const enhanceError = (
 
 export const enhanceMultiRemoteError = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
-    expected: unknown | unknown[],
     results: CompareResult<unknown>[],
     context: ExpectWebdriverIO.MatcherContext,
     arg2 = '',
@@ -101,8 +100,6 @@ export const enhanceMultiRemoteError = (
 
     const { isNot = false, expectation } = context
     let { verb } = context
-
-    console.log('enhanceMultiRemoteError', { subject, expected, results, isNot, verb, expectation, arg2 })
 
     subject = typeof subject === 'string' ? subject : getSelectors(subject)
 
@@ -119,6 +116,7 @@ export const enhanceMultiRemoteError = (
     let msg = ''
     for (const result of failedResults) {
         const actual = result.value
+        const expected = result.expected
 
         let diffString = isNot && equals(actual, expected)
             ? `${EXPECTED_LABEL}: ${printExpected(expected)}\n${RECEIVED_LABEL}: ${printReceived(actual)}`

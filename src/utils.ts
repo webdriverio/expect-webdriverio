@@ -7,8 +7,9 @@ import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
 
-export type CompareResult<T = unknown> = {
-    value: T
+export type CompareResult<T = unknown, E = unknown> = {
+    value: T // actual
+    expected: E
     result: boolean
 }
 
@@ -168,6 +169,7 @@ export const compareText = (
         return {
             value: actual,
             result: false,
+            expected,
         }
     }
 
@@ -195,6 +197,7 @@ export const compareText = (
         return {
             value: actual,
             result,
+            expected,
         }
     }
 
@@ -202,12 +205,14 @@ export const compareText = (
         return {
             value: actual,
             result: !!actual.match(expected),
+            expected,
         }
     }
     if (containing) {
         return {
             value: actual,
             result: actual.includes(expected),
+            expected,
         }
     }
 
@@ -215,6 +220,7 @@ export const compareText = (
         return {
             value: actual,
             result: actual.startsWith(expected),
+            expected,
         }
     }
 
@@ -222,6 +228,7 @@ export const compareText = (
         return {
             value: actual,
             result: actual.endsWith(expected),
+            expected,
         }
     }
 
@@ -229,12 +236,14 @@ export const compareText = (
         return {
             value: actual,
             result: actual.substring(atIndex, actual.length).startsWith(expected),
+            expected,
         }
     }
 
     return {
         value: actual,
         result: actual === expected,
+        expected,
     }
 }
 

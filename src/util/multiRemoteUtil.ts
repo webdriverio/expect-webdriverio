@@ -18,6 +18,7 @@ export const compareMultiRemoteText = (
         return [{
             value: actual,
             result: false,
+            expected
         }]
     }
     if (Array.isArray(expected) && expected.length !== actual.length) {
@@ -25,6 +26,7 @@ export const compareMultiRemoteText = (
         return [{
             value: `Multi-value length mismatch expected ${expected.length} but got ${actual.length}`,
             result: false,
+            expected
         }]
     }
 

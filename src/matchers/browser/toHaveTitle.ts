@@ -52,7 +52,7 @@ export async function toHaveTitle(
     )
 
     const message = browser.isMultiremote
-        ? enhanceMultiRemoteError('window', expectedValue, results, { expectation, verb, isNot }, '', options)
+        ? enhanceMultiRemoteError('window', results, { expectation, verb, isNot }, '', options)
         : enhanceError('window', expectedValue, actual, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
