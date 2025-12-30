@@ -44,44 +44,31 @@ const waitUntil = async (
 ): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
-        return await condition()
+        return isNot !== (await condition())
     }
 
+    const start = Date.now()
     let error: Error | undefined
+    let result = false
 
-    // wait for condition to be truthy
-    try {
-        const start = Date.now()
-        while (true) {
-            if (Date.now() - start > wait) {
-                throw new Error('timeout')
+    while (Date.now() - start <= wait) {
+        try {
+            result = await condition()
+            error = undefined
+            if (result) {
+                break
             }
-
-            try {
-                const result = isNot !== (await condition())
-                error = undefined
-                if (result) {
-                    break
-                }
-                await sleep(interval)
-            } catch (err) {
-                error = err
-                await sleep(interval)
-            }
+        } catch (err) {
+            error = err instanceof Error ? err : new Error(String(err))
         }
-
-        if (error) {
-            throw error
-        }
-
-        return !isNot
-    } catch {
-        if (error) {
-            throw error
-        }
-
-        return isNot
+        await sleep(interval)
     }
+
+    if (error) {
+        throw error
+    }
+
+    return isNot !== result
 }
 
 async function executeCommandBe(
