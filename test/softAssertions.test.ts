@@ -36,7 +36,7 @@ describe('Soft Assertions', () => {
             softService.setCurrentTest('test-2', 'test name', 'test file')
 
             // This should not throw even though it fails
-            await expectWdio.soft(el).not.toHaveText('Actual Text')
+            await expectWdio.soft(el).not.toHaveText('Text')
 
             // Verify the failure was recorded
             const failures = expectWdio.getSoftFailures()

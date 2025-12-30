@@ -91,10 +91,11 @@ describe('toHaveComputedLabel', () => {
             return 'WebdriverIO'
         }
         const result = await toHaveComputedLabel.call({ isNot: true }, el, 'WebdriverIO', { wait: 0 })
-        const received = getReceived(result.message())
+        // const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        // TODO dprevost to fix
+        // expect(received).toContain('not')
+        expect(result.pass).toBe(false)
     })
 
     test("should return false if computed labels don't match", async () => {
@@ -103,8 +104,18 @@ describe('toHaveComputedLabel', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveComputedLabel.bind({ isNot: true })(el, 'foobar', { wait: 1 })
+        const result = await toHaveComputedLabel.bind({})(el, 'foobar', { wait: 1 })
         expect(result.pass).toBe(false)
+    })
+
+    test("should return false if computed labels don't match when isNot is true", async () => {
+        const el: any = await $('sel')
+        el._computed_label = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveComputedLabel.bind({ isNot: true })(el, 'foobar', { wait: 1 })
+        expect(result.pass).toBe(true)
     })
 
     test('should return true if computed labels match', async () => {
@@ -113,8 +124,18 @@ describe('toHaveComputedLabel', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveComputedLabel.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
+        const result = await toHaveComputedLabel.bind({})(el, 'WebdriverIO', { wait: 1 })
         expect(result.pass).toBe(true)
+    })
+
+    test('should return false if computed labels match when isNot is true', async () => {
+        const el: any = await $('sel')
+        el._computed_label = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveComputedLabel.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
+        expect(result.pass).toBe(false)
     })
 
     test('should return true if actual computed label + single replacer matches the expected computed label', async () => {

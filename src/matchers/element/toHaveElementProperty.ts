@@ -36,7 +36,7 @@ async function condition(
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
-    value?: string | RegExp | WdioAsymmetricMatcher<string>,
+    value?: string | RegExp | WdioAsymmetricMatcher<string> | null,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot

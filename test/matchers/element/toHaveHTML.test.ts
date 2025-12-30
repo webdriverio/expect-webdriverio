@@ -94,6 +94,18 @@ describe('toHaveHTML', () => {
         const received = getReceived(result.message())
 
         expect(received).not.toContain('not')
+        expect(result.pass).toBe(false)
+    })
+
+    test('not - success', async () => {
+        const el: any = await $('sel')
+        el._html = function (): string {
+            return '<div>foo</div>'
+        }
+        const result = await toHaveHTML.call({ isNot: true }, el, '<div>Notfoo</div>', { wait: 0 })
+        const received = getReceived(result.message())
+
+        expect(received).not.toContain('not')
         expect(result.pass).toBe(true)
     })
 
@@ -103,7 +115,27 @@ describe('toHaveHTML', () => {
             return '<div>foo</div>'
         }
 
+        const result = await toHaveHTML.bind({})(el, 'foobar', { wait: 1 })
+        expect(result.pass).toBe(false)
+    })
+
+    test("should return true if htmls don't match when isNot is true", async () => {
+        const el: any = await $('sel')
+        el._html = function (): string {
+            return '<div>foo</div>'
+        }
+
         const result = await toHaveHTML.bind({ isNot: true })(el, 'foobar', { wait: 1 })
+        expect(result.pass).toBe(true)
+    })
+
+    test('should return false if htmls match when isNot is true', async () => {
+        const el: any = await $('sel')
+        el._html = function (): string {
+            return '<div>foo</div>'
+        }
+
+        const result = await toHaveHTML.bind({ isNot: true })(el, '<div>foo</div>', { wait: 1 })
         expect(result.pass).toBe(false)
     })
 
@@ -113,7 +145,7 @@ describe('toHaveHTML', () => {
             return '<div>foo</div>'
         }
 
-        const result = await toHaveHTML.bind({ isNot: true })(el, '<div>foo</div>', { wait: 1 })
+        const result = await toHaveHTML.bind({})(el, '<div>foo</div>', { wait: 1 })
         expect(result.pass).toBe(true)
     })
 

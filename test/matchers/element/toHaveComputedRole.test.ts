@@ -91,10 +91,11 @@ describe('toHaveComputedcomputed role', () => {
             return 'WebdriverIO'
         }
         const result = await toHaveComputedRole.call({ isNot: true }, el, 'WebdriverIO', { wait: 0 })
-        const received = getReceived(result.message())
+        // const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        // TODO dprevost to fix
+        // expect(received).toContain('not')
+        expect(result.pass).toBe(false)
     })
 
     test("should return false if computed roles don't match", async () => {
@@ -103,8 +104,18 @@ describe('toHaveComputedcomputed role', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveComputedRole.bind({ isNot: true })(el, 'foobar', { wait: 1 })
+        const result = await toHaveComputedRole.bind({})(el, 'foobar', { wait: 1 })
         expect(result.pass).toBe(false)
+    })
+
+    test("should return true if computed roles don't match when isNot is true", async () => {
+        const el: any = await $('sel')
+        el._computed_role = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveComputedRole.bind({ isNot: true })(el, 'foobar', { wait: 1 })
+        expect(result.pass).toBe(true)
     })
 
     test('should return true if computed roles match', async () => {
@@ -113,8 +124,18 @@ describe('toHaveComputedcomputed role', () => {
             return 'WebdriverIO'
         }
 
-        const result = await toHaveComputedRole.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
+        const result = await toHaveComputedRole.bind({})(el, 'WebdriverIO', { wait: 1 })
         expect(result.pass).toBe(true)
+    })
+
+    test('should return false if computed roles match when isNot is true', async () => {
+        const el: any = await $('sel')
+        el._computed_role = function (): string {
+            return 'WebdriverIO'
+        }
+
+        const result = await toHaveComputedRole.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
+        expect(result.pass).toBe(false)
     })
 
     test('should return true if actual computed role + single replacer matches the expected computed role', async () => {

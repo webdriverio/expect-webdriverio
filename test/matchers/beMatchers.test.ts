@@ -98,8 +98,8 @@ describe('be* matchers', () => {
                 const result = await fn.call({ isNot: true }, $('sel'), { wait: 0 }) as ExpectWebdriverIO.AssertionResult
                 const received = getReceived(result.message())
 
-                expect(received).not.toContain('not')
-                expect(result.pass).toBe(true)
+                expect(received).toContain('not')
+                expect(result.pass).toBe(false)
             })
 
             test('not - success', async () => {
@@ -109,18 +109,16 @@ describe('be* matchers', () => {
                     return false
                 }
                 const result = await fn.call({ isNot: true }, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
-                const received = getReceived(result.message())
 
-                expect(received).toContain('not')
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true)
             })
 
             test('not - failure (with wait)', async () => {
                 const result = await fn.call({ isNot: true }, $('sel'), { wait: 1 }) as ExpectWebdriverIO.AssertionResult
                 const received = getReceived(result.message())
 
-                expect(received).not.toContain('not')
-                expect(result.pass).toBe(true)
+                expect(received).toContain('not')
+                expect(result.pass).toBe(false)
             })
 
             test('not - success (with wait)', async () => {
@@ -130,10 +128,7 @@ describe('be* matchers', () => {
                     return false
                 }
                 const result = await fn.call({ isNot: true }, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
-                const received = getReceived(result.message())
-
-                expect(received).toContain('not')
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true)
             })
 
             test('message', async () => {
