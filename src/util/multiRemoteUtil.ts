@@ -29,7 +29,9 @@ export const compareMultiRemoteText = (
     }
 
     const actualArray = toArray(actual)
-    const expectedArray = toArray(expected)
+
+    // Use array or fill to match actual length when expected is a single value
+    const expectedArray = Array.isArray(expected) ? expected : Array(actualArray.length).fill(expected, 0, actualArray.length)
 
     const results: CompareResult<string>[] = []
     for (let i = 0; i < actualArray.length; i++) {
