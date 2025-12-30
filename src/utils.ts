@@ -1,34 +1,36 @@
 import deepEql from 'deep-eql'
 import type { ParsedCSSValue } from 'webdriverio'
-
 import { expect } from 'expect'
-
 import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
 
+export type CompareResult<T = unknown> = {
+    value: T
+    result: boolean
+}
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const asymmetricMatcher =
-    typeof Symbol === 'function' && Symbol.for
-        ? Symbol.for('jest.asymmetricMatcher')
-        : 0x13_57_a5
+    typeof Symbol === 'function' && Symbol.for ? Symbol.for('jest.asymmetricMatcher') : 0x13_57_a5
 
 export function isAsymmetricMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> {
-    return (
-        typeof expected === 'object' &&
+    return (typeof expected === 'object' &&
         expected &&
         '$$typeof' in expected &&
         'asymmetricMatch' in expected &&
         expected.$$typeof === asymmetricMatcher &&
-        Boolean(expected.asymmetricMatch)
-    ) as boolean
+        Boolean(expected.asymmetricMatch)) as boolean
 }
 
 function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> {
-    return isAsymmetricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
+    return (
+        isAsymmetricMatcher(expected) &&
+        ['StringContaining', 'StringNotContaining'].includes(expected.toString())
+    )
 }
 
 /**
@@ -40,7 +42,7 @@ function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetri
 const waitUntil = async (
     condition: () => Promise<boolean>,
     isNot = false,
-    { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
+    { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {},
 ): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
@@ -87,7 +89,7 @@ const waitUntil = async (
 async function executeCommandBe(
     received: WdioElementMaybePromise,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
-    options: ExpectWebdriverIO.CommandOptions
+    options: ExpectWebdriverIO.CommandOptions,
 ): ExpectWebdriverIO.AsyncAssertionResult {
     const { isNot, expectation, verb = 'be' } = this
 
@@ -97,14 +99,14 @@ async function executeCommandBe(
             const result = await executeCommand.call(
                 this,
                 el,
-                async (element ) => ({ result: await command(element as WebdriverIO.Element) }),
-                options
+                async (element) => ({ result: await command(element as WebdriverIO.Element) }),
+                options,
             )
             el = result.el as WebdriverIO.Element
             return result.success
         },
         isNot,
-        options
+        options,
     )
 
     const message = enhanceErrorBe(el, pass, this, verb, expectation, options)
@@ -139,19 +141,29 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
+const DEFAULT_STRING_OPTIONS: ExpectWebdriverIO.StringOptions = {
+    ignoreCase: false,
+    trim: true,
+    containing: false,
+    atStart: false,
+    atEnd: false,
+    atIndex: undefined,
+    replace: undefined,
+}
+
 export const compareText = (
     actual: string,
     expected: string | RegExp | WdioAsymmetricMatcher<string>,
     {
-        ignoreCase = false,
-        trim = true,
-        containing = false,
-        atStart = false,
-        atEnd = false,
-        atIndex,
-        replace,
-    }: ExpectWebdriverIO.StringOptions
-) => {
+        ignoreCase = DEFAULT_STRING_OPTIONS.ignoreCase,
+        trim = DEFAULT_STRING_OPTIONS.trim,
+        containing = DEFAULT_STRING_OPTIONS.containing,
+        atStart = DEFAULT_STRING_OPTIONS.atStart,
+        atEnd = DEFAULT_STRING_OPTIONS.atEnd,
+        atIndex = DEFAULT_STRING_OPTIONS.atIndex,
+        replace = DEFAULT_STRING_OPTIONS.replace,
+    }: ExpectWebdriverIO.StringOptions,
+): CompareResult<string> => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -170,9 +182,11 @@ export const compareText = (
         if (typeof expected === 'string') {
             expected = expected.toLowerCase()
         } else if (isStringContainingMatcher(expected)) {
-            expected = (expected.toString() === 'StringContaining'
-                ? expect.stringContaining(expected.sample?.toString().toLowerCase())
-                : expect.not.stringContaining(expected.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>
+            expected = (
+                expected.toString() === 'StringContaining'
+                    ? expect.stringContaining(expected.sample?.toString().toLowerCase())
+                    : expect.not.stringContaining(expected.sample?.toString().toLowerCase())
+            ) as WdioAsymmetricMatcher<string>
         }
     }
 
@@ -180,7 +194,7 @@ export const compareText = (
         const result = expected.asymmetricMatch(actual)
         return {
             value: actual,
-            result
+            result,
         }
     }
 
@@ -235,7 +249,7 @@ export const compareTextWithArray = (
         atEnd = false,
         atIndex,
         replace,
-    }: ExpectWebdriverIO.StringOptions
+    }: ExpectWebdriverIO.StringOptions,
 ) => {
     if (typeof actual !== 'string') {
         return {
@@ -257,9 +271,11 @@ export const compareTextWithArray = (
                 return item.toLowerCase()
             }
             if (isStringContainingMatcher(item)) {
-                return (item.toString() === 'StringContaining'
-                    ? expect.stringContaining(item.sample?.toString().toLowerCase())
-                    : expect.not.stringContaining(item.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>
+                return (
+                    item.toString() === 'StringContaining'
+                        ? expect.stringContaining(item.sample?.toString().toLowerCase())
+                        : expect.not.stringContaining(item.sample?.toString().toLowerCase())
+                ) as WdioAsymmetricMatcher<string>
             }
             return item
         })
@@ -317,7 +333,7 @@ export const compareStyle = async (
         atEnd = false,
         atIndex,
         replace,
-    }: ExpectWebdriverIO.StringOptions
+    }: ExpectWebdriverIO.StringOptions,
 ) => {
     let result = true
     const actual: Record<string, string | undefined> = {}
@@ -349,7 +365,7 @@ export const compareStyle = async (
         } else if (atIndex) {
             result = actualVal.substring(atIndex, actualVal.length).startsWith(expectedVal)
             actual[key] = actualVal
-        } else if (replace){
+        } else if (replace) {
             const replacedActual = replaceActual(replace, actualVal)
             result = replacedActual === expectedVal
             actual[key] = replacedActual
@@ -367,13 +383,7 @@ export const compareStyle = async (
 
 function aliasFn(
     fn: (...args: unknown[]) => void,
-    {
-        verb,
-        expectation,
-    }: {
-        verb?: string
-        expectation?: string
-    } = {},
+    { verb, expectation }: ExpectWebdriverIO.MatcherContext = {},
     ...args: unknown[]
 ): unknown {
     this.verb = verb
@@ -382,16 +392,22 @@ function aliasFn(
 }
 
 export {
-    aliasFn, compareNumbers, enhanceError, executeCommand,
-    executeCommandBe, numberError, waitUntil, wrapExpectedWithArray
+    aliasFn,
+    compareNumbers,
+    enhanceError,
+    executeCommand,
+    executeCommandBe,
+    numberError,
+    waitUntil,
+    wrapExpectedWithArray,
 }
 
 function replaceActual(
     replace: [string | RegExp, string | Function] | Array<[string | RegExp, string | Function]>,
-    actual: string
+    actual: string,
 ) {
     const hasMultipleReplacers = (replace as [string | RegExp, string | Function][]).every((r) =>
-        Array.isArray(r)
+        Array.isArray(r),
     )
     const replacers = hasMultipleReplacers
         ? (replace as [string | RegExp, string | Function][])

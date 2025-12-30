@@ -2,6 +2,7 @@ import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
 import { isElementArray } from './elementsUtil.js'
+import type { CompareResult } from '../utils.js'
 
 const EXPECTED_LABEL = 'Expected'
 const RECEIVED_LABEL = 'Received'
@@ -47,10 +48,11 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean },
+    context: { isNot?: boolean },
     verb: string,
     expectation: string,
-    arg2 = '', {
+    arg2 = '',
+    {
         message = '',
         containing = false
     }): string => {
@@ -86,6 +88,59 @@ export const enhanceError = (
     }
 
     const msg = `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}\n\n${diffString}`
+    return msg
+}
+
+export const enhanceMultiRemoteError = (
+    subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
+    expected: unknown | unknown[],
+    results: CompareResult<unknown>[],
+    context: ExpectWebdriverIO.MatcherContext,
+    arg2 = '',
+    { message = '', containing = false }): string => {
+
+    const { isNot = false, expectation } = context
+    let { verb } = context
+
+    console.log('enhanceMultiRemoteError', { subject, expected, results, isNot, verb, expectation, arg2 })
+
+    subject = typeof subject === 'string' ? subject : getSelectors(subject)
+
+    let contain = ''
+    if (containing) {
+        contain = ' containing'
+    }
+
+    if (verb) {
+        verb += ' '
+    }
+    const failedResults = results.filter(result => !result.result)
+
+    let msg = ''
+    for (const result of failedResults) {
+        const actual = result.value
+
+        let diffString = isNot && equals(actual, expected)
+            ? `${EXPECTED_LABEL}: ${printExpected(expected)}\n${RECEIVED_LABEL}: ${printReceived(actual)}`
+            : printDiffOrStringify(expected, actual, EXPECTED_LABEL, RECEIVED_LABEL, true)
+
+        if (isNot) {
+            diffString = diffString
+                .replace(EXPECTED_LABEL, NOT_EXPECTED_LABEL)
+                .replace(RECEIVED_LABEL, RECEIVED_LABEL + ' '.repeat(NOT_SUFFIX.length))
+        }
+
+        if (message) {
+            message += '\n'
+        }
+
+        if (arg2) {
+            arg2 = ` ${arg2}`
+        }
+
+        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}\n\n${diffString}`
+
+    }
     return msg
 }
 
