@@ -37,6 +37,7 @@ export async function toHaveTitle(
 
     let actual: string | string[] = ''
     let results: CompareResult<string>[] = []
+    // TODO: dprevost - try to leverage multiple conditions in waitUntil for each remote to not repeat fetch when they succeed.
     const pass = await waitUntil(
         async () => {
             actual = await browser.getTitle()
