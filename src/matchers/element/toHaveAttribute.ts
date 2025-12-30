@@ -2,6 +2,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
 import {
     compareText,
+    compareTextWithArray,
     enhanceError,
     executeCommand,
     waitUntil,
@@ -10,15 +11,36 @@ import {
 
 async function conditionAttr(el: WebdriverIO.Element, attribute: string) {
     const attr = await el.getAttribute(attribute)
+    if (Array.isArray(attr)) {
+        return {
+            result: attr.every(a => typeof a === 'string'),
+            value: attr
+        }
+    }
     if (typeof attr !== 'string') {
         return { result: false, value: attr }
     }
     return { result: true, value: attr }
-
 }
 
 async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
     const attr = await el.getAttribute(attribute)
+    if (Array.isArray(attr)) {
+        const results = attr.map((item) => {
+            if (typeof item !== 'string') {
+                return { result: false, value: item }
+            }
+            return Array.isArray(value)
+                ? compareTextWithArray(item, value, options)
+                : compareText(item, value, options)
+        })
+
+        return {
+            result: results.every((res) => res.result),
+            value: attr
+        }
+    }
+
     if (typeof attr !== 'string') {
         return { result: false, value: attr }
     }

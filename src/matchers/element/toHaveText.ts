@@ -25,10 +25,21 @@ async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, tex
         checkAllValuesMatchCondition = resultArray.every(Boolean)
     } else {
         const actualText = await (el as WebdriverIO.Element).getText()
-        actualTextArray.push(actualText)
-        checkAllValuesMatchCondition = Array.isArray(text)
-            ? compareTextWithArray(actualText, text, options).result
-            : compareText(actualText, text, options).result
+        if (Array.isArray(actualText)) {
+            for (const value of actualText) {
+                actualTextArray.push(value)
+                const result = Array.isArray(text)
+                    ? compareTextWithArray(value, text, options).result
+                    : compareText(value, text, options).result
+                resultArray.push(result)
+            }
+            checkAllValuesMatchCondition = resultArray.every(Boolean)
+        } else {
+            actualTextArray.push(actualText)
+            checkAllValuesMatchCondition = Array.isArray(text)
+                ? compareTextWithArray(actualText, text, options).result
+                : compareText(actualText, text, options).result
+        }
     }
 
     return {

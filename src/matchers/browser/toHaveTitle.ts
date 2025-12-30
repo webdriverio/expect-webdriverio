@@ -1,4 +1,4 @@
-import { waitUntil, enhanceError, compareText } from '../../utils.js'
+import { waitUntil, enhanceError, compareText, compareTextWithArray } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
 export async function toHaveTitle(
@@ -17,9 +17,20 @@ export async function toHaveTitle(
 
     let actual
     const pass = await waitUntil(async () => {
-        actual = await browser.getTitle()
+        const result = await browser.getTitle()
+        actual = result
 
-        return compareText(actual, expectedValue, options).result
+        if (Array.isArray(result)) {
+            const results = result.map((item) => {
+                return Array.isArray(expectedValue)
+                    ? compareTextWithArray(item, expectedValue, options).result
+                    : compareText(item, expectedValue, options).result
+            })
+
+            return results.every((res) => res)
+        }
+
+        return compareText(result, expectedValue, options).result
     }, isNot, options)
 
     const message = enhanceError('window', expectedValue, actual, this, verb, expectation, '', options)

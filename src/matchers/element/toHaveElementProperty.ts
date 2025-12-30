@@ -2,6 +2,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
 import {
     compareText,
+    compareTextWithArray,
     enhanceError,
     executeCommand,
     waitUntil,
@@ -19,6 +20,34 @@ async function condition(
     let prop = await el.getProperty(property)
     if (prop === null || prop === undefined) {
         return { result: false, value: prop }
+    }
+
+    if (Array.isArray(prop)) {
+        // existence check
+        if (value === null) {
+            return { result: prop.every(p => p === null), value: prop }
+        }
+
+        const results = prop.map((item) => {
+             if (item === null || item === undefined) {
+                return { result: false, value: item }
+            }
+             if (value === null) {
+                return { result: item === null, value: item }
+            }
+            if (!(value instanceof RegExp) && typeof item !== 'string' && !asString) {
+                return { result: item === value, value: item }
+            }
+            const itemStr = item.toString()
+            return Array.isArray(value)
+                ? compareTextWithArray(itemStr, value as string[], options)
+                : compareText(itemStr, value as string | RegExp | WdioAsymmetricMatcher<string>, options)
+        })
+
+        return {
+            result: results.every((res) => res.result),
+            value: prop
+        }
     }
 
     if (value === null) {
