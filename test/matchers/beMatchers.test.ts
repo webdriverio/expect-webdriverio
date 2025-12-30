@@ -1,6 +1,6 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
-import { getExpectMessage, getReceived, matcherNameToString } from '../__fixtures__/utils.js'
+import { getExpectMessage, matcherNameToString } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
@@ -96,9 +96,8 @@ describe('be* matchers', () => {
 
             test('not - failure', async () => {
                 const result = await fn.call({ isNot: true }, $('sel'), { wait: 0 }) as ExpectWebdriverIO.AssertionResult
-                const received = getReceived(result.message())
 
-                expect(received).toContain('not')
+                expect(result.message()).toContain('not')
                 expect(result.pass).toBe(false)
             })
 
@@ -115,9 +114,8 @@ describe('be* matchers', () => {
 
             test('not - failure (with wait)', async () => {
                 const result = await fn.call({ isNot: true }, $('sel'), { wait: 1 }) as ExpectWebdriverIO.AssertionResult
-                const received = getReceived(result.message())
 
-                expect(received).toContain('not')
+                expect(result.message()).toContain('not')
                 expect(result.pass).toBe(false)
             })
 

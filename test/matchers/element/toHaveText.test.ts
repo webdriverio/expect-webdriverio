@@ -129,9 +129,8 @@ describe('toHaveText', () => {
             return 'WebdriverIO'
         }
         const result = await toHaveText.call({ isNot: true }, el, 'WebdriverIO', { wait: 0 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
+        expect(result.message()).toContain('not')
         expect(result.pass).toBe(false)
     })
 

@@ -91,9 +91,8 @@ describe('toHaveHTML', () => {
             return '<div>foo</div>'
         }
         const result = await toHaveHTML.call({ isNot: true }, el, '<div>foo</div>', { wait: 0 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
+        expect(result.message()).toContain('not')
         expect(result.pass).toBe(false)
     })
 
@@ -103,9 +102,7 @@ describe('toHaveHTML', () => {
             return '<div>foo</div>'
         }
         const result = await toHaveHTML.call({ isNot: true }, el, '<div>Notfoo</div>', { wait: 0 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
         expect(result.pass).toBe(true)
     })
 

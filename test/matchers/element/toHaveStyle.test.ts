@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage, getReceived } from '../../__fixtures__/utils.js'
+import { getExpectMessage } from '../../__fixtures__/utils.js'
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle.js'
 
 vi.mock('@wdio/globals')
@@ -122,9 +122,8 @@ describe('toHaveStyle', () => {
             return { value: mockStyle[property] }
         })
         const result = await toHaveStyle.call({ isNot: true }, el, mockStyle, { wait: 0 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
+        expect(result.message()).toContain('not')
         expect(result.pass).toBe(false)
     })
 

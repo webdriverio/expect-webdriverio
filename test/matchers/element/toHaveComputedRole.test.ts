@@ -91,10 +91,8 @@ describe('toHaveComputedcomputed role', () => {
             return 'WebdriverIO'
         }
         const result = await toHaveComputedRole.call({ isNot: true }, el, 'WebdriverIO', { wait: 0 })
-        // const received = getReceived(result.message())
 
-        // TODO dprevost to fix
-        // expect(received).toContain('not')
+        expect(result.message()).toContain('not')
         expect(result.pass).toBe(false)
     })
 
