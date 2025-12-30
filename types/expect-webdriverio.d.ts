@@ -188,11 +188,14 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     /**
      * `WebdriverIO.Element` -> `getProperty`
      */
-    toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, (
-        property: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-        value?: unknown,
-        options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<void>>
+    toHaveElementProperty: FnWhenElementOrArrayLike<
+        ActualT,
+        (
+            property: string,
+            value?: string | RegExp | WdioAsymmetricMatcher<string> | null,
+            options?: ExpectWebdriverIO.StringOptions,
+        ) => Promise<void>
+    >
 
     /**
      * `WebdriverIO.Element` -> `getProperty` value

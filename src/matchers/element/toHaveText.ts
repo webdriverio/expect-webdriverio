@@ -42,7 +42,6 @@ export async function toHaveText(
     expectedValue: string | RegExp | WdioAsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
     const { expectation = 'text', verb = 'have' } = this
 
     await options.beforeAssertion?.({
@@ -64,7 +63,7 @@ export async function toHaveText(
         actualText = result.values
 
         return result.success
-    }, isNot, options)
+    }, options)
 
     const message = enhanceError(el, wrapExpectedWithArray(el, actualText, expectedValue), actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {

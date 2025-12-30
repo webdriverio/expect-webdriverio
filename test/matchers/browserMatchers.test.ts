@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { browser } from '@wdio/globals'
 
-import { getExpectMessage, getReceived, matcherNameToString, getExpected } from '../__fixtures__/utils.js'
+import { getExpectMessage, matcherNameToString, matcherLastWordName } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
@@ -28,7 +28,7 @@ describe('browser matchers', () => {
                 expect(browser[browserFnName]).toHaveBeenCalledTimes(3)
             })
 
-            test('wait but failure', async () => {
+            test('wait but error', async () => {
                 browser[browserFnName] = vi.fn().mockRejectedValue(new Error('some error'))
 
                 await expect(() => matcherFn.call({}, browser, validText, { trim: false }))
@@ -61,48 +61,47 @@ describe('browser matchers', () => {
                 expect(browser[browserFnName]).toHaveBeenCalledTimes(1)
             })
 
-            test('not - failure', async () => {
+            test('not - failure - pass should be true', async () => {
+                browser[browserFnName] = vi.fn().mockResolvedValue(validText)
                 const result = await matcherFn.call({ isNot: true }, browser, validText, { wait: 0, trim: false }) as ExpectWebdriverIO.AssertionResult
 
-                expect(getExpectMessage(result.message())).toContain('not')
-                expect(getExpected(result.message())).toContain('not')
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(result.message()).toEqual(`\
+Expect window not to have ${matcherLastWordName(matcherName)}
 
-                expect(result.pass).toBe(true)
+Expected [not]: " Valid Text "
+Received      : " Valid Text "`
+                )
             })
 
-            test('not - success', async () => {
+            test('not - success - pass should be false', async () => {
                 browser[browserFnName] = vi.fn().mockResolvedValue(wrongText)
 
                 const result = await matcherFn.call({ isNot: true }, browser, validText, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
 
-                expect(getExpectMessage(result.message())).toContain('not')
-                expect(getExpected(result.message())).toContain('Valid')
-                expect(getReceived(result.message())).toContain('Wrong')
-
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
 
-            test('not - failure (with wait)', async () => {
+            test('not - failure (with wait) - pass should be true', async () => {
                 browser[browserFnName] = vi.fn().mockResolvedValue(validText)
 
                 const result = await matcherFn.call({ isNot: true }, browser, validText, { wait: 1, trim: false }) as ExpectWebdriverIO.AssertionResult
 
-                expect(getExpectMessage(result.message())).toContain('not')
-                expect(getExpected(result.message())).toContain('not')
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(result.message()).toEqual(`\
+Expect window not to have ${matcherLastWordName(matcherName)}
 
-                expect(result.pass).toBe(true)
+Expected [not]: " Valid Text "
+Received      : " Valid Text "`
+                )
             })
 
-            test('not - success (with wait)', async () => {
+            test('not - success (with wait) - pass should be false', async () => {
                 browser[browserFnName] = vi.fn().mockResolvedValue(wrongText)
 
                 const result = await matcherFn.call({ isNot: true }, browser, validText, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
 
-                expect(getExpectMessage(result.message())).toContain('not')
-                expect(getExpected(result.message())).toContain('Valid')
-                expect(getReceived(result.message())).toContain('Wrong')
-
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
 
             test('message', async () => {

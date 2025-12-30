@@ -67,30 +67,35 @@ describe('toHaveComputedLabel', () => {
         expect(el.getComputedLabel).toHaveBeenCalledTimes(1)
     })
 
-    test('not - failure', async () => {
+    test('not - failure - pass should be true', async () => {
         const el = await $('sel')
         el.getComputedLabel = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveComputedLabel.call({ isNot: true }, el, 'WebdriverIO', { wait: 0 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+        expect(result.message()).toEqual(`\
+Expect $(\`sel\`) not to have computed label
+
+Expected [not]: "WebdriverIO"
+Received      : "WebdriverIO"`
+        )
     })
 
-    test("should return false if computed labels don't match", async () => {
+    test('not - success - pass should be false', async () => {
         const el = await $('sel')
         el.getComputedLabel = vi.fn().mockResolvedValue('WebdriverIO')
 
-        const result = await toHaveComputedLabel.bind({ isNot: true })(el, 'foobar', { wait: 1 })
-        expect(result.pass).toBe(false)
+        const result = await toHaveComputedLabel.call({ isNot: true }, el, 'not WebdriverIO', { wait: 0 })
+
+        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
     })
 
     test('should return true if computed labels match', async () => {
         const el = await $('sel')
         el.getComputedLabel = vi.fn().mockResolvedValue('WebdriverIO')
 
-        const result = await toHaveComputedLabel.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
+        const result = await toHaveComputedLabel.bind({})(el, 'WebdriverIO', { wait: 1 })
         expect(result.pass).toBe(true)
     })
 
@@ -101,6 +106,7 @@ describe('toHaveComputedLabel', () => {
         const result = await toHaveComputedLabel.bind({})(el, 'BrowserdriverIO', {
             replace: ['Web', 'Browser'],
         })
+
         expect(result.pass).toBe(true)
     })
 

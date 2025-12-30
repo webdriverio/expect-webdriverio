@@ -42,7 +42,6 @@ export async function toHaveElementClass(
     expectedValue: string | RegExp | Array<string | RegExp> | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
 
     await options.beforeAssertion?.({
@@ -62,7 +61,7 @@ export async function toHaveElementClass(
         attr = result.values
 
         return result.success
-    }, isNot, options)
+    }, options)
 
     const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {

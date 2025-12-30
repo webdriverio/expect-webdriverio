@@ -22,7 +22,6 @@ export async function toHaveHeight(
     expectedValue: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
     const { expectation = 'height', verb = 'have' } = this
 
     await options.beforeAssertion?.({
@@ -53,7 +52,6 @@ export async function toHaveHeight(
 
             return result.success
         },
-        isNot,
         { ...numberOptions, ...options }
     )
 
