@@ -665,11 +665,6 @@ declare namespace ExpectWebdriverIO {
 
     interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
 
-    // interface MatcherContext extends ExpectLibMatcherContext {
-    //     verb?: string
-    //     expectation?: string
-    // }
-
     interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
 
     interface InverseAsymmetricMatchers extends Omit<

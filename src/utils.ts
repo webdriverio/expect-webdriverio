@@ -54,7 +54,7 @@ const waitUntilResult = async <A = unknown, E = unknown>(
 ): Promise<{ pass: boolean, results: CompareResult<A, E>[] }> => {
     /**
      * Using array algorithm to handle both single and multiple conditions uniformly
-     * Tehcnically this is an o2(n) operation but pratically, we process either a single promise with Array or an Array of promises
+     * Technically, this is an o(n3) operation, but practically, we process either a single promise with Array or an Array of promises. Review later if we can simplify and only have an array of promises
      */
     const conditions = toArray(condition)
     // single attempt
@@ -81,7 +81,7 @@ const waitUntilResult = async <A = unknown, E = unknown>(
         try {
             const pendingConditions = allConditionsResults.filter(({ results }) => !results.every((result) => result.result))
 
-            // TODO dprevost: verify how to handle errors for each condition
+            // TODO multi-remote support: handle errors per remote more gracefully, so we report failures and throws if all remotes are in errors (and therefore still throw when not multi-remote)
             await Promise.all(
                 pendingConditions.map(async (pendingResult) => {
                     const results = toArray(await pendingResult.condition())
