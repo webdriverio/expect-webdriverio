@@ -87,13 +87,22 @@ export const enhanceError = (
         arg2 = ` ${arg2}`
     }
 
+    /**
+     * Example of below message:
+     * Expect window to have title
+     *
+     * Expected: "some Title text"
+     * Received: "some Wrong Title text"
+     */
     const msg = `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}\n\n${diffString}`
     return msg
 }
 
+export type BrowserCompareResult = { instance: string; result: CompareResult<string> }
+
 export const enhanceMultiRemoteError = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
-    results: CompareResult<unknown>[],
+    compareResults: BrowserCompareResult[],
     context: ExpectWebdriverIO.MatcherContext,
     arg2 = '',
     { message = '', containing = false }): string => {
@@ -111,12 +120,12 @@ export const enhanceMultiRemoteError = (
     if (verb) {
         verb += ' '
     }
-    const failedResults = results.filter(result => !result.result)
+    const failedResults = compareResults.filter(({ result }) => result.result === isNot)
 
     let msg = ''
-    for (const result of failedResults) {
-        const actual = result.value
-        const expected = result.expected
+    for (const browserResult of failedResults) {
+        const { value: actual, expected } = browserResult.result
+        const instanceName = browserResult.instance
 
         let diffString = isNot && equals(actual, expected)
             ? `${EXPECTED_LABEL}: ${printExpected(expected)}\n${RECEIVED_LABEL}: ${printReceived(actual)}`
@@ -136,7 +145,14 @@ export const enhanceMultiRemoteError = (
             arg2 = ` ${arg2}`
         }
 
-        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}\n\n${diffString}\n\n`
+        /**
+         * Example of below message:
+         * Expect window to have title
+         *
+         * Expected: "some Title text"
+         * Received: "some Wrong Title text"
+         */
+        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain} for remote "${instanceName}"\n\n${diffString}\n\n`
 
     }
     return msg.trim()

@@ -1,8 +1,8 @@
-import type { CompareResult } from '../../utils.js'
 import { waitUntil, enhanceError, compareText } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeArray } from '../../util/multiRemoteUtil.js'
-import { compareMultiRemoteText } from '../../util/multiRemoteUtil.js'
+import {  getInstancesWithExpected } from '../../util/multiRemoteUtil.js'
+import type { BrowserCompareResult } from '../../util/formatMessage.js'
 import { enhanceMultiRemoteError } from '../../util/formatMessage.js'
 
 type ExpectedValueType = string | RegExp | WdioAsymmetricMatcher<string>
@@ -36,24 +36,26 @@ export async function toHaveTitle(
     })
 
     let actual: string | string[] = ''
-    let results: CompareResult<string>[] = []
-    // TODO: dprevost - try to leverage multiple conditions in waitUntil for each remote to not repeat fetch when they succeed.
+
+    const browsers = getInstancesWithExpected(browser, expectedValue)
+
+    const results: Record<string, BrowserCompareResult> = {}
+    const conditions = Object.entries(browsers).map(([instance, { browser, expectedValue: expected }]) => async () => {
+        actual = await browser.getTitle()
+
+        const result = compareText(actual, expected as ExpectedValueType, options)
+        results[instance] = { instance, result }
+        return result.result
+    })
+
     const pass = await waitUntil(
-        async () => {
-            actual = await browser.getTitle()
-
-            results = browser.isMultiremote
-                ? compareMultiRemoteText(actual, expectedValue, options)
-                : [compareText(actual as string, expectedValue as ExpectedValueType, options)]
-
-            return results.every((result) => result.result)
-        },
+        conditions,
         isNot,
         options,
     )
 
     const message = browser.isMultiremote
-        ? enhanceMultiRemoteError('window', results, { expectation, verb, isNot }, '', options)
+        ? enhanceMultiRemoteError('window', Object.values(results), { expectation, verb, isNot }, '', options)
         : enhanceError('window', expectedValue, actual, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
