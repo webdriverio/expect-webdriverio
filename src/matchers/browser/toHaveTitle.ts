@@ -1,9 +1,8 @@
-import { waitUntil, enhanceError, compareText } from '../../utils.js'
+import { compareText, waitUntilResult } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeArray } from '../../util/multiRemoteUtil.js'
 import {  getInstancesWithExpected } from '../../util/multiRemoteUtil.js'
-import type { BrowserCompareResult } from '../../util/formatMessage.js'
-import { enhanceMultiRemoteError } from '../../util/formatMessage.js'
+import { formatFailureMessage } from '../../util/formatMessage.js'
 
 type ExpectedValueType = string | RegExp | WdioAsymmetricMatcher<string>
 
@@ -26,6 +25,7 @@ export async function toHaveTitle(
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS,
 ) {
     const { expectation = 'title', verb = 'have', isNot } = this
+    const context = { expectation, verb, isNot, isMultiRemote: browser.isMultiremote }
 
     console.log('toHaveTitle', { expectedValue, isNot, options })
 
@@ -39,26 +39,23 @@ export async function toHaveTitle(
 
     const browsers = getInstancesWithExpected(browser, expectedValue)
 
-    const results: Record<string, BrowserCompareResult> = {}
     const conditions = Object.entries(browsers).map(([instance, { browser, expectedValue: expected }]) => async () => {
         actual = await browser.getTitle()
 
         const result = compareText(actual, expected as ExpectedValueType, options)
-        results[instance] = { instance, result }
-        return result.result
+        result.instance = instance
+        return result
     })
 
-    const pass = await waitUntil(
+    const conditionsResults = await waitUntilResult(
         conditions,
         isNot,
         options,
     )
 
-    const message = browser.isMultiremote
-        ? enhanceMultiRemoteError('window', Object.values(results), { expectation, verb, isNot }, '', options)
-        : enhanceError('window', expectedValue, actual, this, verb, expectation, '', options)
-    const result: ExpectWebdriverIO.AssertionResult = {
-        pass,
+    const message = formatFailureMessage('window', conditionsResults.results, context, '', options)
+    const assertionResult: ExpectWebdriverIO.AssertionResult = {
+        pass: conditionsResults.pass,
         message: () => message,
     }
 
@@ -66,8 +63,8 @@ export async function toHaveTitle(
         matcherName: 'toHaveTitle',
         expectedValue,
         options,
-        result,
+        result: assertionResult,
     })
 
-    return result
+    return assertionResult
 }

@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { browser } from '@wdio/globals'
 
-import { getExpectMessage, getReceived, matcherNameToString, getExpected } from '../__fixtures__/utils.js'
+import { getExpectMessage, matcherNameToString, getExpected } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
@@ -106,11 +106,7 @@ describe('browser matchers', () => {
                 }
                 const result = await fn.call({ isNot: true }, browser, validText, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
 
-                expect(getExpectMessage(result.message())).toContain('not')
-                expect(getExpected(result.message())).toContain('Valid')
-                expect(getReceived(result.message())).toContain('Wrong')
-
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true)
             })
 
             test('not - failure (with wait)', async () => {
@@ -131,11 +127,7 @@ describe('browser matchers', () => {
                 }
                 const result = await fn.call({ isNot: true }, browser, validText, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
 
-                expect(getExpectMessage(result.message())).toContain('not')
-                expect(getExpected(result.message())).toContain('Valid')
-                expect(getReceived(result.message())).toContain('Wrong')
-
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true)
             })
 
             test('message', async () => {

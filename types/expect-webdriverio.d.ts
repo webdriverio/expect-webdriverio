@@ -621,6 +621,7 @@ declare namespace ExpectWebdriverIO {
         verb?: string
         expectation?: string
         isNot?: boolean
+        isMultiRemote?: boolean
     }
 
     /**

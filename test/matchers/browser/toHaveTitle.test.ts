@@ -267,8 +267,8 @@ Received: "some Wrong Title text"`
                             expect(result.pass).toBe(false)
                             expect(result.message()).toEqual(`Expect window to have title for remote "browserA"
 
-Expected: "some title text"
-Received: "some wrong title text"`
+Expected: "some Title text"
+Received: "some Wrong Title text"`
                             )
                             expect(beforeAssertion).toBeCalledWith({
                                 matcherName: 'toHaveTitle',
@@ -386,18 +386,25 @@ Received: "some Wrong Title text"`
                             expect(result.pass).toBe(false)
                             expect(result.message()).toEqual(`Expect window to have title for remote "browserA"
 
-Expected: "some title text"
-Received: "some wrong title text"
+Expected: "some Title text"
+Received: "some Wrong Title text"
 
 Expect window to have title for remote "browserB"
 
-Expected: "some title text 2"
-Received: "some wrong title text"`
-                        )
-                        expect(beforeAssertion).toBeCalledWith({
-                            matcherName: 'toHaveTitle',
-                            expectedValue: goodTitle,
-                            options: { ignoreCase: true, beforeAssertion, afterAssertion },
+Expected: "some Title text 2"
+Received: "some Wrong Title text"`
+                            )
+                            expect(beforeAssertion).toBeCalledWith({
+                                matcherName: 'toHaveTitle',
+                                expectedValue: expectedValues,
+                                options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                            })
+                            expect(afterAssertion).toBeCalledWith({
+                                matcherName: 'toHaveTitle',
+                                expectedValue: expectedValues,
+                                options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                                result,
+                            })
                         })
                         expect(afterAssertion).toBeCalledWith({
                             matcherName: 'toHaveTitle',
@@ -569,8 +576,8 @@ Received      : "some Title text not expected to be"`
                             expect(result.pass).toBe(false)
                             expect(result.message()).toEqual(`Expect window not to have title for remote "browserA"
 
-Expected [not]: "some title text not expected to be"
-Received      : "some title text not expected to be"`
+Expected [not]: "some Title text not expected to be"
+Received      : "some Title text not expected to be"`
                             )
                             expect(beforeAssertion).toBeCalledWith({
                                 matcherName: 'toHaveTitle',
@@ -649,8 +656,8 @@ Received: "some wrong title text"`
                             expect(result.pass).toBe(false)
                             expect(result.message()).toEqual(`Expect window not to have title for remote "browserA"
 
-Expected [not]: "some title text not expected to be"
-Received      : "some title text not expected to be"`
+Expected [not]: "some Title text not expected to be"
+Received      : "some Title text not expected to be"`
                             )
                             expect(beforeAssertion).toBeCalledWith({
                                 matcherName: 'toHaveTitle',

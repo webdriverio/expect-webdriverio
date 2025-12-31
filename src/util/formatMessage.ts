@@ -98,11 +98,9 @@ export const enhanceError = (
     return msg
 }
 
-export type BrowserCompareResult = { instance: string; result: CompareResult<string> }
-
-export const enhanceMultiRemoteError = (
+export const formatFailureMessage = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
-    compareResults: BrowserCompareResult[],
+    compareResults: CompareResult<string, string | RegExp | WdioAsymmetricMatcher<string>>[],
     context: ExpectWebdriverIO.MatcherContext,
     arg2 = '',
     { message = '', containing = false }): string => {
@@ -120,12 +118,11 @@ export const enhanceMultiRemoteError = (
     if (verb) {
         verb += ' '
     }
-    const failedResults = compareResults.filter(({ result }) => result.result === isNot)
+    const failedResults = compareResults.filter(({ result }) => result === isNot)
 
     let msg = ''
-    for (const browserResult of failedResults) {
-        const { value: actual, expected } = browserResult.result
-        const instanceName = browserResult.instance
+    for (const failResult of failedResults) {
+        const { actual, expected, instance: instanceName } = failResult
 
         let diffString = isNot && equals(actual, expected)
             ? `${EXPECTED_LABEL}: ${printExpected(expected)}\n${RECEIVED_LABEL}: ${printReceived(actual)}`
@@ -145,15 +142,19 @@ export const enhanceMultiRemoteError = (
             arg2 = ` ${arg2}`
         }
 
-        /**
-         * Example of below message:
-         * Expect window to have title
-         *
-         * Expected: "some Title text"
-         * Received: "some Wrong Title text"
-         */
-        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain} for remote "${instanceName}"\n\n${diffString}\n\n`
+        const mulitRemoteContext = context.isMultiRemote  ? ` for remote "${instanceName}"` : ''
 
+        /**
+         * Example of below message (multi-remote + isNot case):
+         * ```
+         * Expect window to have title for remote "browserA"
+         *
+         * Expected not: "some Title text"
+         * Received: "some Wrong Title text"
+         *
+         * ```
+         */
+        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}${mulitRemoteContext}\n\n${diffString}\n\n`
     }
     return msg.trim()
 }
