@@ -81,3 +81,26 @@ To assert all remotes with a default value, overriding specific ones:
 - Alpha support is limited to the `toHaveTitle` browser matcher.
 - Element matchers are planned.
 - Assertions currently throw on the first error. Future updates will report errors as failures.
+
+## Alternative
+
+Since multi-remote are still simple browser, there is other way to assert using the instance list on the multi-remote
+
+### Parametrized Tests
+Using parametrized feature of your assertion librairie, we can iterate on the instance of the multi-remote
+
+Mocha parametrized example
+```ts
+    describe('Multiremote test', async () => {
+        multiRemoteBrowser.instances.forEach(function (instance) {
+            describe(`Test ${instance}`, function () {
+                it('should have title "The Internet"', async function () {
+                    const browser = multiRemoteBrowser.getInstance(instance)
+                    await browser.url('https://the-internet.herokuapp.com/login')
+                    
+                    await expect(browser).toHaveTitle("The Internet");
+                })
+            });
+        });
+    });
+```
