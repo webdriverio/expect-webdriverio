@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage, getReceived } from '../../__fixtures__/utils.js'
+import { getExpectMessage } from '../../__fixtures__/utils.js'
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle.js'
 
 vi.mock('@wdio/globals')
@@ -122,9 +122,24 @@ describe('toHaveStyle', () => {
             return { value: mockStyle[property] }
         })
         const result = await toHaveStyle.call({ isNot: true }, el, mockStyle, { wait: 0 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
+        expect(result.message()).toContain('not')
+        expect(result.pass).toBe(false)
+    })
+
+    test('should return true if styles dont match when isNot is true', async () => {
+        const el: any = await $('sel')
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
+            return { value: mockStyle[property] }
+        })
+
+        const wrongStyle: { [key: string]: string; } = {
+            'font-family': 'Incorrect Font',
+            'font-size': '100px',
+            'color': '#fff'
+        }
+
+        const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 1 })
         expect(result.pass).toBe(true)
     })
 
@@ -140,7 +155,7 @@ describe('toHaveStyle', () => {
             'color': '#fff'
         }
 
-        const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 1 })
+        const result = await toHaveStyle.bind({ })(el, wrongStyle, { wait: 1 })
         expect(result.pass).toBe(false)
     })
 
@@ -150,8 +165,18 @@ describe('toHaveStyle', () => {
             return { value: mockStyle[property] }
         })
 
-        const result = await toHaveStyle.bind({ isNot: true })(el, mockStyle, { wait: 1 })
+        const result = await toHaveStyle.bind({})(el, mockStyle, { wait: 1 })
         expect(result.pass).toBe(true)
+    })
+
+    test('should return false if styles match when isNot is true', async () => {
+        const el: any = await $('sel')
+        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
+            return { value: mockStyle[property] }
+        })
+
+        const result = await toHaveStyle.bind({ isNot: true })(el, mockStyle, { wait: 1 })
+        expect(result.pass).toBe(false)
     })
 
     test('message shows correctly', async () => {

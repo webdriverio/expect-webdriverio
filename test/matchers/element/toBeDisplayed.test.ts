@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage, getReceived } from '../../__fixtures__/utils.js'
+import { getExpectMessage } from '../../__fixtures__/utils.js'
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 
 vi.mock('@wdio/globals')
@@ -93,10 +93,9 @@ describe('toBeDisplayed', () => {
             return true
         }
         const result = await toBeDisplayed.call({ isNot: true }, el, {}, { wait: 0 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        expect(result.message()).toContain('not')
+        expect(result.pass).toBe(false)
     })
 
     test('not - success', async () => {
@@ -105,10 +104,8 @@ describe('toBeDisplayed', () => {
             return false
         }
         const result = await toBeDisplayed.call({ isNot: true }, el, {}, { wait: 0 })
-        const received = getReceived(result.message())
 
-        expect(received).toContain('not')
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
     })
 
     test('not - failure (with wait)', async () => {
@@ -117,10 +114,9 @@ describe('toBeDisplayed', () => {
             return true
         }
         const result = await toBeDisplayed.call({ isNot: true }, el, {}, { wait: 1 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        expect(result.message()).toContain('not')
+        expect(result.pass).toBe(false)
     })
 
     test('not - success (with wait)', async () => {
@@ -129,10 +125,7 @@ describe('toBeDisplayed', () => {
             return false
         }
         const result = await toBeDisplayed.call({ isNot: true }, el, {}, { wait: 1 })
-        const received = getReceived(result.message())
-
-        expect(received).toContain('not')
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
     })
 
     test('message', async () => {

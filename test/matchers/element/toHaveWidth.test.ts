@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage, getReceived } from '../../__fixtures__/utils.js'
+import { getExpectMessage } from '../../__fixtures__/utils.js'
 import { toHaveWidth } from '../../../src/matchers/element/toHaveWidth.js'
 
 vi.mock('@wdio/globals')
@@ -142,11 +142,10 @@ describe('toHaveWidth', () => {
             }
             return { width: 50, height: 32 }
         }
-        const result = await toHaveWidth.call({}, el, 50, { wait: 0 })
-        const received = getReceived(result.message())
+        const result = await toHaveWidth.call({ isNot: true }, el, 50, { wait: 0 })
 
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        expect(result.message()).toContain('not')
+        expect(result.pass).toBe(false)
     })
 
     test("should return false if sizes don't match", async () => {

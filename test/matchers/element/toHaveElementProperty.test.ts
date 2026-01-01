@@ -43,14 +43,24 @@ describe('toHaveElementProperty', () => {
         expect(result.pass).toBe(true)
     })
 
-    test('should return false if values dont match', async () => {
+    test('should return false if values', async () => {
+        const el: any = await $('sel')
+        el._value = function (): string {
+            return 'iphone'
+        }
+
+        const result = await toHaveElementProperty.bind({})(el, 'property', 'foobar', { wait: 1 })
+        expect(result.pass).toBe(false)
+    })
+
+    test('should return true if values dont match when isNot is true', async () => {
         const el: any = await $('sel')
         el._value = function (): string {
             return 'iphone'
         }
 
         const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', 'foobar', { wait: 1 })
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(true)
     })
 
     test('should return true if values match', async () => {
@@ -59,8 +69,18 @@ describe('toHaveElementProperty', () => {
             return 'iphone'
         }
 
-        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', 'iphone', { wait: 1 })
+        const result = await toHaveElementProperty.bind({})(el, 'property', 'iphone', { wait: 1 })
         expect(result.pass).toBe(true)
+    })
+
+    test('should return false if values match when isNot is true', async () => {
+        const el: any = await $('sel')
+        el._value = function (): string {
+            return 'iphone'
+        }
+
+        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', 'iphone', { wait: 1 })
+        expect(result.pass).toBe(false)
     })
 
     test('with RegExp should return true if values match', async () => {
@@ -79,8 +99,18 @@ describe('toHaveElementProperty', () => {
             return undefined
         }
 
-        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', 'iphone', { wait: 1 })
+        const result = await toHaveElementProperty.bind({})(el, 'property', 'iphone', { wait: 1 })
         expect(result.pass).toBe(false)
+    })
+
+    test('should return true for null input when isNot is true', async () => {
+        const el: any = await $('sel')
+        el._value = function (): any {
+            return undefined
+        }
+
+        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', 'iphone', { wait: 1 })
+        expect(result.pass).toBe(true)
     })
 
     test('should return true if value is null', async () => {
@@ -89,7 +119,37 @@ describe('toHaveElementProperty', () => {
             return 'Test Value'
         }
 
-        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', null as any)
+        const result = await toHaveElementProperty.bind({})(el, 'property', null)
+        expect(result.pass).toBe(true)
+    })
+
+    test('should return false if value is null when isNot is true', async () => {
+        const el: any = await $('sel')
+        el._value = function (): any {
+            return 'Test Value'
+        }
+
+        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', null)
+        expect(result.pass).toBe(false)
+    })
+
+    test('should return false if value is not present', async () => {
+        const el: any = await $('sel')
+        el._value = function (): any {
+            return 'Test Value'
+        }
+
+        const result = await toHaveElementProperty.bind({})(el, 'property')
+        expect(result.pass).toBe(false)
+    })
+
+    test('should return false if value is not present when isNot is true', async () => {
+        const el: any = await $('sel')
+        el._value = function (): any {
+            return 'Test Value'
+        }
+
+        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property')
         expect(result.pass).toBe(true)
     })
 
@@ -99,8 +159,18 @@ describe('toHaveElementProperty', () => {
             return 5
         }
 
-        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', 'Test Value')
+        const result = await toHaveElementProperty.bind({})(el, 'property', 'Test Value')
         expect(result.pass).toBe(false)
+    })
+
+    test('should return true if value is non-string when isNot is true', async () => {
+        const el: any = await $('sel')
+        el._value = function (): any {
+            return 5
+        }
+
+        const result = await toHaveElementProperty.bind({ isNot: true })(el, 'property', 'Test Value')
+        expect(result.pass).toBe(true)
     })
 
     describe('failure with RegExp when value does not match', () => {
