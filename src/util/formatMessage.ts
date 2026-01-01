@@ -102,7 +102,7 @@ export const formatFailureMessage = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
     compareResults: CompareResult<string, string | RegExp | WdioAsymmetricMatcher<string>>[],
     context: ExpectWebdriverIO.MatcherContext,
-    arg2 = '',
+    expectedValueArg2 = '',
     { message = '', containing = false }): string => {
 
     const { isNot = false, expectation } = context
@@ -138,8 +138,8 @@ export const formatFailureMessage = (
             message += '\n'
         }
 
-        if (arg2) {
-            arg2 = ` ${arg2}`
+        if (expectedValueArg2) {
+            expectedValueArg2 = ` ${expectedValueArg2}`
         }
 
         const mulitRemoteContext = context.isMultiRemote  ? ` for remote "${instanceName}"` : ''
@@ -154,7 +154,7 @@ export const formatFailureMessage = (
          *
          * ```
          */
-        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}${mulitRemoteContext}\n\n${diffString}\n\n`
+        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${expectedValueArg2}${contain}${mulitRemoteContext}\n\n${diffString}\n\n`
     }
     return msg.trim()
 }
