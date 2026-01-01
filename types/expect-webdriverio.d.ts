@@ -99,26 +99,18 @@ interface WdioBrowserMatchers<_R, ActualT> {
             options?: ExpectWebdriverIO.StringOptions,
         ) => Promise<void>
     >
-    // /**
-    //  * `WebdriverIO.Browser` -> `getTitle`
-    //  */
-    // toHaveTitle: FnWhenBrowser<
-    //     ActualT,
-    //     (
-    //         title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-    //         options?: ExpectWebdriverIO.StringOptions,
-    //     ) => Promise<void>
-    // >
 
     /**
      * `WebdriverIO.Browser`, `WebdriverIO.MultiRemoteBrowser` -> `getTitle`
      */
     toHaveTitle: FnWhenBrowserOrMultiRemote<
         ActualT,
+        // Browser
         (
             title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
             options?: ExpectWebdriverIO.StringOptions,
         ) => Promise<void>,
+        // MultiRemoteBrowser
         (
             url: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions,
