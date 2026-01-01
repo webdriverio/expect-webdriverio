@@ -286,145 +286,474 @@ describe('utils', () => {
             throw new Error('Test error')
         }
 
-        describe('given isNot is false', () => {
-            const isNot = false
+        describe('given Browser is not multi-remote and return a single value', () => {
+            describe('given isNot is false', () => {
+                const isNot = false
 
-            test('should return true when condition is met immediately', async () => {
-                const result = await waitUntilResult(trueCondition, isNot, { wait: 1000, interval: 100 })
+                test('should return true when condition is met immediately', async () => {
+                    const result = await waitUntilResult(trueCondition, isNot, { wait: 1000, interval: 100 })
 
-                expect(result).toEqual({
-                    pass: true,
-                    results: [{ ...trueCompareResult, pass : true }],
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }],
+                    })
                 })
-            })
 
-            test('should return false when condition is not met and wait is 0', async () => {
-                const result = await waitUntilResult(falseCondition, isNot, { wait: 0 })
+                test('should return false when condition is not met and wait is 0', async () => {
+                    const result = await waitUntilResult(falseCondition, isNot, { wait: 0 })
 
-                expect(result).toEqual({
-                    pass: false,
-                    results: [{ ...falseCompareResult, pass: false }],
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...falseCompareResult, pass: false }],
+                    })
                 })
-            })
 
-            test('should return true when condition is met within wait time', async () => {
-                let attempts = 0
-                const condition = async () => {
-                    attempts++
-                    return attempts >= 3 ? trueCompareResult : falseCompareResult
-                }
-
-                const result = await waitUntilResult(condition, isNot, { wait: 1000, interval: 50 })
-
-                expect(result).toEqual({
-                    pass: true,
-                    results: [{ ...trueCompareResult, pass : true }],
-                })
-                expect(attempts).toBeGreaterThanOrEqual(3)
-            })
-
-            test('should return false when condition is not met within wait time', async () => {
-                const result = await waitUntilResult(falseCondition, isNot, { wait: 200, interval: 50 })
-
-                expect(result).toEqual({
-                    pass: false,
-                    results: [{ ...falseCompareResult, pass: false }],
-                })
-            })
-
-            test('should throw error if condition throws and never recovers', async () => {
-                await expect(waitUntilResult(errorCondition, isNot, { wait: 200, interval: 50 })).rejects.toThrow('Test error')
-            })
-
-            test('should recover from errors if condition eventually succeeds', async () => {
-                let attempts = 0
-                const condition = async () => {
-                    attempts++
-                    if (attempts < 3) {
-                        throw new Error('Not ready yet')
+                test('should return true when condition is met within wait time', async () => {
+                    let attempts = 0
+                    const condition = async () => {
+                        attempts++
+                        return attempts >= 3 ? trueCompareResult : falseCompareResult
                     }
-                    return trueCompareResult
-                }
 
-                const result = await waitUntilResult(condition, isNot, { wait: 1000, interval: 50 })
+                    const result = await waitUntilResult(condition, isNot, { wait: 1000, interval: 50 })
 
-                expect(result).toEqual({
-                    pass: true,
-                    results: [{ ...trueCompareResult, pass : true }],
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }],
+                    })
+                    expect(attempts).toBeGreaterThanOrEqual(3)
                 })
-                expect(attempts).toBe(3)
+
+                test('should return false when condition is not met within wait time', async () => {
+                    const result = await waitUntilResult(falseCondition, isNot, { wait: 200, interval: 50 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...falseCompareResult, pass: false }],
+                    })
+                })
+
+                test('should throw error if condition throws and never recovers', async () => {
+                    await expect(waitUntilResult(errorCondition, isNot, { wait: 200, interval: 50 })).rejects.toThrow('Test error')
+                })
+
+                test('should recover from errors if condition eventually succeeds', async () => {
+                    let attempts = 0
+                    const condition = async () => {
+                        attempts++
+                        if (attempts < 3) {
+                            throw new Error('Not ready yet')
+                        }
+                        return trueCompareResult
+                    }
+
+                    const result = await waitUntilResult(condition, isNot, { wait: 1000, interval: 50 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }],
+                    })
+                    expect(attempts).toBe(3)
+                })
+
+                test('should use default options when not provided', async () => {
+                    const result = await waitUntilResult(trueCondition)
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }],
+                    })
+                })
             })
 
-            test('should use default options when not provided', async () => {
-                const result = await waitUntilResult(trueCondition)
+            describe('given isNot is true', () => {
+                const isNot = true
 
-                expect(result).toEqual({
-                    pass: true,
-                    results: [{ ...trueCompareResult, pass : true }],
+                test('should handle isNot flag correctly when condition is true', async () => {
+                    const result = await waitUntilResult(trueCondition, isNot, { wait: 1000, interval: 100 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...trueCompareResult, pass : false }],
+                    })
                 })
+
+                test('should handle isNot flag correctly when condition is true and wait is 0', async () => {
+                    const result = await waitUntilResult(trueCondition, isNot, { wait: 0 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...trueCompareResult, pass : false }],
+                    })
+                })
+
+                test('should handle isNot flag correctly when condition is false', async () => {
+                    const result = await waitUntilResult(falseCondition, isNot, { wait: 1000, interval: 100 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...falseCompareResult, pass : true }],
+                    })
+                })
+
+                test('should handle isNot flag correctly when condition is false and wait is 0', async () => {
+                    const result = await waitUntilResult(falseCondition, isNot, { wait: 0 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...falseCompareResult, pass : true }],
+                    })
+                })
+
+                test('should throw error if condition throws and never recovers', async () => {
+                    await expect(waitUntilResult(errorCondition, isNot, { wait: 200, interval: 50 })).rejects.toThrow('Test error')
+                })
+
+                test('should do all the attempts to succeed even with isNot true', async () => {
+                    let attempts = 0
+                    const condition = async () => {
+                        attempts++
+                        if (attempts < 3) {
+                            throw new Error('Not ready yet')
+                        }
+                        return trueCompareResult
+                    }
+                    const result = await waitUntilResult(condition, isNot, { wait: 1000, interval: 50 })
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...trueCompareResult, pass : false }],
+                    })
+                    expect(attempts).toBe(3)
+                })
+
             })
         })
 
-        describe('given isNot is true', () => {
-            const isNot = true
+        describe('given Browser is multi-remote and return an array of value', () => {
+            const trueConditions = async () => {
+                return [{ ...trueCompareResult }, { ...trueCompareResult }]
+            }
+            const falseConditions = async () => {
+                return [{ ...falseCompareResult }, { ...falseCompareResult }]
+            }
+            describe('given isNot is false', () => {
+                const isNot = false
 
-            test('should handle isNot flag correctly when condition is true', async () => {
-                const result = await waitUntilResult(trueCondition, isNot, { wait: 1000, interval: 100 })
+                test('should return true when condition is met immediately', async () => {
+                    const result = await waitUntilResult(trueConditions, isNot, { wait: 1000, interval: 100 })
 
-                expect(result).toEqual({
-                    pass: false,
-                    results: [{ ...trueCompareResult, pass : false }],
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }, { ...trueCompareResult, pass : true }],
+                    })
                 })
-            })
 
-            test('should handle isNot flag correctly when condition is true and wait is 0', async () => {
-                const result = await waitUntilResult(trueCondition, isNot, { wait: 0 })
+                test('should return false when condition is not met and wait is 0', async () => {
+                    const result = await waitUntilResult(falseConditions, isNot, { wait: 0 })
 
-                expect(result).toEqual({
-                    pass: false,
-                    results: [{ ...trueCompareResult, pass : false }],
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...falseCompareResult, pass: false }, { ...falseCompareResult, pass: false }],
+                    })
                 })
-            })
 
-            test('should handle isNot flag correctly when condition is false', async () => {
-                const result = await waitUntilResult(falseCondition, isNot, { wait: 1000, interval: 100 })
-
-                expect(result).toEqual({
-                    pass: true,
-                    results: [{ ...falseCompareResult, pass : true }],
-                })
-            })
-
-            test('should handle isNot flag correctly when condition is false and wait is 0', async () => {
-                const result = await waitUntilResult(falseCondition, isNot, { wait: 0 })
-
-                expect(result).toEqual({
-                    pass: true,
-                    results: [{ ...falseCompareResult, pass : true }],
-                })
-            })
-
-            test('should throw error if condition throws and never recovers', async () => {
-                await expect(waitUntilResult(errorCondition, isNot, { wait: 200, interval: 50 })).rejects.toThrow('Test error')
-            })
-
-            test('should do all the attempts to succeed even with isNot true', async () => {
-                let attempts = 0
-                const condition = async () => {
-                    attempts++
-                    if (attempts < 3) {
-                        throw new Error('Not ready yet')
+                test('should return true when condition is met within wait time', async () => {
+                    let attempts = 0
+                    const conditions = async () => {
+                        attempts++
+                        return attempts >= 3 ? trueConditions() : falseConditions()
                     }
-                    return trueCompareResult
-                }
-                const result = await waitUntilResult(condition, isNot, { wait: 1000, interval: 50 })
-                expect(result).toEqual({
-                    pass: false,
-                    results: [{ ...trueCompareResult, pass : false }],
+
+                    const result = await waitUntilResult(conditions, isNot, { wait: 1000, interval: 50 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }, { ...trueCompareResult, pass : true }],
+                    })
+                    expect(attempts).toBeGreaterThanOrEqual(3)
                 })
-                expect(attempts).toBe(3)
+
+                test('should return false when condition is not met within wait time', async () => {
+                    const result = await waitUntilResult(falseConditions, isNot, { wait: 200, interval: 50 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...falseCompareResult, pass: false }, { ...falseCompareResult, pass: false }],
+                    })
+                })
+
+                test('should throw error if condition throws and never recovers', async () => {
+                    await expect(waitUntilResult(errorCondition, isNot, { wait: 200, interval: 50 })).rejects.toThrow('Test error')
+                })
+
+                test('should recover from errors if condition eventually succeeds', async () => {
+                    let attempts = 0
+                    const condition = async () => {
+                        attempts++
+                        if (attempts < 3) {
+                            throw new Error('Not ready yet')
+                        }
+                        return trueConditions()
+                    }
+
+                    const result = await waitUntilResult(condition, isNot, { wait: 1000, interval: 50 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }, { ...trueCompareResult, pass : true }],
+                    })
+                    expect(attempts).toBe(3)
+                })
+
+                test('should use default options when not provided', async () => {
+                    const result = await waitUntilResult(trueConditions)
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }, { ...trueCompareResult, pass : true }],
+                    })
+                })
             })
 
+            describe('given isNot is true', () => {
+                const isNot = true
+
+                test('should handle isNot flag correctly when condition is true', async () => {
+                    const result = await waitUntilResult(trueConditions, isNot, { wait: 1000, interval: 100 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...trueCompareResult, pass : false }, { ...trueCompareResult, pass : false }],
+                    })
+                })
+
+                test('should handle isNot flag correctly when condition is true and wait is 0', async () => {
+                    const result = await waitUntilResult(trueConditions, isNot, { wait: 0 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...trueCompareResult, pass : false }, { ...trueCompareResult, pass : false }],
+                    })
+                })
+
+                test('should handle isNot flag correctly when condition is false', async () => {
+                    const result = await waitUntilResult(falseConditions, isNot, { wait: 1000, interval: 100 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...falseCompareResult, pass : true }, { ...falseCompareResult, pass : true }],
+                    })
+                })
+
+                test('should handle isNot flag correctly when condition is false and wait is 0', async () => {
+                    const result = await waitUntilResult(falseConditions, isNot, { wait: 0 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...falseCompareResult, pass : true }, { ...falseCompareResult, pass : true }],
+                    })
+                })
+
+                test('should throw error if condition throws and never recovers', async () => {
+                    await expect(waitUntilResult(errorCondition, isNot, { wait: 200, interval: 50 })).rejects.toThrow('Test error')
+                })
+
+                test('should do all the attempts to succeed even with isNot true', async () => {
+                    let attempts = 0
+                    const conditions = async () => {
+                        attempts++
+                        if (attempts < 3) {
+                            throw new Error('Not ready yet')
+                        }
+                        return trueConditions()
+                    }
+                    const result = await waitUntilResult(conditions, isNot, { wait: 1000, interval: 50 })
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...trueCompareResult, pass : false }, { ...trueCompareResult, pass : false }],
+                    })
+                    expect(attempts).toBe(3)
+                })
+
+            })
+        })
+
+        describe('given Browser is multi-remote and we use the list of remotes to fetch each remote value', () => {
+            const trueConditions: (() => Promise<CompareResult>)[] = [
+                trueCondition,
+                trueCondition,
+            ]
+            const falseConditions: (() => Promise<CompareResult>)[] = [
+                falseCondition,
+                falseCondition
+            ]
+            describe('given isNot is false', () => {
+                const isNot = false
+
+                test('should return true when condition is met immediately', async () => {
+                    const result = await waitUntilResult(trueConditions, isNot, { wait: 1000, interval: 100 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }, { ...trueCompareResult, pass : true }],
+                    })
+                })
+
+                test('should return false when condition is not met and wait is 0', async () => {
+                    const result = await waitUntilResult(falseConditions, isNot, { wait: 0 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...falseCompareResult, pass: false }, { ...falseCompareResult, pass: false }],
+                    })
+                })
+
+                test('should return true when condition is met within wait time', async () => {
+                    let attempts1 = 0
+                    const condition1 = async () => {
+                        attempts1++
+                        return attempts1 >= 3 ? trueCondition() : falseCondition()
+                    }
+                    let attempts2 = 0
+                    const condition2 = async () => {
+                        attempts2++
+                        return attempts2 >= 3 ? trueCondition() : falseCondition()
+                    }
+
+                    const result = await waitUntilResult([condition1, condition2], isNot, { wait: 1000, interval: 50 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }, { ...trueCompareResult, pass : true }],
+                    })
+                    expect(attempts1).toBeGreaterThanOrEqual(3)
+                    expect(attempts2).toBeGreaterThanOrEqual(3)
+                })
+
+                test('should return false when condition is not met within wait time', async () => {
+                    const result = await waitUntilResult(falseConditions, isNot, { wait: 200, interval: 50 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...falseCompareResult, pass: false }, { ...falseCompareResult, pass: false }],
+                    })
+                })
+
+                test('should throw error if condition throws and never recovers', async () => {
+                    await expect(waitUntilResult(errorCondition, isNot, { wait: 200, interval: 50 })).rejects.toThrow('Test error')
+                })
+
+                test('should recover from errors if condition eventually succeeds', async () => {
+                    let attempts1 = 0
+                    const condition1 = async () => {
+                        attempts1++
+                        if (attempts1 < 3) {
+                            throw new Error('Not ready yet')
+                        }
+                        return trueCondition()
+                    }
+
+                    let attempts2 = 0
+                    const condition2 = async () => {
+                        attempts2++
+                        if (attempts2 < 3) {
+                            throw new Error('Not ready yet')
+                        }
+                        return trueCondition()
+                    }
+
+                    const result = await waitUntilResult([condition1, condition2], isNot, { wait: 1000, interval: 50 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }, { ...trueCompareResult, pass : true }],
+                    })
+                    expect(attempts1).toBe(3)
+                    expect(attempts2).toBe(3)
+                })
+
+                test('should use default options when not provided', async () => {
+                    const result = await waitUntilResult(trueConditions)
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...trueCompareResult, pass : true }, { ...trueCompareResult, pass : true }],
+                    })
+                })
+            })
+
+            describe('given isNot is true', () => {
+                const isNot = true
+
+                test('should handle isNot flag correctly when condition is true', async () => {
+                    const result = await waitUntilResult(trueConditions, isNot, { wait: 1000, interval: 100 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...trueCompareResult, pass : false }, { ...trueCompareResult, pass : false }],
+                    })
+                })
+
+                test('should handle isNot flag correctly when condition is true and wait is 0', async () => {
+                    const result = await waitUntilResult(trueConditions, isNot, { wait: 0 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...trueCompareResult, pass : false }, { ...trueCompareResult, pass : false }],
+                    })
+                })
+
+                test('should handle isNot flag correctly when condition is false', async () => {
+                    const result = await waitUntilResult(falseConditions, isNot, { wait: 1000, interval: 100 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...falseCompareResult, pass : true }, { ...falseCompareResult, pass : true }],
+                    })
+                })
+
+                test('should handle isNot flag correctly when condition is false and wait is 0', async () => {
+                    const result = await waitUntilResult(falseConditions, isNot, { wait: 0 })
+
+                    expect(result).toEqual({
+                        pass: true,
+                        results: [{ ...falseCompareResult, pass : true }, { ...falseCompareResult, pass : true }],
+                    })
+                })
+
+                test('should throw error if condition throws and never recovers', async () => {
+                    await expect(waitUntilResult(errorCondition, isNot, { wait: 200, interval: 50 })).rejects.toThrow('Test error')
+                })
+
+                test('should do all the attempts to succeed even with isNot true', async () => {
+                    let attempts1 = 0
+                    const condition1 = async () => {
+                        attempts1++
+                        if (attempts1 < 3) {
+                            throw new Error('Not ready yet')
+                        }
+                        return trueCondition()
+                    }
+                    let attempts2 = 0
+                    const condition2 = async () => {
+                        attempts2++
+                        if (attempts2 < 3) {
+                            throw new Error('Not ready yet')
+                        }
+                        return trueCondition()
+                    }
+
+                    const result = await waitUntilResult([condition1, condition2], isNot, { wait: 1000, interval: 50 })
+
+                    expect(result).toEqual({
+                        pass: false,
+                        results: [{ ...trueCompareResult, pass : false }, { ...trueCompareResult, pass : false }],
+                    })
+                    expect(attempts1).toBe(3)
+                    expect(attempts2).toBe(3)
+                })
+
+            })
         })
     })
 })
