@@ -80,7 +80,8 @@ To assert all remotes with a default value, overriding specific ones:
 - Options (e.g., `StringOptions`) apply globally.
 - Alpha support is limited to the `toHaveTitle` browser matcher.
 - Element matchers are planned.
-- Assertions currently throw on the first error. Future updates will report errors as failures.
+- Assertions currently throw on the first error. Future updates will report thrown errors as failures and if all remotes are in error it will throw.
+- SoftAssertions, snapshot services and network matchers might come after.
 
 ## Alternatives
 

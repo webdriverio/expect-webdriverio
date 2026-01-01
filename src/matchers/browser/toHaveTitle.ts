@@ -35,12 +35,10 @@ export async function toHaveTitle(
         options,
     })
 
-    let actual: string | string[] = ''
-
     const browsers = getInstancesWithExpected(browser, expectedValue)
 
     const conditions = Object.entries(browsers).map(([instance, { browser, expectedValue: expected }]) => async () => {
-        actual = await browser.getTitle()
+        const actual = await browser.getTitle()
 
         const result = compareText(actual, expected as ExpectedValueType, options)
         result.instance = instance
