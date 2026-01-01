@@ -122,7 +122,7 @@ interface WdioBrowserMatchers<_R, ActualT> {
         (
             url: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions,
-        ) => Promise<void>,
+        ) => Promise<void>
     >
 
     /**
