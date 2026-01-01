@@ -29,10 +29,10 @@ export default defineConfig({
                 'types-checks-filter-out-node_modules.js',
             ],
             thresholds: {
-                lines: 87.3,
+                lines: 87.7,
                 functions: 85.8,
-                statements: 87,
-                branches: 78.6,
+                statements: 87.5,
+                branches: 78.8,
             }
         }
     }
