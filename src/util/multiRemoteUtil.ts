@@ -8,15 +8,15 @@ export function isArray<T>(value: unknown): value is T[] {
     return Array.isArray(value)
 }
 
-export const isMultiremote = (browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser): browser is WebdriverIO.MultiRemoteBrowser => {
+export const isMultiRemote = (browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser): browser is WebdriverIO.MultiRemoteBrowser => {
     return (browser as WebdriverIO.MultiRemoteBrowser).isMultiremote === true
 }
 
 export const getInstancesWithExpected = <T>(browsers: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser, expectedValues: T): Record<string, { browser: Browser; expectedValue: T; }>  => {
-    if (isMultiremote(browsers)) {
+    if (isMultiRemote(browsers)) {
         if (Array.isArray(expectedValues)) {
             if (expectedValues.length !== browsers.instances.length) {
-                throw new Error(`Expected values length (${expectedValues.length}) does not match number of browser instances (${browsers.instances.length}) in multiremote setup.`)
+                throw new Error(`Expected values length (${expectedValues.length}) does not match number of browser instances (${browsers.instances.length}) in multi-remote setup.`)
             }
         }
         // TODO multi-remote support: add support for object like { default: 'title', browserA: 'titleA', browserB: 'titleB' } later
