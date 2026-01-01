@@ -21,6 +21,8 @@ type ExpectLibAsyncExpectationResult = import('expect').AsyncExpectationResult
 type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
 
+type MaybeArray<T> = T | T[]
+
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,6 +74,7 @@ type MockPromise = Promise<WebdriverIO.Mock>
  * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
  */
 type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser ? Fn : never
+type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT extends WebdriverIO.Browser ? FnBrowser : ActualT extends WebdriverIO.MultiRemoteBrowser ? FnMultiRemote : never
 type FnWhenElementOrArrayLike<ActualT, Fn> = ActualT extends ElementOrArrayLike ? Fn : never
 type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn : never
 
@@ -81,7 +84,7 @@ type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn
 type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
 
 /**
- * Matchers dedicated to Wdio Browser.
+ * Matchers dedicated to Wdio Browser or MultiRemoteBrowser.
  * When asserting on a browser's properties requiring to be awaited, the return type is a Promise.
  * When actual is not a browser, the return type is never, so the function cannot be used.
  */
@@ -96,16 +99,30 @@ interface WdioBrowserMatchers<_R, ActualT> {
             options?: ExpectWebdriverIO.StringOptions,
         ) => Promise<void>
     >
+    // /**
+    //  * `WebdriverIO.Browser` -> `getTitle`
+    //  */
+    // toHaveTitle: FnWhenBrowser<
+    //     ActualT,
+    //     (
+    //         title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+    //         options?: ExpectWebdriverIO.StringOptions,
+    //     ) => Promise<void>
+    // >
 
     /**
-     * `WebdriverIO.Browser` -> `getTitle`
+     * `WebdriverIO.Browser`, `WebdriverIO.MultiRemoteBrowser` -> `getTitle`
      */
-    toHaveTitle: FnWhenBrowser<
+    toHaveTitle: FnWhenBrowserOrMultiRemote<
         ActualT,
         (
             title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
             options?: ExpectWebdriverIO.StringOptions,
-        ) => Promise<void>
+        ) => Promise<void>,
+        (
+            url: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions,
+        ) => Promise<void>,
     >
 
     /**
