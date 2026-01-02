@@ -6,6 +6,7 @@ import type { WdioElementMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
+import { toArray } from './util/multiRemoteUtil.js'
 
 export type CompareResult<A = unknown, E = unknown> = {
     value: A // actual but sometimes modified (e.g. trimmed, lowercased, etc)
@@ -111,19 +112,17 @@ const waitUntilResult = async <A = unknown, E = unknown>(
 
     return { pass, results: allResults }
 }
+
 /**
- * Wait for condition to succeed
- * For multiple remotes, all conditions must be met
- * When using negated condition (isNot=true), we wait for all conditions to be true first, then we negate the real value if it takes time to show up.
- *
- * @param condition function to that should return true when condition is met
+ * wait for expectation to succeed
+ * @param condition function
  * @param isNot     https://jestjs.io/docs/expect#thisisnot
  * @param options   wait, interval, etc
  */
 const waitUntil = async (
     condition: () => Promise<boolean>,
     isNot = false,
-    { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {},
+    { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
 ): Promise<boolean> => {
     // single attempt
     if (wait === 0) {
