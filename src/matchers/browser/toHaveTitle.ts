@@ -1,7 +1,7 @@
-import { compareText, waitUntilResult } from '../../utils.js'
+import { compareText, waitUntilResultSucceed } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeArray } from '../../util/multiRemoteUtil.js'
-import {  getInstancesWithExpected } from '../../util/multiRemoteUtil.js'
+import {  mapExpectedValueWithInstances } from '../../util/multiRemoteUtil.js'
 import { formatFailureMessage } from '../../util/formatMessage.js'
 
 type ExpectedValueType = string | RegExp | WdioAsymmetricMatcher<string>
@@ -33,17 +33,17 @@ export async function toHaveTitle(
         options,
     })
 
-    const browsers = getInstancesWithExpected(browser, expectedValue)
+    const browsersWithExpected = mapExpectedValueWithInstances(browser, expectedValue)
 
-    const conditions = Object.entries(browsers).map(([instance, { browser, expectedValue: expected }]) => async () => {
+    const conditions = Object.entries(browsersWithExpected).map(([instanceName, { browser, expectedValue: expected }]) => async () => {
         const actual = await browser.getTitle()
 
-        const result = compareText(actual, expected as ExpectedValueType, options)
-        result.instance = instance
+        const result = compareText(actual, expected, options)
+        result.instance = instanceName
         return result
     })
 
-    const conditionsResults = await waitUntilResult(
+    const conditionsResults = await waitUntilResultSucceed(
         conditions,
         isNot,
         options,

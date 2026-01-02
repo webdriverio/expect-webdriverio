@@ -4,7 +4,7 @@ Multi-remote support is in active development.
 
 ## Usage
 
-By default, multi-remote queries (e.g., `getTitle`) fetch data from all remotes, simplifying tests where browsers share behavior.
+By default, multi-remote matchers fetch data (e.g., `getTitle`) from all remotes, simplifying tests where browsers share the same behavior.
 
 Use the typed global constants:
 ```ts
@@ -36,6 +36,18 @@ export const config: WebdriverIO.MultiremoteConfig = {
     ...
 }
 ```
+
+And an `it` test like:
+```ts
+import { multiremotebrowser as multiRemoteBrowser } from '@wdio/globals' 
+
+it('should have title "My Site Title"', async function () {
+    await multiRemoteBrowser.url('https://mysite.com')
+    
+    // ... assertions
+})
+```            
+
 
 ## Single Expected Value
 To test all remotes against the same value, pass a single expected value.
@@ -80,7 +92,7 @@ To assert all remotes with a default value, overriding specific ones:
 - Options (e.g., `StringOptions`) apply globally.
 - Alpha support is limited to the `toHaveTitle` browser matcher.
 - Element matchers are planned.
-- Assertions currently throw on the first error. Future updates will report thrown errors as failures and if all remotes are in error it will throw.
+- Assertions currently throw on the first error. Future updates will report thrown errors as failures, and will only throw if all remotes fail.
 - SoftAssertions, snapshot services and network matchers might come after.
 
 ## Alternatives
@@ -95,25 +107,49 @@ Mocha Parameterized Example
     describe('Multiremote test', async () => {
         multiRemoteBrowser.instances.forEach(function (instance) {
             describe(`Test ${instance}`, function () {
-                it('should have title "The Internet"', async function () {
+                it('should have title "My Site Title"', async function () {
                     const browser = multiRemoteBrowser.getInstance(instance)
                     await browser.url('https://mysite.com')
                     
-                    await expect(browser).toHaveTitle("The Internet")
+                    await expect(browser).toHaveTitle("My Site Title")
                 })
             })
         })
     })
 ```
-### Direct Instance Access
+### Direct Instance Access (TypeScript)
 By extending the WebdriverIO `namespace` in TypeScript (see [documentation](https://webdriver.io/docs/multiremote/#extending-typescript-types)), you can directly access each instance and use `expect` on them.
 
 ```ts
     it('should have title per browsers', async () => {
         await multiRemoteBrowser.url('https://mysite.com')
 
-        await expect(multiRemoteBrowser.myChromeBrowser).toHaveTitle('The Internet')
-        await expect(multiRemoteBrowser.myFirefoxBrowser).toHaveTitle('The Internet')
+        await expect(multiRemoteBrowser.myChromeBrowser).toHaveTitle('My Chrome Site Title')
+        await expect(multiRemoteBrowser.myFirefoxBrowser).toHaveTitle('My Firefox Site Title')
     }) 
 ```
 
+Required configuration:
+
+File `type.d.ts`
+```ts
+declare namespace WebdriverIO {
+    interface MultiRemoteBrowser {
+        myChromeBrowser: WebdriverIO.Browser
+        myFirefoxBrowser: WebdriverIO.Browser
+    }
+}
+```
+
+In `tsconfig.json`
+```json
+{
+  "compilerOptions": {
+    ...
+  },
+  "include": [
+    ...
+    "type.d.ts"
+  ]
+}
+```

@@ -49,14 +49,14 @@ function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetri
  * @param isNot     https://jestjs.io/docs/expect#thisisnot
  * @param options   wait, interval, etc
  */
-const waitUntilResult = async <A = unknown, E = unknown>(
+const waitUntilResultSucceed = async <A = unknown, E = unknown>(
     condition: (() => Promise<CompareResult<A, E> | CompareResult<A, E>[]>) | (() => Promise<CompareResult<A, E>>)[],
     isNot = false,
     { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {},
 ): Promise<{ pass: boolean, results: CompareResult<A, E>[] }> => {
     /**
      * Using array algorithm to handle both single and multiple conditions uniformly
-     * Technically, this is an o(n3) operation, but practically, we process either a single promise with Array or an Array of promises. Review later if we can simplify and only have an array of promises
+     * Technically, this is an o(n3) operation, but practically, we process either a single promise returning Array or an Array of promises. Review later if we can simplify and only have an array of promises
      */
     const conditions = toArray(condition)
     // single attempt
@@ -257,7 +257,7 @@ export const compareText = (
                 expectedValue.toString() === 'StringContaining'
                     ? expect.stringContaining(expectedValue.sample?.toString().toLowerCase())
                     : expect.not.stringContaining(expectedValue.sample?.toString().toLowerCase())
-            ) as WdioAsymmetricMatcher<string>
+            ) satisfies Partial<WdioAsymmetricMatcher<string>> as WdioAsymmetricMatcher<string>
         }
     }
 
@@ -469,7 +469,7 @@ function aliasFn(
 
 export {
     aliasFn, compareNumbers, enhanceError, executeCommand,
-    executeCommandBe, numberError, waitUntil, waitUntilResult, wrapExpectedWithArray
+    executeCommandBe, numberError, waitUntil, waitUntilResultSucceed, wrapExpectedWithArray
 }
 
 function replaceActual(

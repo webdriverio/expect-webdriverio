@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { toArray, isArray, isMultiRemote, getInstancesWithExpected } from '../../src/util/multiRemoteUtil.js'
+import { toArray, isMultiRemote, mapExpectedValueWithInstances } from '../../src/util/multiRemoteUtil.js'
 
 describe('multiRemoteUtil', () => {
     describe(toArray, () => {
@@ -21,16 +21,6 @@ describe('multiRemoteUtil', () => {
         })
     })
 
-    describe(isArray, () => {
-        it('should return true if input is array', () => {
-            expect(isArray([1, 2])).toBe(true)
-        })
-
-        it('should return false if input is not array', () => {
-            expect(isArray(1)).toBe(false)
-        })
-    })
-
     describe(isMultiRemote, () => {
         it('should return true if browser is multi-remote', () => {
             const browser = { isMultiremote: true } satisfies Partial<WebdriverIO.MultiRemoteBrowser> as WebdriverIO.MultiRemoteBrowser
@@ -48,11 +38,11 @@ describe('multiRemoteUtil', () => {
         })
     })
 
-    describe(getInstancesWithExpected, () => {
+    describe(mapExpectedValueWithInstances, () => {
         it('should return default instance for single browser', () => {
             const browser = { isMultiremote: false } satisfies Partial<WebdriverIO.Browser> as WebdriverIO.Browser
             const expected = 'expected'
-            const result = getInstancesWithExpected(browser, expected)
+            const result = mapExpectedValueWithInstances(browser, expected)
             expect(result).toEqual({
                 default: {
                     browser,
@@ -78,7 +68,7 @@ describe('multiRemoteUtil', () => {
 
             it('should return instances for multi-remote browser with single expected value', () => {
                 const expected = 'expected'
-                const result = getInstancesWithExpected(browser, expected)
+                const result = mapExpectedValueWithInstances(browser, expected)
 
                 expect(result).toEqual({
                     browserA: {
@@ -96,7 +86,7 @@ describe('multiRemoteUtil', () => {
 
             it('should return instances for multi-remote browser with array of expected values', () => {
                 const expected = ['expectedA', 'expectedB']
-                const result = getInstancesWithExpected(browser, expected)
+                const result = mapExpectedValueWithInstances(browser, expected)
 
                 expect(result).toEqual({
                     browserA: {
@@ -112,7 +102,7 @@ describe('multiRemoteUtil', () => {
 
             it('should throw error if expected values length does not match instances length', () => {
                 const expected = ['expectedA']
-                expect(() => getInstancesWithExpected(browser, expected)).toThrow('Expected values length (1) does not match number of browser instances (2) in multi-remote setup.')
+                expect(() => mapExpectedValueWithInstances(browser, expected)).toThrow('Expected values length (1) does not match number of browser instances (2) in multi-remote setup.')
             })
         })
     })
