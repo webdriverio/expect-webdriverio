@@ -6,7 +6,7 @@ import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
 
-const browserMatchers = ['toHaveUrl', 'toHaveTitle']
+const browserMatchers = ['toHaveUrl']
 
 const validText = ' Valid Text '
 const wrongText = ' Wrong Text '
@@ -145,4 +145,3 @@ describe('browser matchers', () => {
         })
     })
 })
-

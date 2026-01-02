@@ -1,5 +1,6 @@
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
+import type { CompareResult } from '../utils.js'
 
 const EXPECTED_LABEL = 'Expected'
 const RECEIVED_LABEL = 'Received'
@@ -45,10 +46,11 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean },
+    context: { isNot?: boolean },
     verb: string,
     expectation: string,
-    arg2 = '', {
+    arg2 = '',
+    {
         message = '',
         containing = false
     }): string => {
@@ -83,8 +85,76 @@ export const enhanceError = (
         arg2 = ` ${arg2}`
     }
 
+    /**
+     * Example of below message:
+     * Expect window to have title
+     *
+     * Expected: "some Title text"
+     * Received: "some Wrong Title text"
+     */
     const msg = `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}\n\n${diffString}`
     return msg
+}
+
+export const formatFailureMessage = (
+    subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
+    compareResults: CompareResult<string, string | RegExp | WdioAsymmetricMatcher<string>>[],
+    context: ExpectWebdriverIO.MatcherContext,
+    expectedValueArg2 = '',
+    { message = '', containing = false }): string => {
+
+    const { isNot = false, expectation } = context
+    let { verb } = context
+
+    subject = typeof subject === 'string' ? subject : getSelectors(subject)
+
+    let contain = ''
+    if (containing) {
+        contain = ' containing'
+    }
+
+    if (verb) {
+        verb += ' '
+    }
+    const failedResults = compareResults.filter(({ result }) => result === isNot)
+
+    let msg = ''
+    for (const failResult of failedResults) {
+        const { actual, expected, instance: instanceName } = failResult
+
+        let diffString = isNot && equals(actual, expected)
+            ? `${EXPECTED_LABEL}: ${printExpected(expected)}\n${RECEIVED_LABEL}: ${printReceived(actual)}`
+            : printDiffOrStringify(expected, actual, EXPECTED_LABEL, RECEIVED_LABEL, true)
+
+        if (isNot) {
+            diffString = diffString
+                .replace(EXPECTED_LABEL, NOT_EXPECTED_LABEL)
+                .replace(RECEIVED_LABEL, RECEIVED_LABEL + ' '.repeat(NOT_SUFFIX.length))
+        }
+
+        if (message) {
+            message += '\n'
+        }
+
+        if (expectedValueArg2) {
+            expectedValueArg2 = ` ${expectedValueArg2}`
+        }
+
+        const mulitRemoteContext = context.isMultiRemote  ? ` for remote "${instanceName}"` : ''
+
+        /**
+         * Example of below message (multi-remote + isNot case):
+         * ```
+         * Expect window to have title for remote "browserA"
+         *
+         * Expected not: "some Title text"
+         * Received: "some Wrong Title text"
+         *
+         * ```
+         */
+        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${expectedValueArg2}${contain}${mulitRemoteContext}\n\n${diffString}\n\n`
+    }
+    return msg.trim()
 }
 
 export const enhanceErrorBe = (

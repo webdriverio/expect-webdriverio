@@ -1,13 +1,21 @@
 import deepEql from 'deep-eql'
 import type { ParsedCSSValue } from 'webdriverio'
-
 import { expect } from 'expect'
-
 import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
+import { toArray } from './util/multiRemoteUtil.js'
+
+export type CompareResult<A = unknown, E = unknown> = {
+    value: A // actual but sometimes modified (e.g. trimmed, lowercased, etc)
+    actual: A // actual value as is
+    expected: E
+    result: boolean // true when actual matches expected
+    pass?: boolean // true when condition is met (actual matches expected and isNot=false OR actual does not match expected and isNot=true)
+    instance?: string // multiremote instance name if applicable
+}
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -29,6 +37,80 @@ export function isAsymmetricMatcher(expected: unknown): expected is WdioAsymmetr
 
 function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> {
     return isAsymmetricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
+}
+
+/**
+ * Wait for condition to succeed
+ * For multiple remotes, all conditions must be met
+ * When using negated condition (isNot=true), we wait for all conditions to be true first, then we negate the real value if it takes time to show up.
+ * TODO multi-remote support: replace waitUntil in other matchers with this function
+ *
+ * @param condition function(s) that should return compare result(s) when resolved
+ * @param isNot     https://jestjs.io/docs/expect#thisisnot
+ * @param options   wait, interval, etc
+ */
+const waitUntilResultSucceed = async <A = unknown, E = unknown>(
+    condition: (() => Promise<CompareResult<A, E> | CompareResult<A, E>[]>) | (() => Promise<CompareResult<A, E>>)[],
+    isNot = false,
+    { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {},
+): Promise<{ pass: boolean, results: CompareResult<A, E>[] }> => {
+    /**
+     * Using array algorithm to handle both single and multiple conditions uniformly
+     * Technically, this is an o(n3) operation, but practically, we process either a single promise returning Array or an Array of promises. Review later if we can simplify and only have an array of promises
+     */
+    const conditions = toArray(condition)
+    // single attempt
+    if (wait === 0) {
+        const allResults = await Promise.all(conditions.map((condition) => condition().then((results) => toArray(results).map((result) => {
+            result.pass = result.result === !isNot
+            return result
+        }))))
+
+        const flatResults = allResults.flat()
+        const pass = flatResults.every(({ pass }) => pass)
+
+        return { pass, results: flatResults }
+    }
+
+    const start = Date.now()
+    let error: Error | undefined
+    const allConditionsResults = conditions.map((condition) : { condition: () => Promise<CompareResult<A, E> | CompareResult<A, E>[]>, results: CompareResult<A, E>[] } => ({
+        condition,
+        results: [{ value: null as A, actual: null as A, expected: null as E, result: false }],
+    }))
+
+    while (Date.now() - start <= wait) {
+        try {
+            const pendingConditions = allConditionsResults.filter(({ results }) => !results.every((result) => result.result))
+
+            // TODO multi-remote support: handle errors per remote more gracefully, so we report failures and throws if all remotes are in errors (and therefore still throw when not multi-remote)
+            await Promise.all(
+                pendingConditions.map(async (pendingResult) => {
+                    pendingResult.results = toArray(await pendingResult.condition())
+                }),
+            )
+
+            error = undefined
+            if (allConditionsResults.every(({ results }) => results.every((results) => results.result))) {
+                break
+            }
+        } catch (err) {
+            error = err instanceof Error ? err : new Error(String(err))
+        }
+        await sleep(interval)
+    }
+
+    if (error) {
+        throw error
+    }
+
+    const allResults = allConditionsResults.map(({ condition: _condition, ...rest }) => rest.results).flat().map((result) => {
+        result.pass = result.result === !isNot
+        return result
+    })
+    const pass = allResults.every(({ pass }) => pass)
+
+    return { pass, results: allResults }
 }
 
 /**
@@ -97,7 +179,7 @@ async function executeCommandBe(
             const result = await executeCommand.call(
                 this,
                 el,
-                async (element ) => ({ result: await command(element as WebdriverIO.Element) }),
+                async (element) => ({ result: await command(element as WebdriverIO.Element) }),
                 options
             )
             el = result.el as WebdriverIO.Element
@@ -151,76 +233,86 @@ export const compareText = (
         atIndex,
         replace,
     }: ExpectWebdriverIO.StringOptions
-) => {
+): CompareResult<string, string | RegExp | WdioAsymmetricMatcher<string>> => {
+    const compareResult: CompareResult<string, string | RegExp | WdioAsymmetricMatcher<string>> = { value: actual, actual, expected, result: false }
+    let value = actual
+    let expectedValue = expected
+
     if (typeof actual !== 'string') {
-        return {
-            value: actual,
-            result: false,
-        }
+        return compareResult
     }
 
     if (trim) {
-        actual = actual.trim()
+        value = value.trim()
     }
     if (Array.isArray(replace)) {
-        actual = replaceActual(replace, actual)
+        value = replaceActual(replace, value)
     }
     if (ignoreCase) {
-        actual = actual.toLowerCase()
-        if (typeof expected === 'string') {
-            expected = expected.toLowerCase()
-        } else if (isStringContainingMatcher(expected)) {
-            expected = (expected.toString() === 'StringContaining'
-                ? expect.stringContaining(expected.sample?.toString().toLowerCase())
-                : expect.not.stringContaining(expected.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>
+        value = value.toLowerCase()
+        if (typeof expectedValue === 'string') {
+            expectedValue = expectedValue.toLowerCase()
+        } else if (isStringContainingMatcher(expectedValue)) {
+            expectedValue = (
+                expectedValue.toString() === 'StringContaining'
+                    ? expect.stringContaining(expectedValue.sample?.toString().toLowerCase())
+                    : expect.not.stringContaining(expectedValue.sample?.toString().toLowerCase())
+            ) satisfies Partial<WdioAsymmetricMatcher<string>> as WdioAsymmetricMatcher<string>
         }
     }
 
-    if (isAsymmetricMatcher(expected)) {
-        const result = expected.asymmetricMatch(actual)
+    if (isAsymmetricMatcher(expectedValue)) {
+        const result = expectedValue.asymmetricMatch(value)
         return {
-            value: actual,
-            result
+            ...compareResult,
+            value,
+            result,
         }
     }
 
-    if (expected instanceof RegExp) {
+    if (expectedValue instanceof RegExp) {
         return {
-            value: actual,
-            result: !!actual.match(expected),
+            ...compareResult,
+            value,
+            result: !!value.match(expectedValue),
         }
     }
     if (containing) {
         return {
-            value: actual,
-            result: actual.includes(expected),
+            ...compareResult,
+            value,
+            result: value.includes(expectedValue),
         }
     }
 
     if (atStart) {
         return {
-            value: actual,
-            result: actual.startsWith(expected),
+            ...compareResult,
+            value: value,
+            result: value.startsWith(expectedValue),
         }
     }
 
     if (atEnd) {
         return {
-            value: actual,
-            result: actual.endsWith(expected),
+            ...compareResult,
+            value,
+            result: value.endsWith(expectedValue),
         }
     }
 
     if (atIndex) {
         return {
-            value: actual,
-            result: actual.substring(atIndex, actual.length).startsWith(expected),
+            ...compareResult,
+            value,
+            result: value.substring(atIndex, value.length).startsWith(expectedValue),
         }
     }
 
     return {
-        value: actual,
-        result: actual === expected,
+        ...compareResult,
+        value,
+        result: value === expectedValue,
     }
 }
 
@@ -349,7 +441,7 @@ export const compareStyle = async (
         } else if (atIndex) {
             result = actualVal.substring(atIndex, actualVal.length).startsWith(expectedVal)
             actual[key] = actualVal
-        } else if (replace){
+        } else if (replace) {
             const replacedActual = replaceActual(replace, actualVal)
             result = replacedActual === expectedVal
             actual[key] = replacedActual
@@ -367,13 +459,7 @@ export const compareStyle = async (
 
 function aliasFn(
     fn: (...args: unknown[]) => void,
-    {
-        verb,
-        expectation,
-    }: {
-        verb?: string
-        expectation?: string
-    } = {},
+    { verb, expectation }: ExpectWebdriverIO.MatcherContext = {},
     ...args: unknown[]
 ): unknown {
     this.verb = verb
@@ -383,7 +469,7 @@ function aliasFn(
 
 export {
     aliasFn, compareNumbers, enhanceError, executeCommand,
-    executeCommandBe, numberError, waitUntil, wrapExpectedWithArray
+    executeCommandBe, numberError, waitUntil, waitUntilResultSucceed, wrapExpectedWithArray
 }
 
 function replaceActual(

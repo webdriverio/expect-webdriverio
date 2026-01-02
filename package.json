@@ -64,7 +64,8 @@
     "ts:jasmine": "cd test-types/jasmine && tsc --project ./tsconfig.json",
     "ts:jasmine-async": "cd test-types/jasmine-async && tsc --project ./tsconfig.json",
     "watch": "npm run compile -- --watch",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "checks:all": "npm run build && npm run compile && npm run tsc:root-types && npm run test && npm run ts"
   },
   "dependencies": {
     "@vitest/snapshot": "^4.0.16",
