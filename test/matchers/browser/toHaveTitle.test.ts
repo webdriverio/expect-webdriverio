@@ -256,7 +256,6 @@ Received: "some Wrong Title text"`
 
                 describe('given multiple expected values', async () => {
                     const goodTitle2 = `${goodTitle} 2`
-                    // const goodTitles = [goodTitle, goodTitle2]
                     const expectedValues = [goodTitle, goodTitle2]
 
                     beforeEach(async () => {

@@ -45,7 +45,7 @@ function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetri
  * When using negated condition (isNot=true), we wait for all conditions to be true first, then we negate the real value if it takes time to show up.
  * TODO multi-remote support: replace waitUntil in other matchers with this function
  *
- * @param condition function to that should return true when condition is met
+ * @param condition function(s) that should return compare result(s) when resolved
  * @param isNot     https://jestjs.io/docs/expect#thisisnot
  * @param options   wait, interval, etc
  */
@@ -86,8 +86,7 @@ const waitUntilResult = async <A = unknown, E = unknown>(
             // TODO multi-remote support: handle errors per remote more gracefully, so we report failures and throws if all remotes are in errors (and therefore still throw when not multi-remote)
             await Promise.all(
                 pendingConditions.map(async (pendingResult) => {
-                    const results = toArray(await pendingResult.condition())
-                    pendingResult.results = results
+                    pendingResult.results = toArray(await pendingResult.condition())
                 }),
             )
 
