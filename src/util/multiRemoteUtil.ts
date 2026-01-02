@@ -4,15 +4,16 @@ export const toArray = <T>(value: T | T[] | MaybeArray<T>): T[] => (Array.isArra
 
 export type MaybeArray<T> = T | T[]
 
-export function isArray<T>(value: unknown): value is T[] {
-    return Array.isArray(value)
-}
-
 export const isMultiRemote = (browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser): browser is WebdriverIO.MultiRemoteBrowser => {
     return (browser as WebdriverIO.MultiRemoteBrowser).isMultiremote === true
 }
 
-export const getInstancesWithExpected = <T>(browsers: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser, expectedValues: T): Record<string, { browser: Browser; expectedValue: T; }>  => {
+type BrowserWithExpected<T> = Record<string, {
+    browser: Browser;
+    expectedValue: T;
+}>
+
+export const mapExpectedValueWithInstances = <T>(browsers: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser, expectedValues: T | MaybeArray<T>): BrowserWithExpected<T> => {
     if (isMultiRemote(browsers)) {
         if (Array.isArray(expectedValues)) {
             if (expectedValues.length !== browsers.instances.length) {
@@ -21,15 +22,15 @@ export const getInstancesWithExpected = <T>(browsers: WebdriverIO.Browser | Webd
         }
         // TODO multi-remote support: add support for object like { default: 'title', browserA: 'titleA', browserB: 'titleB' } later
 
-        const browsersWithExpected = browsers.instances.reduce((acc, instance, index) => {
+        const browsersWithExpected = browsers.instances.reduce((acc: BrowserWithExpected<T>, instance, index) => {
             const browser = browsers.getInstance(instance)
-            const expectedValue = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
+            const expectedValue: T = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
             acc[instance] = { browser, expectedValue }
             return acc
-        }, {} as Record<string,  { browser: WebdriverIO.Browser, expectedValue: T }>)
+        }, {})
         return browsersWithExpected
     }
 
     // TODO multi-remote support: using default could clash if someone use name default, to review later
-    return { default: { browser: browsers, expectedValue: expectedValues } }
+    return { default: { browser: browsers, expectedValue: expectedValues as T } }
 }
