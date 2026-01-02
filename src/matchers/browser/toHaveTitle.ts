@@ -27,8 +27,6 @@ export async function toHaveTitle(
     const { expectation = 'title', verb = 'have', isNot } = this
     const context = { expectation, verb, isNot, isMultiRemote: browser.isMultiremote }
 
-    console.log('toHaveTitle', { expectedValue, isNot, options })
-
     await options.beforeAssertion?.({
         matcherName: 'toHaveTitle',
         expectedValue,

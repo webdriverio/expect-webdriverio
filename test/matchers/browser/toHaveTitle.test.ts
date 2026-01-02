@@ -18,7 +18,6 @@ vi.mock('@wdio/globals', () => ({
     },
     multiremotebrowser: {
         isMultiremote: true,
-        getTitle: vi.fn().mockResolvedValue(['']),
         instances: ['browserA'],
         getInstance: (name: string) => {
             const instance = multiRemoteBrowserInstances[name]
@@ -31,128 +30,98 @@ vi.mock('@wdio/globals', () => ({
 }))
 
 describe('toHaveTitle', async () => {
-    const defaultContext = { isNot: false, toHaveTitle }
-    const goodTitle = 'some Title text'
-    const wrongTitle = 'some Wrong Title text'
+    describe('given isNot false', async () => {
+        const defaultContext = { isNot: false, toHaveTitle }
+        const goodTitle = 'some Title text'
+        const wrongTitle = 'some Wrong Title text'
 
-    beforeEach(async () => {
-        beforeAssertion.mockClear()
-        afterAssertion.mockClear()
-    })
-
-    describe('Browser', async () => {
         beforeEach(async () => {
-            browser.getTitle = vi.fn().mockResolvedValue(goodTitle)
+            beforeAssertion.mockClear()
+            afterAssertion.mockClear()
         })
 
-        describe('given default usage', async () => {
-            test('when success', async () => {
-                const result = await defaultContext.toHaveTitle(browser, goodTitle)
-
-                expect(result.pass).toBe(true)
+        describe('Browser', async () => {
+            beforeEach(async () => {
+                browser.getTitle = vi.fn().mockResolvedValue(goodTitle)
             })
 
-            test('when failure', async () => {
-                browser.getTitle = vi.fn().mockResolvedValue(wrongTitle)
-                const result = await defaultContext.toHaveTitle(browser, goodTitle)
+            describe('given default usage', async () => {
+                test('when success', async () => {
+                    const result = await defaultContext.toHaveTitle(browser, goodTitle)
 
-                expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`Expect window to have title
+                    expect(result.pass).toBe(true)
+                })
+
+                test('when failure', async () => {
+                    browser.getTitle = vi.fn().mockResolvedValue(wrongTitle)
+                    const result = await defaultContext.toHaveTitle(browser, goodTitle)
+
+                    expect(result.pass).toBe(false)
+                    expect(result.message()).toEqual(`Expect window to have title
 
 Expected: "some Title text"
 Received: "some Wrong Title text"`
-                )
-            })
-        })
-
-        describe('given before/after assertion hooks and options', async () => {
-            const options = {
-                ignoreCase: true,
-                beforeAssertion,
-                afterAssertion,
-            } satisfies ExpectWebdriverIO.StringOptions
-
-            test('when success', async () => {
-                const result = await defaultContext.toHaveTitle(browser, goodTitle, options)
-
-                expect(result.pass).toBe(true)
-                expect(beforeAssertion).toBeCalledWith({
-                    matcherName: 'toHaveTitle',
-                    expectedValue: goodTitle,
-                    options,
-                })
-                expect(afterAssertion).toBeCalledWith({
-                    matcherName: 'toHaveTitle',
-                    expectedValue: goodTitle,
-                    options,
-                    result,
+                    )
                 })
             })
 
-            test('when failure', async () => {
-                browser.getTitle = vi.fn().mockResolvedValue(wrongTitle)
-                const result = await defaultContext.toHaveTitle(browser, goodTitle, options)
+            describe('given before/after assertion hooks and options', async () => {
+                const options = {
+                    ignoreCase: true,
+                    beforeAssertion,
+                    afterAssertion,
+                } satisfies ExpectWebdriverIO.StringOptions
 
-                expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`Expect window to have title
+                test('when success', async () => {
+                    const result = await defaultContext.toHaveTitle(browser, goodTitle, options)
+
+                    expect(result.pass).toBe(true)
+                    expect(beforeAssertion).toBeCalledWith({
+                        matcherName: 'toHaveTitle',
+                        expectedValue: goodTitle,
+                        options,
+                    })
+                    expect(afterAssertion).toBeCalledWith({
+                        matcherName: 'toHaveTitle',
+                        expectedValue: goodTitle,
+                        options,
+                        result,
+                    })
+                })
+
+                test('when failure', async () => {
+                    browser.getTitle = vi.fn().mockResolvedValue(wrongTitle)
+                    const result = await defaultContext.toHaveTitle(browser, goodTitle, options)
+
+                    expect(result.pass).toBe(false)
+                    expect(result.message()).toEqual(`Expect window to have title
 
 Expected: "some Title text"
 Received: "some Wrong Title text"`
-                )
-                expect(beforeAssertion).toBeCalledWith({
-                    matcherName: 'toHaveTitle',
-                    expectedValue: goodTitle,
-                    options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                    )
+                    expect(beforeAssertion).toBeCalledWith({
+                        matcherName: 'toHaveTitle',
+                        expectedValue: goodTitle,
+                        options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                    })
+                    expect(afterAssertion).toBeCalledWith({
+                        matcherName: 'toHaveTitle',
+                        expectedValue: goodTitle,
+                        options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                        result,
+                    })
                 })
-                expect(afterAssertion).toBeCalledWith({
-                    matcherName: 'toHaveTitle',
-                    expectedValue: goodTitle,
-                    options: { ignoreCase: true, beforeAssertion, afterAssertion },
-                    result,
-                })
-            })
-        })
-    })
-
-    describe('Multi Remote Browsers', async () => {
-        beforeEach(async () => {
-            multiremotebrowser.getTitle = vi.fn().mockResolvedValue([goodTitle])
-        })
-
-        describe('given default usage', async () => {
-            test('when success', async () => {
-                const result = await defaultContext.toHaveTitle(multiremotebrowser, goodTitle)
-
-                expect(result.pass).toBe(true)
-            })
-
-            test('when failure', async () => {
-                multiremotebrowser.getTitle = vi.fn().mockResolvedValue([wrongTitle])
-                const result = await defaultContext.toHaveTitle(multiremotebrowser, goodTitle)
-
-                expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`Expect window to have title
-
-Expected: "some Title text"
-Received: "some Wrong Title text"`
-                )
             })
         })
 
         describe('Multi Remote Browsers', async () => {
             beforeEach(async () => {
-                multiremotebrowser.getTitle = vi.fn().mockResolvedValue([goodTitle])
                 multiremotebrowser.instances = ['browserA']
                 browserA.getTitle = vi.fn().mockResolvedValue(goodTitle)
                 browserB.getTitle = vi.fn().mockResolvedValue(goodTitle)
             })
 
-            describe('given one expected value', async () => {
-                const goodTitles = [goodTitle, goodTitle]
-                beforeEach(async () => {
-                    multiremotebrowser.getTitle = vi.fn().mockResolvedValue(goodTitles)
-                })
-
+            describe('given default usage', async () => {
                 test('when success', async () => {
                     const result = await defaultContext.toHaveTitle(multiremotebrowser, goodTitle)
 
@@ -170,6 +139,7 @@ Expected: "some Title text"
 Received: "some Wrong Title text"`
                     )
                 })
+            })
 
             describe('given multiple remote browsers', async () => {
                 beforeEach(async () => {
@@ -178,8 +148,7 @@ Received: "some Wrong Title text"`
                     browserB.getTitle = vi.fn().mockResolvedValue(goodTitle)
                 })
 
-                    expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`Expect window to have title
+                describe('given one expected value', async () => {
 
                     test('when success', async () => {
                         const result = await defaultContext.toHaveTitle(multiremotebrowser, goodTitle)
@@ -296,23 +265,9 @@ Received: "some Wrong Title text"`
                     })
 
                     test('when success', async () => {
-                        const result = await defaultContext.toHaveTitle(
-                            multiremotebrowser,
-                            goodTitle,
-                            options,
-                        )
+                        const result = await defaultContext.toHaveTitle(multiremotebrowser, expectedValues)
+
                         expect(result.pass).toBe(true)
-                        expect(beforeAssertion).toBeCalledWith({
-                            matcherName: 'toHaveTitle',
-                            expectedValue: goodTitle,
-                            options,
-                        })
-                        expect(afterAssertion).toBeCalledWith({
-                            matcherName: 'toHaveTitle',
-                            expectedValue: goodTitle,
-                            options,
-                            result,
-                        })
                     })
 
                     test('when failure for one browser', async () => {
@@ -326,6 +281,7 @@ Received: "some Wrong Title text"`
 Expected: "some Title text"
 Received: "some Wrong Title text"`
                         )
+                    })
 
                     test('when failure for multiple browsers', async () => {
                         browserA.getTitle = vi.fn().mockResolvedValue(wrongTitle)
@@ -406,52 +362,95 @@ Received: "some Wrong Title text"`
                                 result,
                             })
                         })
-                        expect(afterAssertion).toBeCalledWith({
-                            matcherName: 'toHaveTitle',
-                            expectedValue: goodTitle,
-                            options: { ignoreCase: true, beforeAssertion, afterAssertion },
-                            result,
-                        })
                     })
                 })
             })
+        })
+    })
 
-            describe('given multiple expected values', async () => {
-                const goodTitle2 = `${goodTitle} 2`
-                const goodTitles = [goodTitle, goodTitle2]
-                const expectedValues = [goodTitle, goodTitle2]
+    describe('given isNot true', async () => {
+        const defaultContext = { isNot: true, toHaveTitle }
+        const aTitle = 'some Title text'
+        const negatedExpectedTitle = 'some Title text not expected to be'
 
-                beforeEach(async () => {
-                    multiremotebrowser.getTitle = vi.fn().mockResolvedValue(goodTitles)
-                })
+        beforeEach(async () => {
+            beforeAssertion.mockClear()
+            afterAssertion.mockClear()
+        })
 
+        describe('Browser', async () => {
+            beforeEach(async () => {
+                browser.getTitle = vi.fn().mockResolvedValue(aTitle)
+            })
+
+            describe('given default usage', async () => {
                 test('when success', async () => {
-                    const result = await defaultContext.toHaveTitle(multiremotebrowser, expectedValues)
+                    const result = await defaultContext.toHaveTitle(browser, negatedExpectedTitle)
 
                     expect(result.pass).toBe(true)
                 })
 
-                test('when failure for one browser', async () => {
-                    multiremotebrowser.getTitle = vi.fn().mockResolvedValue([wrongTitle, goodTitle2])
-                    const result = await defaultContext.toHaveTitle(multiremotebrowser, expectedValues)
+                test('when failure', async () => {
+                    browser.getTitle = vi.fn().mockResolvedValue(negatedExpectedTitle)
+                    const result = await defaultContext.toHaveTitle(browser, negatedExpectedTitle)
 
                     expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`Expect window to have title
+                    expect(result.message()).toEqual(`Expect window not to have title
 
-Expected: "some Title text"
-Received: "some Wrong Title text"`
+Expected [not]: "some Title text not expected to be"
+Received      : "some Title text not expected to be"`
                     )
                 })
+            })
 
-                test('when failure for multiple browsers', async () => {
-                    multiremotebrowser.getTitle = vi.fn().mockResolvedValue([wrongTitle, wrongTitle])
-                    const result = await defaultContext.toHaveTitle(multiremotebrowser, expectedValues)
+            describe('given before/after assertion hooks and options', async () => {
+                const options = {
+                    ignoreCase: true,
+                    beforeAssertion,
+                    afterAssertion,
+                } satisfies ExpectWebdriverIO.StringOptions
+
+                test('when success', async () => {
+                    const result = await defaultContext.toHaveTitle(browser, negatedExpectedTitle, options)
+
+                    expect(result.pass).toBe(true)
+                    expect(beforeAssertion).toBeCalledWith({
+                        matcherName: 'toHaveTitle',
+                        expectedValue: negatedExpectedTitle,
+                        options,
+                    })
+                    expect(afterAssertion).toBeCalledWith({
+                        matcherName: 'toHaveTitle',
+                        expectedValue: negatedExpectedTitle,
+                        options,
+                        result,
+                    })
+                })
+
+                test('when failure', async () => {
+                    browser.getTitle = vi.fn().mockResolvedValue(negatedExpectedTitle)
+                    const result = await defaultContext.toHaveTitle(browser, negatedExpectedTitle, options)
 
                     expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`Expect window to have title
+                    expect(result.message()).toEqual(`Expect window not to have title
 
-Expected: "some Title text"
-Received: "some Wrong Title text"
+Expected [not]: "some Title text not expected to be"
+Received      : "some Title text not expected to be"`
+                    )
+                    expect(beforeAssertion).toBeCalledWith({
+                        matcherName: 'toHaveTitle',
+                        expectedValue: negatedExpectedTitle,
+                        options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                    })
+                    expect(afterAssertion).toBeCalledWith({
+                        matcherName: 'toHaveTitle',
+                        expectedValue: negatedExpectedTitle,
+                        options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                        result,
+                    })
+                })
+            })
+        })
 
         describe('Multi Remote Browsers', async () => {
             beforeEach(async () => {
@@ -479,13 +478,9 @@ Expected [not]: "some Title text not expected to be"
 Received      : "some Title text not expected to be"`
                     )
                 })
+            })
 
-                describe('given before/after assertion hooks and options', async () => {
-                    const options = {
-                        ignoreCase: true,
-                        beforeAssertion,
-                        afterAssertion,
-                    } satisfies ExpectWebdriverIO.StringOptions
+            describe('given multiple remote browsers', async () => {
 
                 beforeEach(async () => {
                     multiremotebrowser.instances = ['browserA', 'browserB']
@@ -507,7 +502,6 @@ Received      : "some Title text not expected to be"`
                     test('when failure for one browser', async () => {
                         browserA.getTitle = vi.fn().mockResolvedValue(negatedExpectedTitle)
 
-                        multiremotebrowser.getTitle = vi.fn().mockResolvedValue([negatedExpectedTitle, aTitle])
                         const result = await defaultContext.toHaveTitle(multiremotebrowser, negatedExpectedTitle)
 
                         expect(result.pass).toBe(false)
@@ -592,6 +586,7 @@ Received      : "some Title text not expected to be"`
                             })
                         })
                     })
+                })
 
                 describe('given multiple expected values', async () => {
                     const aTitle2 = `${aTitle} 2`
@@ -620,6 +615,7 @@ Received      : "some Title text not expected to be"`
 Expected [not]: "some Title text not expected to be"
 Received      : "some Title text not expected to be"`
                         )
+                    })
 
                     test('when failure for multiple browsers', async () => {
                         browserA.getTitle = vi.fn().mockResolvedValue(negatedExpectedTitle)
@@ -630,18 +626,41 @@ Received      : "some Title text not expected to be"`
                         expect(result.pass).toBe(false)
                         expect(result.message()).toEqual(`Expect window not to have title for remote "browserA"
 
-Expected: "some title text"
-Received: "some wrong title text"
+Expected [not]: "some Title text not expected to be"
+Received      : "some Title text not expected to be"
 
 Expect window not to have title for remote "browserB"
 
-Expected: "some title text 2"
-Received: "some wrong title text"`
+Expected [not]: "some Title text 2 not expected to be"
+Received      : "some Title text 2 not expected to be"`
                         )
-                        expect(beforeAssertion).toBeCalledWith({
-                            matcherName: 'toHaveTitle',
-                            expectedValue: expectedValues,
-                            options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                    })
+
+                    describe('given before/after assertion hooks and options', async () => {
+                        const options = {
+                            ignoreCase: true,
+                            beforeAssertion,
+                            afterAssertion,
+                        } satisfies ExpectWebdriverIO.StringOptions
+
+                        test('when success', async () => {
+                            const result = await defaultContext.toHaveTitle(
+                                multiremotebrowser,
+                                negatedExpectedValues,
+                                options,
+                            )
+                            expect(result.pass).toBe(true)
+                            expect(beforeAssertion).toBeCalledWith({
+                                matcherName: 'toHaveTitle',
+                                expectedValue: negatedExpectedValues,
+                                options,
+                            })
+                            expect(afterAssertion).toBeCalledWith({
+                                matcherName: 'toHaveTitle',
+                                expectedValue: negatedExpectedValues,
+                                options,
+                                result,
+                            })
                         })
 
                         test('when failure', async () => {
