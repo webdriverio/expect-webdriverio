@@ -350,11 +350,9 @@ export const compareTextWithArray = (
                 return item.toLowerCase()
             }
             if (isStringContainingMatcher(item)) {
-                return (
-                    item.toString() === 'StringContaining'
-                        ? expect.stringContaining(item.sample?.toString().toLowerCase())
-                        : expect.not.stringContaining(item.sample?.toString().toLowerCase())
-                ) as WdioAsymmetricMatcher<string>
+                return (item.toString() === 'StringContaining'
+                    ? expect.stringContaining(item.sample?.toString().toLowerCase())
+                    : expect.not.stringContaining(item.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>
             }
             return item
         })
