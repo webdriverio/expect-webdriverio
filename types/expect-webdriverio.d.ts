@@ -54,7 +54,7 @@ type WdioOnlyMaybePromiseLike = ElementPromise | ElementArrayPromise | Chainable
  */
 type ElementOrArrayLike = ElementLike | ElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
-type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray
+type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[]
 type MockPromise = Promise<WebdriverIO.Mock>
 
 /**
