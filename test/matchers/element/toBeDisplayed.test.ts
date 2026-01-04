@@ -3,8 +3,18 @@ import { $ } from '@wdio/globals'
 
 import { getExpectMessage, getReceived } from '../../__fixtures__/utils.js'
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
+import { executeCommandBe } from '../../../src/utils.js'
+import { DEFAULT_OPTIONS } from '../../../src/constants.js'
 
 vi.mock('@wdio/globals')
+vi.mock('../../../src/utils.js', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await importOriginal<typeof import('../../../src/utils.js')>()
+    return {
+        ...actual,
+        executeCommandBe: vi.fn(actual.executeCommandBe)
+    }
+})
 
 describe('toBeDisplayed', () => {
     /**
@@ -24,7 +34,21 @@ describe('toBeDisplayed', () => {
 
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
-        const result = await toBeDisplayed.call({}, el, {}, { beforeAssertion, afterAssertion })
+
+        const result = await toBeDisplayed.call({}, el, { beforeAssertion, afterAssertion })
+
+        expect(el.isDisplayed).toHaveBeenCalledWith(
+            {
+                withinViewport: false,
+                contentVisibilityAuto: true,
+                opacityProperty: true,
+                visibilityProperty: true
+            }
+        )
+        expect(executeCommandBe).toHaveBeenCalledWith(el, expect.anything(), expect.objectContaining({
+            wait: DEFAULT_OPTIONS.wait,
+            interval: DEFAULT_OPTIONS.interval
+        }))
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(0)
         expect(beforeAssertion).toBeCalledWith({
@@ -36,6 +60,28 @@ describe('toBeDisplayed', () => {
             options: { beforeAssertion, afterAssertion },
             result
         })
+    })
+
+    test('success with ToBeDisplayed and command options', async () => {
+        const el: any = await $('sel')
+        el._value = function (): boolean {
+            return true
+        }
+        const result = await toBeDisplayed.call({}, el, { wait: 1, withinViewport: true })
+
+        expect(el.isDisplayed).toHaveBeenCalledWith(
+            {
+                withinViewport: true,
+                contentVisibilityAuto: true,
+                opacityProperty: true,
+                visibilityProperty: true
+            }
+        )
+        expect(executeCommandBe).toHaveBeenCalledWith(el, expect.anything(), expect.objectContaining({
+            wait: 1,
+            interval: DEFAULT_OPTIONS.interval
+        }))
+        expect(result.pass).toBe(true)
     })
 
     test('wait but failure', async () => {
@@ -69,7 +115,8 @@ describe('toBeDisplayed', () => {
             return false
         }
 
-        const result = await toBeDisplayed.call({}, el, {}, { wait: 0 })
+        const result = await toBeDisplayed.call({}, el, { wait: 0 })
+
         expect(result.pass).toBe(false)
         expect(el._attempts).toBe(1)
     })
@@ -82,7 +129,21 @@ describe('toBeDisplayed', () => {
             return true
         }
 
-        const result = await toBeDisplayed.call({}, el, {}, { wait: 0 })
+        const result = await toBeDisplayed.call({}, el, { wait: 0 })
+
+        expect(el.isDisplayed).toHaveBeenCalledWith(
+            {
+                withinViewport: false,
+                contentVisibilityAuto: true,
+                opacityProperty: true,
+                visibilityProperty: true
+            }
+        )
+        expect(executeCommandBe).toHaveBeenCalledWith(el, expect.anything(), expect.objectContaining({
+            wait: 0,
+            interval: DEFAULT_OPTIONS.interval
+        }))
+
         expect(result.pass).toBe(true)
         expect(el._attempts).toBe(1)
     })
@@ -92,7 +153,7 @@ describe('toBeDisplayed', () => {
         el._value = function (): boolean {
             return true
         }
-        const result = await toBeDisplayed.call({ isNot: true }, el, {}, { wait: 0 })
+        const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 0 })
         const received = getReceived(result.message())
 
         expect(received).not.toContain('not')
@@ -104,7 +165,7 @@ describe('toBeDisplayed', () => {
         el._value = function (): boolean {
             return false
         }
-        const result = await toBeDisplayed.call({ isNot: true }, el, {}, { wait: 0 })
+        const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 0 })
         const received = getReceived(result.message())
 
         expect(received).toContain('not')
@@ -116,7 +177,7 @@ describe('toBeDisplayed', () => {
         el._value = function (): boolean {
             return true
         }
-        const result = await toBeDisplayed.call({ isNot: true }, el, {}, { wait: 1 })
+        const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 1 })
         const received = getReceived(result.message())
 
         expect(received).not.toContain('not')
@@ -128,9 +189,21 @@ describe('toBeDisplayed', () => {
         el._value = function (): boolean {
             return false
         }
-        const result = await toBeDisplayed.call({ isNot: true }, el, {}, { wait: 1 })
+        const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 1 })
         const received = getReceived(result.message())
 
+        expect(el.isDisplayed).toHaveBeenCalledWith(
+            {
+                withinViewport: false,
+                contentVisibilityAuto: true,
+                opacityProperty: true,
+                visibilityProperty: true
+            }
+        )
+        expect(executeCommandBe).toHaveBeenCalledWith(el, expect.anything(), expect.objectContaining({
+            wait: 1,
+            interval: DEFAULT_OPTIONS.interval
+        }))
         expect(received).toContain('not')
         expect(result.pass).toBe(false)
     })

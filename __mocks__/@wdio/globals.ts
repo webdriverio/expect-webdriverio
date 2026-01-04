@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 function beFn() {
@@ -32,9 +34,7 @@ function getSizeFn(property?: 'height' | 'width') {
     return this._size ? this._size(property) : undefined
 }
 
-const element = {
-    $,
-    $$,
+const elementMethods = {
     isDisplayed: beFn,
     isDisplayedInViewport: beFn,
     isExisting: beFn,
@@ -50,10 +50,19 @@ const element = {
     getSize: getSizeFn,
 }
 
+const element = {
+    $,
+    $$,
+    ...elementMethods
+}
+
 export function $(selector) {
     const el: any = {
         ...element,
         selector
+    }
+    for (const [prop, method] of Object.entries(elementMethods)) {
+        el[prop] = vi.fn(method)
     }
     el.getElement = async () => el
     return el
@@ -62,11 +71,15 @@ export function $(selector) {
 export function $$(selector) {
     const length = this?._length || 2
     const els: any = Array(length).map((_, index) => {
-        return {
+        const el = {
             ...element,
             selector,
             index
         }
+        for (const [prop, method] of Object.entries(elementMethods)) {
+            el[prop] = vi.fn(method)
+        }
+        return el
     })
     // Required to refetch
     const parent: any = element
