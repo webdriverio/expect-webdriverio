@@ -34,132 +34,232 @@ vi.mock('@wdio/globals', () => ({
 }))
 
 describe('toBeElementsArrayOfSize', () => {
-    let els: WebdriverIO.ElementArray
+    describe('given an elements of type WebdriverIO.ElementArray', () => {
+        let els: WebdriverIO.ElementArray
 
-    beforeEach(() => {
-        els = $$('parent') as unknown as WebdriverIO.ElementArray
-    })
-
-    describe('success', () => {
-        test('array of size 2', async () => {
-            const beforeAssertion = vi.fn()
-            const afterAssertion = vi.fn()
-            const result = await toBeElementsArrayOfSize.call({}, els, 2, { beforeAssertion, afterAssertion })
-            expect(result.pass).toBe(true)
-            expect(beforeAssertion).toBeCalledWith({
-                matcherName: 'toBeElementsArrayOfSize',
-                expectedValue: 2,
-                options: { beforeAssertion, afterAssertion }
-            })
-            expect(afterAssertion).toBeCalledWith({
-                matcherName: 'toBeElementsArrayOfSize',
-                expectedValue: 2,
-                options: { beforeAssertion, afterAssertion },
-                result
-            })
-        })
-        test('array of size 5', async () => {
-            els = createMockElementArray(5)
-            const result = await toBeElementsArrayOfSize.call({}, els, 5, {})
-            expect(result.pass).toBe(true)
-        })
-    })
-
-    describe('failure', () => {
-        let result: any
-
-        beforeEach(async () => {
-            result = await toBeElementsArrayOfSize.call({}, els, 5, {})
+        beforeEach(() => {
+            els = $$('parent') as unknown as WebdriverIO.ElementArray
         })
 
-        test('fails', () => {
-            expect(result.pass).toBe(false)
-        })
-
-        describe('message shows correctly', () => {
-            test('expect message', () => {
-                expect(getExpectMessage(result.message())).toContain('to be elements array of size')
+        describe('success', () => {
+            test('array of size 2', async () => {
+                const beforeAssertion = vi.fn()
+                const afterAssertion = vi.fn()
+                const result = await toBeElementsArrayOfSize.call({}, els, 2, { beforeAssertion, afterAssertion })
+                expect(result.pass).toBe(true)
+                expect(beforeAssertion).toBeCalledWith({
+                    matcherName: 'toBeElementsArrayOfSize',
+                    expectedValue: 2,
+                    options: { beforeAssertion, afterAssertion }
+                })
+                expect(afterAssertion).toBeCalledWith({
+                    matcherName: 'toBeElementsArrayOfSize',
+                    expectedValue: 2,
+                    options: { beforeAssertion, afterAssertion },
+                    result
+                })
             })
-            test('expected message', () => {
-                expect(getExpected(result.message())).toContain('5')
-            })
-            test('received message', () => {
-                expect(getReceived(result.message())).toContain('2')
+            test('array of size 5', async () => {
+                els = createMockElementArray(5)
+                const result = await toBeElementsArrayOfSize.call({}, els, 5, {})
+                expect(result.pass).toBe(true)
             })
         })
+
+        describe('failure', () => {
+            let result: any
+
+            beforeEach(async () => {
+                result = await toBeElementsArrayOfSize.call({}, els, 5, {})
+            })
+
+            test('fails', () => {
+                expect(result.pass).toBe(false)
+            })
+
+            describe('message shows correctly', () => {
+                test('expect message', () => {
+                    expect(getExpectMessage(result.message())).toContain('to be elements array of size')
+                })
+                test('expected message', () => {
+                    expect(getExpected(result.message())).toContain('5')
+                })
+                test('received message', () => {
+                    expect(getReceived(result.message())).toContain('2')
+                })
+            })
+        })
+
+        describe('error catching', () => {
+            test('throws error with incorrect size param', async () => {
+                await expect(toBeElementsArrayOfSize.call({}, els, '5' as any)).rejects.toThrow('Invalid params passed to toBeElementsArrayOfSize.')
+            })
+
+            test('works if size contains options', async () => {
+                const result = await toBeElementsArrayOfSize.call({}, els, { lte: 5 })
+                expect(result.pass).toBe(true)
+            })
+        })
+
+        describe('number options', () => {
+            test.each([
+                ['lte', 10, true],
+                ['lte', 1, false],
+                ['gte', 1, true],
+                ['gte', 10, false],
+                ['gte and lte', { gte: 1, lte: 10 }, true],
+                ['not gte but is lte', { gte: 10, lte: 10 }, false],
+                ['not lte but is gte', { gte: 1, lte: 1 }, false],
+            ])('should handle %s correctly', async (_, option, expected) => {
+                const result = await toBeElementsArrayOfSize.call({}, els, typeof option === 'object' ? option : { [_ as string]: option })
+                expect(result.pass).toBe(expected)
+            })
+        })
+
+        describe('array update', () => {
+            test('updates the received array when assertion passes', async () => {
+                const receivedArray = createMockElementArray(2);
+                (receivedArray.parent as any)._length = 5;
+                (receivedArray.parent as any).$$ = vi.fn().mockReturnValue(createMockElementArray(5))
+
+                const result = await toBeElementsArrayOfSize.call({}, receivedArray, 5)
+
+                expect(result.pass).toBe(true)
+                expect(receivedArray.length).toBe(5)
+            })
+
+            test('does not update the received array when assertion fails', async () => {
+                const receivedArray = createMockElementArray(2)
+
+                const result = await toBeElementsArrayOfSize.call({}, receivedArray, 10)
+
+                expect(result.pass).toBe(false)
+                expect(receivedArray.length).toBe(2)
+            })
+
+            test('does not modify non-array received values', async () => {
+                const nonArrayEls = {
+                    selector: 'parent',
+                    length: 2,
+                    parent: {
+                        $: vi.fn(),
+                        $$: vi.fn().mockReturnValue(createMockElementArray(5)),
+                    },
+                    foundWith: '$$',
+                    props: [],
+                } as unknown as WebdriverIO.ElementArray
+
+                const result = await toBeElementsArrayOfSize.call({}, nonArrayEls, 5)
+
+                expect(result.pass).toBe(true)
+                expect(nonArrayEls.length).toBe(2)
+            })
+
+            test('does not alter the array when checking', async () => {
+                const receivedArray = createMockElementArray(2)
+                const result = await toBeElementsArrayOfSize.call({}, receivedArray, 2)
+
+                expect(result.pass).toBe(true)
+                expect(receivedArray.length).toBe(2)
+            })
+        })
     })
 
-    describe('error catching', () => {
-        test('throws error with incorrect size param', async () => {
-            await expect(toBeElementsArrayOfSize.call({}, els, '5' as any)).rejects.toThrow('Invalid params passed to toBeElementsArrayOfSize.')
+    describe('given an elements of type WebdriverIO.Element[]', () => {
+        describe('when elements is empty array', () => {
+            const elements: WebdriverIO.Element[] = []
+            describe('success', () => {
+                test('array of size 0', async () => {
+                    const beforeAssertion = vi.fn()
+                    const afterAssertion = vi.fn()
+                    const result = await toBeElementsArrayOfSize.call({}, elements, 0, { beforeAssertion, afterAssertion })
+                    expect(result.pass).toBe(true)
+                    expect(beforeAssertion).toBeCalledWith({
+                        matcherName: 'toBeElementsArrayOfSize',
+                        expectedValue: 0,
+                        options: { beforeAssertion, afterAssertion }
+                    })
+                    expect(afterAssertion).toBeCalledWith({
+                        matcherName: 'toBeElementsArrayOfSize',
+                        expectedValue: 0,
+                        options: { beforeAssertion, afterAssertion },
+                        result
+                    })
+                })
+            })
+
+            describe('failure', () => {
+                let result: any
+
+                beforeEach(async () => {
+                    result = await toBeElementsArrayOfSize.call({}, elements, 5, {})
+                })
+
+                test('fails', () => {
+                    expect(result.pass).toBe(false)
+                })
+
+                describe('message shows correctly', () => {
+                    test('expect message', () => {
+                        expect(getExpectMessage(result.message())).toContain('to be elements array of size')
+                    })
+                    test('expected message', () => {
+                        expect(getExpected(result.message())).toContain('5')
+                    })
+                    test('received message', () => {
+                        expect(getReceived(result.message())).toContain('0')
+                    })
+                })
+            })
         })
 
-        test('works if size contains options', async () => {
-            const result = await toBeElementsArrayOfSize.call({}, els, { lte: 5 })
-            expect(result.pass).toBe(true)
-        })
-    })
+        describe('when elements is not empty array', () => {
+            const elements: WebdriverIO.Element[] = [{
+                elementId: 'element-1'
+            } satisfies Partial<WebdriverIO.Element> as WebdriverIO.Element,]
+            describe('success', () => {
+                test('array of size 1', async () => {
+                    const beforeAssertion = vi.fn()
+                    const afterAssertion = vi.fn()
+                    const result = await toBeElementsArrayOfSize.call({}, elements, 1, { beforeAssertion, afterAssertion })
+                    expect(result.pass).toBe(true)
+                    expect(beforeAssertion).toBeCalledWith({
+                        matcherName: 'toBeElementsArrayOfSize',
+                        expectedValue: 1,
+                        options: { beforeAssertion, afterAssertion }
+                    })
+                    expect(afterAssertion).toBeCalledWith({
+                        matcherName: 'toBeElementsArrayOfSize',
+                        expectedValue: 1,
+                        options: { beforeAssertion, afterAssertion },
+                        result
+                    })
+                })
+            })
 
-    describe('number options', () => {
-        test.each([
-            ['lte', 10, true],
-            ['lte', 1, false],
-            ['gte', 1, true],
-            ['gte', 10, false],
-            ['gte and lte', { gte: 1, lte: 10 }, true],
-            ['not gte but is lte', { gte: 10, lte: 10 }, false],
-            ['not lte but is gte', { gte: 1, lte: 1 }, false],
-        ])('should handle %s correctly', async (_, option, expected) => {
-            const result = await toBeElementsArrayOfSize.call({}, els, typeof option === 'object' ? option : { [_ as string]: option })
-            expect(result.pass).toBe(expected)
-        })
-    })
+            describe('failure', () => {
+                let result: any
 
-    describe('array update', () => {
-        test('updates the received array when assertion passes', async () => {
-            const receivedArray = createMockElementArray(2);
-            (receivedArray.parent as any)._length = 5;
-            (receivedArray.parent as any).$$ = vi.fn().mockReturnValue(createMockElementArray(5))
+                beforeEach(async () => {
+                    result = await toBeElementsArrayOfSize.call({}, elements, 5, {})
+                })
 
-            const result = await toBeElementsArrayOfSize.call({}, receivedArray, 5)
+                test('fails', () => {
+                    expect(result.pass).toBe(false)
+                })
 
-            expect(result.pass).toBe(true)
-            expect(receivedArray.length).toBe(5)
-        })
-
-        test('does not update the received array when assertion fails', async () => {
-            const receivedArray = createMockElementArray(2)
-
-            const result = await toBeElementsArrayOfSize.call({}, receivedArray, 10)
-
-            expect(result.pass).toBe(false)
-            expect(receivedArray.length).toBe(2)
-        })
-
-        test('does not modify non-array received values', async () => {
-            const nonArrayEls = {
-                selector: 'parent',
-                length: 2,
-                parent: {
-                    $: vi.fn(),
-                    $$: vi.fn().mockReturnValue(createMockElementArray(5)),
-                },
-                foundWith: '$$',
-                props: [],
-            } as unknown as WebdriverIO.ElementArray
-
-            const result = await toBeElementsArrayOfSize.call({}, nonArrayEls, 5)
-
-            expect(result.pass).toBe(true)
-            expect(nonArrayEls.length).toBe(2)
-        })
-
-        test('does not alter the array when checking', async () => {
-            const receivedArray = createMockElementArray(2)
-            const result = await toBeElementsArrayOfSize.call({}, receivedArray, 2)
-
-            expect(result.pass).toBe(true)
-            expect(receivedArray.length).toBe(2)
+                describe('message shows correctly', () => {
+                    test('expect message', () => {
+                        expect(getExpectMessage(result.message())).toContain('to be elements array of size')
+                    })
+                    test('expected message', () => {
+                        expect(getExpected(result.message())).toContain('5')
+                    })
+                    test('received message', () => {
+                        expect(getReceived(result.message())).toContain('1')
+                    })
+                })
+            })
         })
     })
 })

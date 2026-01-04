@@ -5,8 +5,10 @@ export type WdioElementMaybePromise =
     WebdriverIO.Element |
     ChainablePromiseElement
 
+export type WdioElements = WebdriverIO.ElementArray | WebdriverIO.Element[]
+
 export type WdioElementsMaybePromise =
-    WebdriverIO.ElementArray |
+    WdioElements |
     ChainablePromiseArray
 
 export type RawMatcherFn<Context extends MatcherContext = MatcherContext> = {
