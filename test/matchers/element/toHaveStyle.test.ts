@@ -124,7 +124,22 @@ Received      : {"color": "#000", "font-family": "Faktum", "font-size": "26px"}`
         }
 
         const result = await toHaveStyle.bind({ })(el, wrongStyle, { wait: 1 })
+
         expect(result.pass).toBe(false)
+        expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have style
+
+- Expected  - 3
++ Received  + 3
+
+  Object {
+-   "color": "#fff",
+-   "font-family": "Incorrect Font",
+-   "font-size": "100px",
++   "color": "#000",
++   "font-family": "Faktum",
++   "font-size": "26px",
+  }`)
     })
 
     test('should return true if styles match', async () => {
