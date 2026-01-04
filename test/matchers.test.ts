@@ -111,43 +111,43 @@ describe('Custom Wdio Matchers Integration Tests', async () => {
             await expect(() => expectLib(el).not.toBeDisplayed({ wait: 1 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to be displayed
 
-Expected [not]: "not displayed"
-Received      : "displayed"`
+Expected: "not displayed"
+Received: "displayed"`
             )
 
             await expect(() => expectLib(el).not.toBeExisting({ wait: 1 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to be existing
 
-Expected [not]: "not existing"
-Received      : "existing"`
+Expected: "not existing"
+Received: "existing"`
             )
 
             await expect(() => expectLib(el).not.toBeEnabled({ wait: 1 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to be enabled
 
-Expected [not]: "not enabled"
-Received      : "enabled"`
+Expected: "not enabled"
+Received: "enabled"`
             )
 
             await expect(() => expectLib(el).not.toBeClickable({ wait: 1 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to be clickable
 
-Expected [not]: "not clickable"
-Received      : "clickable"`
+Expected: "not clickable"
+Received: "clickable"`
             )
 
             await expect(() => expectLib(el).not.toBeFocused({ wait: 1 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to be focused
 
-Expected [not]: "not focused"
-Received      : "focused"`
+Expected: "not focused"
+Received: "focused"`
             )
 
             await expect(() => expectLib(el).not.toBeSelected({ wait: 1 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to be selected
 
-Expected [not]: "not selected"
-Received      : "selected"`
+Expected: "not selected"
+Received: "selected"`
             )
         })
 
@@ -424,8 +424,8 @@ Received: 100`)
             await expect(() => expectLib(el).not.toBeDisplayed({ wait: 300, interval: 100 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to be displayed
 
-Expected [not]: "not displayed"
-Received      : "displayed"`)
+Expected: "not displayed"
+Received: "displayed"`)
 
             expect(el.isDisplayed).toHaveBeenCalledTimes(6)
         })

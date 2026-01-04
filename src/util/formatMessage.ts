@@ -3,11 +3,6 @@ import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
 import { isElementArray } from './elementsUtil.js'
 
-const EXPECTED_LABEL = 'Expected'
-const RECEIVED_LABEL = 'Received'
-const NOT_SUFFIX = ' [not]'
-const NOT_EXPECTED_LABEL = EXPECTED_LABEL + NOT_SUFFIX
-
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
     if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
@@ -39,22 +34,20 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
     return selectors.reverse().join('.')
 }
 
-export const not = (isNot: boolean): string => {
-    return `${isNot ? 'not ' : ''}`
-}
+const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
 
 export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean },
+    context: { isNot: boolean, useNotInLabel?: boolean },
     verb: string,
     expectation: string,
-    arg2 = '', {
+    expectedValueArgument2 = '', {
         message = '',
         containing = false
-    }): string => {
-    const { isNot = false } = context
+    } = {}): string => {
+    const { isNot = false, useNotInLabel = true } = context
 
     subject = typeof subject === 'string' ? subject : getSelectors(subject)
 
@@ -67,37 +60,43 @@ export const enhanceError = (
         verb += ' '
     }
 
-    let diffString = isNot && equals(actual, expected)
-        ? `${EXPECTED_LABEL}: ${printExpected(expected)}\n${RECEIVED_LABEL}: ${printReceived(actual)}`
-        : printDiffOrStringify(expected, actual, EXPECTED_LABEL, RECEIVED_LABEL, true)
-
-    if (isNot) {
-        diffString = diffString
-            .replace(EXPECTED_LABEL, NOT_EXPECTED_LABEL)
-            .replace(RECEIVED_LABEL, RECEIVED_LABEL + ' '.repeat(NOT_SUFFIX.length))
+    const label =  {
+        expected: isNot && useNotInLabel ? 'Expected [not]' : 'Expected',
+        received: isNot && useNotInLabel ? 'Received      ' : 'Received'
     }
+
+    // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
+    const diffString = equals(actual, expected) ?`\
+${label.expected}: ${printExpected(expected)}
+${label.received}: ${printReceived(actual)}`
+        : printDiffOrStringify(expected, actual, label.expected, label.received, true)
 
     if (message) {
         message += '\n'
     }
 
-    if (arg2) {
-        arg2 = ` ${arg2}`
+    if (expectedValueArgument2) {
+        expectedValueArgument2 = ` ${expectedValueArgument2}`
     }
 
-    const msg = `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}\n\n${diffString}`
+    const msg = `\
+${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${expectedValueArgument2}${contain}
+
+${diffString}`
+
     return msg
 }
 
 export const enhanceErrorBe = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
-    pass: boolean,
-    context: { isNot: boolean },
-    verb: string,
-    expectation: string,
+    context: { isNot: boolean, verb: string, expectation: string },
     options: ExpectWebdriverIO.CommandOptions
 ) => {
-    return enhanceError(subject, not(context.isNot) + expectation, not(!pass) + expectation, context, verb, expectation, '', options)
+    const { isNot, verb, expectation } = context
+    const expected = `${not(isNot)}${expectation}`
+    const actual = `${not(!isNot)}${expectation}`
+
+    return enhanceError(subject, expected, actual, { ...context, useNotInLabel: false }, verb, expectation, '', options)
 }
 
 export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): string | number => {
