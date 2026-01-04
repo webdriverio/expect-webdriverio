@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { browser } from '@wdio/globals'
 
-import { getExpectMessage, matcherNameToString, matcherLastWordName } from '../__fixtures__/utils.js'
+import { matcherNameLastWords } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
@@ -67,7 +67,7 @@ describe('browser matchers', () => {
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(result.message()).toEqual(`\
-Expect window not to have ${matcherLastWordName(matcherName)}
+Expect window not to have ${matcherNameLastWords(matcherName)}
 
 Expected [not]: " Valid Text "
 Received      : " Valid Text "`
@@ -89,7 +89,7 @@ Received      : " Valid Text "`
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(result.message()).toEqual(`\
-Expect window not to have ${matcherLastWordName(matcherName)}
+Expect window not to have ${matcherNameLastWords(matcherName)}
 
 Expected [not]: " Valid Text "
 Received      : " Valid Text "`
@@ -106,7 +106,13 @@ Received      : " Valid Text "`
 
             test('message', async () => {
                 const result = await matcherFn.call({}, browser) as ExpectWebdriverIO.AssertionResult
-                expect(getExpectMessage(result.message())).toContain(matcherNameToString(matcherName))
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect window to have ${matcherNameLastWords(matcherName)}
+
+Expected: undefined
+Received: " Wrong Text "`)
             })
         })
     })

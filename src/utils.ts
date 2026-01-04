@@ -72,8 +72,6 @@ async function executeCommandBe(
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): ExpectWebdriverIO.AsyncAssertionResult {
-    const { expectation, verb = 'be' } = this
-
     let el = await received?.getElement()
     const pass = await waitUntil(
         async () => {
@@ -89,7 +87,8 @@ async function executeCommandBe(
         options
     )
 
-    const message = enhanceErrorBe(el, pass, this, verb, expectation, options)
+    const  { verb = 'be' } = this
+    const message = enhanceErrorBe(el, { ...this, verb }, options)
 
     return {
         pass,

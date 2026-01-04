@@ -147,8 +147,8 @@ describe('toBeDisplayed', () => {
         expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to be displayed
 
-Expected [not]: "not displayed"
-Received      : "displayed"`
+Expected: "not displayed"
+Received: "displayed"`
         )
     })
 
