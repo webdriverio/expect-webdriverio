@@ -1,65 +1,67 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 import { toHaveId } from '../../../src/matchers/element/toHaveId.js'
 import type { AssertionResult } from 'expect-webdriverio'
 
 vi.mock('@wdio/globals')
 
-describe('toHaveId', () => {
-    let el: ChainablePromiseElement
+describe(toHaveId, () => {
 
-    beforeEach(async () => {
-        el = await $('sel')
-        el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
-            if (attribute === 'id') {
-                return 'test id'
-            }
-            return null
-        })
+    let thisContext: { toHaveId: typeof toHaveId }
+
+    beforeEach(() => {
+        thisContext = { toHaveId }
     })
 
-    test('success', async () => {
-        const result = await toHaveId.call({}, el, 'test id')
-        expect(result.pass).toBe(true)
-    })
-
-    describe('failure', () => {
-        let result: AssertionResult
-        const beforeAssertion = vi.fn()
-        const afterAssertion = vi.fn()
+    describe('given a single element', () => {
+        let el: ChainablePromiseElement
 
         beforeEach(async () => {
-            result = await toHaveId.call({}, el, 'an attribute', { beforeAssertion, afterAssertion, wait: 0 })
-        })
-
-        test('failure', () => {
-            expect(beforeAssertion).toBeCalledWith({
-                matcherName: 'toHaveId',
-                expectedValue: 'an attribute',
-                options: { beforeAssertion, afterAssertion, wait: 0 }
-            })
-            expect(result.pass).toBe(false)
-            expect(afterAssertion).toBeCalledWith({
-                matcherName: 'toHaveId',
-                expectedValue: 'an attribute',
-                options: { beforeAssertion, afterAssertion, wait: 0 },
-                result
+            el = await $('sel')
+            vi.mocked(el.getAttribute).mockImplementation(async (attribute: string) => {
+                if (attribute === 'id') {
+                    return 'test id'
+                }
+                return null
             })
         })
 
-        describe('message shows correctly', () => {
-            test('expect message', () => {
-                expect(getExpectMessage(result.message())).toContain('to have attribute id')
+        test('success', async () => {
+            const result = await thisContext.toHaveId(el, 'test id')
+            expect(result.pass).toBe(true)
+        })
+
+        describe('failure', () => {
+            let result: AssertionResult
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+
+            beforeEach(async () => {
+                result = await thisContext.toHaveId(el, 'an attribute', { wait: 1, beforeAssertion, afterAssertion })
             })
-            test('expected message', () => {
-                expect(getExpected(result.message())).toContain('an attribute')
-            })
-            test('received message', () => {
-                expect(getReceived(result.message())).toContain('test id')
+
+            test('failure with proper failure callbacks and message', () => {
+                expect(beforeAssertion).toBeCalledWith({
+                    matcherName: 'toHaveId',
+                    expectedValue: 'an attribute',
+                    options: { beforeAssertion, afterAssertion, wait: 1 }
+                })
+                expect(result.pass).toBe(false)
+                expect(afterAssertion).toBeCalledWith({
+                    matcherName: 'toHaveId',
+                    expectedValue: 'an attribute',
+                    options: { beforeAssertion, afterAssertion, wait: 1 },
+                    result
+                })
+
+                expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have attribute id
+
+Expected: "an attribute"
+Received: "test id"`
+                )
             })
         })
     })
-
 })

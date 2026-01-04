@@ -5,8 +5,32 @@
 import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
 
-import type { RectReturn } from '@wdio/protocols'
-export type Size = Pick<RectReturn, 'width' | 'height'>
+vi.mock('@wdio/globals')
+vi.mock('../../../src/constants.js', async () => ({
+    DEFAULT_OPTIONS: {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+        ...(await vi.importActual<typeof import('../../../src/constants.js')>('../../../src/constants.js')).DEFAULT_OPTIONS,
+        // speed up tests by lowering default wait timeout
+        wait : 1
+    }
+}))
+
+vi.mock('../../../src/util/waitUntil.js', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await importOriginal<typeof import('../../../src/util/waitUntil.js')>()
+    return {
+        ...actual,
+        waitUntil: vi.spyOn(actual, 'waitUntil')
+    }
+})
+vi.mock('../../../src/utils.js', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await importOriginal<typeof import('../../../src/utils.js')>()
+    return {
+        ...actual,
+        executeCommandBe: vi.spyOn(actual, 'executeCommandBe'),
+    }
+})
 
 const getElementMethods = () => ({
     isDisplayed: vi.spyOn({ isDisplayed: async () => true }, 'isDisplayed'),
@@ -23,13 +47,12 @@ const getElementMethods = () => ({
     getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
     getCSSProperty: vi.spyOn({ getCSSProperty: async (_prop: string, _pseudo?: string) =>
         ({ value: 'colorValue', parsed: {} } satisfies ParsedCSSValue) }, 'getCSSProperty'),
-    getSize: vi.spyOn({ getSize: async (prop?: 'width' | 'height') => {
-        if (prop === 'width') { return 100 }
-        if (prop === 'height') { return 50 }
-        return { width: 100, height: 50 } satisfies Size
-    } },
-    // Force wrong size & number typing, fixed by https://github.com/webdriverio/webdriverio/pull/15003
-    'getSize') as unknown as WebdriverIO.Element['getSize'],
+    // We cannot type-safely mock overloaded functions, so we force the below implementation
+    getSize: vi.fn().mockImplementation(async function(this: WebdriverIO.Element, prop?: 'width' | 'height'): Promise<number | Size> {
+        if (prop === 'width') { return Promise.resolve(100) }
+        if (prop === 'height') { return Promise.resolve(50) }
+        return Promise.resolve({ width: 100, height: 50 })
+    }),
     $,
     $$,
 } satisfies Partial<WebdriverIO.Element>)
@@ -176,3 +199,4 @@ export const browser = {
     getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
     call(fn: Function) { return fn() },
 } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+
