@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports*/
-type ServiceInstance =  import('@wdio/types').Services.ServiceInstance
+type ServiceInstance = import('@wdio/types').Services.ServiceInstance
 type Test = import('@wdio/types').Frameworks.Test
 type TestResult = import('@wdio/types').Frameworks.TestResult
 type PickleStep = import('@wdio/types').Frameworks.PickleStep
@@ -21,10 +21,12 @@ type ExpectLibAsyncExpectationResult = import('expect').AsyncExpectationResult
 type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
 
+type MaybeArray<T> = T | T[]
+
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult;
+    (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult
 }
 
 /**
@@ -61,6 +63,7 @@ type MockPromise = Promise<WebdriverIO.Mock>
  * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
  */
 type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser ? Fn : never
+type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT extends WebdriverIO.Browser ? FnBrowser : ActualT extends WebdriverIO.MultiRemoteBrowser ? FnMultiRemote : never
 type FnWhenElementOrArrayLike<ActualT, Fn> = ActualT extends ElementOrArrayLike ? Fn : never
 type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn : never
 
@@ -70,7 +73,7 @@ type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn
 type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
 
 /**
- * Matchers dedicated to Wdio Browser.
+ * Matchers dedicated to Wdio Browser or MultiRemoteBrowser.
  * When asserting on a browser's properties requiring to be awaited, the return type is a Promise.
  * When actual is not a browser, the return type is never, so the function cannot be used.
  */
@@ -81,9 +84,21 @@ interface WdioBrowserMatchers<_R, ActualT>{
     toHaveUrl: FnWhenBrowser<ActualT, (url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
 
     /**
-     * `WebdriverIO.Browser` -> `getTitle`
+     * `WebdriverIO.Browser`, `WebdriverIO.MultiRemoteBrowser` -> `getTitle`
      */
-    toHaveTitle: FnWhenBrowser<ActualT, (title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
+    toHaveTitle: FnWhenBrowserOrMultiRemote<
+        ActualT,
+        // Browser
+        (
+            title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions,
+        ) => Promise<void>,
+        // MultiRemoteBrowser
+        (
+            url: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions,
+        ) => Promise<void>
+    >
 
     /**
      * `WebdriverIO.Browser` -> `execute`
@@ -453,7 +468,7 @@ type WdioAsymmetricMatchers = ExpectLibAsymmetricMatchers
  */
 type WdioAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
     // Overwrite protected properties of expect.AsymmetricMatcher to access them
-    sample: R;
+    sample: R
 }
 
 declare namespace ExpectWebdriverIO {
@@ -469,6 +484,16 @@ declare namespace ExpectWebdriverIO {
     function setOptions(options: DefaultOptions): void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getConfig(): any
+
+    /**
+     * The this context available inside each matcher function.
+     */
+    interface MatcherContext /* extends ExpectLibMatcherContext */ {
+        verb?: string
+        expectation?: string
+        isNot?: boolean
+        isMultiRemote?: boolean
+    }
 
     /**
      * The below block are overloaded types from the expect library.
@@ -518,12 +543,12 @@ declare namespace ExpectWebdriverIO {
          * Unwraps the reason of a rejected promise so any other matcher can be chained.
          * If the promise is fulfilled the assertion fails.
          */
-        rejects: MatchersAndInverse<Promise<void>, T>;
+        rejects: MatchersAndInverse<Promise<void>, T>
         /**
          * Unwraps the value of a fulfilled promise so any other matcher can be chained.
          * If the promise is rejected the assertion fails.
          */
-        resolves: MatchersAndInverse<Promise<void>, T>;
+        resolves: MatchersAndInverse<Promise<void>, T>
     }
     interface SnapshotServiceArgs {
         updateState?: SnapshotUpdateState
@@ -729,7 +754,7 @@ declare namespace ExpectWebdriverIO {
     }
 
     type RequestedWith = {
-        url?: string | ExpectWebdriverIO.PartialMatcher<string>| ((url: string) => boolean)
+        url?: string | ExpectWebdriverIO.PartialMatcher<string> | ((url: string) => boolean)
         method?: string | Array<string>
         statusCode?: number | Array<number>
         requestHeaders?:

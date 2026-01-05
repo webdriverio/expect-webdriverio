@@ -2,6 +2,7 @@ import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
 import { isElementArray } from './elementsUtil.js'
+import type { CompareResult } from '../utils.js'
 
 const EXPECTED_LABEL = 'Expected'
 const RECEIVED_LABEL = 'Received'
@@ -39,18 +40,19 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
     return selectors.reverse().join('.')
 }
 
-export const not = (isNot: boolean): string => {
-    return `${isNot ? 'not ' : ''}`
-}
+const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
+
+const startSpace = (word = ''): string | undefined => word ? ` ${word}` : word
 
 export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean },
+    context: { isNot?: boolean },
     verb: string,
     expectation: string,
-    arg2 = '', {
+    arg2 = '',
+    {
         message = '',
         containing = false
     }): string => {
@@ -85,8 +87,74 @@ export const enhanceError = (
         arg2 = ` ${arg2}`
     }
 
+    /**
+     * Example of below message:
+     * Expect window to have title
+     *
+     * Expected: "some Title text"
+     * Received: "some Wrong Title text"
+     */
     const msg = `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${arg2}${contain}\n\n${diffString}`
     return msg
+}
+
+/**
+ * Formats failure message for multiple compare results
+ * TODO multi-remote support: Replace enhanceError with this one everywhere
+ */
+export const formatFailureMessage = (
+    subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
+    compareResults: CompareResult<string, string | RegExp | WdioAsymmetricMatcher<string>>[],
+    context: ExpectWebdriverIO.MatcherContext & { useNotInLabel?: boolean },
+    expectedValueArgument2 = '',
+    { message = '', containing = false } = {}): string => {
+
+    const { isNot = false, expectation, useNotInLabel = true, verb } = context
+
+    subject = typeof subject === 'string' ? subject : getSelectors(subject)
+
+    const contain = containing ? 'containing' : ''
+    const customMessage = message ? `${message}\n` : ''
+
+    const label =  {
+        expected: isNot && useNotInLabel ? 'Expected [not]' : 'Expected',
+        received: isNot && useNotInLabel ? 'Received      ' : 'Received'
+    }
+
+    const failedResults = compareResults.filter(({ result }) => result === isNot)
+
+    let msg = ''
+    for (const failResult of failedResults) {
+        const { actual, expected, instance: instanceName } = failResult
+
+        // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
+        const diffString = equals(actual, expected) ?`\
+${label.expected}: ${printExpected(expected)}
+${label.received}: ${printReceived(actual)}`
+            : printDiffOrStringify(expected, actual, label.expected, label.received, true)
+
+        const mulitRemoteContext = context.isMultiRemote  ? `for remote "${instanceName}"` : ''
+
+        /**
+         * Example of below message (custom message + multi-remote + isNot case):
+         * ```
+         * My custom error message
+         * Expect window not to have title for remote "browserA"
+         *
+         * Expected not: "some Title text"
+         * Received: "some Wrong Title text"
+         *
+         * ```
+         */
+        msg += `\
+${customMessage}Expect ${subject} ${not(isNot)}to${startSpace(verb)}${startSpace(expectation)}${startSpace(expectedValueArgument2)}${startSpace(contain)}${startSpace(mulitRemoteContext)}
+
+${diffString}
+
+`
+    }
+
+    return msg.trim()
 }
 
 export const enhanceErrorBe = (

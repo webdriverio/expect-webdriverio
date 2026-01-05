@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { multiremotebrowser } from '@wdio/globals'
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 
 describe('type assertions', () => {
@@ -10,6 +11,8 @@ describe('type assertions', () => {
     const elements: WebdriverIO.Element[] = [] as unknown as WebdriverIO.Element[]
 
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
+
+    const multiRemoteBrowser: WebdriverIO.MultiRemoteBrowser = multiremotebrowser
 
     // Type assertions
     let expectPromiseVoid: Promise<void>
@@ -53,21 +56,59 @@ describe('type assertions', () => {
         })
 
         describe('toHaveTitle', () => {
-            it('should be supported correctly', async () => {
-                expectPromiseVoid = expect(browser).toHaveTitle('https://example.com')
-                expectPromiseVoid = expect(browser).not.toHaveTitle('https://example.com')
+            describe('Browser', () => {
+                it('should be supported correctly', async () => {
+                    expectPromiseVoid = expect(browser).toHaveTitle('https://example.com')
+                    expectPromiseVoid = expect(browser).not.toHaveTitle('https://example.com')
 
-                // Asymmetric matchers
-                expectPromiseVoid = expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
-                expectPromiseVoid = expect(browser).toHaveTitle(expect.any(String))
-                expectPromiseVoid = expect(browser).toHaveTitle(expect.anything())
+                    // Asymmetric matchers
+                    expectPromiseVoid = expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+                    expectPromiseVoid = expect(browser).toHaveTitle(expect.any(String))
+                    expectPromiseVoid = expect(browser).toHaveTitle(expect.anything())
 
-                // @ts-expect-error
-                expectVoid = expect(browser).toHaveTitle('https://example.com')
-                // @ts-expect-error
-                expectVoid = expect(browser).not.toHaveTitle('https://example.com')
-                // @ts-expect-error
-                expectVoid = expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+                    // @ts-expect-error
+                    expectVoid = expect(browser).toHaveTitle('https://example.com')
+                    // @ts-expect-error
+                    expectVoid = expect(browser).not.toHaveTitle('https://example.com')
+                    // @ts-expect-error
+                    expectVoid = expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+                })
+            })
+
+            describe('Multi-remote Browser', () => {
+                it('should be supported correctly by default', async () => {
+                    expectPromiseVoid = expect(multiRemoteBrowser).toHaveTitle('https://example.com')
+                    expectPromiseVoid = expect(multiRemoteBrowser).not.toHaveTitle('https://example.com')
+
+                    // Asymmetric matchers
+                    expectPromiseVoid = expect(multiRemoteBrowser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+                    expectPromiseVoid = expect(multiRemoteBrowser).toHaveTitle(expect.any(String))
+                    expectPromiseVoid = expect(multiRemoteBrowser).toHaveTitle(expect.anything())
+
+                    // @ts-expect-error
+                    expectVoid = expect(multiRemoteBrowser).toHaveTitle('https://example.com')
+                    // @ts-expect-error
+                    expectVoid = expect(multiRemoteBrowser).not.toHaveTitle('https://example.com')
+                    // @ts-expect-error
+                    expectVoid = expect(multiRemoteBrowser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+                })
+
+                it('should be supported correctly with multiple expect values', async () => {
+                    expectPromiseVoid = expect(multiRemoteBrowser).toHaveTitle(['https://example.com', 'https://example.org'])
+                    expectPromiseVoid = expect(multiRemoteBrowser).not.toHaveTitle(['https://example.com', 'https://example.org'])
+
+                    // Asymmetric matchers
+                    expectPromiseVoid = expect(multiRemoteBrowser).toHaveTitle([expect.stringContaining('WebdriverIO'), expect.stringContaining('Example')])
+                    expectPromiseVoid = expect(multiRemoteBrowser).toHaveTitle([expect.any(String), expect.any(String)])
+                    expectPromiseVoid = expect(multiRemoteBrowser).toHaveTitle([expect.anything(), expect.anything()])
+
+                    // @ts-expect-error
+                    expectVoid = expect(multiRemoteBrowser).toHaveTitle(['https://example.com', 'https://example.org'])
+                    // @ts-expect-error
+                    expectVoid = expect(multiRemoteBrowser).not.toHaveTitle(['https://example.com', 'https://example.org'])
+                    // @ts-expect-error
+                    expectVoid = expect(multiRemoteBrowser).toHaveTitle([expect.stringContaining('WebdriverIO'), expect.stringContaining('Example')])
+                })
             })
 
             it('should have ts errors when actual is not a Browser element', async () => {
@@ -118,6 +159,52 @@ describe('type assertions', () => {
                 await expect(true).toBeDisabled()
                 // @ts-expect-error
                 await expect(true).not.toBeDisabled()
+            })
+        })
+
+        describe('toBeDisplayed', () => {
+            const options: ExpectWebdriverIO.ToBeDisplayedOptions = {
+                withinViewport: true,
+                contentVisibilityAuto: true,
+                opacityProperty: true,
+                wait: 0,
+                visibilityProperty: true,
+                message: 'Custom error message'
+            }
+            it('should be supported correctly', async () => {
+                // Element
+                expectPromiseVoid = expect(element).toBeDisplayed()
+                expectPromiseVoid = expect(element).not.toBeDisplayed()
+                expectPromiseVoid = expect(element).toBeDisplayed(options)
+                expectPromiseVoid = expect(element).not.toBeDisplayed(options)
+
+                // Element array
+                expectPromiseVoid = expect(elementArray).toBeDisplayed()
+                expectPromiseVoid = expect(elementArray).not.toBeDisplayed()
+
+                // Chainable element
+                expectPromiseVoid = expect(chainableElement).toBeDisplayed()
+                expectPromiseVoid = expect(chainableElement).not.toBeDisplayed()
+
+                // Chainable element array
+                expectPromiseVoid = expect(chainableArray).toBeDisplayed()
+                expectPromiseVoid = expect(chainableArray).not.toBeDisplayed()
+
+                // @ts-expect-error
+                expectVoid = expect(element).toBeDisplayed()
+                // @ts-expect-error
+                expectVoid = expect(element).not.toBeDisplayed()
+            })
+
+            it('should have ts errors when actual is not an element', async () => {
+                // @ts-expect-error
+                await expect(browser).toBeDisplayed()
+                // @ts-expect-error
+                await expect(browser).not.toBeDisplayed()
+                // @ts-expect-error
+                await expect(true).toBeDisplayed()
+                // @ts-expect-error
+                await expect(true).not.toBeDisplayed()
             })
         })
 
