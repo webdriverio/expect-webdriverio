@@ -162,6 +162,52 @@ describe('type assertions', () => {
             })
         })
 
+        describe('toBeDisplayed', () => {
+            const options: ExpectWebdriverIO.ToBeDisplayedOptions = {
+                withinViewport: true,
+                contentVisibilityAuto: true,
+                opacityProperty: true,
+                wait: 0,
+                visibilityProperty: true,
+                message: 'Custom error message'
+            }
+            it('should be supported correctly', async () => {
+                // Element
+                expectPromiseVoid = expect(element).toBeDisplayed()
+                expectPromiseVoid = expect(element).not.toBeDisplayed()
+                expectPromiseVoid = expect(element).toBeDisplayed(options)
+                expectPromiseVoid = expect(element).not.toBeDisplayed(options)
+
+                // Element array
+                expectPromiseVoid = expect(elementArray).toBeDisplayed()
+                expectPromiseVoid = expect(elementArray).not.toBeDisplayed()
+
+                // Chainable element
+                expectPromiseVoid = expect(chainableElement).toBeDisplayed()
+                expectPromiseVoid = expect(chainableElement).not.toBeDisplayed()
+
+                // Chainable element array
+                expectPromiseVoid = expect(chainableArray).toBeDisplayed()
+                expectPromiseVoid = expect(chainableArray).not.toBeDisplayed()
+
+                // @ts-expect-error
+                expectVoid = expect(element).toBeDisplayed()
+                // @ts-expect-error
+                expectVoid = expect(element).not.toBeDisplayed()
+            })
+
+            it('should have ts errors when actual is not an element', async () => {
+                // @ts-expect-error
+                await expect(browser).toBeDisplayed()
+                // @ts-expect-error
+                await expect(browser).not.toBeDisplayed()
+                // @ts-expect-error
+                await expect(true).toBeDisplayed()
+                // @ts-expect-error
+                await expect(true).not.toBeDisplayed()
+            })
+        })
+
         describe('toHaveText', () => {
             it('should be supported correctly', async () => {
                 expectPromiseVoid = expect(element).toHaveText('text')
