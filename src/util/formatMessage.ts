@@ -42,6 +42,8 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
 
 const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
 
+const startSpace = (word = ''): string | undefined => word ? ` ${word}` : word
+
 export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements,
     expected: unknown,
@@ -107,19 +109,12 @@ export const formatFailureMessage = (
     expectedValueArgument2 = '',
     { message = '', containing = false } = {}): string => {
 
-    const { isNot = false, expectation, useNotInLabel = true } = context
-    let { verb } = context
+    const { isNot = false, expectation, useNotInLabel = true, verb } = context
 
     subject = typeof subject === 'string' ? subject : getSelectors(subject)
 
-    let contain = ''
-    if (containing) {
-        contain = ' containing'
-    }
-
-    if (verb) {
-        verb += ' '
-    }
+    const contain = containing ? 'containing' : ''
+    const customMessage = message ? `${message}\n` : ''
 
     const label =  {
         expected: isNot && useNotInLabel ? 'Expected [not]' : 'Expected',
@@ -138,19 +133,12 @@ ${label.expected}: ${printExpected(expected)}
 ${label.received}: ${printReceived(actual)}`
             : printDiffOrStringify(expected, actual, label.expected, label.received, true)
 
-        if (message) {
-            message += '\n'
-        }
-
-        if (expectedValueArgument2) {
-            expectedValueArgument2 = ` ${expectedValueArgument2}`
-        }
-
-        const mulitRemoteContext = context.isMultiRemote  ? ` for remote "${instanceName}"` : ''
+        const mulitRemoteContext = context.isMultiRemote  ? `for remote "${instanceName}"` : ''
 
         /**
-         * Example of below message (multi-remote + isNot case):
+         * Example of below message (custom message + multi-remote + isNot case):
          * ```
+         * My custom error message
          * Expect window not to have title for remote "browserA"
          *
          * Expected not: "some Title text"
@@ -159,7 +147,7 @@ ${label.received}: ${printReceived(actual)}`
          * ```
          */
         msg += `\
-${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${expectedValueArgument2}${contain}${mulitRemoteContext}
+${customMessage}Expect ${subject} ${not(isNot)}to${startSpace(verb)}${startSpace(expectation)}${startSpace(expectedValueArgument2)}${startSpace(contain)}${startSpace(mulitRemoteContext)}
 
 ${diffString}
 
