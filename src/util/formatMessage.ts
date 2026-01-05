@@ -40,9 +40,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
     return selectors.reverse().join('.')
 }
 
-export const not = (isNot: boolean): string => {
-    return `${isNot ? 'not ' : ''}`
-}
+const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
 
 export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements,
@@ -105,11 +103,11 @@ export const enhanceError = (
 export const formatFailureMessage = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
     compareResults: CompareResult<string, string | RegExp | WdioAsymmetricMatcher<string>>[],
-    context: ExpectWebdriverIO.MatcherContext,
-    expectedValueArg2 = '',
-    { message = '', containing = false }): string => {
+    context: ExpectWebdriverIO.MatcherContext & { useNotInLabel?: boolean },
+    expectedValueArgument2 = '',
+    { message = '', containing = false } = {}): string => {
 
-    const { isNot = false, expectation } = context
+    const { isNot = false, expectation, useNotInLabel = true } = context
     let { verb } = context
 
     subject = typeof subject === 'string' ? subject : getSelectors(subject)
@@ -122,28 +120,30 @@ export const formatFailureMessage = (
     if (verb) {
         verb += ' '
     }
+
+    const label =  {
+        expected: isNot && useNotInLabel ? 'Expected [not]' : 'Expected',
+        received: isNot && useNotInLabel ? 'Received      ' : 'Received'
+    }
+
     const failedResults = compareResults.filter(({ result }) => result === isNot)
 
     let msg = ''
     for (const failResult of failedResults) {
         const { actual, expected, instance: instanceName } = failResult
 
-        let diffString = isNot && equals(actual, expected)
-            ? `${EXPECTED_LABEL}: ${printExpected(expected)}\n${RECEIVED_LABEL}: ${printReceived(actual)}`
-            : printDiffOrStringify(expected, actual, EXPECTED_LABEL, RECEIVED_LABEL, true)
-
-        if (isNot) {
-            diffString = diffString
-                .replace(EXPECTED_LABEL, NOT_EXPECTED_LABEL)
-                .replace(RECEIVED_LABEL, RECEIVED_LABEL + ' '.repeat(NOT_SUFFIX.length))
-        }
+        // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
+        const diffString = equals(actual, expected) ?`\
+${label.expected}: ${printExpected(expected)}
+${label.received}: ${printReceived(actual)}`
+            : printDiffOrStringify(expected, actual, label.expected, label.received, true)
 
         if (message) {
             message += '\n'
         }
 
-        if (expectedValueArg2) {
-            expectedValueArg2 = ` ${expectedValueArg2}`
+        if (expectedValueArgument2) {
+            expectedValueArgument2 = ` ${expectedValueArgument2}`
         }
 
         const mulitRemoteContext = context.isMultiRemote  ? ` for remote "${instanceName}"` : ''
@@ -158,8 +158,14 @@ export const formatFailureMessage = (
          *
          * ```
          */
-        msg += `${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${expectedValueArg2}${contain}${mulitRemoteContext}\n\n${diffString}\n\n`
+        msg += `\
+${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${expectedValueArgument2}${contain}${mulitRemoteContext}
+
+${diffString}
+
+`
     }
+
     return msg.trim()
 }
 

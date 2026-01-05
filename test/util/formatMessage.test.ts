@@ -176,7 +176,8 @@ describe('formatMessage', () => {
     })
     describe(formatFailureMessage, () => {
         const subject = 'window'
-        const expectation = 'have title'
+        const expectation = 'title'
+        const verb = 'have'
         const expectedValueArgument2 = 'myProp'
 
         const baseResult: CompareResult<string, string> = {
@@ -189,7 +190,7 @@ describe('formatMessage', () => {
         const baseContext: ExpectWebdriverIO.MatcherContext = {
             isNot: false,
             expectation,
-            verb: '',
+            verb,
             isMultiRemote: false
         }
 
@@ -200,9 +201,11 @@ describe('formatMessage', () => {
 
                 const message = formatFailureMessage(subject, results, context, '', {})
 
-                expect(message).toMatch('Expect window to have title')
-                const diffString = printDiffOrStringify('expected', 'actual', 'Expected', 'Received', true)
-                expect(message).toMatch(diffString)
+                expect(message).toEqual(`\
+Expect window to have title
+
+Expected: "expected"
+Received: "actual"`)
             })
         })
 
@@ -229,13 +232,16 @@ describe('formatMessage', () => {
 
                 const message = formatFailureMessage(subject, results, context, '', {})
 
-                expect(message).toContain('Expect window to have title for remote "browserA"')
-                const diffString1 = printDiffOrStringify('expected1', 'actual1', 'Expected', 'Received', true)
-                expect(message).toContain(diffString1)
+                expect(message).toEqual(`\
+Expect window to have title for remote "browserA"
 
-                expect(message).toContain('Expect window to have title for remote "browserB"')
-                const diffString2 = printDiffOrStringify('expected2', 'actual2', 'Expected', 'Received', true)
-                expect(message).toContain(diffString2)
+Expected: "expected1"
+Received: "actual1"
+
+Expect window to have title for remote "browserB"
+
+Expected: "expected2"
+Received: "actual2"`)
             })
         })
 
@@ -254,30 +260,51 @@ describe('formatMessage', () => {
 
                 const message = formatFailureMessage(subject, results, context, '', {})
 
-                expect(message).toMatch('Expect window not to have title')
-                const diffString = `Expected [not]: ${printExpected('actual')}\n` +
-                    `Received      : ${printReceived('actual')}`
-                expect(message).toMatch(diffString)
+                expect(message).toEqual(`\
+Expect window not to have title
+
+Expected [not]: "actual"
+Received      : "actual"`)
             })
 
             test('should handle message', () => {
                 const results = [baseResult]
-                const context = { ...baseContext, expectation: 'have property' }
+                const context = { ...baseContext, expectation: 'property' }
 
                 const message = formatFailureMessage('my-element', results, context, expectedValueArgument2, { message: 'Custom Message', containing: false })
 
-                expect(message).toMatch('Custom Message')
-                expect(message).toMatch('Expect my-element to have property myProp')
-                expect(message).not.toContain('containing')
+                expect(message).toEqual(`\
+Custom Message
+Expect my-element to have property myProp
+
+Expected: "expected"
+Received: "actual"`)
             })
 
             test('should handle containing', () => {
                 const results = [baseResult]
-                const context = { ...baseContext, expectation: 'have property' }
+                const context = { ...baseContext, expectation: 'property' }
 
                 const message = formatFailureMessage('my-element', results, context, expectedValueArgument2, { message: '', containing: true })
 
-                expect(message).toMatch('Expect my-element to have property myProp containing')
+                expect(message).toEqual(`\
+Expect my-element to have property myProp containing
+
+Expected: "expected"
+Received: "actual"`)
+            })
+
+            test('should handle no verb', () => {
+                const results = [baseResult]
+                const context = { ...baseContext, expectation: 'exist', verb: '' }
+
+                const message = formatFailureMessage('my-element', results, context)
+
+                expect(message).toEqual(`\
+Expect my-element to exist
+
+Expected: "expected"
+Received: "actual"`)
             })
         })
     })
