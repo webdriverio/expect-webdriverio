@@ -151,7 +151,7 @@ export const formatFailureMessage = (
         /**
          * Example of below message (multi-remote + isNot case):
          * ```
-         * Expect window to have title for remote "browserA"
+         * Expect window not to have title for remote "browserA"
          *
          * Expected not: "some Title text"
          * Received: "some Wrong Title text"
