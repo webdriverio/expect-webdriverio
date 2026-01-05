@@ -98,6 +98,10 @@ export const enhanceError = (
     return msg
 }
 
+/**
+ * Formats failure message for multiple compare results
+ * TODO multi-remote support: Replace enhanceError with this one everywhere
+ */
 export const formatFailureMessage = (
     subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
     compareResults: CompareResult<string, string | RegExp | WdioAsymmetricMatcher<string>>[],
