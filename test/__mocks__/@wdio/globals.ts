@@ -3,12 +3,10 @@
  * This file exist for better typed mock implementation, so that we can follow wdio/globals API updates more easily.
  */
 import { vi } from 'vitest'
-import type { ChainablePromiseArray, ChainablePromiseElement, WaitUntilOptions } from 'webdriverio'
+import type { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio'
 
 import type { RectReturn } from '@wdio/protocols'
 export type Size = Pick<RectReturn, 'width' | 'height'>
-
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 const getElementMethods = () => ({
     isDisplayed: vi.spyOn({ isDisplayed: async () => true }, 'isDisplayed'),
@@ -63,27 +61,10 @@ function $$(selector: string) {
     return elements as unknown as ChainablePromiseArray
 }
 
-const waitUntil = async (condition: () => Promise<boolean>, { timeout = 1000, interval = 100 }: Partial<WaitUntilOptions>): Promise<boolean> => {
-    if (!Number.isInteger(timeout) || timeout < 1) {
-        throw new Error('wrong args passed to waitUntil fixture')
-    }
-    let attemptsLeft = timeout / interval
-    while (attemptsLeft > 0) {
-        const result = await condition()
-        if (result) {
-            return true
-        }
-        attemptsLeft--
-        await sleep(interval)
-    }
-    throw new Error('waitUntil: timeout after ' + timeout)
-}
-
 export const browser = {
     $,
     $$,
     execute: vi.fn(),
-    waitUntil: vi.fn().mockImplementation(waitUntil),
     setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
     getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
     getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
