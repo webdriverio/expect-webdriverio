@@ -37,7 +37,7 @@ function $(_selector: string) {
         $$
     } satisfies Partial<WebdriverIO.Element> as unknown as WebdriverIO.Element
     element.getElement = async () => Promise.resolve(element)
-    return Promise.resolve(element) as unknown as ChainablePromiseElement
+    return element as unknown as ChainablePromiseElement
 }
 
 function $$(selector: string) {
@@ -54,14 +54,13 @@ function $$(selector: string) {
         return element
     }) satisfies WebdriverIO.Element[] as unknown as WebdriverIO.ElementArray
 
-    // elements.parent = { _length: length }
     elements.foundWith = '$$'
     elements.props = []
     elements.props.length = length
     elements.selector = selector
     elements.getElements = async () => elements
     elements.length = length
-    return Promise.resolve(elements) as unknown as ChainablePromiseArray
+    return elements as unknown as ChainablePromiseArray
 }
 
 const waitUntil = async (condition: () => Promise<boolean>, { timeout = 1000, interval = 100 }: Partial<WaitUntilOptions>): Promise<boolean> => {

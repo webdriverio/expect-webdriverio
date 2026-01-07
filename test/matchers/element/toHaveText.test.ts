@@ -69,7 +69,7 @@ describe('toHaveText', () => {
     })
 
     test('wait but failure', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getText = vi.fn().mockRejectedValue(new Error('some error'))
 
         await expect(() => toHaveText.call({}, el, 'WebdriverIO', { ignoreCase: true }))
@@ -106,7 +106,7 @@ describe('toHaveText', () => {
     })
 
     test('not - failure', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
 
         el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
@@ -220,7 +220,7 @@ describe('toHaveText', () => {
     })
 
     test('success if array matches with text and replace (string)', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [['Web', 'Browser']] })

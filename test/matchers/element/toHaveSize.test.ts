@@ -8,7 +8,7 @@ vi.mock('@wdio/globals')
 
 describe('toHaveSize', () => {
     test('wait for success', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getSize = vi.fn().mockResolvedValue({ width: 32, height: 32 })
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
@@ -31,7 +31,7 @@ describe('toHaveSize', () => {
     })
 
     test('wait but failure', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getSize = vi.fn().mockRejectedValue(new Error('some error'))
 
         await expect(() => toHaveSize.call({}, el, { width: 32, height: 32 }, {}))
@@ -39,7 +39,7 @@ describe('toHaveSize', () => {
     })
 
     test('success on the first attempt', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getSize = vi.fn().mockResolvedValue({ width: 32, height: 32 })
 
         const result = await toHaveSize.call({}, el, { width: 32, height: 32 }, {})
@@ -49,7 +49,7 @@ describe('toHaveSize', () => {
     })
 
     test('no wait - failure', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getSize = vi.fn().mockResolvedValue({ width: 32, height: 32 })
 
         const result = await toHaveSize.call({}, el, { width: 15, height: 32 }, { wait: 0 })
@@ -59,7 +59,7 @@ describe('toHaveSize', () => {
     })
 
     test('no wait - success', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getSize = vi.fn().mockResolvedValue({ width: 32, height: 32 })
 
         const result = await toHaveSize.call({}, el, { width: 32, height: 32 }, { wait: 0 })
@@ -69,7 +69,7 @@ describe('toHaveSize', () => {
     })
 
     test('not - failure', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getSize = vi.fn().mockResolvedValue({ width: 32, height: 32 })
 
         const result = await toHaveSize.call({}, el, { width: 32, height: 32 }, { wait: 0 })
@@ -80,7 +80,7 @@ describe('toHaveSize', () => {
     })
 
     test("should return false if sizes don't match", async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getSize = vi.fn().mockResolvedValue({ width: 32, height: 32 })
 
         const result = await toHaveSize.bind({})(el, { width: 15, height: 32 }, { wait: 1 })
@@ -89,7 +89,7 @@ describe('toHaveSize', () => {
     })
 
     test('should return true if sizes match', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getSize = vi.fn().mockResolvedValue({ width: 32, height: 32 })
 
         const result = await toHaveSize.bind({})(el, { width: 32, height: 32 }, { wait: 1 })
@@ -98,7 +98,7 @@ describe('toHaveSize', () => {
     })
 
     test('message', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.getSize = vi.fn().mockResolvedValue(null)
 
         const result = await toHaveSize.call({}, el, { width: 32, height: 32 })

@@ -12,7 +12,7 @@ describe('toBeDisabled', () => {
      * `!await el.isEnabled()`
      */
     test('wait for success', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValueOnce(true).mockResolvedValueOnce(true).mockResolvedValueOnce(false)
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
@@ -33,7 +33,7 @@ describe('toBeDisabled', () => {
     })
 
     test('wait but failure', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isEnabled = vi.fn().mockRejectedValue(new Error('some error'))
 
         await expect(() => toBeDisabled.call({}, el))
@@ -41,7 +41,7 @@ describe('toBeDisabled', () => {
     })
 
     test('success on the first attempt', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(false)
 
         const result = await toBeDisabled.call({}, el)
@@ -50,7 +50,7 @@ describe('toBeDisabled', () => {
     })
 
     test('no wait - failure', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(true)
 
         const result = await toBeDisabled.call({}, el, { wait: 0 })
@@ -60,7 +60,7 @@ describe('toBeDisabled', () => {
     })
 
     test('no wait - success', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(false)
 
         const result = await toBeDisabled.call({}, el, { wait: 0 })
@@ -70,7 +70,7 @@ describe('toBeDisabled', () => {
     })
 
     test('not - failure', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(false)
 
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
@@ -81,7 +81,7 @@ describe('toBeDisabled', () => {
     })
 
     test('not - success', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(true)
 
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
@@ -92,7 +92,7 @@ describe('toBeDisabled', () => {
     })
 
     test('not - failure (with wait)', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(false)
 
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 1 })
@@ -103,7 +103,7 @@ describe('toBeDisabled', () => {
     })
 
     test('not - success (with wait)', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(true)
 
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 1 })
@@ -114,7 +114,7 @@ describe('toBeDisabled', () => {
     })
 
     test('message', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(false)
 
         const result = await toBeDisabled.call({}, el)

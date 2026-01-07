@@ -22,7 +22,7 @@ describe('toBeDisplayed', () => {
      * `!await el.isEnabled()`
      */
     test('wait for success', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
         el.isDisplayed = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(true)
 
         const beforeAssertion = vi.fn()
@@ -55,7 +55,7 @@ describe('toBeDisplayed', () => {
     })
 
     test('success with ToBeDisplayed and command options', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
 
         const result = await toBeDisplayed.call({}, el, { wait: 1, withinViewport: true })
 
@@ -75,7 +75,7 @@ describe('toBeDisplayed', () => {
     })
 
     test('wait but failure', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
 
         el.isDisplayed = vi.fn().mockRejectedValue(new Error('some error'))
 
@@ -180,7 +180,7 @@ describe('toBeDisplayed', () => {
     })
 
     test('message', async () => {
-        const el: any = await $('sel')
+        const el = await $('sel')
 
         el.isDisplayed = vi.fn().mockResolvedValue(false)
 
