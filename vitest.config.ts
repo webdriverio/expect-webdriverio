@@ -1,12 +1,8 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
     test: {
         include: ['test/**/*.test.ts'],
-        /**
-         * not to ESM ported packages
-         */
         exclude: [
             'dist', '.idea', '.git', '.cache', 'lib',
             '**/node_modules/**'

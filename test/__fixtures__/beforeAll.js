@@ -5,8 +5,3 @@ beforeAll(() => {
         expect._expectWebdriverio.options.interval = 10
     }
 })
-
-afterEach(() => {
-    delete browser._value
-    delete browser._attempts
-})
