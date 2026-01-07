@@ -7,6 +7,7 @@
     "outDir": "./lib/",
     "module": "esnext",
     "target": "es2022",
+    "rootDir": ".",
     "lib": ["ES2022", "DOM"],
     "strictBindCallApply": true,
     "removeComments": true,
