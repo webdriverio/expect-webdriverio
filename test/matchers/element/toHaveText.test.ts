@@ -14,10 +14,10 @@ describe('toHaveText', () => {
         beforeEach(async () => {
             els = await $$('parent')
 
-            const el1: any = await $('sel')
+            const el1: ChainablePromiseElement = await $('sel')
             el1.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
-            const el2: any = await $('dev')
+            const el2: ChainablePromiseElement = await $('dev')
             el2.getText = vi.fn().mockResolvedValue('Get Started')
 
             els[0] = el1

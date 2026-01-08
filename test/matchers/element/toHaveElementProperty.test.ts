@@ -3,6 +3,7 @@ import { $ } from '@wdio/globals'
 
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty.js'
+import type { AssertionResult } from 'expect-webdriverio'
 
 vi.mock('@wdio/globals')
 
@@ -95,7 +96,7 @@ describe('toHaveElementProperty', () => {
     })
 
     describe('failure with RegExp when value does not match', () => {
-        let result: any
+        let result: AssertionResult
 
         beforeEach(async () => {
             const el = await $('sel')

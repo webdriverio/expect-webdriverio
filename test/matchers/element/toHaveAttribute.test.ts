@@ -102,7 +102,7 @@ describe('toHaveAttribute', () => {
             expect(result.pass).toBe(false)
         })
         describe('message shows correctly', () => {
-            let result: any
+            let result: AssertionResult
 
             beforeEach(async () => {
                 el.getAttribute = vi.fn().mockResolvedValue('Wrong')
@@ -120,7 +120,7 @@ describe('toHaveAttribute', () => {
             })
         })
         describe('failure with RegExp, message shows correctly', () => {
-            let result: any
+            let result: AssertionResult
 
             beforeEach(async () => {
                 el.getAttribute = vi.fn().mockResolvedValue('Wrong')
