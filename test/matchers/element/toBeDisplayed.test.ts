@@ -1,192 +1,454 @@
-import { vi, test, describe, expect } from 'vitest'
-import { $ } from '@wdio/globals'
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $, $$ } from '@wdio/globals'
 
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
-import { executeCommandBe } from '../../../src/utils.js'
-import { DEFAULT_OPTIONS } from '../../../src/constants.js'
+import { executeCommandBe, waitUntil } from '../../../src/utils.js'
 
 vi.mock('@wdio/globals')
-vi.mock('../../../src/utils.js', async (importOriginal) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    const actual = await importOriginal<typeof import('../../../src/utils.js')>()
-    return {
-        ...actual,
-        executeCommandBe: vi.fn(actual.executeCommandBe)
-    }
-})
 
-describe('toBeDisplayed', () => {
-    /**
-     * result is inverted for toBeDisplayed because it inverts isEnabled result
-     * `!await el.isEnabled()`
-     */
-    test('wait for success', async () => {
-        const el = await $('sel')
-        el.isDisplayed = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(true)
+describe(toBeDisplayed, async () => {
+    let thisContext: { toBeDisplayed: typeof toBeDisplayed }
+    let thisNotContext: { isNot: true; toBeDisplayed: typeof toBeDisplayed }
 
-        const beforeAssertion = vi.fn()
-        const afterAssertion = vi.fn()
+    beforeEach(async () => {
+        thisContext = { toBeDisplayed }
+        thisNotContext = { isNot: true, toBeDisplayed }
 
-        const result = await toBeDisplayed.call({}, el, { beforeAssertion, afterAssertion })
+    })
 
-        expect(el.isDisplayed).toHaveBeenCalledWith(
-            {
-                withinViewport: false,
-                contentVisibilityAuto: true,
-                opacityProperty: true,
-                visibilityProperty: true
-            }
-        )
-        expect(executeCommandBe).toHaveBeenCalledWith(el, expect.anything(), expect.objectContaining({
-            wait: DEFAULT_OPTIONS.wait,
-            interval: DEFAULT_OPTIONS.interval
-        }))
-        expect(result.pass).toBe(true)
-        expect(beforeAssertion).toBeCalledWith({
-            matcherName: 'toBeDisplayed',
-            options: { beforeAssertion, afterAssertion }
+    describe.each([
+        { element: await $('sel'), title: 'awaited ChainablePromiseElement' },
+        { element: await $('sel').getElement(), title: 'awaited getElement of ChainablePromiseElement (e.g. WebdriverIO.Element)' },
+        { element: $('sel'), title: 'non-awaited of ChainablePromiseElement' }
+    ])('given a single element when $title', ({ element: el }) => {
+        let element: ChainablePromiseElement | WebdriverIO.Element
+
+        beforeEach(async () => {
+            thisContext = { toBeDisplayed }
+            thisNotContext = { isNot: true, toBeDisplayed }
+
+            element = el
+            vi.mocked(element.isDisplayed).mockResolvedValue(true)
         })
-        expect(afterAssertion).toBeCalledWith({
-            matcherName: 'toBeDisplayed',
-            options: { beforeAssertion, afterAssertion },
-            result
+
+        test('wait for success', async () => {
+            vi.mocked(element.isDisplayed).mockResolvedValueOnce(false).mockResolvedValueOnce(true)
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+
+            const result = await thisContext.toBeDisplayed(element, { beforeAssertion, afterAssertion })
+
+            expect(element.isDisplayed).toHaveBeenCalledWith(
+                {
+                    withinViewport: false,
+                    contentVisibilityAuto: true,
+                    opacityProperty: true,
+                    visibilityProperty: true
+                }
+            )
+            expect(executeCommandBe).toHaveBeenCalledExactlyOnceWith(element, expect.any(Function),
+                {
+                    'beforeAssertion': beforeAssertion,
+                    'afterAssertion': afterAssertion,
+                    'interval': 100,
+                    'wait': 2000,
+                },
+            )
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
+                wait: 2000,
+                interval: 100,
+            })
+            expect(result.pass).toBe(true)
+            expect(beforeAssertion).toBeCalledWith({
+                matcherName: 'toBeDisplayed',
+                options: { beforeAssertion, afterAssertion }
+            })
+            expect(afterAssertion).toBeCalledWith({
+                matcherName: 'toBeDisplayed',
+                options: { beforeAssertion, afterAssertion },
+                result
+            })
         })
-    })
 
-    test('success with ToBeDisplayed and command options', async () => {
-        const el = await $('sel')
+        test('success with ToBeDisplayed and command options', async () => {
+            const result = await thisContext.toBeDisplayed(element, { wait: 1, withinViewport: true })
 
-        const result = await toBeDisplayed.call({}, el, { wait: 1, withinViewport: true })
+            expect(element.isDisplayed).toHaveBeenCalledWith(
+                {
+                    withinViewport: true,
+                    contentVisibilityAuto: true,
+                    opacityProperty: true,
+                    visibilityProperty: true
+                }
+            )
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
+                wait: 1,
+                interval: 100,
+            })
+            expect(result.pass).toBe(true)
+        })
 
-        expect(el.isDisplayed).toHaveBeenCalledWith(
-            {
-                withinViewport: true,
-                contentVisibilityAuto: true,
-                opacityProperty: true,
-                visibilityProperty: true
-            }
-        )
-        expect(executeCommandBe).toHaveBeenCalledWith(el, expect.anything(), expect.objectContaining({
-            wait: 1,
-            interval: DEFAULT_OPTIONS.interval
-        }))
-        expect(result.pass).toBe(true)
-    })
+        test('wait but throws', async () => {
+            vi.mocked(element.isDisplayed).mockRejectedValue(new Error('some error'))
 
-    test('wait but failure', async () => {
-        const el = await $('sel')
+            await expect(() => thisContext.toBeDisplayed(element, { wait: 1 }))
+                .rejects.toThrow('some error')
+        })
 
-        el.isDisplayed = vi.fn().mockRejectedValue(new Error('some error'))
+        test('success on the first attempt', async () => {
+            const result = await thisContext.toBeDisplayed(element, { wait: 1 })
 
-        await expect(() => toBeDisplayed.call({}, el))
-            .rejects.toThrow('some error')
-    })
+            expect(result.pass).toBe(true)
+            expect(element.isDisplayed).toHaveBeenCalledTimes(1)
+        })
 
-    test('success on the first attempt', async () => {
-        const el = await $('sel')
+        test('no wait - failure', async () => {
+            vi.mocked(element.isDisplayed).mockResolvedValue(false)
 
-        const result = await toBeDisplayed.call({}, el)
-        expect(result.pass).toBe(true)
-        expect(el.isDisplayed).toHaveBeenCalledTimes(1)
-    })
+            const result = await thisContext.toBeDisplayed(element, { wait: 0 })
 
-    test('no wait - failure', async () => {
-        const el = await $('sel')
-        el.isDisplayed = vi.fn().mockResolvedValue(false)
+            expect(result.pass).toBe(false)
+            expect(element.isDisplayed).toHaveBeenCalledTimes(1)
+        })
 
-        const result = await toBeDisplayed.call({}, el, { wait: 0 })
+        test('no wait - success', async () => {
+            const result = await thisContext.toBeDisplayed(element, { wait: 0 })
 
-        expect(result.pass).toBe(false)
-        expect(el.isDisplayed).toHaveBeenCalledTimes(1)
-    })
+            expect(element.isDisplayed).toHaveBeenCalledWith(
+                {
+                    withinViewport: false,
+                    contentVisibilityAuto: true,
+                    opacityProperty: true,
+                    visibilityProperty: true
+                }
+            )
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
+                wait: 0,
+                interval: 100,
+            })
 
-    test('no wait - success', async () => {
-        const el = await $('sel')
+            expect(result.pass).toBe(true)
+            expect(element.isDisplayed).toHaveBeenCalledTimes(1)
+        })
 
-        const result = await toBeDisplayed.call({}, el, { wait: 0 })
+        test('not - failure', async () => {
+            const result = await thisNotContext.toBeDisplayed(element, { wait: 0 })
 
-        expect(el.isDisplayed).toHaveBeenCalledWith(
-            {
-                withinViewport: false,
-                contentVisibilityAuto: true,
-                opacityProperty: true,
-                visibilityProperty: true
-            }
-        )
-        expect(executeCommandBe).toHaveBeenCalledWith(el, expect.anything(), expect.objectContaining({
-            wait: 0,
-            interval: DEFAULT_OPTIONS.interval
-        }))
-
-        expect(result.pass).toBe(true)
-        expect(el.isDisplayed).toHaveBeenCalledTimes(1)
-    })
-
-    test('not - failure - pass must be true', async () => {
-        const el = await $('sel')
-        const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 0 })
-
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-    })
-
-    test('not - success - pass should be false', async () => {
-        const el = await $('sel')
-
-        el.isDisplayed = vi.fn().mockResolvedValue(false)
-
-        const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 0 })
-
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-    })
-
-    test('not - failure (with wait) - pass should be true', async () => {
-        const el = await $('sel')
-        const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 1 })
-
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result.message()).toEqual(`\
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to be displayed
 
 Expected: "not displayed"
-Received: "displayed"`
-        )
-    })
+Received: "displayed"`)
+        })
 
-    test('not - success (with wait) - pass should be false', async () => {
-        const el = await $('sel')
+        test('not - success', async () => {
+            vi.mocked(element.isDisplayed).mockResolvedValue(false)
 
-        el.isDisplayed = vi.fn().mockResolvedValue(false)
+            const result = await thisNotContext.toBeDisplayed(element, { wait: 0 })
 
-        const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 1 })
+            expect(result.pass).toBe(true)
+        })
 
-        expect(el.isDisplayed).toHaveBeenCalledWith(
-            {
-                withinViewport: false,
-                contentVisibilityAuto: true,
-                opacityProperty: true,
-                visibilityProperty: true
-            }
-        )
-        expect(executeCommandBe).toHaveBeenCalledWith(el, expect.anything(), expect.objectContaining({
-            wait: 1,
-            interval: DEFAULT_OPTIONS.interval
-        }))
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-    })
+        test('not - failure (with wait)', async () => {
+            const result = await thisNotContext.toBeDisplayed(element, { wait: 1 })
 
-    test('message', async () => {
-        const el = await $('sel')
+            expect(result.pass).toBe(false)
+        })
 
-        el.isDisplayed = vi.fn().mockResolvedValue(false)
+        test('not - success (with wait)', async () => {
+            vi.mocked(element.isDisplayed).mockResolvedValue(false)
 
-        const result = await toBeDisplayed.call({}, el, { wait: 0 })
+            const result = await thisNotContext.toBeDisplayed(element, { wait: 1 })
 
-        expect(result.pass).toBe(false)
-        expect(result.message()).toEqual(`\
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), true,  {
+                wait: 1,
+                interval: 100,
+            })
+            expect(element.isDisplayed).toHaveBeenCalledWith(
+                {
+                    withinViewport: false,
+                    contentVisibilityAuto: true,
+                    opacityProperty: true,
+                    visibilityProperty: true
+                }
+            )
+            expect(result.pass).toBe(true)
+        })
+
+        test('message', async () => {
+            vi.mocked(element.isDisplayed).mockResolvedValue(false)
+
+            const result = await thisContext.toBeDisplayed(element, { wait: 1 })
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
 Expect $(\`sel\`) to be displayed
 
 Expected: "displayed"
-Received: "not displayed"`
-        )
+Received: "not displayed"`)
+        })
+
+        test('undefined - failure', async () => {
+            const element = undefined as unknown as WebdriverIO.Element
+
+            const result = await thisContext.toBeDisplayed(element, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect undefined to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
+        })
+    })
+
+    describe.each([
+        { elements: await $$('sel'), title: 'awaited ChainablePromiseArray' },
+        { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
+        { elements: await $$('sel').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
+        { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' }
+    ])('given a multiple elements when $title', ({ elements : els, title }) => {
+        let elements: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[]
+        let awaitedElements: typeof elements
+
+        const selectorName = title.includes('filtered') ?  '$(`sel`), $$(`sel`)[1]': '$$(`sel, <props>`)'
+
+        beforeEach(async () => {
+            elements = els
+
+            awaitedElements = await elements
+            awaitedElements.forEach((element) => {
+                vi.mocked(element.isDisplayed).mockResolvedValue(true)
+            })
+            expect(awaitedElements).toHaveLength(2)
+        })
+
+        test('wait for success', async () => {
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+
+            const result = await thisContext.toBeDisplayed(elements, { beforeAssertion, afterAssertion })
+
+            awaitedElements.forEach((element) => {
+                expect(element.isDisplayed).toHaveBeenCalledWith(
+                    {
+                        withinViewport: false,
+                        contentVisibilityAuto: true,
+                        opacityProperty: true,
+                        visibilityProperty: true
+                    }
+                )
+            })
+            expect(executeCommandBe).toHaveBeenCalledExactlyOnceWith(elements, expect.any(Function),
+                {
+                    'beforeAssertion': beforeAssertion,
+                    'afterAssertion': afterAssertion,
+                    'interval': 100,
+                    'wait': 2000,
+                },
+            )
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
+                wait: 2000,
+                interval: 100,
+            })
+
+            expect(result.pass).toBe(true)
+            expect(beforeAssertion).toBeCalledWith({
+                matcherName: 'toBeDisplayed',
+                options: { beforeAssertion, afterAssertion }
+            })
+            expect(afterAssertion).toBeCalledWith({
+                matcherName: 'toBeDisplayed',
+                options: { beforeAssertion, afterAssertion },
+                result
+            })
+        })
+
+        test('success with ToBeDisplayed and command options', async () => {
+            const result = await thisContext.toBeDisplayed(elements, { wait: 1, withinViewport: true })
+
+            awaitedElements.forEach((element) => {
+                expect(element.isDisplayed).toHaveBeenCalledWith(
+                    {
+                        withinViewport: true,
+                        contentVisibilityAuto: true,
+                        opacityProperty: true,
+                        visibilityProperty: true
+                    }
+                )
+            })
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
+                wait: 1,
+                interval: 100,
+            })
+            expect(result.pass).toBe(true)
+        })
+
+        test('wait but error', async () => {
+            vi.mocked(awaitedElements[0].isDisplayed).mockRejectedValue(new Error('some error'))
+
+            await expect(() => thisContext.toBeDisplayed(elements, { wait: 1 }))
+                .rejects.toThrow('some error')
+        })
+
+        // TODO review if failure message need to be more specific and hihghlight that elements are empty?
+        test('failure when no elements exist', async () => {
+            const result = await thisContext.toBeDisplayed([], { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect  to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
+        })
+
+        test('success on the first attempt', async () => {
+            const result = await thisContext.toBeDisplayed(elements, { wait: 1 })
+
+            expect(result.pass).toBe(true)
+            awaitedElements.forEach((element) => {
+                expect(element.isDisplayed).toHaveBeenCalledTimes(1)
+            })
+        })
+
+        test('no wait - failure', async () => {
+            vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
+
+            const result = await thisContext.toBeDisplayed(elements, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            awaitedElements.forEach((element) => {
+                expect(element.isDisplayed).toHaveBeenCalledTimes(1)
+            })
+        })
+
+        test('no wait - success', async () => {
+            const result = await thisContext.toBeDisplayed(elements, { wait: 0 })
+
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
+                wait: 0,
+                interval: 100,
+            })
+            awaitedElements.forEach((element) => {
+                expect(element.isDisplayed).toHaveBeenNthCalledWith(1,
+                    {
+                        withinViewport: false,
+                        contentVisibilityAuto: true,
+                        opacityProperty: true,
+                        visibilityProperty: true
+                    }
+                )
+            })
+            expect(result.pass).toBe(true)
+        })
+
+        test('not - failure', async () => {
+            const result = await thisNotContext.toBeDisplayed(elements, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect ${selectorName} not to be displayed
+
+Expected: "not displayed"
+Received: "displayed"`)
+        })
+
+        // TODO having a better message showing that we expect at least one element would be great?
+        test('not - failure when no elements', async () => {
+            const result = await thisNotContext.toBeDisplayed([], { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect  not to be displayed
+
+Expected: "not displayed"
+Received: "displayed"`)
+        })
+
+        // TODO review we should display an array of values showing which element failed
+        test('not - failure - when only first element is displayed', async () => {
+            vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
+            vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(true)
+
+            const result = await thisNotContext.toBeDisplayed(elements, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect ${selectorName} not to be displayed
+
+Expected: "not displayed"
+Received: "displayed"`)
+        })
+
+        test('not - success', async () => {
+            awaitedElements.forEach((element) => {
+                vi.mocked(element.isDisplayed).mockResolvedValue(false)
+            })
+
+            const result = await thisNotContext.toBeDisplayed(elements, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('not - failure (with wait)', async () => {
+            const result = await thisNotContext.toBeDisplayed(elements, { wait: 1 })
+
+            expect(result.pass).toBe(false)
+        })
+
+        test('not - success (with wait)', async () => {
+            awaitedElements.forEach((element) => {
+                vi.mocked(element.isDisplayed).mockResolvedValue(false)
+            })
+
+            const result = await thisNotContext.toBeDisplayed(elements, { wait: 1 })
+
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), true,  {
+                wait: 1,
+                interval: 100,
+            })
+            awaitedElements.forEach((element) => {
+                expect(element.isDisplayed).toHaveBeenCalledWith(
+                    {
+                        withinViewport: false,
+                        contentVisibilityAuto: true,
+                        opacityProperty: true,
+                        visibilityProperty: true
+                    }
+                )
+            })
+            expect(result.pass).toBe(true)
+        })
+
+        test('message when both elements fail', async () => {
+            awaitedElements.forEach((element) => {
+                vi.mocked(element.isDisplayed).mockResolvedValue(false)
+            })
+
+            const result = await thisContext.toBeDisplayed(elements, { wait: 1 })
+
+            expect(result.message()).toEqual(`\
+Expect ${selectorName} to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
+        })
+
+        test('message when a single element fails', async () => {
+            awaitedElements.forEach((element) => {
+                vi.mocked(element.isDisplayed).mockResolvedValue(false)
+            })
+            vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(true)
+
+            const result = await thisContext.toBeDisplayed(elements, { wait: 1 })
+
+            expect(result.message()).toEqual(`\
+Expect ${selectorName} to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
+        })
     })
 })

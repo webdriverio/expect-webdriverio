@@ -45,7 +45,7 @@ describe('toBeRequested', () => {
         setTimeout(() => {
             mock.calls.push(mockMatch)
             mock.calls.push(mockMatch)
-        }, 10)
+        }, 5)
 
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
@@ -68,20 +68,20 @@ describe('toBeRequested', () => {
         const mock: Mock = new TestMock()
 
         // expect(mock).not.toBeRequested() should pass=false
-        const result = await toBeRequested.call({ isNot: true }, mock)
+        const result = await toBeRequested.call({ isNot: true }, mock, { wait: 1 })
         expect(result.pass).toBe(false) // success, boolean is inverted later becuase of `.not`
 
         mock.calls.push(mockMatch)
 
         // expect(mock).not.toBeRequested() should fail
-        const result4 = await toBeRequested.call({ isNot: true }, mock)
+        const result4 = await toBeRequested.call({ isNot: true }, mock, { wait: 1 })
         expect(result4.pass).toBe(true) // failure, boolean is inverted later because of `.not`
     })
 
     test('message', async () => {
         const mock: Mock = new TestMock()
 
-        const result = await toBeRequested(mock)
+        const result = await toBeRequested(mock, { wait: 0 })
         expect(result.pass).toBe(false)
         expect(result.message()).toEqual(`\
 Expect mock to be called
@@ -91,8 +91,7 @@ Received: 0`
         )
 
         mock.calls.push(mockMatch)
-        const result2 = await toBeRequested.call({ isNot: true }, mock)
-
+        const result2 = await toBeRequested.call({ isNot: true }, mock, { wait: 0 })
         expect(result2.pass).toBe(true) // failure, boolean is inverted later because of `.not`
         expect(result2.message()).toEqual(`\
 Expect mock not to be called

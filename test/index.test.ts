@@ -5,5 +5,5 @@ test('index', () => {
     expect(setOptions.name).toBe('setDefaultOptions')
     expect(expectExport).toBeDefined()
     expect(utils.compareText).toBeDefined()
-    expect(matchers.size).toEqual(41)
+    expect(matchers.size).toEqual(39)
 })

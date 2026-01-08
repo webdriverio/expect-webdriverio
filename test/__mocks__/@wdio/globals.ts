@@ -3,10 +3,26 @@
  * This file exist for better typed mock implementation, so that we can follow wdio/globals API updates more easily.
  */
 import { vi } from 'vitest'
-import type { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio'
+import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
+import type { Size } from '../../../src/matchers/element/toHaveSize.js'
 
-import type { RectReturn } from '@wdio/protocols'
-export type Size = Pick<RectReturn, 'width' | 'height'>
+vi.mock('@wdio/globals')
+vi.mock('../../../src/util/waitUntil.js', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await importOriginal<typeof import('../../../src/util/waitUntil.js')>()
+    return {
+        ...actual,
+        waitUntil: vi.spyOn(actual, 'waitUntil')
+    }
+})
+vi.mock('../../../src/utils.js', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await importOriginal<typeof import('../../../src/utils.js')>()
+    return {
+        ...actual,
+        executeCommandBe: vi.spyOn(actual, 'executeCommandBe'),
+    }
+})
 
 const getElementMethods = () => ({
     isDisplayed: vi.spyOn({ isDisplayed: async () => true }, 'isDisplayed'),
@@ -20,23 +36,30 @@ const getElementMethods = () => ({
     getHTML: vi.spyOn({ getHTML: async () => { return '<Html/>' } }, 'getHTML'),
     getComputedLabel: vi.spyOn({ getComputedLabel: async () => 'Computed Label' }, 'getComputedLabel'),
     getComputedRole: vi.spyOn({ getComputedRole: async () => 'Computed Role' }, 'getComputedRole'),
-    // Null is not part of the type, to fix in wdio one day
-    getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => null as unknown as string }, 'getAttribute'),
+    getAttribute: vi.spyOn({ getAttribute: async (_attr: string) =>
+    // Null is not part of the type, fixed by https://github.com/webdriverio/webdriverio/pull/15003
+        null as unknown as string }, 'getAttribute'),
+    getCSSProperty: vi.spyOn({ getCSSProperty: async (_prop: string, _pseudo?: string) =>
+        ({ value: 'colorValue', parsed: {} } satisfies ParsedCSSValue) }, 'getCSSProperty'),
     getSize: vi.spyOn({ getSize: async (prop?: 'width' | 'height') => {
         if (prop === 'width') { return 100 }
         if (prop === 'height') { return 50 }
         return { width: 100, height: 50 } satisfies Size
-    } }, 'getSize') as unknown as WebdriverIO.Element['getSize'],
+    } },
+    // Force wrong size & number typing, fixed by https://github.com/webdriverio/webdriverio/pull/15003
+    'getSize') as unknown as WebdriverIO.Element['getSize'],
     getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
+    $,
+    $$,
 } satisfies Partial<WebdriverIO.Element>)
 
-const elementFactory = (_selector: string, index?: number): WebdriverIO.Element => {
+export const elementFactory = (_selector: string, index?: number): WebdriverIO.Element => {
     const partialElement = {
         selector: _selector,
         ...getElementMethods(),
         index,
         $,
-        $$
+        $$,
     } satisfies Partial<WebdriverIO.Element>
 
     const element = partialElement as unknown as WebdriverIO.Element
@@ -44,7 +67,7 @@ const elementFactory = (_selector: string, index?: number): WebdriverIO.Element 
     return element
 }
 
-function $(_selector: string) {
+const $ = vi.fn((_selector: string) => {
     const element = elementFactory(_selector)
 
     // Wdio framework does return a Promise-wrapped element, so we need to mimic this behavior
@@ -61,10 +84,14 @@ function $(_selector: string) {
         }
     })
     return runtimeChainableElement
-}
+})
 
-function $$(selector: string) {
+const $$ = vi.fn((selector: string) => {
     const length = (this as any)?._length || 2
+    return $$Factory(selector, length)
+})
+
+export function $$Factory(selector: string, length: number) {
     const elements: WebdriverIO.Element[] = Array(length).fill(null).map((_, index) => elementFactory(selector, index))
 
     const elementArray = elements as unknown as WebdriverIO.ElementArray
@@ -74,7 +101,12 @@ function $$(selector: string) {
     elementArray.props.length = length
     elementArray.selector = selector
     elementArray.getElements = async () => elementArray
+    elementArray.filter = async <T>(fn: (element: WebdriverIO.Element, index: number, array: T[]) => boolean | Promise<boolean>) => {
+        const results = await Promise.all(elements.map((el, i) => fn(el, i, elements as unknown as T[])))
+        return Array.prototype.filter.call(elements, (_, i) => results[i])
+    }
     elementArray.length = length
+    elementArray.parent = browser
 
     // Wdio framework does return a Promise-wrapped element, so we need to mimic this behavior
     const chainablePromiseArray = Promise.resolve(elementArray) as unknown as ChainablePromiseArray
@@ -102,4 +134,3 @@ export const browser = {
     getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
     call(fn: Function) { return fn() },
 } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
-

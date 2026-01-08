@@ -1,7 +1,6 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $$ } from '@wdio/globals'
 
-import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils.js'
 import { toBeElementsArrayOfSize } from '../../../src/matchers/elements/toBeElementsArrayOfSize.js'
 import type { AssertionResult } from 'expect-webdriverio'
 
@@ -71,29 +70,24 @@ describe('toBeElementsArrayOfSize', () => {
             let result: AssertionResult
 
             beforeEach(async () => {
-                result = await toBeElementsArrayOfSize.call({}, els, 5, { wait: 0 })
+                result = await toBeElementsArrayOfSize.call({}, els, 5, { wait: 1 })
             })
 
-            test('fails', () => {
+            test('fails with proper error message', () => {
                 expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`parent\`) to be elements array of size
+
+Expected: 5
+Received: 2`
+                )
             })
 
-            describe('message shows correctly', () => {
-                test('expect message', () => {
-                    expect(getExpectMessage(result.message())).toContain('to be elements array of size')
-                })
-                test('expected message', () => {
-                    expect(getExpected(result.message())).toContain('5')
-                })
-                test('received message', () => {
-                    expect(getReceived(result.message())).toContain('2')
-                })
-            })
         })
 
         describe('error catching', () => {
             test('throws error with incorrect size param', async () => {
-                await expect(toBeElementsArrayOfSize.call({}, els, '5' as any)).rejects.toThrow('Invalid params passed to toBeElementsArrayOfSize.')
+                await expect(toBeElementsArrayOfSize.call({}, els, '5' as any)).rejects.toThrow('Invalid NumberOptions. Received: "5"')
             })
 
             test('works if size contains options', async () => {
@@ -104,16 +98,29 @@ describe('toBeElementsArrayOfSize', () => {
 
         describe('number options', () => {
             test.each([
-                ['lte', 10, true],
-                ['lte', 1, false],
-                ['gte', 1, true],
-                ['gte', 10, false],
-                ['gte and lte', { gte: 1, lte: 10, wait: 0 }, true],
-                ['not gte but is lte', { gte: 10, lte: 10, wait: 0 }, false],
-                ['not lte but is gte', { gte: 1, lte: 1, wait: 0 }, false],
-            ])('should handle %s correctly', async (_, option, expected) => {
-                const result = await toBeElementsArrayOfSize.call({}, els, typeof option === 'object' ? option : { [_ as string]: option })
-                expect(result.pass).toBe(expected)
+                ['number - equal', 2, true],
+                ['number - equal - fail 1', 1, false],
+                ['number - equal - fail 2', 3, false],
+            ])('should handle %s correctly', async (_title, expectedNumberValue, expectedPass) => {
+                const result = await toBeElementsArrayOfSize.call({}, els, expectedNumberValue,  { wait: 0 })
+
+                expect(result.pass).toBe(expectedPass)
+            })
+
+            test.each([
+                ['gte - equal', { gte: 2 } satisfies ExpectWebdriverIO.NumberOptions, true],
+                ['gte - fail', { gte: 1 } satisfies ExpectWebdriverIO.NumberOptions, true],
+                ['gte', { gte: 3 } satisfies ExpectWebdriverIO.NumberOptions, false],
+                ['lte - equal', { lte: 2 } satisfies ExpectWebdriverIO.NumberOptions, true],
+                ['lte - fail', { lte: 3 } satisfies ExpectWebdriverIO.NumberOptions, true],
+                ['lte', { lte: 1 } satisfies ExpectWebdriverIO.NumberOptions, false],
+                ['gte and lte', { gte: 1, lte: 10 } satisfies ExpectWebdriverIO.NumberOptions, true],
+                ['not gte but is lte', { gte: 10, lte: 10 } satisfies ExpectWebdriverIO.NumberOptions, false],
+                ['not lte but is gte', { gte: 1, lte: 1 } satisfies ExpectWebdriverIO.NumberOptions, false],
+            ])('should handle %s correctly', async (_title, expectedNumberValue: ExpectWebdriverIO.NumberOptions, expectedPass) => {
+                const result = await toBeElementsArrayOfSize.call({}, els, expectedNumberValue, { wait: 0 })
+
+                expect(result.pass).toBe(expectedPass)
             })
         })
 
@@ -132,7 +139,7 @@ describe('toBeElementsArrayOfSize', () => {
             test('does not update the received array when assertion fails', async () => {
                 const receivedArray = createMockElementArray(2)
 
-                const result = await toBeElementsArrayOfSize.call({}, receivedArray, 10)
+                const result = await toBeElementsArrayOfSize.call({}, receivedArray, 10, { wait: 1 })
 
                 expect(result.pass).toBe(false)
                 expect(receivedArray.length).toBe(2)
@@ -196,20 +203,15 @@ describe('toBeElementsArrayOfSize', () => {
                     result = await toBeElementsArrayOfSize.call({}, elements, 5, { wait: 0 })
                 })
 
-                test('fails', () => {
+                // TODO dprevost review missing subject in error message
+                test('fails with proper failure message', () => {
                     expect(result.pass).toBe(false)
-                })
+                    expect(result.message()).toEqual(`\
+Expect  to be elements array of size
 
-                describe('message shows correctly', () => {
-                    test('expect message', () => {
-                        expect(getExpectMessage(result.message())).toContain('to be elements array of size')
-                    })
-                    test('expected message', () => {
-                        expect(getExpected(result.message())).toContain('5')
-                    })
-                    test('received message', () => {
-                        expect(getReceived(result.message())).toContain('0')
-                    })
+Expected: 5
+Received: 0`
+                    )
                 })
             })
         })
@@ -245,21 +247,17 @@ describe('toBeElementsArrayOfSize', () => {
                     result = await toBeElementsArrayOfSize.call({}, elements, 5, { wait: 0 })
                 })
 
-                test('fails', () => {
+                // TODO dprevost review missing subject in error message
+                test('fails with proper failure message', () => {
                     expect(result.pass).toBe(false)
+                    expect(result.message()).toContain(`\
+Expect  to be elements array of size
+
+Expected: 5
+Received: 1`
+                    )
                 })
 
-                describe('message shows correctly', () => {
-                    test('expect message', () => {
-                        expect(getExpectMessage(result.message())).toContain('to be elements array of size')
-                    })
-                    test('expected message', () => {
-                        expect(getExpected(result.message())).toContain('5')
-                    })
-                    test('received message', () => {
-                        expect(getReceived(result.message())).toContain('1')
-                    })
-                })
             })
         })
     })
