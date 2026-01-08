@@ -24,7 +24,7 @@ const getElementMethods = () => ({
         if (prop === 'width') { return 100 }
         if (prop === 'height') { return 50 }
         return { width: 100, height: 50 } satisfies Size
-    } }, 'getSize') as WebdriverIO.Element['getSize'],
+    } }, 'getSize') as unknown as WebdriverIO.Element['getSize'],
 } satisfies Partial<WebdriverIO.Element>)
 
 function $(_selector: string) {
