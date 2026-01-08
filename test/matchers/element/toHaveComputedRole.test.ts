@@ -8,21 +8,15 @@ vi.mock('@wdio/globals')
 
 describe('toHaveComputedcomputed role', () => {
     test('wait for success', async () => {
-        const el: any = await $('sel')
-        el._attempts = 2
-        el._computed_role = function (): string {
-            if (this._attempts > 0) {
-                this._attempts--
-                return ''
-            }
-            return 'WebdriverIO'
-        }
-
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('').mockResolvedValueOnce('').mockResolvedValueOnce('WebdriverIO')
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
+
         const result = await toHaveComputedRole.call({}, el, 'WebdriverIO', { ignoreCase: true, beforeAssertion, afterAssertion })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(0)
+        expect(el.getComputedRole).toHaveBeenCalledTimes(3)
         expect(beforeAssertion).toBeCalledWith({
             matcherName: 'toHaveComputedRole',
             expectedValue: 'WebdriverIO',
@@ -37,59 +31,48 @@ describe('toHaveComputedcomputed role', () => {
     })
 
     test('wait but failure', async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            throw new Error('some error')
-        }
+        const el = await $('sel')
+
+        el.getComputedRole = vi.fn().mockRejectedValue(new Error('some error'))
 
         await expect(() => toHaveComputedRole.call({}, el, 'WebdriverIO', { ignoreCase: true }))
             .rejects.toThrow('some error')
     })
 
     test('success on the first attempt', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._computed_role = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.call({}, el, 'WebdriverIO', { ignoreCase: true })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getComputedRole).toHaveBeenCalledTimes(1)
     })
 
     test('no wait - failure', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._computed_role = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.call({}, el, 'foo', { wait: 0 })
+
         expect(result.pass).toBe(false)
-        expect(el._attempts).toBe(1)
+        expect(el.getComputedRole).toHaveBeenCalledTimes(1)
     })
 
     test('no wait - success', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._computed_role = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.call({}, el, 'WebdriverIO', { wait: 0 })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getComputedRole).toHaveBeenCalledTimes(1)
     })
 
     test('not - failure', async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
+
         const result = await toHaveComputedRole.call({ isNot: true }, el, 'WebdriverIO', { wait: 0 })
         const received = getReceived(result.message())
 
@@ -98,30 +81,25 @@ describe('toHaveComputedcomputed role', () => {
     })
 
     test("should return false if computed roles don't match", async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.bind({ isNot: true })(el, 'foobar', { wait: 1 })
         expect(result.pass).toBe(false)
     })
 
     test('should return true if computed roles match', async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
+
         expect(result.pass).toBe(true)
     })
 
     test('should return true if actual computed role + single replacer matches the expected computed role', async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.bind({})(el, 'BrowserdriverIO', {
             replace: ['Web', 'Browser'],
@@ -130,10 +108,8 @@ describe('toHaveComputedcomputed role', () => {
     })
 
     test('should return true if actual computed role + replace (string) matches the expected computed role', async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.bind({})(el, 'BrowserdriverIO', {
             replace: [['Web', 'Browser']],
@@ -142,10 +118,8 @@ describe('toHaveComputedcomputed role', () => {
     })
 
     test('should return true if actual computed role + replace (regex) matches the expected computed role', async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.bind({})(el, 'BrowserdriverIO', {
             replace: [[/Web/, 'Browser']],
@@ -154,109 +128,87 @@ describe('toHaveComputedcomputed role', () => {
     })
 
     test('should return true if actual computed role starts with expected computed role', async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.bind({})(el, 'Webd', { atStart: true })
         expect(result.pass).toBe(true)
     })
 
     test('should return true if actual computed role ends with expected computed role', async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.bind({})(el, 'erIO', { atEnd: true })
         expect(result.pass).toBe(true)
     })
 
     test('should return true if actual computed role contains the expected computed role at the given index', async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.bind({})(el, 'iver', { atIndex: 5 })
         expect(result.pass).toBe(true)
     })
 
     test('message', async () => {
-        const el: any = await $('sel')
-        el._computed_role = function (): string {
-            return ''
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('')
+
         const result = await toHaveComputedRole.call({}, el, 'WebdriverIO')
+
         expect(getExpectMessage(result.message())).toContain('to have computed role')
     })
 
     test('success if array matches with computed role and ignoreCase', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._computed_role = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.call({}, el, ['div', 'WebdriverIO'], { ignoreCase: true })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getComputedRole).toHaveBeenCalledTimes(1)
     })
 
     test('success if array matches with computed role and trim', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._computed_role = function (): string {
-            this._attempts++
-            return '   WebdriverIO   '
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('   WebdriverIO   ')
 
         const result = await toHaveComputedRole.call({}, el, ['div', 'WebdriverIO', 'toto'], {
             trim: true,
+
         })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getComputedRole).toHaveBeenCalledTimes(1)
     })
 
     test('success if array matches with computed role and replace (string)', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._computed_role = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.call({}, el, ['div', 'BrowserdriverIO', 'toto'], {
             replace: [['Web', 'Browser']],
         })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getComputedRole).toHaveBeenCalledTimes(1)
     })
 
     test('success if array matches with computed role and replace (regex)', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._computed_role = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.call({}, el, ['div', 'BrowserdriverIO', 'toto'], {
             replace: [[/Web/g, 'Browser']],
         })
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getComputedRole).toHaveBeenCalledTimes(1)
     })
 
     test('success if array matches with computed role and multiple replacers and one of the replacers is a function', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._computed_role = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.call({}, el, ['div', 'browserdriverio', 'toto'], {
             replace: [
@@ -265,30 +217,24 @@ describe('toHaveComputedcomputed role', () => {
             ],
         })
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getComputedRole).toHaveBeenCalledTimes(1)
     })
 
     test('failure if array does not match with computed role', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._computed_role = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getComputedRole = vi.fn().mockResolvedValueOnce('WebdriverIO')
 
         const result = await toHaveComputedRole.call({}, el, ['div', 'foo'], { wait: 1 })
         expect(result.pass).toBe(false)
-        expect(el._attempts).toBe(1)
+        expect(el.getComputedRole).toHaveBeenCalledTimes(1)
     })
 
     describe('with RegExp', () => {
-        let el: any
+        let el: ChainablePromiseElement
 
         beforeEach(async () => {
             el = await $('sel')
-            el._computed_role = vi.fn().mockImplementation(() => {
-                return 'This is example computed role'
-            })
+            el.getComputedRole = vi.fn().mockResolvedValue('This is example computed role')
         })
 
         test('success if match', async () => {

@@ -6,96 +6,86 @@ import * as Matchers from '../../src/matchers.js'
 vi.mock('@wdio/globals')
 
 const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeDisabled', 'toBeDisplayed', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith']
-const beMatchers = [
-    ...Object.keys(Matchers).filter(name => name.startsWith('toBe') && !ignoredMatchers.includes(name)),
-    'toExist'
-]
+const beMatchers = {
+    'toBeChecked': 'isSelected',
+    'toBeClickable': 'isClickable',
+    'toBeDisplayedInViewport': 'isDisplayed',
+    'toBeEnabled': 'isEnabled',
+    'toBeExisting': 'isExisting',
+    'toBeFocused': 'isFocused',
+    'toBePresent': 'isExisting',
+    'toBeSelected': 'isSelected',
+} satisfies Partial<Record<keyof typeof Matchers, keyof WebdriverIO.Element>>
 
 describe('be* matchers', () => {
-    beMatchers.forEach((name) => {
-        const fn = Matchers[name as keyof typeof Matchers] // .bind({})
+    describe('Ensure all toBe matchers are covered', () => {
 
-        describe(name, () => {
+        test('all toBe matchers are covered in beMatchers', () => {
+            const matcherNames = Object.keys(Matchers).filter(name => name.startsWith('toBe') && !ignoredMatchers.includes(name))
+            matcherNames.sort()
+
+            expect(Object.keys(beMatchers)).toEqual(matcherNames)
+        })
+    })
+
+    Object.entries(beMatchers).forEach(([matcherName, elementFnName]) => {
+        const matcherFn = Matchers[matcherName as keyof typeof Matchers]
+
+        describe(matcherName, () => {
             test('wait for success', async () => {
                 const el = await $('sel')
-                // @ts-expect-error mock feature
-                el._attempts = 2
-                // @ts-expect-error mock feature
-                el._value = function (): boolean {
-                    if (this._attempts > 0) {
-                        this._attempts--
-                        return false
-                    }
-                    return true
-                }
 
-                const result = await fn.call({}, el) as ExpectWebdriverIO.AssertionResult
+                el[elementFnName] = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(true)
+
+                const result = await matcherFn.call({}, el) as ExpectWebdriverIO.AssertionResult
+
                 expect(result.pass).toBe(true)
-                // @ts-expect-error mock feature
-                expect(el._attempts).toBe(0)
+                expect(el[elementFnName]).toHaveBeenCalledTimes(3)
             })
 
             test('wait but failure', async () => {
                 const el = await $('sel')
-                // @ts-expect-error mock feature
-                el._value = function (): boolean {
-                    throw new Error('some error')
-                }
 
-                await expect(() => fn.call({}, el, 10, {}))
+                el[elementFnName] = vi.fn().mockRejectedValue(new Error('some error'))
+
+                await expect(() => matcherFn.call({}, el, 10, {}))
                     .rejects.toThrow('some error')
             })
 
             test('success on the first attempt', async () => {
                 const el = await $('sel')
-                // @ts-expect-error mock feature
-                el._attempts = 0
-                // @ts-expect-error mock feature
-                el._value = function (): boolean {
-                    this._attempts++
-                    return true
-                }
 
-                const result = await fn.call({}, el) as ExpectWebdriverIO.AssertionResult
+                el[elementFnName] = vi.fn().mockResolvedValue(true)
+
+                const result = await matcherFn.call({}, el) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(true)
-                // @ts-expect-error mock feature
-                expect(el._attempts).toBe(1)
+                expect(el[elementFnName]).toHaveBeenCalledTimes(1)
             })
 
             test('no wait - failure', async () => {
                 const el = await $('sel')
-                // @ts-expect-error mock feature
-                el._attempts = 0
-                // @ts-expect-error mock feature
-                el._value = function (): boolean {
-                    this._attempts++
-                    return false
-                }
 
-                const result = await fn.call({}, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
+                el[elementFnName] = vi.fn().mockResolvedValue(false)
+
+                const result = await matcherFn.call({}, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(false)
-                // @ts-expect-error mock feature
-                expect(el._attempts).toBe(1)
+                expect(el[elementFnName]).toHaveBeenCalledTimes(1)
             })
 
             test('no wait - success', async () => {
                 const el = await $('sel')
-                // @ts-expect-error mock feature
-                el._attempts = 0
-                // @ts-expect-error mock feature
-                el._value = function (): boolean {
-                    this._attempts++
-                    return true
-                }
 
-                const result = await fn.call({}, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
+                el[elementFnName] = vi.fn().mockResolvedValue(true)
+
+                const result = await matcherFn.call({}, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(true)
-                // @ts-expect-error mock feature
-                expect(el._attempts).toBe(1)
+                expect(el[elementFnName]).toHaveBeenCalledTimes(1)
             })
 
             test('not - failure', async () => {
-                const result = await fn.call({ isNot: true }, $('sel'), { wait: 0 }) as ExpectWebdriverIO.AssertionResult
+                const el = await $('sel')
+
+                const result = await matcherFn.call({ isNot: true }, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
                 const received = getReceived(result.message())
 
                 expect(received).not.toContain('not')
@@ -104,11 +94,10 @@ describe('be* matchers', () => {
 
             test('not - success', async () => {
                 const el = await $('sel')
-                // @ts-expect-error mock feature
-                el._value = function (): boolean {
-                    return false
-                }
-                const result = await fn.call({ isNot: true }, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
+
+                el[elementFnName] = vi.fn().mockResolvedValue(false)
+
+                const result = await matcherFn.call({ isNot: true }, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
                 const received = getReceived(result.message())
 
                 expect(received).toContain('not')
@@ -116,7 +105,9 @@ describe('be* matchers', () => {
             })
 
             test('not - failure (with wait)', async () => {
-                const result = await fn.call({ isNot: true }, $('sel'), { wait: 1 }) as ExpectWebdriverIO.AssertionResult
+                const el = await $('sel')
+
+                const result = await matcherFn.call({ isNot: true }, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
                 const received = getReceived(result.message())
 
                 expect(received).not.toContain('not')
@@ -125,23 +116,23 @@ describe('be* matchers', () => {
 
             test('not - success (with wait)', async () => {
                 const el = await $('sel')
-                // @ts-expect-error mock feature
-                el._value = function (): boolean {
-                    return false
-                }
-                const result = await fn.call({ isNot: true }, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
-                const received = getReceived(result.message())
+                el[elementFnName] = vi.fn().mockResolvedValue(false)
 
+                const result = await matcherFn.call({ isNot: true }, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
+
+                const received = getReceived(result.message())
                 expect(received).toContain('not')
                 expect(result.pass).toBe(false)
             })
 
             test('message', async () => {
-                const result = await fn.call({}, $('sel')) as ExpectWebdriverIO.AssertionResult
+                const el = await $('sel')
+                el[elementFnName] = vi.fn().mockResolvedValue(false)
+
+                const result = await matcherFn.call({}, el) as ExpectWebdriverIO.AssertionResult
                 expect(getExpectMessage(result.message()))
-                    .toContain(matcherNameToString(name))
+                    .toContain(matcherNameToString(matcherName))
             })
         })
     })
 })
-

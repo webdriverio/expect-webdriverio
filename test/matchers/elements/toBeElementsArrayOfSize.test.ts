@@ -3,6 +3,7 @@ import { $$ } from '@wdio/globals'
 
 import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils.js'
 import { toBeElementsArrayOfSize } from '../../../src/matchers/elements/toBeElementsArrayOfSize.js'
+import type { AssertionResult } from 'expect-webdriverio'
 
 const createMockElementArray = (length: number): WebdriverIO.ElementArray => {
     const array = Array.from({ length }, () => ({}))
@@ -67,7 +68,7 @@ describe('toBeElementsArrayOfSize', () => {
         })
 
         describe('failure', () => {
-            let result: any
+            let result: AssertionResult
 
             beforeEach(async () => {
                 result = await toBeElementsArrayOfSize.call({}, els, 5, {})
@@ -189,7 +190,7 @@ describe('toBeElementsArrayOfSize', () => {
             })
 
             describe('failure', () => {
-                let result: any
+                let result: AssertionResult
 
                 beforeEach(async () => {
                     result = await toBeElementsArrayOfSize.call({}, elements, 5, {})
@@ -238,7 +239,7 @@ describe('toBeElementsArrayOfSize', () => {
             })
 
             describe('failure', () => {
-                let result: any
+                let result: AssertionResult
 
                 beforeEach(async () => {
                     result = await toBeElementsArrayOfSize.call({}, elements, 5, {})

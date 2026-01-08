@@ -1,8 +1,8 @@
 import { $ } from '@wdio/globals'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 import { toHaveElementClass } from '../../../src/matchers/element/toHaveClass.js'
+import type { AssertionResult } from 'expect-webdriverio'
 
 vi.mock('@wdio/globals')
 
@@ -99,7 +99,7 @@ describe('toHaveElementClass', () => {
     })
 
     describe('failure when class name is not present', () => {
-        let result: any
+        let result: AssertionResult
 
         beforeEach(async () => {
             result = await toHaveElementClass.call({}, el, 'test')
@@ -123,7 +123,7 @@ describe('toHaveElementClass', () => {
     })
 
     describe('failure with RegExp when class name is not present', () => {
-        let result: any
+        let result: AssertionResult
 
         beforeEach(async () => {
             result = await toHaveElementClass.call({}, el, /WDIO/)

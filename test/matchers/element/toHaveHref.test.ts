@@ -3,6 +3,7 @@ import { $ } from '@wdio/globals'
 
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 import { toHaveHref } from '../../../src/matchers/element/toHaveHref.js'
+import type { AssertionResult } from 'expect-webdriverio'
 
 vi.mock('@wdio/globals')
 
@@ -38,7 +39,7 @@ describe('toHaveHref', () => {
     })
 
     describe('failure when doesnt contain', () => {
-        let result: any
+        let result: AssertionResult
 
         beforeEach(async () => {
             result = await toHaveHref.call({}, el, 'an href')

@@ -1,2 +1,0 @@
-require('./beforeAll')
-require('./wdio')
