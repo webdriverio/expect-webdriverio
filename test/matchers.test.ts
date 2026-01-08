@@ -59,7 +59,7 @@ test('matchers', () => {
 })
 
 test('allows to add matcher', () => {
-    const matcher = vi.fn((actual, expected) => ({ pass: actual === expected }))
+    const matcher: any = vi.fn((actual, expected) => ({ pass: actual === expected }))
     expectLib.extend({ toBeCustom: matcher })
 
     // @ts-expect-error not in types
