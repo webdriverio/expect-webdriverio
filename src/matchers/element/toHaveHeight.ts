@@ -1,66 +1,63 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
+import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
+import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import { toNumberError, validateNumberOptionsArray } from '../../util/numberOptionsUtil.js'
 import {
     compareNumbers,
     enhanceError,
-    executeCommand,
-    numberError,
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, height: number, options: ExpectWebdriverIO.NumberOptions) {
+async function condition(el: WebdriverIO.Element, expected: ExpectWebdriverIO.NumberOptions) {
     const actualHeight = await el.getSize('height')
 
     return {
-        result: compareNumbers(actualHeight, options),
+        result: compareNumbers(actualHeight, expected),
         value: actualHeight
     }
 }
 
 export async function toHaveHeight(
-    received: WdioElementMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions,
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberOptions>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot
-    const { expectation = 'height', verb = 'have' } = this
+    const { expectation = 'height', verb = 'have', matcherName = 'toHaveHeight' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveHeight',
+        matcherName,
         expectedValue,
         options,
     })
 
-    // type check
-    let numberOptions: ExpectWebdriverIO.NumberOptions
-    if (typeof expectedValue === 'number') {
-        numberOptions = { eq: expectedValue } as ExpectWebdriverIO.NumberOptions
-    } else if (!expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')) {
-        throw new Error('Invalid params passed to toHaveHeight.')
-    } else {
-        numberOptions = expectedValue
-    }
+    const expected = validateNumberOptionsArray(expectedValue)
+    // TODO: deprecated NumberOptions as options in favor of ExpectedType and use a third options param only for command options
+    const { wait, interval } = Array.isArray(expected) ? {} : expected
 
-    let el = await received?.getElement()
-    let actualHeight
+    let elements: WebdriverIO.Element | WdioElements | undefined
+    let actualHeight: string | number | (string | number | undefined)[] | undefined
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, numberOptions, [expectedValue, numberOptions])
+            const result = await executeCommand(received,
+                undefined,
+                (elements) => defaultMultipleElementsIterationStrategy(elements, expected, condition))
 
-            el = result.el as WebdriverIO.Element
-            actualHeight = result.values
+            elements = result.elementOrArray
+            actualHeight = result.valueOrArray
 
-            return result.success
+            return result
         },
-        isNot,
-        { ...numberOptions, ...options }
+        { wait: wait ?? options.wait, interval: interval ?? options.interval }
     )
 
-    const error = numberError(numberOptions)
+    const expextedFailureMessage = toNumberError(expected)
+    const expectedValues = wrapExpectedWithArray(elements, actualHeight, expextedFailureMessage)
     const message = enhanceError(
-        el,
-        error,
+        elements,
+        expectedValues,
         actualHeight,
         this,
         verb,
@@ -75,7 +72,7 @@ export async function toHaveHeight(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveHeight',
+        matcherName,
         expectedValue,
         options,
         result

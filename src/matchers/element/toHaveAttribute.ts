@@ -1,46 +1,50 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
 import {
     compareText,
     enhanceError,
-    executeCommand,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function conditionAttr(el: WebdriverIO.Element, attribute: string) {
-    const attr = await el.getAttribute(attribute)
-    if (typeof attr !== 'string') {
-        return { result: false, value: attr }
+async function conditionAttributeIsPresent(el: WebdriverIO.Element, attribute: string) {
+    const attributeValue = await el.getAttribute(attribute)
+    if (typeof attributeValue !== 'string') {
+        return { result: false, value: attributeValue }
     }
-    return { result: true, value: attr }
+    return { result: true, value: attributeValue }
 
 }
 
-async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
-    const attr = await el.getAttribute(attribute)
-    if (typeof attr !== 'string') {
-        return { result: false, value: attr }
+async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
+    const attributeValue = await el.getAttribute(attribute)
+    if (typeof attributeValue !== 'string') {
+        return { result: false, value: attributeValue }
     }
 
-    return compareText(attr, value, options)
+    return compareText(attributeValue, expectedValue, options)
 }
 
-export async function toHaveAttributeAndValue(received: WdioElementMaybePromise, attribute: string, value: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
+export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybePromise, attribute: string, expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
-    let el = await received?.getElement()
+    let el
     let attr
     const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, conditionAttrAndValue, options, [attribute, value, options])
-        el = result.el as WebdriverIO.Element
-        attr = result.values
+        const result = await executeCommand(received,
+            undefined,
+            (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (element, expected) => conditionAttributeValueMatchWithExpected(element, attribute, expected, options))
+        )
 
-        return result.success
-    }, isNot, options)
+        el = result.elementOrArray
+        attr = result.valueOrArray
 
-    const expected = wrapExpectedWithArray(el, attr, value)
+        return result
+    }, isNot,  { wait: options.wait, interval: options.interval })
+
+    const expected = wrapExpectedWithArray(el, attr, expectedValue)
     const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
 
     return {
@@ -49,20 +53,28 @@ export async function toHaveAttributeAndValue(received: WdioElementMaybePromise,
     } as ExpectWebdriverIO.AssertionResult
 }
 
-async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: string) {
+async function toHaveAttributeFn(received: WdioElementOrArrayMaybePromise, attribute: string, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
     const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
-    let el = await received?.getElement()
+    let el
 
     const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, conditionAttr, {}, [attribute])
-        el = result.el as WebdriverIO.Element
+        const result = await executeCommand(
+            received,
+            undefined,
+            (elements) => defaultMultipleElementsIterationStrategy(elements, attribute, (el) => conditionAttributeIsPresent(el, attribute))
+        )
 
-        return result.success
-    }, isNot, {})
+        el = result.elementOrArray
 
-    const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, {})
+        return result
+    }, isNot, {
+        wait: options.wait,
+        interval: options.interval,
+    })
+
+    const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, options)
 
     return {
         pass,
@@ -70,10 +82,11 @@ async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: s
     }
 }
 
+// TODO: one day it would be better to have overload signature one with value and ExpectWebdriverIO.StringOptions, the other with no value and commnad options
 export async function toHaveAttribute(
-    received: WdioElementMaybePromise,
+    received: WdioElementOrArrayMaybePromise,
     attribute: string,
-    value?: string | RegExp | WdioAsymmetricMatcher<string>,
+    value?: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     await options.beforeAssertion?.({

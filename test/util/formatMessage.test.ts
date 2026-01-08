@@ -219,10 +219,10 @@ Received      : "Actual Property Value"`)
 
     describe(numberError, () => {
         test('should return correct message', () => {
-            expect(numberError()).toBe('no params')
+            expect(numberError()).toBe('Incorrect number options provided. Received: {}')
             expect(numberError({ eq: 0 })).toBe(0)
             expect(numberError({ gte: 1 })).toBe('>= 1')
-            expect(numberError({ lte: 1 })).toBe(' <= 1')
+            expect(numberError({ lte: 1 })).toBe('<= 1')
             expect(numberError({ gte: 2, lte: 1 })).toBe('>= 2 && <= 1')
         })
     })

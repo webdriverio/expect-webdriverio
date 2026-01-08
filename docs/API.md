@@ -2,6 +2,8 @@
 
 When you're writing tests, you often need to check that values meet certain conditions. `expect` gives you access to a number of "matchers" that let you validate different things on the `browser`, an `element` or `mock` object.
 
+**Note:** Multi-remote is not yet supported; any working case is coincidental and could break or change until fully supported.
+
 ## Soft Assertions
 
 Soft assertions allow you to continue test execution even when an assertion fails. This is useful when you want to check multiple conditions in a test and collect all failures rather than stopping at the first failure. Failures are collected and reported at the end of the test.
@@ -252,6 +254,35 @@ await expect(browser).toHaveClipboardText(expect.stringContaining('clipboard tex
 
 ## Element Matchers
 
+### Multiples Elements Support
+
+All element matchers work with arrays of elements (e.g., `$$()` results).
+- In short, matchers is applied on each elements and must pass for the entire assertion to succeed, so if one fails, the assertions fails.
+- See [MutipleElements.md](MultipleElements.md) for more information.
+
+#### Usage
+
+```ts
+await expect($$('#someElem')).toBeDisplayed()
+await expect(await $$('#someElem')).toBeDisplayed()
+```
+
+```ts
+const elements = await $$('#someElem')
+
+// Single expected value compare with each element's value
+await expect(elements).toHaveAttribute('class', 'form-control')
+
+// Multiple expected values for exactly 2 elements having exactly 'control1' & 'control2' as values
+await expect(elements).toHaveAttribute('class', ['control1', 'control2'])
+
+// Multiple expected values for exactly 2 elements but with more flexibility for the first element's value
+await expect(elements).toHaveAttribute('class', [expect.stringContaining('control1'), 'control2'])
+
+// Filtered array also works
+await expect($$('#someElem').filter(el => el.isDisplayed())).toHaveAttribute('class', ['control1', 'control2'])
+```
+
 ### toBeDisplayed
 
 Calls [`isDisplayed`](https://webdriver.io/docs/api/element/isDisplayed/) on given element.
@@ -259,8 +290,7 @@ Calls [`isDisplayed`](https://webdriver.io/docs/api/element/isDisplayed/) on giv
 ##### Usage
 
 ```js
-const elem = await $('#someElem')
-await expect(elem).toBeDisplayed()
+await expect($('#someElem')).toBeDisplayed()
 ```
 
 ### toExist
@@ -270,8 +300,7 @@ Calls [`isExisting`](https://webdriver.io/docs/api/element/isExisting) on given 
 ##### Usage
 
 ```js
-const elem = await $('#someElem')
-await expect(elem).toExist()
+await expect($('#someElem')).toExist()
 ```
 
 ### toBePresent
@@ -281,8 +310,7 @@ Same as `toExist`.
 ##### Usage
 
 ```js
-const elem = await $('#someElem')
-await expect(elem).toBePresent()
+await expect($('#someElem')).toBePresent()
 ```
 
 ### toBeExisting
@@ -375,8 +403,7 @@ Checks if an element can be clicked by calling [`isClickable`](https://webdriver
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toBeClickable()
+await expect($('#elem')).toBeClickable()
 ```
 
 ### toBeDisabled
@@ -412,8 +439,7 @@ Checks if an element is enabled by calling [`isSelected`](https://webdriver.io/d
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toBeSelected()
+await expect($('#elem')).toBeSelected()
 ```
 
 ### toBeChecked
@@ -423,8 +449,7 @@ Same as `toBeSelected`.
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toBeChecked()
+await expect($('#elem')).toBeChecked()
 ```
 
 ### toHaveComputedLabel
@@ -502,8 +527,7 @@ Checks if element has a specific `id` attribute.
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toHaveId('elem')
+await expect($('#elem')).toHaveId('elem')
 ```
 
 ### toHaveStyle
@@ -513,8 +537,7 @@ Checks if an element has specific `CSS` properties. By default, values must matc
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toHaveStyle({
+await expect($('#elem')).toHaveStyle({
   'font-family': 'Faktum',
   'font-weight': '500',
   'font-size': '12px',
@@ -549,9 +572,10 @@ In case there is a list of elements in the div below:
 You can assert them using an array:
 
 ```js
-const elem = await $$('ul > li')
-await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
+await expect($$('ul > li')).toHaveText(['Coffee', 'Tea', 'Milk'])
 ```
+
+**Note:** Assertion with multiple elements will pass if the element text's matches any of the text in the arrays. Strict array matching is not yet supported.
 
 ### toHaveHTML
 
@@ -583,8 +607,7 @@ Checks if an element is within the viewport by calling [`isDisplayedInViewport`]
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toBeDisplayedInViewport()
+await expect($('#elem')).toBeDisplayedInViewport()
 ```
 
 ### toHaveChildren

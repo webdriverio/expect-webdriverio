@@ -46,7 +46,9 @@ describe('toBeRequestedTimes', () => {
 
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
+
         const result = await toBeRequestedTimes.call({}, mock, 1, { beforeAssertion, afterAssertion })
+
         expect(result.pass).toBe(true)
         expect(beforeAssertion).toBeCalledWith({
             matcherName: 'toBeRequestedTimes',
@@ -68,15 +70,15 @@ describe('toBeRequestedTimes', () => {
             mock.calls.push(mockMatch)
         }, 10)
 
-        const result = await toBeRequestedTimes.call({}, mock, { gte: 1 })
+        const result = await toBeRequestedTimes.call({}, mock, { gte: 1, wait: 1 })
         expect(result.pass).toBe(true)
-        const result2 = await toBeRequestedTimes.call({}, mock, { eq: 1 })
+        const result2 = await toBeRequestedTimes.call({}, mock, { eq: 1, wait: 1 })
         expect(result2.pass).toBe(true)
     })
 
     test('wait but failure', async () => {
         const mock: Mock = new TestMock()
-        const result = await toBeRequestedTimes.call({}, mock, 1)
+        const result = await toBeRequestedTimes.call({}, mock, 1, { wait: 1 })
         expect(result.pass).toBe(false)
 
         setTimeout(() => {
@@ -84,15 +86,19 @@ describe('toBeRequestedTimes', () => {
             mock.calls.push(mockMatch)
         }, 10)
 
-        const result2 = await toBeRequestedTimes.call({}, mock, 1)
+        const result2 = await toBeRequestedTimes.call({}, mock, 1, { wait: 1 })
         expect(result2.pass).toBe(false)
-        const result3 = await toBeRequestedTimes.call({}, mock, 2)
+
+        const result3 = await toBeRequestedTimes.call({}, mock, 2, { wait: 1 })
         expect(result3.pass).toBe(true)
-        const result4 = await toBeRequestedTimes.call({}, mock, { gte: 2 })
+
+        const result4 = await toBeRequestedTimes.call({}, mock, { gte: 2, wait: 1 })
         expect(result4.pass).toBe(true)
-        const result5 = await toBeRequestedTimes.call({}, mock, { lte: 2 })
+
+        const result5 = await toBeRequestedTimes.call({}, mock, { lte: 2, wait: 1 })
         expect(result5.pass).toBe(true)
-        const result6 = await toBeRequestedTimes.call({}, mock, { lte: 3 })
+
+        const result6 = await toBeRequestedTimes.call({}, mock, { lte: 3, wait: 1 })
         expect(result6.pass).toBe(true)
     })
 

@@ -12,7 +12,7 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) 
     return result
 }
 
-export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
+export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => {
     const selectors = []
     let parent: WebdriverIO.ElementArray['parent'] | undefined
 
@@ -21,6 +21,12 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
         parent = el.parent
     } else if (!Array.isArray(el)) {
         parent = el
+    } else if (Array.isArray(el)) {
+        for (const element of el) {
+            selectors.push(getSelectors(element))
+        }
+        // When not having more context about the common parent, return joined selectors
+        return selectors.join(', ')
     }
 
     while (parent && 'selector' in parent) {
@@ -37,7 +43,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
 const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
 
 export const enhanceError = (
-    subject: string | WebdriverIO.Element | WdioElements,
+    subject: string | WebdriverIO.Element | WdioElements | undefined,
     expected: unknown,
     actual: unknown,
     context: { isNot: boolean, useNotInLabel?: boolean },
@@ -49,7 +55,7 @@ export const enhanceError = (
     } = {}): string => {
     const { isNot = false, useNotInLabel = true } = context
 
-    subject = typeof subject === 'string' ? subject : getSelectors(subject)
+    subject = typeof subject === 'string' || !subject ? subject : getSelectors(subject)
 
     let contain = ''
     if (containing) {
@@ -88,7 +94,7 @@ ${diffString}`
 }
 
 export const enhanceErrorBe = (
-    subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
+    subject: string | WebdriverIO.Element | WdioElements | undefined,
     context: { isNot: boolean, verb: string, expectation: string },
     options: ExpectWebdriverIO.CommandOptions
 ) => {
@@ -113,8 +119,8 @@ export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): stri
     }
 
     if (options.lte) {
-        return ` <= ${options.lte}`
+        return `<= ${options.lte}`
     }
 
-    return 'no params'
+    return `Incorrect number options provided. Received: ${JSON.stringify(options)}`
 }

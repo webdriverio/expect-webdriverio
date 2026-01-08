@@ -27,6 +27,8 @@ type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherCont
     (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult;
 }
 
+type MaybeArray<T> = T | T[]
+
 /**
  * Real Promise and wdio chainable promise types.
  */
@@ -140,72 +142,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toBeExisting: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
-     * `WebdriverIO.Element` -> `getAttribute`
-     */
-    toHaveAttribute: FnWhenElementOrArrayLike<ActualT, (
-        attribute: string, value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-        options?: ExpectWebdriverIO.StringOptions)
-    => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `getAttribute`
-     */
-    toHaveAttr: FnWhenElementOrArrayLike<ActualT, (
-        attribute: string, value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-        options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `getAttribute` class
-     * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
-     */
-    toHaveClass: FnWhenElementOrArrayLike<ActualT, (
-        className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-        options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `getAttribute` class
-     *
-     * Checks if an element has the specified class or matches any of the provided class patterns.
-     * @param className - The class name(s) or pattern(s) to match against.
-     * @param options - Optional settings that can be passed to the function.
-     *
-     * **Usage**
-     * ```js
-     * // Check if an element has the class 'btn'
-     * await expect(element).toHaveElementClass('btn');
-     *
-     * // Check if an element has any of the specified classes
-     * await expect(element).toHaveElementClass(['btn', 'btn-large']);
-     * ```
-     */
-    toHaveElementClass: FnWhenElementOrArrayLike<ActualT, (
-        className: string | RegExp | Array<string | RegExp> | ExpectWebdriverIO.PartialMatcher<string>,
-        options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `getProperty`
-     */
-    toHaveElementProperty: FnWhenElementOrArrayLike<
-        ActualT,
-        (
-            property: string,
-            value?: string | RegExp | WdioAsymmetricMatcher<string> | null,
-            options?: ExpectWebdriverIO.StringOptions,
-        ) => Promise<void>
-    >
-
-    /**
-     * `WebdriverIO.Element` -> `getProperty` value
-     */
-    toHaveValue: FnWhenElementOrArrayLike<ActualT, (
-        value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-        options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<void>>
-
-    /**
      * `WebdriverIO.Element` -> `isClickable`
      */
     toBeClickable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
@@ -241,19 +177,75 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toBeChecked: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
+     * `WebdriverIO.Element` -> `getAttribute`
+     */
+    toHaveAttribute: FnWhenElementOrArrayLike<ActualT, (
+        attribute: string,
+        value?: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+        options?: ExpectWebdriverIO.StringOptions)
+    => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `getAttribute`
+     */
+    toHaveAttr: FnWhenElementOrArrayLike<ActualT, (
+        attribute: string,
+        value?: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `getAttribute` class
+     *
+     * Checks if an element has the specified class or matches any of the provided class patterns.
+     * @param className - The class name(s) or pattern(s) to match against.
+     * @param options - Optional settings that can be passed to the function.
+     *
+     * **Usage**
+     * ```js
+     * // Check if an element has the class 'btn'
+     * await expect(element).toHaveElementClass('btn');
+     *
+     * // Check if an element has any of the specified classes
+     * await expect(element).toHaveElementClass(['btn', 'btn-large']);
+     * ```
+     */
+    toHaveElementClass: FnWhenElementOrArrayLike<ActualT, (
+        className: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `getProperty`
+     */
+    toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, (
+        property: string,
+        value: MaybeArray<unknown | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `getProperty` value
+     */
+    toHaveValue: FnWhenElementOrArrayLike<ActualT, (
+        value: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<void>>
+
+    /**
      * `WebdriverIO.Element` -> `$$('./*').length`
      * supports less / greater then or equals to be passed in options
      */
     toHaveChildren: FnWhenElementOrArrayLike<ActualT, (
-        size?: number | ExpectWebdriverIO.NumberOptions,
-        options?: ExpectWebdriverIO.NumberOptions
+        size?: MaybeArray<number | ExpectWebdriverIO.NumberOptions>,
+        options?: ExpectWebdriverIO.CommandOptions
     ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` href
      */
     toHaveHref: FnWhenElementOrArrayLike<ActualT, (
-        href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+        href: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -261,7 +253,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * `WebdriverIO.Element` -> `getAttribute` href
      */
     toHaveLink: FnWhenElementOrArrayLike<ActualT, (
-        href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+        href: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -269,7 +261,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * `WebdriverIO.Element` -> `getProperty` value
      */
     toHaveId: FnWhenElementOrArrayLike<ActualT, (
-        id: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+        id: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -277,7 +269,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * `WebdriverIO.Element` -> `getSize` value
      */
     toHaveSize: FnWhenElementOrArrayLike<ActualT, (
-        size: { height: number; width: number },
+        size: MaybeArray<{ height: number; width: number }>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -301,7 +293,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * ```
      */
     toHaveText: FnWhenElementOrArrayLike<ActualT, (
-        text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+        text: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -310,7 +302,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * Element's html equals the html provided
      */
     toHaveHTML: FnWhenElementOrArrayLike<ActualT, (
-        html: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
+        html: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -319,7 +311,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * Element's computed label equals the computed label provided
      */
     toHaveComputedLabel: FnWhenElementOrArrayLike<ActualT, (
-        computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
+        computedLabel: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -328,7 +320,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * Element's computed role equals the computed role provided
      */
     toHaveComputedRole: FnWhenElementOrArrayLike<ActualT, (
-        computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
+        computedRole: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -336,7 +328,9 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * `WebdriverIO.Element` -> `getSize('width')`
      * Element's width equals the width provided
      */
-    toHaveWidth: FnWhenElementOrArrayLike<ActualT, (width: number, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+    toHaveWidth: FnWhenElementOrArrayLike<ActualT, (
+        width: MaybeArray<number | ExpectWebdriverIO.NumberOptions>,
+        options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getSize('height')` or `getSize()`
@@ -352,14 +346,16 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * ```
      */
     toHaveHeight: FnWhenElementOrArrayLike<ActualT, (
-        heightOrSize: number | { height: number; width: number },
+        heightOrSize: MaybeArray<number | { height: number; width: number }>,
         options?: ExpectWebdriverIO.CommandOptions
     ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute("style")`
      */
-    toHaveStyle: FnWhenElementOrArrayLike<ActualT, (style: { [key: string]: string }, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
+    toHaveStyle: FnWhenElementOrArrayLike<ActualT, (
+        style: MaybeArray<{ [key: string]: string }>,
+        options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
 }
 
 /**
@@ -689,6 +685,9 @@ declare namespace ExpectWebdriverIO {
         asString?: boolean
     }
 
+    // Number options is the only options that also serves as a expected value container
+    // This can caused problems with multiple expected values vs global command options
+    // Potnetial we should have this object as a NumberExpect type and have the options separate
     interface NumberOptions extends CommandOptions {
         /**
          * equals

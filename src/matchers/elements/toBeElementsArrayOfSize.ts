@@ -1,10 +1,11 @@
 import { waitUntil, enhanceError, compareNumbers, numberError } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElements, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
+import { validateNumberOptions } from '../../util/numberOptionsUtil.js'
 
 export async function toBeElementsArrayOfSize(
-    received: WdioElementsMaybePromise,
+    received: WdioElementOrArrayMaybePromise,
     expectedValue: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -17,17 +18,12 @@ export async function toBeElementsArrayOfSize(
         options,
     })
 
-    let numberOptions: ExpectWebdriverIO.NumberOptions
-    if (typeof expectedValue === 'number') {
-        numberOptions = { eq: expectedValue } satisfies ExpectWebdriverIO.NumberOptions
-    } else if (!expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')) {
-        throw new Error('Invalid params passed to toBeElementsArrayOfSize.')
-    } else {
-        numberOptions = expectedValue
-    }
+    const numberOptions = validateNumberOptions(expectedValue)
 
+    // Why not await in the waitUntil and use it to refetch in case of failure?
     let elements = await received as WdioElements
     const originalLength = elements.length
+
     const pass = await waitUntil(async () => {
         /**
          * check numbers first before refetching elements
@@ -36,6 +32,8 @@ export async function toBeElementsArrayOfSize(
         if (isPassing) {
             return isPassing
         }
+
+        // TODO analyse this refetch purpose if needed in more places or just pas false to have waitUntil to refetch with the await inside waitUntil
         elements = await refetchElements(elements, numberOptions.wait, true)
         return false
     }, isNot, { ...numberOptions, ...options })

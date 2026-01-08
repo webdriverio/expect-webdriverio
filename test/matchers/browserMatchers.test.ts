@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { browser } from '@wdio/globals'
 
-import { matcherNameLastWords } from '../__fixtures__/utils.js'
+import { lastMatcherWords } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
@@ -31,14 +31,14 @@ describe('browser matchers', () => {
             test('wait but error', async () => {
                 browser[browserFnName] = vi.fn().mockRejectedValue(new Error('some error'))
 
-                await expect(() => matcherFn.call({}, browser, validText, { trim: false }))
+                await expect(() => matcherFn.call({}, browser, validText, { trim: false, wait: 1 }))
                     .rejects.toThrow('some error')
             })
 
             test('success on the first attempt', async () => {
                 browser[browserFnName] = vi.fn().mockResolvedValue(validText)
 
-                const result = await matcherFn.call({}, browser, validText, { trim: false }) as ExpectWebdriverIO.AssertionResult
+                const result = await matcherFn.call({}, browser, validText, { trim: false, wait: 1 }) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(true)
                 expect(browser[browserFnName]).toHaveBeenCalledTimes(1)
             })

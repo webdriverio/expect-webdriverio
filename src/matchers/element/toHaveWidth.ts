@@ -1,66 +1,64 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
+import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
+import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import { toNumberError, validateNumberOptionsArray } from '../../util/numberOptionsUtil.js'
 import {
     compareNumbers,
     enhanceError,
-    executeCommand,
-    numberError,
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, width: number, options: ExpectWebdriverIO.NumberOptions) {
+async function condition(el: WebdriverIO.Element, expected: ExpectWebdriverIO.NumberOptions) {
     const actualWidth = await el.getSize('width')
 
     return {
-        result: compareNumbers(actualWidth, options),
+        result: compareNumbers(actualWidth, expected),
         value: actualWidth
     }
 }
 
 export async function toHaveWidth(
-    received: WdioElementMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions,
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberOptions>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot
-    const { expectation = 'width', verb = 'have' } = this
+    const { expectation = 'width', verb = 'have', matcherName = 'toHaveWidth' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveWidth',
+        matcherName,
         expectedValue,
         options,
     })
 
-    // type check
-    let numberOptions: ExpectWebdriverIO.NumberOptions
-    if (typeof expectedValue === 'number') {
-        numberOptions = { eq: expectedValue } as ExpectWebdriverIO.NumberOptions
-    } else if (!expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')) {
-        throw new Error('Invalid params passed to toHaveHeight.')
-    } else {
-        numberOptions = expectedValue
-    }
+    const expected = validateNumberOptionsArray(expectedValue)
+    // TODO: deprecated NumberOptions as options in favor of ExpectedType and use a third options param only for command options
+    const { wait, interval } = Array.isArray(expected) ? {} : expected
 
-    let el = await received?.getElement()
-    let actualWidth
+    let elements: WebdriverIO.Element | WdioElements | undefined
+    let actualWidth: string | number | (string | number | undefined)[] | undefined
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, numberOptions, [expectedValue, numberOptions])
+            const result = await executeCommand(received,
+                undefined,
+                (elements) => defaultMultipleElementsIterationStrategy(elements, expected, condition))
 
-            el = result.el as WebdriverIO.Element
-            actualWidth = result.values
+            elements = result.elementOrArray
+            actualWidth = result.valueOrArray
 
-            return result.success
+            return result
         },
         isNot,
-        { ...numberOptions, ...options }
+        { wait: wait ?? options.wait, interval: interval ?? options.interval }
     )
 
-    const error = numberError(numberOptions)
+    const expextedFailureMessage = toNumberError(expected)
+    const expectedValues = wrapExpectedWithArray(elements, actualWidth, expextedFailureMessage)
     const message = enhanceError(
-        el,
-        error,
+        elements,
+        expectedValues,
         actualWidth,
         this,
         verb,
@@ -75,7 +73,7 @@ export async function toHaveWidth(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveWidth',
+        matcherName,
         expectedValue,
         options,
         result

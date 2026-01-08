@@ -127,7 +127,9 @@ describe('toBeRequestedWith', () => {
 
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
+
         const result = await toBeRequestedWith.call({}, mock, params, { beforeAssertion, afterAssertion })
+
         expect(result.pass).toBe(true)
         expect(beforeAssertion).toBeCalledWith({
             matcherName: 'toBeRequestedWith',
@@ -158,7 +160,7 @@ describe('toBeRequestedWith', () => {
             // response: 'post.body',
         }
 
-        const result = await toBeRequestedWith.call({}, mock, params)
+        const result = await toBeRequestedWith.call({}, mock, params, { wait: 50 })
         expect(result.pass).toBe(false)
     })
 
@@ -169,7 +171,7 @@ describe('toBeRequestedWith', () => {
             mock.calls.push({ ...mockGet }, { ...mockPost })
         }, 10)
 
-        const result = await toBeRequestedWith.call({ isNot: true }, mock, {})
+        const result = await toBeRequestedWith.call({ isNot: true }, mock, {}, { wait: 50 })
         expect(result.pass).toBe(true) // failure, boolean inverted later because of .not
         expect(result.message()).toEqual(`\
 Expect mock not to be called with
@@ -186,7 +188,7 @@ Received      : {}`
             mock.calls.push({ ...mockGet }, { ...mockPost })
         }, 10)
 
-        const result = await toBeRequestedWith.call({ isNot: true }, mock, { method: 'DELETE' })
+        const result = await toBeRequestedWith.call({ isNot: true }, mock, { method: 'DELETE' }, { wait: 50 })
         expect(result.pass).toBe(false) // success, boolean inverted later because of .not
     })
 
@@ -418,7 +420,7 @@ Received      : {}`
             const mock: any = new TestMock()
             mock.calls.push(...scenario.mocks)
 
-            const result = await toBeRequestedWith.call({}, mock, scenario.params as any)
+            const result = await toBeRequestedWith.call({}, mock, scenario.params as any, { wait: 1 })
             expect(result.pass).toBe(scenario.pass)
         })
     })
@@ -433,7 +435,7 @@ Received      : {}`
             const mock: any = new TestMock()
             mock.calls.push({ ...mockGet })
 
-            const result = await toBeRequestedWith.call({}, mock, { method: 1234 } as any)
+            const result = await toBeRequestedWith.call({}, mock, { method: 1234 } as any, { wait: 1 })
             expect(result.pass).toBe(false)
             expect(global.console.error).toBeCalledWith(
                 'expect.toBeRequestedWith: unsupported value passed to method 1234'
@@ -455,7 +457,7 @@ Received      : {}`
             responseHeaders: reduceHeaders(mockPost.response.headers),
             postData: expect.anything(),
             response: [...Array(50).keys()].map((_, id) => ({ id, name: `name_${id}` })),
-        })
+        }, { wait: 1 })
         expect(requested.pass).toBe(false)
         expect(requested.message()).toEqual(`\
 Expect mock to be called with

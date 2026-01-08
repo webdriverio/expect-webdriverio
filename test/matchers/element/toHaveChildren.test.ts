@@ -1,90 +1,468 @@
-import { vi, test, describe, expect } from 'vitest'
-import { $ } from '@wdio/globals'
+import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { $, $$ } from '@wdio/globals'
 
-import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren.js'
+import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren'
+import { waitUntil } from '../../../src/util/waitUntil'
+import { $$Factory } from '../../__mocks__/@wdio/globals'
+import type { ChainablePromiseArray } from 'webdriverio'
 
 vi.mock('@wdio/globals')
 
-describe('toHaveChildren', () => {
-    test('no value', async () => {
-        const beforeAssertion = vi.fn()
-        const afterAssertion = vi.fn()
-        const el = await $('sel')
+describe(toHaveChildren, () => {
+    const thisContext = { toHaveChildren }
+    const thisNotContext = { isNot: true, toHaveChildren }
 
-        const result = await toHaveChildren.call({}, el, undefined, { wait: 0, beforeAssertion, afterAssertion })
-        expect(result.pass).toBe(true)
-        expect(beforeAssertion).toBeCalledWith({
-            matcherName: 'toHaveChildren',
-            options: { wait: 0, beforeAssertion, afterAssertion }
+    describe('given a single element', () => {
+        let el: ChainablePromiseElement
+
+        beforeEach(async () => {
+            el = await $('sel')
         })
-        expect(afterAssertion).toBeCalledWith({
-            matcherName: 'toHaveChildren',
-            options: { wait: 0, beforeAssertion, afterAssertion },
-            result
+
+        test('no value - success - default to gte 1 and with command options', async () => {
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+
+            const result = await thisContext.toHaveChildren(el, undefined, { wait: 0, interval: 100, beforeAssertion, afterAssertion })
+
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  { wait: 0, interval: 100 })
+
+            expect(result.pass).toBe(true)
+            expect(beforeAssertion).toBeCalledWith({
+                matcherName: 'toHaveChildren',
+                options: { wait: 0, interval: 100, beforeAssertion, afterAssertion }
+            })
+            expect(afterAssertion).toBeCalledWith({
+                matcherName: 'toHaveChildren',
+                options: { wait: 0, interval: 100, beforeAssertion, afterAssertion },
+                result
+            })
         })
-    })
 
-    test('If no options passed in + children exists', async () => {
-        const el = await $('sel')
+        test('use numberOption wait and internal', async () => {
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
 
-        const result = await toHaveChildren.call({}, el, {})
-        expect(result.pass).toBe(true)
-    })
+            const result = await thisContext.toHaveChildren(el, { eq: 2, wait: 0, interval: 100 }, { beforeAssertion, afterAssertion } )
 
-    test('exact number value', async () => {
-        const el = await $('sel')
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  { wait: 0, interval: 100 })
+            expect(result.pass).toBe(true)
+            expect(beforeAssertion).toBeCalledWith({
+                matcherName: 'toHaveChildren',
+                options: { beforeAssertion, afterAssertion },
+                expectedValue: { eq: 2, wait: 0, interval: 100 }
 
-        const result = await toHaveChildren.call({}, el, 2, { wait: 1 })
-        expect(result.pass).toBe(true)
-    })
+            })
+            expect(afterAssertion).toBeCalledWith({
+                matcherName: 'toHaveChildren',
+                options: { beforeAssertion, afterAssertion },
+                result,
+                expectedValue: { eq: 2, wait: 0, interval: 100 }
+            })
+        })
 
-    test('exact value', async () => {
-        const el = await $('sel')
+        test('success - If no options passed in + children exists', async () => {
+            const result = await thisContext.toHaveChildren(el)
+            expect(result.pass).toBe(true)
+        })
 
-        const result = await toHaveChildren.call({}, el, { eq: 2, wait: 1 })
-        expect(result.pass).toBe(true)
-    })
+        test('fails - If no options passed in + children do not exist', async () => {
+            vi.mocked(el.$$).mockReturnValueOnce($$Factory('./child', 0))
 
-    test('gte value', async () => {
-        const el = await $('sel')
+            const result = await thisContext.toHaveChildren(el, undefined, { wait: 0 })
 
-        const result = await toHaveChildren.call({}, el, { gte: 2, wait: 1 })
-        expect(result.pass).toBe(true)
-    })
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have children
 
-    test('exact value - failure', async () => {
-        const el = await $('sel')
+Expected: ">= 1"
+Received: 0`
+            )
+        })
 
-        const result = await toHaveChildren.call({}, el, { eq: 3, wait: 1 })
-        expect(result.pass).toBe(false)
-    })
+        test('exact number value', async () => {
+            const result = await thisContext.toHaveChildren(el, 2, { wait: 1 })
 
-    test('lte value - failure', async () => {
-        const el = await $('sel')
+            expect(result.pass).toBe(true)
+        })
 
-        const result = await toHaveChildren.call({}, el, { lte: 1, wait: 0 })
-        expect(result.pass).toBe(false)
-    })
+        test('exact value', async () => {
+            const result = await thisContext.toHaveChildren(el, { eq: 2, wait: 1 })
 
-    test('.not exact value - failure - pass should be true', async () => {
-        const el = await $('sel')
+            expect(result.pass).toBe(true)
+        })
 
-        const result = await toHaveChildren.bind({ isNot: true })(el, { eq: 2, wait: 0 })
+        test('gte value', async () => {
+            const result = await thisContext.toHaveChildren(el, { gte: 2 }, { wait: 1 })
 
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result.message()).toEqual(`\
+            expect(result.pass).toBe(true)
+        })
+
+        test('exact value - failure', async () => {
+            const result = await thisContext.toHaveChildren(el, { eq: 3 }, { wait: 1 })
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have children
+
+Expected: 3
+Received: 2`
+            )
+        })
+
+        test('lte value - failure', async () => {
+            const result = await thisContext.toHaveChildren(el, { lte: 1 }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have children
+
+Expected: "<= 1"
+Received: 2`
+            )
+        })
+
+        test('.not exact value - failure', async () => {
+            const result = await thisNotContext.toHaveChildren(el, { eq: 2 }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to have children
 
 Expected [not]: 2
-Received      : 2`)
+Received      : 2`
+            )
+        })
 
+        test('.not lte value - failure', async () => {
+            const result = await thisNotContext.toHaveChildren(el, { lte: 2 }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) not to have children
+
+Expected [not]: "<= 2"
+Received      : 2`
+            )
+        })
+
+        test('.not exact value - success', async () => {
+            const result = await thisNotContext.toHaveChildren(el, { eq: 3 }, { wait: 1 })
+
+            expect(result.pass).toBe(true)
+        })
     })
 
-    test('.not exact value - success - pass should be false', async () => {
-        const el = await $('sel')
+    describe('given a multiple elements', () => {
+        let elements: ChainablePromiseArray
 
-        const result = await toHaveChildren.bind({ isNot: true })(el, { eq: 3, wait: 1 })
+        beforeEach(async () => {
+            elements = await $$('sel')
+        })
 
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        describe('given a single expected value', () => {
+            test('no value - success - default to gte 1 and with command options', async () => {
+                const beforeAssertion = vi.fn()
+                const afterAssertion = vi.fn()
+
+                const result = await thisContext.toHaveChildren(elements, undefined, { wait: 0, interval: 100, beforeAssertion, afterAssertion })
+
+                expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  { wait: 0, interval: 100 })
+
+                expect(result.pass).toBe(true)
+                expect(beforeAssertion).toBeCalledWith({
+                    matcherName: 'toHaveChildren',
+                    options: { wait: 0, interval: 100, beforeAssertion, afterAssertion }
+                })
+                expect(afterAssertion).toBeCalledWith({
+                    matcherName: 'toHaveChildren',
+                    options: { wait: 0, interval: 100, beforeAssertion, afterAssertion },
+                    result
+                })
+            })
+
+            test('use numberOption wait and internal', async () => {
+                const beforeAssertion = vi.fn()
+                const afterAssertion = vi.fn()
+
+                const result = await thisContext.toHaveChildren(elements, { eq: 2, wait: 0, interval: 100 }, { beforeAssertion, afterAssertion } )
+
+                expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  { wait: 0, interval: 100 })
+                expect(result.pass).toBe(true)
+                expect(beforeAssertion).toBeCalledWith({
+                    matcherName: 'toHaveChildren',
+                    options: { beforeAssertion, afterAssertion },
+                    expectedValue: { eq: 2, wait: 0, interval: 100 }
+
+                })
+                expect(afterAssertion).toBeCalledWith({
+                    matcherName: 'toHaveChildren',
+                    options: { beforeAssertion, afterAssertion },
+                    result,
+                    expectedValue: { eq: 2, wait: 0, interval: 100 }
+                })
+            })
+
+            test('success - If no options passed in + children exists', async () => {
+                const result = await thisContext.toHaveChildren(elements)
+                expect(result.pass).toBe(true)
+            })
+
+            // TODO failure message show 2 expected missing while only one should, to enhance later
+            test('fails - If no options passed in + children do not exist', async () => {
+                vi.mocked(elements[0].$$).mockReturnValueOnce($$Factory('./child', 0))
+
+                const result = await thisContext.toHaveChildren(elements, undefined, { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) to have children
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   ">= 1",
+-   ">= 1",
++   0,
++   2,
+  ]`
+                )
+            })
+
+            test('exact number value', async () => {
+                const result = await thisContext.toHaveChildren(elements, 2, { wait: 1 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('exact value', async () => {
+                const result = await thisContext.toHaveChildren(elements, { eq: 2, wait: 1 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('gte value', async () => {
+                const result = await thisContext.toHaveChildren(elements, { gte: 2 }, { wait: 1 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('exact value - failure', async () => {
+                const result = await thisContext.toHaveChildren(elements, { eq: 3 }, { wait: 1 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) to have children
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   3,
+-   3,
++   2,
++   2,
+  ]`
+                )
+            })
+
+            test('lte value - failure', async () => {
+                const result = await thisContext.toHaveChildren(elements, { lte: 1 }, { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) to have children
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "<= 1",
+-   "<= 1",
++   2,
++   2,
+  ]`
+                )
+            })
+
+            test('.not exact value - failure', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, { eq: 2 }, { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) not to have children
+
+Expected [not]: [2, 2]
+Received      : [2, 2]`
+                )
+            })
+
+            test('.not lte value - failure', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, { lte: 2 }, { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) not to have children
+
+- Expected [not]  - 2
++ Received        + 2
+
+  Array [
+-   "<= 2",
+-   "<= 2",
++   2,
++   2,
+  ]`
+                )
+            })
+            test('.not exact value - success', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, { eq: 3 }, { wait: 1 })
+
+                expect(result.pass).toBe(true)
+            })
+        })
+
+        describe('given a multiple expected value', () => {
+            test('exact number value', async () => {
+                const result = await thisContext.toHaveChildren(elements, [2, 2], { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('exact value', async () => {
+                const result = await thisContext.toHaveChildren(elements, [{ eq: 2 },  { eq: 2 }], { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('gte value', async () => {
+                const result = await thisContext.toHaveChildren(elements, [{ gte: 2 }, { gte: 2 }], { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('gte & lte value', async () => {
+                const result = await thisContext.toHaveChildren(elements, [{ gte: 2 }, { lte: 2 }], { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('exact value - failure', async () => {
+                const result = await thisContext.toHaveChildren(elements, [{ eq: 3 }, { eq: 3 }], { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) to have children
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   3,
+-   3,
++   2,
++   2,
+  ]`
+                )
+            })
+
+            test('lte value - failure', async () => {
+                const result = await thisContext.toHaveChildren(elements, [{ lte: 1 }, { lte: 1 }], { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) to have children
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "<= 1",
+-   "<= 1",
++   2,
++   2,
+  ]`
+                )
+            })
+
+            test('lte & gte value - failure', async () => {
+                const result = await thisContext.toHaveChildren(elements, [{ lte: 1 }, { gte: 1 }], { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) to have children
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "<= 1",
+-   ">= 1",
++   2,
++   2,
+  ]`
+                )
+            })
+
+            test('.not exact value - failure', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, [{ eq: 2 }, { eq: 2 }], { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) not to have children
+
+Expected [not]: [2, 2]
+Received      : [2, 2]`)
+            })
+
+            test('.not lte value - failure', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, [{ lte: 2 }, { lte: 2 }], { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) not to have children
+
+- Expected [not]  - 2
++ Received        + 2
+
+  Array [
+-   "<= 2",
+-   "<= 2",
++   2,
++   2,
+  ]`)
+            })
+
+            test('.not lte & gte value - failure', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, [{ lte: 2 }, { gte: 2 }], { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $$(\`sel, <props>\`) not to have children
+
+- Expected [not]  - 2
++ Received        + 2
+
+  Array [
+-   "<= 2",
+-   ">= 2",
++   2,
++   2,
+  ]`)
+            })
+
+            test('.not exact value - success', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, [{ eq: 3 }, { eq: 3 }], { wait: 1 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('.not exact value on one element - success or pass?', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, [{ eq: 2 }, { eq: 3 }], { wait: 1 })
+
+                expect(result.pass).toBe(false)
+            })
+        })
     })
 })
