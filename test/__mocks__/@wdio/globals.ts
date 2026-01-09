@@ -20,6 +20,8 @@ const getElementMethods = () => ({
     getHTML: vi.spyOn({ getHTML: async () => { return '<Html/>' } }, 'getHTML'),
     getComputedLabel: vi.spyOn({ getComputedLabel: async () => 'Computed Label' }, 'getComputedLabel'),
     getComputedRole: vi.spyOn({ getComputedRole: async () => 'Computed Role' }, 'getComputedRole'),
+    // Null is not part of the type, to fix in wdio one day
+    getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => null as unknown as string }, 'getAttribute'),
     getSize: vi.spyOn({ getSize: async (prop?: 'width' | 'height') => {
         if (prop === 'width') { return 100 }
         if (prop === 'height') { return 50 }
@@ -28,38 +30,67 @@ const getElementMethods = () => ({
     getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
 } satisfies Partial<WebdriverIO.Element>)
 
-function $(_selector: string) {
-    const element = {
+const elementFactory = (_selector: string, index?: number): WebdriverIO.Element => {
+    const partialElement = {
         selector: _selector,
         ...getElementMethods(),
+        index,
         $,
         $$
-    } satisfies Partial<WebdriverIO.Element> as unknown as WebdriverIO.Element
-    element.getElement = async () => Promise.resolve(element)
-    return element as unknown as ChainablePromiseElement
+    } satisfies Partial<WebdriverIO.Element>
+
+    const element = partialElement as unknown as WebdriverIO.Element
+    element.getElement = vi.fn().mockResolvedValue(element)
+    return element
+}
+
+function $(_selector: string) {
+    const element = elementFactory(_selector)
+
+    // Wdio framework does return a Promise-wrapped element, so we need to mimic this behavior
+    const chainablePromiseElement = Promise.resolve(element) as unknown as ChainablePromiseElement
+
+    // Ensure `'getElement' in chainableElement` is false while allowing to use `await chainableElement.getElement()`
+    const runtimeChainableElement = new Proxy(chainablePromiseElement, {
+        get(target, prop) {
+            if (prop in element) {
+                return element[prop as keyof WebdriverIO.Element]
+            }
+            const value = Reflect.get(target, prop)
+            return typeof value === 'function' ? value.bind(target) : value
+        }
+    })
+    return runtimeChainableElement
 }
 
 function $$(selector: string) {
-    const length = (this)?._length || 2
-    const elements = Array(length).fill(null).map((_, index) => {
-        const element = {
-            selector,
-            index,
-            ...getElementMethods(),
-            $,
-            $$
-        } satisfies Partial<WebdriverIO.Element> as unknown as WebdriverIO.Element
-        element.getElement = async () => Promise.resolve(element)
-        return element
-    }) satisfies WebdriverIO.Element[] as unknown as WebdriverIO.ElementArray
+    const length = (this as any)?._length || 2
+    const elements: WebdriverIO.Element[] = Array(length).fill(null).map((_, index) => elementFactory(selector, index))
 
-    elements.foundWith = '$$'
-    elements.props = []
-    elements.props.length = length
-    elements.selector = selector
-    elements.getElements = async () => elements
-    elements.length = length
-    return elements as unknown as ChainablePromiseArray
+    const elementArray = elements as unknown as WebdriverIO.ElementArray
+
+    elementArray.foundWith = '$$'
+    elementArray.props = []
+    elementArray.props.length = length
+    elementArray.selector = selector
+    elementArray.getElements = async () => elementArray
+    elementArray.length = length
+
+    // Wdio framework does return a Promise-wrapped element, so we need to mimic this behavior
+    const chainablePromiseArray = Promise.resolve(elementArray) as unknown as ChainablePromiseArray
+
+    // Ensure `'getElements' in chainableElements` is false while allowing to use `await chainableElement.getElements()`
+    const runtimeChainablePromiseArray = new Proxy(chainablePromiseArray, {
+        get(target, prop) {
+            if (elementArray && prop in elementArray) {
+                return elementArray[prop as keyof WebdriverIO.ElementArray]
+            }
+            const value = Reflect.get(target, prop)
+            return typeof value === 'function' ? value.bind(target) : value
+        }
+    })
+
+    return runtimeChainablePromiseArray
 }
 
 export const browser = {

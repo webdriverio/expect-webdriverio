@@ -8,6 +8,8 @@ export default defineConfig({
             '**/node_modules/**'
         ],
         testTimeout: 15 * 1000,
+        clearMocks: true, // clears all mock call histories before each test
+        restoreMocks: true, // restores the original implementation of spies
         coverage: {
             enabled: true,
             exclude: [
@@ -26,10 +28,10 @@ export default defineConfig({
                 'types-checks-filter-out-node_modules.js',
             ],
             thresholds: {
-                lines: 88,
-                functions: 86,
-                statements: 88,
-                branches: 79,
+                lines: 88.4,
+                functions: 86.9,
+                statements: 88.3,
+                branches: 79.6,
             }
         }
     }
