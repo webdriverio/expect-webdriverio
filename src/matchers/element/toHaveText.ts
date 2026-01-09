@@ -38,7 +38,7 @@ async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, tex
 }
 
 export async function toHaveText(
-    received: ChainablePromiseElement | ChainablePromiseArray,
+    received: ChainablePromiseElement | ChainablePromiseArray | WebdriverIO.Element | WebdriverIO.ElementArray,
     expectedValue: string | RegExp | WdioAsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
