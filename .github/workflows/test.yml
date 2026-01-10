@@ -22,4 +22,4 @@ jobs:
       - name: Install Dependencies
         run: npm install --force
       - name: Run All Checks
-        run: npm check:all
+        run: npm run checks:all
