@@ -19,7 +19,7 @@ export class SoftAssertService {
     private static instance: SoftAssertService
     /**
      * Fallback test ID used when no test context is set (e.g., in Cucumber steps).
-     * 
+     *
      * NOTE: usage of this fallback ID in parallel execution environments may result
      * in soft assertion failures from different tests being aggregated together.
      * Ensure proper test context is set in hooks whenever possible.
