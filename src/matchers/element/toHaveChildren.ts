@@ -35,7 +35,6 @@ export async function toHaveChildren(
     expectedValue?: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
     const { expectation = 'children', verb = 'have' } = this
 
     await options.beforeAssertion?.({
@@ -56,7 +55,7 @@ export async function toHaveChildren(
         children = result.values
 
         return result.success
-    }, isNot, { ...numberOptions, ...options })
+    }, { ...numberOptions, ...options })
 
     const error = numberError(numberOptions)
     const expectedArray = wrapExpectedWithArray(el, children, error)

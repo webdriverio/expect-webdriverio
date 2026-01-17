@@ -26,7 +26,6 @@ export async function toHaveComputedLabel(
     expectedValue: string | RegExp | WdioAsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
     const { expectation = 'computed label', verb = 'have' } = this
 
     await options.beforeAssertion?.({
@@ -46,7 +45,6 @@ export async function toHaveComputedLabel(
 
             return result.success
         },
-        isNot,
         options
     )
 

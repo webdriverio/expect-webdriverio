@@ -46,23 +46,23 @@ describe('toBeElementsArrayOfSize', () => {
             test('array of size 2', async () => {
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
-                const result = await toBeElementsArrayOfSize.call({}, els, 2, { beforeAssertion, afterAssertion })
+                const result = await toBeElementsArrayOfSize.call({}, els, 2, { beforeAssertion, afterAssertion, wait: 0 })
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toBeCalledWith({
                     matcherName: 'toBeElementsArrayOfSize',
                     expectedValue: 2,
-                    options: { beforeAssertion, afterAssertion }
+                    options: { beforeAssertion, afterAssertion, wait: 0 }
                 })
                 expect(afterAssertion).toBeCalledWith({
                     matcherName: 'toBeElementsArrayOfSize',
                     expectedValue: 2,
-                    options: { beforeAssertion, afterAssertion },
+                    options: { beforeAssertion, afterAssertion, wait: 0 },
                     result
                 })
             })
             test('array of size 5', async () => {
                 els = createMockElementArray(5)
-                const result = await toBeElementsArrayOfSize.call({}, els, 5, {})
+                const result = await toBeElementsArrayOfSize.call({}, els, 5, { wait : 0 })
                 expect(result.pass).toBe(true)
             })
         })
@@ -71,7 +71,7 @@ describe('toBeElementsArrayOfSize', () => {
             let result: AssertionResult
 
             beforeEach(async () => {
-                result = await toBeElementsArrayOfSize.call({}, els, 5, {})
+                result = await toBeElementsArrayOfSize.call({}, els, 5, { wait: 0 })
             })
 
             test('fails', () => {
@@ -97,7 +97,7 @@ describe('toBeElementsArrayOfSize', () => {
             })
 
             test('works if size contains options', async () => {
-                const result = await toBeElementsArrayOfSize.call({}, els, { lte: 5 })
+                const result = await toBeElementsArrayOfSize.call({}, els, { lte: 5 }, { wait: 0 })
                 expect(result.pass).toBe(true)
             })
         })
@@ -108,9 +108,9 @@ describe('toBeElementsArrayOfSize', () => {
                 ['lte', 1, false],
                 ['gte', 1, true],
                 ['gte', 10, false],
-                ['gte and lte', { gte: 1, lte: 10 }, true],
-                ['not gte but is lte', { gte: 10, lte: 10 }, false],
-                ['not lte but is gte', { gte: 1, lte: 1 }, false],
+                ['gte and lte', { gte: 1, lte: 10, wait: 0 }, true],
+                ['not gte but is lte', { gte: 10, lte: 10, wait: 0 }, false],
+                ['not lte but is gte', { gte: 1, lte: 1, wait: 0 }, false],
             ])('should handle %s correctly', async (_, option, expected) => {
                 const result = await toBeElementsArrayOfSize.call({}, els, typeof option === 'object' ? option : { [_ as string]: option })
                 expect(result.pass).toBe(expected)
@@ -173,17 +173,17 @@ describe('toBeElementsArrayOfSize', () => {
                 test('array of size 0', async () => {
                     const beforeAssertion = vi.fn()
                     const afterAssertion = vi.fn()
-                    const result = await toBeElementsArrayOfSize.call({}, elements, 0, { beforeAssertion, afterAssertion })
+                    const result = await toBeElementsArrayOfSize.call({}, elements, 0, { beforeAssertion, afterAssertion, wait: 0 })
                     expect(result.pass).toBe(true)
                     expect(beforeAssertion).toBeCalledWith({
                         matcherName: 'toBeElementsArrayOfSize',
                         expectedValue: 0,
-                        options: { beforeAssertion, afterAssertion }
+                        options: { beforeAssertion, afterAssertion, wait: 0 }
                     })
                     expect(afterAssertion).toBeCalledWith({
                         matcherName: 'toBeElementsArrayOfSize',
                         expectedValue: 0,
-                        options: { beforeAssertion, afterAssertion },
+                        options: { beforeAssertion, afterAssertion, wait: 0 },
                         result
                     })
                 })
@@ -193,7 +193,7 @@ describe('toBeElementsArrayOfSize', () => {
                 let result: AssertionResult
 
                 beforeEach(async () => {
-                    result = await toBeElementsArrayOfSize.call({}, elements, 5, {})
+                    result = await toBeElementsArrayOfSize.call({}, elements, 5, { wait: 0 })
                 })
 
                 test('fails', () => {
@@ -222,17 +222,17 @@ describe('toBeElementsArrayOfSize', () => {
                 test('array of size 1', async () => {
                     const beforeAssertion = vi.fn()
                     const afterAssertion = vi.fn()
-                    const result = await toBeElementsArrayOfSize.call({}, elements, 1, { beforeAssertion, afterAssertion })
+                    const result = await toBeElementsArrayOfSize.call({}, elements, 1, { beforeAssertion, afterAssertion, wait: 0 })
                     expect(result.pass).toBe(true)
                     expect(beforeAssertion).toBeCalledWith({
                         matcherName: 'toBeElementsArrayOfSize',
                         expectedValue: 1,
-                        options: { beforeAssertion, afterAssertion }
+                        options: { beforeAssertion, afterAssertion, wait: 0 }
                     })
                     expect(afterAssertion).toBeCalledWith({
                         matcherName: 'toBeElementsArrayOfSize',
                         expectedValue: 1,
-                        options: { beforeAssertion, afterAssertion },
+                        options: { beforeAssertion, afterAssertion, wait: 0 },
                         result
                     })
                 })
@@ -242,7 +242,7 @@ describe('toBeElementsArrayOfSize', () => {
                 let result: AssertionResult
 
                 beforeEach(async () => {
-                    result = await toBeElementsArrayOfSize.call({}, elements, 5, {})
+                    result = await toBeElementsArrayOfSize.call({}, elements, 5, { wait: 0 })
                 })
 
                 test('fails', () => {

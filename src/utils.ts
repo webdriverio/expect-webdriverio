@@ -39,49 +39,32 @@ function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetri
  */
 const waitUntil = async (
     condition: () => Promise<boolean>,
-    isNot = false,
     { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
 ): Promise<boolean> => {
-    // single attempt
-    if (wait === 0) {
-        return await condition()
-    }
+    const start = Date.now()
+    let error: unknown
+    let result = false
 
-    let error: Error | undefined
-
-    // wait for condition to be truthy
-    try {
-        const start = Date.now()
-        while (true) {
-            if (Date.now() - start > wait) {
-                throw new Error('timeout')
+    do {
+        try {
+            result = await condition()
+            error = undefined
+            if (result) {
+                break
             }
-
-            try {
-                const result = isNot !== (await condition())
-                error = undefined
-                if (result) {
-                    break
-                }
-                await sleep(interval)
-            } catch (err) {
-                error = err
-                await sleep(interval)
-            }
+        } catch (err) {
+            error = err
         }
 
-        if (error) {
-            throw error
+        // No need to sleep again if time is already over
+        if (Date.now() - start < wait) {
+            await sleep(interval)
         }
+    } while (Date.now() - start < wait)
 
-        return !isNot
-    } catch {
-        if (error) {
-            throw error
-        }
+    if (error) { throw error }
 
-        return isNot
-    }
+    return result
 }
 
 async function executeCommandBe(
@@ -89,7 +72,7 @@ async function executeCommandBe(
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): ExpectWebdriverIO.AsyncAssertionResult {
-    const { isNot, expectation, verb = 'be' } = this
+    const { expectation, verb = 'be' } = this
 
     let el = await received?.getElement()
     const pass = await waitUntil(
@@ -103,7 +86,6 @@ async function executeCommandBe(
             el = result.el as WebdriverIO.Element
             return result.success
         },
-        isNot,
         options
     )
 

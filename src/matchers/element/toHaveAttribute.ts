@@ -27,7 +27,6 @@ async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string,
 }
 
 export async function toHaveAttributeAndValue(received: WdioElementMaybePromise, attribute: string, value: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
-    const isNot = this.isNot
     const { expectation = 'attribute', verb = 'have' } = this
 
     let el = await received?.getElement()
@@ -38,7 +37,7 @@ export async function toHaveAttributeAndValue(received: WdioElementMaybePromise,
         attr = result.values
 
         return result.success
-    }, isNot, options)
+    }, options)
 
     const expected = wrapExpectedWithArray(el, attr, value)
     const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
@@ -49,9 +48,8 @@ export async function toHaveAttributeAndValue(received: WdioElementMaybePromise,
     } as ExpectWebdriverIO.AssertionResult
 }
 
-async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: string) {
-    const isNot = this.isNot
-    const { expectation = 'attribute', verb = 'have' } = this
+async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: string, options: ExpectWebdriverIO.StringOptions) {
+    const { expectation = 'attribute', verb = 'have', isNot } = this
 
     let el = await received?.getElement()
 
@@ -60,9 +58,9 @@ async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: s
         el = result.el as WebdriverIO.Element
 
         return result.success
-    }, isNot, {})
+    }, options)
 
-    const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, {})
+    const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, options)
 
     return {
         pass,
@@ -86,7 +84,7 @@ export async function toHaveAttribute(
         // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
         ? await toHaveAttributeAndValue.call(this, received, attribute, value, options)
         // Only name is passed in e.g. el.toHaveAttribute('attr')
-        : await toHaveAttributeFn.call(this, received, attribute)
+        : await toHaveAttributeFn.call(this, received, attribute, options)
 
     await options.afterAssertion?.({
         matcherName: 'toHaveAttribute',
