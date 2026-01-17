@@ -7,7 +7,7 @@ import {
 } from '../../utils.js'
 import { executeCommand } from '../../util/executeCommand.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
-import { isAnyKindOfElementArray, map } from '../../util/elementsUtil.js'
+import { isElementArrayLike, map } from '../../util/elementsUtil.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
@@ -21,7 +21,7 @@ async function singleElementCompare(el: WebdriverIO.Element, text: MaybeArray<st
     }
 }
 
-// Same as singleElementCompare (e.g `$$()`) but with a deprecation notice for `compareTextWithArray` removal to have the same behavior across all matchers with  `$$()`
+// Same as singleElementCompare (e.g `$()`) but with a deprecation notice for `compareTextWithArray` removal to have the same behavior across all matchers with `$$()`
 async function multipleElementsStrategyCompare(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
     const checkAllValuesMatchCondition = Array.isArray(text) ?
@@ -40,45 +40,45 @@ export async function toHaveText(
     expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'text', verb = 'have' } = this
+    const { expectation = 'text', verb = 'have', isNot, matcherName = 'toHaveText' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveText',
+        matcherName,
         expectedValue,
         options,
     })
 
-    let elementOrElements
+    let elementOrArray
     let actualText
 
-    const pass = await waitUntil(async () => {
-        const commandResult = await executeCommand(received,
-            undefined,
-            async (elements) => {
-                if (isAnyKindOfElementArray(elements)) {
-                    return map(elements, async (element) => multipleElementsStrategyCompare(element, expectedValue, options))
+    const pass = await waitUntil(
+        async () => {
+            const commandResult = await executeCommand(received,
+                undefined,
+                async (elements) => {
+                    if (isElementArrayLike(elements)) {
+                        return map(elements, async (element) => multipleElementsStrategyCompare(element, expectedValue, options))
+                    }
+                    return [await singleElementCompare(elements, expectedValue, options)]
                 }
-                return [await singleElementCompare(elements, expectedValue, options)]
-            }
-        )
-        elementOrElements = commandResult.elementOrArray
-        actualText = commandResult.valueOrArray
+            )
+            elementOrArray = commandResult.elementOrArray
+            actualText = commandResult.valueOrArray
 
-        return commandResult
-    }, isNot, {
-        wait: options.wait,
-        interval: options.interval
-    })
+            return commandResult
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
-    const message = enhanceError(elementOrElements, wrapExpectedWithArray(elementOrElements, actualText, expectedValue), actualText, this, verb, expectation, '', options)
+    const message = enhanceError(elementOrArray, wrapExpectedWithArray(elementOrArray, actualText, expectedValue), actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveText',
+        matcherName,
         expectedValue,
         options,
         result

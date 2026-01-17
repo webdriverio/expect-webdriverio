@@ -34,19 +34,19 @@ describe(toHaveSize, async () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await thisContext.toHaveSize(el, expectedValue, { beforeAssertion, afterAssertion })
+            const result = await thisContext.toHaveSize(el, expectedValue, { beforeAssertion, afterAssertion, wait: 500 })
 
             expect(result.pass).toBe(true)
             expect(el.getSize).toHaveBeenCalledTimes(1)
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toHaveSize',
                 expectedValue: expectedValue,
-                options: { beforeAssertion, afterAssertion }
+                options: { beforeAssertion, afterAssertion, wait: 500 }
             })
             expect(afterAssertion).toBeCalledWith({
                 matcherName: 'toHaveSize',
                 expectedValue: expectedValue,
-                options: { beforeAssertion, afterAssertion },
+                options: { beforeAssertion, afterAssertion, wait: 500 },
                 result
             })
         })
@@ -54,12 +54,12 @@ describe(toHaveSize, async () => {
         test('wait but error', async () => {
             vi.mocked(el.getSize).mockRejectedValue(new Error('some error'))
 
-            await expect(() => thisContext.toHaveSize(el, expectedValue, { wait: 1 }))
+            await expect(() => thisContext.toHaveSize(el, expectedValue))
                 .rejects.toThrow('some error')
         })
 
         test('success by default', async () => {
-            const result = await thisContext.toHaveSize(el, expectedValue, { wait: 1 })
+            const result = await thisContext.toHaveSize(el, expectedValue)
 
             expect(result.pass).toBe(true)
             expect(el.getSize).toHaveBeenCalledTimes(1)
@@ -93,16 +93,10 @@ Expect $(\`sel\`) to have size
             expect(el.getSize).toHaveBeenCalledTimes(1)
         })
 
-        test('not - success', async () => {
-            const result = await thisNotContext.toHaveSize(el, wrongValue, { wait: 0 })
+        test('not - failure - pass should be true', async () => {
+            const result = await thisNotContext.toHaveSize(el, expectedValue)
 
-            expect(result.pass).toBe(true)
-        })
-
-        test('not - failure with proper error message', async () => {
-            const result = await thisNotContext.toHaveSize(el, expectedValue, { wait: 0 })
-
-            expect(result.pass).toBe(false)
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to have size
 
@@ -133,7 +127,7 @@ Expect $(\`sel\`) to have size
         })
 
         test('should fails when expected is an unsupported array type', async () => {
-            const result = await thisContext.toHaveSize(el, [expectedValue], { wait: 0 })
+            const result = await thisContext.toHaveSize(el, [expectedValue])
 
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\
@@ -151,11 +145,11 @@ Received: "Expected value cannot be an array"`
         { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
         { elements: await $$('sel').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
         { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' }
-    ])('given a multiple elements when $title', ({ elements, title }) => {
+    ])('given multiple elements when $title', ({ elements, title }) => {
         let els: ChainablePromiseArray | WebdriverIO.Element[] | WebdriverIO.ElementArray
         let awaitedEls: typeof els
 
-        let selectorName = '$$(`sel, <props>`)'
+        let selectorName = '$$(`sel`)'
         if (title.includes('Element[]')) {selectorName = '$(`sel`), $$(`sel`)[1]'}
 
         beforeEach(async () => {
@@ -197,7 +191,7 @@ Received: "Expected value cannot be an array"`
                     vi.mocked(el.getSize).mockRejectedValue(new Error('some error'))
                 })
 
-                await expect(() => thisContext.toHaveSize( els, expectedValue, { wait: 1 }))
+                await expect(() => thisContext.toHaveSize(els, expectedValue))
                     .rejects.toThrow('some error')
             })
 
@@ -206,7 +200,7 @@ Received: "Expected value cannot be an array"`
                     vi.mocked(el.getSize).mockResolvedValue(wrongValue as unknown as Size & number)
                 })
 
-                const result = await thisContext.toHaveSize( els, expectedValue, { wait: 0 })
+                const result = await thisContext.toHaveSize(els, expectedValue, { wait: 0 })
 
                 expect(result.pass).toBe(false)
                 awaitedEls.forEach((el) =>
@@ -234,7 +228,7 @@ Expect ${selectorName} to have size
             })
 
             test('no wait - success', async () => {
-                const result = await thisContext.toHaveSize( els, expectedValue, { wait: 0 })
+                const result = await thisContext.toHaveSize(els, expectedValue, { wait: 0 })
 
                 expect(result.pass).toBe(true)
                 awaitedEls.forEach((el) =>
@@ -242,16 +236,16 @@ Expect ${selectorName} to have size
                 )
             })
 
-            test('not - success', async () => {
-                const result = await thisNotContext.toHaveSize( els, wrongValue, { wait: 0 })
+            test('not - success - pass should false', async () => {
+                const result = await thisNotContext.toHaveSize(els, wrongValue)
 
-                expect(result.pass).toBe(true)
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
 
-            test('not - failure with proper error message', async () => {
-                const result = await thisNotContext.toHaveSize( els, expectedValue, { wait: 0 })
+            test('not - failure - pass should be true', async () => {
+                const result = await thisNotContext.toHaveSize(els, expectedValue)
 
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(result.message()).toEqual(`\
 Expect ${selectorName} not to have size
 
@@ -293,12 +287,12 @@ Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 32}]`
                     vi.mocked(el.getSize).mockRejectedValue(new Error('some error'))
                 })
 
-                await expect(() => thisContext.toHaveSize( els, expectedSizes, { wait: 1 }))
+                await expect(() => thisContext.toHaveSize(els, expectedSizes))
                     .rejects.toThrow('some error')
             })
 
             test('success on the first attempt', async () => {
-                const result = await thisContext.toHaveSize( els, expectedSizes, { wait: 1 })
+                const result = await thisContext.toHaveSize(els, expectedSizes)
 
                 expect(result.pass).toBe(true)
                 awaitedEls.forEach((el) =>
@@ -311,7 +305,7 @@ Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 32}]`
                     vi.mocked(el.getSize).mockResolvedValue(wrongValue as unknown as Size & number)
                 })
 
-                const result = await thisContext.toHaveSize( els, expectedSizes, { wait: 0 })
+                const result = await thisContext.toHaveSize(els, expectedSizes, { wait: 0 })
 
                 expect(result.pass).toBe(false)
                 awaitedEls.forEach((el) =>
@@ -341,7 +335,7 @@ Expect ${selectorName} to have size
             test('no wait - failure - first element', async () => {
                 vi.mocked(awaitedEls[0].getSize).mockResolvedValue(wrongValue as unknown as Size & number)
 
-                const result = await thisContext.toHaveSize( els, expectedSizes, { wait: 0 })
+                const result = await thisContext.toHaveSize(els, expectedSizes, { wait: 0 })
 
                 expect(result.pass).toBe(false)
                 awaitedEls.forEach((el) =>
@@ -370,7 +364,7 @@ Expect ${selectorName} to have size
             test('no wait - failure - second element', async () => {
                 vi.mocked(awaitedEls[1].getSize).mockResolvedValue(wrongValue as unknown as Size & number)
 
-                const result = await thisContext.toHaveSize( els, expectedSizes, { wait: 0 })
+                const result = await thisContext.toHaveSize(els, expectedSizes, { wait: 0 })
 
                 expect(result.pass).toBe(false)
                 awaitedEls.forEach((el) =>
@@ -397,7 +391,7 @@ Expect ${selectorName} to have size
             })
 
             test('no wait - success', async () => {
-                const result = await thisContext.toHaveSize( els, expectedSizes, { wait: 0 })
+                const result = await thisContext.toHaveSize(els, expectedSizes, { wait: 0 })
 
                 expect(result.pass).toBe(true)
                 awaitedEls.forEach((el) =>
@@ -405,10 +399,10 @@ Expect ${selectorName} to have size
                 )
             })
 
-            test('not - failure - all elements', async () => {
-                const result = await thisNotContext.toHaveSize( els, expectedSizes, { wait: 0 })
+            test('not - failure - all elements - pass should be true', async () => {
+                const result = await thisNotContext.toHaveSize(els, expectedSizes)
 
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(result.message()).toEqual(`\
 Expect ${selectorName} not to have size
 
@@ -417,68 +411,38 @@ Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 32}]`
                 )
             })
 
-            test('not - failure - first element', async () => {
+            test('not - failure - first element has same size - pass should be true', async () => {
                 vi.mocked(awaitedEls[0].getSize).mockResolvedValue(expectedSize as unknown as Size & number)
                 vi.mocked(awaitedEls[1].getSize).mockResolvedValue(wrongValue as unknown as Size & number)
 
-                const result = await thisNotContext.toHaveSize( els, expectedSizes, { wait: 0 })
+                const result = await thisNotContext.toHaveSize(els, expectedSizes)
 
-                expect(result.pass).toBe(false)
-
-                // TODO Wrong failure message, to review after merge of https://github.com/webdriverio/expect-webdriverio/pull/1983 to fix this
-                // Here the first Oject should be highligthed as the one making the assertion failed
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(result.message()).toEqual(`\
 Expect ${selectorName} not to have size
 
-- Expected [not]  - 1
-+ Received        + 1
-
-  Array [
-    Object {
-      "height": 32,
-      "width": 32,
-    },
-    Object {
-      "height": 32,
--     "width": 32,
-+     "width": 15,
-    },
-  ]`
+Expected [not]: [{"height": 32, "width": 32}, {"height": 32, "width": 32}]
+Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 15}]`
                 )
             })
 
-            test('not - failure - second element', async () => {
+            test('not - failure - one element has same size - pass should be true', async () => {
                 vi.mocked(awaitedEls[0].getSize).mockResolvedValue(wrongValue as unknown as Size & number)
                 vi.mocked(awaitedEls[1].getSize).mockResolvedValue(expectedSize as unknown as Size & number)
 
-                const result = await thisNotContext.toHaveSize( els, expectedSizes, { wait: 0 })
+                const result = await thisNotContext.toHaveSize(els, expectedSizes)
 
-                expect(result.pass).toBe(false)
-
-                // TODO Wrong failure message, to review after merge of https://github.com/webdriverio/expect-webdriverio/pull/1983 to fix this
-                // Here the second Object should be highlighted as the one making the assertion failed
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(result.message()).toEqual(`\
 Expect ${selectorName} not to have size
 
-- Expected [not]  - 1
-+ Received        + 1
-
-  Array [
-    Object {
-      "height": 32,
--     "width": 32,
-+     "width": 15,
-    },
-    Object {
-      "height": 32,
-      "width": 32,
-    },
-  ]`
+Expected [not]: [{"height": 32, "width": 32}, {"height": 32, "width": 32}]
+Received      : [{"height": 32, "width": 15}, {"height": 32, "width": 32}]`
                 )
             })
 
             test('should fails when expected is an array with a mismatched length', async () => {
-                const result = await thisContext.toHaveSize(elements, [expectedValue, expectedValue, expectedValue], { wait: 0 })
+                const result = await thisContext.toHaveSize(elements, [expectedValue, expectedValue, expectedValue])
 
                 expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\
@@ -500,18 +464,18 @@ Expect ${selectorName} to have size
 -     "height": 32,
 -     "width": 32,
 -   },
-+   "Expected array length 2, received 3",
++   "Received array length 2, expected 3",
   ]`
                 )
             })
         })
 
         test('fails when no elements are provided', async () => {
-            const result = await thisContext.toHaveSize([], expectedValue, { wait: 0 })
+            const result = await thisContext.toHaveSize([], expectedValue)
 
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\
-Expect  to have size
+Expect [] to have size
 
 Expected: {"height": 32, "width": 32}
 Received: undefined`)

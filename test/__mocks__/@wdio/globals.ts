@@ -7,6 +7,15 @@ import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } f
 import type { Size } from '../../../src/matchers/element/toHaveSize.js'
 
 vi.mock('@wdio/globals')
+vi.mock('../../../src/constants.js', async () => ({
+    DEFAULT_OPTIONS: {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+        ...(await vi.importActual<typeof import('../../../src/constants.js')>('../../../src/constants.js')).DEFAULT_OPTIONS,
+        // speed up tests by lowering default wait timeout
+        wait : 1
+    }
+}))
+
 vi.mock('../../../src/util/waitUntil.js', async (importOriginal) => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await importOriginal<typeof import('../../../src/util/waitUntil.js')>()
@@ -36,9 +45,7 @@ const getElementMethods = () => ({
     getHTML: vi.spyOn({ getHTML: async () => { return '<Html/>' } }, 'getHTML'),
     getComputedLabel: vi.spyOn({ getComputedLabel: async () => 'Computed Label' }, 'getComputedLabel'),
     getComputedRole: vi.spyOn({ getComputedRole: async () => 'Computed Role' }, 'getComputedRole'),
-    getAttribute: vi.spyOn({ getAttribute: async (_attr: string) =>
-    // Null is not part of the type, fixed by https://github.com/webdriverio/webdriverio/pull/15003
-        null as unknown as string }, 'getAttribute'),
+    getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
     getCSSProperty: vi.spyOn({ getCSSProperty: async (_prop: string, _pseudo?: string) =>
         ({ value: 'colorValue', parsed: {} } satisfies ParsedCSSValue) }, 'getCSSProperty'),
     getSize: vi.spyOn({ getSize: async (prop?: 'width' | 'height') => {
@@ -48,23 +55,65 @@ const getElementMethods = () => ({
     } },
     // Force wrong size & number typing, fixed by https://github.com/webdriverio/webdriverio/pull/15003
     'getSize') as unknown as WebdriverIO.Element['getSize'],
-    getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
+    // getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
     $,
     $$,
 } satisfies Partial<WebdriverIO.Element>)
 
-export const elementFactory = (_selector: string, index?: number): WebdriverIO.Element => {
+export const elementFactory = (_selector: string, index?: number, parent: WebdriverIO.Browser | WebdriverIO.Element = browser): WebdriverIO.Element => {
     const partialElement = {
         selector: _selector,
         ...getElementMethods(),
         index,
         $,
         $$,
+        parent
     } satisfies Partial<WebdriverIO.Element>
 
     const element = partialElement as unknown as WebdriverIO.Element
     element.getElement = vi.fn().mockResolvedValue(element)
+
+    // Note: an element found has element.elementId while a not found has element.error
+    element.elementId = `${_selector}${index ? '-' + index : ''}`
+
     return element
+}
+
+export const notFoundElementFactory = (_selector: string, index?: number, parent: WebdriverIO.Browser | WebdriverIO.Element = browser): WebdriverIO.Element => {
+    const partialElement = {
+        selector: _selector,
+        index,
+        $,
+        $$,
+        isExisting: vi.fn().mockResolvedValue(false),
+        parent
+    } satisfies Partial<WebdriverIO.Element>
+
+    const element = partialElement as unknown as WebdriverIO.Element
+
+    // Note: an element found has element.elementId while a not found has element.error
+    const elementId = `${_selector}${index ? '-' + index : ''}`
+    const error = (functionName: string) => new Error(`Can't call ${functionName} on element with selector ${elementId} because element wasn't found`)
+
+    // Mimic element not found by throwing error on any method call beisde isExisting
+    const notFoundElement = new Proxy(element, {
+        get(target, prop) {
+            if (prop in element) {
+                const value = element[prop as keyof WebdriverIO.Element]
+                return value
+            }
+            if (['then', 'catch', 'toStringTag'].includes(prop as string) || typeof prop === 'symbol') {
+                const value = Reflect.get(target, prop)
+                return typeof value === 'function' ? value.bind(target) : value
+            }
+            element.error = error(prop as string)
+            return () => { throw element.error }
+        }
+    })
+
+    element.getElement = vi.fn().mockResolvedValue(notFoundElement)
+
+    return notFoundElement
 }
 
 const $ = vi.fn((_selector: string) => {
@@ -87,26 +136,52 @@ const $ = vi.fn((_selector: string) => {
 })
 
 const $$ = vi.fn((selector: string) => {
-    const length = (this as any)?._length || 2
-    return $$Factory(selector, length)
+    return chainableElementArrayFactory(selector, 2)
 })
 
-export function $$Factory(selector: string, length: number) {
+export function elementArrayFactory(selector: string, length?: number): WebdriverIO.ElementArray {
     const elements: WebdriverIO.Element[] = Array(length).fill(null).map((_, index) => elementFactory(selector, index))
 
     const elementArray = elements as unknown as WebdriverIO.ElementArray
 
     elementArray.foundWith = '$$'
     elementArray.props = []
-    elementArray.props.length = length
     elementArray.selector = selector
-    elementArray.getElements = async () => elementArray
+    elementArray.getElements = vi.fn().mockResolvedValue(elementArray)
     elementArray.filter = async <T>(fn: (element: WebdriverIO.Element, index: number, array: T[]) => boolean | Promise<boolean>) => {
         const results = await Promise.all(elements.map((el, i) => fn(el, i, elements as unknown as T[])))
         return Array.prototype.filter.call(elements, (_, i) => results[i])
     }
-    elementArray.length = length
     elementArray.parent = browser
+
+    // Ensure critical array methods are properly accessible for type compatibility with MultiRemoteElement[]
+    // Note: WebdriverIO.ElementArray has async versions of some methods (map, forEach, some, every, find, findIndex)
+    // so we only bind the synchronous array methods that don't conflict
+    // const arrayPrototype = Array.prototype
+    // elementArray.slice = arrayPrototype.slice.bind(elementArray)
+    // elementArray.concat = arrayPrototype.concat.bind(elementArray)
+    // elementArray.join = arrayPrototype.join.bind(elementArray)
+    // elementArray.indexOf = arrayPrototype.indexOf.bind(elementArray)
+    // elementArray.lastIndexOf = arrayPrototype.lastIndexOf.bind(elementArray)
+    // elementArray.reduce = arrayPrototype.reduce.bind(elementArray)
+    // elementArray.reduceRight = arrayPrototype.reduceRight.bind(elementArray)
+    // elementArray.reverse = arrayPrototype.reverse.bind(elementArray)
+    // elementArray.sort = arrayPrototype.sort.bind(elementArray)
+    // elementArray.splice = arrayPrototype.splice.bind(elementArray)
+    // elementArray.push = arrayPrototype.push.bind(elementArray)
+    // elementArray.pop = arrayPrototype.pop.bind(elementArray)
+    // elementArray.shift = arrayPrototype.shift.bind(elementArray)
+    // elementArray.unshift = arrayPrototype.unshift.bind(elementArray)
+    // elementArray.fill = arrayPrototype.fill.bind(elementArray)
+    // elementArray.copyWithin = arrayPrototype.copyWithin.bind(elementArray)
+    // Note: keys, values, entries, and Symbol.iterator inherit from the array prototype
+    // map, forEach, some, every, find, findIndex are async in WebdriverIO.ElementArray
+
+    return elementArray
+}
+
+export function chainableElementArrayFactory(selector: string, length: number) {
+    const elementArray = elementArrayFactory(selector, length)
 
     // Wdio framework does return a Promise-wrapped element, so we need to mimic this behavior
     const chainablePromiseArray = Promise.resolve(elementArray) as unknown as ChainablePromiseArray
@@ -114,6 +189,20 @@ export function $$Factory(selector: string, length: number) {
     // Ensure `'getElements' in chainableElements` is false while allowing to use `await chainableElement.getElements()`
     const runtimeChainablePromiseArray = new Proxy(chainablePromiseArray, {
         get(target, prop) {
+            if (typeof prop === 'string' && /^\d+$/.test(prop)) {
+                const index = parseInt(prop, 10)
+                if (index >= length) {
+                    const error = new Error(`Index out of bounds! $$(${selector}) returned only ${length} elements.`)
+                    return new Proxy(Promise.resolve(), {
+                        get(target, prop) {
+                            if (prop === 'then') {
+                                return (resolve: any, reject: any) => reject(error)
+                            }
+                            return () => Promise.reject(error)
+                        }
+                    })
+                }
+            }
             if (elementArray && prop in elementArray) {
                 return elementArray[prop as keyof WebdriverIO.ElementArray]
             }
@@ -125,12 +214,16 @@ export function $$Factory(selector: string, length: number) {
     return runtimeChainablePromiseArray
 }
 
-export const browser = {
-    $,
-    $$,
-    execute: vi.fn(),
-    setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
-    getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
-    getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
-    call(fn: Function) { return fn() },
-} satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+export const browserFactory = (): WebdriverIO.Browser => {
+    return  {
+        $,
+        $$,
+        execute: vi.fn(),
+        setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
+        getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
+        getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
+        call(fn: Function) { return fn() },
+    } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+}
+
+export const browser = browserFactory()

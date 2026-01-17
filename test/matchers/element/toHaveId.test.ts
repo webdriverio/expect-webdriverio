@@ -28,7 +28,7 @@ describe(toHaveId, () => {
         })
 
         test('success', async () => {
-            const result = await thisContext.toHaveId(el, 'test id', { wait: 1 })
+            const result = await thisContext.toHaveId(el, 'test id')
             expect(result.pass).toBe(true)
         })
 

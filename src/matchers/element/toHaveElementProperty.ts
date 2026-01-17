@@ -11,7 +11,7 @@ import {
 async function condition(
     el: WebdriverIO.Element,
     property: string,
-    expected: unknown | RegExp | WdioAsymmetricMatcher<string>,
+    expected: string | number | null | RegExp | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { asString = false } = options
@@ -23,7 +23,7 @@ async function condition(
         return { result: false, value: prop }
     }
 
-    // Why not comparing expected and prop for null? Bug?
+    // As specified in the w3c spec, cases where property simply exists, missing undefined here?
     if (expected === null) {
         return { result: true, value: prop }
     }
@@ -33,13 +33,13 @@ async function condition(
     }
 
     // To review the cast to be more type safe but for now let's keep the existing behavior to ensure no regression
-    return compareText(prop.toString(), expected as string, options)
+    return compareText(prop.toString(), expected as string | RegExp | WdioAsymmetricMatcher<string>, options)
 }
 
 export async function toHaveElementProperty(
     received: WdioElementOrArrayMaybePromise,
     property: string,
-    expectedValue: MaybeArray<unknown | RegExp | WdioAsymmetricMatcher<string>>,
+    expectedValue: MaybeArray<string | number | null | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
@@ -55,10 +55,11 @@ export async function toHaveElementProperty(
     const pass = await waitUntil(
         async () => {
             const result = await executeCommand(received, undefined,
-                async (elements) => defaultMultipleElementsIterationStrategy(
+                (elements) => defaultMultipleElementsIterationStrategy(
                     elements,
                     expectedValue,
-                    (element, expected) => condition(element, property, expected, options)
+                    (element, expected) => condition(element, property, expected, options),
+                    { supportArrayForSingleElement: true }
                 )
             )
             el = result.elementOrArray
@@ -70,13 +71,8 @@ export async function toHaveElementProperty(
         { wait: options.wait, interval: options.interval }
     )
 
-    let message: string
-    if (expectedValue === undefined) {
-        message = enhanceError(el, !isNot, pass, this, verb, expectation, property, options)
-    } else {
-        const expected = wrapExpectedWithArray(el, prop, expectedValue)
-        message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
-    }
+    const expected = wrapExpectedWithArray(el, prop, expectedValue)
+    const message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
@@ -84,7 +80,7 @@ export async function toHaveElementProperty(
     }
 
     await options.afterAssertion?.({
-        matcherName: matcherName,
+        matcherName,
         expectedValue: [property, expectedValue],
         options,
         result

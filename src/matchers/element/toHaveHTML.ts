@@ -28,11 +28,10 @@ export async function toHaveHTML(
     expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'HTML', verb = 'have' } = this
+    const { expectation = 'HTML', verb = 'have', isNot, matcherName = 'toHaveHTML' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveHTML',
+        matcherName,
         expectedValue,
         options,
     })
@@ -40,18 +39,20 @@ export async function toHaveHTML(
     let elements
     let actualHTML
 
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand(received,
-            (element) => singleElementCompare(element, expectedValue, options),
-            (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (el, html) => multipleElementsStrategyCompare(el, html, options))
-        )
-        elements = result.elementOrArray
-        actualHTML = result.valueOrArray
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand(received,
+                (element) => singleElementCompare(element, expectedValue, options),
+                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (el, html) => multipleElementsStrategyCompare(el, html, options))
+            )
+            elements = result.elementOrArray
+            actualHTML = result.valueOrArray
 
-        return result
-    },
-    isNot,
-    { wait: options.wait, interval: options.interval })
+            return result
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
     const expectedValues = wrapExpectedWithArray(elements, actualHTML, expectedValue)
     const message = enhanceError(elements, expectedValues, actualHTML, this, verb, expectation, '', options)
@@ -62,7 +63,7 @@ export async function toHaveHTML(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveHTML',
+        matcherName,
         expectedValue,
         options,
         result

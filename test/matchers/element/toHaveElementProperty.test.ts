@@ -38,21 +38,60 @@ describe(toHaveElementProperty, () => {
             })
         })
 
-        test('assymeric match', async () => {
-            const result = await thisContext.toHaveElementProperty(el, 'property', expect.stringContaining('phone'), { wait: 0 })
-            expect(result.pass).toBe(true)
-        })
+        test('success with when property value is number', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue(5)
 
-        test('not - should return true if values dont match', async () => {
-            const result = await thisIsNotContext.toHaveElementProperty(el, 'property', 'foobar', { wait: 0 })
+            const result = await thisContext.toHaveElementProperty(el, 'property', 5)
 
             expect(result.pass).toBe(true)
         })
 
-        test('not - should return true if values match', async () => {
-            const result = await thisIsNotContext.toHaveElementProperty(el, 'property', 'iphone', { wait: 0 })
+        // TODO Need deep equality to support array and object properly
+        test('success with when property value is an array, bug?', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue([5])
+
+            const result = await thisContext.toHaveElementProperty(el, 'property', [5])
 
             expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have property property
+
+Expected: [5]
+Received: [5]`
+            )
+        })
+
+        // TODO Need deep equality to support array and object properly
+        test('success with when property value an object, bug?', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue( { foo: 'bar' } )
+
+            // @ts-expect-error -- object not working for now, to support later
+            const result = await thisContext.toHaveElementProperty(el, 'property', { foo: 'bar' } )
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have property property
+
+Expected: {"foo": "bar"}
+Received: {"foo": "bar"}`
+            )
+        })
+
+        test('assymeric match', async () => {
+            const result = await thisContext.toHaveElementProperty(el, 'property', expect.stringContaining('phone'))
+            expect(result.pass).toBe(true)
+        })
+
+        test('not - success - should return pass=false if values dont match', async () => {
+            const result = await thisIsNotContext.toHaveElementProperty(el, 'property', 'foobar')
+
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        })
+
+        test('not - failure - should return true if values match', async () => {
+            const result = await thisIsNotContext.toHaveElementProperty(el, 'property', 'iphone')
+
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to have property property
 
@@ -61,7 +100,7 @@ Received      : "iphone"`)
         })
 
         test('with RegExp should return true if values match', async () => {
-            const result = await thisContext.toHaveElementProperty(el, 'property', /iPhOnE/i, { wait: 0 })
+            const result = await thisContext.toHaveElementProperty(el, 'property', /iPhOnE/i)
 
             expect(result.pass).toBe(true)
         })
@@ -69,7 +108,7 @@ Received      : "iphone"`)
         test('should return false for undefined input', async () => {
             vi.mocked(el.getProperty).mockResolvedValue(undefined)
 
-            const result = await thisContext.toHaveElementProperty(el, 'property', 'iphone', { wait: 0 })
+            const result = await thisContext.toHaveElementProperty(el, 'property', 'iphone')
 
             expect(result.pass).toBe(false)
         })
@@ -77,7 +116,7 @@ Received      : "iphone"`)
         test('should return false for null input', async () => {
             vi.mocked(el.getProperty).mockResolvedValue(null)
 
-            const result = await thisContext.toHaveElementProperty(el, 'property', 'iphone', { wait: 0 })
+            const result = await thisContext.toHaveElementProperty(el, 'property', 'iphone')
 
             expect(result.pass).toBe(false)
         })
@@ -86,7 +125,7 @@ Received      : "iphone"`)
         test('should return true? if value is null', async () => {
             vi.mocked(el.getProperty).mockResolvedValue(null)
 
-            const result = await thisContext.toHaveElementProperty(el, 'property', null, { wait: 0 })
+            const result = await thisContext.toHaveElementProperty(el, 'property', null)
 
             expect(result.pass).toBe(false)
         })
@@ -94,22 +133,22 @@ Received      : "iphone"`)
         test('should return false if value is non-string', async () => {
             vi.mocked(el.getProperty).mockResolvedValue(5)
 
-            const result = await thisContext.toHaveElementProperty(el, 'property', 'Test Value', { wait: 0 })
+            const result = await thisContext.toHaveElementProperty(el, 'property', 'Test Value')
 
             expect(result.pass).toBe(false)
         })
 
-        test('not - should return true if value is non-string', async () => {
+        test('not - success - should return pass=false if value is non-string', async () => {
             vi.mocked(el.getProperty).mockResolvedValue(5)
 
-            const result = await thisIsNotContext.toHaveElementProperty(el, 'property', 'Test Value', { wait: 0 })
+            const result = await thisIsNotContext.toHaveElementProperty(el, 'property', 'Test Value')
 
-            expect(result.pass).toBe(true)
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
         describe('failure with RegExp when value does not match', () => {
             test('failure', async () => {
-                const result = await thisContext.toHaveElementProperty(el, 'property', /WDIO/, { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(el, 'property', /WDIO/)
 
                 expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\
@@ -156,23 +195,23 @@ Received: "iphone"`)
                 })
             })
 
-            test('assymeric match', async () => {
-                const result = await thisContext.toHaveElementProperty(els, 'property', expect.stringContaining('phone'), { wait: 0 })
+            test('asymeric match', async () => {
+                const result = await thisContext.toHaveElementProperty(els, 'property', expect.stringContaining('phone'))
                 expect(result.pass).toBe(true)
             })
 
-            test('not - should return true if values dont match', async () => {
-                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', 'foobar', { wait: 0 })
+            test('not - success - should return pass=false if values dont match', async () => {
+                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', 'foobar')
 
-                expect(result.pass).toBe(true)
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
 
-            test('not - should return true if values match', async () => {
-                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', 'iphone', { wait: 0 })
+            test('not - failure - should return pass=true if values match', async () => {
+                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', 'iphone')
 
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) not to have property property
+Expect $$(\`sel\`) not to have property property
 
 Expected [not]: ["iphone", "iphone"]
 Received      : ["iphone", "iphone"]`
@@ -180,7 +219,7 @@ Received      : ["iphone", "iphone"]`
             })
 
             test('with RegExp should return true if values match', async () => {
-                const result = await thisContext.toHaveElementProperty(els, 'property', /iPhOnE/i, { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', /iPhOnE/i)
 
                 expect(result.pass).toBe(true)
             })
@@ -190,7 +229,7 @@ Received      : ["iphone", "iphone"]`
                     vi.mocked(el.getProperty).mockResolvedValue(undefined)
                 )
 
-                const result = await thisContext.toHaveElementProperty(els, 'property', 'iphone', { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', 'iphone')
 
                 expect(result.pass).toBe(false)
             })
@@ -201,7 +240,7 @@ Received      : ["iphone", "iphone"]`
                     vi.mocked(el.getProperty).mockResolvedValue('Test Value')
                 )
 
-                const result = await thisContext.toHaveElementProperty(els, 'property', null, { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', null)
 
                 expect(result.pass).toBe(true)
             })
@@ -211,7 +250,7 @@ Received      : ["iphone", "iphone"]`
                     vi.mocked(el.getProperty).mockResolvedValue(5)
                 )
 
-                const result = await thisContext.toHaveElementProperty(els, 'property', 'Test Value', { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', 'Test Value')
 
                 expect(result.pass).toBe(false)
             })
@@ -221,18 +260,18 @@ Received      : ["iphone", "iphone"]`
                     vi.mocked(el.getProperty).mockResolvedValue(5)
                 )
 
-                const result = await thisContext.toHaveElementProperty(els, 'property', 5, { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', 5)
 
                 expect(result.pass).toBe(true)
             })
 
             describe('failure with RegExp when value does not match', () => {
                 test('failure', async () => {
-                    const result = await thisContext.toHaveElementProperty(els, 'property', /WDIO/, { wait: 0 })
+                    const result = await thisContext.toHaveElementProperty(els, 'property', /WDIO/)
 
                     expect(result.pass).toBe(false)
                     expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to have property property
+Expect $$(\`sel\`) to have property property
 
 - Expected  - 2
 + Received  + 2
@@ -272,22 +311,22 @@ Expect $$(\`sel, <props>\`) to have property property
             })
 
             test('assymeric match', async () => {
-                const result = await thisContext.toHaveElementProperty(els, 'property', [expect.stringContaining('phone'), expect.stringContaining('phone')], { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', [expect.stringContaining('phone'), expect.stringContaining('phone')])
                 expect(result.pass).toBe(true)
             })
 
-            test('not - should return false if values dont match', async () => {
-                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', ['foobar', 'foobar'], { wait: 0 })
+            test('not - success - should return false if values dont match', async () => {
+                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', ['foobar', 'foobar'])
 
-                expect(result.pass).toBe(true)
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
 
-            test('not - should return true if values match', async () => {
-                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', ['iphone', 'iphone'], { wait: 0 })
+            test('not - failure - should return true if values match', async () => {
+                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', ['iphone', 'iphone'])
 
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) not to have property property
+Expect $$(\`sel\`) not to have property property
 
 Expected [not]: ["iphone", "iphone"]
 Received      : ["iphone", "iphone"]`
@@ -298,7 +337,7 @@ Received      : ["iphone", "iphone"]`
                 els.forEach(el =>
                     vi.mocked(el.getProperty).mockResolvedValue('iPhone')
                 )
-                const result = await thisContext.toHaveElementProperty(els, 'property', [/iPhOnE/i, /iPhOnE/i], { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', [/iPhOnE/i, /iPhOnE/i])
 
                 expect(result.pass).toBe(true)
             })
@@ -308,11 +347,11 @@ Received      : ["iphone", "iphone"]`
                     vi.mocked(el.getProperty).mockResolvedValue(null)
                 )
 
-                const result = await thisContext.toHaveElementProperty(els, 'property', ['iphone', 'iphone'], { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', ['iphone', 'iphone'])
 
                 expect(result.pass).toBe(false)
                 expect(result.message()).toContain(`\
-Expect $$(\`sel, <props>\`) to have property property
+Expect $$(\`sel\`) to have property property
 
 - Expected  - 2
 + Received  + 2
@@ -332,19 +371,19 @@ Expect $$(\`sel, <props>\`) to have property property
                     vi.mocked(el.getProperty).mockResolvedValue(null)
                 )
 
-                const result = await thisContext.toHaveElementProperty(els, 'property', [null, null], { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', [null, null])
 
                 expect(result.pass).toBe(true)
             })
 
-            test('not - should return false if actual value is null and expected is not null', async () => {
+            test('not - success - should return false if actual value is null and expected is not null', async () => {
                 els.forEach(el =>
                     vi.mocked(el.getProperty).mockResolvedValue(null)
                 )
 
-                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', ['yo', 'yo'], { wait: 0 })
+                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', ['yo', 'yo'])
 
-                expect(result.pass).toBe(true)
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
 
             test('should return false if actual value is non-string and expected is string', async () => {
@@ -352,7 +391,7 @@ Expect $$(\`sel, <props>\`) to have property property
                     vi.mocked(el.getProperty).mockResolvedValue(5)
                 )
 
-                const result = await thisContext.toHaveElementProperty(els, 'property', ['Test Value', 'Test Value'], { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', ['Test Value', 'Test Value'])
 
                 expect(result.pass).toBe(false)
             })
@@ -362,18 +401,18 @@ Expect $$(\`sel, <props>\`) to have property property
                     vi.mocked(el.getProperty).mockResolvedValue(5)
                 )
 
-                const result = await thisContext.toHaveElementProperty(els, 'property', [5, 5], { wait: 0 })
+                const result = await thisContext.toHaveElementProperty(els, 'property', [5, 5])
 
                 expect(result.pass).toBe(true)
             })
 
             describe('failure with RegExp when value does not match', () => {
                 test('failure', async () => {
-                    const result = await thisContext.toHaveElementProperty(els, 'property', /WDIO/, { wait: 0 })
+                    const result = await thisContext.toHaveElementProperty(els, 'property', /WDIO/)
 
                     expect(result.pass).toBe(false)
                     expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to have property property
+Expect $$(\`sel\`) to have property property
 
 - Expected  - 2
 + Received  + 2

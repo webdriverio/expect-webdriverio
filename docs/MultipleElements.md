@@ -1,24 +1,42 @@
 # Multiple Elements Support
 
-All element matchers work with arrays of elements (e.g., `$$()` results).
-- **Strict Length Matching**: If you provide an array of expected values, the number of values must match the number of elements found. A failure occurs if the lengths differ.
-- **Index-based Matching**: When using an array of expected values, each element is compared to the value at the corresponding index.
-- **Single Value Matching**: If you provide a single expected value, it is compared against *every* element in the array.
-- **Asymmetric Matchers**: Asymmetric matchers can be used within the expected values array for more matching flexibility.
-- If no elements exist, a failure occurs (except with `toBeElementsArrayOfSize`).
-- Options like `StringOptions` or `HTMLOptions` apply to the entire array (except `NumberOptions`).
-- The assertion passes only if **all** elements match the expected value(s).
-- Using `.not` applies the negation to each element (e.g., *all* elements must *not* display).
+Matchers element array support (e.g., `$$()`):
 
-**Note:** Strict length matching does not apply on `toHaveText` to preserve existing behavior.
+- **Strict Index-based Matching**: If an array of expected values is provided, it must match the elements' count; each value is checked at its index.
+- If a single value is provided, every element is compared to it.
+- Asymmetric matchers (e.g., `expect.stringContaining`) work within expected value arrays.
+- An error is thrown if no elements are found (except with `toBeElementsArrayOfSize`).
+- Options like `StringOptions` or `HTMLOptions` apply to the whole array; `NumberOptions` behaves like any expected provided value.
+- The assertion passes only if **all** elements match.
+- Using `.not` means all elements must **not** match.
+
+**Note:** Strict Index-based matching does not apply to `toHaveText`, since an existing behavior was already in placed.
 
 ## Limitations
-- An alternative to using `StringOptions` (like `ignoreCase` or `containing`) for a single expected value is to use RegEx (`/MyExample/i`) or Asymmetric Matchers (`expect.stringContaining('Example')`).
-- Passing an array of "containing" values, as previously supported by `toHaveText`, is deprecated and not supported for other matchers.
+- Instead of `StringOptions` for a single expected value, use RegExp or asymmetric matchers.
+  - For `ignoreCase` use RegEx (`/MyExample/i`) 
+  - For `containing` use Asymmetric Matchers (`expect.stringContaining('Example')`)
+- Passing an array of "containing" values is deprecated and not supported outside `toHaveText`.
 
 ## Supported types
-
-Any of the below element types can be passed to `expect`:
+You can pass any of these element types to `expect`:
 - `ChainablePromiseArray` (the non-awaited case)
 - `ElementArray` (the awaited case)
 - `Element[]` (the filtered case)
+
+## Alternative
+
+For more granular or explicit per-element validation, use a parameterized test of your framework.
+Example in Mocha:
+```ts
+    describe('Element at index of `$$`', function () {
+        [ { expectedText: 'one', index: 0 },
+            { expectedText: 'two', index: 2 },
+            { expectedText: 'four', index: 4 },
+        ].forEach(function ( { expectedText, index } ) {
+            it("Element at $index of `$$('label')` is $expectedText", function () {
+                expect($$('label')[index]).toHaveText(expectedText);
+            });
+        });
+    });
+```    

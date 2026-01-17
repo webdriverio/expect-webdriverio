@@ -256,9 +256,11 @@ await expect(browser).toHaveClipboardText(expect.stringContaining('clipboard tex
 
 ### Multiples Elements Support
 
-All element matchers work with arrays of elements (e.g., `$$()` results).
-- In short, matchers is applied on each elements and must pass for the entire assertion to succeed, so if one fails, the assertions fails.
-- See [MutipleElements.md](MultipleElements.md) for more information.
+All element matchers support arrays (e.g., `$$()` results).
+
+- Each element must pass the matcher for the assertion to succeed; if any fail, the assertion fails.
+   - `toHaveText` differ and keep it's legacy behavior.
+- See [MultipleElements.md](MultipleElements.md) for details.
 
 #### Usage
 
@@ -270,16 +272,20 @@ await expect(await $$('#someElem')).toBeDisplayed()
 ```ts
 const elements = await $$('#someElem')
 
-// Single expected value compare with each element's value
+// Single value: checked against every element
 await expect(elements).toHaveAttribute('class', 'form-control')
 
-// Multiple expected values for exactly 2 elements having exactly 'control1' & 'control2' as values
+// Array: each value checked at corresponding element index (must match length)
 await expect(elements).toHaveAttribute('class', ['control1', 'control2'])
 
-// Multiple expected values for exactly 2 elements but with more flexibility for the first element's value
+// Use asymmetric matchers for flexible matching
 await expect(elements).toHaveAttribute('class', [expect.stringContaining('control1'), 'control2'])
 
-// Filtered array also works
+// Use RegEx `i` for case insensitive
+await expect(elements).toHaveAttribute('class', [/'Control1'/i, 'control2'])
+
+
+// Works with filtered arrays too
 await expect($$('#someElem').filter(el => el.isDisplayed())).toHaveAttribute('class', ['control1', 'control2'])
 ```
 

@@ -58,11 +58,10 @@ export async function toHaveElementClass(
     expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'class', verb = 'have' } = this
+    const { expectation = 'class', verb = 'have', isNot, matcherName = 'toHaveElementClass' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveElementClass',
+        matcherName,
         expectedValue,
         options,
     })
@@ -72,20 +71,22 @@ export async function toHaveElementClass(
     let el
     let attr
 
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand(received, (element) =>
-            singleElementStrategyCompare(element, attribute, expectedValue, options),
-        (elements) => defaultMultipleElementsIterationStrategy(elements,
-            expectedValue,
-            (element, value) => multipleElementsStrategyCompare(element, attribute, value, options))
-        )
-        el = result.elementOrArray
-        attr = result.valueOrArray
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand(received, (element) =>
+                singleElementStrategyCompare(element, attribute, expectedValue, options),
+            (elements) => defaultMultipleElementsIterationStrategy(elements,
+                expectedValue,
+                (element, value) => multipleElementsStrategyCompare(element, attribute, value, options))
+            )
+            el = result.elementOrArray
+            attr = result.valueOrArray
 
-        return result
-    },
-    isNot,
-    { wait: options.wait, interval: options.interval })
+            return result
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
     const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
@@ -94,7 +95,7 @@ export async function toHaveElementClass(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveElementClass',
+        matcherName,
         expectedValue,
         options,
         result

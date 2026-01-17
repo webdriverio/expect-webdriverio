@@ -27,22 +27,25 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
 }
 
 export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybePromise, attribute: string, expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
-    const isNot = this.isNot
-    const { expectation = 'attribute', verb = 'have' } = this
+    const { expectation = 'attribute', verb = 'have', isNot } = this
 
     let el
     let attr
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand(received,
-            undefined,
-            (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (element, expected) => conditionAttributeValueMatchWithExpected(element, attribute, expected, options))
-        )
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand(received,
+                undefined,
+                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (element, expected) => conditionAttributeValueMatchWithExpected(element, attribute, expected, options))
+            )
 
-        el = result.elementOrArray
-        attr = result.valueOrArray
+            el = result.elementOrArray
+            attr = result.valueOrArray
 
-        return result
-    }, isNot,  { wait: options.wait, interval: options.interval })
+            return result
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
     const expected = wrapExpectedWithArray(el, attr, expectedValue)
     const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
@@ -50,29 +53,29 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
     return {
         pass,
         message: (): string => message
-    } as ExpectWebdriverIO.AssertionResult
+    }
 }
 
 async function toHaveAttributeFn(received: WdioElementOrArrayMaybePromise, attribute: string, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
-    const isNot = this.isNot
-    const { expectation = 'attribute', verb = 'have' } = this
+    const { expectation = 'attribute', verb = 'have', isNot } = this
 
     let el
 
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand(
-            received,
-            undefined,
-            (elements) => defaultMultipleElementsIterationStrategy(elements, attribute, (el) => conditionAttributeIsPresent(el, attribute))
-        )
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand(
+                received,
+                undefined,
+                (elements) => defaultMultipleElementsIterationStrategy(elements, attribute, (el) => conditionAttributeIsPresent(el, attribute))
+            )
 
-        el = result.elementOrArray
+            el = result.elementOrArray
 
-        return result
-    }, isNot, {
-        wait: options.wait,
-        interval: options.interval,
-    })
+            return result
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
     const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, options)
 
@@ -89,8 +92,10 @@ export async function toHaveAttribute(
     value?: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
+    const { matcherName = 'toHaveAttribute' } = this
+
     await options.beforeAssertion?.({
-        matcherName: 'toHaveAttribute',
+        matcherName,
         expectedValue: [attribute, value],
         options,
     })
@@ -102,7 +107,7 @@ export async function toHaveAttribute(
         : await toHaveAttributeFn.call(this, received, attribute)
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveAttribute',
+        matcherName,
         expectedValue: [attribute, value],
         options,
         result

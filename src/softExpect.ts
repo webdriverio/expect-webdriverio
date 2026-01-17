@@ -87,8 +87,7 @@ const createSoftMatcher = <T>(
                 expectChain = expectChain.rejects
             }
 
-            const result = await ((expectChain as unknown) as Record<string, (...args: unknown[]) => ExpectWebdriverIO.AsyncAssertionResult>)[matcherName](...args)
-            return result
+            return await ((expectChain as unknown) as Record<string, (...args: unknown[]) => ExpectWebdriverIO.AsyncAssertionResult>)[matcherName](...args)
 
         } catch (error) {
             // Record the failure

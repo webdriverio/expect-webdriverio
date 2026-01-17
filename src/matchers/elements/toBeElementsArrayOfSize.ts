@@ -1,51 +1,60 @@
-import { waitUntil, enhanceError, compareNumbers, numberError } from '../../utils.js'
+import { waitUntil, enhanceError, } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
+import type { WdioElementsMaybePromise } from '../../types.js'
 import { validateNumberOptions } from '../../util/numberOptionsUtil.js'
+import { awaitElementArray } from '../../util/elementsUtil.js'
 
 export async function toBeElementsArrayOfSize(
-    received: WdioElementOrArrayMaybePromise,
+    received: WdioElementsMaybePromise,
     expectedValue: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'elements array of size', verb = 'be' } = this
+    const { expectation = 'elements array of size', verb = 'be', matcherName = 'toBeElementsArrayOfSize', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeElementsArrayOfSize',
+        matcherName,
         expectedValue,
         options,
     })
 
-    const numberOptions = validateNumberOptions(expectedValue)
+    const { numberMatcher, numberCommandOptions } = validateNumberOptions(expectedValue)
 
-    // Why not await in the waitUntil and use it to refetch in case of failure?
-    let elements = await received as WdioElements
-    const originalLength = elements.length
+    // eslint-disable-next-line prefer-const
+    let { elements, other } = await awaitElementArray(received)
 
-    const pass = await waitUntil(async () => {
-        /**
-         * check numbers first before refetching elements
-         */
-        const isPassing = compareNumbers(elements.length, numberOptions)
-        if (isPassing) {
-            return isPassing
-        }
+    const wait = numberCommandOptions?.wait ?? options.wait ?? DEFAULT_OPTIONS.wait
+    const originalLength =  elements ? elements.length : undefined
 
-        // TODO analyse this refetch purpose if needed in more places or just pas false to have waitUntil to refetch with the await inside waitUntil
-        elements = await refetchElements(elements, numberOptions.wait, true)
-        return false
-    }, isNot, { ...numberOptions, ...options })
+    const pass = await waitUntil(
+        async () => {
+            if (!elements) {
+                return false
+            }
 
-    if (Array.isArray(received) && pass) {
+            // Verify is size match first before refetching elements
+            const isPassing = numberMatcher.equals(elements.length)
+            if (isPassing) {
+                return isPassing
+            }
+
+            // TODO should we do this on other matchers??
+            elements = await refetchElements(elements, wait, true)
+            return false
+        },
+        isNot,
+        { wait, interval: numberCommandOptions?.interval ?? options.interval }
+    )
+
+    // TODO By using `(await received).push(elements[index])` we could update Promises of arrays, should we support that?
+    if (Array.isArray(received) && pass && originalLength !== undefined && elements) {
         for (let index = originalLength; index < elements.length; index++) {
             received.push(elements[index])
         }
     }
 
-    const error = numberError(numberOptions)
-    const message = enhanceError(elements, error, originalLength, this, verb, expectation, '', numberOptions)
+    const actual = originalLength
+    const message = enhanceError(elements ?? other, numberMatcher, actual, this, verb, expectation, '', { ...numberCommandOptions, ...options })
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
@@ -53,7 +62,7 @@ export async function toBeElementsArrayOfSize(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toBeElementsArrayOfSize',
+        matcherName,
         expectedValue,
         options,
         result

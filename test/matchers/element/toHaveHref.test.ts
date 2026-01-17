@@ -52,7 +52,7 @@ describe(toHaveHref, () => {
             let result: AssertionResult
 
             beforeEach(async () => {
-                result = await thisContext.toHaveHref(el, 'an href', { wait: 0 })
+                result = await thisContext.toHaveHref(el, 'an href')
             })
 
             test('failure with proper failure message', () => {

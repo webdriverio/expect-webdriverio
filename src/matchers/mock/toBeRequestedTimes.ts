@@ -1,34 +1,36 @@
-import { waitUntil, enhanceError, compareNumbers } from '../../utils.js'
-import { numberError } from '../../util/formatMessage.js'
+import { waitUntil, enhanceError } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import { isNumber, validateNumberOptions } from '../../util/numberOptionsUtil.js'
 
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock,
     expectedValue: number | ExpectWebdriverIO.NumberOptions = {},
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot || false
-    const { expectation = `called${typeof expectedValue === 'number' ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`, verb = 'be' } = this
+    const {
+        expectation = `called${isNumber(expectedValue) ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`, verb = 'be',
+        isNot, matcherName = 'toBeRequestedTimes'
+    } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeRequestedTimes',
+        matcherName,
         expectedValue,
         options,
     })
 
-    // type check
-    const numberOptions: ExpectWebdriverIO.NumberOptions = typeof expectedValue === 'number'
-        ? { eq: expectedValue } as ExpectWebdriverIO.NumberOptions
-        : expectedValue || {}
+    const  { numberMatcher, numberCommandOptions } = validateNumberOptions(expectedValue)
 
     let actual
-    const pass = await waitUntil(async () => {
-        actual = received.calls.length
-        return compareNumbers(actual, numberOptions)
-    }, isNot, { wait: options.wait, interval: options.interval })
+    const pass = await waitUntil(
+        async () => {
+            actual = received.calls.length
+            return numberMatcher.equals(actual)
+        },
+        isNot,
+        { wait: numberCommandOptions?.wait ?? options.wait, interval: numberCommandOptions?.interval ?? options.interval }
+    )
 
-    const error = numberError(numberOptions)
-    const message = enhanceError('mock', error, actual, this, verb, expectation, '', numberOptions)
+    const message = enhanceError('mock', numberMatcher, actual, this, verb, expectation, '', { ...numberCommandOptions, ...options })
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
@@ -36,7 +38,7 @@ export async function toBeRequestedTimes(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toBeRequestedTimes',
+        matcherName,
         expectedValue,
         options,
         result

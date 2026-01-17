@@ -2,18 +2,18 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
-import { toNumberError, validateNumberOptionsArray } from '../../util/numberOptionsUtil.js'
+import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
+import { validateNumberOptionsArray } from '../../util/numberOptionsUtil.js'
 import {
-    compareNumbers,
     enhanceError,
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expected: ExpectWebdriverIO.NumberOptions) {
+async function condition(el: WebdriverIO.Element, expected: NumberMatcher) {
     const actualWidth = await el.getSize('width')
 
     return {
-        result: compareNumbers(actualWidth, expected),
+        result: expected.equals(actualWidth),
         value: actualWidth
     }
 }
@@ -23,8 +23,7 @@ export async function toHaveWidth(
     expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberOptions>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'width', verb = 'have', matcherName = 'toHaveWidth' } = this
+    const { expectation = 'width', verb = 'have', matcherName = 'toHaveWidth', isNot } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -32,9 +31,7 @@ export async function toHaveWidth(
         options,
     })
 
-    const expected = validateNumberOptionsArray(expectedValue)
-    // TODO: deprecated NumberOptions as options in favor of ExpectedType and use a third options param only for command options
-    const { wait, interval } = Array.isArray(expected) ? {} : expected
+    const { numberMatcher, numberCommandOptions } = validateNumberOptionsArray(expectedValue)
 
     let elements: WebdriverIO.Element | WdioElements | undefined
     let actualWidth: string | number | (string | number | undefined)[] | undefined
@@ -43,7 +40,7 @@ export async function toHaveWidth(
         async () => {
             const result = await executeCommand(received,
                 undefined,
-                (elements) => defaultMultipleElementsIterationStrategy(elements, expected, condition))
+                (elements) => defaultMultipleElementsIterationStrategy(elements, numberMatcher, condition))
 
             elements = result.elementOrArray
             actualWidth = result.valueOrArray
@@ -51,11 +48,10 @@ export async function toHaveWidth(
             return result
         },
         isNot,
-        { wait: wait ?? options.wait, interval: interval ?? options.interval }
+        { wait: numberCommandOptions?.wait ?? options.wait, interval: numberCommandOptions?.interval ?? options.interval }
     )
 
-    const expextedFailureMessage = toNumberError(expected)
-    const expectedValues = wrapExpectedWithArray(elements, actualWidth, expextedFailureMessage)
+    const expectedValues = wrapExpectedWithArray(elements, actualWidth, numberMatcher)
     const message = enhanceError(
         elements,
         expectedValues,

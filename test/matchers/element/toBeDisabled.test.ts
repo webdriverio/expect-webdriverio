@@ -34,17 +34,17 @@ describe(toBeDisabled, () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await thisContext.toBeDisabled(el, { beforeAssertion, afterAssertion })
+            const result = await thisContext.toBeDisabled(el, { beforeAssertion, afterAssertion, wait: 500 })
 
             expect(result.pass).toBe(true)
             expect(el.isEnabled).toHaveBeenCalledTimes(2)
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toBeDisabled',
-                options: { beforeAssertion, afterAssertion }
+                options: { beforeAssertion, afterAssertion, wait: 500 }
             })
             expect(afterAssertion).toBeCalledWith({
                 matcherName: 'toBeDisabled',
-                options: { beforeAssertion, afterAssertion },
+                options: { beforeAssertion, afterAssertion, wait: 500 },
                 result
             })
         })
@@ -52,12 +52,12 @@ describe(toBeDisabled, () => {
         test('wait but error', async () => {
             vi.mocked(el.isEnabled).mockRejectedValue(new Error('some error'))
 
-            await expect(() => thisContext.toBeDisabled(el, { wait: 1 }))
+            await expect(() => thisContext.toBeDisabled(el))
                 .rejects.toThrow('some error')
         })
 
         test('success on the first attempt', async () => {
-            const result = await thisContext.toBeDisabled(el, { wait: 1 })
+            const result = await thisContext.toBeDisabled(el)
 
             expect(result.pass).toBe(true)
             expect(el.isEnabled).toHaveBeenCalledTimes(1)
@@ -84,10 +84,10 @@ Received: "not disabled"`)
             expect(el.isEnabled).toHaveBeenCalledTimes(1)
         })
 
-        test('not - failure', async () => {
-            const result = await thisNotContext.toBeDisabled(el, { wait: 0 })
+        test('not - failure - pass should be true', async () => {
+            const result = await thisNotContext.toBeDisabled(el)
 
-            expect(result.pass).toBe(false)
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to be disabled
 
@@ -95,31 +95,31 @@ Expected: "not disabled"
 Received: "disabled"`)
         })
 
-        test('not - success', async () => {
+        test('not - success - pass should be false', async () => {
             const el = await $('sel')
             vi.mocked(el.isEnabled).mockResolvedValue(true)
 
-            const result = await thisNotContext.toBeDisabled(el, { wait: 0 })
+            const result = await thisNotContext.toBeDisabled(el)
 
-            expect(result.pass).toBe(true)
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
-        test('not - failure (with wait)', async () => {
+        test('not - failure (with wait) - pass should be true', async () => {
             const el = await $('sel')
             vi.mocked(el.isEnabled).mockResolvedValue(false)
 
-            const result = await thisNotContext.toBeDisabled(el, { wait: 1 })
+            const result = await thisNotContext.toBeDisabled(el)
 
-            expect(result.pass).toBe(false)
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
         })
 
-        test('not - success (with wait)', async () => {
+        test('not - success (with wait) - pass should be false', async () => {
             const el = await $('sel')
             vi.mocked(el.isEnabled).mockResolvedValue(true)
 
-            const result = await thisNotContext.toBeDisabled(el, { wait: 1 })
+            const result = await thisNotContext.toBeDisabled(el)
 
-            expect(result.pass).toBe(true)
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
     })
 
@@ -139,7 +139,7 @@ Received: "disabled"`)
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await thisContext.toBeDisabled(elements, { beforeAssertion, afterAssertion })
+            const result = await thisContext.toBeDisabled(elements, { beforeAssertion, afterAssertion, wait: 500 })
 
             for (const element of elements) {
                 expect(element.isEnabled).toHaveBeenCalledExactlyOnceWith()
@@ -147,43 +147,44 @@ Received: "disabled"`)
 
             expect(executeCommandBe).toHaveBeenCalledExactlyOnceWith(elements, expect.any(Function),
                 {
-                    'afterAssertion': afterAssertion,
-                    'beforeAssertion': beforeAssertion,
+                    afterAssertion,
+                    beforeAssertion,
+                    wait: 500,
                 },
             )
-            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {})
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 500, interval: 100 })
 
             expect(result.pass).toBe(true)
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toBeDisabled',
-                options: { beforeAssertion, afterAssertion }
+                options: { beforeAssertion, afterAssertion, wait: 500 }
             })
             expect(afterAssertion).toBeCalledWith({
                 matcherName: 'toBeDisabled',
-                options: { beforeAssertion, afterAssertion },
+                options: { beforeAssertion, afterAssertion, wait: 500 },
                 result
             })
         })
 
         test('success with toBeDisabled and command options', async () => {
-            const result = await thisContext.toBeDisabled(elements, { wait: 1 })
+            const result = await thisContext.toBeDisabled(elements)
 
             elements.forEach(element => {
                 expect(element.isEnabled).toHaveBeenCalledExactlyOnceWith()
             })
-            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  { wait: 1 })
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 1, interval: 100 })
             expect(result.pass).toBe(true)
         })
 
         test('wait but failure', async () => {
             vi.mocked(elements[0].isEnabled).mockRejectedValue(new Error('some error'))
 
-            await expect(() => thisContext.toBeDisabled(elements, { wait: 1 }))
+            await expect(() => thisContext.toBeDisabled(elements))
                 .rejects.toThrow('some error')
         })
 
         test('success on the first attempt', async () => {
-            const result = await thisContext.toBeDisabled(elements, { wait: 1 })
+            const result = await thisContext.toBeDisabled(elements)
 
             expect(result.pass).toBe(true)
             elements.forEach(element => {
@@ -202,10 +203,11 @@ Received: "disabled"`)
         })
 
         test('no wait - success', async () => {
-            const result = await thisContext.toBeDisabled(elements, { wait: 0 })
+            const result = await thisContext.toBeDisabled(elements)
 
-            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
-                wait: 0,
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {
+                wait: 1,
+                interval: 100,
             })
             elements.forEach(element => {
                 expect(element.isEnabled).toHaveBeenCalledExactlyOnceWith()
@@ -213,48 +215,56 @@ Received: "disabled"`)
             expect(result.pass).toBe(true)
         })
 
-        test('not - failure', async () => {
-            const result = await thisNotContext.toBeDisabled(elements, { wait: 0 })
+        test('not - failure - pass should be true', async () => {
+            const result = await thisNotContext.toBeDisabled(elements)
 
-            expect(result.pass).toBe(false)
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) not to be disabled
+Expect $$(\`sel\`) not to be disabled
 
-Expected: "not disabled"
-Received: "disabled"`
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "not disabled",
+-   "not disabled",
++   "disabled",
++   "disabled",
+  ]`
             )
         })
 
-        test('not - success', async () => {
+        test('not - success - pass should be false', async () => {
             elements.forEach(element => {
                 vi.mocked(element.isEnabled).mockResolvedValue(true)
             })
 
-            const result = await thisNotContext.toBeDisabled(elements, { wait: 0 })
+            const result = await thisNotContext.toBeDisabled(elements)
 
-            expect(result.pass).toBe(true)
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
-        test('not - failure (with wait)', async () => {
-            const result = await thisNotContext.toBeDisabled(elements, { wait: 1 })
+        test('not - failure (with wait) - pass should be true', async () => {
+            const result = await thisNotContext.toBeDisabled(elements)
 
-            expect(result.pass).toBe(false)
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
         })
 
-        test('not - success (with wait)', async () => {
+        test('not - success (with wait) - pass should be false', async () => {
             elements.forEach(element => {
                 vi.mocked(element.isEnabled).mockResolvedValue(true)
             })
 
-            const result = await thisNotContext.toBeDisabled(elements, { wait: 1 })
+            const result = await thisNotContext.toBeDisabled(elements, { wait: 500 })
 
-            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), true,  {
-                wait: 1,
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), true, {
+                wait: 500,
+                interval: 100,
             })
             elements.forEach(element => {
-                expect(element.isEnabled).toHaveBeenCalledExactlyOnceWith()
+                expect(element.isEnabled).toHaveBeenCalledTimes(5)
             })
-            expect(result.pass).toBe(true)
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
         test('message when both elements fail', async () => {
@@ -264,23 +274,36 @@ Received: "disabled"`
                 vi.mocked(element.isEnabled).mockResolvedValue(true)
             })
 
-            const result = await thisContext.toBeDisabled(elements, { wait: 1 })
+            const result = await thisContext.toBeDisabled(elements)
             expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to be disabled
+Expect $$(\`sel\`) to be disabled
 
-Expected: "disabled"
-Received: "not disabled"`)
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "disabled",
+-   "disabled",
++   "not disabled",
++   "not disabled",
+  ]`)
         })
 
         test('message when a single element fails', async () => {
             vi.mocked(elements[0].isEnabled).mockResolvedValue(true)
 
-            const result = await thisContext.toBeDisabled(elements, { wait: 1 })
+            const result = await thisContext.toBeDisabled(elements)
             expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to be disabled
+Expect $$(\`sel\`) to be disabled
 
-Expected: "disabled"
-Received: "not disabled"`)
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "disabled",
++   "not disabled",
+    "disabled",
+  ]`)
         })
     })
 })

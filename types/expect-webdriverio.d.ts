@@ -220,7 +220,8 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      */
     toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, (
         property: string,
-        value: MaybeArray<unknown | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>,
+        // Needs deep equality to support unknown property types (objects & arrays)
+        value: MaybeArray<string | number | null | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -687,12 +688,14 @@ declare namespace ExpectWebdriverIO {
 
     // Number options is the only options that also serves as a expected value container
     // This can caused problems with multiple expected values vs global command options
-    // Potnetial we should have this object as a NumberExpect type and have the options separate
+    // Potentially we should have this object as a NumberExpect type and have the options separate
     interface NumberOptions extends CommandOptions {
+
         /**
          * equals
          */
         eq?: number
+
         /**
          * less than or equals
          */

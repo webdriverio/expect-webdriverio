@@ -1,12 +1,12 @@
-import { describe, expect, test, vi } from 'vitest'
+import { describe, expect, test, vi, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
-import { executeCommand } from '../../src/util/executeCommand'
+import { executeCommand, defaultMultipleElementsIterationStrategy } from '../../src/util/executeCommand'
 
 vi.mock('@wdio/globals')
 
 describe(executeCommand, () => {
     const conditionPass = vi.fn().mockImplementation(async (_element: WebdriverIO.Element) => {
-        return ({ result: true, value: 'pass' })
+        return ({ result: true, value: 'myValue' })
     })
 
     describe('given single element', () => {
@@ -19,11 +19,13 @@ describe(executeCommand, () => {
 
             const result = await executeCommand(chainable, conditionPass)
 
-            expect(result.success).toBe(true)
-            expect(result.valueOrArray).toBe('pass')
-
             const unwrapped = await chainable
-            expect(result.elementOrArray).toBe(unwrapped)
+            expect(result).toEqual({
+                success: true,
+                valueOrArray: 'myValue',
+                elementOrArray: unwrapped,
+                results: [true]
+            })
         })
 
         test('Element', async () => {
@@ -31,9 +33,65 @@ describe(executeCommand, () => {
 
             const result = await executeCommand(element, conditionPass)
 
-            expect(result.success).toBe(true)
-            expect(result.valueOrArray).toBe('pass')
-            expect(result.elementOrArray).toBe(element)
+            expect(result).toEqual({
+                success: true,
+                valueOrArray: 'myValue',
+                elementOrArray: element,
+                results: [true]
+            })
+        })
+
+        test('Element with value result being an array', async () => {
+            const conditionPassWithValueArray = vi.fn().mockImplementation(async (_element: WebdriverIO.Element) => {
+                return ({ result: true, value: ['myValue'] })
+            })
+
+            const element = await $(selector)
+
+            const result = await executeCommand(element, conditionPassWithValueArray)
+
+            expect(result).toEqual({
+                success: true,
+                valueOrArray: ['myValue'],
+                elementOrArray: element,
+                results: [true]
+            })
+        })
+
+        test('Element with value result being an array of array', async () => {
+            const conditionPassWithValueArray = vi.fn().mockImplementation(async (_element: WebdriverIO.Element) => {
+                return ({ result: true, value: [['myValue']] })
+            })
+
+            const element = await $(selector)
+
+            const result = await executeCommand(element, conditionPassWithValueArray)
+
+            expect(result).toEqual({
+                success: true,
+                valueOrArray: [['myValue']],
+                elementOrArray: element,
+                results: [true]
+            })
+        })
+
+        test('when condition is not met', async () => {
+            const conditionPass = vi.fn().mockImplementation(async (_element: WebdriverIO.Element) => {
+                return ({ result: false })
+            })
+            const chainable = $(selector)
+
+            expect(chainable).toBeInstanceOf(Promise)
+
+            const result = await executeCommand(chainable, conditionPass)
+
+            const unwrapped = await chainable
+            expect(result).toEqual({
+                success: false,
+                valueOrArray: undefined,
+                elementOrArray: unwrapped,
+                results: [false]
+            })
         })
     })
 
@@ -47,11 +105,13 @@ describe(executeCommand, () => {
 
             const result = await executeCommand(chainableArray, conditionPass)
 
-            expect(result.success).toBe(true)
-            expect(result.valueOrArray).toEqual(['pass', 'pass'])
-
             const unwrapped = await chainableArray
-            expect(result.elementOrArray).toBe(unwrapped)
+            expect(result).toEqual({
+                success: true,
+                valueOrArray: ['myValue', 'myValue'],
+                elementOrArray: unwrapped,
+                results: [true, true]
+            })
         })
 
         test('ElementArray', async () => {
@@ -59,9 +119,12 @@ describe(executeCommand, () => {
 
             const result = await executeCommand(elementArray, conditionPass)
 
-            expect(result.success).toBe(true)
-            expect(result.valueOrArray).toEqual(['pass', 'pass'])
-            expect(result.elementOrArray).toBe(elementArray)
+            expect(result).toEqual({
+                success: true,
+                valueOrArray: ['myValue', 'myValue'],
+                elementOrArray: elementArray,
+                results: [true, true]
+            })
         })
 
         test('Element[]', async () => {
@@ -72,9 +135,32 @@ describe(executeCommand, () => {
 
             const result = await executeCommand(elements, conditionPass)
 
-            expect(result.success).toBe(true)
-            expect(result.valueOrArray).toEqual(['pass', 'pass'])
-            expect(result.elementOrArray).toBe(elements)
+            expect(result).toEqual({
+                success: true,
+                valueOrArray: ['myValue', 'myValue'],
+                elementOrArray: elements,
+                results: [true, true]
+            })
+        })
+
+        test('Arrray of value', async () => {
+            const conditionPassWithValueArray = vi.fn().mockImplementation(async (_element: WebdriverIO.Element) => {
+                return ({ result: true, value: ['myValue'] })
+            })
+
+            const elementArray = await $$(selector)
+            const elements = Array.from(elementArray)
+
+            expect(Array.isArray(elements)).toBe(true)
+
+            const result = await executeCommand(elements, conditionPassWithValueArray)
+
+            expect(result).toEqual({
+                success: true,
+                valueOrArray: [['myValue'], ['myValue']],
+                elementOrArray: elements,
+                results: [true, true]
+            })
         })
     })
 
@@ -82,17 +168,23 @@ describe(executeCommand, () => {
         test('undefined', async () => {
             const result = await executeCommand(undefined as any, conditionPass)
 
-            expect(result.success).toBe(false)
-            expect(result.valueOrArray).toBeUndefined()
-            expect(result.elementOrArray).toBeUndefined()
+            expect(result).toEqual({
+                success: false,
+                valueOrArray: undefined,
+                elementOrArray: undefined,
+                results: []
+            })
         })
 
         test('empty array', async () => {
             const result = await executeCommand([], conditionPass)
 
-            expect(result.success).toBe(false)
-            expect(result.valueOrArray).toBeUndefined()
-            expect(result.elementOrArray).toEqual([])
+            expect(result).toEqual({
+                success: false,
+                valueOrArray: undefined,
+                elementOrArray: [],
+                results: []
+            })
         })
 
         test('object', async () => {
@@ -100,9 +192,12 @@ describe(executeCommand, () => {
 
             const result = await executeCommand(anyOjbect as any, conditionPass)
 
-            expect(result.success).toBe(false)
-            expect(result.valueOrArray).toBeUndefined()
-            expect(result.elementOrArray).toBe(anyOjbect)
+            expect(result).toEqual({
+                success: false,
+                valueOrArray: undefined,
+                elementOrArray: { foo: 'bar' },
+                results: []
+            })
         })
 
         test('number', async () => {
@@ -110,9 +205,88 @@ describe(executeCommand, () => {
 
             const result = await executeCommand(anyNumber as any, conditionPass)
 
-            expect(result.success).toBe(false)
-            expect(result.valueOrArray).toBeUndefined()
-            expect(result.elementOrArray).toBe(anyNumber)
+            expect(result).toEqual({
+                success: false,
+                valueOrArray: undefined,
+                elementOrArray: 42,
+                results: []
+            })
+        })
+    })
+
+    describe('error handling', () => {
+        test('should throw if no strategies are provided', async () => {
+            const element = await $('some-selector')
+
+            await expect(executeCommand(element)).rejects.toThrowError('No condition or customMultipleElementCompareStrategy provided to executeCommand')
+        })
+    })
+})
+
+describe(defaultMultipleElementsIterationStrategy, () => {
+
+    describe('given single element', () => {
+        let singleElement: WebdriverIO.Element
+        let condition: any
+
+        beforeEach(async () => {
+            singleElement = await $('single-mock-element').getElement()
+            condition = vi.fn().mockImplementation(async (_el, expected) => ({ result: true, value: expected }))
+        })
+
+        test('should handle single element and single expected value', async () => {
+            const result = await defaultMultipleElementsIterationStrategy(singleElement, 'val', condition)
+
+            expect(result).toEqual([{ result: true, value: 'val' }])
+        })
+
+        test('should fail if single element and expected value is array (default)', async () => {
+            const result = await defaultMultipleElementsIterationStrategy(singleElement, ['val'], condition)
+
+            expect(result).toEqual([{ result: false, value: 'Expected value cannot be an array' }])
+        })
+
+        test('should handle single element and expected value array if supportArrayForSingleElement is true', async () => {
+            const result = await defaultMultipleElementsIterationStrategy(singleElement, ['val'], condition, { supportArrayForSingleElement: true })
+
+            expect(result).toEqual([{ result: true, value: ['val'] }])
+            expect(condition).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('given multiple elements', () => {
+        let elements: WebdriverIO.ElementArray
+        let condition: () => Promise<{ result: boolean; value: string }>
+
+        beforeEach(async () => {
+            elements = await $$('elements').getElements()
+            expect(elements.length).toBe(2)
+            condition = vi.fn()
+                .mockResolvedValueOnce({ result: true, value: 'val1' })
+                .mockResolvedValueOnce({ result: true, value: 'val2' })
+        })
+
+        test('should iterate over array of elements and array of expected values', async () => {
+            const result = await defaultMultipleElementsIterationStrategy(elements, ['val1', 'val2'], condition)
+
+            expect(result).toEqual([{ result: true, value: 'val1' }, { result: true, value: 'val2' }])
+            expect(condition).toHaveBeenCalledTimes(2)
+        })
+
+        test('should fail if array lengths mismatch', async () => {
+            const result = await defaultMultipleElementsIterationStrategy([elements[0]] as any, ['val1', 'val2'], condition)
+
+            expect(result).toEqual([{ result: false, value: 'Received array length 1, expected 2' }])
+        })
+
+        test('should iterate over array of elements and single expected value', async () => {
+            condition = vi.fn()
+                .mockResolvedValue({ result: true, value: 'val' })
+
+            const result = await defaultMultipleElementsIterationStrategy(elements, 'val', condition)
+
+            expect(result).toEqual([{ result: true, value: 'val' }, { result: true, value: 'val' }])
+            expect(condition).toHaveBeenCalledTimes(2)
         })
     })
 })

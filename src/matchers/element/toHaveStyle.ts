@@ -17,11 +17,10 @@ export async function toHaveStyle(
     expectedValue: MaybeArray<{ [key: string]: string; }>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'style', verb = 'have' } = this
+    const { expectation = 'style', verb = 'have', isNot, matcherName = 'toHaveStyle' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveStyle',
+        matcherName,
         expectedValue,
         options,
     })
@@ -29,18 +28,20 @@ export async function toHaveStyle(
     let el
     let actualStyle
 
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand(received,
-            undefined,
-            (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (element, expected) => condition(element, expected, options))
-        )
-        el = result.elementOrArray
-        actualStyle = result.valueOrArray
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand(received,
+                undefined,
+                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (element, expected) => condition(element, expected, options))
+            )
+            el = result.elementOrArray
+            actualStyle = result.valueOrArray
 
-        return result
-    },
-    isNot,
-    { wait: options.wait, interval: options.interval })
+            return result
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
     const message = enhanceError(el, wrapExpectedWithArray(el, actualStyle, expectedValue), actualStyle, this, verb, expectation, '', options)
 
@@ -50,7 +51,7 @@ export async function toHaveStyle(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveStyle',
+        matcherName,
         expectedValue,
         options,
         result
