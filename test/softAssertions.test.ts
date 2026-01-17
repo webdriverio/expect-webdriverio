@@ -225,14 +225,20 @@ describe('Soft Assertions', () => {
             expect(expectWdio.getSoftFailures('isolation-test-2').length).toBe(1)
         })
 
-        it('should handle calls without test context gracefully', async () => {
+        it('should handle calls without test context using global fallback ID', async () => {
             const softService = SoftAssertService.getInstance()
             softService.clearCurrentTest() // No test context
 
-            // Should throw immediately when no test context
-            await expect(async () => {
-                await expectWdio.soft(el).toHaveText('Expected Text')
-            }).rejects.toThrow()
+            // Should NOT throw - instead should store under global fallback ID
+            await expectWdio.soft(el).toHaveText('Expected Text')
+
+            // Failures should be stored under the global ID
+            const failures = expectWdio.getSoftFailures(SoftAssertService.GLOBAL_TEST_ID)
+            expect(failures.length).toBe(1)
+            expect(failures[0].matcherName).toBe('toHaveText')
+
+            // Clean up
+            expectWdio.clearSoftFailures(SoftAssertService.GLOBAL_TEST_ID)
         })
 
         it('should handle rapid concurrent soft assertions', async () => {
