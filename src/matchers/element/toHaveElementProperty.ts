@@ -23,7 +23,7 @@ async function condition(
         return { result: false, value: prop }
     }
 
-    // Why not comparing expected and prop for null? Bug?
+    // As specified in the w3c spec, cases where property simply exists, missing undefined here?
     if (expected === null) {
         return { result: true, value: prop }
     }
@@ -66,6 +66,7 @@ export async function toHaveElementProperty(
 
             return result
         },
+        isNot,
         { wait: options.wait, interval: options.interval }
     )
 
@@ -83,7 +84,7 @@ export async function toHaveElementProperty(
     }
 
     await options.afterAssertion?.({
-        matcherName: matcherName,
+        matcherName,
         expectedValue: [property, expectedValue],
         options,
         result

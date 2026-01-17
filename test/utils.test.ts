@@ -192,99 +192,8 @@ describe('utils', () => {
         })
     })
 
-    describe('waitUntil', () => {
-
-        describe('should be pass=true for normal success and pass=true for `isNot` failure', () => {
-            test('should return true when condition is met', async () => {
-                const condition = vi.fn().mockResolvedValue(true)
-
-                const result = await waitUntil(condition, { wait: 1000, interval: 100 })
-
-                expect(result).toBe(true)
-            })
-
-            test('should return true with wait 0', async () => {
-                const condition = vi.fn().mockResolvedValue(true)
-
-                const result = await waitUntil(condition, { wait: 0 })
-
-                expect(result).toBe(true)
-            })
-
-            test('should return true when condition is met within wait time', async () => {
-                const condition = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(true)
-
-                const result = await waitUntil(condition, { wait: 1000, interval: 50 })
-
-                expect(result).toBe(true)
-                expect(condition).toBeCalledTimes(3)
-            })
-
-            test('should return true when condition errors but still is met within wait time', async () => {
-                const condition = vi.fn().mockRejectedValueOnce(new Error('Test error')).mockRejectedValueOnce(new Error('Test error')).mockResolvedValueOnce(true)
-
-                const result = await waitUntil(condition, { wait: 1000, interval: 50 })
-
-                expect(result).toBe(true)
-                expect(condition).toBeCalledTimes(3)
-            })
-
-            test('should use default options when not provided', async () => {
-                const condition = vi.fn().mockResolvedValue(true)
-
-                const result = await waitUntil(condition)
-
-                expect(result).toBe(true)
-            })
-        })
-
-        describe('should be pass=false for normal failure or pass=false  for `isNot` success', () => {
-
-            test('should return false when condition is not met within wait time', async () => {
-                const condition = vi.fn().mockResolvedValue(false)
-
-                const result = await waitUntil(condition, { wait: 200, interval: 50 })
-
-                expect(result).toBe(false)
-            })
-
-            test('should return false when condition is not met and wait is 0', async () => {
-                const condition = vi.fn().mockResolvedValue(false)
-
-                const result = await waitUntil(condition, { wait: 0 })
-
-                expect(result).toBe(false)
-            })
-
-            test('should return false if condition throws but still return false', async () => {
-                const condition = vi.fn().mockRejectedValueOnce(new Error('Always failing')).mockRejectedValueOnce(new Error('Always failing')).mockResolvedValue(false)
-
-                const result = await waitUntil(condition, { wait: 200, interval: 50 })
-
-                expect(result).toBe(false)
-                expect(condition).toBeCalledTimes(4)
-            })
-        })
-
-        describe('when condition throws', () => {
-            const error = new Error('failing')
-
-            test('should throw with wait', async () => {
-                const condition = vi.fn().mockRejectedValue(error)
-
-                await expect(() => waitUntil(condition, { wait: 200, interval: 50 })).rejects.toThrowError('failing')
-            })
-
-            test('should throw with wait 0', async () => {
-                const condition = vi.fn().mockRejectedValue(error)
-
-                await expect(() => waitUntil(condition, { wait: 0 })).rejects.toThrowError('failing')
-
-            })
-        })
-    })
-
     // TODO dprevost to review
+    // TOOD ensure to test default values
     describe.skip(executeCommandBe, () => {
         let context: { isNot: boolean; expectation: string; verb: string }
         let command: () => Promise<boolean>
@@ -297,7 +206,7 @@ describe('utils', () => {
                 verb: 'be'
             }
             command = vi.fn().mockResolvedValue(true)
-            options = { wait: 1000, interval: 100 }
+            options = { wait: 1000, interval: 5 }
 
             // vi.mocked(waitUntilModule.waitUntil).mockImplementation(async (callback, _isNot, _options) => {
             //     return await callback()

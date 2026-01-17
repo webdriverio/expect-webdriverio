@@ -23,8 +23,7 @@ export async function toHaveWidth(
     expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberOptions>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'width', verb = 'have', matcherName = 'toHaveWidth' } = this
+    const { expectation = 'width', verb = 'have', matcherName = 'toHaveWidth', isNot } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -50,6 +49,7 @@ export async function toHaveWidth(
 
             return result
         },
+        isNot,
         { wait: wait ?? options.wait, interval: interval ?? options.interval }
     )
 

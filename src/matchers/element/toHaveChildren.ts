@@ -23,10 +23,10 @@ export async function toHaveChildren(
     expectedValue?: MaybeArray<number | ExpectWebdriverIO.NumberOptions>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'children', verb = 'have' } = this
+    const { expectation = 'children', verb = 'have', matcherName = 'toHaveChildren', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveChildren',
+        matcherName,
         expectedValue,
         options,
     })
@@ -38,17 +38,21 @@ export async function toHaveChildren(
 
     let el
     let children
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand(received,
-            undefined,
-            async (elements) => defaultMultipleElementsIterationStrategy(elements, numberOptions, condition)
-        )
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand(received,
+                undefined,
+                async (elements) => defaultMultipleElementsIterationStrategy(elements, numberOptions, condition)
+            )
 
-        el = result.elementOrArray
-        children = result.valueOrArray
+            el = result.elementOrArray
+            children = result.valueOrArray
 
-        return result
-    }, isNot, { wait: wait ?? options.wait, interval: interval ?? options.interval })
+            return result
+        },
+        isNot,
+        { wait: wait ?? options.wait, interval: interval ?? options.interval }
+    )
 
     const error = toNumberError(numberOptions)
     const expectedArray = wrapExpectedWithArray(el, children, error)

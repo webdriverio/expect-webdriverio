@@ -14,12 +14,25 @@ export const wrapExpectedWithArray = (el: WebdriverIO.Element | WdioElements | u
     return expected
 }
 
-export const isElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
-    return obj !== null && typeof obj === 'object' && 'selector' in obj && 'foundWith' in obj && 'parent' in obj
+export const isStrictlyElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
+    return !!obj && typeof obj === 'object'
+    && Array.isArray(obj)
+    && 'selector' in obj
+    && 'foundWith' in obj // Element does not have foundWith property
+    && 'parent' in obj // commun with Element
+    && 'getElements' in obj // specific to ElementArray
+}
+
+export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
+    // Note elementId is only for found element
+    return !!obj && typeof obj === 'object'
+    && !Array.isArray(obj)
+    && 'selector' in obj
+    && 'parent' in obj
 }
 
 export const isAnyKindOfElementArray = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] => {
-    return Array.isArray(obj) || isElementArray(obj)
+    return !!obj && isStrictlyElementArray(obj) || (Array.isArray(obj) && obj.every(isElement))
 }
 
 /**
@@ -34,27 +47,28 @@ export const isAnyKindOfElementArray = (obj: unknown): obj is WebdriverIO.Elemen
  * @returns
  */
 export const awaitElements = async(received: WdioElementOrArrayMaybePromise | undefined): Promise<{ elements: WdioElements | undefined, isSingleElement?: boolean, isElementLikeType: boolean }> => {
+    let awaitedElements = received
     // For non-awaited `$()` or `$$()`, so ChainablePromiseElement | ChainablePromiseArray.
     // At some extend it also process non-awaited `$().getElement()`, `$$().getElements()` or `$$().filter()`, but typings does not allow it
-    if (received instanceof Promise) {
-        received = await received
+    if (awaitedElements instanceof Promise) {
+        awaitedElements = await awaitedElements
     }
 
-    if (!received || (typeof received !== 'object')) {
-        return { elements: received, isElementLikeType: false }
+    if (!awaitedElements || (typeof awaitedElements !== 'object')) {
+        return { elements: awaitedElements, isElementLikeType: false }
     }
 
     // for `await $()` or `WebdriverIO.Element`
-    if ('getElement' in received) {
-        return { elements: [await received.getElement()], isSingleElement: true, isElementLikeType: true }
+    if ('getElement' in awaitedElements) {
+        return { elements: [await awaitedElements.getElement()], isSingleElement: true, isElementLikeType: true }
     }
     // for `await $$()` or `WebdriverIO.ElementArray` but not `WebdriverIO.Element[]`
-    if ('getElements' in received) {
-        return { elements: await received.getElements(), isSingleElement: false, isElementLikeType: true }
+    if ('getElements' in awaitedElements) {
+        return { elements: await awaitedElements.getElements(), isSingleElement: false, isElementLikeType: true }
     }
 
     // for `WebdriverIO.Element[]` or any other object
-    return { elements: received, isSingleElement: false, isElementLikeType: Array.isArray(received) && received.every(el => 'getElement' in el) }
+    return { elements: awaitedElements, isSingleElement: false, isElementLikeType: Array.isArray(awaitedElements) && awaitedElements.every(el => 'getElement' in el) }
 }
 
 export const map = <T>(

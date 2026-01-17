@@ -46,14 +46,14 @@ describe(toHaveAttribute, () => {
             test('failure when not present', async () => {
                 vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
 
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined, { wait: 1 })
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined)
 
                 expect(result.pass).toBe(false)
             })
 
             // TODO something to fix?
             test.skip('not failure when present', async () => {
-                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name', undefined, { wait: 1 })
+                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name', undefined)
 
                 expect(result.pass).toBe(false)
             })
@@ -62,7 +62,7 @@ describe(toHaveAttribute, () => {
             test.skip('not - success when not present', async () => {
                 vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
 
-                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name', undefined, { wait: 1 })
+                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name', undefined)
 
                 expect(result.pass).toBe(true)
             })
@@ -71,7 +71,7 @@ describe(toHaveAttribute, () => {
                 test('expect message', async () => {
                     vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
 
-                    const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined, { wait: 1 })
+                    const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined)
 
                     expect(result.pass).toBe(false)
                     expect(result.message()).toEqual(`\
@@ -92,7 +92,7 @@ Received: false`
             })
 
             test('success with RegExp and correct value', async () => {
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', /cOrReCt VaLuE/i, { wait: 1 })
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', /cOrReCt VaLuE/i)
 
                 expect(result.pass).toBe(true)
             })
@@ -124,7 +124,7 @@ Received: false`
                 test('expect message', async () => {
                     vi.mocked(el.getAttribute).mockResolvedValue('Wrong')
 
-                    const result = await thisContext.toHaveAttribute(el, 'attribute_name', 'Correct', { wait: 1 })
+                    const result = await thisContext.toHaveAttribute(el, 'attribute_name', 'Correct')
 
                     expect(result.pass).toBe(false)
                     expect(result.message()).toEqual(`\
@@ -140,7 +140,7 @@ Received: "Wrong"`
                 test('expect message', async () => {
                     vi.mocked(el.getAttribute).mockResolvedValue('Wrong')
 
-                    const result = await thisContext.toHaveAttribute(el, 'attribute_name', /WDIO/, { wait: 1 })
+                    const result = await thisContext.toHaveAttribute(el, 'attribute_name', /WDIO/)
 
                     expect(result.pass).toBe(false)
                     expect(result.message()).toEqual(`\
@@ -193,7 +193,7 @@ Received: "Wrong"`
                     vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
                 })
 
-                const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined, { wait: 1 })
+                const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined)
 
                 expect(result.pass).toBe(false)
             })
@@ -205,11 +205,11 @@ Received: "Wrong"`
                         vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
                     })
 
-                    const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined, { wait: 1 })
+                    const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined)
 
                     expect(result.pass).toBe(false)
                     expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to have attribute attribute_name
+Expect $$(\`sel\`) to have attribute attribute_name
 
 Expected: true
 Received: false`
@@ -225,7 +225,7 @@ Received: false`
                 expect(result.pass).toBe(true)
             })
             test('success with RegExp and correct value', async () => {
-                const result = await thisContext.toHaveAttribute(els, 'attribute_name', /cOrReCt VaLuE/i, { wait: 1 })
+                const result = await thisContext.toHaveAttribute(els, 'attribute_name', /cOrReCt VaLuE/i)
 
                 expect(result.pass).toBe(true)
             })
@@ -259,11 +259,11 @@ Received: false`
                         vi.mocked(el.getAttribute).mockResolvedValue('Wrong')
                     })
 
-                    const result = await thisContext.toHaveAttribute(els, 'attribute_name', 'Correct', { wait: 1 })
+                    const result = await thisContext.toHaveAttribute(els, 'attribute_name', 'Correct')
 
                     expect(result.pass).toBe(false)
                     expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to have attribute attribute_name
+Expect $$(\`sel\`) to have attribute attribute_name
 
 - Expected  - 2
 + Received  + 2
@@ -284,11 +284,11 @@ Expect $$(\`sel, <props>\`) to have attribute attribute_name
                         vi.mocked(el.getAttribute).mockResolvedValue('Wrong')
                     })
 
-                    const result = await thisContext.toHaveAttribute(els, 'attribute_name', /WDIO/, { wait: 1 })
+                    const result = await thisContext.toHaveAttribute(els, 'attribute_name', /WDIO/)
 
                     expect(result.pass).toBe(false)
                     expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to have attribute attribute_name
+Expect $$(\`sel\`) to have attribute attribute_name
 
 - Expected  - 2
 + Received  + 2
@@ -305,7 +305,7 @@ Expect $$(\`sel, <props>\`) to have attribute attribute_name
         })
 
         test('fails when no elements are provided', async () => {
-            const result = await thisContext.toHaveAttribute([], 'attribute_name', 'some value', { wait: 1 })
+            const result = await thisContext.toHaveAttribute([], 'attribute_name', 'some value')
 
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\

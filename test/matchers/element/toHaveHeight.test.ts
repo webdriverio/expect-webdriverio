@@ -31,19 +31,19 @@ describe(toHaveHeight, () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await thisContext.toHaveHeight(el, 32, { beforeAssertion, afterAssertion })
+            const result = await thisContext.toHaveHeight(el, 32, { beforeAssertion, afterAssertion, wait: 500 })
 
             expect(result.pass).toBe(true)
             expect(el.getSize).toHaveBeenCalledTimes(2)
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toHaveHeight',
                 expectedValue: 32,
-                options: { beforeAssertion, afterAssertion }
+                options: { beforeAssertion, afterAssertion, wait: 500 }
             })
             expect(afterAssertion).toBeCalledWith({
                 matcherName: 'toHaveHeight',
                 expectedValue: 32,
-                options: { beforeAssertion, afterAssertion },
+                options: { beforeAssertion, afterAssertion, wait: 500 },
                 result
             })
         })
@@ -51,12 +51,12 @@ describe(toHaveHeight, () => {
         test('wait but failure', async () => {
             vi.mocked(el.getSize).mockRejectedValue(new Error('some error'))
 
-            await expect(() => thisContext.toHaveHeight(el, 10, { wait: 1 }))
+            await expect(() => thisContext.toHaveHeight(el, 10))
                 .rejects.toThrow('some error')
         })
 
         test('success on the first attempt', async () => {
-            const result = await thisContext.toHaveHeight(el, 32, { wait: 1 })
+            const result = await thisContext.toHaveHeight(el, 32)
 
             expect(result.pass).toBe(true)
             expect(el.getSize).toHaveBeenCalledTimes(1)
@@ -83,16 +83,16 @@ Received: 32`
         })
 
         test('gte and lte', async () => {
-            const result = await thisContext.toHaveHeight(el, { gte: 31, lte: 33 }, { wait: 0 })
+            const result = await thisContext.toHaveHeight(el, { gte: 31, lte: 33 })
 
             expect(result.pass).toBe(true)
             expect(el.getSize).toHaveBeenCalledTimes(1)
         })
 
-        test('not - failure', async () => {
-            const result = await thisNotContext.toHaveHeight(el, 32, { wait: 0 })
+        test('not - failure - pass should be true', async () => {
+            const result = await thisNotContext.toHaveHeight(el, 32)
 
-            expect(result.pass).toBe(false)
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to have height
 
@@ -101,16 +101,16 @@ Received      : 32`
             )
         })
 
-        test('not - success', async () => {
-            const result = await thisNotContext.toHaveHeight(el, 10, { wait: 0 })
+        test('not - success - pass should be false', async () => {
+            const result = await thisNotContext.toHaveHeight(el, 10)
 
-            expect(result.pass).toBe(true)
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
         test('message', async () => {
             vi.mocked(el.getSize as () => Promise<number>).mockResolvedValue(1)
 
-            const result = await thisContext.toHaveHeight(el, 50, { wait: 1 })
+            const result = await thisContext.toHaveHeight(el, 50)
 
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\

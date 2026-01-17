@@ -44,13 +44,13 @@ describe(toHaveValue, () => {
             })
 
             test('assymetric passes', async () => {
-                const result = await thisContext.toHaveValue(el, expect.stringContaining('example value'), { wait: 0 })
+                const result = await thisContext.toHaveValue(el, expect.stringContaining('example value'))
 
                 expect(result.pass).toBe(true)
             })
 
             test('RegExp passes', async () => {
-                const result = await thisContext.toHaveValue(el, /ExAmPlE/i, { wait: 0 })
+                const result = await thisContext.toHaveValue(el, /ExAmPlE/i)
 
                 expect(result.pass).toBe(true)
             })
@@ -60,7 +60,7 @@ describe(toHaveValue, () => {
             let result: AssertionResult
 
             beforeEach(async () => {
-                result = await thisContext.toHaveValue(el, 'webdriver', { wait: 0 })
+                result = await thisContext.toHaveValue(el, 'webdriver')
             })
 
             test('does not pass with proper failure message', () => {
@@ -78,7 +78,7 @@ Received: "This is an example value"`
             let result: AssertionResult
 
             beforeEach(async () => {
-                result = await thisContext.toHaveValue(el, /WDIO/, { wait: 0 })
+                result = await thisContext.toHaveValue(el, /WDIO/)
             })
 
             test('does not pass with proper failure message', () => {

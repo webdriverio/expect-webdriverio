@@ -30,19 +30,19 @@ describe(toHaveHTML, () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await thisContext.toHaveHTML(element, '<div>foo</div>', { ignoreCase: true, beforeAssertion, afterAssertion })
+            const result = await thisContext.toHaveHTML(element, '<div>foo</div>', { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 })
 
             expect(result.pass).toBe(true)
             expect(element.getHTML).toHaveBeenCalledTimes(3)
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toHaveHTML',
                 expectedValue: '<div>foo</div>',
-                options: { ignoreCase: true, beforeAssertion, afterAssertion }
+                options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 }
             })
             expect(afterAssertion).toBeCalledWith({
                 matcherName: 'toHaveHTML',
                 expectedValue: '<div>foo</div>',
-                options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 },
                 result
             })
         })
@@ -79,12 +79,12 @@ describe(toHaveHTML, () => {
             expect(element.getHTML).toHaveBeenCalledTimes(1)
         })
 
-        test('not - failure', async () => {
+        test('not - failure - pass should be true', async () => {
             vi.mocked(element.getHTML).mockResolvedValue('<div>foo</div>')
 
-            const result = await toHaveHTML.call({ isNot: true }, element, '<div>foo</div>', { wait: 0 })
+            const result = await thisNotContext.toHaveHTML(element, '<div>foo</div>')
 
-            expect(result.pass).toBe(false)
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to have HTML
 
@@ -93,11 +93,12 @@ Received      : "<div>foo</div>"`
             )
         })
 
-        test('not - success', async () => {
+        test('not - success - pass should be false', async () => {
             vi.mocked(element.getHTML).mockResolvedValue('<div>foo</div>')
 
-            const result = await thisNotContext.toHaveHTML(element, 'foobar', { wait: 1 })
-            expect(result.pass).toBe(true)
+            const result = await thisNotContext.toHaveHTML(element, 'foobar')
+
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
         test('should return true if actual html + single replacer matches the expected html', async () => {
@@ -165,7 +166,7 @@ Received      : "<div>foo</div>"`
 
         test('message', async () => {
             vi.mocked(element.getHTML).mockResolvedValue('')
-            const result = await thisContext.toHaveHTML(element, '<div>foo</div>', { wait: 1 })
+            const result = await thisContext.toHaveHTML(element, '<div>foo</div>')
 
             expect(result.message()).toEqual(`\
 Expect $(\`sel\`) to have HTML
@@ -229,7 +230,7 @@ Received: ""`)
         test('failure if array does not match with html', async () => {
             vi.mocked(element.getHTML).mockResolvedValue('<div>foo</div>')
 
-            const result = await thisContext.toHaveHTML(element, ['div', 'foo'], { wait: 1 })
+            const result = await thisContext.toHaveHTML(element, ['div', 'foo'])
             expect(result.pass).toBe(false)
             expect(element.getHTML).toHaveBeenCalledTimes(1)
         })
@@ -240,17 +241,17 @@ Received: ""`)
             })
 
             test('success if match', async () => {
-                const result = await thisContext.toHaveHTML(element, /ExAmplE/i, { wait: 1 })
+                const result = await thisContext.toHaveHTML(element, /ExAmplE/i)
                 expect(result.pass).toBe(true)
             })
 
             test('success if array matches with RegExp', async () => {
-                const result = await thisContext.toHaveHTML(element, ['div', /ExAmPlE/i], { wait: 1 })
+                const result = await thisContext.toHaveHTML(element, ['div', /ExAmPlE/i])
                 expect(result.pass).toBe(true)
             })
 
             test('success if array matches with html', async () => {
-                const result = await thisContext.toHaveHTML(element, ['This is example HTML', /Webdriver/i], { wait: 1 })
+                const result = await thisContext.toHaveHTML(element, ['This is example HTML', /Webdriver/i])
                 expect(result.pass).toBe(true)
             })
 
@@ -263,7 +264,7 @@ Received: ""`)
             })
 
             test('failure if no match', async () => {
-                const result = await thisContext.toHaveHTML(element, /Webdriver/i, { wait: 1 })
+                const result = await thisContext.toHaveHTML(element, /Webdriver/i)
                 expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\
 Expect $(\`sel\`) to have HTML
@@ -274,7 +275,7 @@ Received: "This is example HTML"`
             })
 
             test('failure if array does not match with html', async () => {
-                const result = await thisContext.toHaveHTML(element, ['div', /Webdriver/i], { wait: 1 })
+                const result = await thisContext.toHaveHTML(element, ['div', /Webdriver/i])
 
                 expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\
@@ -304,19 +305,19 @@ Received: "This is example HTML"`
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await thisContext.toHaveHTML(elements, '<div>foo</div>', { ignoreCase: true, beforeAssertion, afterAssertion })
+            const result = await thisContext.toHaveHTML(elements, '<div>foo</div>', { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 })
 
             expect(result.pass).toBe(true)
             elements.forEach(el => expect(el.getHTML).toHaveBeenCalledTimes(3))
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toHaveHTML',
                 expectedValue: '<div>foo</div>',
-                options: { ignoreCase: true, beforeAssertion, afterAssertion }
+                options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 }
             })
             expect(afterAssertion).toBeCalledWith({
                 matcherName: 'toHaveHTML',
                 expectedValue: '<div>foo</div>',
-                options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 },
                 result
             })
         })
@@ -352,30 +353,32 @@ Received: "This is example HTML"`
             elements.forEach(el => expect(el.getHTML).toHaveBeenCalledTimes(1))
         })
 
-        test('not - failure', async () => {
+        test('not - failure - pass should be true', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('<div>foo</div>'))
-            const result = await toHaveHTML.call({ isNot: true }, elements, '<div>foo</div>', { wait: 0 })
+            const result = await thisNotContext.toHaveHTML(elements, '<div>foo</div>')
 
-            expect(result.pass).toBe(false)
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) not to have HTML
+Expect $$(\`sel\`) not to have HTML
 
 Expected [not]: ["<div>foo</div>", "<div>foo</div>"]
 Received      : ["<div>foo</div>", "<div>foo</div>"]`
             )
         })
 
-        test('not -- succcess', async () => {
+        test('not - succcess - pass should be false', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('<div></div>'))
 
-            const result = await thisNotContext.toHaveHTML(elements, '<div>foo</div>', { wait: 1 })
-            expect(result.pass).toBe(true)
+            const result = await thisNotContext.toHaveHTML(elements, '<div>foo</div>')
+
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
         test('should return true if actual html + single replacer matches the expected html', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('<div>foo</div>'))
 
             const result = await thisContext.toHaveHTML(elements, '<div>bar</div>', { replace: ['foo', 'bar'] })
+
             expect(result.pass).toBe(true)
         })
 
@@ -437,10 +440,10 @@ Received      : ["<div>foo</div>", "<div>foo</div>"]`
         test('message', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue(''))
 
-            const result = await thisContext.toHaveHTML(elements, '<div>foo</div>', { wait: 1 })
+            const result = await thisContext.toHaveHTML(elements, '<div>foo</div>')
 
             expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to have HTML
+Expect $$(\`sel\`) to have HTML
 
 - Expected  - 2
 + Received  + 2
@@ -457,10 +460,10 @@ Expect $$(\`sel, <props>\`) to have HTML
         test('fails if not an array exact match even if one element matches - not supporting any array value match', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('<div>foo</div>'))
 
-            const result = await thisContext.toHaveHTML(elements, ['div', '<div>foo</div>'], { wait: 0 })
+            const result = await thisContext.toHaveHTML(elements, ['div', '<div>foo</div>'])
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to have HTML
+Expect $$(\`sel\`) to have HTML
 
 - Expected  - 1
 + Received  + 1
@@ -479,7 +482,7 @@ Expect $$(\`sel, <props>\`) to have HTML
             const result = await thisContext.toHaveHTML(elements, ['div', '<div>foo</div>', 'toto'], { trim: true, wait: 0 })
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to have HTML
+Expect $$(\`sel\`) to have HTML
 
 - Expected  - 3
 + Received  + 1
@@ -572,11 +575,11 @@ Expect $$(\`sel, <props>\`) to have HTML
             })
 
             test('failure if no match', async () => {
-                const result = await thisContext.toHaveHTML(elements, /Webdriver/i, { wait: 0 })
+                const result = await thisContext.toHaveHTML(elements, /Webdriver/i)
 
                 expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to have HTML
+Expect $$(\`sel\`) to have HTML
 
 - Expected  - 2
 + Received  + 2
@@ -591,11 +594,11 @@ Expect $$(\`sel, <props>\`) to have HTML
             })
 
             test('failure if array does not match with html', async () => {
-                const result = await thisContext.toHaveHTML(elements, ['div', /Webdriver/i], { wait: 0 })
+                const result = await thisContext.toHaveHTML(elements, ['div', /Webdriver/i])
 
                 expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\
-Expect $$(\`sel, <props>\`) to have HTML
+Expect $$(\`sel\`) to have HTML
 
 - Expected  - 2
 + Received  + 2

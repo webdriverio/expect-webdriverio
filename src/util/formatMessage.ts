@@ -1,7 +1,7 @@
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
-import { isElementArray } from './elementsUtil.js'
+import { isStrictlyElementArray } from './elementsUtil.js'
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
@@ -16,7 +16,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
     const selectors = []
     let parent: WebdriverIO.ElementArray['parent'] | undefined
 
-    if (isElementArray(el)) {
+    if (isStrictlyElementArray(el)) {
         selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)
         parent = el.parent
     } else if (!Array.isArray(el)) {

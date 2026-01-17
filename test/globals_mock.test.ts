@@ -53,7 +53,7 @@ describe('globals mock', () => {
         })
     })
 
-    describe('$$', () => {
+    describe($$, () => {
         it('should return a ChainablePromiseArray', async () => {
             const els = $$('foo')
             expect(els).toHaveProperty('then')
@@ -83,6 +83,12 @@ describe('globals mock', () => {
             // map is available on the resolved array
             const selectors = els.map(el => el.selector)
             expect(selectors).toEqual(['foo', 'foo'])
+        })
+
+        it('should returns ElementArray on getElements', async () => {
+            const els = await $$('foo')
+
+            expect(await els.getElements()).toEqual(els)
         })
     })
 })

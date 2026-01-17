@@ -9,10 +9,10 @@ export async function toBeElementsArrayOfSize(
     expectedValue: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'elements array of size', verb = 'be' } = this
+    const { expectation = 'elements array of size', verb = 'be', matcherName = 'toBeElementsArrayOfSize', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeElementsArrayOfSize',
+        matcherName,
         expectedValue,
         options,
     })
@@ -23,19 +23,25 @@ export async function toBeElementsArrayOfSize(
     let elements = await received as WdioElements
     const originalLength = elements.length
 
-    const pass = await waitUntil(async () => {
+    const wait = numberOptions.wait ?? options.wait ?? DEFAULT_OPTIONS.wait
+
+    const pass = await waitUntil(
+        async () => {
         /**
          * check numbers first before refetching elements
          */
-        const isPassing = compareNumbers(elements.length, numberOptions)
-        if (isPassing) {
-            return isPassing
-        }
+            const isPassing = compareNumbers(elements.length, numberOptions)
+            if (isPassing) {
+                return isPassing
+            }
 
-        // TODO analyse this refetch purpose if needed in more places or just pas false to have waitUntil to refetch with the await inside waitUntil
-        elements = await refetchElements(elements, numberOptions.wait, true)
-        return false
-    }, { ...numberOptions, ...options })
+            // TODO analyse this refetch purpose if needed in more places or just pas false to have waitUntil to refetch with the await inside waitUntil
+            elements = await refetchElements(elements, wait, true)
+            return false
+        },
+        isNot,
+        { wait, interval: numberOptions.interval ?? options.interval }
+    )
 
     if (Array.isArray(received) && pass) {
         for (let index = originalLength; index < elements.length; index++) {
@@ -52,7 +58,7 @@ export async function toBeElementsArrayOfSize(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toBeElementsArrayOfSize',
+        matcherName,
         expectedValue,
         options,
         result

@@ -27,19 +27,19 @@ describe(toHaveComputedLabel, () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await thisContext.toHaveComputedLabel(el, 'WebdriverIO', { ignoreCase: true, beforeAssertion, afterAssertion })
+            const result = await thisContext.toHaveComputedLabel(el, 'WebdriverIO', { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 })
 
             expect(result.pass).toBe(true)
             expect(el.getComputedLabel).toHaveBeenCalledTimes(3)
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toHaveComputedLabel',
                 expectedValue: 'WebdriverIO',
-                options: { ignoreCase: true, beforeAssertion, afterAssertion }
+                options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 }
             })
             expect(afterAssertion).toBeCalledWith({
                 matcherName: 'toHaveComputedLabel',
                 expectedValue: 'WebdriverIO',
-                options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 },
                 result
             })
         })
@@ -72,10 +72,10 @@ describe(toHaveComputedLabel, () => {
             expect(el.getComputedLabel).toHaveBeenCalledTimes(1)
         })
 
-        test('not - failure', async () => {
+        test('not - failure - pass should be true', async () => {
             const result = await thisNotContext.toHaveComputedLabel(el, 'WebdriverIO', { wait: 0 })
 
-            expect(result.pass).toBe(false)
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to have computed label
 
@@ -84,10 +84,10 @@ Received      : "WebdriverIO"`
             )
         })
 
-        test('not - success', async () => {
-            const result = await thisNotContext.toHaveComputedLabel(el, 'foobar', { wait: 1 })
+        test('not - success - pass should be false', async () => {
+            const result = await thisNotContext.toHaveComputedLabel(el, 'foobar')
 
-            expect(result.pass).toBe(true)
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
         test('should return true if actual computed label + single replacer matches the expected computed label', async () => {
@@ -142,7 +142,7 @@ Received      : "WebdriverIO"`
         test('message', async () => {
             vi.mocked(el.getComputedLabel).mockResolvedValue('')
 
-            const result = await thisContext.toHaveComputedLabel(el, 'WebdriverIO', { wait: 1 })
+            const result = await thisContext.toHaveComputedLabel(el, 'WebdriverIO')
 
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\
@@ -204,7 +204,7 @@ Received: ""`)
         })
 
         test('failure if array does not match with computed label', async () => {
-            const result = await thisContext.toHaveComputedLabel(el, ['div', 'foo'], { wait: 1 })
+            const result = await thisContext.toHaveComputedLabel(el, ['div', 'foo'])
 
             expect(result.pass).toBe(false)
             expect(el.getComputedLabel).toHaveBeenCalledTimes(1)
@@ -216,12 +216,12 @@ Received: ""`)
             })
 
             test('success if match', async () => {
-                const result = await thisContext.toHaveComputedLabel(el, /ExAmplE/i, { wait: 1 })
+                const result = await thisContext.toHaveComputedLabel(el, /ExAmplE/i)
                 expect(result.pass).toBe(true)
             })
 
             test('success if array matches with RegExp', async () => {
-                const result = await thisContext.toHaveComputedLabel(el, ['div', /ExAmPlE/i], { wait: 1 })
+                const result = await thisContext.toHaveComputedLabel(el, ['div', /ExAmPlE/i])
                 expect(result.pass).toBe(true)
             })
 
@@ -229,13 +229,12 @@ Received: ""`)
                 const result = await thisContext.toHaveComputedLabel(el, [
                     'This is example computed label',
                     /Webdriver/i,
-                ], { wait: 1 })
+                ])
                 expect(result.pass).toBe(true)
             })
 
             test('success if array matches with computed label and ignoreCase', async () => {
-                const result = await toHaveComputedLabel.call(
-                    {},
+                const result = await thisContext.toHaveComputedLabel(
                     el,
                     ['ThIs Is ExAmPlE computed label', /Webdriver/i],
                     {
@@ -247,7 +246,7 @@ Received: ""`)
             })
 
             test('failure if no match', async () => {
-                const result = await thisContext.toHaveComputedLabel(el, /Webdriver/i, { wait: 1 })
+                const result = await thisContext.toHaveComputedLabel(el, /Webdriver/i)
 
                 expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\
@@ -259,7 +258,7 @@ Received: "This is example computed label"`
             })
 
             test('failure if array does not match with computed label', async () => {
-                const result = await thisContext.toHaveComputedLabel(el, ['div', /Webdriver/i], { wait: 1 })
+                const result = await thisContext.toHaveComputedLabel(el, ['div', /Webdriver/i])
 
                 expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\

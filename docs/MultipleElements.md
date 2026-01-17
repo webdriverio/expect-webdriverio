@@ -22,3 +22,20 @@ Any of the below element types can be passed to `expect`:
 - `ChainablePromiseArray` (the non-awaited case)
 - `ElementArray` (the awaited case)
 - `Element[]` (the filtered case)
+
+## Alternative
+
+For better control on each element value assertion, a parametrized test of your assertion framework can be used.
+Example with mocha
+```ts
+    describe('Element at index of `$$`', function () {
+        [ { expectedText: 'one', index: 0 },
+            { expectedText: 'two', index: 2 },
+            { expectedText: 'four', index: 4 },
+        ].forEach(function ( { expectedText, index } ) {
+            it("Element at $index of `$$('label')` is $expectedText", function () {
+                expect($$('label')[index]).toHaveText(expectedText);
+            });
+        });
+    });
+```    

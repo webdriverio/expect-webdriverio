@@ -4,6 +4,16 @@ import { $ } from '@wdio/globals'
 
 vi.mock('@wdio/globals')
 
+vi.mock('../src/constants.js', async () => ({
+    DEFAULT_OPTIONS: {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+        ...(await vi.importActual<typeof import('../src/constants.js')>('../src/constants.js')).DEFAULT_OPTIONS,
+        // speed up tests by lowering default wait timeout
+        wait : 15,
+        interval: 5
+    }
+}))
+
 const ALL_MATCHERS = [
     // browser
     'toHaveClipboardText',
@@ -157,21 +167,21 @@ Expected [not]: " Valid Text "
 Received      : " Valid Text "`
             )
 
-            await expect(() => expectLib(el).not.toHaveHTML('<Html/>', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toHaveHTML('<Html/>')).rejects.toThrow(`\
 Expect $(\`selector\`) not to have HTML
 
 Expected [not]: "<Html/>"
 Received      : "<Html/>"`
             )
 
-            await expect(() => expectLib(el).not.toHaveComputedLabel('Computed Label', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toHaveComputedLabel('Computed Label')).rejects.toThrow(`\
 Expect $(\`selector\`) not to have computed label
 
 Expected [not]: "Computed Label"
 Received      : "Computed Label"`
             )
 
-            await expect(() => expectLib(el).not.toHaveComputedRole('Computed Role', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toHaveComputedRole('Computed Role')).rejects.toThrow(`\
 Expect $(\`selector\`) not to have computed role
 
 Expected [not]: "Computed Role"
@@ -180,21 +190,21 @@ Received      : "Computed Role"`
         })
 
         test('size matchers', async () => {
-            await expect(() => expectLib(el).not.toHaveSize({ width: 100, height: 50 }, { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toHaveSize({ width: 100, height: 50 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to have size
 
 Expected [not]: {"height": 50, "width": 100}
 Received      : {"height": 50, "width": 100}`
             )
 
-            await expect(() => expectLib(el).not.toHaveHeight(50, { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toHaveHeight(50)).rejects.toThrow(`\
 Expect $(\`selector\`) not to have height
 
 Expected [not]: 50
 Received      : 50`
             )
 
-            await expect(() => expectLib(el).not.toHaveWidth(100, { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toHaveWidth(100)).rejects.toThrow(`\
 Expect $(\`selector\`) not to have width
 
 Expected [not]: 100
@@ -287,31 +297,31 @@ Received: "not selected"`)
         })
 
         test('Ensure toHave matchers throws and show proper failing message', async () => {
-            await expect(() => expectLib(el).toHaveText('Some other text', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveText('Some other text')).rejects.toThrow(`\
 Expect $(\`selector\`) to have text
 
 Expected: "Some other text"
 Received: " Valid Text "`)
 
-            await expect(() => expectLib(el).toHaveHTML('<SomeOtherHtml/>', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveHTML('<SomeOtherHtml/>')).rejects.toThrow(`\
 Expect $(\`selector\`) to have HTML
 
 Expected: "<SomeOtherHtml/>"
 Received: "<Html/>"`)
 
-            await expect(() => expectLib(el).toHaveComputedLabel('Some Other Computed Label', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveComputedLabel('Some Other Computed Label')).rejects.toThrow(`\
 Expect $(\`selector\`) to have computed label
 
 Expected: "Some Other Computed Label"
 Received: "Computed Label"`)
 
-            await expect(() => expectLib(el).toHaveComputedRole('Some Other Computed Role', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveComputedRole('Some Other Computed Role')).rejects.toThrow(`\
 Expect $(\`selector\`) to have computed role
 
 Expected: "Some Other Computed Role"
 Received: "Computed Role"`)
 
-            await expect(() => expectLib(el).toHaveElementProperty('someProperty', 'some other value', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveElementProperty('someProperty', 'some other value')).rejects.toThrow(`\
 Expect $(\`selector\`) to have property someProperty
 
 Expected: "some other value"
@@ -320,7 +330,7 @@ Received: "1"`)
         })
 
         test('Ensure toHaveAttribute matchers throw and show proper failing message', async () => {
-            await expect(() => expectLib(el).toHaveAttribute('someAttribute', 'some other attribute', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveAttribute('someAttribute', 'some other attribute')).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute someAttribute
 
 Expected: "some other attribute"
@@ -332,7 +342,7 @@ Expect $(\`selector\`) to have attribute notExistingAttribute
 
 Expected: true
 Received: false`)
-            await expect(() => expectLib(el).toHaveAttr('someAttribute', 'some other attribute', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveAttr('someAttribute', 'some other attribute')).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute someAttribute
 
 Expected: "some other attribute"
@@ -340,7 +350,7 @@ Received: null`)
         })
 
         test('Ensure toHaveSize, toHaveHeight, toHaveWidth matchers throw and show proper failing message', async () => {
-            await expect(() => expectLib(el).toHaveSize({ width: 200, height: 100 }, { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveSize({ width: 200, height: 100 })).rejects.toThrow(`\
 Expect $(\`selector\`) to have size
 
 - Expected  - 2
@@ -352,13 +362,13 @@ Expect $(\`selector\`) to have size
 +   "height": 50,
 +   "width": 100,
   }`)
-            await expect(() => expectLib(el).toHaveHeight(100, { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveHeight(100)).rejects.toThrow(`\
 Expect $(\`selector\`) to have height
 
 Expected: 100
 Received: 50`)
 
-            await expect(() => expectLib(el).toHaveWidth(200, { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveWidth(200)).rejects.toThrow(`\
 Expect $(\`selector\`) to have width
 
 Expected: 200
@@ -386,16 +396,16 @@ Received: 100`)
         })
 
         test('toHave matchers', async () => {
-            await expectLib(el).not.toHaveText('Some other text', { wait: 1 })
-            await expectLib(el).not.toHaveHTML('<SomeOtherHtml/>', { wait: 1 })
-            await expectLib(el).not.toHaveComputedLabel('Some Other Computed Label', { wait: 1 })
-            await expectLib(el).not.toHaveComputedRole('Some Other Computed Role', { wait: 1 })
-            await expectLib(el).not.toHaveElementProperty('someProperty', 'some other value', { wait: 1 })
-            await expectLib(el).not.toHaveAttribute('someAttribute', 'some other attribute', { wait: 1 })
-            await expectLib(el).not.toHaveAttr('someAttribute', 'some other attribute', { wait: 1 })
-            await expectLib(el).not.toHaveSize({ width: 200, height: 100 }, { wait: 1 })
-            await expectLib(el).not.toHaveHeight(100, { wait: 1 })
-            await expectLib(el).not.toHaveWidth(200, { wait: 1 })
+            await expectLib(el).not.toHaveText('Some other text')
+            await expectLib(el).not.toHaveHTML('<SomeOtherHtml/>')
+            await expectLib(el).not.toHaveComputedLabel('Some Other Computed Label')
+            await expectLib(el).not.toHaveComputedRole('Some Other Computed Role')
+            await expectLib(el).not.toHaveElementProperty('someProperty', 'some other value')
+            await expectLib(el).not.toHaveAttribute('someAttribute', 'some other attribute')
+            await expectLib(el).not.toHaveAttr('someAttribute', 'some other attribute')
+            await expectLib(el).not.toHaveSize({ width: 200, height: 100 })
+            await expectLib(el).not.toHaveHeight(100)
+            await expectLib(el).not.toHaveWidth(200)
         })
 
     })
@@ -410,7 +420,7 @@ Received: 100`)
                 .mockResolvedValueOnce(true)
 
             // Passes when element becomes displayed
-            await expectLib(el).toBeDisplayed({ wait: 300, interval: 100 })
+            await expectLib(el).toBeDisplayed({ wait: 300, interval: 5 })
 
             vi.mocked(el.isDisplayed)
                 .mockResolvedValueOnce(false)
@@ -418,7 +428,7 @@ Received: 100`)
                 .mockResolvedValueOnce(true)
 
             // Should not pass with the same scenario to be consistent
-            await expect(() => expectLib(el).not.toBeDisplayed({ wait: 300, interval: 100 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toBeDisplayed({ wait: 300, interval: 5 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to be displayed
 
 Expected: "not displayed"
@@ -430,9 +440,7 @@ Received: "displayed"`)
         test('when element eventually is not displayed, matcher and .not matcher should be consistent', async () => {
             const el = await $('selector')
             vi.mocked(el.isDisplayed)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(false)
+                .mockResolvedValue(false)
 
             // Does not pass since element never becomes displayed
             await expect(expectLib(el).toBeDisplayed({ wait: 300, interval: 100 })).rejects.toThrow(`\
@@ -442,9 +450,7 @@ Expected: "displayed"
 Received: "not displayed"`)
 
             vi.mocked(el.isDisplayed)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(false)
+                .mockResolvedValue(false)
 
             // Should pass with the same scenario to be consistent
             await expectLib(el).not.toBeDisplayed({ wait: 300, interval: 100 })

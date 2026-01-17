@@ -50,21 +50,21 @@ describe(toHaveElementClass, () => {
         })
 
         test('success when including surrounding spaces and asymmetric matcher', async () => {
-            const result = await thisContext.toHaveElementClass(el, expect.stringContaining('some-class '), { wait: 0 })
+            const result = await thisContext.toHaveElementClass(el, expect.stringContaining('some-class '))
             expect(result.pass).toBe(true)
 
-            const result2 = await thisContext.toHaveElementClass(el, expect.stringContaining(' another-class '), { wait: 0 })
+            const result2 = await thisContext.toHaveElementClass(el, expect.stringContaining(' another-class '))
             expect(result2.pass).toBe(true)
         })
 
         test('success with RegExp when class name is present', async () => {
-            const result = await thisContext.toHaveElementClass(el, /sOmE-cLaSs/i, { wait: 0 })
+            const result = await thisContext.toHaveElementClass(el, /sOmE-cLaSs/i)
 
             expect(result.pass).toBe(true)
         })
 
         test('success if array matches with class', async () => {
-            const result = await thisContext.toHaveElementClass(el, ['some-class', 'yet-another-class'], { wait: 0 })
+            const result = await thisContext.toHaveElementClass(el, ['some-class', 'yet-another-class'])
 
             expect(result.pass).toBe(true)
         })
@@ -82,7 +82,7 @@ Received: "some-class another-class yet-another-class"`)
         })
 
         test('failure if array does not match with class', async () => {
-            const result = await thisContext.toHaveElementClass(el, ['someclass', 'anotherclass'], { wait: 0 })
+            const result = await thisContext.toHaveElementClass(el, ['someclass', 'anotherclass'])
 
             expect(result.pass).toBe(false)
         })
@@ -92,7 +92,7 @@ Received: "some-class another-class yet-another-class"`)
                 vi.mocked(el.getAttribute).mockImplementation(async () => {
                     return null as unknown as string // casting required since wdio as bug typing see
                 })
-                const result = await thisContext.toHaveElementClass(el, 'some-class', { wait: 0 })
+                const result = await thisContext.toHaveElementClass(el, 'some-class')
                 expect(result.pass).toBe(false)
             })
 
@@ -124,7 +124,7 @@ Received: "some-class another-class yet-another-class"`)
             let result: AssertionResult
 
             beforeEach(async () => {
-                result = await thisContext.toHaveElementClass(el, 'test', { wait: 0 })
+                result = await thisContext.toHaveElementClass(el, 'test')
             })
 
             test('failure', () => {
@@ -141,7 +141,7 @@ Received: "some-class another-class yet-another-class"` )
             let result: AssertionResult
 
             beforeEach(async () => {
-                result = await thisContext.toHaveElementClass(el, /WDIO/, { wait: 0 })
+                result = await thisContext.toHaveElementClass(el, /WDIO/)
             })
 
             test('failure', () => {

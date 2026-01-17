@@ -7,10 +7,13 @@ export async function toBeRequestedTimes(
     expectedValue: number | ExpectWebdriverIO.NumberOptions = {},
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = `called${typeof expectedValue === 'number' ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`, verb = 'be' } = this
+    const {
+        expectation = `called${typeof expectedValue === 'number' ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`, verb = 'be',
+        isNot, matcherName = 'toBeRequestedTimes'
+    } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeRequestedTimes',
+        matcherName,
         expectedValue,
         options,
     })
@@ -21,10 +24,14 @@ export async function toBeRequestedTimes(
         : expectedValue || {}
 
     let actual
-    const pass = await waitUntil(async () => {
-        actual = received.calls.length
-        return compareNumbers(actual, numberOptions)
-    }, { wait: options.wait, interval: options.interval })
+    const pass = await waitUntil(
+        async () => {
+            actual = received.calls.length
+            return compareNumbers(actual, numberOptions)
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
     const error = numberError(numberOptions)
     const message = enhanceError('mock', error, actual, this, verb, expectation, '', numberOptions)
@@ -35,7 +42,7 @@ export async function toBeRequestedTimes(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toBeRequestedTimes',
+        matcherName,
         expectedValue,
         options,
         result

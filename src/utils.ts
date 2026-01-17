@@ -8,6 +8,7 @@ import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
+import { DEFAULT_OPTIONS } from './constants.js'
 
 const asymmetricMatcher =
     typeof Symbol === 'function' && Symbol.for
@@ -29,47 +30,13 @@ function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetri
     return isAsymmetricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
 }
 
-/**
- * wait for expectation to succeed
- * @param condition function
- * @param isNot     https://jestjs.io/docs/expect#thisisnot
- * @param options   wait, interval, etc
- */
-const waitUntil = async (
-    condition: () => Promise<boolean>,
-    { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
-): Promise<boolean> => {
-    const start = Date.now()
-    let error: unknown
-    let result = false
-
-    do {
-        try {
-            result = await condition()
-            error = undefined
-            if (result) {
-                break
-            }
-        } catch (err) {
-            error = err
-        }
-
-        // No need to sleep again if time is already over
-        if (Date.now() - start < wait) {
-            await sleep(interval)
-        }
-    } while (Date.now() - start < wait)
-
-    if (error) { throw error }
-
-    return result
-}
-
 async function executeCommandBe(
     nonAwaitedElements: WdioElementOrArrayMaybePromise | undefined,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): ExpectWebdriverIO.AsyncAssertionResult {
+    const { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = options
+
     let awaitedElements: WdioElements | WebdriverIO.Element | undefined
     const pass = await waitUntil(
         async () => {
@@ -81,11 +48,12 @@ async function executeCommandBe(
             awaitedElements = elementOrArray
             return { success, results }
         },
-        { wait: options.wait, interval: options.interval }
+        this.isNot,
+        { wait, interval }
     )
 
     const  { verb = 'be' } = this
-    const message = enhanceErrorBe(el, { ...this, verb }, options)
+    const message = enhanceErrorBe(awaitedElements, { ...this, verb }, options)
 
     return {
         pass,

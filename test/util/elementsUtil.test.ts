@@ -1,8 +1,8 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $, $$ } from '@wdio/globals'
+import { $, $$, } from '@wdio/globals'
 
-import { awaitElements, wrapExpectedWithArray, map } from '../../src/util/elementsUtil.js'
-import { elementFactory } from '../__mocks__/@wdio/globals.js'
+import { awaitElements, wrapExpectedWithArray, map, isStrictlyElementArray, isElement, isAnyKindOfElementArray } from '../../src/util/elementsUtil.js'
+import { chainableElementArrayFactory, elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -276,6 +276,104 @@ describe('elementsUtil', () => {
             expect(command).toHaveBeenCalledTimes(2)
             expect(command).toHaveBeenCalledWith(elements[0], 0)
             expect(command).toHaveBeenCalledWith(elements[1], 1)
+        })
+    })
+
+    describe(isStrictlyElementArray, async () => {
+        test.for([
+            await $$('elements').getElements(),
+            await $$('elements'),
+            elementArrayFactory('elements'),
+            await chainableElementArrayFactory('elements', 3),
+        ])('should return true for ElementArray: %s', async (elements) => {
+            const isElementArrayResult = isStrictlyElementArray(elements)
+
+            expect(elements).toBeDefined()
+            expect(typeof elements).toBe('object')
+            expect(isElementArrayResult).toBe(true)
+        })
+
+        test.for([
+            await $('elements'),
+            await $('elements').getElement(),
+            $$('elements'),
+            $$('elements').getElements(),
+            elementFactory('element'),
+            [elementFactory('element1'), elementFactory('element2')],
+            undefined,
+            null,
+            42,
+            'string',
+            {},
+            Promise.resolve(true),
+            []
+        ])('should return false for non-ElementArray: %s', async (elements) => {
+            const isElementArrayResult = isStrictlyElementArray(elements)
+
+            expect(isElementArrayResult).toBe(false)
+        })
+    })
+
+    describe(isElement, async () => {
+        test.for([
+            await $('element').getElement(),
+            await $('element'),
+            elementFactory('element'),
+        ])('should return true for Element: %s', async (element) => {
+            const isElementResult = isElement(element)
+
+            expect(isElementResult).toBe(true)
+        })
+
+        test.for([
+            $$('elements'),
+            $$('elements').getElements(),
+            [elementFactory('element1'), elementFactory('element2')],
+            undefined,
+            null,
+            42,
+            'string',
+            {},
+            Promise.resolve(true)
+        ])('should return false for non-Element: %s', async (element) => {
+            const isElementResult = isElement(element)
+
+            expect(isElementResult).toBe(false)
+        })
+    })
+
+    describe(isAnyKindOfElementArray, async () => {
+        test.for([
+            await $$('elements').getElements(),
+            await $$('elements'),
+            elementArrayFactory('elements'),
+            await chainableElementArrayFactory('elements', 3),
+            [elementFactory('element1'), elementFactory('element2')],
+            []
+        ])('should return true for ElementArray or Element[] %s', async (elements) => {
+            const isElementArrayResult = isAnyKindOfElementArray(elements)
+
+            expect(isElementArrayResult).toBe(true)
+        })
+
+        test.for([
+            await $('elements'),
+            await $('elements').getElement(),
+            $$('elements'),
+            $$('elements').getElements(),
+            undefined,
+            null,
+            42,
+            'string',
+            {},
+            Promise.resolve(true),
+            [$('elements')],
+            [$$('elements')],
+            [await $$('elements')]
+        ])('should return false for non-ElementArray or non-Element[]: %s', async (elements) => {
+            const isElementArrayResult = isAnyKindOfElementArray(elements)
+
+            expect(isElementArrayResult).toBe(false)
         })
     })
 })

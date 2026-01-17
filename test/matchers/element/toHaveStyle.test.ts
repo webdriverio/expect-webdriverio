@@ -39,19 +39,19 @@ describe(toHaveStyle, () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await thisContext.toHaveStyle(el, mockStyle, { ignoreCase: true, beforeAssertion, afterAssertion })
+            const result = await thisContext.toHaveStyle(el, mockStyle, { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 })
 
             expect(result.pass).toBe(true)
             expect(el.getCSSProperty).toHaveBeenCalledTimes(6)
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toHaveStyle',
                 expectedValue: mockStyle,
-                options: { ignoreCase: true, beforeAssertion, afterAssertion }
+                options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 }
             })
             expect(afterAssertion).toBeCalledWith({
                 matcherName: 'toHaveStyle',
                 expectedValue: mockStyle,
-                options: { ignoreCase: true, beforeAssertion, afterAssertion },
+                options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 },
                 result
             })
         })
@@ -86,10 +86,10 @@ describe(toHaveStyle, () => {
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
         })
 
-        test('not - failure', async () => {
-            const result = await thisNotContext.toHaveStyle(el, mockStyle, { wait: 0 })
+        test('not - failure - pass should be true', async () => {
+            const result = await thisNotContext.toHaveStyle(el, mockStyle)
 
-            expect(result.pass).toBe(false)
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to have style
 
@@ -98,22 +98,22 @@ Received      : {"color": "#000", "font-family": "Faktum", "font-size": "26px"}`
             )
         })
 
-        test('not - success', async () => {
+        test('not - success - pass should be false', async () => {
             const wrongStyle: { [key: string]: string; } = {
                 'font-family': 'Incorrect Font',
                 'font-size': '100px',
                 'color': '#fff'
             }
 
-            const result = await thisNotContext.toHaveStyle(el, wrongStyle, { wait: 0 })
+            const result = await thisNotContext.toHaveStyle(el, wrongStyle)
 
-            expect(result.pass).toBe(true)
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
         test('message shows correctly', async () => {
             vi.mocked(el.getCSSProperty).mockResolvedValue({ value: 'Wrong Value', parsed: {} })
 
-            const result = await thisContext.toHaveStyle(el, 'WebdriverIO' as any, { wait: 0 })
+            const result = await thisContext.toHaveStyle(el, 'WebdriverIO' as any)
 
             expect(result.message()).toEqual(`\
 Expect $(\`sel\`) to have style
@@ -165,8 +165,7 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
         })
 
         test('sucess if style matches with containing', async () => {
-            const result = await toHaveStyle.call(
-                {},
+            const result = await thisNotContext.toHaveStyle(
                 el,
                 {
                     'font-family': 'Faktum',
@@ -187,8 +186,7 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             }
             vi.mocked(el.getCSSProperty).mockImplementation(async (property: string) => ({ value: actualStyle[property], parsed: {} }))
 
-            const result = await toHaveStyle.call(
-                {},
+            const result = await thisContext.toHaveStyle(
                 el,
                 {
                     'font-family': 'Faktum',
@@ -209,8 +207,7 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             }
             vi.mocked(el.getCSSProperty).mockImplementation(async (property: string) => ({ value: actualStyle[property], parsed: {} }))
 
-            const result = await toHaveStyle.call(
-                {},
+            const result = await thisContext.toHaveStyle(
                 el,
                 {
                     'font-family': 'sit amet',

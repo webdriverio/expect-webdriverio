@@ -35,10 +35,10 @@ export async function toHaveComputedRole(
     expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'computed role', verb = 'have' } = this
+    const { expectation = 'computed role', verb = 'have', isNot, matcherName = 'toHaveComputedRole' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveComputedRole',
+        matcherName,
         expectedValue,
         options,
     })
@@ -60,6 +60,7 @@ export async function toHaveComputedRole(
 
             return result
         },
+        isNot,
         { wait: options.wait, interval: options.interval }
     )
 
@@ -80,7 +81,7 @@ export async function toHaveComputedRole(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveComputedRole',
+        matcherName,
         expectedValue,
         options,
         result
