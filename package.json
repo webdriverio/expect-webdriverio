@@ -53,7 +53,7 @@
     "compile": "tsc --build tsconfig.build.json",
     "tsc:root-types": "node types-checks-filter-out-node_modules.js",
     "test": "run-s test:*",
-    "test:tsc": "tsc --project tsconfig.json --noEmit",
+    "test:tsc": "tsc --project tsconfig.json --noEmit --rootDir .",
     "test:lint": "eslint .",
     "test:unit": "vitest --run",
     "test:types": "npm run ts && npm run tsc:root-types",
