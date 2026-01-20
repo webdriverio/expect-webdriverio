@@ -28,13 +28,15 @@ describe('Soft Assertions', () => {
             expect(failures[0].error.message).toContain('text')
         })
 
-        // TODO dprevost: fix this, in soft results is undefined even thought the matcher records a failure and returns it
-        it.skip('should support chained assertions with .not', async () => {
+        it('should support chained assertions with .not', async () => {
+            // Setup a test ID for this test
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('test-2', 'test name', 'test file')
 
-            await expectWdio.soft(el).not.toHaveText('Actual Text')
+            // This should not throw even though it fails
+            await expectWdio.soft(el).not.toHaveText('Actual Text', { wait: 0 })
 
+            // Verify the failure was recorded
             const failures = expectWdio.getSoftFailures()
             expect(failures.length).toBe(1)
             expect(failures[0].matcherName).toBe('not.toHaveText')

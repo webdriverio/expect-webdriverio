@@ -40,6 +40,9 @@ export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementAr
     return !!obj && isElement(obj) || isElementArrayLike(obj)
 }
 
+export const isElementOrNotEmptyElementArray = (obj: unknown): obj is WebdriverIO.Element | WdioElements => {
+    return !!obj && isElement(obj) || (isElementArrayLike(obj) && obj.length > 0)
+}
 /**
  * Universaly await element(s) since depending on the type received, it can become complex.
  *

@@ -27,7 +27,7 @@ export async function executeCommand<T>(
     const { elements, element, other } = await awaitElementOrArray(nonAwaitedElements)
     if (!elements && !element) {
         return {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- one day move up the unknown type
             elementOrArray: other as any,
             success: false,
             valueOrArray: undefined,
@@ -45,6 +45,7 @@ export async function executeCommand<T>(
 
     const elementOrArray = element ? element : elements ? elements : undefined
     if (!elementOrArray) {
+        // Should be unreachable due to checks above
         throw new Error('No elements to process in executeCommand')
     }
 

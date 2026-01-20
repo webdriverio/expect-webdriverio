@@ -27,7 +27,7 @@ export const waitUntil = async (
         try {
             result = await condition()
             error = undefined
-            if (typeof result === 'boolean' ? result : result.success) {
+            if (isBoolean(result) ? result : result.success) {
                 break
             }
         } catch (err) {
@@ -35,28 +35,29 @@ export const waitUntil = async (
         }
 
         // No need to sleep again if time is already over
-        if (Date.now() - start < wait) {
+        if (canWait(start, wait)) {
             await sleep(interval)
         }
-    } while (Date.now() - start < wait)
+    } while (canWait(start, wait))
 
     if (error) { throw error }
 
-    if (typeof result === 'boolean') {
+    if (isBoolean(result)) {
         return result
     }
 
     const { results } = result
 
     if (results.length === 0) {
-        // To fails when using .not, we need to send true so that Jest inverts it to false
+        // To fails with .not, we need pass=true, so it s inverted later by Jest's expect framework
         return isNot
     }
 
-    // TODO dprevost: Should we consider moving that into a strategy pattern, so that if a matching does not need the same pattern he can change it?
-    const allTrue = () => results.every((result) => result)
-    const allFalse = () => results.every((result) => !result)
-
-    // Needs to return true when all true, but with isNot, must be success=false when all false (failure=true when at least one true)
-    return isNot ? !allFalse() : allTrue()
+    // With isNot to succeed with need pass=false, so it s inverted later by Jest's expect framework
+    return isNot ? !isAllFalse(results) : isAllTrue(results)
 }
+const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean'
+
+const isAllTrue = (results: boolean[]): boolean => results.every((res) => res === true)
+const isAllFalse = (results: boolean[]): boolean => results.every((res) => res === false)
+const canWait = (start: number, wait: number): boolean => (Date.now() - start) < wait

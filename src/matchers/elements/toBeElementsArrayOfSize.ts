@@ -46,6 +46,7 @@ export async function toBeElementsArrayOfSize(
         { wait, interval: numberOptions.interval ?? options.interval }
     )
 
+    // TODO By using `(await received).push(elements[index])` we could update Promises of arrays, should we support that?
     if (Array.isArray(received) && pass && originalLength !== undefined && elements) {
         for (let index = originalLength; index < elements.length; index++) {
             received.push(elements[index])

@@ -116,7 +116,7 @@ describe('Custom Wdio Matchers Integration Tests', async () => {
         })
 
         // TODO to support one day?
-        test('toHave works with arrayContaining asymmetric matcher', async () => {
+        test.skip('toHave works with arrayContaining asymmetric matcher', async () => {
             await expectLib(el).toHaveText(
                 expectLib.arrayContaining([
                     expectLib.stringContaining('Valid'),

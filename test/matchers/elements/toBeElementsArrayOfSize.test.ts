@@ -22,11 +22,11 @@ describe(toBeElementsArrayOfSize, async () => {
         { elements: await $$('elements').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
         { elements: await $$('elements').filter((t) => t.isEnabled()), selectorName: '$(`elements`), $$(`elements`)[1]', title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
         { elements: [elementFactory('element'), elementFactory('element')], selectorName: '$(`element`), $(`element`)', title: 'Array of element (e.g. WebdriverIO.Element[])' },
-        { elements: $$('elements'), title: 'non-awaited of ChainablePromiseArray' }
+        { elements: $$('elements'), title: 'non-awaited of ChainablePromiseArray' },
 
         // TODO to support, since the below return Promise<WebdriverIO.ElementArray|Element[]>, we do not support it type wise yet, but we could
-        // { elements: $$('elements').getElements(), title: 'non-awaited of ChainablePromiseArray' }
-        // { elements: $$('elements').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
+        { elements: $$('elements').getElements() as unknown as ChainablePromiseArray, title: 'non-awaited of ChainablePromiseArray' },
+        { elements: $$('elements').filter((t) => t.isEnabled()) as unknown as ChainablePromiseArray, selectorName:'$(`elements`), $$(`elements`)[1]', title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
     ])('given multiple elements when $title', ({ elements, selectorName = '$$(`elements`)' }) => {
         let els: ChainablePromiseArray | WebdriverIO.Element[] | WebdriverIO.ElementArray
 
@@ -85,7 +85,7 @@ Received: 2`
             test('not - failure - pass should be true', async () => {
                 const result = await thisNotContext.toBeElementsArrayOfSize(els, 2)
 
-                expect(result.pass).toBe(true)
+                expect(result.pass).toBe(true) // failure, boolean is inverted later in .not cases
                 expect(result.message()).toEqual(`\
 Expect ${selectorName} not to be elements array of size
 
@@ -177,6 +177,7 @@ Received      : 2`
             expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf5, 500, true)
         })
 
+        // TODO: By awaiting the promise we could update the actual elements array, so should we support that?
         test('refresh once but does not update actual elements since they are not of type ElementArray or Element[]', async () => {
             vi.fn(browser.$$).mockResolvedValueOnce(elementArrayOf2).mockResolvedValueOnce(elementArrayOf5)
             const nonAwaitedElements = $$('elements')

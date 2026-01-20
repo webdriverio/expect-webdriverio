@@ -1,7 +1,7 @@
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
-import { isElement, isElementArrayLike, isStrictlyElementArray } from './elementsUtil.js'
+import { isElementOrNotEmptyElementArray, isStrictlyElementArray } from './elementsUtil.js'
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
@@ -55,10 +55,7 @@ export const enhanceError = (
     } = {}): string => {
     const { isNot = false, useNotInLabel = true } = context
 
-    if (isElement(subject) || (isElementArrayLike(subject) && subject.length > 0)) {
-        subject = getSelectors(subject)
-    }
-    subject = subject = typeof subject === 'string' ? subject : JSON.stringify(subject)
+    subject = subject = isElementOrNotEmptyElementArray(subject) ? getSelectors(subject) : toJsonString(subject)
 
     let contain = ''
     if (containing) {
@@ -125,5 +122,18 @@ export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): stri
         return `<= ${options.lte}`
     }
 
-    return `Incorrect number options provided. Received: ${JSON.stringify(options)}`
+    return `Incorrect number options provided. Received: ${toJsonString(options)}`
+}
+
+const isString = (value: unknown): value is string => typeof value === 'string'
+
+const toJsonString = (value: unknown): string => {
+    if (isString(value)) {
+        return value
+    }
+    try {
+        return JSON.stringify(value)
+    } catch {
+        return String(value)
+    }
 }

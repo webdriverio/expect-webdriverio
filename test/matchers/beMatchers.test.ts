@@ -217,7 +217,27 @@ Received: "not ${lastMatcherWords(matcherFn.name)}"`)
                     })
                 })
 
-                test('success with matcherFn and command options', async () => {
+                test('success with matcherFn and custom command options', async () => {
+                    const result = await thisContext.matcherFn(elements, { wait: 4, interval: 99 })
+
+                    for (const element of elements) {
+                        expect(element[elementFnName]).toHaveBeenCalledOnce()
+                    }
+                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 4, interval: 99 })
+                    expect(result.pass).toBe(true)
+                })
+
+                test('success with matcherFn and custom command options - only interval', async () => {
+                    const result = await thisContext.matcherFn(elements, { interval: 99 })
+
+                    for (const element of elements) {
+                        expect(element[elementFnName]).toHaveBeenCalledOnce()
+                    }
+                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 1, interval: 99 })
+                    expect(result.pass).toBe(true)
+                })
+
+                test('success with matcherFn and default command options', async () => {
                     const result = await thisContext.matcherFn(elements)
 
                     for (const element of elements) {
