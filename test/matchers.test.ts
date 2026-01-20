@@ -1,6 +1,6 @@
 import { test, expect, vi, describe } from 'vitest'
 import { matchers, expect as expectLib } from '../src/index.js'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 
 vi.mock('@wdio/globals')
 
@@ -109,6 +109,19 @@ describe('Custom Wdio Matchers Integration Tests', async () => {
             await expectLib(el).toHaveAttribute('someAttribute')
             await expectLib(el).toHaveAttr('someAttribute', 'some attribute')
             await expectLib(el).toHaveElementProperty('someProperty', '1')
+        })
+
+        test('toHave works with stringContaining asymmetric matcher', async () => {
+            await expectLib(el).toHaveText([expectLib.stringContaining('Valid'), expectLib.stringContaining('Valid')])
+        })
+
+        // TODO to support one day?
+        test('toHave works with arrayContaining asymmetric matcher', async () => {
+            await expectLib(el).toHaveText(
+                expectLib.arrayContaining([
+                    expectLib.stringContaining('Valid'),
+                    expectLib.stringContaining('Valid')
+                ]))
         })
     })
 
@@ -456,6 +469,47 @@ Received: "not displayed"`)
             await expectLib(el).not.toBeDisplayed({ wait: 300, interval: 100 })
 
             expect(el.isDisplayed).toHaveBeenCalledTimes(6)
+        })
+    })
+
+    describe('Matchers pass with success when using valid element array', async () => {
+        const elements = await $$('selector')
+
+        test('toBe matchers', async () => {
+            await expectLib(elements).toBeDisplayed()
+            await expectLib(elements).toBeExisting()
+            await expectLib(elements).toBeEnabled()
+            await expectLib(elements).toBeClickable()
+            await expectLib(elements).toBeFocused()
+            await expectLib(elements).toBeSelected()
+        })
+
+        test('toHave matchers', async () => {
+            await expectLib(elements).toHaveText('Valid Text')
+            await expectLib(elements).toHaveHTML('<Html/>')
+            await expectLib(elements).toHaveComputedLabel('Computed Label')
+            await expectLib(elements).toHaveComputedRole('Computed Role')
+            await expectLib(elements).toHaveSize({ width: 100, height: 50 })
+            await expectLib(elements).toHaveHeight(50)
+            await expectLib(elements).toHaveWidth(100)
+            await expectLib(elements).toHaveAttribute('someAttribute', 'some attribute')
+            await expectLib(elements).toHaveAttribute('someAttribute')
+            await expectLib(elements).toHaveAttr('someAttribute', 'some attribute')
+            await expectLib(elements).toHaveElementProperty('someProperty', '1')
+            await expectLib(elements).toBeElementsArrayOfSize(2)
+        })
+
+        test('toHave works with stringContaining asymmetric matcher', async () => {
+            await expectLib(elements).toHaveText([expectLib.stringContaining('Valid'), expectLib.stringContaining('Valid')])
+        })
+
+        // TODO to support one day?
+        test.skip('toHave works with arrayContaining asymmetric matcher', async () => {
+            await expectLib(elements).toHaveText(
+                expectLib.arrayContaining([
+                    expectLib.stringContaining('Valid'),
+                    expectLib.stringContaining('Valid')
+                ]))
         })
     })
 })
