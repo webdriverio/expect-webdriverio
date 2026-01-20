@@ -298,7 +298,7 @@ Received: "not displayed"`)
 
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\
-Expect  to be displayed
+Expect [] to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
@@ -361,7 +361,7 @@ Received: "displayed"`)
 
             expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
-Expect  not to be displayed
+Expect [] not to be displayed
 
 Expected: "not displayed"
 Received: "displayed"`)
@@ -450,5 +450,28 @@ Expect ${selectorName} to be displayed
 Expected: "displayed"
 Received: "not displayed"`)
         })
+    })
+
+    test.for([
+        { els: undefined, selectorName: 'undefined' },
+        { els: null, selectorName: 'null' },
+        { els: 0, selectorName: '0' },
+        { els: 1, selectorName: '1' },
+        { els: true, selectorName: 'true' },
+        { els: false, selectorName: 'false' },
+        { els: '', selectorName: '' },
+        { els: 'test', selectorName: 'test' },
+        { els: {}, selectorName: '{}' },
+        { els: [1, 'test'], selectorName: '[1,"test"]' },
+        { els: Promise.resolve(true), selectorName: 'true' }
+    ])('fails for %s', async ({ els, selectorName }) => {
+        const result = await thisContext.toBeDisplayed(els as any)
+
+        expect(result.pass).toBe(false)
+        expect(result.message()).toEqual(`\
+Expect ${selectorName} to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
     })
 })

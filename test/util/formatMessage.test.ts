@@ -215,6 +215,42 @@ Received      : "Actual Property Value"`)
                 })
             })
         })
+
+        test.for([
+            { actual: undefined, selectorName: 'undefined' },
+            { actual: null, selectorName: 'null' },
+            { actual: true, selectorName: 'true' },
+            { actual: 5, selectorName: '5' },
+            { actual: 'test', selectorName: 'test' },
+            { actual: {}, selectorName: '{}' },
+            { actual: ['1', '2'], selectorName: '["1","2"]' },
+        ])('should return failure message for unsupported type $actual when isNot is false', async ({ actual, selectorName }) => {
+            const result = await enhanceError(actual as any, 'webdriverio', undefined, { isNot: false }, 'have', 'text')
+
+            expect(result).toEqual(`\
+Expect ${selectorName} to have text
+
+Expected: "webdriverio"
+Received: undefined`)
+        })
+
+        test.for([
+            { actual: undefined, selectorName: 'undefined' },
+            { actual: null, selectorName: 'null' },
+            { actual: true, selectorName: 'true' },
+            { actual: 5, selectorName: '5' },
+            { actual: 'test', selectorName: 'test' },
+            { actual: {}, selectorName: '{}' },
+            { actual: ['1', '2'], selectorName: '["1","2"]' },
+        ])('should return failure message for unsupported type $actual when isNot is true', async ({ actual, selectorName }) => {
+            const result = await enhanceError(actual as any, 'webdriverio', undefined, { isNot: true }, 'have', 'text')
+
+            expect(result).toEqual(`\
+Expect ${selectorName} not to have text
+
+Expected [not]: "webdriverio"
+Received      : undefined`)
+        })
     })
 
     describe(numberError, () => {
@@ -263,6 +299,42 @@ Expect element not to be displayed
 Expected: "not displayed"
 Received: "displayed"`)
 
+        })
+
+        test.for([
+            { actual: undefined, selectorName: 'undefined' },
+            { actual: null, selectorName: 'null' },
+            { actual: true, selectorName: 'true' },
+            { actual: 5, selectorName: '5' },
+            { actual: 'test', selectorName: 'test' },
+            { actual: {}, selectorName: '{}' },
+            { actual: ['1', '2'], selectorName: '["1","2"]' },
+        ])('should return failure message for unsupported type $actual when isNot is false', async ({ actual: subject, selectorName }) => {
+            const result = await enhanceErrorBe(subject as any, { isNot, verb, expectation }, options)
+
+            expect(result).toEqual(`\
+Expect ${selectorName} to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
+        })
+
+        test.for([
+            { actual: undefined, selectorName: 'undefined' },
+            { actual: null, selectorName: 'null' },
+            { actual: true, selectorName: 'true' },
+            { actual: 5, selectorName: '5' },
+            { actual: 'test', selectorName: 'test' },
+            { actual: {}, selectorName: '{}' },
+            { actual: ['1', '2'], selectorName: '["1","2"]' },
+        ])('should return failure message for unsupported type $actual when isNot is true', async ({ actual: subject, selectorName }) => {
+            const result = await enhanceErrorBe(subject as any, { isNot: true, verb, expectation }, options)
+
+            expect(result).toEqual(`\
+Expect ${selectorName} not to be displayed
+
+Expected: "not displayed"
+Received: "displayed"`)
         })
     })
 })

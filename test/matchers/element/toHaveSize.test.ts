@@ -505,7 +505,7 @@ Expect ${selectorName} to have size
 
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\
-Expect  to have size
+Expect [] to have size
 
 Expected: {"height": 32, "width": 32}
 Received: undefined`)

@@ -55,7 +55,7 @@ export async function toHaveElementProperty(
     const pass = await waitUntil(
         async () => {
             const result = await executeCommand(received, undefined,
-                async (elements) => defaultMultipleElementsIterationStrategy(
+                (elements) => defaultMultipleElementsIterationStrategy(
                     elements,
                     expectedValue,
                     (element, expected) => condition(element, property, expected, options)

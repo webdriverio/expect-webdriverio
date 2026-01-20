@@ -1,11 +1,12 @@
 import { waitUntil, enhanceError, compareNumbers, numberError } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
+import type { WdioElementsMaybePromise } from '../../types.js'
 import { validateNumberOptions } from '../../util/numberOptionsUtil.js'
+import { awaitElementArray } from '../../util/elementsUtil.js'
 
 export async function toBeElementsArrayOfSize(
-    received: WdioElementOrArrayMaybePromise,
+    received: WdioElementsMaybePromise,
     expectedValue: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -19,23 +20,25 @@ export async function toBeElementsArrayOfSize(
 
     const numberOptions = validateNumberOptions(expectedValue)
 
-    // Why not await in the waitUntil and use it to refetch in case of failure?
-    let elements = await received as WdioElements
-    const originalLength = elements.length
+    // eslint-disable-next-line prefer-const
+    let { elements, other } = await awaitElementArray(received)
 
     const wait = numberOptions.wait ?? options.wait ?? DEFAULT_OPTIONS.wait
+    const originalLength =  elements ? elements.length : undefined
 
     const pass = await waitUntil(
         async () => {
-        /**
-         * check numbers first before refetching elements
-         */
+            if (!elements) {
+                return false
+            }
+
+            // Verify is size match first before refetching elements
             const isPassing = compareNumbers(elements.length, numberOptions)
             if (isPassing) {
                 return isPassing
             }
 
-            // TODO analyse this refetch purpose if needed in more places or just pas false to have waitUntil to refetch with the await inside waitUntil
+            // TODO should we do this on other matchers??
             elements = await refetchElements(elements, wait, true)
             return false
         },
@@ -43,14 +46,15 @@ export async function toBeElementsArrayOfSize(
         { wait, interval: numberOptions.interval ?? options.interval }
     )
 
-    if (Array.isArray(received) && pass) {
+    if (Array.isArray(received) && pass && originalLength !== undefined && elements) {
         for (let index = originalLength; index < elements.length; index++) {
             received.push(elements[index])
         }
     }
 
-    const error = numberError(numberOptions)
-    const message = enhanceError(elements, error, originalLength, this, verb, expectation, '', numberOptions)
+    const expected = numberError(numberOptions)
+    const actual = originalLength
+    const message = enhanceError(elements ?? other, expected, actual, this, verb, expectation, '', numberOptions)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

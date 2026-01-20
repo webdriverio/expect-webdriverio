@@ -11,17 +11,17 @@ const afterAssertion = vi.fn()
 test('toHaveClipboardText', async () => {
     browser.execute = vi.fn().mockResolvedValue('some clipboard text')
 
-    const result = await toHaveClipboardText(browser, 'some ClipBoard text', { ignoreCase: true, beforeAssertion, afterAssertion, wait: 1 })
+    const result = await toHaveClipboardText(browser, 'some ClipBoard text', { ignoreCase: true, beforeAssertion, afterAssertion })
     expect(result.pass).toBe(true)
     expect(beforeAssertion).toBeCalledWith({
         matcherName: 'toHaveClipboardText',
         expectedValue: 'some ClipBoard text',
-        options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 1 }
+        options: { ignoreCase: true, beforeAssertion, afterAssertion }
     })
     expect(afterAssertion).toBeCalledWith({
         matcherName: 'toHaveClipboardText',
         expectedValue: 'some ClipBoard text',
-        options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 1 },
+        options: { ignoreCase: true, beforeAssertion, afterAssertion },
         result
     })
 })

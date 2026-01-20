@@ -1,7 +1,7 @@
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
-import { isStrictlyElementArray } from './elementsUtil.js'
+import { isElement, isElementArrayLike, isStrictlyElementArray } from './elementsUtil.js'
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
@@ -43,7 +43,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
 const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
 
 export const enhanceError = (
-    subject: string | WebdriverIO.Element | WdioElements | undefined,
+    subject: string | WebdriverIO.Element | WdioElements | unknown,
     expected: unknown,
     actual: unknown,
     context: { isNot: boolean, useNotInLabel?: boolean },
@@ -55,7 +55,10 @@ export const enhanceError = (
     } = {}): string => {
     const { isNot = false, useNotInLabel = true } = context
 
-    subject = typeof subject === 'string' || !subject ? subject : getSelectors(subject)
+    if (isElement(subject) || (isElementArrayLike(subject) && subject.length > 0)) {
+        subject = getSelectors(subject)
+    }
+    subject = subject = typeof subject === 'string' ? subject : JSON.stringify(subject)
 
     let contain = ''
     if (containing) {

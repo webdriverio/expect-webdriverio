@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest'
 import { compareNumbers, compareObject, compareText, compareTextWithArray, executeCommandBe } from '../src/utils'
-import { awaitElements } from '../src/util/elementsUtil'
+import { awaitElementOrArray } from '../src/util/elementsUtil'
 import * as waitUntilModule from '../src/util/waitUntil'
 import { enhanceErrorBe } from '../src/util/formatMessage'
 import type { CommandOptions } from 'expect-webdriverio'
@@ -29,7 +29,7 @@ vi.mock('../src/util/elementsUtil.js', async (importOriginal) => {
     const actual = await importOriginal<typeof import('../src/util/elementsUtil.js')>()
     return {
         ...actual,
-        awaitElements: vi.spyOn(actual, 'awaitElements'),
+        awaitElementOrArray: vi.spyOn(actual, 'awaitElementOrArray'),
         map: vi.spyOn(actual, 'map'),
     }
 })
@@ -218,10 +218,10 @@ describe('utils', () => {
         })
 
         test('should fail immediately if no elements are found', async () => {
-            vi.mocked(awaitElements).mockResolvedValue({
+            vi.mocked(awaitElementOrArray).mockResolvedValue({
                 elements: undefined,
-                isSingleElement: false,
-                isElementLikeType: false
+                element: undefined,
+                other: undefined
             })
 
             const result = await executeCommandBe.call(context, undefined as any, command, options)
@@ -247,7 +247,7 @@ Received: "not displayed"`)
                 const result = await executeCommandBe.call(context, received, command, options)
 
                 expect(result.pass).toBe(true)
-                expect(awaitElements).toHaveBeenCalledWith(received)
+                expect(awaitElementOrArray).toHaveBeenCalledWith(received)
                 expect(waitUntilModule.waitUntil).toHaveBeenCalled()
             })
 
@@ -316,7 +316,7 @@ Received: "not displayed"`)
                     const result = await executeCommandBe.call(context, received, command, options)
 
                     expect(result.pass).toBe(true)
-                    expect(awaitElements).toHaveBeenCalledWith(received)
+                    expect(awaitElementOrArray).toHaveBeenCalledWith(received)
                     expect(waitUntilModule.waitUntil).toHaveBeenCalled()
                 })
 

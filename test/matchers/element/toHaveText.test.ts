@@ -21,7 +21,7 @@ describe(toHaveText, async () => {
         { element: $('sel'), title: 'non-awaited of ChainablePromiseElement' },
 
         // Since Promise<Element> Type is not supported the below is not official even if it works, should we support it? TODO delete or remove casting `as unknown as ChainablePromiseArray`
-        // { element: $('sel').getElement() as unknown as ChainablePromiseElement, title: 'non-awaited getElements of ChainablePromiseArray' }
+        // { element: $('sel').getElement() as unknown as ChainablePromiseElement, selectorName: '', title: 'non-awaited getElements of ChainablePromiseArray' }
     ])('given a single element when $title', ({ element }) => {
         let el: ChainablePromiseElement | WebdriverIO.Element
 
@@ -348,15 +348,16 @@ Received: "This is example text"`
     describe.each([
         { elements: await $$('sel'), title: 'awaited ChainablePromiseArray' },
         { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
-        { elements: await $$('sel').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
+        { elements: await $$('sel').filter((t) => t.isEnabled()), selectorName: '$(`sel`), $(`dev`)', title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
         { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' },
 
         // Since Promise<Element[]> Type is not supported the below is not official even if it works, should we support it? TODO delete or remove casting `as unknown as ChainablePromiseArray`
-        // { elements: $$('sel').filter((t) => t.isEnabled()) as unknown as ChainablePromiseArray, title: 'non-awaited filtered ChainablePromiseArray' },
-        // { elements: $$('sel').getElements() as unknown as ChainablePromiseArray, title: 'non-awaited getElements of ChainablePromiseArray' }
-    ])('given multiple elements when $title', ({ elements, title }) => {
+        { elements: $$('sel').filter((t) => t.isEnabled()) as unknown as ChainablePromiseArray, selectorName: '$(`sel`), $(`dev`)', title: 'non-awaited filtered ChainablePromiseArray' },
+        { elements: $$('sel').getElements() as unknown as ChainablePromiseArray, title: 'non-awaited getElements of ChainablePromiseArray' }
+    ])('given multiple elements when $title', ({ elements, selectorName }) => {
         let els: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[]
 
+        selectorName = selectorName || '$$(`sel`)'
         beforeEach(async () => {
             els = elements
 
@@ -392,7 +393,6 @@ Received: "This is example text"`
             test('should return true if the expected message shows correctly', async () => {
                 const result = await thisContext.toHaveText(els, 'webdriverio', { message: 'Test', wait: 0 })
 
-                const selectorName = title === 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' ?  '$(`sel`), $(`dev`)': '$$(`sel`)'
                 expect(result.message()).toEqual(`\
 Test
 Expect ${selectorName} to have text
@@ -450,7 +450,7 @@ Expect ${selectorName} to have text
 
                 expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\
-Expect ${title === 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' ?  '$(`sel`), $(`dev`)': '$$(`sel`)'} to have text
+Expect ${selectorName} to have text
 
 - Expected  - 1
 + Received  + 1
@@ -466,7 +466,6 @@ Expect ${title === 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Ele
             test('should return false and display proper custom error message', async () => {
                 const result = await thisContext.toHaveText(els, ['webdriverio', 'get started'], { message: 'Test', wait: 0 })
 
-                const selectorName = title === 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' ?  '$(`sel`), $(`dev`)': '$$(`sel`)'
                 expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\
 Test
@@ -491,9 +490,8 @@ Expect ${selectorName} to have text
             const result = await thisContext.toHaveText([], 'webdriverio')
 
             expect(result.pass).toBe(false)
-            // TODO have a better message for empty elements one day
             expect(result.message()).toEqual(`\
-Expect  to have text
+Expect [] to have text
 
 Expected: "webdriverio"
 Received: undefined`)
@@ -502,12 +500,12 @@ Received: undefined`)
         test.for([
             { actual: undefined, selectorName: 'undefined' },
             { actual: null, selectorName: 'null' },
-            // { actual: true, selectorName: 'true' }, // throws with Cannot use 'in' operator to search for 'selector' in 5
-            // { actual: 5, selectorName: '5' }, // throws with Cannot use 'in' operator to search for 'selector' in 5
+            { actual: true, selectorName: 'true' },
+            { actual: 5, selectorName: '5' },
             { actual: 'test', selectorName: 'test' },
-            // { actual: Promise.resolve(true), selectorName: 'test' }, // throws with Cannot use 'in' operator to search for 'selector' in true
-            { actual: {}, selectorName: '' },
-            // { actual: ['1', '2'], selectorName: '{"foo":"bar"}' }, // throws with Cannot use 'in' operator to search for 'getElement' in 1
+            { actual: Promise.resolve(true), selectorName: 'true' },
+            { actual: {}, selectorName: '{}' },
+            { actual: ['1', '2'], selectorName: '["1","2"]' },
         ])('should have pass false with proper error message when actual is unsupported type of $actual', async ({ actual, selectorName }) => {
             const result = await thisContext.toHaveText(actual as any, 'webdriverio')
 

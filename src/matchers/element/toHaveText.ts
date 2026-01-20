@@ -7,7 +7,7 @@ import {
 } from '../../utils.js'
 import { executeCommand } from '../../util/executeCommand.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
-import { isAnyKindOfElementArray, map } from '../../util/elementsUtil.js'
+import { isElementArrayLike, map } from '../../util/elementsUtil.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
@@ -48,7 +48,7 @@ export async function toHaveText(
         options,
     })
 
-    let elementOrElements
+    let elementOrArray
     let actualText
 
     const pass = await waitUntil(
@@ -56,13 +56,13 @@ export async function toHaveText(
             const commandResult = await executeCommand(received,
                 undefined,
                 async (elements) => {
-                    if (isAnyKindOfElementArray(elements)) {
+                    if (isElementArrayLike(elements)) {
                         return map(elements, async (element) => multipleElementsStrategyCompare(element, expectedValue, options))
                     }
                     return [await singleElementCompare(elements, expectedValue, options)]
                 }
             )
-            elementOrElements = commandResult.elementOrArray
+            elementOrArray = commandResult.elementOrArray
             actualText = commandResult.valueOrArray
 
             return commandResult
@@ -71,7 +71,7 @@ export async function toHaveText(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(elementOrElements, wrapExpectedWithArray(elementOrElements, actualText, expectedValue), actualText, this, verb, expectation, '', options)
+    const message = enhanceError(elementOrArray, wrapExpectedWithArray(elementOrArray, actualText, expectedValue), actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

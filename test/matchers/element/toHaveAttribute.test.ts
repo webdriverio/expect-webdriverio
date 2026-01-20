@@ -309,7 +309,7 @@ Expect $$(\`sel\`) to have attribute attribute_name
 
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\
-Expect  to have attribute attribute_name
+Expect [] to have attribute attribute_name
 
 Expected: "some value"
 Received: undefined`)

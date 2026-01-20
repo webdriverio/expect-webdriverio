@@ -271,14 +271,29 @@ Received      : 2`
         })
     })
 
-    // TODO to fix one day
-    describe.skip('Fails for unsupported types', () => {
-        test.for([undefined, null, 1, '', {}, Promise.resolve(true)])('fails for undefined', async () => {
-            const els = undefined as unknown as any
+    describe('Fails for unsupported types', () => {
 
-            const result = await thisContext.toBeElementsArrayOfSize(els, 1)
+        test.for([
+            { els: undefined, selectorName: 'undefined' },
+            { els: null, selectorName: 'null' },
+            { els: 0, selectorName: '0' },
+            { els: 1, selectorName: '1' },
+            { els: true, selectorName: 'true' },
+            { els: false, selectorName: 'false' },
+            { els: '', selectorName: '' },
+            { els: 'test', selectorName: 'test' },
+            { els: {}, selectorName: '{}' },
+            { els: [1, 'test'], selectorName: '[1,"test"]' },
+            { els: Promise.resolve(true), selectorName: 'true' }
+        ])('fails for %s', async ({ els, selectorName }) => {
+            const result = await thisContext.toBeElementsArrayOfSize(els as any, 0)
 
             expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect ${selectorName} to be elements array of size
+
+Expected: 0
+Received: undefined`)
         })
     })
 })
