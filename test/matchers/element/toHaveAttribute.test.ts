@@ -43,28 +43,16 @@ describe(toHaveAttribute, () => {
                 })
             })
 
-            test('failure when not present', async () => {
-                vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
+            test('not - failure when present for %s - pass should be true', async () => {
+                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name')
 
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined)
-
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             })
 
-            // TODO something to fix?
-            test.skip('not failure when present', async () => {
+            test('not - failure when present for %s - pass should be true', async () => {
                 const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name', undefined)
 
-                expect(result.pass).toBe(false)
-            })
-
-            // TODO something to fix?
-            test.skip('not - success when not present', async () => {
-                vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
-
-                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name', undefined)
-
-                expect(result.pass).toBe(true)
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             })
 
             describe('message shows correctly', () => {
@@ -120,6 +108,17 @@ Received: false`
                 expect(result.pass).toBe(false)
             })
 
+            test.for([
+                undefined,
+                null
+            ])('not - failure when present for %s - pass should be false', async ( attributeValue) => {
+                vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
+
+                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name')
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+            })
+
             describe('message shows correctly', () => {
                 test('expect message', async () => {
                     vi.mocked(el.getAttribute).mockResolvedValue('Wrong')
@@ -150,6 +149,52 @@ Expected: /WDIO/
 Received: "Wrong"`
                     )
                 })
+            })
+        })
+
+        describe('attribute does not exist or does not have a value', () => {
+            test.for([
+                undefined,
+                null
+            ])('failure when not present for %s', async ( attributeValue) => {
+                vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
+
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name')
+
+                expect(result.pass).toBe(false)
+            })
+
+            test.for([
+                undefined,
+                null
+            ])('failure when not present for %s', async ( attributeValue) => {
+                vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
+
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined)
+
+                expect(result.pass).toBe(false)
+            })
+
+            test.for([
+                undefined,
+                null
+            ])('not - success when not present for %s - pass should be false', async ( attributeValue) => {
+                vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
+
+                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name')
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+            })
+
+            test.for([
+                undefined,
+                null
+            ])('not - success when not present for %s - pass should be false', async ( attributeValue) => {
+                vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
+
+                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name', undefined)
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
         })
     })
@@ -301,6 +346,78 @@ Expect $$(\`sel\`) to have attribute attribute_name
   ]`
                     )
                 })
+            })
+        })
+
+        describe('attribute does not exist or does not have a value', () => {
+            test.for([
+                undefined,
+                null
+            ])('failure when not present for %s', async ( attributeValue) => {
+                els.forEach(el => {
+                    vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
+                })
+
+                const result = await thisContext.toHaveAttribute(els, 'attribute_name')
+
+                expect(result.pass).toBe(false)
+            })
+
+            test.for([
+                undefined,
+                null
+            ])('failure when not present for %s', async ( attributeValue) => {
+                els.forEach(el => {
+                    vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
+                })
+
+                const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined)
+
+                expect(result.pass).toBe(false)
+            })
+
+            test.for([
+                undefined,
+                null
+            ])('not - success when not present for %s - pass should be false', async ( attributeValue) => {
+                els.forEach(el => {
+                    vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
+                })
+
+                const result = await thisIsNotContext.toHaveAttribute(els, 'attribute_name')
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+            })
+
+            test.for([
+                undefined,
+                null
+            ])('not - success when not present for %s - pass should be false', async ( attributeValue) => {
+                els.forEach(el => {
+                    vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
+                })
+
+                const result = await thisIsNotContext.toHaveAttribute(els, 'attribute_name', undefined)
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+            })
+
+            test('not - failure when one is present for %s - pass should be true', async () => {
+                vi.mocked(els[0].getAttribute).mockResolvedValue('Some Value')
+                vi.mocked(els[1].getAttribute).mockResolvedValue(null as unknown as string)
+
+                const result = await thisIsNotContext.toHaveAttribute(els, 'attribute_name', undefined)
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            })
+
+            test('failure when only one is present for %s', async () => {
+                vi.mocked(els[0].getAttribute).mockResolvedValue('Some Value')
+                vi.mocked(els[1].getAttribute).mockResolvedValue(null as unknown as string)
+
+                const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined)
+
+                expect(result.pass).toBe(false)
             })
         })
 
