@@ -411,16 +411,13 @@ Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 32}]`
                 )
             })
 
-            test('not - failure - first element - pass should be true', async () => {
+            test('not - failure - first element has same size - pass should be true', async () => {
                 vi.mocked(awaitedEls[0].getSize).mockResolvedValue(expectedSize as unknown as Size & number)
                 vi.mocked(awaitedEls[1].getSize).mockResolvedValue(wrongValue as unknown as Size & number)
 
                 const result = await thisNotContext.toHaveSize(els, expectedSizes)
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-
-                // TODO Wrong failure message, to review after merge of https://github.com/webdriverio/expect-webdriverio/pull/1983 to fix this
-                // Here the first Oject should be highligthed as the one making the assertion failed
                 expect(result.message()).toEqual(`\
 Expect ${selectorName} not to have size
 
@@ -441,16 +438,13 @@ Expect ${selectorName} not to have size
                 )
             })
 
-            test('not - failure - second element', async () => {
+            test('not - failure - one element has same size - pass should be true', async () => {
                 vi.mocked(awaitedEls[0].getSize).mockResolvedValue(wrongValue as unknown as Size & number)
                 vi.mocked(awaitedEls[1].getSize).mockResolvedValue(expectedSize as unknown as Size & number)
 
                 const result = await thisNotContext.toHaveSize(els, expectedSizes)
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-
-                // TODO Wrong failure message, to review after merge of https://github.com/webdriverio/expect-webdriverio/pull/1983 to fix this
-                // Here the second Object should be highlighted as the one making the assertion failed
                 expect(result.message()).toEqual(`\
 Expect ${selectorName} not to have size
 
