@@ -496,53 +496,26 @@ Expect $$(\`sel\`) to have HTML
             )
         })
 
-        // TODO review if support array of array
-        test.skip('success if array matches with html and ignoreCase', async () => {
+        test('success if array matches with html and ignoreCase', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('<div>FOO</div>'))
 
-            // @ts-expect-error
-            const result = await thisContext.toHaveHTML(elements, [['div', '<div>foo</div>'], '<div>foo</div>'], { ignoreCase: true })
+            const result = await thisContext.toHaveHTML(elements, ['<div>foo</div>', '<div>foo</div>'], { ignoreCase: true })
             expect(result.pass).toBe(true)
             elements.forEach(el => expect(el.getHTML).toHaveBeenCalledTimes(1))
         })
 
-        // TODO review if support array of array
-        test.skip('success if array matches with html and trim', async () => {
+        test('success if array matches with html and trim', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('   <div>foo</div>   '))
 
-            // @ts-expect-error
-            const result = await thisContext.toHaveHTML(elements, [['div', '<div>FOO</div>'], '<div>foo</div>'], { trim: true })
+            const result = await thisContext.toHaveHTML(elements, ['<div>foo</div>', '<div>foo</div>'], { trim: true })
             expect(result.pass).toBe(true)
             elements.forEach(el => expect(el.getHTML).toHaveBeenCalledTimes(1))
         })
 
-        // TODO review if support array of array
-        test.skip('success if array matches with html and replace (string)', async () => {
-            elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('<div>foo</div>'))
-
-            const result = await thisContext.toHaveHTML(elements, ['div', '<div>foo</div>', 'toto'], {
-                replace: [['Web', 'Browser']],
-            })
-            expect(result.pass).toBe(true)
-            elements.forEach(el => expect(el.getHTML).toHaveBeenCalledTimes(1))
-        })
-
-        // TODO review if support array of array
-        test.skip('success if array matches with html and replace (regex)', async () => {
-            elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('<div>foo</div>'))
-
-            const result = await thisContext.toHaveHTML(elements, ['div', '<div>foo</div>', 'toto'], {
-                replace: [[/Web/g, 'Browser']],
-            })
-            expect(result.pass).toBe(true)
-            elements.forEach(el => expect(el.getHTML).toHaveBeenCalledTimes(1))
-        })
-
-        // TODO review this behavior
-        test.skip('success if array matches with html and multiple replacers and one of the replacers is a function', async () => {
+        test('success if array matches with html and multiple replacers and one of the replacers is a function', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('<div>FOO</div>'))
 
-            const result = await thisContext.toHaveHTML(elements, ['div', '<p>foo</p>', 'toto'], {
+            const result = await thisContext.toHaveHTML(elements, ['<p>foo</p>', '<p>foo</p>'], {
                 replace: [
                     [/div/g, 'p'],
                     [/[A-Z]/g, (match: string) => match.toLowerCase()],

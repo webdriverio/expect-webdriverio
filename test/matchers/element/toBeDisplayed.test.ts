@@ -292,7 +292,6 @@ Received: "not displayed"`)
                 .rejects.toThrow('some error')
         })
 
-        // TODO review if failure message need to be more specific and hihghlight that elements are empty?
         test('failure when no elements exist', async () => {
             const result = await thisContext.toBeDisplayed([])
 
@@ -355,7 +354,7 @@ Expected: "not displayed"
 Received: "displayed"`)
         })
 
-        // TODO having a better message showing that we expect at least one element would be great?
+        // TODO having a better message like `Received: undefined` showing that with no element, not reulst was fetched
         test('not - failure when no elements - pass should be true', async () => {
             const result = await thisNotContext.toBeDisplayed([])
 
