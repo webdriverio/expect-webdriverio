@@ -1,7 +1,7 @@
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
-import { isElementOrNotEmptyElementArray, isStrictlyElementArray } from './elementsUtil.js'
+import { isElementArrayLike, isElementOrNotEmptyElementArray, isStrictlyElementArray } from './elementsUtil.js'
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
@@ -72,7 +72,8 @@ export const enhanceError = (
     }
 
     // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
-    const diffString = equals(actual, expected) ?`\
+    const diffString = equals(actual, expected) ?
+        `\
 ${label.expected}: ${printExpected(expected)}
 ${label.received}: ${printReceived(actual)}`
         : printDiffOrStringify(expected, actual, label.expected, label.received, true)
@@ -94,13 +95,25 @@ ${diffString}`
 }
 
 export const enhanceErrorBe = (
-    subject: string | WebdriverIO.Element | WdioElements | undefined,
+    subject: WebdriverIO.Element | WdioElements | unknown,
+    results: boolean[],
     context: { isNot: boolean, verb: string, expectation: string },
     options: ExpectWebdriverIO.CommandOptions
 ) => {
     const { isNot, verb, expectation } = context
-    const expected = `${not(isNot)}${expectation}`
-    const actual = `${not(!isNot)}${expectation}`
+    let expected
+    let actual
+
+    const expectedValue = `${not(isNot)}${expectation}`
+    const actualValue = `${not(!isNot)}${expectation}`
+
+    if (isElementArrayLike(subject)) {
+        expected = subject.length === 0? 'at least one result' : subject.map(() => expectedValue)
+        actual = results.map(result => isSuccess(isNot, result) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
+    } else {
+        expected = expectedValue
+        actual = actualValue
+    }
 
     return enhanceError(subject, expected, actual, { ...context, useNotInLabel: false }, verb, expectation, '', options)
 }
@@ -136,4 +149,8 @@ const toJsonString = (value: unknown): string => {
     } catch {
         return String(value)
     }
+}
+
+const isSuccess = (isNot: boolean, result: boolean): boolean => {
+    return isNot ? !result : result
 }

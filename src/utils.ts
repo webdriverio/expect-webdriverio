@@ -38,6 +38,7 @@ async function executeCommandBe(
     const { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = options
 
     let awaitedElements: WdioElements | WebdriverIO.Element | undefined
+    let allResults: boolean[] = []
     const pass = await waitUntil(
         async () => {
             const  { elementOrArray, success, results } = await executeCommand(
@@ -46,6 +47,8 @@ async function executeCommandBe(
             )
 
             awaitedElements = elementOrArray
+            allResults = results
+
             return { success, results }
         },
         this.isNot,
@@ -53,7 +56,7 @@ async function executeCommandBe(
     )
 
     const  { verb = 'be' } = this
-    const message = enhanceErrorBe(awaitedElements, { ...this, verb }, options)
+    const message = enhanceErrorBe(awaitedElements, allResults, { ...this, verb }, options)
 
     return {
         pass,

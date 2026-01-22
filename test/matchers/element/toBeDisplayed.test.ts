@@ -293,14 +293,15 @@ Received: "not displayed"`)
         })
 
         test('failure when no elements exist', async () => {
-            const result = await thisContext.toBeDisplayed([])
+            const noElementsFound: WebdriverIO.Element[] = []
+            const result = await thisContext.toBeDisplayed(noElementsFound)
 
             expect(result.pass).toBe(false)
             expect(result.message()).toEqual(`\
 Expect [] to be displayed
 
-Expected: "displayed"
-Received: "not displayed"`)
+Expected: "at least one result"
+Received: []`)
         })
 
         test('success on the first attempt', async () => {
@@ -343,31 +344,38 @@ Received: "not displayed"`)
             expect(result.pass).toBe(true)
         })
 
-        test('not - failure - pass should be true', async () => {
+        test('not - failure - all elements - pass should be true', async () => {
             const result = await thisNotContext.toBeDisplayed(elements)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
 Expect ${selectorName} not to be displayed
 
-Expected: "not displayed"
-Received: "displayed"`)
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "not displayed",
+-   "not displayed",
++   "displayed",
++   "displayed",
+  ]`)
         })
 
-        // TODO having a better message like `Received: undefined` showing that with no element, not reulst was fetched
         test('not - failure when no elements - pass should be true', async () => {
-            const result = await thisNotContext.toBeDisplayed([])
+            const noElementsFound: WebdriverIO.Element[] = []
+
+            const result = await thisNotContext.toBeDisplayed(noElementsFound)
 
             expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
             expect(result.message()).toEqual(`\
 Expect [] not to be displayed
 
-Expected: "not displayed"
-Received: "displayed"`)
+Expected: "at least one result"
+Received: []`)
         })
 
-        // TODO review we should display an array of values showing which element failed
-        test('not - failure - when only first element is displayed - pass should be true', async () => {
+        test('not - failure - when only first element is not displayed - pass should be true', async () => {
             vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
             vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(true)
 
@@ -377,8 +385,34 @@ Received: "displayed"`)
             expect(result.message()).toEqual(`\
 Expect ${selectorName} not to be displayed
 
-Expected: "not displayed"
-Received: "displayed"`)
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "not displayed",
+-   "not displayed",
++   "displayed",
+  ]`)
+        })
+
+        test('not - failure - when only second element is not displayed - pass should be true', async () => {
+            vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(true)
+            vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(false)
+
+            const result = await thisNotContext.toBeDisplayed(elements)
+
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            expect(result.message()).toEqual(`\
+Expect ${selectorName} not to be displayed
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "not displayed",
++   "displayed",
+    "not displayed",
+  ]`)
         })
 
         test('not - success - pass should be false', async () => {
@@ -431,23 +465,65 @@ Received: "displayed"`)
             expect(result.message()).toEqual(`\
 Expect ${selectorName} to be displayed
 
-Expected: "displayed"
-Received: "not displayed"`)
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "displayed",
+-   "displayed",
++   "not displayed",
++   "not displayed",
+  ]`)
         })
 
-        test('message when a single element fails', async () => {
-            awaitedElements.forEach((element) => {
-                vi.mocked(element.isDisplayed).mockResolvedValue(false)
-            })
-            vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(true)
+        test('message when first element fails', async () => {
+            vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
+            vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(true)
 
             const result = await thisContext.toBeDisplayed(elements)
 
             expect(result.message()).toEqual(`\
 Expect ${selectorName} to be displayed
 
-Expected: "displayed"
-Received: "not displayed"`)
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "displayed",
++   "not displayed",
+    "displayed",
+  ]`)
+        })
+
+        test('message when second element fails', async () => {
+            vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(true)
+            vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(false)
+
+            const result = await thisContext.toBeDisplayed(elements)
+
+            expect(result.message()).toEqual(`\
+Expect ${selectorName} to be displayed
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "displayed",
+-   "displayed",
++   "not displayed",
+  ]`)
+        })
+
+        test('message when no element fails', async () => {
+            const noElementsFound: WebdriverIO.Element[] = []
+
+            const result = await thisContext.toBeDisplayed(noElementsFound)
+
+            expect(result.message()).toEqual(`\
+Expect [] to be displayed
+
+Expected: "at least one result"
+Received: []`)
         })
     })
 

@@ -2,6 +2,7 @@ import { test, describe, beforeEach, expect } from 'vitest'
 import { printDiffOrStringify } from 'jest-matcher-utils'
 
 import { enhanceError, enhanceErrorBe, numberError } from '../../src/util/formatMessage.js'
+import { elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
 
 describe('formatMessage', () => {
     describe(enhanceError, () => {
@@ -264,77 +265,213 @@ Received      : undefined`)
     })
 
     describe(enhanceErrorBe, () => {
-        const subject = 'element'
         const verb = 'be'
         const expectation = 'displayed'
         const options = {}
 
-        const isNot = false
-        test('when isNot is false', () => {
-            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, options )
-            expect(message).toEqual(`\
-Expect element to be displayed
+        describe('given a single element', () => {
+            const subject = elementFactory('element')
+
+            const isNot = false
+            test('when isNot is false and failure with result having pass=false', () => {
+                const message = enhanceErrorBe(subject, [false], { isNot, verb, expectation }, options )
+                expect(message).toEqual(`\
+Expect $(\`element\`) to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
-        })
+            })
 
-        test('with custom message', () => {
-            const customMessage = 'Custom Error Message'
-            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, { ...options, message: customMessage })
-            expect(message).toEqual(`\
+            test('with custom message', () => {
+                const customMessage = 'Custom Error Message'
+                const message = enhanceErrorBe(subject, [false], { isNot, verb, expectation }, { ...options, message: customMessage })
+                expect(message).toEqual(`\
 Custom Error Message
-Expect element to be displayed
+Expect $(\`element\`) to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
-        })
+            })
 
-        test('when isNot is true', () => {
-            const isNot = true
-            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, options)
-            expect(message).toEqual(`\
-Expect element not to be displayed
+            test('when isNot is true and failure with result having pass=true (inverted later by Jest)', () => {
+                const isNot = true
+                const message = enhanceErrorBe(subject, [true], { isNot, verb, expectation }, options)
+                expect(message).toEqual(`\
+Expect $(\`element\`) not to be displayed
 
 Expected: "not displayed"
 Received: "displayed"`)
 
-        })
+            })
 
-        test.for([
-            { actual: undefined, selectorName: 'undefined' },
-            { actual: null, selectorName: 'null' },
-            { actual: true, selectorName: 'true' },
-            { actual: 5, selectorName: '5' },
-            { actual: 'test', selectorName: 'test' },
-            { actual: {}, selectorName: '{}' },
-            { actual: ['1', '2'], selectorName: '["1","2"]' },
-        ])('should return failure message for unsupported type $actual when isNot is false', async ({ actual: subject, selectorName }) => {
-            const result = await enhanceErrorBe(subject as any, { isNot, verb, expectation }, options)
+            test('when isNot is true and failure with result having pass=true (inverted later by Jest)', () => {
+                const isNot = true
+                const message = enhanceErrorBe(subject, [true], { isNot, verb, expectation }, options)
+                expect(message).toEqual(`\
+Expect $(\`element\`) not to be displayed
 
-            expect(result).toEqual(`\
+Expected: "not displayed"
+Received: "displayed"`)
+
+            })
+
+            test.for([
+                { actual: undefined, selectorName: 'undefined' },
+                { actual: null, selectorName: 'null' },
+                { actual: true, selectorName: 'true' },
+                { actual: 5, selectorName: '5' },
+                { actual: 'test', selectorName: 'test' },
+                { actual: {}, selectorName: '{}' },
+                { actual: ['1', '2'], selectorName: '["1","2"]' },
+            ])('should return failure message for unsupported type $actual when isNot is false and not result from element function call', async ({ actual: subject, selectorName }) => {
+                const result = await enhanceErrorBe(subject as any,  [], { isNot, verb, expectation }, options)
+
+                expect(result).toEqual(`\
 Expect ${selectorName} to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
-        })
+            })
 
-        test.for([
-            { actual: undefined, selectorName: 'undefined' },
-            { actual: null, selectorName: 'null' },
-            { actual: true, selectorName: 'true' },
-            { actual: 5, selectorName: '5' },
-            { actual: 'test', selectorName: 'test' },
-            { actual: {}, selectorName: '{}' },
-            { actual: ['1', '2'], selectorName: '["1","2"]' },
-        ])('should return failure message for unsupported type $actual when isNot is true', async ({ actual: subject, selectorName }) => {
-            const result = await enhanceErrorBe(subject as any, { isNot: true, verb, expectation }, options)
+            test.for([
+                { actual: undefined, selectorName: 'undefined' },
+                { actual: null, selectorName: 'null' },
+                { actual: true, selectorName: 'true' },
+                { actual: 5, selectorName: '5' },
+                { actual: 'test', selectorName: 'test' },
+                { actual: {}, selectorName: '{}' },
+                { actual: ['1', '2'], selectorName: '["1","2"]' },
+            ])('should return failure message for unsupported type $actual when isNot is true and not result from element function call', async ({ actual: subject, selectorName }) => {
+                const result = await enhanceErrorBe(subject as any, [], { isNot: true, verb, expectation }, options)
 
-            expect(result).toEqual(`\
+                expect(result).toEqual(`\
 Expect ${selectorName} not to be displayed
 
 Expected: "not displayed"
 Received: "displayed"`)
+            })
+        })
+
+        describe('given multiples elements', () => {
+            const subject = elementArrayFactory('elements', 2)
+
+            describe('when isNot is false', () => {
+                const isNot = false
+
+                test('failure with all results having pass=false', () => {
+                    const message = enhanceErrorBe(subject, [false, false], { isNot, verb, expectation }, options )
+                    expect(message).toEqual(`\
+Expect $$(\`elements\`) to be displayed
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "displayed",
+-   "displayed",
++   "not displayed",
++   "not displayed",
+  ]`)
+                })
+
+                test('failure with first results having pass=true', () => {
+                    const message = enhanceErrorBe(subject, [true, false], { isNot, verb, expectation }, options )
+                    expect(message).toEqual(`\
+Expect $$(\`elements\`) to be displayed
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "displayed",
+-   "displayed",
++   "not displayed",
+  ]`)
+                })
+
+                test('failure with second results having pass=true', () => {
+                    const message = enhanceErrorBe(subject, [false, true], { isNot, verb, expectation }, options )
+                    expect(message).toEqual(`\
+Expect $$(\`elements\`) to be displayed
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "displayed",
++   "not displayed",
+    "displayed",
+  ]`)
+                })
+
+                test('when no element', () => {
+                    const message = enhanceErrorBe([], [], { isNot, verb, expectation }, options )
+                    expect(message).toEqual(`\
+Expect [] to be displayed
+
+Expected: "at least one result"
+Received: []`)
+                })
+            })
+
+            describe('when isNot is true where failure are pass=true since Jest inverts the result', () => {
+                const isNot = true
+
+                test('failure with all results having pass=true', () => {
+                    const message = enhanceErrorBe(subject, [true, true], { isNot, verb, expectation }, options )
+                    expect(message).toEqual(`\
+Expect $$(\`elements\`) not to be displayed
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "not displayed",
+-   "not displayed",
++   "displayed",
++   "displayed",
+  ]`)
+                })
+
+                test('failure with first results having success pass=false (inverted later)', () => {
+                    const message = enhanceErrorBe(subject, [false, true], { isNot, verb, expectation }, options )
+                    expect(message).toEqual(`\
+Expect $$(\`elements\`) not to be displayed
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "not displayed",
+-   "not displayed",
++   "displayed",
+  ]`)
+                })
+
+                test('failure with second results having success pass=false (inverted later)', () => {
+                    const message = enhanceErrorBe(subject, [true, false], { isNot, verb, expectation }, options )
+                    expect(message).toEqual(`\
+Expect $$(\`elements\`) not to be displayed
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "not displayed",
++   "displayed",
+    "not displayed",
+  ]`)
+                })
+
+                test('when no elements', () => {
+                    const message = enhanceErrorBe([], [], { isNot, verb, expectation }, options )
+                    expect(message).toEqual(`\
+Expect [] not to be displayed
+
+Expected: "at least one result"
+Received: []`)
+                })
+            })
         })
     })
 })

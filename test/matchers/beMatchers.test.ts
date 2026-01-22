@@ -294,8 +294,15 @@ Received: "not ${lastMatcherWords(matcherFn.name)}"`)
                     expect(result.message()).toEqual(`\
 Expect ${selectorName} not ${verb} ${lastMatcherWords(matcherFn.name)}
 
-Expected: "not ${lastMatcherWords(matcherFn.name)}"
-Received: "${lastMatcherWords(matcherFn.name)}"`
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "not ${lastMatcherWords(matcherFn.name)}",
+-   "not ${lastMatcherWords(matcherFn.name)}",
++   "${lastMatcherWords(matcherFn.name)}",
++   "${lastMatcherWords(matcherFn.name)}",
+  ]`
                     )
                 })
 
@@ -313,12 +320,6 @@ Received: "${lastMatcherWords(matcherFn.name)}"`
                     const result = await thisNotContext.matcherFn(elements)
 
                     expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
-                    expect(result.message()).toEqual(`\
-Expect ${selectorName} not ${verb} ${lastMatcherWords(matcherFn.name)}
-
-Expected: "not ${lastMatcherWords(matcherFn.name)}"
-Received: "${lastMatcherWords(matcherFn.name)}"`)
                 })
 
                 test('not - success (with wait) - pass should be false', async () => {
@@ -350,8 +351,15 @@ Received: "${lastMatcherWords(matcherFn.name)}"`)
                     expect(result.message()).toEqual(`\
 Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
 
-Expected: "${lastMatcherWords(matcherFn.name)}"
-Received: "not ${lastMatcherWords(matcherFn.name)}"`)
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "${lastMatcherWords(matcherFn.name)}",
+-   "${lastMatcherWords(matcherFn.name)}",
++   "not ${lastMatcherWords(matcherFn.name)}",
++   "not ${lastMatcherWords(matcherFn.name)}",
+  ]`)
                 })
 
                 test('message when a single element fails', async () => {
@@ -362,8 +370,14 @@ Received: "not ${lastMatcherWords(matcherFn.name)}"`)
                     expect(result.message()).toEqual(`\
 Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
 
-Expected: "${lastMatcherWords(matcherFn.name)}"
-Received: "not ${lastMatcherWords(matcherFn.name)}"`)
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "${lastMatcherWords(matcherFn.name)}",
++   "not ${lastMatcherWords(matcherFn.name)}",
+    "${lastMatcherWords(matcherFn.name)}",
+  ]`)
                 })
 
                 describe('fails with ElementArray', () => {
@@ -401,8 +415,14 @@ Received: "not ${lastMatcherWords(matcherFn.name)}"`)
                         expect(result.message()).toEqual(`\
 Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
 
-Expected: "${lastMatcherWords(matcherFn.name)}"
-Received: "not ${lastMatcherWords(matcherFn.name)}"`)
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "${lastMatcherWords(matcherFn.name)}",
+-   "${lastMatcherWords(matcherFn.name)}",
++   "not ${lastMatcherWords(matcherFn.name)}",
+  ]`)
                     })
 
                     describe('given filtered elememts (Element[])', () => {
@@ -434,8 +454,14 @@ Received: "not ${lastMatcherWords(matcherFn.name)}"`)
                             expect(result.message()).toEqual(`\
 Expect $(\`sel\`), $$(\`sel\`)[1] ${verb} ${lastMatcherWords(matcherFn.name)}
 
-Expected: "${lastMatcherWords(matcherFn.name)}"
-Received: "not ${lastMatcherWords(matcherFn.name)}"`)
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "${lastMatcherWords(matcherFn.name)}",
+-   "${lastMatcherWords(matcherFn.name)}",
++   "not ${lastMatcherWords(matcherFn.name)}",
+  ]`)
                         })
                     })
                 })

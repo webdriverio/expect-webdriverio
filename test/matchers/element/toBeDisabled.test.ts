@@ -222,8 +222,15 @@ Received: "disabled"`)
             expect(result.message()).toEqual(`\
 Expect $$(\`sel\`) not to be disabled
 
-Expected: "not disabled"
-Received: "disabled"`
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "not disabled",
+-   "not disabled",
++   "disabled",
++   "disabled",
+  ]`
             )
         })
 
@@ -271,8 +278,15 @@ Received: "disabled"`
             expect(result.message()).toEqual(`\
 Expect $$(\`sel\`) to be disabled
 
-Expected: "disabled"
-Received: "not disabled"`)
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "disabled",
+-   "disabled",
++   "not disabled",
++   "not disabled",
+  ]`)
         })
 
         test('message when a single element fails', async () => {
@@ -282,8 +296,14 @@ Received: "not disabled"`)
             expect(result.message()).toEqual(`\
 Expect $$(\`sel\`) to be disabled
 
-Expected: "disabled"
-Received: "not disabled"`)
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "disabled",
++   "not disabled",
+    "disabled",
+  ]`)
         })
     })
 })
