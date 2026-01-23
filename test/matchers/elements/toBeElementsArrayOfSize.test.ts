@@ -98,7 +98,6 @@ Received      : 2`
                 const result = await thisNotContext.toBeElementsArrayOfSize(els, { lte: 3 })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later in .not cases
-                console.log(result.message())
                 expect(result.message()).toEqual(`\
 Expect ${selectorName} not to be elements array of size
 
