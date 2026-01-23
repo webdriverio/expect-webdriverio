@@ -321,7 +321,6 @@ Received: ""`
                 const result = await thisContext.toHaveText(el, /Webdriver/i)
 
                 expect(result.pass).toBe(false)
-                // TODO drepvost verify if we should see array as received value
                 expect(result.message()).toEqual(`\
 Expect $(\`sel\`) to have text
 
@@ -334,7 +333,6 @@ Received: "This is example text"`
                 const result = await thisContext.toHaveText(el, ['WDIO', /Webdriver/i])
 
                 expect(result.pass).toBe(false)
-                // TODO drepvost verify if we should see array as received value
                 expect(result.message()).toEqual(`\
 Expect $(\`sel\`) to have text
 
