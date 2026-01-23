@@ -94,7 +94,7 @@ export async function defaultMultipleElementsIterationStrategy<Expected, Value>(
     if (isElementArrayLike(elements)) {
         if (Array.isArray(expectedValues)) {
             if (elements.length !== expectedValues.length) {
-                return [{ result: false, value: `Expected array length ${elements.length}, received ${expectedValues.length}` }]
+                return [{ result: false, value: `Received array length ${elements.length}, expected ${expectedValues.length}` }]
             }
             return await map(elements, (el: WebdriverIO.Element, index: number) => condition(el, expectedValues[index]))
         }

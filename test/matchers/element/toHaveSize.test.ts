@@ -421,20 +421,8 @@ Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 32}]`
                 expect(result.message()).toEqual(`\
 Expect ${selectorName} not to have size
 
-- Expected [not]  - 1
-+ Received        + 1
-
-  Array [
-    Object {
-      "height": 32,
-      "width": 32,
-    },
-    Object {
-      "height": 32,
--     "width": 32,
-+     "width": 15,
-    },
-  ]`
+Expected [not]: [{"height": 32, "width": 32}, {"height": 32, "width": 32}]
+Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 15}]`
                 )
             })
 
@@ -448,20 +436,8 @@ Expect ${selectorName} not to have size
                 expect(result.message()).toEqual(`\
 Expect ${selectorName} not to have size
 
-- Expected [not]  - 1
-+ Received        + 1
-
-  Array [
-    Object {
-      "height": 32,
--     "width": 32,
-+     "width": 15,
-    },
-    Object {
-      "height": 32,
-      "width": 32,
-    },
-  ]`
+Expected [not]: [{"height": 32, "width": 32}, {"height": 32, "width": 32}]
+Received      : [{"height": 32, "width": 15}, {"height": 32, "width": 32}]`
                 )
             })
 
@@ -488,7 +464,7 @@ Expect ${selectorName} to have size
 -     "height": 32,
 -     "width": 32,
 -   },
-+   "Expected array length 2, received 3",
++   "Received array length 2, expected 3",
   ]`
                 )
             })

@@ -390,9 +390,10 @@ Received: "This is example text"`
                 expect(result.pass).toBe(false)
             })
 
-            test('should return true if the expected message shows correctly', async () => {
+            test('should shows custom failure message', async () => {
                 const result = await thisContext.toHaveText(els, 'webdriverio', { message: 'Test', wait: 0 })
 
+                expect(result.pass).toBe(false)
                 expect(result.message()).toEqual(`\
 Test
 Expect ${selectorName} to have text
@@ -411,12 +412,13 @@ Expect ${selectorName} to have text
         })
 
         describe('given multiples expected values', () => {
+            let awaitedElements: WebdriverIO.Element[] | WebdriverIO.ElementArray| ChainablePromiseArray
             beforeEach(async () => {
                 els = elements
 
-                const awaitedEls = await els
-                vi.mocked(awaitedEls[0].getText).mockResolvedValue('WebdriverIO')
-                vi.mocked(awaitedEls[1].getText).mockResolvedValue('Get Started')
+                awaitedElements = await els
+                vi.mocked(awaitedElements[0].getText).mockResolvedValue('WebdriverIO')
+                vi.mocked(awaitedElements[1].getText).mockResolvedValue('Get Started')
             })
 
             test('should return true if the received elements', async () => {
@@ -443,6 +445,37 @@ Expect ${selectorName} to have text
                 const result = await thisContext.toHaveText(els, ['webdriverio', 'get started'])
 
                 expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect ${selectorName} to have text
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "webdriverio",
+-   "get started",
++   "WebdriverIO",
++   "Get Started",
+  ]`
+                )
+            })
+
+            test('should return false if the first received element array does not match the first expected text in the array', async () => {
+                const result = await thisContext.toHaveText(els, ['webdriverIO', 'Get Started'])
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect ${selectorName} to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "webdriverIO",
++   "WebdriverIO",
+    "Get Started",
+  ]`
+                )
             })
 
             test('should return false if the second received element array does not match the second expected text in the array', async () => {
@@ -481,6 +514,34 @@ Expect ${selectorName} to have text
 +   "Get Started",
   ]`
                 )
+            })
+
+            test('not - failure on both elements - pass should be true', async () => {
+                const result = await thisNotContext.toHaveText(elements, ['WebdriverIO', 'Get Started'])
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(result.message()).toEqual(`\
+Expect ${selectorName} not to have text
+
+Expected [not]: ["WebdriverIO", "Get Started"]
+Received      : ["WebdriverIO", "Get Started"]`)
+            })
+
+            test('not - failure on first element only - pass should be true', async () => {
+                const result = await thisNotContext.toHaveText(elements, ['WebdriverIO', 'OK Get Started'])
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(result.message()).toEqual(`\
+Expect ${selectorName} not to have text
+
+Expected [not]: ["WebdriverIO", "OK Get Started"]
+Received      : ["WebdriverIO", "Get Started"]`)
+            })
+
+            test('not - success - pass should be false', async () => {
+                const result = await thisNotContext.toHaveText(elements, ['NOT WebdriverIO', 'NOT Get Started'])
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
         })
     })

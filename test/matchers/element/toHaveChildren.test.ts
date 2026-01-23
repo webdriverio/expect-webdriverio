@@ -135,6 +135,7 @@ Received      : 2`
             )
         })
 
+        // This is not outputting the right colors in the test output console, to enhance!
         test('.not, lte value - failure - pass should be true', async () => {
             const result = await thisNotContext.toHaveChildren(el, { lte: 2 })
 
@@ -306,15 +307,8 @@ Received      : [2, 2]`
                 expect(result.message()).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
-- Expected [not]  - 2
-+ Received        + 2
-
-  Array [
--   "<= 2",
--   "<= 2",
-+   2,
-+   2,
-  ]`
+Expected [not]: ["<= 2", "<= 2"]
+Received      : [2, 2]`
                 )
             })
             test('.not, exact value - success - pass should be false', async () => {
@@ -424,15 +418,8 @@ Received      : [2, 2]`)
                 expect(result.message()).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
-- Expected [not]  - 2
-+ Received        + 2
-
-  Array [
--   "<= 2",
--   "<= 2",
-+   2,
-+   2,
-  ]`)
+Expected [not]: ["<= 2", "<= 2"]
+Received      : [2, 2]`)
             })
 
             test('.not, lte & gte value - failure - pass should be true', async () => {
@@ -442,15 +429,8 @@ Expect $$(\`sel\`) not to have children
                 expect(result.message()).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
-- Expected [not]  - 2
-+ Received        + 2
-
-  Array [
--   "<= 2",
--   ">= 2",
-+   2,
-+   2,
-  ]`)
+Expected [not]: ["<= 2", ">= 2"]
+Received      : [2, 2]`)
             })
 
             test('.not, exact value - success - pass should be false', async () => {
