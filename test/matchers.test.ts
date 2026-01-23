@@ -499,8 +499,24 @@ Received: "not displayed"`)
             await expectLib(elements).toBeElementsArrayOfSize(2)
         })
 
+        test('toBe matchers and toHve matchers work with .not', async () => {
+            await expectLib(elements).not.toBeDisabled()
+            await expectLib(elements).not.toHaveText('Some other text')
+            await expectLib(elements).not.toHaveHTML('<SomeOtherHtml/>')
+            await expectLib(elements).not.toHaveComputedLabel('Some Other Computed Label')
+            await expectLib(elements).not.toHaveComputedRole('Some Other Computed Role')
+            await expectLib(elements).not.toHaveElementProperty('someProperty', 'some other value')
+            await expectLib(elements).not.toHaveAttribute('someAttribute', 'some other attribute')
+            await expectLib(elements).not.toHaveAttr('someAttribute', 'some other attribute')
+            await expectLib(elements).not.toHaveSize({ width: 200, height: 100 })
+            await expectLib(elements).not.toHaveHeight(100)
+            await expectLib(elements).not.toHaveWidth(200)
+            await expectLib(elements).not.toBeElementsArrayOfSize(3)
+        })
+
         test('toHave works with stringContaining asymmetric matcher', async () => {
             await expectLib(elements).toHaveText([expectLib.stringContaining('Valid'), expectLib.stringContaining('Valid')])
+            await expectLib(elements).not.toHaveText([expectLib.stringContaining('Test'), expectLib.stringContaining('Test')])
         })
 
         // TODO to support one day?
