@@ -1,8 +1,17 @@
-import { test, describe, beforeEach, expect } from 'vitest'
-import { printDiffOrStringify } from 'jest-matcher-utils'
+import { test, describe, beforeEach, expect, vi } from 'vitest'
+import { INVERTED_COLOR, printDiffOrStringify } from 'jest-matcher-utils'
 
 import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
 import { elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
+
+vi.mock('jest-matcher-utils', async (importActual) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await importActual<typeof import('jest-matcher-utils')>()
+    return {
+        ...actual,
+        INVERTED_COLOR: vi.fn(actual.INVERTED_COLOR)
+    }
+})
 
 describe('formatMessage', () => {
     describe(enhanceError, () => {
@@ -252,17 +261,170 @@ Expect ${selectorName} not to have text
 Expected [not]: "webdriverio"
 Received      : undefined`)
         })
-    })
 
-    // describe(numberError, () => {
-    //     test('should return correct message', () => {
-    //         expect(numberError()).toBe('Incorrect number options provided. Received: {}')
-    //         expect(numberError({ eq: 0 })).toBe(0)
-    //         expect(numberError({ gte: 1 })).toBe('>= 1')
-    //         expect(numberError({ lte: 1 })).toBe('<= 1')
-    //         expect(numberError({ gte: 2, lte: 1 })).toBe('>= 2 && <= 1')
-    //     })
-    // })
+        describe('given multiple elements', () => {
+            const elements = elementArrayFactory('elements', 2)
+            const elementName = '$$(`elements`)'
+
+            describe('elements when isNot is false', () => {
+                const isNot = false
+                test('all elements failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Actual Value 1', 'Test Actual Value 2']
+
+                    const actualFailureMessage = enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    )
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} to have text
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "Test Expected Value 1",
+-   "Test Expected Value 2",
++   "Test Actual Value 1",
++   "Test Actual Value 2",
+  ]`)
+                })
+
+                test('First elements failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Actual Value 1', 'Test Expected Value 2']
+
+                    const actualFailureMessage = enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    )
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "Test Expected Value 1",
++   "Test Actual Value 1",
+    "Test Expected Value 2",
+  ]`)
+                })
+
+                test('Seconds elements failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Expected Value 1', 'Test Actual Value 2']
+
+                    const actualFailureMessage = enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    )
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "Test Expected Value 1",
+-   "Test Expected Value 2",
++   "Test Actual Value 2",
+  ]`)
+                })
+            })
+
+            describe('elements when isNot is true', () => {
+                const isNot = true
+                test('all elements failure then all values are highlighted as failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Expected Value 1', 'Test Expected Value 2']
+
+                    const actualFailureMessage = enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    )
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} not to have text
+
+Expected [not]: ["Test Expected Value 1", "Test Expected Value 2"]
+Received      : ["Test Expected Value 1", "Test Expected Value 2"]`
+                    )
+
+                    expect(INVERTED_COLOR).toHaveBeenCalledTimes(4)
+                })
+
+                test('First elements failure then only first values are highlighted as failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Expected Value 1', 'Test Actual Value 2']
+
+                    const actualFailureMessage = enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    )
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} not to have text
+
+Expected [not]: ["Test Expected Value 1", "Test Expected Value 2"]
+Received      : ["Test Expected Value 1", "Test Actual Value 2"]`
+                    )
+
+                    expect(INVERTED_COLOR).toHaveBeenCalledTimes(2)
+                    expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '"Test Expected Value 1"')
+                    expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '"Test Expected Value 1"')
+                })
+
+                test('Second elements failure then only second values are highlighted as failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Actual Value 1', 'Test Expected Value 2']
+
+                    const actualFailureMessage = enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    )
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} not to have text
+
+Expected [not]: ["Test Expected Value 1", "Test Expected Value 2"]
+Received      : ["Test Actual Value 1", "Test Expected Value 2"]`
+                    )
+
+                    expect(INVERTED_COLOR).toHaveBeenCalledTimes(2)
+                    expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '"Test Expected Value 2"')
+                    expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '"Test Expected Value 2"')
+                })
+            })
+        })
+    })
 
     describe(enhanceErrorBe, () => {
         const verb = 'be'

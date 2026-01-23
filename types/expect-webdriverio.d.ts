@@ -689,10 +689,12 @@ declare namespace ExpectWebdriverIO {
     // This can caused problems with multiple expected values vs global command options
     // Potnetial we should have this object as a NumberExpect type and have the options separate
     interface NumberOptions extends CommandOptions {
+
         /**
          * equals
          */
         eq?: number
+
         /**
          * less than or equals
          */

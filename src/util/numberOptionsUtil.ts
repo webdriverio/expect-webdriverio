@@ -1,5 +1,6 @@
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number'
+const isDefined = (value: unknown): boolean =>  value !== undefined && value !== null
 
 export function validateNumberOptions(expectedValue: number | ExpectWebdriverIO.NumberOptions): { numberMatcher: NumberMatcher, numberCommandOptions?: ExpectWebdriverIO.CommandOptions } {
     let numberOptions: ExpectWebdriverIO.NumberOptions
@@ -9,8 +10,8 @@ export function validateNumberOptions(expectedValue: number | ExpectWebdriverIO.
     } else if (!expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')) {
         throw new Error(`Invalid NumberOptions. Received: ${JSON.stringify(expectedValue)}`)
     } else {
-        numberOptions = expectedValue
-        return { numberMatcher: new NumberMatcher(numberOptions), numberCommandOptions: expectedValue }
+        const { eq, gte, lte, ...commandOptions } = expectedValue
+        return { numberMatcher: new NumberMatcher( { eq, gte, lte }), numberCommandOptions: commandOptions }
     }
 
 }
@@ -36,23 +37,19 @@ export class NumberMatcher {
             return false
         }
 
-        // Equals case
-        if (typeof this.options.eq === 'number') {
+        if (isNumber(this.options.eq)) {
             return actual === this.options.eq
         }
 
-        // Greater than or equal AND less than or equal case
-        if (typeof this.options.gte === 'number' && typeof this.options.lte === 'number') {
+        if (isNumber(this.options.gte) && isNumber(this.options.lte)) {
             return actual >= this.options.gte && actual <= this.options.lte
         }
 
-        // Greater than or equal case
-        if (typeof this.options.gte === 'number') {
+        if (isNumber(this.options.gte)) {
             return actual >= this.options.gte
         }
 
-        // Less than or equal case
-        if (typeof this.options.lte === 'number') {
+        if (isNumber(this.options.lte)) {
             return actual <= this.options.lte
         }
 
@@ -60,19 +57,19 @@ export class NumberMatcher {
     }
 
     toString(): string {
-        if (typeof this.options.eq === 'number') {
+        if (isNumber(this.options.eq)) {
             return String(this.options.eq)
         }
 
-        if (this.options.gte && this.options.lte) {
+        if (isDefined(this.options.gte) && isDefined(this.options.lte)) {
             return `>= ${this.options.gte} && <= ${this.options.lte}`
         }
 
-        if (this.options.gte) {
+        if (isDefined(this.options.gte)) {
             return `>= ${this.options.gte}`
         }
 
-        if (this.options.lte) {
+        if (isDefined(this.options.lte))     {
             return `<= ${this.options.lte}`
         }
 
@@ -81,7 +78,7 @@ export class NumberMatcher {
 
     toJSON(): string | number {
         // Return the actual number for exact equality, so it serializes as 0 not "0"
-        if (typeof this.options.eq === 'number') {
+        if (isNumber(this.options.eq)) {
             return this.options.eq
         }
         return this.toString()
@@ -95,11 +92,11 @@ export const numberMatcherTester = (a: unknown, b: unknown): boolean | undefined
     const isNumberMatcherA = a instanceof NumberMatcher
     const isNumberMatcherB = b instanceof NumberMatcher
 
-    if (isNumberMatcherA && typeof b === 'number') {
+    if (isNumberMatcherA && isNumber(b)) {
         return a.equals(b)
     }
 
-    if (isNumberMatcherB && typeof a === 'number') {
+    if (isNumberMatcherB && isNumber(a)) {
         return b.equals(a)
     }
 
