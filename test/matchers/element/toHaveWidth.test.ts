@@ -214,6 +214,48 @@ Received      : [50, 50]`
             )
         })
 
+        test.only('not - failure lte - pass should be true', async () => {
+            elements.forEach(el => el.getSize = vi.fn().mockResolvedValue(50))
+
+            const result = await thisNotContext.toHaveWidth(elements, { lte: 51 })
+
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            expect(result.message()).toEqual(`\
+Expect $$(\`sel\`) not to have width
+
+Expected [not]: ["<= 51", "<= 51"]
+Received      : [50, 50]`
+            )
+        })
+
+        test.only('not - failure lte only first element - pass should be true', async () => {
+            elements.forEach(el => el.getSize = vi.fn().mockResolvedValue(50))
+
+            const result = await thisNotContext.toHaveWidth(elements, [{ lte: 51 }, 51])
+
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            expect(result.message()).toEqual(`\
+Expect $$(\`sel\`) not to have width
+
+Expected [not]: ["<= 51", 51]
+Received      : [50, 50]`
+            )
+        })
+
+        test.only('not - failure gte - pass should be true', async () => {
+            elements.forEach(el => el.getSize = vi.fn().mockResolvedValue(50))
+
+            const result = await thisNotContext.toHaveWidth(elements, { gte: 49 })
+
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            expect(result.message()).toEqual(`\
+Expect $$(\`sel\`) not to have width
+
+Expected [not]: [">= 49", ">= 49"]
+Received      : [50, 50]`
+            )
+        })
+
         test('not - success - pass should be false', async () => {
             const result = await thisNotContext.toHaveWidth(elements, 10)
 

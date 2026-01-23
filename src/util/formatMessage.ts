@@ -2,6 +2,10 @@ import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXP
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
 import { isElementArrayLike, isElementOrNotEmptyElementArray, isStrictlyElementArray } from './elementsUtil.js'
+import { numberMatcherTester } from './numberOptionsUtil.js'
+import { toJsonString } from './stringUtil.js'
+
+const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
@@ -84,7 +88,7 @@ export const enhanceError = (
         diffString = `\
 ${label.expected}: ${expectedFormatted}
 ${label.received}: ${receivedFormatted}`
-    } else if (equals(actual, expected)) {
+    } else if (equals(actual, expected, CUSTOM_EQUALITY_TESTER)) {
         // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
         diffString =
             `\
@@ -119,7 +123,7 @@ const printArrayWithMatchingItemInRed = (
     // Find matching indices
     const matchingIndices: number[] = []
     for (let i = 0; i < expectedArray.length; i++) {
-        if (equals(expectedArray[i], actualArray[i])) {
+        if (equals(expectedArray[i], actualArray[i], CUSTOM_EQUALITY_TESTER)) {
             matchingIndices.push(i)
         }
     }
@@ -170,39 +174,6 @@ export const enhanceErrorBe = (
     }
 
     return enhanceError(subject, expected, actual, { ...context, useNotInLabel: false }, verb, expectation, '', options)
-}
-
-export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): string | number => {
-    if (typeof options.eq === 'number') {
-        return options.eq
-    }
-
-    if (options.gte && options.lte) {
-        return `>= ${options.gte} && <= ${options.lte}`
-    }
-
-    if (options.gte) {
-        return `>= ${options.gte}`
-    }
-
-    if (options.lte) {
-        return `<= ${options.lte}`
-    }
-
-    return `Incorrect number options provided. Received: ${toJsonString(options)}`
-}
-
-const isString = (value: unknown): value is string => typeof value === 'string'
-
-const toJsonString = (value: unknown): string => {
-    if (isString(value)) {
-        return value
-    }
-    try {
-        return JSON.stringify(value)
-    } catch {
-        return String(value)
-    }
 }
 
 const isSuccess = (isNot: boolean, result: boolean): boolean => {

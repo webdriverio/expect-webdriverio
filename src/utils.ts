@@ -6,7 +6,7 @@ import { expect } from 'expect'
 import type { WdioElementOrArrayMaybePromise, WdioElements } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
-import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
+import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
 import { DEFAULT_OPTIONS } from './constants.js'
 
@@ -325,7 +325,7 @@ export const compareStyle = async (
 
 export {
     compareNumbers, enhanceError,
-    executeCommandBe, numberError, waitUntil, wrapExpectedWithArray
+    executeCommandBe, waitUntil, wrapExpectedWithArray
 }
 
 function replaceActual(

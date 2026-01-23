@@ -1,4 +1,4 @@
-import { waitUntil, enhanceError, compareNumbers, numberError } from '../../utils.js'
+import { waitUntil, enhanceError, } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementsMaybePromise } from '../../types.js'
@@ -18,12 +18,12 @@ export async function toBeElementsArrayOfSize(
         options,
     })
 
-    const numberOptions = validateNumberOptions(expectedValue)
+    const { numberMatcher, numberCommandOptions } = validateNumberOptions(expectedValue)
 
     // eslint-disable-next-line prefer-const
     let { elements, other } = await awaitElementArray(received)
 
-    const wait = numberOptions.wait ?? options.wait ?? DEFAULT_OPTIONS.wait
+    const wait = numberCommandOptions?.wait ?? options.wait ?? DEFAULT_OPTIONS.wait
     const originalLength =  elements ? elements.length : undefined
 
     const pass = await waitUntil(
@@ -33,7 +33,7 @@ export async function toBeElementsArrayOfSize(
             }
 
             // Verify is size match first before refetching elements
-            const isPassing = compareNumbers(elements.length, numberOptions)
+            const isPassing = numberMatcher.equals(elements.length)
             if (isPassing) {
                 return isPassing
             }
@@ -43,7 +43,7 @@ export async function toBeElementsArrayOfSize(
             return false
         },
         isNot,
-        { wait, interval: numberOptions.interval ?? options.interval }
+        { wait, interval: numberCommandOptions?.interval ?? options.interval }
     )
 
     // TODO By using `(await received).push(elements[index])` we could update Promises of arrays, should we support that?
@@ -53,9 +53,8 @@ export async function toBeElementsArrayOfSize(
         }
     }
 
-    const expected = numberError(numberOptions)
     const actual = originalLength
-    const message = enhanceError(elements ?? other, expected, actual, this, verb, expectation, '', numberOptions)
+    const message = enhanceError(elements ?? other, numberMatcher, actual, this, verb, expectation, '', { ...numberCommandOptions, ...options })
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

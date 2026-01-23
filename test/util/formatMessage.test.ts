@@ -1,7 +1,7 @@
 import { test, describe, beforeEach, expect } from 'vitest'
 import { printDiffOrStringify } from 'jest-matcher-utils'
 
-import { enhanceError, enhanceErrorBe, numberError } from '../../src/util/formatMessage.js'
+import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
 import { elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
 
 describe('formatMessage', () => {
@@ -254,15 +254,15 @@ Received      : undefined`)
         })
     })
 
-    describe(numberError, () => {
-        test('should return correct message', () => {
-            expect(numberError()).toBe('Incorrect number options provided. Received: {}')
-            expect(numberError({ eq: 0 })).toBe(0)
-            expect(numberError({ gte: 1 })).toBe('>= 1')
-            expect(numberError({ lte: 1 })).toBe('<= 1')
-            expect(numberError({ gte: 2, lte: 1 })).toBe('>= 2 && <= 1')
-        })
-    })
+    // describe(numberError, () => {
+    //     test('should return correct message', () => {
+    //         expect(numberError()).toBe('Incorrect number options provided. Received: {}')
+    //         expect(numberError({ eq: 0 })).toBe(0)
+    //         expect(numberError({ gte: 1 })).toBe('>= 1')
+    //         expect(numberError({ lte: 1 })).toBe('<= 1')
+    //         expect(numberError({ gte: 2, lte: 1 })).toBe('>= 2 && <= 1')
+    //     })
+    // })
 
     describe(enhanceErrorBe, () => {
         const verb = 'be'

@@ -81,7 +81,6 @@ describe(toHaveHTML, () => {
             const result = await thisNotContext.toHaveHTML(element, '<div>foo</div>')
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            console.log(result.message())
             expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to have HTML
 
