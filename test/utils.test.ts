@@ -211,7 +211,7 @@ describe('utils', () => {
                 verb: 'be'
             }
             command = vi.fn().mockResolvedValue(true)
-            options = { wait: 1, interval: 1 }
+            options = { wait: 0, interval: 1 }
         })
 
         afterEach(() => {
