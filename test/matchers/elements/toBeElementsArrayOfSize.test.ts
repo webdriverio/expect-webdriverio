@@ -94,7 +94,7 @@ Received      : 2`
                 )
             })
 
-            test.only('not - failure - lte - pass should be true', async () => {
+            test('not - failure - lte - pass should be true', async () => {
                 const result = await thisNotContext.toBeElementsArrayOfSize(els, { lte: 3 })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later in .not cases
@@ -106,7 +106,7 @@ Received      : 2`
                 )
             })
 
-            test.only('not - failure - gte - pass should be true', async () => {
+            test('not - failure - gte - pass should be true', async () => {
                 const result = await thisNotContext.toBeElementsArrayOfSize(els, { gte: 1 })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later in .not cases

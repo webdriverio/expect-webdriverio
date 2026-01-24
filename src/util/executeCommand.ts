@@ -44,8 +44,9 @@ export async function executeCommand<T>(
     if (!singleElementCompareStrategy && !mutipleElementsCompareStrategy) { throw new Error('No condition or customMultipleElementCompareStrategy provided to executeCommand') }
 
     const elementOrArray = element ? element : elements ? elements : undefined
+
+    /* v8 ignore next -- @preserve -- should be unreachable due to checks above */
     if (!elementOrArray) {
-        // Should be unreachable due to checks above
         throw new Error('No elements to process in executeCommand')
     }
 
@@ -57,7 +58,7 @@ export async function executeCommand<T>(
     } else if (singleElementCompareStrategy && elements) {
         results = await map(elements, (el: WebdriverIO.Element) => singleElementCompareStrategy(el))
     } else  {
-        // To please tsc but never reached due to checks above
+        /* v8 ignore next -- @preserve -- To please tsc but never reached due to checks above */
         throw new Error('Unable to process executeCommand with the provided parameters')
     }
 

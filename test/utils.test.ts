@@ -291,7 +291,11 @@ Received: "not displayed"`)
                 beforeEach(() => {
                     // Success for `.not`
                     vi.mocked(command).mockResolvedValue(false)
-                    negatedContext = { ...context, isNot: true }
+                    negatedContext = {
+                        expectation: 'displayed',
+                        verb: 'be',
+                        isNot: true
+                    }
                 })
 
                 test('should succeed so pass=false since it is inverted later', async () => {
@@ -433,7 +437,11 @@ Expect ${selectorName} to be displayed
                 beforeEach(() => {
                     // Success for `.not`
                     vi.mocked(command).mockResolvedValue(false)
-                    negatedContext = { ...context, isNot: true }
+                    negatedContext = {
+                        expectation: 'displayed',
+                        verb: 'be',
+                        isNot: true
+                    }
                 })
 
                 test('should succeed so pass=false since it is inverted later', async () => {

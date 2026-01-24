@@ -214,7 +214,7 @@ Received      : [50, 50]`
             )
         })
 
-        test.only('not - failure lte - pass should be true', async () => {
+        test('not - failure lte - pass should be true', async () => {
             elements.forEach(el => el.getSize = vi.fn().mockResolvedValue(50))
 
             const result = await thisNotContext.toHaveWidth(elements, { lte: 51 })
@@ -228,7 +228,7 @@ Received      : [50, 50]`
             )
         })
 
-        test.only('not - failure lte only first element - pass should be true', async () => {
+        test('not - failure lte only first element - pass should be true', async () => {
             elements.forEach(el => el.getSize = vi.fn().mockResolvedValue(50))
 
             const result = await thisNotContext.toHaveWidth(elements, [{ lte: 51 }, 51])
@@ -242,7 +242,7 @@ Received      : [50, 50]`
             )
         })
 
-        test.only('not - failure gte - pass should be true', async () => {
+        test('not - failure gte - pass should be true', async () => {
             elements.forEach(el => el.getSize = vi.fn().mockResolvedValue(50))
 
             const result = await thisNotContext.toHaveWidth(elements, { gte: 49 })

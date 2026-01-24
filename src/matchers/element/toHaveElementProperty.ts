@@ -70,13 +70,8 @@ export async function toHaveElementProperty(
         { wait: options.wait, interval: options.interval }
     )
 
-    let message: string
-    if (expectedValue === undefined) {
-        message = enhanceError(el, !isNot, pass, this, verb, expectation, property, options)
-    } else {
-        const expected = wrapExpectedWithArray(el, prop, expectedValue)
-        message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
-    }
+    const expected = wrapExpectedWithArray(el, prop, expectedValue)
+    const message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
