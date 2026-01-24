@@ -74,10 +74,46 @@ export const elementFactory = (_selector: string, index?: number, parent: Webdri
     element.getElement = vi.fn().mockResolvedValue(element)
 
     // Note: an element found has element.elementId while a not found has element.error
-    // element.error = new Error(`Couldn't find element with selector "${_selector}"`)
-    // element.elementId = `elementId-${index ?? 0}-${_selector}`
+    element.elementId = `${_selector}${index ? '-' + index : ''}`
 
     return element
+}
+
+export const notFoundElementFactory = (_selector: string, index?: number, parent: WebdriverIO.Browser | WebdriverIO.Element = browser): WebdriverIO.Element => {
+    const partialElement = {
+        selector: _selector,
+        index,
+        $,
+        $$,
+        isExisting: vi.fn().mockResolvedValue(false),
+        parent
+    } satisfies Partial<WebdriverIO.Element>
+
+    const element = partialElement as unknown as WebdriverIO.Element
+
+    // Note: an element found has element.elementId while a not found has element.error
+    const elementId = `${_selector}${index ? '-' + index : ''}`
+    const error = (functionName: string) => new Error(`Can't call ${functionName} on element with selector ${elementId} because element wasn't found`)
+
+    // Mimic element not found by throwing error on any method call beisde isExisting
+    const notFoundElement = new Proxy(element, {
+        get(target, prop) {
+            if (prop in element) {
+                const value = element[prop as keyof WebdriverIO.Element]
+                return value
+            }
+            if (['then', 'catch', 'toStringTag'].includes(prop as string) || typeof prop === 'symbol') {
+                const value = Reflect.get(target, prop)
+                return typeof value === 'function' ? value.bind(target) : value
+            }
+            element.error = error(prop as string)
+            return () => { throw element.error }
+        }
+    })
+
+    element.getElement = vi.fn().mockResolvedValue(notFoundElement)
+
+    return notFoundElement
 }
 
 const $ = vi.fn((_selector: string) => {

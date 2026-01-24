@@ -3,6 +3,7 @@ import { $, $$ } from '@wdio/globals'
 
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
+import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -548,5 +549,17 @@ Expect ${selectorName} to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
+    })
+
+    describe('not found element', async () => {
+        let element: WebdriverIO.Element
+
+        beforeEach(async () => {
+            element = notFoundElementFactory('sel')
+        })
+
+        test('throws error when an element does not exists', async () => {
+            await expect(thisContext.toBeDisplayed(element)).rejects.toThrow("Can't call isDisplayed on element with selector sel because element wasn't found")
+        })
     })
 })

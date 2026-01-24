@@ -1,8 +1,8 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$, } from '@wdio/globals'
 
-import { awaitElementOrArray, awaitElementArray, wrapExpectedWithArray, map, isStrictlyElementArray, isElement, isElementArrayLike, isElementOrArrayLike, isElementOrNotEmptyElementArray } from '../../src/util/elementsUtil.js'
-import { chainableElementArrayFactory, elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
+import { awaitElementOrArray, awaitElementArray, wrapExpectedWithArray, map, isStrictlyElementArray, isElement, isElementArrayLike, isElementOrArrayLike } from '../../src/util/elementsUtil.js'
+import { chainableElementArrayFactory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -383,6 +383,7 @@ describe('elementsUtil', () => {
             await $('element').getElement(),
             await $('element'),
             elementFactory('element'),
+            notFoundElementFactory('notFoundElement')
         ])('should return true for Element: %s', async (element) => {
             const isElementResult = isElement(element)
 
@@ -474,29 +475,6 @@ describe('elementsUtil', () => {
             [await $$('elements')]
         ])('should return false for non-Element and non-ElementArray and non-Element[]: %s', async (element) => {
             const result = isElementOrArrayLike(element)
-
-            expect(result).toBe(false)
-        })
-    })
-
-    describe(isElementOrNotEmptyElementArray, async () => {
-        test.for([
-            await $('element'),
-            await $$('elements'),
-            [elementFactory('element1'), elementFactory('element2')],
-        ])('should return true for Element or non-empty ElementArray/Element[]: %s', async (element) => {
-            const result = isElementOrNotEmptyElementArray(element)
-
-            expect(result).toBe(true)
-        })
-        test.for([
-            [],
-            $$('elements'),
-            $('element'),
-            '1',
-            {},
-        ])('should return false for non-Element or empty array: %s', async (element) => {
-            const result = isElementOrNotEmptyElementArray(element)
 
             expect(result).toBe(false)
         })
