@@ -84,13 +84,15 @@ export async function executeCommand<T>(
  * @param elements The element or array of elements.
  * @param expectedValues The expected value or array of expected values.
  * @param condition The condition to execute on each element.
+ * @param options Optional configuration options.
  */
 export async function defaultMultipleElementsIterationStrategy<Expected, Value>(
     elements: WebdriverIO.Element | WdioElements,
     expectedValues: MaybeArray<Expected>,
     condition: (awaitedElement: WebdriverIO.Element, expectedValue: Expected) => Promise<
         { result: boolean; value?: Value }
-    >
+    >,
+    { supportArrayForSingleElement = false } =  {}
 ): Promise<{ result: boolean; value?: Value | string }[]> {
     if (isElementArrayLike(elements)) {
         if (Array.isArray(expectedValues)) {
@@ -101,8 +103,13 @@ export async function defaultMultipleElementsIterationStrategy<Expected, Value>(
         }
         return await map(elements, (el: WebdriverIO.Element) => condition(el, expectedValues))
 
-    } else if (Array.isArray(expectedValues)) {
-        return [{ result: false, value: 'Expected value cannot be an array' }]
+    } else if ( Array.isArray(expectedValues)) {
+        if (!supportArrayForSingleElement) {
+            return [{ result: false, value: 'Expected value cannot be an array' }]
+        }
+
+        // Case where a single element's value can be an array compared to an expected value array and not multiple expected values
+        return [await condition(elements, expectedValues as Expected)]
     }
     return [await condition(elements, expectedValues)]
 }

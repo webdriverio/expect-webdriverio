@@ -220,7 +220,8 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      */
     toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, (
         property: string,
-        value: MaybeArray<unknown | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>,
+        // Needs deep equality to support unknown property types (objects & arrays)
+        value: MaybeArray<string | number | null | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 

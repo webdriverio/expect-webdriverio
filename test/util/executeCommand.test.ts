@@ -1,6 +1,6 @@
-import { describe, expect, test, vi } from 'vitest'
+import { describe, expect, test, vi, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
-import { executeCommand } from '../../src/util/executeCommand'
+import { executeCommand, defaultMultipleElementsIterationStrategy } from '../../src/util/executeCommand'
 
 vi.mock('@wdio/globals')
 
@@ -219,6 +219,74 @@ describe(executeCommand, () => {
             const element = await $('some-selector')
 
             await expect(executeCommand(element)).rejects.toThrowError('No condition or customMultipleElementCompareStrategy provided to executeCommand')
+        })
+    })
+})
+
+describe(defaultMultipleElementsIterationStrategy, () => {
+
+    describe('given single element', () => {
+        let singleElement: WebdriverIO.Element
+        let condition: any
+
+        beforeEach(async () => {
+            singleElement = await $('single-mock-element').getElement()
+            condition = vi.fn().mockImplementation(async (_el, expected) => ({ result: true, value: expected }))
+        })
+
+        test('should handle single element and single expected value', async () => {
+            const result = await defaultMultipleElementsIterationStrategy(singleElement, 'val', condition)
+
+            expect(result).toEqual([{ result: true, value: 'val' }])
+        })
+
+        test('should fail if single element and expected value is array (default)', async () => {
+            const result = await defaultMultipleElementsIterationStrategy(singleElement, ['val'], condition)
+
+            expect(result).toEqual([{ result: false, value: 'Expected value cannot be an array' }])
+        })
+
+        test('should handle single element and expected value array if supportArrayForSingleElement is true', async () => {
+            const result = await defaultMultipleElementsIterationStrategy(singleElement, ['val'], condition, { supportArrayForSingleElement: true })
+
+            expect(result).toEqual([{ result: true, value: ['val'] }])
+            expect(condition).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('given multiple elements', () => {
+        let elements: WebdriverIO.ElementArray
+        let condition: () => Promise<{ result: boolean; value: string }>
+
+        beforeEach(async () => {
+            elements = await $$('elements').getElements()
+            expect(elements.length).toBe(2)
+            condition = vi.fn()
+                .mockResolvedValueOnce({ result: true, value: 'val1' })
+                .mockResolvedValueOnce({ result: true, value: 'val2' })
+        })
+
+        test('should iterate over array of elements and array of expected values', async () => {
+            const result = await defaultMultipleElementsIterationStrategy(elements, ['val1', 'val2'], condition)
+
+            expect(result).toEqual([{ result: true, value: 'val1' }, { result: true, value: 'val2' }])
+            expect(condition).toHaveBeenCalledTimes(2)
+        })
+
+        test('should fail if array lengths mismatch', async () => {
+            const result = await defaultMultipleElementsIterationStrategy([elements[0]] as any, ['val1', 'val2'], condition)
+
+            expect(result).toEqual([{ result: false, value: 'Received array length 1, expected 2' }])
+        })
+
+        test('should iterate over array of elements and single expected value', async () => {
+            condition = vi.fn()
+                .mockResolvedValue({ result: true, value: 'val' })
+
+            const result = await defaultMultipleElementsIterationStrategy(elements, 'val', condition)
+
+            expect(result).toEqual([{ result: true, value: 'val' }, { result: true, value: 'val' }])
+            expect(condition).toHaveBeenCalledTimes(2)
         })
     })
 })

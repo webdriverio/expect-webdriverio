@@ -11,7 +11,7 @@ import {
 async function condition(
     el: WebdriverIO.Element,
     property: string,
-    expected: unknown | RegExp | WdioAsymmetricMatcher<string>,
+    expected: string | number | null | RegExp | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { asString = false } = options
@@ -33,13 +33,13 @@ async function condition(
     }
 
     // To review the cast to be more type safe but for now let's keep the existing behavior to ensure no regression
-    return compareText(prop.toString(), expected as string, options)
+    return compareText(prop.toString(), expected as string | RegExp | WdioAsymmetricMatcher<string>, options)
 }
 
 export async function toHaveElementProperty(
     received: WdioElementOrArrayMaybePromise,
     property: string,
-    expectedValue: MaybeArray<unknown | RegExp | WdioAsymmetricMatcher<string>>,
+    expectedValue: MaybeArray<string | number | null | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
@@ -58,7 +58,8 @@ export async function toHaveElementProperty(
                 (elements) => defaultMultipleElementsIterationStrategy(
                     elements,
                     expectedValue,
-                    (element, expected) => condition(element, property, expected, options)
+                    (element, expected) => condition(element, property, expected, options),
+                    { supportArrayForSingleElement: true }
                 )
             )
             el = result.elementOrArray

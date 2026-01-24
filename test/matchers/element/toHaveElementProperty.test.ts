@@ -46,7 +46,7 @@ describe(toHaveElementProperty, () => {
             expect(result.pass).toBe(true)
         })
 
-        // TODO With unknonwn as expect should array be be supported ? If so this is a bug!!!
+        // TODO Need deep equality to support array and object properly
         test('success with when property value is an array, bug?', async () => {
             vi.mocked(el.getProperty).mockResolvedValue([5])
 
@@ -57,14 +57,15 @@ describe(toHaveElementProperty, () => {
 Expect $(\`sel\`) to have property property
 
 Expected: [5]
-Received: "Expected value cannot be an array"`
+Received: [5]`
             )
         })
 
-        // TODO With unknonwn as expect should array be be supported ? If so this is a bug!!!
+        // TODO Need deep equality to support array and object properly
         test('success with when property value an object, bug?', async () => {
             vi.mocked(el.getProperty).mockResolvedValue( { foo: 'bar' } )
 
+            // @ts-expect-error -- object not working for now, to support later
             const result = await thisContext.toHaveElementProperty(el, 'property', { foo: 'bar' } )
 
             expect(result.pass).toBe(false)
