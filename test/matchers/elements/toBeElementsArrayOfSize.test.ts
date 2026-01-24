@@ -177,13 +177,13 @@ Received      : 2`
             vi.fn(browser.$$).mockResolvedValueOnce(elementArrayOf2).mockResolvedValueOnce(elementArrayOf5)
             const elements = await $$('elements')
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, 5, { wait: 500 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, 5, { wait: 95, interval: 50 })
 
             expect(result.pass).toBe(true)
             expect(elements).toBe(elementArrayOf2) // Original actual elements array but altered
             expect(elements.length).toBe(5) // Altered actual elements array
             expect(browser.$$).toHaveBeenCalledTimes(2)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 500, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 95, true)
             expect(refetchElements).toHaveBeenCalledTimes(1)
         })
 
@@ -191,14 +191,14 @@ Received      : 2`
             browser.$$ = vi.fn().mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
             const elements = await $$('elements')
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 500 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 100, interval: 20 })
 
             expect(result.pass).toBe(false)
             expect(elements.length).toBe(2)
             expect(elements).toBe(elementArrayOf2)
             expect(browser.$$).toHaveBeenCalledTimes(6)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 500, true)
-            expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf5, 500, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 100, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf5, 100, true)
         })
 
         // TODO: By awaiting the promise we could update the actual elements array, so should we support that?

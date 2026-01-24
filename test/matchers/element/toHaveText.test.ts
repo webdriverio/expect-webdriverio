@@ -51,7 +51,7 @@ describe(toHaveText, async () => {
             })
         })
 
-        test('wait but failure', async () => {
+        test('wait but error', async () => {
             vi.mocked(el.getText).mockRejectedValue(new Error('some error'))
 
             await expect(() => thisContext.toHaveText(el, 'WebdriverIO', { ignoreCase: true, wait: 500 }))
@@ -68,7 +68,7 @@ describe(toHaveText, async () => {
         test('success on the first attempt', async () => {
             vi.mocked(el.getText).mockResolvedValue('WebdriverIO')
 
-            const result = await thisContext.toHaveText(el, 'WebdriverIO', { ignoreCase: true, wait: 0 })
+            const result = await thisContext.toHaveText(el, 'WebdriverIO', { ignoreCase: true })
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(1)
         })
@@ -79,6 +79,12 @@ describe(toHaveText, async () => {
             const result = await thisContext.toHaveText(el, 'WebdriverIO', { wait: 0 })
 
             expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have text
+
+Expected: "WebdriverIO"
+Received: "webdriverio"`
+            )
             expect(el.getText).toHaveBeenCalledTimes(1)
         })
 
@@ -124,7 +130,7 @@ Received      : "WebdriverIO"`)
         test('should return true if texts strictly match without trimming', async () => {
             vi.mocked(el.getText).mockResolvedValue('WebdriverIO')
 
-            const result = await thisContext.toHaveText(el, 'WebdriverIO', { trim: false, wait: 0 })
+            const result = await thisContext.toHaveText(el, 'WebdriverIO', { trim: false })
 
             expect(result.pass).toBe(true)
         })
@@ -132,7 +138,7 @@ Received      : "WebdriverIO"`)
         test('should return true if actual text + single replacer matches the expected text', async () => {
             vi.mocked(el.getText).mockResolvedValue('WebdriverIO')
 
-            const result = await thisContext.toHaveText(el, 'BrowserdriverIO', { wait: 0, replace: ['Web', 'Browser'] })
+            const result = await thisContext.toHaveText(el, 'BrowserdriverIO', {  replace: ['Web', 'Browser'] })
 
             expect(result.pass).toBe(true)
         })
@@ -140,7 +146,7 @@ Received      : "WebdriverIO"`)
         test('should return true if actual text + replace (string) matches the expected text', async () => {
             vi.mocked(el.getText).mockResolvedValue('WebdriverIO')
 
-            const result = await thisContext.toHaveText(el, 'BrowserdriverIO', { wait: 0, replace: [['Web', 'Browser']] })
+            const result = await thisContext.toHaveText(el, 'BrowserdriverIO', { replace: [['Web', 'Browser']] })
 
             expect(result.pass).toBe(true)
         })
@@ -148,7 +154,7 @@ Received      : "WebdriverIO"`)
         test('should return true if actual text + replace (regex) matches the expected text', async () => {
             vi.mocked(el.getText).mockResolvedValue('WebdriverIO')
 
-            const result = await thisContext.toHaveText(el, 'BrowserdriverIO', { wait: 0, replace: [[/Web/, 'Browser']] })
+            const result = await thisContext.toHaveText(el, 'BrowserdriverIO', { replace: [[/Web/, 'Browser']] })
 
             expect(result.pass).toBe(true)
         })
@@ -156,7 +162,7 @@ Received      : "WebdriverIO"`)
         test('should return true if actual text starts with expected text', async () => {
             vi.mocked(el.getText).mockResolvedValue('WebdriverIO')
 
-            const result = await thisContext.toHaveText(el, 'Web', { wait: 0, atStart: true })
+            const result = await thisContext.toHaveText(el, 'Web', { atStart: true })
 
             expect(result.pass).toBe(true)
         })
@@ -164,7 +170,7 @@ Received      : "WebdriverIO"`)
         test('should return true if actual text ends with expected text', async () => {
             vi.mocked(el.getText).mockResolvedValue('WebdriverIO')
 
-            const result = await thisContext.toHaveText(el, 'IO', { wait: 0, atEnd: true })
+            const result = await thisContext.toHaveText(el, 'IO', { atEnd: true })
 
             expect(result.pass).toBe(true)
         })
@@ -172,7 +178,7 @@ Received      : "WebdriverIO"`)
         test('should return true if actual text contains the expected text at the given index', async () => {
             vi.mocked(el.getText).mockResolvedValue('WebdriverIO')
 
-            const result = await thisContext.toHaveText(el, 'iverIO', { wait: 0, atIndex: 5 })
+            const result = await thisContext.toHaveText(el, 'iverIO', { atIndex: 5 })
 
             expect(result.pass).toBe(true)
         })
@@ -194,7 +200,7 @@ Received: ""`
 
             vi.mocked(el.getText).mockResolvedValue('webdriverio')
 
-            const result = await thisContext.toHaveText(el, ['WDIO', 'Webdriverio'], { wait: 0, ignoreCase: true })
+            const result = await thisContext.toHaveText(el, ['WDIO', 'Webdriverio'], { ignoreCase: true })
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(1)
         })
@@ -203,7 +209,7 @@ Received: ""`
 
             vi.mocked(el.getText).mockResolvedValue('   WebdriverIO   ')
 
-            const result = await thisContext.toHaveText(el, ['WDIO', 'WebdriverIO', 'toto'], { wait: 0, trim: true })
+            const result = await thisContext.toHaveText(el, ['WDIO', 'WebdriverIO', 'toto'], { trim: true })
 
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(1)
@@ -379,13 +385,57 @@ Received: "This is example text"`
             })
 
             test('should return true if the received element array matches the expected text array & ignoreCase', async () => {
-                const result = await thisContext.toHaveText(els, 'webdriverio', { ignoreCase: true, wait: 0 })
+                const result = await thisContext.toHaveText(els, 'webdriverio', { ignoreCase: true })
                 expect(result.pass).toBe(true)
             })
 
             test('should return false if the received element array does not match the expected text array', async () => {
                 const result = await thisContext.toHaveText(els, 'webdriverio')
                 expect(result.pass).toBe(false)
+            })
+
+            test('should return false when first element does not match', async () => {
+                vi.mocked((await els)[0].getText).mockResolvedValueOnce('Wrong')
+                vi.mocked((await els)[1].getText).mockResolvedValueOnce('webdriverio')
+
+                const result = await thisContext.toHaveText(els, 'webdriverio', { message: 'Test', wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Test
+Expect ${selectorName} to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "webdriverio",
++   "Wrong",
+    "webdriverio",
+  ]`
+                )
+            })
+
+            test('should return false when second element does not match', async () => {
+                vi.mocked((await els)[0].getText).mockResolvedValueOnce('webdriverio')
+                vi.mocked((await els)[1].getText).mockResolvedValueOnce('Wrong')
+
+                const result = await thisContext.toHaveText(els, 'webdriverio', { message: 'Test', wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Test
+Expect ${selectorName} to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "webdriverio",
+-   "webdriverio",
++   "Wrong",
+  ]`
+                )
             })
 
             test('should shows custom failure message', async () => {
@@ -435,7 +485,7 @@ Expect ${selectorName} to have text
             })
 
             test('should return true if the received element array matches the expected text array & ignoreCase', async () => {
-                const result = await thisContext.toHaveText(els, ['webdriverio', 'get started'], { ignoreCase: true, wait: 0 })
+                const result = await thisContext.toHaveText(els, ['webdriverio', 'get started'], { ignoreCase: true })
                 expect(result.pass).toBe(true)
             })
 
@@ -490,6 +540,39 @@ Expect ${selectorName} to have text
     "WebdriverIO",
 -   "get started",
 +   "Get Started",
+  ]`
+                )
+            })
+
+            // TODO legacy behavior to be removed in future major release
+            test('should return true when trying to match non-indexed + more texts than elements (legacy behavior to deprecated)', async () => {
+                vi.mocked((await els)[0].getText).mockResolvedValueOnce('webdriverio1')
+                vi.mocked((await els)[1].getText).mockResolvedValueOnce('webdriverio2')
+
+                const result = await thisContext.toHaveText(els, ['webdriverio2', 'webdriverio1', 'webdriverio'])
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('should return false when trying to match non-indexed + more texts than elements (legacy behavior to deprecated) but nothing match', async () => {
+                vi.mocked((await els)[0].getText).mockResolvedValueOnce('webdriverio1')
+                vi.mocked((await els)[1].getText).mockResolvedValueOnce('webdriverio2')
+
+                const result = await thisContext.toHaveText(els, ['webdriverio', 'webdriverio', 'webdriverIO'])
+
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect ${selectorName} to have text
+
+- Expected  - 3
++ Received  + 2
+
+  Array [
+-   "webdriverio",
+-   "webdriverio",
+-   "webdriverIO",
++   "webdriverio1",
++   "webdriverio2",
   ]`
                 )
             })

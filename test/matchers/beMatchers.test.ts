@@ -56,7 +56,7 @@ describe('be* matchers', () => {
                     const afterAssertion = vi.fn()
                     vi.mocked(el[elementFnName]).mockResolvedValueOnce(false).mockResolvedValueOnce(true)
 
-                    const result = await thisContext.matcherFn(el, { beforeAssertion, afterAssertion, wait: 500 })
+                    const result = await thisContext.matcherFn(el, { beforeAssertion, afterAssertion, wait: 125, interval: 50 })
 
                     expect(result.pass).toBe(true)
                     expect(el[elementFnName]).toHaveBeenCalledTimes(2)
@@ -65,17 +65,18 @@ describe('be* matchers', () => {
                         {
                             afterAssertion,
                             beforeAssertion,
-                            wait: 500
+                            wait: 125,
+                            interval: 50
                         },
                     )
-                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 500, interval: 100 })
+                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 125, interval: 50 })
                     expect(beforeAssertion).toBeCalledWith({
                         matcherName: matcherFn.name,
-                        options: { beforeAssertion, afterAssertion, wait: 500 }
+                        options: { beforeAssertion, afterAssertion, wait: 125, interval: 50 }
                     })
                     expect(afterAssertion).toBeCalledWith({
                         matcherName: matcherFn.name,
-                        options: { beforeAssertion, afterAssertion, wait: 500 },
+                        options: { beforeAssertion, afterAssertion, wait: 125, interval: 50 },
                         result
                     })
                 })
@@ -138,7 +139,7 @@ Received: "${lastMatcherWords(matcherFn.name)}"`
                     const el = await $('sel')
                     vi.mocked(el[elementFnName]).mockResolvedValue(false)
 
-                    const result = await thisNotContext.matcherFn(el)
+                    const result = await thisNotContext.matcherFn(el, { wait: 0 })
 
                     expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
                 })
@@ -164,7 +165,7 @@ Received: "${lastMatcherWords(matcherFn.name)}"`
                     const el = await $('sel')
                     vi.mocked(el[elementFnName]).mockResolvedValue(false)
 
-                    const result = await thisContext.matcherFn(el)
+                    const result = await thisContext.matcherFn(el, { wait: 0 })
 
                     expect(result.pass).toBe(false)
                     if (matcherFn.name === 'toExist') {return}
@@ -308,7 +309,7 @@ Expect ${selectorName} not ${verb} ${lastMatcherWords(matcherFn.name)}
 
                 test('not - success - pass should be false', async () => {
                     for (const element of elements) {
-                        vi.mocked(element[elementFnName]).mockResolvedValue(false)
+                        vi.mocked(element[elementFnName]).mockResolvedValue(false,  { wait: 0 })
                     }
 
                     const result = await thisNotContext.matcherFn(elements)
@@ -404,7 +405,7 @@ Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
                     test('fails with ElementArray', async () => {
                         vi.mocked(elementsArray[1][elementFnName]).mockResolvedValue(false)
 
-                        const result = await thisContext.matcherFn(elementsArray)
+                        const result = await thisContext.matcherFn(elementsArray, { wait: 0 })
 
                         for (const element of elementsArray) {
                             expect(element[elementFnName]).toHaveBeenCalled()
