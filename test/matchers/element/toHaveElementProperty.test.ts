@@ -38,6 +38,44 @@ describe(toHaveElementProperty, () => {
             })
         })
 
+        test('success with when property value is number', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue(5)
+
+            const result = await thisContext.toHaveElementProperty(el, 'property', 5)
+
+            expect(result.pass).toBe(true)
+        })
+
+        // TODO With unknonwn as expect should array be be supported ? If so this is a bug!!!
+        test('success with when property value is an array, bug?', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue([5])
+
+            const result = await thisContext.toHaveElementProperty(el, 'property', [5])
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have property property
+
+Expected: [5]
+Received: "Expected value cannot be an array"`
+            )
+        })
+
+        // TODO With unknonwn as expect should array be be supported ? If so this is a bug!!!
+        test('success with when property value an object, bug?', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue( { foo: 'bar' } )
+
+            const result = await thisContext.toHaveElementProperty(el, 'property', { foo: 'bar' } )
+
+            expect(result.pass).toBe(false)
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have property property
+
+Expected: {"foo": "bar"}
+Received: {"foo": "bar"}`
+            )
+        })
+
         test('assymeric match', async () => {
             const result = await thisContext.toHaveElementProperty(el, 'property', expect.stringContaining('phone'))
             expect(result.pass).toBe(true)
