@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
+import expectLib from 'expect'
 import { expect as expectWdio, SoftAssertionService, SoftAssertService } from '../src/index.js'
 
 vi.mock('@wdio/globals')
@@ -19,6 +20,77 @@ describe('Soft Assertions', () => {
     })
 
     describe('expect.soft', () => {
+
+        it('should handle promises properly and return a promise when matchers are used with Promises or Elements', async () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('promise-0', 'test name', 'test file')
+
+            expect(expectLib(Promise.resolve(true)).resolves.toBe(true)).toBeInstanceOf(Promise)
+            expect(expectWdio(Promise.resolve(true)).resolves.toBe(true)).toBeInstanceOf(Promise)
+            expect(expectWdio(Promise.resolve(true)).resolves.not.toBe(false)).toBeInstanceOf(Promise)
+            expect(expectWdio.soft(Promise.resolve(true)).resolves.toBe(true)).toBeInstanceOf(Promise)
+
+            const elementToHaveText = expectWdio($('element1')).toHaveText('Valid Text')
+            expect(elementToHaveText).toBeInstanceOf(Promise)
+
+            // TODO remove await once $$() support is merged
+            const elementsToHaveText = expectWdio(await $$('elements2')).toHaveText('Valid Text')
+            expect(elementsToHaveText).toBeInstanceOf(Promise)
+
+            const elementsNotToHaveText = expectWdio(await $$('elements3')).not.toHaveText('Not Valid Text')
+            expect(elementsNotToHaveText).toBeInstanceOf(Promise)
+
+            await Promise.all([elementToHaveText, elementsToHaveText, elementsNotToHaveText])
+
+            const elementSoftToHaveText = expectWdio.soft($('element4')).toHaveText('Valid Text')
+            expect(elementSoftToHaveText).toBeInstanceOf(Promise)
+
+            const elementsSoftToHaveText = expectWdio.soft(await $$('elements5')).toHaveText('Valid Text')
+            expect(elementsSoftToHaveText).toBeInstanceOf(Promise)
+
+            const elementsSoftNotToHaveText = expectWdio.soft(await $$('elements6')).not.toHaveText('Not Valid Text')
+            expect(elementsSoftNotToHaveText).toBeInstanceOf(Promise)
+
+            // Ensure all assertions are awaited to avoid conflicts in other tests
+            await Promise.all([elementSoftToHaveText, elementsSoftToHaveText, elementsSoftNotToHaveText])
+        })
+
+        it('should handle non-promises properly', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('non-promise-1', 'test name', 'test file')
+
+            expect(expectLib(true).toBe(true)).toBeUndefined()
+            expect(expectLib(true).toBe).toBeInstanceOf(Function)
+            expect(expectLib(true).toBe(true)).not.toBeInstanceOf(Promise)
+            expect(expectLib(true).not.toBe(false)).not.toBeInstanceOf(Promise)
+
+            expect(expectWdio(true).toBe(true)).toBeUndefined()
+            expect(expectWdio(true).toBe).toBeInstanceOf(Function)
+            expect(expectWdio(true).toBe(true)).not.toBeInstanceOf(Promise)
+            expect(expectWdio(true).not.toBe(false)).not.toBeInstanceOf(Promise)
+
+            expect(expectWdio.soft(true).toBe(true)).toBeUndefined()
+            expect(expectWdio.soft(true).toBe).toBeInstanceOf(Function)
+            expect(expectWdio.soft(true).toBe).not.toBeInstanceOf(Promise)
+            expect(expectWdio.soft(true).not.toBe(false)).not.toBeInstanceOf(Promise)
+        })
+
+        it.for([
+            '',
+            2,
+            [],
+        ])('should handle non-promises and return a non-promise target to have the correct runtime type', (actualPromise) => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('non-promise-2', 'test name', 'test file')
+
+            const wdioExpect = expectWdio(actualPromise)
+            expect(wdioExpect).not.toBeInstanceOf(Promise)
+
+            const softExpect = expectWdio.soft(actualPromise)
+            expect(softExpect).toBeInstanceOf(Object)
+            expect(softExpect).not.toBeInstanceOf(Promise)
+        })
+
         it('should not throw immediately on failure', async () => {
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('test-1', 'test name', 'test file')
@@ -108,20 +180,48 @@ describe('Soft Assertions', () => {
             expect(expectWdio.getSoftFailures().length).toBe(0)
         })
 
-        /**
-         * TODO: Skipped since soft assertions are currently not supporting basic matchers like toBe or toEqual. To fix one day!
-         * @see https://github.com/webdriverio/expect-webdriverio/issues/1887
-         */
-        it.skip('should support basic text matching', async () => {
-            const softService = SoftAssertService.getInstance()
-            softService.setCurrentTest('test-7', 'test name', 'test file')
-            const text = await el.getText()
+        describe('Basic Matchers Support', () => {
+            it('should support basic matchers failure without await', () => {
+                const softService = SoftAssertService.getInstance()
+                softService.setCurrentTest('test-7', 'test name', 'test file')
 
-            expectWdio.soft(text).toEqual('!Actual Text')
+                expectWdio.soft('Actual Text').toEqual('!Actual Text')
 
-            const failures = expectWdio.getSoftFailures()
-            expect(failures.length).toBe(1)
-            expect(failures[0].matcherName).toBe('toHaveText')
+                const failures = expectWdio.getSoftFailures()
+                expect(failures.length).toBe(1)
+                expect(failures[0].matcherName).toBe('toEqual')
+            })
+
+            it('should support basic matchers success', async () => {
+                const softService = SoftAssertService.getInstance()
+                softService.setCurrentTest('test-8', 'test name', 'test file')
+
+                expectWdio.soft('Actual Text').toEqual('Actual Text')
+
+                const failures = expectWdio.getSoftFailures()
+                expect(failures.length).toBe(0)
+            })
+
+            it('not - should support basic matchers failure without await', async () => {
+                const softService = SoftAssertService.getInstance()
+                softService.setCurrentTest('test-9', 'test name', 'test file')
+
+                expectWdio.soft('Actual Text').not.toEqual('Actual Text')
+
+                const failures = expectWdio.getSoftFailures()
+                expect(failures.length).toBe(1)
+                expect(failures[0].matcherName).toBe('not.toEqual')
+            })
+
+            it.skip('not - should support basic matcher success', async () => {
+                const softService = SoftAssertService.getInstance()
+                softService.setCurrentTest('test-10', 'test name', 'test file')
+
+                expectWdio.soft('Actual Text').not.toEqual('Not Actual Text')
+
+                const failures = expectWdio.getSoftFailures()
+                expect(failures.length).toBe(0)
+            })
         })
 
     })

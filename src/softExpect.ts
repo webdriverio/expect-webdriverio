@@ -1,15 +1,18 @@
-import { expect, matchers } from './index.js'
+import { expect } from './index.js'
 import { SoftAssertService } from './softAssert.js'
+import type { SyncExpectationResult } from 'expect'
+
+const isPossibleMatcher = (propName: string) => propName.startsWith('to') && propName.length > 2
 
 /**
  * Creates a soft assertion wrapper using lazy evaluation
  * Only creates matchers when they're actually accessed
  */
-const createSoftExpect = <T = unknown>(actual: T): ExpectWebdriverIO.Matchers<Promise<void>, T> => {
+const createSoftExpect = <T = unknown>(actual: T): ExpectWebdriverIO.Matchers<Promise<void> | void, T> => {
     const softService = SoftAssertService.getInstance()
 
     // Use a simple proxy that creates matchers on-demand
-    return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void>, T>, {
+    return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void> | void, T>, {
         get(target, prop) {
             const propName = String(prop)
 
@@ -23,12 +26,10 @@ const createSoftExpect = <T = unknown>(actual: T): ExpectWebdriverIO.Matchers<Pr
                 return createSoftChainProxy(actual, propName, softService)
             }
 
-            // Handle matchers
-            if (matchers.has(propName)) {
+            if (isPossibleMatcher(propName)) {
+                // Support basic & wdio (and more) matchers that start with "to"
                 return createSoftMatcher(actual, propName, softService)
             }
-
-            // For any other properties, return undefined
             return undefined
         }
     })
@@ -38,13 +39,10 @@ const createSoftExpect = <T = unknown>(actual: T): ExpectWebdriverIO.Matchers<Pr
  * Creates a soft .not proxy
  */
 const createSoftNotProxy = <T>(actual: T, softService: SoftAssertService) => {
-    return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void>, T>, {
-        get(target, prop) {
+    return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void> | void, T>, {
+        get(_target, prop) {
             const propName = String(prop)
-            if (matchers.has(propName)) {
-                return createSoftMatcher(actual, propName, softService, 'not')
-            }
-            return undefined
+            return isPossibleMatcher(propName) ? createSoftMatcher(actual, propName, softService, 'not') : undefined
         }
     })
 }
@@ -53,13 +51,10 @@ const createSoftNotProxy = <T>(actual: T, softService: SoftAssertService) => {
  * Creates a soft chain proxy (resolves/rejects)
  */
 const createSoftChainProxy = <T>(actual: T, chainType: string, softService: SoftAssertService) => {
-    return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void>, T>, {
-        get(target, prop) {
+    return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void> | void, T>, {
+        get(_target, prop) {
             const propName = String(prop)
-            if (matchers.has(propName)) {
-                return createSoftMatcher(actual, propName, softService, chainType)
-            }
-            return undefined
+            return isPossibleMatcher(propName) ? createSoftMatcher(actual, propName, softService, chainType) : undefined
         }
     })
 }
@@ -73,7 +68,7 @@ const createSoftMatcher = <T>(
     softService: SoftAssertService,
     prefix?: string
 ) => {
-    return async (...args: unknown[]) => {
+    return (...args: unknown[]) => {
         try {
             // Build the expectation chain
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -87,19 +82,30 @@ const createSoftMatcher = <T>(
                 expectChain = expectChain.rejects
             }
 
-            return await ((expectChain as unknown) as Record<string, (...args: unknown[]) => ExpectWebdriverIO.AsyncAssertionResult>)[matcherName](...args)
+            // In case of matchers failures we jump into the catch block below
+            const assertionResult: ExpectWebdriverIO.AsyncAssertionResult | SyncExpectationResult  = expectChain[matcherName](...args)
+
+            // Handle async matchers, and allow to not be a promise for basic non-async matchers
+            if ( assertionResult instanceof Promise) {
+                return assertionResult.catch((error: Error) => handlingMatcherFailure(prefix, matcherName, softService, error))
+            }
+            return assertionResult
 
         } catch (error) {
-            // Record the failure
-            const fullMatcherName = prefix ? `${prefix}.${matcherName}` : matcherName
-            softService.addFailure(error as Error, fullMatcherName)
-
-            // Return a passing result to continue execution
-            return {
-                pass: true,
-                message: () => `Soft assertion failed: ${fullMatcherName}`
-            }
+            return handlingMatcherFailure(prefix, matcherName, softService, error as Error)
         }
+    }
+}
+
+function handlingMatcherFailure(prefix: string | undefined, matcherName: string, softService: SoftAssertService, error: unknown) {
+    // Record the failure
+    const fullMatcherName = prefix ? `${prefix}.${matcherName}` : matcherName
+    softService.addFailure(error as Error, fullMatcherName)
+
+    // Return a passing result to continue execution
+    return {
+        pass: true,
+        message: () => `Soft assertion failed: ${fullMatcherName}`
     }
 }
 
