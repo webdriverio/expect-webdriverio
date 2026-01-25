@@ -179,6 +179,30 @@ export function chainableElementArrayFactory(selector: string, length: number) {
     // Ensure `'getElements' in chainableElements` is false while allowing to use `await chainableElement.getElements()`
     const runtimeChainablePromiseArray = new Proxy(chainablePromiseArray, {
         get(target, prop) {
+            if (typeof prop === 'string' && /^\d+$/.test(prop)) {
+                const index = parseInt(prop, 10)
+                if (index >= length) {
+                    const error = new Error(`Index out of bounds! $$(${selector}) returned only ${length} elements.`)
+                    return new Proxy(Promise.resolve(), {
+                        get(target, prop) {
+                            if (prop === 'then') {
+                                return (resolve: any, reject: any) => reject(error)
+                            }
+                            // Allow resolving methods like 'catch', 'finally' normally from the promise if needed,
+                            // but usually we want any interaction to fail?
+                            // Actually, standard promise methods might be accessed.
+                            // But the user requirements says: `$$('foo')[3].getText()` should return a promise (that rejects).
+
+                            // If accessing a property that exists on Promise (like catch, finally, Symbol.toStringTag), maybe we should be careful.
+                            // However, the test expects `el` (the proxy) to be a Promise instance.
+                            // And `el.getText()` to return a promise.
+
+                            // If I return a function that returns a rejected promise for everything else:
+                            return () => Promise.reject(error)
+                        }
+                    })
+                }
+            }
             if (elementArray && prop in elementArray) {
                 return elementArray[prop as keyof WebdriverIO.ElementArray]
             }

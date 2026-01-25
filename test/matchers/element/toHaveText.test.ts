@@ -2,6 +2,7 @@ import { $, $$ } from '@wdio/globals'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio'
+import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -637,6 +638,20 @@ Expect [] to have text
 
 Expected: "webdriverio"
 Received: undefined`)
+        })
+
+        // TODO view later to handle this case more gracefully
+        test('given element is not found then it throws error when an element does not exists', async () => {
+            const element: WebdriverIO.Element = notFoundElementFactory('sel')
+
+            await expect(thisContext.toHaveText(element, 'webdriverio')).rejects.toThrow("Can't call getText on element with selector sel because element wasn't found")
+        })
+
+        // TODO view later to handle this case more gracefully
+        test('given element from out of bound ChainableArray, then it throws error when an element does not exists', async () => {
+            const element: ChainablePromiseElement = $$('elements')[3]
+
+            await expect(thisContext.toHaveText(element, 'webdriverio')).rejects.toThrow('Index out of bounds! $$(elements) returned only 2 elements.')
         })
 
         test.for([

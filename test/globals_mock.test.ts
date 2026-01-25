@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { $, $$ } from '@wdio/globals'
+import { notFoundElementFactory } from './__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -89,6 +90,53 @@ describe('globals mock', () => {
             const els = await $$('foo')
 
             expect(await els.getElements()).toEqual(els)
+        })
+
+        it('should return a promise-like object when accessing index out of bounds', () => {
+            const el = $$('foo')[3]
+            // It shouldn't throw synchronously
+            expect(el).toBeDefined()
+            expect(el).toBeInstanceOf(Promise)
+            expect(typeof (el as any).then).toBe('function')
+
+            // Methods should return a Promise
+            const p1 = el.getElement()
+            expect(p1).toBeInstanceOf(Promise)
+            // catch unhandled rejection to avoid warnings
+            p1.catch(() => {})
+
+            const p2 = el.getText()
+            expect(p2).toBeInstanceOf(Promise)
+            // catch unhandled rejection to avoid warnings
+            p2.catch(() => {})
+        })
+
+        it('should throw "Index out of bounds" when awaiting index out of bounds', async () => {
+            await expect(async () => await $$('foo')[3]).rejects.toThrow('Index out of bounds! $$(foo) returned only 2 elements.')
+            await expect(async () => await $$('foo')[3].getElement()).rejects.toThrow('Index out of bounds! $$(foo) returned only 2 elements.')
+            await expect(async () => await $$('foo')[3].getText()).rejects.toThrow('Index out of bounds! $$(foo) returned only 2 elements.')
+        })
+    })
+
+    describe('notFoundElementFactory', () => {
+        it('should return false for isExisting', async () => {
+            const el = notFoundElementFactory('not-found')
+            expect(await el.isExisting()).toBe(false)
+        })
+
+        it('should resolve to itself when calling getElement', async () => {
+            const el = notFoundElementFactory('not-found')
+            expect(await el.getElement()).toBe(el)
+        })
+
+        it('should throw error on method calls', async () => {
+            const el = notFoundElementFactory('not-found')
+            expect(() => el.click()).toThrow("Can't call click on element with selector not-found because element wasn't found")
+        })
+
+        it('should throw error when awaiting a method call (sync throw)', async () => {
+            const el = notFoundElementFactory('not-found')
+            expect(() => el.getText()).toThrow("Can't call getText on element with selector not-found because element wasn't found")
         })
     })
 })
