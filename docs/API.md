@@ -14,6 +14,10 @@ it('product page smoke', async () => {
   // These won't throw immediately if they fail
   await expect.soft(await $('h1').getText()).toEqual('Basketball Shoes');
   await expect.soft(await $('#price').getText()).toMatch(/€\d+/);
+  
+  // Also work with basic matcher
+  const h1Text = await $('h1').getText()
+  expect.soft(h1Text).toEqual('Basketball Shoes');
 
   // Regular assertions still throw immediately
   await expect(await $('.add-to-cart').isClickable()).toBe(true);
@@ -75,7 +79,7 @@ export const config = {
   // ...
   services: [
     // ...other services
-    [SoftAssertionService]
+    [SoftAssertionService, {}]
   ],
   // ...
 }
