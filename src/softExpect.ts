@@ -30,6 +30,8 @@ const createSoftExpect = <T = unknown>(actual: T): ExpectWebdriverIO.Matchers<Pr
                 // Support basic & wdio (and more) matchers that start with "to"
                 return createSoftMatcher(actual, propName, softService)
             }
+
+            // For any other properties, return undefined
             return undefined
         }
     })
@@ -68,7 +70,7 @@ const createSoftMatcher = <T>(
     softService: SoftAssertService,
     prefix?: string
 ) => {
-    return (...args: unknown[]) => {
+    return (...args: unknown[]): ExpectWebdriverIO.AsyncAssertionResult | SyncExpectationResult  => {
         try {
             // Build the expectation chain
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -106,7 +108,7 @@ function handlingMatcherFailure(prefix: string | undefined, matcherName: string,
     return {
         pass: true,
         message: () => `Soft assertion failed: ${fullMatcherName}`
-    }
+    } satisfies SyncExpectationResult
 }
 
 export default createSoftExpect
