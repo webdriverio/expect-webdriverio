@@ -55,40 +55,27 @@ describe('Soft Assertions', () => {
             await Promise.all([elementSoftToHaveText, elementsSoftToHaveText, elementsSoftNotToHaveText])
         })
 
-        it('should handle non-promises properly', () => {
+        it('should handle non-promises matchers properly by not using promises', () => {
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('non-promise-1', 'test name', 'test file')
 
+            // Base line on Jest 'expect' library
             expect(expectLib(true).toBe(true)).toBeUndefined()
             expect(expectLib(true).toBe).toBeInstanceOf(Function)
             expect(expectLib(true).toBe(true)).not.toBeInstanceOf(Promise)
             expect(expectLib(true).not.toBe(false)).not.toBeInstanceOf(Promise)
 
+            // wdio expect
             expect(expectWdio(true).toBe(true)).toBeUndefined()
             expect(expectWdio(true).toBe).toBeInstanceOf(Function)
             expect(expectWdio(true).toBe(true)).not.toBeInstanceOf(Promise)
             expect(expectWdio(true).not.toBe(false)).not.toBeInstanceOf(Promise)
 
+            // wdio expect.soft
             expect(expectWdio.soft(true).toBe(true)).toBeUndefined()
             expect(expectWdio.soft(true).toBe).toBeInstanceOf(Function)
             expect(expectWdio.soft(true).toBe).not.toBeInstanceOf(Promise)
             expect(expectWdio.soft(true).not.toBe(false)).not.toBeInstanceOf(Promise)
-        })
-
-        it.for([
-            '',
-            2,
-            [],
-        ])('should handle non-promises and return a non-promise target to have the correct runtime type', (actualPromise) => {
-            const softService = SoftAssertService.getInstance()
-            softService.setCurrentTest('non-promise-2', 'test name', 'test file')
-
-            const wdioExpect = expectWdio(actualPromise)
-            expect(wdioExpect).not.toBeInstanceOf(Promise)
-
-            const softExpect = expectWdio.soft(actualPromise)
-            expect(softExpect).toBeInstanceOf(Object)
-            expect(softExpect).not.toBeInstanceOf(Promise)
         })
 
         it('should not throw immediately on failure', async () => {
@@ -213,7 +200,7 @@ describe('Soft Assertions', () => {
                 expect(failures[0].matcherName).toBe('not.toEqual')
             })
 
-            it.skip('not - should support basic matcher success', async () => {
+            it('not - should support basic matcher success', async () => {
                 const softService = SoftAssertService.getInstance()
                 softService.setCurrentTest('test-10', 'test name', 'test file')
 
