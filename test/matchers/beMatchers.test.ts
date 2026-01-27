@@ -1,6 +1,6 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
-import { matcherLastWordName } from '../__fixtures__/utils.js'
+import { matcherNameLastWords } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
@@ -78,6 +78,7 @@ describe('be* matchers', () => {
                 el[elementFnName] = vi.fn().mockResolvedValue(true)
 
                 const result = await matcherFn.call({}, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
+
                 expect(result.pass).toBe(true)
                 expect(el[elementFnName]).toHaveBeenCalledTimes(1)
             })
@@ -89,10 +90,10 @@ describe('be* matchers', () => {
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(result.message()).toEqual(`\
-Expect $(\`sel\`) not to be ${matcherLastWordName(matcherName)}
+Expect $(\`sel\`) not to be ${matcherNameLastWords(matcherName)}
 
-Expected [not]: "not ${matcherLastWordName(matcherName)}"
-Received      : "${matcherLastWordName(matcherName)}"`
+Expected: "not ${matcherNameLastWords(matcherName)}"
+Received: "${matcherNameLastWords(matcherName)}"`
                 )
             })
 
@@ -129,10 +130,10 @@ Received      : "${matcherLastWordName(matcherName)}"`
                 const result = await matcherFn.call({}, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(false)
                 expect(result.message()).toBe(`\
-Expect $(\`sel\`) to be ${matcherLastWordName(matcherName)}
+Expect $(\`sel\`) to be ${matcherNameLastWords(matcherName)}
 
-Expected: "${matcherLastWordName(matcherName)}"
-Received: "not ${matcherLastWordName(matcherName)}"`
+Expected: "${matcherNameLastWords(matcherName)}"
+Received: "not ${matcherNameLastWords(matcherName)}"`
                 )
             })
         })
