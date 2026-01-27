@@ -1,0 +1,23 @@
+{
+  "name": "expect-wdio-playground-jest",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "wdio run wdio.conf.ts",
+    "typecheck": "tsc --noEmit",
+    "preinstall": "cd ../.. && npm i && npm run build"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.10.5",
+    "@wdio/cli": "^9.4.0",
+    "@wdio/globals": "^9.4.0",
+    "@wdio/local-runner": "^9.4.0",
+    "@wdio/mocha-framework": "^9.4.0",
+    "@wdio/spec-reporter": "^9.4.0",
+    "expect-webdriverio": "file:../..",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
