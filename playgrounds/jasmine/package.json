@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "wdio run wdio.conf.ts",
+    "preinstall": "cd ../.. && npm i && npm run compile",
     "typecheck": "tsc --noEmit",
-    "preinstall": "cd ../.. && npm i && npm run build"
+    "test": "wdio run wdio.conf.ts"
   },
   "devDependencies": {
     "@types/jasmine": "^5.1.4",
