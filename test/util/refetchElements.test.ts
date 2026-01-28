@@ -2,60 +2,49 @@ import { vi, test, describe, beforeEach, expect } from 'vitest'
 import { $$ } from '@wdio/globals'
 
 import { refetchElements } from '../../src/util/refetchElements.js'
+import { browserFactory, chainableElementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
 
-const createMockElementArray = (length: number): WebdriverIO.ElementArray => {
-    const array = Array.from({ length }, () => ({}))
-    const mockArray = {
-        selector: 'parent',
-        get length() { return array.length },
-        set length(newLength: number) { array.length = newLength },
-        parent: {
-            $: vi.fn(),
-            $$: vi.fn().mockReturnValue(array),
-        },
-        foundWith: '$$',
-        props: [],
-        [Symbol.iterator]: array[Symbol.iterator].bind(array),
-        filter: vi.fn().mockReturnThis(),
-        map: vi.fn().mockReturnThis(),
-        find: vi.fn().mockReturnThis(),
-        forEach: vi.fn(),
-        some: vi.fn(),
-        every: vi.fn(),
-        slice: vi.fn().mockReturnThis(),
-        toArray: vi.fn().mockReturnThis(),
-    }
-    return Object.assign(array, mockArray) as unknown as WebdriverIO.ElementArray
-}
+vi.mock('@wdio/globals')
 
-vi.mock('@wdio/globals', () => ({
-    $$: vi.fn().mockImplementation(() => createMockElementArray(5))
-}))
-
-describe('refetchElements', () => {
+describe(refetchElements, () => {
     describe('given WebdriverIO.ElementArray type', () => {
         let elements: WebdriverIO.ElementArray
 
         beforeEach(async () => {
-            elements = (await $$('parent')) as unknown as WebdriverIO.ElementArray
-            // @ts-ignore
-            elements.parent._length = 5
+            elements = await $$('elements').getElements()
+
+            // Have a different browser instance and $$ implementation to be able to assert calls
+            elements.parent = browserFactory()
+            elements.parent.$$ = vi.fn().mockResolvedValue(
+                chainableElementArrayFactory('elements', 5) as unknown as ChainablePromiseArray & WebdriverIO.MultiRemoteElement[]
+            )
         })
 
-        test('default', async () => {
+        test('default should refresh once', async () => {
+
             const actual = await refetchElements(elements, 5, true)
+
             expect(actual.length).toBe(5)
+            expect(actual).not.toBe(elements)
+            expect(elements.parent.$$).toHaveBeenCalledTimes(1)
         })
 
-        test('wait is 0', async () => {
-            const actual = await refetchElements(elements, 0, true)
+        test('wait is 0 should not refresh', async () => {
+            const wait = 0
+
+            const actual = await refetchElements(elements, wait, true)
+
             expect(actual).toEqual(elements)
+            expect(actual).toHaveLength(2)
+            expect(elements.parent.$$).not.toHaveBeenCalled()
         })
 
         test('should call $$ with all props', async () => {
             elements.props = ['prop1', 'prop2']
+
             await refetchElements(elements, 5, true)
-            expect(elements.parent.$$).toHaveBeenCalledWith('parent', 'prop1', 'prop2')
+
+            expect(elements.parent.$$).toHaveBeenCalledWith('elements', 'prop1', 'prop2')
         })
 
         test('should call $$ with the proper parent this context', async () => {
@@ -68,11 +57,17 @@ describe('refetchElements', () => {
     })
 
     describe('given WebdriverIO.Element[] type', () => {
-        const elements: WebdriverIO.Element[] = [] as unknown as WebdriverIO.Element[]
+        let elements: WebdriverIO.Element[]
 
-        test('default', async () => {
-            const actual = await refetchElements(elements, 0)
-            expect(actual).toEqual([])
+        beforeEach(() => {
+            elements = [elementFactory('element1'), elementFactory('element2')]
+        })
+
+        test('default should not refresh', async () => {
+            const actual = await refetchElements(elements, 5, true)
+
+            expect(actual).toEqual(elements)
+            expect(actual).toHaveLength(2)
         })
     })
 })

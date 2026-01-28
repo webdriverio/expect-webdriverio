@@ -2,9 +2,16 @@ import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 
 import { toBeRequestedWith } from '../../../src/matchers/mock/toBeRequestedWith.js'
 import type { local } from 'webdriver'
-import { removeColors, getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 
 vi.mock('@wdio/globals')
+vi.mock('../../../src/constants.js', async () => ({
+    DEFAULT_OPTIONS: {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+        ...(await vi.importActual<typeof import('../../../src/constants.js')>('../../../src/constants.js')).DEFAULT_OPTIONS,
+        // speed up tests by lowering default wait timeout
+        wait : 0
+    }
+}))
 
 interface Scenario {
     name: string
@@ -105,7 +112,12 @@ const mockPost: local.NetworkAuthRequiredParameters = {
     // referrerPolicy: 'origin',
 } as any
 
-describe('toBeRequestedWith', () => {
+describe(toBeRequestedWith, () => {
+    let thisNotContext: { isNot: true,  toBeRequestedWith: typeof toBeRequestedWith }
+
+    beforeEach(() => {
+        thisNotContext = { isNot: true,  toBeRequestedWith }
+    })
     test('wait for success, exact match', async () => {
         const mock: any = new TestMock()
 
@@ -128,17 +140,19 @@ describe('toBeRequestedWith', () => {
 
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
-        const result = await toBeRequestedWith.call({}, mock, params, { beforeAssertion, afterAssertion })
+
+        const result = await toBeRequestedWith(mock, params, { beforeAssertion, afterAssertion, wait: 500 })
+
         expect(result.pass).toBe(true)
         expect(beforeAssertion).toBeCalledWith({
             matcherName: 'toBeRequestedWith',
             expectedValue: params,
-            options: { beforeAssertion, afterAssertion },
+            options: { beforeAssertion, afterAssertion, wait: 500 },
         })
         expect(afterAssertion).toBeCalledWith({
             matcherName: 'toBeRequestedWith',
             expectedValue: params,
-            options: { beforeAssertion, afterAssertion },
+            options: { beforeAssertion, afterAssertion, wait: 500 },
             result
         })
     })
@@ -159,7 +173,7 @@ describe('toBeRequestedWith', () => {
             // response: 'post.body',
         }
 
-        const result = await toBeRequestedWith.call({}, mock, params)
+        const result = await toBeRequestedWith(mock, params, { wait: 20 })
         expect(result.pass).toBe(false)
     })
 
@@ -170,7 +184,7 @@ describe('toBeRequestedWith', () => {
             mock.calls.push({ ...mockGet }, { ...mockPost })
         }, 10)
 
-        const result = await toBeRequestedWith.call({ isNot: true }, mock, {})
+        const result = await thisNotContext.toBeRequestedWith(mock, {}, { wait: 20 })
         expect(result.pass).toBe(true) // failure, boolean inverted later because of .not
         expect(result.message()).toEqual(`\
 Expect mock not to be called with
@@ -187,7 +201,7 @@ Received      : {}`
             mock.calls.push({ ...mockGet }, { ...mockPost })
         }, 10)
 
-        const result = await toBeRequestedWith.call({ isNot: true }, mock, { method: 'DELETE' })
+        const result = await thisNotContext.toBeRequestedWith(mock, { method: 'DELETE' }, { wait: 20 })
         expect(result.pass).toBe(false) // success, boolean inverted later because of .not
     })
 
@@ -419,7 +433,7 @@ Received      : {}`
             const mock: any = new TestMock()
             mock.calls.push(...scenario.mocks)
 
-            const result = await toBeRequestedWith.call({}, mock, scenario.params as any)
+            const result = await toBeRequestedWith(mock, scenario.params as any)
             expect(result.pass).toBe(scenario.pass)
         })
     })
@@ -434,7 +448,7 @@ Received      : {}`
             const mock: any = new TestMock()
             mock.calls.push({ ...mockGet })
 
-            const result = await toBeRequestedWith.call({}, mock, { method: 1234 } as any)
+            const result = await toBeRequestedWith(mock, { method: 1234 } as any)
             expect(result.pass).toBe(false)
             expect(global.console.error).toBeCalledWith(
                 'expect.toBeRequestedWith: unsupported value passed to method 1234'
@@ -449,7 +463,7 @@ Received      : {}`
     test('message', async () => {
         const mock: any = new TestMock()
 
-        const requested = await toBeRequestedWith.call({}, mock, {
+        const requested = await toBeRequestedWith(mock, {
             url: () => false,
             method: ['DELETE', 'PUT'],
             requestHeaders: reduceHeaders(mockPost.request.headers),
@@ -457,27 +471,21 @@ Received      : {}`
             postData: expect.anything(),
             response: [...Array(50).keys()].map((_, id) => ({ id, name: `name_${id}` })),
         })
-        const wasNotCalled = removeColors(requested.message())
-        expect(getExpectMessage(wasNotCalled)).toBe('Expect mock to be called with')
-        expect(getExpected(wasNotCalled)).toBe(
-            'Expected: {' +
-                '"method": ["DELETE", "PUT"], ' +
-                '"postData": "Anything ", ' +
-                '"requestHeaders": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, ' +
-                '"response": [{"id": 0, "name": "name_0"}, "... 49 more items"], ' +
-                '"responseHeaders": {}, ' +
-                '"url": "() => false"}'
+        expect(requested.pass).toBe(false)
+        expect(requested.message()).toEqual(`\
+Expect mock to be called with
+
+Expected: {"method": ["DELETE", "PUT"], "postData": "Anything ", "requestHeaders": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, "response": [{"id": 0, "name": "name_0"}, "... 49 more items"], "responseHeaders": {}, "url": "() => false"}
+Received: "was not called"`
         )
-        expect(getReceived(wasNotCalled)).toBe('Received: "was not called"')
 
         mock.calls.push(mockPost)
-
-        const notRequested = await toBeRequestedWith.call({ isNot: true }, mock, {
+        const notRequested = await thisNotContext.toBeRequestedWith(mock, {
             url: () => true,
             method: mockPost.request.method,
         })
-        const wasCalled = removeColors(notRequested.message())
-        expect(wasCalled).toBe(
+
+        expect(notRequested.message()).toBe(
             `Expect mock not to be called with
 
 - Expected [not]  - 1

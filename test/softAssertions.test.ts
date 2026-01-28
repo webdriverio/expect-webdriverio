@@ -5,14 +5,12 @@ import { expect as expectWdio, SoftAssertionService, SoftAssertService } from '.
 vi.mock('@wdio/globals')
 
 describe('Soft Assertions', () => {
-    // Setup a mock element for testing
     let el: ChainablePromiseElement
 
     beforeEach(async () => {
         el = $('sel')
-        // We need to mock getText() which is what the toHaveText matcher actually calls
-        el.getText = vi.fn().mockImplementation(() => 'Actual Text')
-        // Clear any soft assertion failures before each test
+        vi.mocked(el.getText).mockResolvedValue('Actual Text')
+
         expectWdio.clearSoftFailures()
     })
 
@@ -21,7 +19,7 @@ describe('Soft Assertions', () => {
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('test-1', 'test name', 'test file')
 
-            await expectWdio.soft(el).toHaveText('Expected Text', { wait: 0 })
+            await expectWdio.soft(el).toHaveText('Expected Text')
 
             // Verify the failure was recorded
             const failures = expectWdio.getSoftFailures()
@@ -50,9 +48,9 @@ describe('Soft Assertions', () => {
             softService.setCurrentTest('test-3', 'test name', 'test file')
 
             // These should not throw even though they fail
-            await expectWdio.soft(el).toHaveText('First Expected', { wait: 0 })
-            await expectWdio.soft(el).toHaveText('Second Expected', { wait: 0 })
-            await expectWdio.soft(el).toHaveText('Third Expected', { wait: 0 })
+            await expectWdio.soft(el).toHaveText('First Expected')
+            await expectWdio.soft(el).toHaveText('Second Expected')
+            await expectWdio.soft(el).toHaveText('Third Expected')
 
             // Verify all failures were recorded
             const failures = expectWdio.getSoftFailures()
@@ -157,11 +155,13 @@ describe('Soft Assertions', () => {
     describe('Different Matcher Types', () => {
         beforeEach(async () => {
             el = $('sel')
+
             // Mock different methods for different matchers
-            el.getText = vi.fn().mockImplementation(() => 'Actual Text')
-            el.isDisplayed = vi.fn().mockImplementation(() => false)
-            el.getAttribute = vi.fn().mockImplementation(() => 'actual-class')
-            el.isClickable = vi.fn().mockImplementation(() => false)
+            vi.mocked(el.getText).mockResolvedValue('Actual Text')
+            vi.mocked(el.isDisplayed).mockResolvedValue(false)
+            vi.mocked(el.getAttribute).mockResolvedValue('actual-class')
+            vi.mocked(el.isClickable).mockResolvedValue(false)
+
             expectWdio.clearSoftFailures()
         })
 
@@ -183,7 +183,7 @@ describe('Soft Assertions', () => {
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('attribute-test', 'attribute test', 'test file')
 
-            await expectWdio.soft(el).toHaveAttribute('class', 'expected-class', { wait: 0 })
+            await expectWdio.soft(el).toHaveAttribute('class', 'expected-class')
 
             const failures = expectWdio.getSoftFailures()
             expect(failures.length).toBe(1)
@@ -208,12 +208,12 @@ describe('Soft Assertions', () => {
 
             // Test 1
             softService.setCurrentTest('isolation-test-1', 'test 1', 'file1')
-            await expectWdio.soft(el).toHaveText('Expected Text 1', { wait: 0 })
+            await expectWdio.soft(el).toHaveText('Expected Text 1')
             expect(expectWdio.getSoftFailures().length).toBe(1)
 
             // Test 2 - should have separate failures
             softService.setCurrentTest('isolation-test-2', 'test 2', 'file2')
-            await expectWdio.soft(el).toHaveText('Expected Text 2', { wait: 0 })
+            await expectWdio.soft(el).toHaveText('Expected Text 2')
 
             // Test 2 should only see its own failure
             expect(expectWdio.getSoftFailures('isolation-test-2').length).toBe(1)
@@ -245,13 +245,13 @@ describe('Soft Assertions', () => {
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('concurrent-test', 'concurrent', 'test file')
 
-            el.getText = vi.fn().mockImplementation(() => 'Actual Text')
-            el.isDisplayed = vi.fn().mockImplementation(() => false)
-            el.isClickable = vi.fn().mockImplementation(() => false)
+            vi.mocked(el.getText).mockResolvedValue('Actual Text')
+            vi.mocked(el.isDisplayed).mockResolvedValue(false)
+            vi.mocked(el.isClickable).mockResolvedValue(false)
 
             // Fire multiple assertions rapidly
             const promises = [
-                expectWdio.soft(el).toHaveText('Expected 1', { wait: 0 }),
+                expectWdio.soft(el).toHaveText('Expected 1'),
                 expectWdio.soft(el).toBeDisplayed({ wait: 0 }),
                 expectWdio.soft(el).toBeClickable({ wait: 0 })
             ]
@@ -276,10 +276,7 @@ describe('Soft Assertions', () => {
             softService.setCurrentTest('error-test', 'error test', 'test file')
 
             // Mock a matcher that throws a unique error
-            const originalMethod = el.getText
-            el.getText = vi.fn().mockImplementation(() => {
-                throw new TypeError('Weird browser error')
-            })
+            vi.mocked(el.getText).mockRejectedValue(new TypeError('Weird browser error'))
 
             await expectWdio.soft(el).toHaveText('Expected Text')
 
@@ -287,9 +284,6 @@ describe('Soft Assertions', () => {
             expect(failures.length).toBe(1)
             expect(failures[0].error).toBeInstanceOf(Error)
             expect(failures[0].error.message).toContain('Weird browser error')
-
-            // Restore
-            el.getText = originalMethod
         })
 
         it('should handle very long error messages', async () => {
@@ -297,7 +291,7 @@ describe('Soft Assertions', () => {
             softService.setCurrentTest('long-error-test', 'long error', 'test file')
 
             const veryLongText = 'A'.repeat(10000)
-            await expectWdio.soft(el).toHaveText(veryLongText, { wait: 0 })
+            await expectWdio.soft(el).toHaveText(veryLongText)
 
             const failures = expectWdio.getSoftFailures()
             expect(failures.length).toBe(1)
@@ -310,8 +304,8 @@ describe('Soft Assertions', () => {
             softService.setCurrentTest('null-test', 'null test', 'test file')
 
             // Test with null/undefined values
-            await expectWdio.soft(el).toHaveText(null as any, { wait: 0 })
-            await expectWdio.soft(el).toHaveAttribute('class')
+            await expectWdio.soft(el).toHaveText(null as any)
+            await expectWdio.soft(el).toHaveAttribute('class', undefined)
 
             const failures = expectWdio.getSoftFailures()
             expect(failures.length).toBe(2)
@@ -321,7 +315,7 @@ describe('Soft Assertions', () => {
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('location-test', 'location test', 'test file')
 
-            await expectWdio.soft(el).toHaveText('Expected Text', { wait: 0 })
+            await expectWdio.soft(el).toHaveText('Expected Text')
 
             const failures = expectWdio.getSoftFailures()
             expect(failures.length).toBe(1)
@@ -340,7 +334,7 @@ describe('Soft Assertions', () => {
             // Generate many failures
             const promises = []
             for (let i = 0; i < 150; i++) {
-                promises.push(expectWdio.soft(el).toHaveText(`Expected ${i}`), { wait: 0 })
+                promises.push(expectWdio.soft(el).toHaveText(`Expected ${i}`))
             }
 
             await Promise.all(promises)
