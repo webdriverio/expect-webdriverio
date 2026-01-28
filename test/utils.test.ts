@@ -210,7 +210,7 @@ describe('utils', () => {
             test('should return false when condition is not met within wait time', async () => {
                 const condition = vi.fn().mockResolvedValue(false)
 
-                const result = await waitUntil(condition, { wait: 200, interval: 50 })
+                const result = await waitUntil(condition, { wait: 180, interval: 50 })
 
                 expect(result).toBe(false)
             })
@@ -226,7 +226,7 @@ describe('utils', () => {
             test('should return false if condition throws but still return false', async () => {
                 const condition = vi.fn().mockRejectedValueOnce(new Error('Always failing')).mockRejectedValueOnce(new Error('Always failing')).mockResolvedValue(false)
 
-                const result = await waitUntil(condition, { wait: 200, interval: 50 })
+                const result = await waitUntil(condition, { wait: 180, interval: 50 })
 
                 expect(result).toBe(false)
                 expect(condition).toBeCalledTimes(4)
@@ -239,7 +239,7 @@ describe('utils', () => {
             test('should throw with wait', async () => {
                 const condition = vi.fn().mockRejectedValue(error)
 
-                await expect(() => waitUntil(condition, { wait: 200, interval: 50 })).rejects.toThrowError('failing')
+                await expect(() => waitUntil(condition, { wait: 180, interval: 50 })).rejects.toThrowError('failing')
             })
 
             test('should throw with wait 0', async () => {
