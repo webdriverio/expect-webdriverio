@@ -1,4 +1,6 @@
 
+import { join } from 'node:path'
+import type { VisualServiceOptions } from '@wdio/visual-service'
 import { SoftAssertionService, setOptions } from 'expect-webdriverio'
 
 export const config: WebdriverIO.Config = {
@@ -29,6 +31,9 @@ export const config: WebdriverIO.Config = {
         browserName: 'chrome',
         'goog:chromeOptions': {
             args: ['--headless', '--disable-gpu']
+        },
+        'wdio-ics:options': {
+            logName: 'chrome-jasmine'
         }
     }],
 
@@ -44,7 +49,22 @@ export const config: WebdriverIO.Config = {
     connectionRetryTimeout: 120000,
     connectionRetryCount: 3,
     services: [
-        [SoftAssertionService, {}]
+        // Not working with Jasmine yet
+        [SoftAssertionService, {}],
+        // Not working with Jasmine yet
+        [
+            'visual',
+            {
+                baselineFolder: join(process.cwd(), '.tmp/visual/baseline'),
+                formatImageName: '{tag}-{logName}-{width}x{height}',
+                screenshotPath: join(process.cwd(), '.tmp/visual'),
+                savePerInstance: true,
+                autoSaveBaseline: true,
+                // Block out the changing elements
+                blockOutStatusBar: true,
+                blockOutToolBar: true
+            } satisfies VisualServiceOptions
+        ]
     ],
     framework: 'jasmine',
     reporters: ['spec'],
