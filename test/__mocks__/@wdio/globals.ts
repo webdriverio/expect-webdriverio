@@ -136,8 +136,7 @@ const $ = vi.fn((_selector: string) => {
 })
 
 const $$ = vi.fn((selector: string) => {
-    const length = (this as any)?._length || 2
-    return chainableElementArrayFactory(selector, length)
+    return chainableElementArrayFactory(selector, 2)
 })
 
 export function elementArrayFactory(selector: string, length?: number): WebdriverIO.ElementArray {
@@ -155,17 +154,28 @@ export function elementArrayFactory(selector: string, length?: number): Webdrive
     }
     elementArray.parent = browser
 
-    // TODO Verify if we need to implement other array methods
-    // [Symbol.iterator]: array[Symbol.iterator].bind(array)
-    // filter: vi.fn().mockReturnThis(),
-    // map: vi.fn().mockReturnThis(),
-    // find: vi.fn().mockReturnThis(),
-    // forEach: vi.fn(),
-    // some: vi.fn(),
-    // every: vi.fn(),
-    // slice: vi.fn().mockReturnThis(),
-    // toArray: vi.fn().mockReturnThis(),
-    // getElements: vi.fn().mockResolvedValue(array)
+    // Ensure critical array methods are properly accessible for type compatibility with MultiRemoteElement[]
+    // Note: WebdriverIO.ElementArray has async versions of some methods (map, forEach, some, every, find, findIndex)
+    // so we only bind the synchronous array methods that don't conflict
+    // const arrayPrototype = Array.prototype
+    // elementArray.slice = arrayPrototype.slice.bind(elementArray)
+    // elementArray.concat = arrayPrototype.concat.bind(elementArray)
+    // elementArray.join = arrayPrototype.join.bind(elementArray)
+    // elementArray.indexOf = arrayPrototype.indexOf.bind(elementArray)
+    // elementArray.lastIndexOf = arrayPrototype.lastIndexOf.bind(elementArray)
+    // elementArray.reduce = arrayPrototype.reduce.bind(elementArray)
+    // elementArray.reduceRight = arrayPrototype.reduceRight.bind(elementArray)
+    // elementArray.reverse = arrayPrototype.reverse.bind(elementArray)
+    // elementArray.sort = arrayPrototype.sort.bind(elementArray)
+    // elementArray.splice = arrayPrototype.splice.bind(elementArray)
+    // elementArray.push = arrayPrototype.push.bind(elementArray)
+    // elementArray.pop = arrayPrototype.pop.bind(elementArray)
+    // elementArray.shift = arrayPrototype.shift.bind(elementArray)
+    // elementArray.unshift = arrayPrototype.unshift.bind(elementArray)
+    // elementArray.fill = arrayPrototype.fill.bind(elementArray)
+    // elementArray.copyWithin = arrayPrototype.copyWithin.bind(elementArray)
+    // Note: keys, values, entries, and Symbol.iterator inherit from the array prototype
+    // map, forEach, some, every, find, findIndex are async in WebdriverIO.ElementArray
 
     return elementArray
 }
@@ -188,16 +198,6 @@ export function chainableElementArrayFactory(selector: string, length: number) {
                             if (prop === 'then') {
                                 return (resolve: any, reject: any) => reject(error)
                             }
-                            // Allow resolving methods like 'catch', 'finally' normally from the promise if needed,
-                            // but usually we want any interaction to fail?
-                            // Actually, standard promise methods might be accessed.
-                            // But the user requirements says: `$$('foo')[3].getText()` should return a promise (that rejects).
-
-                            // If accessing a property that exists on Promise (like catch, finally, Symbol.toStringTag), maybe we should be careful.
-                            // However, the test expects `el` (the proxy) to be a Promise instance.
-                            // And `el.getText()` to return a promise.
-
-                            // If I return a function that returns a rejected promise for everything else:
                             return () => Promise.reject(error)
                         }
                     })
@@ -214,12 +214,16 @@ export function chainableElementArrayFactory(selector: string, length: number) {
     return runtimeChainablePromiseArray
 }
 
-export const browser = {
-    $,
-    $$,
-    execute: vi.fn(),
-    setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
-    getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
-    getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
-    call(fn: Function) { return fn() },
-} satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+export const browserFactory = (): WebdriverIO.Browser => {
+    return  {
+        $,
+        $$,
+        execute: vi.fn(),
+        setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
+        getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
+        getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
+        call(fn: Function) { return fn() },
+    } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+}
+
+export const browser = browserFactory()

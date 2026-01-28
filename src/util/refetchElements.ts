@@ -14,7 +14,7 @@ export const refetchElements = async (
     if (elements && wait > 0 && (elements.length === 0 || full) && isStrictlyElementArray(elements)) {
         const browser = elements.parent
         const $$ = browser[elements.foundWith as keyof typeof browser] as Function
-        elements = await $$.call(browser, elements.selector, ...elements.props)
+        return await $$.call(browser, elements.selector, ...elements.props)
     }
     return elements
 }
