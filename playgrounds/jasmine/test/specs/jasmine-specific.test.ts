@@ -165,4 +165,13 @@ describe('Jasmine-Specific Features', () => {
             await expect(nonExistent).not.toHaveText(jasmine.any(String))
         })
     })
+
+    describe('Expect.withContext usage', () => {
+        xit('should provide additional context on failure', async () => {
+            const title = await browser.getTitle()
+
+            // @ts-ignore -- withContext fails tsc, see https://github.com/webdriverio/expect-webdriverio/issues/1407
+            expect(title).withContext('Checking page title for webdriver.io').toBe('Non-Matching Title')
+        })
+    })
 })
