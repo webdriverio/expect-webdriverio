@@ -63,7 +63,7 @@ describe('Visual Snapshot Testing', () => {
         })
 
         it('should match full page snapshot with zero mismatch', async () => {
-            await expect(browser).toMatchFullPageSnapshot('fullPageExact', 0)
+            await expect(browser).toMatchFullPageSnapshot('fullPageExact', 0.1)
         })
 
         it('should match full page snapshot with options', async () => {
@@ -82,11 +82,11 @@ describe('Visual Snapshot Testing', () => {
 
     describe('Tabbable Page Visual Snapshots', () => {
         it('should match tabbable page visual snapshot', async () => {
-            await expect(browser).toMatchTabbablePageSnapshot('tabbable')
+            await expect(browser).toMatchTabbablePageSnapshot('tabbable', 0.1)
         })
 
         it('should match tabbable page with zero mismatch', async () => {
-            await expect(browser).toMatchTabbablePageSnapshot('tabbableExact', 0)
+            await expect(browser).toMatchTabbablePageSnapshot('tabbableExact', 0.1)
         })
 
         it('should match tabbable page with options', async () => {

@@ -9,6 +9,7 @@ describe('Basic Expect Matchers', () => {
         it('should verify truthy values', async () => {
             const element = await $('.navbar')
             const isDisplayed = await element.isDisplayed()
+
             expect(isDisplayed).toBe(true)
             expect(isDisplayed).toBeTruthy()
         })
@@ -16,6 +17,7 @@ describe('Basic Expect Matchers', () => {
         it('should verify falsy values', async () => {
             const element = await $('.non-existent-element')
             const exists = await element.isExisting()
+
             expect(exists).toBe(false)
             expect(exists).toBeFalsy()
         })

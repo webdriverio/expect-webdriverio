@@ -3,7 +3,13 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": ["node", "@wdio/globals/types", "@types/jest", "expect-webdriverio/jest", "@wdio/visual-service"],
+    "types": [
+      "node",
+      "@wdio/globals/types",
+      "@types/jest",
+      "expect-webdriverio/jest",
+      "@wdio/visual-service"
+    ],
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

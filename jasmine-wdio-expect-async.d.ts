@@ -1,7 +1,7 @@
 /// <reference types="./types/expect-webdriverio.d.ts"/>
 
 /**
- * Overrides the default wdio `expect` for Jasmine case specifically since the `expect` is now completely asynchronous which is not the case under Jest or standalone.
+ * Overrides the default WDIO expect specifically for Jasmine, since `expectAsync` is forced into `expect`, making all matchers fully asynchronous. This is not the case under Jest or Mocha.
  */
 declare namespace ExpectWebdriverIO {
     interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, ExpectLibInverse<ExpectWebdriverIO.InverseAsymmetricMatchers>, WdioExpect {
