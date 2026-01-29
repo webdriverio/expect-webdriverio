@@ -63,7 +63,7 @@ expect.clearSoftFailures();
 
 ### Integration with Test Frameworks
 
-The soft assertions feature integrates with WebdriverIO's test runner automatically. By default, it will report all soft assertion failures at the end of each test (Mocha/Jasmine) or step (Cucumber).
+The soft assertions feature integrates with WebdriverIO's test runner automatically. By default, it will report all soft assertion failures at the end of each test (Mocha) or step (Cucumber).
 
 To use with WebdriverIO, add the SoftAssertionService to your services list:
 
