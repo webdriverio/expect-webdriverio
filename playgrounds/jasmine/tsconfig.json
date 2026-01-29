@@ -8,7 +8,8 @@
       "@wdio/globals/types",
       "@types/jasmine",
       "expect-webdriverio/jasmine",
-      "@wdio/visual-service"
+      "@wdio/visual-service",
+      "expect-webdriverio/jasmine-wdio-expect-async"
     ],
     "resolveJsonModule": true,
     "esModuleInterop": true,

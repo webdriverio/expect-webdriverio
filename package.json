@@ -72,7 +72,7 @@
     "watch": "npm run compile -- --watch",
     "prepare": "husky install",
     "playgrounds:setup": "for dir in playgrounds/*/; do cd \"$dir\" && npm install && cd ../..; done",
-    "playgrounds:test": "for dir in playgrounds/*/; do cd \"$dir\" && npm run typecheck && npm test && cd ../..; done"
+    "playgrounds:checks:all": "for dir in playgrounds/*/; do cd \"$dir\" && npm run checks:all && cd ../..; done"
   },
   "dependencies": {
     "@vitest/snapshot": "^4.0.16",

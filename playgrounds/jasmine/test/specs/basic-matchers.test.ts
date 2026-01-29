@@ -10,28 +10,28 @@ describe('Basic Expect Matchers', () => {
             const element = await $('.navbar')
             const isDisplayed = await element.isDisplayed()
 
-            expect(isDisplayed).toBe(true)
-            expect(isDisplayed).toBeTruthy()
+            await expect(isDisplayed).toBe(true)
+            await expect(isDisplayed).toBeTruthy()
         })
 
         it('should verify falsy values', async () => {
             const element = await $('.non-existent-element')
             const exists = await element.isExisting()
 
-            expect(exists).toBe(false)
-            expect(exists).toBeFalsy()
+            await expect(exists).toBe(false)
+            await expect(exists).toBeFalsy()
         })
     })
 
     describe('String matchers', () => {
         it('should match exact text', async () => {
             const title = await browser.getTitle()
-            expect(title).toContain('WebdriverIO')
+            await expect(title).toContain('WebdriverIO')
         })
 
         it('should match with regex', async () => {
             const url = await browser.getUrl()
-            expect(url).toMatch(/^https:\/\/webdriver\.io/)
+            await expect(url).toMatch(/^https:\/\/webdriver\.io/)
         })
     })
 
@@ -40,10 +40,10 @@ describe('Basic Expect Matchers', () => {
             const navLinks = await $$('nav a')
             const count = navLinks.length
 
-            expect(count).toBeGreaterThan(5)
-            expect(count).toBeGreaterThanOrEqual(6)
-            expect(count).toBeLessThan(100)
-            expect(count).toBeLessThanOrEqual(50)
+            await expect(count).toBeGreaterThan(5)
+            await expect(count).toBeGreaterThanOrEqual(6)
+            await expect(count).toBeLessThan(100)
+            await expect(count).toBeLessThanOrEqual(50)
         })
     })
 
@@ -55,19 +55,19 @@ describe('Basic Expect Matchers', () => {
                 hrefs.push(await link.getAttribute('href'))
             }
 
-            expect(hrefs).toBeInstanceOf(Array)
-            expect(hrefs.length).toBeGreaterThan(0)
-            expect(hrefs).toEqual(expect.arrayContaining(['/docs/gettingstarted']))
+            await expect(hrefs).toBeInstanceOf(Array)
+            await expect(hrefs.length).toBeGreaterThan(0)
+            await expect(hrefs).toEqual(expect.arrayContaining(['/docs/gettingstarted']))
         })
     })
 
-    // TODO failing with  TypeError: expect(...).toHaveProperty is not a function
+    // TODO failing with  TypeError: await expect(...).toHaveProperty is not a function
     xdescribe('Object matchers', () => {
         it('should match object properties', async () => {
             const capabilities = await browser.capabilities
 
-            expect(capabilities).toHaveProperty('browserName')
-            expect(capabilities).toMatchObject({
+            await expect(capabilities).toHaveProperty('browserName')
+            await expect(capabilities).toMatchObject({
                 browserName: 'chrome'
             })
         })
@@ -77,22 +77,23 @@ describe('Basic Expect Matchers', () => {
         it('should work with not', async () => {
             const title = await browser.getTitle()
 
-            expect(title).not.toBe('')
-            expect(title).not.toContain('Firefox')
+            await expect(title).not.toBe('')
+            await expect(title).not.toContain('Firefox')
         })
     })
 
-    // TODO TypeError: Cannot read properties of undefined (reading 'toContain')
     xdescribe('Async/Promise matchers', () => {
         it('should handle promises', async () => {
             const titlePromise = browser.getTitle()
 
+            // @ts-expect-error -- resolves does not exist under Jasmine typings
             await expect(titlePromise).resolves.toContain('WebdriverIO')
         })
 
         it('should not reject', async () => {
             const urlPromise = browser.getUrl()
 
+            // @ts-expect-error -- resolves does not exist under Jasmine typings
             await expect(urlPromise).resolves.toBeDefined()
         })
     })

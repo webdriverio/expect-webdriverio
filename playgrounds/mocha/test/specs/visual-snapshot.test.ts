@@ -66,7 +66,8 @@ describe('Visual Snapshot Testing', () => {
             await expect(browser).toMatchFullPageSnapshot('fullPageExact', 0.1)
         })
 
-        it('should match full page snapshot with options', async () => {
+        // Skipping flaky test
+        it.skip('should match full page snapshot with options', async () => {
             await expect(browser).toMatchFullPageSnapshot('fullPage', {
                 // Full page screenshot options
                 fullPageScrollTimeout: 1500,

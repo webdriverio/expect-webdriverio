@@ -76,6 +76,7 @@ export const config: WebdriverIO.Config = {
     // Hooks
     // =====
     //
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     before: function (_capabilities, _specs) {
         setOptions({ wait: 250 })
     },

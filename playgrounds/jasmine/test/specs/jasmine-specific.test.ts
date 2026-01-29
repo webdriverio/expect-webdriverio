@@ -8,28 +8,28 @@ describe('Jasmine-Specific Features', () => {
     describe('Asymmetric matchers', () => {
         it('should work with jasmine.any()', async () => {
             const title = await browser.getTitle()
-            expect(title).toEqual(jasmine.any(String))
+            await expect(title).toEqual(jasmine.any(String))
         })
 
         it('should work with jasmine.anything()', async () => {
             const element = await $('.navbar')
             const text = await element.getText()
-            expect(text).toEqual(jasmine.anything())
+            await expect(text).toEqual(jasmine.anything())
         })
 
         it('should work with jasmine.stringContaining()', async () => {
             const title = await browser.getTitle()
-            expect(title).toEqual(jasmine.stringContaining('WebdriverIO'))
+            await expect(title).toEqual(jasmine.stringContaining('WebdriverIO'))
         })
 
         it('should work with jasmine.stringMatching()', async () => {
             const url = await browser.getUrl()
-            expect(url).toEqual(jasmine.stringMatching(/^https:\/\//))
+            await expect(url).toEqual(jasmine.stringMatching(/^https:\/\//))
         })
 
         it('should work with jasmine.objectContaining()', async () => {
             const capabilities = await browser.capabilities
-            expect(capabilities).toEqual(jasmine.objectContaining({
+            await expect(capabilities).toEqual(jasmine.objectContaining({
                 browserName: 'chrome'
             }))
         })
@@ -40,7 +40,7 @@ describe('Jasmine-Specific Features', () => {
             for (const link of navLinks) {
                 hrefs.push(await link.getAttribute('href'))
             }
-            expect(hrefs).toEqual(jasmine.arrayContaining(['/docs/gettingstarted']))
+            await expect(hrefs).toEqual(jasmine.arrayContaining(['/docs/gettingstarted']))
         })
     })
 
@@ -53,8 +53,8 @@ describe('Jasmine-Specific Features', () => {
 
             // Jasmine matcher on element property
             const tagName = await searchButton.getTagName()
-            expect(tagName).toEqual(jasmine.any(String))
-            expect(tagName).toBe('button')
+            await expect(tagName).toEqual(jasmine.any(String))
+            await expect(tagName).toBe('button')
         })
 
         // TODO failing on jasmine.stringContaining not working properly with wdio matchers
@@ -79,7 +79,7 @@ describe('Jasmine-Specific Features', () => {
             await expect(searchButton).toBeClickable()
 
             const buttonType = await searchButton.getAttribute('type')
-            expect(buttonType).toEqual(jasmine.any(String))
+            await expect(buttonType).toEqual(jasmine.any(String))
         })
     })
 
@@ -90,8 +90,8 @@ describe('Jasmine-Specific Features', () => {
             const count = navLinks.length
 
             // Standard Jasmine matchers
-            expect(count).toBeGreaterThan(0)
-            expect(count).toEqual(jasmine.any(Number))
+            await expect(count).toBeGreaterThan(0)
+            await expect(count).toEqual(jasmine.any(Number))
 
             // WebdriverIO matcher with asymmetric matcher for attribute value
             const firstLink = navLinks[0]
@@ -106,7 +106,7 @@ describe('Jasmine-Specific Features', () => {
                 texts.push(await navLinks[i].getText())
             }
 
-            expect(texts).toEqual(jasmine.arrayContaining([jasmine.any(String)]))
+            await expect(texts).toEqual(jasmine.arrayContaining([jasmine.any(String)]))
         })
     })
 
@@ -116,8 +116,8 @@ describe('Jasmine-Specific Features', () => {
             const title = await browser.getTitle()
             const url = await browser.getUrl()
 
-            expect(title).toEqual(jasmine.stringMatching(/WebdriverIO/i))
-            expect(url).toEqual(jasmine.stringContaining('webdriver.io'))
+            await expect(title).toEqual(jasmine.stringMatching(/WebdriverIO/i))
+            await expect(url).toEqual(jasmine.stringContaining('webdriver.io'))
 
             // Combined with WebdriverIO matchers
             await expect(browser).toHaveUrl(jasmine.stringContaining('webdriver.io'))
@@ -130,13 +130,13 @@ describe('Jasmine-Specific Features', () => {
             const heading = await $$('h1')[1]
             const size = await heading.getSize()
 
-            expect(size).toEqual(jasmine.objectContaining({
+            await expect(size).toEqual(jasmine.objectContaining({
                 width: jasmine.any(Number),
                 height: jasmine.any(Number)
             }))
 
-            expect(size.width).toBeGreaterThan(0)
-            expect(size.height).toBeGreaterThan(0)
+            await expect(size.width).toBeGreaterThan(0)
+            await expect(size.height).toBeGreaterThan(0)
         })
 
         // TODO failing with Error: Can't call getText on element with selector ".non-existent-element-xyz" because element wasn't found
@@ -144,7 +144,7 @@ describe('Jasmine-Specific Features', () => {
             const searchButton = await $('.DocSearch-Button')
             const classList = await searchButton.getAttribute('class')
 
-            expect(classList).toEqual(jasmine.stringContaining('DocSearch'))
+            await expect(classList).toEqual(jasmine.stringContaining('DocSearch'))
             await expect(searchButton).toHaveElementClass(jasmine.stringContaining('DocSearch'))
         })
     })
@@ -153,8 +153,8 @@ describe('Jasmine-Specific Features', () => {
         it('should work with not and asymmetric matchers', async () => {
             const title = await browser.getTitle()
 
-            expect(title).not.toEqual(jasmine.stringContaining('Firefox'))
-            expect(title).not.toEqual(jasmine.stringMatching(/selenium/i))
+            await expect(title).not.toEqual(jasmine.stringContaining('Firefox'))
+            await expect(title).not.toEqual(jasmine.stringMatching(/selenium/i))
         })
 
         // TODO to keep? Failing since element not found
@@ -170,8 +170,9 @@ describe('Jasmine-Specific Features', () => {
         xit('should provide additional context on failure', async () => {
             const title = await browser.getTitle()
 
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore -- withContext fails tsc, see https://github.com/webdriverio/expect-webdriverio/issues/1407
-            expect(title).withContext('Checking page title for webdriver.io').toBe('Non-Matching Title')
+            await expect(title).withContext('Checking page title for webdriver.io').toBe('Non-Matching Title')
         })
     })
 })
