@@ -471,7 +471,7 @@ Received: "not displayed"`)
 
             // The element ok button is clicked and the component is discarded...
 
-            // ...but the element takes time to be removed from the DOM (at least 500 ms in real life)
+            // ...but the element takes time to be removed from the DOM (below 500 ms in real life)
             vi.mocked(el.isDisplayed)
                 .mockResolvedValueOnce(true)
                 .mockResolvedValueOnce(true)
