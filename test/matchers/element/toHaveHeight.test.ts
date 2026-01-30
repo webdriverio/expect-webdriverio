@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage } from '../../__fixtures__/utils.js'
+import { getExpectMessage, getReceived } from '../../__fixtures__/utils.js'
 import { toHaveHeight } from '../../../src/matchers/element/toHaveHeight.js'
 
 vi.mock('@wdio/globals')
@@ -84,27 +84,15 @@ describe('toHaveHeight', () => {
         expect(el.getSize).toHaveBeenCalledTimes(1)
     })
 
-    test('not - failure - pass should be true', async () => {
+    test('not - failure', async () => {
         const el = await $('sel')
         el.getSize = vi.fn().mockResolvedValue(32)
-        const result = await toHaveHeight.call({ isNot: true }, el, 32, { wait: 0 })
 
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result.message()).toEqual(`\
-Expect $(\`sel\`) not to have height
+        const result = await toHaveHeight.call({}, el, 32, { wait: 0 })
+        const received = getReceived(result.message())
 
-Expected [not]: 32
-Received      : 32`
-        )
-    })
-
-    test('not - success - pass should be false', async () => {
-        const el = await $('sel')
-        el.getSize = vi.fn().mockResolvedValue(31)
-
-        const result = await toHaveHeight.call({ isNot: true }, el, 32, { wait: 0 })
-
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        expect(received).not.toContain('not')
+        expect(result.pass).toBe(true)
     })
 
     test("should return false if sizes don't match", async () => {

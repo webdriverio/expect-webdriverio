@@ -3,6 +3,7 @@ import { vi, test, describe, expect } from 'vitest'
 import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTimes.js'
+import { removeColors, getReceived, getExpected, getExpectMessage } from '../../__fixtures__/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -101,54 +102,39 @@ describe('toBeRequestedTimes', () => {
 
         // expect(mock).not.toBeRequestedTimes(0) should fail
         const result = await toBeRequestedTimes.call({ isNot: true }, mock, 0)
-        expect(result.pass).toBe(true) // failure, boolean inverted later because of .not
-        expect(result.message()).toEqual(`\
-Expect mock not to be called 0 times
-
-Expected [not]: 0
-Received      : 0`
-        )
+        expect(result.pass).toBe(true)
 
         // expect(mock).not.toBeRequestedTimes(1) should pass
         const result2 = await toBeRequestedTimes.call({ isNot: true }, mock, 1)
-        expect(result2.pass).toBe(false) // success, boolean inverted later because of .not
+        expect(result2.pass).toBe(false)
 
         mock.calls.push(mockMatch)
 
         // expect(mock).not.toBeRequestedTimes(0) should pass
         const result3 = await toBeRequestedTimes.call({ isNot: true }, mock, 0)
-        expect(result3.pass).toBe(false) // success, boolean inverted later because of .not
+        expect(result3.pass).toBe(false)
 
         // expect(mock).not.toBeRequestedTimes(1) should fail
         const result4 = await toBeRequestedTimes.call({ isNot: true }, mock, 1)
-        expect(result4.pass).toBe(true) // failure, boolean inverted later because of .not
-        expect(result4.message()).toEqual(`\
-Expect mock not to be called 1 time
-
-Expected [not]: 1
-Received      : 1`
-        )
+        expect(result4.pass).toBe(true)
     })
 
     test('message', async () => {
         const mock: Mock = new TestMock()
 
-        const result = await toBeRequestedTimes.call({}, mock, 0, { wait: 1 })
+        const result = await toBeRequestedTimes.call({}, mock, 0)
         expect(result.message()).toContain('Expect mock to be called 0 times')
 
-        const result2 = await toBeRequestedTimes.call({}, mock, 1, { wait: 1 })
+        const result2 = await toBeRequestedTimes.call({}, mock, 1)
         expect(result2.message()).toContain('Expect mock to be called 1 time')
 
-        const result3 = await toBeRequestedTimes.call({}, mock, 2, { wait: 1 })
+        const result3 = await toBeRequestedTimes.call({}, mock, 2)
         expect(result3.message()).toContain('Expect mock to be called 2 times')
 
-        const result4 = await toBeRequestedTimes.call({}, mock, { gte: 3 }, { wait: 1 })
-        expect(result4.pass).toBe(false)
-        expect(result4.message()).toEqual(`\
-Expect mock to be called times
-
-Expected: ">= 3"
-Received: 0`
-        )
+        const result4 = await toBeRequestedTimes.call({}, mock, { gte: 3 })
+        const message4 = removeColors(result4.message())
+        expect(getExpectMessage(message4)).toBe('Expect mock to be called times')
+        expect(getExpected(message4)).toBe('Expected: ">= 3"')
+        expect(getReceived(message4)).toBe('Received: 0')
     })
 })

@@ -6,6 +6,7 @@ export async function toHaveTitle(
     expectedValue: string | RegExp | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
+    const isNot = this.isNot
     const { expectation = 'title', verb = 'have' } = this
 
     await options.beforeAssertion?.({
@@ -19,7 +20,7 @@ export async function toHaveTitle(
         actual = await browser.getTitle()
 
         return compareText(actual, expectedValue, options).result
-    }, options)
+    }, isNot, options)
 
     const message = enhanceError('window', expectedValue, actual, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {

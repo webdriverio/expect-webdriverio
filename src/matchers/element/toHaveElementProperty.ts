@@ -17,13 +17,10 @@ async function condition(
     const { asString = false } = options
 
     let prop = await el.getProperty(property)
-
-    // As specified in the w3c spec, cases where property does not exist
     if (prop === null || prop === undefined) {
         return { result: false, value: prop }
     }
 
-    // As specified in the w3c spec, cases where property simply exists, missing undefined here?
     if (value === null) {
         return { result: true, value: prop }
     }
@@ -39,10 +36,11 @@ async function condition(
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
-    value?: string | RegExp | WdioAsymmetricMatcher<string> | null,
+    value?: string | RegExp | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'property', verb = 'have', isNot } = this
+    const isNot = this.isNot
+    const { expectation = 'property', verb = 'have' } = this
 
     await options.beforeAssertion?.({
         matcherName: 'toHaveElementProperty',
@@ -60,6 +58,7 @@ export async function toHaveElementProperty(
 
             return result.success
         },
+        isNot,
         options
     )
 

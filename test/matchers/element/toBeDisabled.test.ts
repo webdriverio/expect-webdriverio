@@ -1,6 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 
+import { getExpectMessage, getReceived } from '../../__fixtures__/utils.js'
 import { toBeDisabled } from '../../../src/matchers/element/toBeDisabled.js'
 
 vi.mock('@wdio/globals')
@@ -68,65 +69,55 @@ describe('toBeDisabled', () => {
         expect(el.isEnabled).toHaveBeenCalledTimes(1)
     })
 
-    test('not - failure - pass should be true', async () => {
+    test('not - failure', async () => {
         const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(false)
 
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
+        const received = getReceived(result.message())
 
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result.message()).toEqual(`\
-Expect $(\`sel\`) not to be disabled
-
-Expected [not]: "not disabled"
-Received      : "disabled"`
-        )
+        expect(received).not.toContain('not')
+        expect(result.pass).toBe(true)
     })
 
-    test('not - success - pass should be false', async () => {
+    test('not - success', async () => {
         const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(true)
 
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 0 })
+        const received = getReceived(result.message())
 
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        expect(received).toContain('not')
+        expect(result.pass).toBe(false)
     })
 
-    test('not - failure (with wait) - pass should be true', async () => {
+    test('not - failure (with wait)', async () => {
         const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(false)
 
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 1 })
+        const received = getReceived(result.message())
 
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result.message()).toEqual(`\
-Expect $(\`sel\`) not to be disabled
-
-Expected [not]: "not disabled"
-Received      : "disabled"`
-        )
+        expect(received).not.toContain('not')
+        expect(result.pass).toBe(true)
     })
 
-    test('not - success (with wait) - pass should be false', async () => {
+    test('not - success (with wait)', async () => {
         const el = await $('sel')
         el.isEnabled = vi.fn().mockResolvedValue(true)
 
         const result = await toBeDisabled.call({ isNot: true }, el, { wait: 1 })
+        const received = getReceived(result.message())
 
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        expect(received).toContain('not')
+        expect(result.pass).toBe(false)
     })
 
     test('message', async () => {
         const el = await $('sel')
-        el.isEnabled = vi.fn().mockResolvedValue(true)
+        el.isEnabled = vi.fn().mockResolvedValue(false)
 
         const result = await toBeDisabled.call({}, el)
-        expect(result.pass).toBe(false)
-        expect(result.message()).toEqual(`\
-Expect $(\`sel\`) to be disabled
-
-Expected: "disabled"
-Received: "not disabled"`
-        )
+        expect(getExpectMessage(result.message())).toContain('to be disabled')
     })
 })

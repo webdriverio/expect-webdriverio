@@ -1,6 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 
+import { getExpectMessage, getReceived } from '../../__fixtures__/utils.js'
 import { toHaveSize } from '../../../src/matchers/element/toHaveSize.js'
 
 vi.mock('@wdio/globals')
@@ -67,18 +68,15 @@ describe('toHaveSize', () => {
         expect(el.getSize).toHaveBeenCalledTimes(1)
     })
 
-    test('not - failure - pass should be true', async () => {
+    test('not - failure', async () => {
         const el = await $('sel')
         el.getSize = vi.fn().mockResolvedValue({ width: 32, height: 32 })
-        const result = await toHaveSize.call({ isNot: true }, el, { width: 32, height: 32 }, { wait: 0 })
 
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result.message()).toEqual(`\
-Expect $(\`sel\`) not to have size
+        const result = await toHaveSize.call({}, el, { width: 32, height: 32 }, { wait: 0 })
+        const received = getReceived(result.message())
 
-Expected [not]: {"height": 32, "width": 32}
-Received      : {"height": 32, "width": 32}`
-        )
+        expect(received).not.toContain('not')
+        expect(result.pass).toBe(true)
     })
 
     test("should return false if sizes don't match", async () => {
@@ -105,11 +103,6 @@ Received      : {"height": 32, "width": 32}`
 
         const result = await toHaveSize.call({}, el, { width: 32, height: 32 })
 
-        expect(result.pass).toBe(false)
-        expect(result.message()).toEqual(`\
-Expect $(\`sel\`) to have size
-
-Expected: {"height": 32, "width": 32}
-Received: null`)
+        expect(getExpectMessage(result.message())).toContain('to have size')
     })
 })

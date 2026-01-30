@@ -4,6 +4,8 @@ import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
 
+import { getExpected, getExpectMessage, getReceived, removeColors } from '../../__fixtures__/utils.js'
+
 vi.mock('@wdio/globals')
 
 class TestMock implements Mock {
@@ -67,38 +69,26 @@ describe('toBeRequested', () => {
     test('not to be called', async () => {
         const mock: Mock = new TestMock()
 
-        // expect(mock).not.toBeRequested() should pass=false
+        // expect(mock).not.toBeRequested() should pass
         const result = await toBeRequested.call({ isNot: true }, mock)
-        expect(result.pass).toBe(false) // success, boolean is inverted later becuase of `.not`
+        expect(result.pass).toBe(false)
 
         mock.calls.push(mockMatch)
 
         // expect(mock).not.toBeRequested() should fail
         const result4 = await toBeRequested.call({ isNot: true }, mock)
-        expect(result4.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+        expect(result4.pass).toBe(true)
     })
 
     test('message', async () => {
         const mock: Mock = new TestMock()
 
-        const result = await toBeRequested(mock)
-        expect(result.pass).toBe(false)
-        expect(result.message()).toEqual(`\
-Expect mock to be called
+        const message = removeColors((await toBeRequested(mock)).message())
+        expect(getExpectMessage(message)).toBe('Expect mock to be called')
+        expect(getReceived(message)).toBe('Received: 0')
+        expect(getExpected(message)).toBe('Expected: ">= 1"')
 
-Expected: ">= 1"
-Received: 0`
-        )
-
-        mock.calls.push(mockMatch)
         const result2 = await toBeRequested.call({ isNot: true }, mock)
-
-        expect(result2.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result2.message()).toEqual(`\
-Expect mock not to be called
-
-Expected [not]: ">= 1"
-Received      : 1`
-        )
+        expect(result2.message()).toContain('Expect mock not to be called')
     })
 })

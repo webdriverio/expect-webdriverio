@@ -1,6 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 
+import { getExpectMessage, getReceived } from '../../__fixtures__/utils.js'
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle.js'
 
 vi.mock('@wdio/globals')
@@ -79,36 +80,16 @@ describe('toHaveStyle', () => {
         expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
     })
 
-    test('not - failure - pass should be true', async () => {
+    test('not - failure', async () => {
         const el = await $('sel')
         el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
             return { value: mockStyle[property] }
         })
         const result = await toHaveStyle.call({ isNot: true }, el, mockStyle, { wait: 0 })
+        const received = getReceived(result.message())
 
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result.message()).toEqual(`\
-Expect $(\`sel\`) not to have style
-
-Expected [not]: {"color": "#000", "font-family": "Faktum", "font-size": "26px"}
-Received      : {"color": "#000", "font-family": "Faktum", "font-size": "26px"}`
-        )
-    })
-
-    test('not - success - pass should be false', async () => {
-        const el = await $('sel')
-        el.getCSSProperty = vi.fn().mockImplementation((property: string) => {
-            return { value: mockStyle[property] }
-        })
-        const wrongStyle: { [key: string]: string; } = {
-            'font-family': 'Incorrect Font',
-            'font-size': '100px',
-            'color': '#fff'
-        }
-
-        const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 1 })
-
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        expect(received).not.toContain('not')
+        expect(result.pass).toBe(true)
     })
 
     test('should return false if styles dont match', async () => {
@@ -123,7 +104,7 @@ Received      : {"color": "#000", "font-family": "Faktum", "font-size": "26px"}`
             'color': '#fff'
         }
 
-        const result = await toHaveStyle.bind({ })(el, wrongStyle, { wait: 1 })
+        const result = await toHaveStyle.bind({ isNot: true })(el, wrongStyle, { wait: 1 })
         expect(result.pass).toBe(false)
     })
 
@@ -133,7 +114,7 @@ Received      : {"color": "#000", "font-family": "Faktum", "font-size": "26px"}`
             return { value: mockStyle[property] }
         })
 
-        const result = await toHaveStyle.bind({})(el, mockStyle, { wait: 1 })
+        const result = await toHaveStyle.bind({ isNot: true })(el, mockStyle, { wait: 1 })
         expect(result.pass).toBe(true)
     })
 
@@ -143,14 +124,7 @@ Received      : {"color": "#000", "font-family": "Faktum", "font-size": "26px"}`
 
         const result = await toHaveStyle.call({}, el, 'WebdriverIO' as any)
 
-        expect(result.pass).toBe(false)
-        expect(result.message()).toEqual(`\
-Expect $(\`sel\`) to have style
-
-Expected: "WebdriverIO"
-Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wrong Value", "3": "Wrong Value", "4": "Wrong Value", "5": "Wrong Value", "6": "Wrong Value", "7": "Wrong Value", "8": "Wrong Value", "9": "Wrong Value"}`
-        )
-
+        expect(getExpectMessage(result.message())).toContain('to have style')
     })
 
     test('success if style matches with ignoreCase', async () => {

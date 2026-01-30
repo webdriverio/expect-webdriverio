@@ -17,6 +17,7 @@ export async function toHaveStyle(
     expectedValue: { [key: string]: string; },
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
+    const isNot = this.isNot
     const { expectation = 'style', verb = 'have' } = this
 
     await options.beforeAssertion?.({
@@ -34,7 +35,7 @@ export async function toHaveStyle(
         actualStyle = result.values
 
         return result.success
-    }, options)
+    }, isNot, options)
 
     const message = enhanceError(el, wrapExpectedWithArray(el, actualStyle, expectedValue), actualStyle, this, verb, expectation, '', options)
 

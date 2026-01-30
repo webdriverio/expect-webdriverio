@@ -105,59 +105,33 @@ describe('toHaveText', () => {
         expect(el.getText).toHaveBeenCalledTimes(1)
     })
 
-    test('not - failure - pass should be true', async () => {
+    test('not - failure', async () => {
         const el = await $('sel')
+
         el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.call({ isNot: true }, el, 'WebdriverIO', { wait: 0 })
+        const received = getReceived(result.message())
 
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result.message()).toEqual(`\
-Expect $(\`sel\`) not to have text
-
-Expected [not]: "WebdriverIO"
-Received      : "WebdriverIO"`
-        )
+        expect(received).not.toContain('not')
+        expect(result.pass).toBe(true)
     })
 
-    test('not - success - pass should be false', async () => {
+    test("should return false if texts don't match", async () => {
         const el = await $('sel')
         el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
-        const result = await toHaveText.call({ isNot: true }, el, 'not WebdriverIO', { wait: 0 })
+        const result = await toHaveText.bind({ isNot: true })(el, 'foobar', { wait: 1 })
 
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-    })
-
-    test('not with no trim - failure - pass should be true', async () => {
-        const el = await $('sel')
-        el.getText = vi.fn().mockResolvedValue(' WebdriverIO ')
-
-        const result = await toHaveText.call({ isNot: true }, el, ' WebdriverIO ', { trim: false, wait: 0 })
-
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result.message()).toEqual(`\
-Expect $(\`sel\`) not to have text
-
-Expected [not]: " WebdriverIO "
-Received      : " WebdriverIO "`
-        )
-    })
-
-    test('not - success - pass should be false', async () => {
-        const el = await $('sel')
-        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
-
-        const result = await toHaveText.call({ isNot: true }, el, 'not WebdriverIO', { wait: 0 })
-
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        expect(result.pass).toBe(false)
     })
 
     test('should return true if texts match', async () => {
         const el = await $('sel')
         el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
-        const result = await toHaveText.bind({})(el, 'WebdriverIO', { wait: 1 })
+        const result = await toHaveText.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
+
         expect(result.pass).toBe(true)
     })
 

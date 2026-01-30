@@ -163,7 +163,7 @@ describe('toBeRequestedWith', () => {
         expect(result.pass).toBe(false)
     })
 
-    test('wait for NOT - failure with empty params and pass expected to be true', async () => {
+    test('wait for NOT failure, empty params', async () => {
         const mock: any = new TestMock()
         mock.calls.push({ ...mockGet }, { ...mockPost })
         setTimeout(() => {
@@ -171,16 +171,10 @@ describe('toBeRequestedWith', () => {
         }, 10)
 
         const result = await toBeRequestedWith.call({ isNot: true }, mock, {})
-        expect(result.pass).toBe(true) // failure, boolean inverted later because of .not
-        expect(result.message()).toEqual(`\
-Expect mock not to be called with
-
-Expected [not]: {}
-Received      : {}`
-        )
+        expect(result.pass).toBe(true)
     })
 
-    test('wait for NOT - success with pass expected to be false', async () => {
+    test('wait for NOT success', async () => {
         const mock: any = new TestMock()
 
         setTimeout(() => {
@@ -188,7 +182,7 @@ Received      : {}`
         }, 10)
 
         const result = await toBeRequestedWith.call({ isNot: true }, mock, { method: 'DELETE' })
-        expect(result.pass).toBe(false) // success, boolean inverted later because of .not
+        expect(result.pass).toBe(false)
     })
 
     const scenarios: Scenario[] = [

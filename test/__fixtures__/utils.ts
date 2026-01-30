@@ -2,11 +2,6 @@ export function matcherNameToString(matcherName: string) {
     return matcherName.replace(/([A-Z])/g, ' $1').toLowerCase()
 }
 
-export function matcherLastWordName(matcherName: string) {
-    return matcherName.replace(/^toHave/, '').replace(/^toBe/, '')
-        .replace(/([A-Z])/g, ' $1').trim().toLowerCase()
-}
-
 export function getExpectMessage(msg: string) {
     return msg.split('\n')[0]
 }

@@ -15,7 +15,7 @@ const getElementMethods = () => ({
     isClickable: vi.spyOn({ isClickable: async () => true }, 'isClickable'),
     isFocused: vi.spyOn({ isFocused: async () => true }, 'isFocused'),
     isEnabled: vi.spyOn({ isEnabled: async () => true }, 'isEnabled'),
-    getProperty: vi.spyOn({ getProperty: async (_prop: string) => '1' }, 'getProperty'),
+    getProperty: vi.spyOn({ getProperty: async (_prop: string) => undefined }, 'getProperty'),
     getText: vi.spyOn({ getText: async () => ' Valid Text ' }, 'getText'),
     getHTML: vi.spyOn({ getHTML: async () => { return '<Html/>' } }, 'getHTML'),
     getComputedLabel: vi.spyOn({ getComputedLabel: async () => 'Computed Label' }, 'getComputedLabel'),
@@ -25,7 +25,6 @@ const getElementMethods = () => ({
         if (prop === 'height') { return 50 }
         return { width: 100, height: 50 } satisfies Size
     } }, 'getSize') as unknown as WebdriverIO.Element['getSize'],
-    getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
 } satisfies Partial<WebdriverIO.Element>)
 
 function $(_selector: string) {
