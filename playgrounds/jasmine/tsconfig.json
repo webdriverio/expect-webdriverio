@@ -5,11 +5,11 @@
     "moduleResolution": "bundler",
     "types": [
       "node",
-      "@wdio/globals/types",
+      "expect-webdriverio/expect-global",
+      "expect-webdriverio/jasmine-wdio-expect-async",
       "@types/jasmine",
-      "expect-webdriverio/jasmine",
+      "@wdio/globals/types", // Need to be last to so the above from the projects have priority
       "@wdio/visual-service",
-      "expect-webdriverio/jasmine-wdio-expect-async"
     ],
     "resolveJsonModule": true,
     "esModuleInterop": true,

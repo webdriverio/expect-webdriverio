@@ -5,9 +5,10 @@
     "moduleResolution": "bundler",
     "types": [
       "node",
-      "@wdio/globals/types",
+      "expect-webdriverio/expect-global",
       "@wdio/mocha-framework",
       "expect-webdriverio",
+      "@wdio/globals/types", // Need to be last to so the above from the projects have priority
       "@wdio/visual-service"
     ],
     "esModuleInterop": true,

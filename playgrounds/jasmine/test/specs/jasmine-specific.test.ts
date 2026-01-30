@@ -57,6 +57,13 @@ describe('Jasmine-Specific Features', () => {
             await expect(tagName).toBe('button')
         })
 
+        it('should use withContext on WDIO matcher', async () => {
+            const searchButton = await $('.DocSearch-Button')
+
+            await expect(searchButton).withContext('Search button should be visible on the homepage').toBeDisplayed()
+            await expect(searchButton).withContext('Search button should exist on the homepage').toExist()
+        })
+
         // TODO failing on jasmine.stringContaining not working properly with wdio matchers
         xit('should use asymmetric matchers in toHaveAttribute', async () => {
             const docsLink = await $('a[href="/docs/gettingstarted"]')
@@ -166,13 +173,51 @@ describe('Jasmine-Specific Features', () => {
         })
     })
 
-    describe('Expect.withContext usage', () => {
-        xit('should provide additional context on failure', async () => {
+    describe('Jasmine core matcher use cases with expect', () => {
+        it('should use all core Jasmine matchers with expect', async () => {
             const title = await browser.getTitle()
+            const navLinks = await $$('nav a')
+            const count = navLinks.length
+            const firstLink = navLinks[0]
+            const tagName = await firstLink.getTagName()
+            const arr = [1, 2, 3]
+            const obj = { foo: 'bar', num: 42 }
 
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore -- withContext fails tsc, see https://github.com/webdriverio/expect-webdriverio/issues/1407
-            await expect(title).withContext('Checking page title for webdriver.io').toBe('Non-Matching Title')
+            // Equality
+            await expect(title).toEqual('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js | WebdriverIO')
+            await expect(count).toBeGreaterThan(0)
+            await expect(count).toBeLessThan(100)
+            await expect(count).toBeGreaterThanOrEqual(1)
+            await expect(count).toBeLessThanOrEqual(100)
+            await expect(count).toBeCloseTo(49, 3)
+            await expect(count).not.toBeNaN()
+            await expect(tagName).toBeDefined()
+            await expect(tagName).not.toBeUndefined()
+            await expect(tagName).toBeTruthy()
+            await expect('').toBeFalsy()
+            await expect(arr).toContain(2)
+            await expect(arr).not.toContain(99)
+            await expect(obj).toEqual(jasmine.objectContaining({ foo: 'bar' }))
+            await expect(arr).toEqual(jasmine.arrayContaining([1, 2]))
+            await expect(title).toMatch(/WebdriverIO/)
+            await expect(title).toEqual(jasmine.stringContaining('WebdriverIO'))
+            await expect(obj).toBeInstanceOf(Object)
+            await expect(Promise.resolve(1)).toBeResolved()
+            await expect(Promise.reject('fail')).toBeRejected()
+
+            // @ts-expect-error -- toThrowError is not recognized properly to fix one day
+            await expect(Promise.resolve(42)).toBeResolvedTo(42)
+            // @ts-expect-error -- toBeRejectedWith is not recognized properly to fix one day
+            await expect(Promise.reject('fail')).toBeRejectedWith('fail')
+            // @ts-expect-error -- toThrowError is not recognized properly to fix one day
+            await expect(() => { throw new Error('fail') }).toThrowError('fail')
+
+            // withContext with various matchers
+            await expect(title).withContext('Title should contain WebdriverIO').toMatch(/WebdriverIO/)
+            await expect(arr).withContext('Array should contain 2').toContain(2)
+            await expect(obj).withContext('Object should have foo').toEqual(jasmine.objectContaining({ foo: 'bar' }))
         })
+
+
     })
 })

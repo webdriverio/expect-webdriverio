@@ -1,7 +1,7 @@
 
 import { join } from 'node:path'
 import type { VisualServiceOptions } from '@wdio/visual-service'
-import { SoftAssertionService, setOptions } from 'expect-webdriverio'
+import { setOptions } from 'expect-webdriverio'
 
 export const config: WebdriverIO.Config = {
     //
@@ -18,7 +18,8 @@ export const config: WebdriverIO.Config = {
     //
     specs: [
         './test/specs/**/*.test.ts'
-        // './test/specs/**/jasmine-specific.test.ts'
+        // './test/specs/**/jasmine-specific.test.ts',
+        // './test/specs/**/snapshot.test.ts'
     ],
 
     //
@@ -49,20 +50,21 @@ export const config: WebdriverIO.Config = {
     connectionRetryTimeout: 120000,
     connectionRetryCount: 3,
     services: [
-        // Not working with Jasmine yet
-        [SoftAssertionService, {}],
-        // Not working with Jasmine yet
         [
+            // SoftAssertionService is not supported since anyway Jasmine is designed that way out of the box
             'visual',
             {
+                // TODO Add back snapshot tests and generate visual baselines
                 baselineFolder: join(process.cwd(), '.tmp/visual/baseline'),
                 formatImageName: '{tag}-{logName}-{width}x{height}',
                 screenshotPath: join(process.cwd(), '.tmp/visual'),
                 savePerInstance: true,
                 autoSaveBaseline: true,
-                // Block out the changing elements
-                blockOutStatusBar: true,
-                blockOutToolBar: true
+                compareOptions: {
+                    // Block out the changing elements
+                    blockOutStatusBar: true,
+                    blockOutToolBar: true
+                }
             } satisfies VisualServiceOptions
         ]
     ],

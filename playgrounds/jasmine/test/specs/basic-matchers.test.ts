@@ -86,14 +86,14 @@ describe('Basic Expect Matchers', () => {
         it('should handle promises', async () => {
             const titlePromise = browser.getTitle()
 
-            // @ts-expect-error -- resolves does not exist under Jasmine typings
+            // @ts-expect-error -- resolves should not exists on expect
             await expect(titlePromise).resolves.toContain('WebdriverIO')
         })
 
         it('should not reject', async () => {
             const urlPromise = browser.getUrl()
 
-            // @ts-expect-error -- resolves does not exist under Jasmine typings
+            // @ts-expect-error -- rejects should not exists on expect
             await expect(urlPromise).resolves.toBeDefined()
         })
     })

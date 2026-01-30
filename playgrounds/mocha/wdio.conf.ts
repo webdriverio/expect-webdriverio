@@ -58,9 +58,11 @@ export const config: WebdriverIO.Config = {
                 screenshotPath: join(process.cwd(), '.tmp/visual'),
                 savePerInstance: true,
                 autoSaveBaseline: true,
-                // Block out the changing elements
-                blockOutStatusBar: true,
-                blockOutToolBar: true
+                compareOptions: {
+                    // Block out the changing elements
+                    blockOutStatusBar: true,
+                    blockOutToolBar: true
+                }
             } satisfies VisualServiceOptions
         ]
     ],

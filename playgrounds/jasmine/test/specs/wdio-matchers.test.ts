@@ -148,7 +148,7 @@ describe('WebdriverIO Custom Matchers', () => {
             await searchButton.click()
 
             // The search modal input should be focused after clicking
-             
+
             await browser.pause(500) // Wait for modal to open
             const searchInput = await $('.DocSearch-Input')
             if (await searchInput.isExisting()) {
