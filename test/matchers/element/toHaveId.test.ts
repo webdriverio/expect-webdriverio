@@ -31,20 +31,20 @@ describe('toHaveId', () => {
         const afterAssertion = vi.fn()
 
         beforeEach(async () => {
-            result = await toHaveId.call({}, el, 'an attribute', { beforeAssertion, afterAssertion })
+            result = await toHaveId.call({}, el, 'an attribute', { beforeAssertion, afterAssertion, wait: 0 })
         })
 
         test('failure', () => {
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toHaveId',
                 expectedValue: 'an attribute',
-                options: { beforeAssertion, afterAssertion }
+                options: { beforeAssertion, afterAssertion, wait: 0 }
             })
             expect(result.pass).toBe(false)
             expect(afterAssertion).toBeCalledWith({
                 matcherName: 'toHaveId',
                 expectedValue: 'an attribute',
-                options: { beforeAssertion, afterAssertion },
+                options: { beforeAssertion, afterAssertion, wait: 0 },
                 result
             })
         })

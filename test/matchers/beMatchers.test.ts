@@ -1,6 +1,6 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
-import { getExpectMessage, getReceived, matcherNameToString } from '../__fixtures__/utils.js'
+import { matcherLastWordName } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 
 vi.mock('@wdio/globals')
@@ -82,56 +82,58 @@ describe('be* matchers', () => {
                 expect(el[elementFnName]).toHaveBeenCalledTimes(1)
             })
 
-            test('not - failure', async () => {
+            test('not - failure - pass should be true', async () => {
                 const el = await $('sel')
 
                 const result = await matcherFn.call({ isNot: true }, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
-                const received = getReceived(result.message())
 
-                expect(received).not.toContain('not')
-                expect(result.pass).toBe(true)
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(result.message()).toEqual(`\
+Expect $(\`sel\`) not to be ${matcherLastWordName(matcherName)}
+
+Expected [not]: "not ${matcherLastWordName(matcherName)}"
+Received      : "${matcherLastWordName(matcherName)}"`
+                )
             })
 
-            test('not - success', async () => {
+            test('not - success - pass should be false', async () => {
                 const el = await $('sel')
 
                 el[elementFnName] = vi.fn().mockResolvedValue(false)
 
                 const result = await matcherFn.call({ isNot: true }, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
-                const received = getReceived(result.message())
 
-                expect(received).toContain('not')
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
 
-            test('not - failure (with wait)', async () => {
+            test('not - failure (with wait) - pass should be true', async () => {
                 const el = await $('sel')
 
                 const result = await matcherFn.call({ isNot: true }, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
-                const received = getReceived(result.message())
 
-                expect(received).not.toContain('not')
-                expect(result.pass).toBe(true)
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             })
 
-            test('not - success (with wait)', async () => {
+            test('not - success (with wait) - pass should be false', async () => {
                 const el = await $('sel')
                 el[elementFnName] = vi.fn().mockResolvedValue(false)
-
                 const result = await matcherFn.call({ isNot: true }, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
 
-                const received = getReceived(result.message())
-                expect(received).toContain('not')
-                expect(result.pass).toBe(false)
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
 
             test('message', async () => {
                 const el = await $('sel')
                 el[elementFnName] = vi.fn().mockResolvedValue(false)
 
-                const result = await matcherFn.call({}, el) as ExpectWebdriverIO.AssertionResult
-                expect(getExpectMessage(result.message()))
-                    .toContain(matcherNameToString(matcherName))
+                const result = await matcherFn.call({}, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
+                expect(result.pass).toBe(false)
+                expect(result.message()).toBe(`\
+Expect $(\`sel\`) to be ${matcherLastWordName(matcherName)}
+
+Expected: "${matcherLastWordName(matcherName)}"
+Received: "not ${matcherLastWordName(matcherName)}"`
+                )
             })
         })
     })

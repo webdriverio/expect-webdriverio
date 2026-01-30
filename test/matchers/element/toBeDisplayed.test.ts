@@ -1,7 +1,6 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage, getReceived } from '../../__fixtures__/utils.js'
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe } from '../../../src/utils.js'
 import { DEFAULT_OPTIONS } from '../../../src/constants.js'
@@ -123,45 +122,42 @@ describe('toBeDisplayed', () => {
         expect(el.isDisplayed).toHaveBeenCalledTimes(1)
     })
 
-    test('not - failure', async () => {
+    test('not - failure - pass must be true', async () => {
         const el = await $('sel')
-
         const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 0 })
 
-        const received = getReceived(result.message())
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
     })
 
-    test('not - success', async () => {
+    test('not - success - pass should be false', async () => {
         const el = await $('sel')
 
         el.isDisplayed = vi.fn().mockResolvedValue(false)
 
         const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 0 })
 
-        const received = getReceived(result.message())
-        expect(received).toContain('not')
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
     })
 
-    test('not - failure (with wait)', async () => {
+    test('not - failure (with wait) - pass should be true', async () => {
         const el = await $('sel')
-
         const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 1 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+        expect(result.message()).toEqual(`\
+Expect $(\`sel\`) not to be displayed
+
+Expected [not]: "not displayed"
+Received      : "displayed"`
+        )
     })
 
-    test('not - success (with wait)', async () => {
+    test('not - success (with wait) - pass should be false', async () => {
         const el = await $('sel')
 
         el.isDisplayed = vi.fn().mockResolvedValue(false)
 
         const result = await toBeDisplayed.call({ isNot: true }, el, { wait: 1 })
-        const received = getReceived(result.message())
 
         expect(el.isDisplayed).toHaveBeenCalledWith(
             {
@@ -175,8 +171,7 @@ describe('toBeDisplayed', () => {
             wait: 1,
             interval: DEFAULT_OPTIONS.interval
         }))
-        expect(received).toContain('not')
-        expect(result.pass).toBe(false)
+        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
     })
 
     test('message', async () => {
@@ -184,7 +179,14 @@ describe('toBeDisplayed', () => {
 
         el.isDisplayed = vi.fn().mockResolvedValue(false)
 
-        const result = await toBeDisplayed.call({}, el)
-        expect(getExpectMessage(result.message())).toContain('to be displayed')
+        const result = await toBeDisplayed.call({}, el, { wait: 0 })
+
+        expect(result.pass).toBe(false)
+        expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`
+        )
     })
 })

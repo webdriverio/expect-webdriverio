@@ -70,29 +70,59 @@ describe('toHaveHTML', () => {
         expect(element.getHTML).toHaveBeenCalledTimes(1)
     })
 
-    test('not - failure', async () => {
+    test('not - failure - pass should be true', async () => {
         const element = await $('sel')
         element.getHTML = vi.fn().mockResolvedValue('<div>foo</div>')
-        const result = await toHaveHTML.call({ isNot: true }, element, '<div>foo</div>', { wait: 0 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        const result = await toHaveHTML.call({ isNot: true }, element, '<div>foo</div>', { wait: 0 })
+
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+        expect(result.message()).toEqual(`\
+Expect $(\`sel\`) not to have HTML
+
+Expected [not]: "<div>foo</div>"
+Received      : "<div>foo</div>"`
+        )
+    })
+
+    test('not - success - pass should be false', async () => {
+        const el = await $('sel')
+        el.getHTML = vi.fn().mockResolvedValue('<div>foo</div>')
+
+        const result = await toHaveHTML.call({ isNot: true }, el, '<div>Notfoo</div>', { wait: 0 })
+
+        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
     })
 
     test("should return false if htmls don't match", async () => {
         const element = await $('sel')
         element.getHTML = vi.fn().mockResolvedValue('<div>foo</div>')
 
-        const result = await toHaveHTML.bind({ isNot: true })(element, 'foobar', { wait: 1 })
+        const result = await toHaveHTML.bind({})(element, 'foobar', { wait: 1 })
         expect(result.pass).toBe(false)
+    })
+
+    test("should suceeds (false) if htmls don't match when isNot is true", async () => {
+        const element = await $('sel')
+        element.getHTML = vi.fn().mockReturnValue('<div>foo</div>')
+
+        const result = await toHaveHTML.bind({ isNot: true })(element, 'foobar', { wait: 1 })
+        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+    })
+
+    test('should fails (pass=true) if htmls match when isNot is true', async () => {
+        const element = await $('sel')
+        element.getHTML = vi.fn().mockReturnValue('<div>foo</div>')
+
+        const result = await toHaveHTML.bind({ isNot: true })(element, '<div>foo</div>', { wait: 1 })
+        expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
     })
 
     test('should return true if htmls match', async () => {
         const element = await $('sel')
         element.getHTML = vi.fn().mockResolvedValue('<div>foo</div>')
 
-        const result = await toHaveHTML.bind({ isNot: true })(element, '<div>foo</div>', { wait: 1 })
+        const result = await toHaveHTML.bind({})(element, '<div>foo</div>', { wait: 1 })
         expect(result.pass).toBe(true)
     })
 
