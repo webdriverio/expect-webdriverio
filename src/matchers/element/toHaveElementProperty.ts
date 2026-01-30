@@ -17,10 +17,13 @@ async function condition(
     const { asString = false } = options
 
     let prop = await el.getProperty(property)
+
+    // As specified in the w3c spec, cases where property does not exist
     if (prop === null || prop === undefined) {
         return { result: false, value: prop }
     }
 
+    // As specified in the w3c spec, cases where property simply exists, missing undefined here?
     if (value === null) {
         return { result: true, value: prop }
     }
