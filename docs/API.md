@@ -880,6 +880,29 @@ await expect(elem).toHaveElementClass(/Container/i)
 
 In addition to the `expect-webdriverio` matchers you can use builtin Jest's [expect](https://jestjs.io/docs/expect) assertions or [expect/expectAsync](https://jasmine.github.io/api/edge/global.html#expect) for Jasmine.
 
+## Modifiers
+
+WebdriverIO supports usage of modifiers as `.not` and it will wait until the reverse condition is meet
+
+```ts
+// Wait until the element is no longer present
+await expect(element).not.toBeDisplayed()
+
+// Wait until the text is no more 'some title'
+await expect(browser).not.toHaveTitle('some title')
+```
+
+In case immediate assertion is required, use `{ wait: 0 }`
+```ts
+// Ensure element is not present right now
+await expect(element).not.toBeDisplayed({ wait: 0 })
+
+// Ensure the text is not 'some title' right now
+await expect(browser).not.toHaveTitle('some title', { wait: 0 })
+```
+
+Note: You can pair `.not` with asymmetric matchers, but to enable the wait-until behavior, `.not` must be used directly on the `expect()` call. 
+
 ## Asymmetric Matchers
 
 WebdriverIO supports usage of asymmetric matchers wherever you compare text values, e.g.:
