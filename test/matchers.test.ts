@@ -402,7 +402,7 @@ Received: 100`)
 
     })
 
-    // Skipped since even through logically correct, this is not too user friendly adn breaks today current expected behavior, see https://github.com/webdriverio/expect-webdriverio/issues/2013
+    // Skipped since even though logically correct, this is not too user-friendly and breaks today's current expected behaviour, see https://github.com/webdriverio/expect-webdriverio/issues/2013
     describe.skip('Matcher eventually passing', async () => {
 
         test('when element eventually is displayed, matcher and .not matcher should be consistent', async () => {
@@ -477,7 +477,7 @@ Received: "not displayed"`)
                 .mockResolvedValueOnce(true)
                 .mockResolvedValueOnce(false)
 
-            // We should be able to assert that the element is no longer displayed by default without additional code of configuration
+            // We should be able to assert that the element is no longer displayed by default without additional code or configuration
             await expectLib(el).not.toBeDisplayed()
         })
     })
