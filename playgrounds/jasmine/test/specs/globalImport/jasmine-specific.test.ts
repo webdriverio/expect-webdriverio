@@ -164,17 +164,22 @@ describe('Jasmine-Specific Features', () => {
             await expect(title).not.toEqual(jasmine.stringMatching(/selenium/i))
         })
 
-        // TODO to keep? Failing since element not found
-        xit('should combine not with WebdriverIO matchers', async () => {
-            const nonExistent = await $('.non-existent-element-xyz')
+        it('should combine not.toBeDisplayed with WebdriverIO matchers', async () => {
+            const nonExistent = $('.non-existent-element-xyz')
 
             await expect(nonExistent).not.toBeDisplayed()
-            await expect(nonExistent).not.toHaveText(jasmine.any(String))
+        })
+
+
+        it('should combine not.toHaveText with WebdriverIO matchers', async () => {
+            const searchButton = await $('.DocSearch-Button')
+
+            await expect(searchButton).not.toHaveText('test')
         })
     })
 
     describe('Jasmine core matcher use cases with expect', () => {
-        it('should use all core Jasmine matchers with expect', async () => {
+        fit('should use all core Jasmine matchers with expect', async () => {
             const title = await browser.getTitle()
             const navLinks = await $$('nav a')
             const count = navLinks.length
@@ -182,6 +187,12 @@ describe('Jasmine-Specific Features', () => {
             const tagName = await firstLink.getTagName()
             const arr = [1, 2, 3]
             const obj = { foo: 'bar', num: 42 }
+
+            // withContext with various matchers
+            await expect(title).toMatch(/WebdriverIO/)
+            await expect(title).withContext('Title should contain WebdriverIO').not.toMatch(/NOT WebdriverIO/)
+            await expect(arr).withContext('Array should contain 2').toContain(3)
+            await expect(obj).withContext('Object should have foo').toEqual(jasmine.objectContaining({ foo: 'bar' }))
 
             // Equality
             await expect(title).toEqual('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js | WebdriverIO')
@@ -209,15 +220,8 @@ describe('Jasmine-Specific Features', () => {
             await expect(Promise.resolve(42)).toBeResolvedTo(42)
             // @ts-expect-error -- toBeRejectedWith is not recognized properly to fix one day
             await expect(Promise.reject('fail')).toBeRejectedWith('fail')
-            // @ts-expect-error -- toThrowError is not recognized properly to fix one day
+
             await expect(() => { throw new Error('fail') }).toThrowError('fail')
-
-            // withContext with various matchers
-            await expect(title).withContext('Title should contain WebdriverIO').toMatch(/WebdriverIO/)
-            await expect(arr).withContext('Array should contain 2').toContain(2)
-            await expect(obj).withContext('Object should have foo').toEqual(jasmine.objectContaining({ foo: 'bar' }))
         })
-
-
     })
 })

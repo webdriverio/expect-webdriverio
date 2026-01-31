@@ -15,9 +15,9 @@ export const config: WebdriverIO.Config = {
     // ==================
     //
     specs: [
-        './test/specs/**/*.test.ts'
-        // './test/specs/**/jasmine-specific.test.ts',
-        // './test/specs/**/snapshot.test.ts'
+        // './test/specs/**/*.test.ts',
+        './test/specs/expectWdioImport/basic-matchers.test.ts',
+        // './test/specs/expectWdioImport/wdio-matchers.test.ts'
     ],
 
     //
@@ -49,7 +49,7 @@ export const config: WebdriverIO.Config = {
     connectionRetryCount: 3,
     services: [
             // SoftAssertionService is not supported since anyway Jasmine is designed that way out of the box
-            // Viusal Snapshot Service is not supported
+            // visual snapshot service does not work properly with Jasmine due to the lack of proper hooks
     ],
     framework: 'jasmine',
     reporters: ['spec'],

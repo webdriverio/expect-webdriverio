@@ -503,6 +503,8 @@ declare namespace ExpectWebdriverIO {
 
     interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
 
+    interface CustomMatchers<R extends void | Promise<void>, T> extends WdioCustomMatchers<R, T> {}
+
     interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
 
     interface InverseAsymmetricMatchers extends Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any'> {}

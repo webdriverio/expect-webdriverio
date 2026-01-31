@@ -5,7 +5,6 @@
     "moduleResolution": "bundler",
     "types": [
       "node",
-      "expect-webdriverio/expect-global",
       "expect-webdriverio/jasmine-wdio-expect-async",
       "@types/jasmine",
       "@wdio/globals/types", // Need to be last to so the above from the projects have priority
