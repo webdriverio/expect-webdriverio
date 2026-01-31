@@ -1,6 +1,7 @@
 import { browser, $, $$ } from '@wdio/globals'
+import { expect } from 'expect-webdriverio'
 
-describe('Basic Expect Matchers', () => {
+describe('Basic Expect Matchers available when pulling expect from expect-webdriverio directly', () => {
     beforeEach(async () => {
         await browser.url('https://webdriver.io')
     })
@@ -47,6 +48,16 @@ describe('Basic Expect Matchers', () => {
         })
     })
 
+    describe('Negation', () => {
+        it('should work with not', async () => {
+            const title = await browser.getTitle()
+
+            await expect(title).not.toBe('')
+            await expect(title).not.toContain('Firefox')
+        })
+    })
+
+
     describe('Array matchers', () => {
         it('should verify array contents', async () => {
             const navLinks = await $$('nav a')
@@ -61,11 +72,11 @@ describe('Basic Expect Matchers', () => {
         })
     })
 
-    // TODO failing with  TypeError: await expect(...).toHaveProperty is not a function
-    xdescribe('Object matchers', () => {
+    describe('Object matchers', () => {
         it('should match object properties', async () => {
             const capabilities = await browser.capabilities
 
+            console.log('capabilities', expect(capabilities).toHaveProperty('browserName'))
             await expect(capabilities).toHaveProperty('browserName')
             await expect(capabilities).toMatchObject({
                 browserName: 'chrome'
@@ -73,28 +84,23 @@ describe('Basic Expect Matchers', () => {
         })
     })
 
-    describe('Negation', () => {
-        it('should work with not', async () => {
-            const title = await browser.getTitle()
-
-            await expect(title).not.toBe('')
-            await expect(title).not.toContain('Firefox')
-        })
-    })
-
-    xdescribe('Async/Promise matchers', () => {
+    describe('Async/Promise matchers', () => {
         it('should handle promises', async () => {
             const titlePromise = browser.getTitle()
 
-            // @ts-expect-error -- resolves should not exists on expect
             await expect(titlePromise).resolves.toContain('WebdriverIO')
         })
 
         it('should not reject', async () => {
             const urlPromise = browser.getUrl()
 
-            // @ts-expect-error -- rejects should not exists on expect
             await expect(urlPromise).resolves.toBeDefined()
+        })
+    })
+
+    describe('Basis matcher with Jasmine asymmetric matchers', () => {
+        fit('should not work with jasmine.stringContaining', async () => {
+            expect(() => expect('title').toBe(jasmine.stringContaining('title'))).toThrow()
         })
     })
 })
