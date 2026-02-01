@@ -19,6 +19,7 @@ export async function toHaveUrl(
     const pass = await waitUntil(async () => {
         actual = await browser.getUrl()
 
+        console.log('toHaveUrl', { actual, expectedValue })
         return compareText(actual, expectedValue, options).result
     }, isNot, options)
 

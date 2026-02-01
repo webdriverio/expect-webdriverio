@@ -459,6 +459,12 @@ type WdioAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
     sample: R;
 }
 
+type JasmineAsymmetricMatcher<R> = {
+    jasmineToString(): string;
+    expected: R;
+    asymmetricMatch(other: unknown): boolean;
+}
+
 declare namespace ExpectWebdriverIO {
     /**
      * When importing expect from 'expect-webdriverio', instead of using globals this is the one used.

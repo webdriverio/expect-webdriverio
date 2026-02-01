@@ -8,7 +8,6 @@
     "types": [
       "@types/jasmine",
       "../../jasmine.d.ts",
-      "../../jasmine-wdio-expect-async.d.ts"
     ]
   }
 }
