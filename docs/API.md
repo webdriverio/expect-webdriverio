@@ -941,7 +941,7 @@ In addition to the WebdriverIO matchers, `expect-webdriverio` also provides basi
 For Jasmine, see the official documentation for [expect/expectAsync](https://jasmine.github.io/api/edge/global.html#expect), [matchers](https://jasmine.github.io/tutorials/your_first_suite#section-Matchers), and [async-matchers](https://jasmine.github.io/api/edge/async-matchers.html).
 
 **Note:**
-- When using `@wdio/jasmine-framework` with the global import, all matchers are registered on `expectAsync`, which is then assigned to the global `expect`. This causes every matcher to return a promise and behave asynchronously.
+- With the global import in @wdio/jasmine-framework, only WebdriverIO custom matchers are registered on expectAsync (assigned to global expect), so all matchers are always async, even those that are normally synchronous.
 - Default matchers are still available if you import `expect` directly from `expect-webdriverio` instead of using the global.
 
 ## Modifiers
