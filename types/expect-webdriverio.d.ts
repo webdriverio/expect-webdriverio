@@ -89,6 +89,15 @@ interface WdioBrowserMatchers<_R, ActualT>{
      * `WebdriverIO.Browser` -> `execute`
      */
     toHaveClipboardText: FnWhenBrowser<ActualT, (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Browser` -> `execute`
+     */
+    toHaveLocalStorageItem: FnWhenBrowser<ActualT, (
+        key: string,
+        expectedValue?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<void>>
 }
 
 /**
@@ -728,6 +737,7 @@ declare namespace ExpectWebdriverIO {
          * `true` to check if the element is invisible due to the value of its visibility property. `true` by default.
          * @default true
          */
+
         visibilityProperty?: boolean
     }
 

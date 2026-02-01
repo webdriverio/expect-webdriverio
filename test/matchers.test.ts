@@ -7,6 +7,7 @@ vi.mock('@wdio/globals')
 const ALL_MATCHERS = [
     // browser
     'toHaveClipboardText',
+    'toHaveLocalStorageItem',
     'toHaveTitle',
     'toHaveUrl',
 
