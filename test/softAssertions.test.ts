@@ -10,8 +10,10 @@ describe('Soft Assertions', () => {
 
     beforeEach(async () => {
         el = $('sel')
+
         // We need to mock getText() which is what the toHaveText matcher actually calls
-        el.getText = vi.fn().mockImplementation(() => 'Actual Text')
+        vi.mocked(el.getText).mockResolvedValue('Actual Text')
+
         // Clear any soft assertion failures before each test
         expectWdio.clearSoftFailures()
     })
@@ -157,11 +159,13 @@ describe('Soft Assertions', () => {
     describe('Different Matcher Types', () => {
         beforeEach(async () => {
             el = $('sel')
+
             // Mock different methods for different matchers
-            el.getText = vi.fn().mockImplementation(() => 'Actual Text')
-            el.isDisplayed = vi.fn().mockImplementation(() => false)
-            el.getAttribute = vi.fn().mockImplementation(() => 'actual-class')
-            el.isClickable = vi.fn().mockImplementation(() => false)
+            vi.mocked(el.getText).mockResolvedValue('Actual Text')
+            vi.mocked(el.isDisplayed).mockResolvedValue(false)
+            vi.mocked(el.getAttribute).mockResolvedValue('actual-class')
+            vi.mocked(el.isClickable).mockResolvedValue(false)
+
             expectWdio.clearSoftFailures()
         })
 
@@ -245,9 +249,9 @@ describe('Soft Assertions', () => {
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('concurrent-test', 'concurrent', 'test file')
 
-            el.getText = vi.fn().mockImplementation(() => 'Actual Text')
-            el.isDisplayed = vi.fn().mockImplementation(() => false)
-            el.isClickable = vi.fn().mockImplementation(() => false)
+            vi.mocked(el.getText).mockResolvedValue('Actual Text')
+            vi.mocked(el.isDisplayed).mockResolvedValue(false)
+            vi.mocked(el.isClickable).mockResolvedValue(false)
 
             // Fire multiple assertions rapidly
             const promises = [
@@ -276,10 +280,7 @@ describe('Soft Assertions', () => {
             softService.setCurrentTest('error-test', 'error test', 'test file')
 
             // Mock a matcher that throws a unique error
-            const originalMethod = el.getText
-            el.getText = vi.fn().mockImplementation(() => {
-                throw new TypeError('Weird browser error')
-            })
+            vi.mocked(el.getText).mockRejectedValue(new TypeError('Weird browser error'))
 
             await expectWdio.soft(el).toHaveText('Expected Text')
 
@@ -287,9 +288,6 @@ describe('Soft Assertions', () => {
             expect(failures.length).toBe(1)
             expect(failures[0].error).toBeInstanceOf(Error)
             expect(failures[0].error.message).toContain('Weird browser error')
-
-            // Restore
-            el.getText = originalMethod
         })
 
         it('should handle very long error messages', async () => {
