@@ -129,18 +129,6 @@ export function elementArrayFactory(selector: string, length?: number): Webdrive
     }
     elementArray.parent = browser
 
-    // TODO Verify if we need to implement other array methods
-    // [Symbol.iterator]: array[Symbol.iterator].bind(array)
-    // filter: vi.fn().mockReturnThis(),
-    // map: vi.fn().mockReturnThis(),
-    // find: vi.fn().mockReturnThis(),
-    // forEach: vi.fn(),
-    // some: vi.fn(),
-    // every: vi.fn(),
-    // slice: vi.fn().mockReturnThis(),
-    // toArray: vi.fn().mockReturnThis(),
-    // getElements: vi.fn().mockResolvedValue(array)
-
     return elementArray
 }
 
@@ -154,6 +142,7 @@ export function chainableElementArrayFactory(selector: string, length: number) {
     const runtimeChainablePromiseArray = new Proxy(chainablePromiseArray, {
         get(target, prop) {
             if (typeof prop === 'string' && /^\d+$/.test(prop)) {
+                // Simulate index out of bounds error when asking for an element outside the array length
                 const index = parseInt(prop, 10)
                 if (index >= length) {
                     const error = new Error(`Index out of bounds! $$(${selector}) returned only ${length} elements.`)
@@ -162,16 +151,6 @@ export function chainableElementArrayFactory(selector: string, length: number) {
                             if (prop === 'then') {
                                 return (resolve: any, reject: any) => reject(error)
                             }
-                            // Allow resolving methods like 'catch', 'finally' normally from the promise if needed,
-                            // but usually we want any interaction to fail?
-                            // Actually, standard promise methods might be accessed.
-                            // But the user requirements says: `$$('foo')[3].getText()` should return a promise (that rejects).
-
-                            // If accessing a property that exists on Promise (like catch, finally, Symbol.toStringTag), maybe we should be careful.
-                            // However, the test expects `el` (the proxy) to be a Promise instance.
-                            // And `el.getText()` to return a promise.
-
-                            // If I return a function that returns a rejected promise for everything else:
                             return () => Promise.reject(error)
                         }
                     })
