@@ -938,9 +938,11 @@ In addition to the WebdriverIO matchers, `expect-webdriverio` also provides basi
 
 ### Jasmine
 
-For Jasmine, see [expect/expectAsync](https://jasmine.github.io/api/edge/global.html#expect) and it's [matchers](https://jasmine.github.io/tutorials/your_first_suite#section-Matchers) and [async-matchers](https://jasmine.github.io/api/edge/async-matchers.html)
+For Jasmine, see the official documentation for [expect/expectAsync](https://jasmine.github.io/api/edge/global.html#expect), [matchers](https://jasmine.github.io/tutorials/your_first_suite#section-Matchers), and [async-matchers](https://jasmine.github.io/api/edge/async-matchers.html).
 
-Note: Under `@wdio/jasmine-framework`, all matchers are registered on `expectAsync`, which is then assigned to the global `expect`. This makes every matcher return a promise and behave asynchronously.
+**Note:**
+- When using `@wdio/jasmine-framework` with the global import, all matchers are registered on `expectAsync`, which is then assigned to the global `expect`. This causes every matcher to return a promise and behave asynchronously.
+- Default matchers are still available if you import `expect` directly from `expect-webdriverio` instead of using the global.
 
 ## Modifiers
 
@@ -963,7 +965,7 @@ await expect(element).not.toBeDisplayed({ wait: 0 })
 await expect(browser).not.toHaveTitle('some title', { wait: 0 })
 ```
 
-Note: You can pair `.not` with asymmetric matchers, but to enable the wait-until behavior, `.not` must be used directly on the `expect()` call. 
+**Note:** You can pair `.not` with asymmetric matchers, but to enable the wait-until behavior, `.not` must be used directly on the `expect()` call. 
 
 ## Asymmetric Matchers
 
