@@ -877,8 +877,6 @@ await expect(elem).toHaveElementClass(/Container/i)
 
 ## Default Matchers
 
-# Default Matchers
-
 In addition to the WebdriverIO matchers, `expect-webdriverio` also provides basic matchers from Jest's [expect](https://jestjs.io/docs/expect) library.
 
 ```ts
