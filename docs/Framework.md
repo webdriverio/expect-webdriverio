@@ -146,6 +146,11 @@ See also this [documentation](https://webdriver.io/docs/assertion/#migrating-fro
 ### Jasmine
 When paired with [Jasmine](https://jasmine.github.io/), [`@wdio/jasmine-framework`](https://www.npmjs.com/package/@wdio/jasmine-framework) is also required to configure it correctly, as it needs to force `expect` to be `expectAsync` and also register the WDIO matchers with `addAsyncMatcher` since `expect-webdriverio` only supports the Jest-style `expect.extend` version.
 
+Jasmine differs from other assertion libraries in two key ways:
+1. Jasmine performs soft assertions by default, collecting failures and only failing the test at the end. Because of this, the SoftAssertion service is not needed or supported.
+2. Forcing `expectAsync` as `expect` (by `@wdio/jasmine-framework`) makes even basic matchers asynchronous. However, since Jasmine handles all promises at the end of the test, assertions appear to work properly—unlike in other frameworks, where using `await` is mandatory for correct behavior.
+ - Note: This goes against [this recommendation](https://jasmine.github.io/api/edge/async-matchers) and could cause unexpected issues.
+
 The types `expect-webdriverio/jasmine` are still offered but are subject to removal or being moved into `@wdio/jasmine-framework`. The usage of `expectAsync` is also subject to future removal.
 
 #### Jasmine `expectAsync`
@@ -173,14 +178,14 @@ Expected in `tsconfig.json`:
 ```
 
 #### Global `expectAsync` force as `expect`
-When the global ambiant is the `expect` of wdio but forced to be `expectAsync` under the hood, like when using `@wdio/jasmine-framework`, then even the basic matchers need to be awaited 
+When the global ambient `expect` is actually `expectAsync` under the hood (as with `@wdio/jasmine-framework`), it is recommended to `await` even basic matchers, even though Jasmine will handle any un-awaited assertions at the end of the test.
 
 ```ts
 describe('My tests', async () => {
     it('should verify my browser to have the expected url', async () => {
         await expect(browser).toHaveUrl('https://example.com')
 
-        // Even basic matchers requires expect since they are promises underneath
+        // Even basic matchers should have `await` since they are promises underneath
         await expect(true).toBe(true)
     })
 })     

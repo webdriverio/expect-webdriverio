@@ -4,7 +4,8 @@ export default wdioEslint.config([
     {
         ignores: [
             'lib',
-            '**/*/dist'
+            '**/*/dist',
+            'playgrounds/**'
         ]
     },
     /**

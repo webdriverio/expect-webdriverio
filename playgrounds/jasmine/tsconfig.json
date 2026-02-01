@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": [
+      "node",
+      "expect-webdriverio/expect-global",
+      "expect-webdriverio/jasmine-wdio-expect-async",
+      "@types/jasmine",
+      "@wdio/globals/types", // Need to be last to so the above from the projects have priority
+      "@wdio/visual-service",
+    ],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}
