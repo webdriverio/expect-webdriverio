@@ -42,7 +42,8 @@ export async function toHaveElementProperty(
     value?: string | RegExp | WdioAsymmetricMatcher<string> | null,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'property', verb = 'have', isNot } = this
+    const isNot = this.isNot
+    const { expectation = 'property', verb = 'have' } = this
 
     await options.beforeAssertion?.({
         matcherName: 'toHaveElementProperty',
@@ -60,6 +61,7 @@ export async function toHaveElementProperty(
 
             return result.success
         },
+        isNot,
         options
     )
 

@@ -402,7 +402,8 @@ Received: 100`)
 
     })
 
-    describe('Matcher eventually passing', async () => {
+    // Skipped since even though logically correct, this is not too user-friendly and breaks today's current expected behaviour, see https://github.com/webdriverio/expect-webdriverio/issues/2013
+    describe.skip('Matcher eventually passing', async () => {
 
         test('when element eventually is displayed, matcher and .not matcher should be consistent', async () => {
             const el = await $('selector')
@@ -452,6 +453,32 @@ Received: "not displayed"`)
             await expectLib(el).not.toBeDisplayed({ wait: 300, interval: 100 })
 
             expect(el.isDisplayed).toHaveBeenCalledTimes(6)
+        })
+    })
+
+    describe('Matchers should cover real life scenarios', async () => {
+        test('Using toBeDisplayed and not.toBeDisplayed before and after a component is being discarded should work easily', async () => {
+            const el = await $('selector')
+
+            // Element takes time to display
+            vi.mocked(el.isDisplayed)
+                .mockResolvedValueOnce(false)
+                .mockResolvedValueOnce(false)
+                .mockResolvedValueOnce(true)
+
+            // Passes when element becomes displayed
+            await expectLib(el).toBeDisplayed()
+
+            // The element ok button is clicked and the component is discarded...
+
+            // ...but the element takes time to be removed from the DOM (below 500 ms in real life)
+            vi.mocked(el.isDisplayed)
+                .mockResolvedValueOnce(true)
+                .mockResolvedValueOnce(true)
+                .mockResolvedValueOnce(false)
+
+            // We should be able to assert that the element is no longer displayed by default without additional code or configuration
+            await expectLib(el).not.toBeDisplayed()
         })
     })
 })

@@ -51,6 +51,20 @@ describe('refetchElements', () => {
             const actual = await refetchElements(elements, 0, true)
             expect(actual).toEqual(elements)
         })
+
+        test('should call $$ with all props', async () => {
+            elements.props = ['prop1', 'prop2']
+            await refetchElements(elements, 5, true)
+            expect(elements.parent.$$).toHaveBeenCalledWith('parent', 'prop1', 'prop2')
+        })
+
+        test('should call $$ with the proper parent this context', async () => {
+            const parentFoundWith = vi.mocked(elements.parent.$$)
+
+            await refetchElements(elements, 5, true)
+
+            expect(parentFoundWith.mock.contexts[0]).toBe(elements.parent)
+        })
     })
 
     describe('given WebdriverIO.Element[] type', () => {

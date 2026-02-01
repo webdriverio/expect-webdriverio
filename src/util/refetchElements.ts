@@ -12,8 +12,9 @@ export const refetchElements = async (
     full = false
 ): Promise<WdioElements> => {
     if (elements && wait > 0 && (elements.length === 0 || full) && isElementArray(elements) && elements.parent && elements.foundWith && elements.foundWith in elements.parent) {
-        const fetchFunction = elements.parent[elements.foundWith as keyof typeof elements.parent] as Function
-        elements = await fetchFunction(elements.selector, ...elements.props)
+        const browser = elements.parent
+        const $$ = browser[elements.foundWith as keyof typeof browser] as Function
+        elements = await $$.call(browser, elements.selector, ...elements.props)
     }
     return elements
 }
