@@ -53,9 +53,9 @@ export const config: WebdriverIO.Config = {
         [
             'visual',
             {
-                baselineFolder: join(process.cwd(), '.tmp/visual/baseline'),
+                baselineFolder: join(process.cwd(), 'visual-snapshot/baseline'),
                 formatImageName: '{tag}-{logName}-{width}x{height}',
-                screenshotPath: join(process.cwd(), '.tmp/visual'),
+                screenshotPath: join(process.cwd(), 'visual-snapshot/.temp'),
                 savePerInstance: true,
                 autoSaveBaseline: true,
                 compareOptions: {
