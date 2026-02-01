@@ -95,7 +95,7 @@ interface WdioBrowserMatchers<_R, ActualT>{
      */
     toHaveLocalStorageItem: FnWhenBrowser<ActualT, (
         key: string,
-        expectedValue?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+        expectedValue?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 }
