@@ -66,17 +66,25 @@ describe('toHaveChildren', () => {
         expect(result.pass).toBe(false)
     })
 
-    test('.not exact value - failure', async () => {
+    test('.not exact value - failure - pass should be true', async () => {
         const el = await $('sel')
 
         const result = await toHaveChildren.bind({ isNot: true })(el, { eq: 2, wait: 0 })
-        expect(result.pass).toBe(true)
+
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+        expect(result.message()).toEqual(`\
+Expect $(\`sel\`) not to have children
+
+Expected [not]: 2
+Received      : 2`)
+
     })
 
-    test('.not exact value - success', async () => {
+    test('.not exact value - success - pass should be false', async () => {
         const el = await $('sel')
 
         const result = await toHaveChildren.bind({ isNot: true })(el, { eq: 3, wait: 1 })
-        expect(result.pass).toBe(false)
+
+        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
     })
 })

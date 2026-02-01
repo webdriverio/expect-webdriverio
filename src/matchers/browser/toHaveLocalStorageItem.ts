@@ -4,7 +4,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 export async function toHaveLocalStorageItem(
     browser: WebdriverIO.Browser,
     key: string,
-    expectedValue?: string | RegExp | ExpectWebdriverIO.PartialMatcher,
+    expectedValue?: string | RegExp | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot

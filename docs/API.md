@@ -111,6 +111,11 @@ When set to `true` (default), the service will automatically assert all soft ass
 
 This is useful if you want full control over when soft assertions are verified or if you want to handle soft assertion failures in a custom way.
 
+### Known limitations
+
+For Jasmine, using `wdio-jasmine-framework` will give a better plug-and-play experiences, else without it, the soft assertion service and custom matchers might not work/be registered correctly.
+Moreover, if Jasmine augmentation is used, the soft assertion function are not exposed in the typing, but could still work depending of your configuration. See [this issue](https://github.com/webdriverio/expect-webdriverio/issues/1893) for more details.
+
 ## Default Options
 
 These default options below are connected to the [`waitforTimeout`](https://webdriver.io/docs/options#waitfortimeout) and [`waitforInterval`](https://webdriver.io/docs/options#waitforinterval) options set in the config.
@@ -709,7 +714,7 @@ await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at 
 
 Checks that mock was called according to the expected options.
 
-Most of the options supports expect/jasmine partial matchers like [expect.objectContaining](https://jestjs.io/docs/en/expect#expectobjectcontainingobject)
+Most of the options supports expect/jasmine partial matchers like [expect.objectContaining](https://jestjs.io/docs/expect#expectobjectcontainingobject)
 
 ##### Usage
 
@@ -900,7 +905,30 @@ await expect(elem).toHaveElementClass(/Container/i)
 
 ## Default Matchers
 
-In addition to the `expect-webdriverio` matchers you can use builtin Jest's [expect](https://jestjs.io/docs/en/expect) assertions or [expect/expectAsync](https://jasmine.github.io/api/3.5/global.html#expect) for Jasmine.
+In addition to the `expect-webdriverio` matchers you can use builtin Jest's [expect](https://jestjs.io/docs/expect) assertions or [expect/expectAsync](https://jasmine.github.io/api/edge/global.html#expect) for Jasmine.
+
+## Modifiers
+
+WebdriverIO supports usage of modifiers as `.not` and it will wait until the reverse condition is meet
+
+```ts
+// Wait until the element is no longer present
+await expect(element).not.toBeDisplayed()
+
+// Wait until the text is no more 'some title'
+await expect(browser).not.toHaveTitle('some title')
+```
+
+In case immediate assertion is required, use `{ wait: 0 }`
+```ts
+// Ensure element is not present right now
+await expect(element).not.toBeDisplayed({ wait: 0 })
+
+// Ensure the text is not 'some title' right now
+await expect(browser).not.toHaveTitle('some title', { wait: 0 })
+```
+
+Note: You can pair `.not` with asymmetric matchers, but to enable the wait-until behavior, `.not` must be used directly on the `expect()` call. 
 
 ## Asymmetric Matchers
 

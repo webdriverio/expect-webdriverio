@@ -3,24 +3,76 @@ import { $$ } from '@wdio/globals'
 
 import { refetchElements } from '../../src/util/refetchElements.js'
 
-vi.mock('@wdio/globals')
+const createMockElementArray = (length: number): WebdriverIO.ElementArray => {
+    const array = Array.from({ length }, () => ({}))
+    const mockArray = {
+        selector: 'parent',
+        get length() { return array.length },
+        set length(newLength: number) { array.length = newLength },
+        parent: {
+            $: vi.fn(),
+            $$: vi.fn().mockReturnValue(array),
+        },
+        foundWith: '$$',
+        props: [],
+        [Symbol.iterator]: array[Symbol.iterator].bind(array),
+        filter: vi.fn().mockReturnThis(),
+        map: vi.fn().mockReturnThis(),
+        find: vi.fn().mockReturnThis(),
+        forEach: vi.fn(),
+        some: vi.fn(),
+        every: vi.fn(),
+        slice: vi.fn().mockReturnThis(),
+        toArray: vi.fn().mockReturnThis(),
+    }
+    return Object.assign(array, mockArray) as unknown as WebdriverIO.ElementArray
+}
+
+vi.mock('@wdio/globals', () => ({
+    $$: vi.fn().mockImplementation(() => createMockElementArray(5))
+}))
 
 describe('refetchElements', () => {
-    let els: WebdriverIO.ElementArray
+    describe('given WebdriverIO.ElementArray type', () => {
+        let elements: WebdriverIO.ElementArray
 
-    beforeEach(async () => {
-        els = (await $$('parent')) as unknown as WebdriverIO.ElementArray
-        // @ts-ignore
-        els.parent._length = 5
+        beforeEach(async () => {
+            elements = (await $$('parent')) as unknown as WebdriverIO.ElementArray
+            // @ts-ignore
+            elements.parent._length = 5
+        })
+
+        test('default', async () => {
+            const actual = await refetchElements(elements, 5, true)
+            expect(actual.length).toBe(5)
+        })
+
+        test('wait is 0', async () => {
+            const actual = await refetchElements(elements, 0, true)
+            expect(actual).toEqual(elements)
+        })
+
+        test('should call $$ with all props', async () => {
+            elements.props = ['prop1', 'prop2']
+            await refetchElements(elements, 5, true)
+            expect(elements.parent.$$).toHaveBeenCalledWith('parent', 'prop1', 'prop2')
+        })
+
+        test('should call $$ with the proper parent this context', async () => {
+            const parentFoundWith = vi.mocked(elements.parent.$$)
+
+            await refetchElements(elements, 5, true)
+
+            expect(parentFoundWith.mock.contexts[0]).toBe(elements.parent)
+        })
     })
 
-    test('default', async () => {
-        const actual = await refetchElements(els, 5, true)
-        expect(actual.length).toBe(5)
-    })
+    describe('given WebdriverIO.Element[] type', () => {
+        const elements: WebdriverIO.Element[] = [] as unknown as WebdriverIO.Element[]
 
-    test('wait is 0', async () => {
-        const actual = await refetchElements(els, 0, true)
-        expect(actual).toEqual(els)
+        test('default', async () => {
+            const actual = await refetchElements(elements, 0)
+            expect(actual).toEqual([])
+        })
     })
 })

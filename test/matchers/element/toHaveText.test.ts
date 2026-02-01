@@ -3,23 +3,23 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils.js'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
+import type { ChainablePromiseArray } from 'webdriverio'
 
 vi.mock('@wdio/globals')
 
 describe('toHaveText', () => {
     describe('when receiving an element array', () => {
-        let els: any
+        let els: ChainablePromiseArray
 
         beforeEach(async () => {
             els = await $$('parent')
-            const el1: any = await $('sel')
-            el1._text = function (): string {
-                return 'WebdriverIO'
-            }
-            const el2: any = await $('dev')
-            el2._text = function (): string {
-                return 'Get Started'
-            }
+
+            const el1: ChainablePromiseElement = await $('sel')
+            el1.getText = vi.fn().mockResolvedValue('WebdriverIO')
+
+            const el2: ChainablePromiseElement = await $('dev')
+            el2.getText = vi.fn().mockResolvedValue('Get Started')
+
             els[0] = el1
             els[1] = el2
         })
@@ -46,21 +46,15 @@ describe('toHaveText', () => {
     })
 
     test('wait for success', async () => {
-        const el: any = await $('sel')
-        el._attempts = 2
-        el._text = function (): string {
-            if (this._attempts > 0) {
-                this._attempts--
-                return ''
-            }
-            return 'webdriverio'
-        }
-
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValueOnce('').mockResolvedValueOnce('').mockResolvedValueOnce('webdriverio')
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
+
         const result = await toHaveText.call({}, el, 'WebdriverIO', { ignoreCase: true, beforeAssertion, afterAssertion })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(0)
+        expect(el.getText).toHaveBeenCalledTimes(3)
         expect(beforeAssertion).toBeCalledWith({
             matcherName: 'toHaveText',
             expectedValue: 'WebdriverIO',
@@ -75,214 +69,206 @@ describe('toHaveText', () => {
     })
 
     test('wait but failure', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            throw new Error('some error')
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockRejectedValue(new Error('some error'))
 
         await expect(() => toHaveText.call({}, el, 'WebdriverIO', { ignoreCase: true }))
             .rejects.toThrow('some error')
     })
 
     test('success on the first attempt', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._text = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.call({}, el, 'WebdriverIO', { ignoreCase: true })
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getText).toHaveBeenCalledTimes(1)
     })
 
     test('no wait - failure', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._text = function (): string {
-            this._attempts++
-            return 'webdriverio'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('webdriverio')
 
         const result = await toHaveText.call({}, el, 'WebdriverIO', { wait: 0 })
+
         expect(result.pass).toBe(false)
-        expect(el._attempts).toBe(1)
+        expect(el.getText).toHaveBeenCalledTimes(1)
     })
 
     test('no wait - success', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._text = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.call({}, el, 'WebdriverIO', { wait: 0 })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getText).toHaveBeenCalledTimes(1)
     })
 
-    test('not - failure', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+    test('not - failure - pass should be true', async () => {
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
+
         const result = await toHaveText.call({ isNot: true }, el, 'WebdriverIO', { wait: 0 })
-        const received = getReceived(result.message())
 
-        expect(received).not.toContain('not')
-        expect(result.pass).toBe(true)
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+        expect(result.message()).toEqual(`\
+Expect $(\`sel\`) not to have text
+
+Expected [not]: "WebdriverIO"
+Received      : "WebdriverIO"`
+        )
     })
 
-    test('should return false if texts don\'t match', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+    test('not - success - pass should be false', async () => {
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
-        const result = await toHaveText.bind({ isNot: true })(el, 'foobar', { wait: 1 })
-        expect(result.pass).toBe(false)
+        const result = await toHaveText.call({ isNot: true }, el, 'not WebdriverIO', { wait: 0 })
+
+        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+    })
+
+    test('not with no trim - failure - pass should be true', async () => {
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue(' WebdriverIO ')
+
+        const result = await toHaveText.call({ isNot: true }, el, ' WebdriverIO ', { trim: false, wait: 0 })
+
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+        expect(result.message()).toEqual(`\
+Expect $(\`sel\`) not to have text
+
+Expected [not]: " WebdriverIO "
+Received      : " WebdriverIO "`
+        )
+    })
+
+    test('not - success - pass should be false', async () => {
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
+
+        const result = await toHaveText.call({ isNot: true }, el, 'not WebdriverIO', { wait: 0 })
+
+        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
     })
 
     test('should return true if texts match', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
-        const result = await toHaveText.bind({ isNot: true })(el, 'WebdriverIO', { wait: 1 })
+        const result = await toHaveText.bind({})(el, 'WebdriverIO', { wait: 1 })
         expect(result.pass).toBe(true)
     })
 
     test('should return true if actual text + single replacer matches the expected text', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: ['Web', 'Browser'] })
+
         expect(result.pass).toBe(true)
     })
 
     test('should return true if actual text + replace (string) matches the expected text', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: [['Web', 'Browser']] })
+
         expect(result.pass).toBe(true)
     })
 
     test('should return true if actual text + replace (regex) matches the expected text', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.bind({})(el, 'BrowserdriverIO', { replace: [[/Web/, 'Browser']] })
+
         expect(result.pass).toBe(true)
     })
 
     test('should return true if actual text starts with expected text', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.bind({})(el, 'Web', { atStart: true })
+
         expect(result.pass).toBe(true)
     })
 
     test('should return true if actual text ends with expected text', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.bind({})(el, 'IO', { atEnd: true })
+
         expect(result.pass).toBe(true)
     })
 
     test('should return true if actual text contains the expected text at the given index', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.bind({})(el, 'iverIO', { atIndex: 5 })
+
         expect(result.pass).toBe(true)
     })
 
     test('message', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return ''
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('')
+
         const result = await toHaveText.call({}, el, 'WebdriverIO')
+
         expect(getExpectMessage(result.message())).toContain('to have text')
     })
 
     test('success if array matches with text and ignoreCase', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._text = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+
+        el.getText = vi.fn().mockResolvedValue('webdriverio')
 
         const result = await toHaveText.call({}, el, ['WDIO', 'Webdriverio'], { ignoreCase: true })
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getText).toHaveBeenCalledTimes(1)
     })
 
     test('success if array matches with text and trim', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._text = function (): string {
-            this._attempts++
-            return '   WebdriverIO   '
-        }
+        const el = await $('sel')
+
+        el.getText = vi.fn().mockResolvedValue('   WebdriverIO   ')
 
         const result = await toHaveText.call({}, el, ['WDIO', 'WebdriverIO', 'toto'], { trim: true })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getText).toHaveBeenCalledTimes(1)
     })
 
     test('success if array matches with text and replace (string)', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._text = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [['Web', 'Browser']] })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getText).toHaveBeenCalledTimes(1)
     })
 
     test('success if array matches with text and replace (regex)', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._text = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.call({}, el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [[/Web/g, 'Browser']] })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getText).toHaveBeenCalledTimes(1)
     })
 
     test('success if array matches with text and multiple replacers and one of the replacers is a function', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._text = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.call({}, el, ['WDIO', 'browserdriverio', 'toto'], {
             replace: [
@@ -290,85 +276,80 @@ describe('toHaveText', () => {
                 [/[A-Z]/g, (match: string) => match.toLowerCase()],
             ],
         })
+
         expect(result.pass).toBe(true)
-        expect(el._attempts).toBe(1)
+        expect(el.getText).toHaveBeenCalledTimes(1)
     })
 
     test('failure if array does not match with text', async () => {
-        const el: any = await $('sel')
-        el._attempts = 0
-        el._text = function (): string {
-            this._attempts++
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
 
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
         const result = await toHaveText.call({}, el, ['WDIO', 'Webdriverio'], { wait: 1 })
+
         expect(result.pass).toBe(false)
-        expect(el._attempts).toBe(1)
+        expect(el.getText).toHaveBeenCalledTimes(1)
     })
 
     test('should return true if actual text contains the expected text', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.bind({})(el, expect.stringContaining('iverIO'), {})
+
         expect(result.pass).toBe(true)
     })
 
     test('should return false if actual text does not contain the expected text', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.bind({})(el, expect.stringContaining('WDIO'), {})
+
         expect(result.pass).toBe(false)
     })
 
     test('should return true if actual text contains one of the expected texts', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.bind({})(el, [expect.stringContaining('iverIO'), expect.stringContaining('WDIO')], {})
+
         expect(result.pass).toBe(true)
     })
 
     test('should return false if actual text does not contain the expected texts', async () => {
-        const el: any = await $('sel')
-        el._text = function (): string {
-            return 'WebdriverIO'
-        }
+        const el = await $('sel')
+        el.getText = vi.fn().mockResolvedValue('WebdriverIO')
 
         const result = await toHaveText.bind({})(el, [expect.stringContaining('EXAMPLE'), expect.stringContaining('WDIO')], {})
+
         expect(result.pass).toBe(false)
     })
 
     describe('with RegExp', () => {
-        let el: any
+        let el: ChainablePromiseElement
 
         beforeEach(async () => {
             el = await $('sel')
-            el._text = vi.fn().mockImplementation(() => {
-                return 'This is example text'
-            })
+            el.getText = vi.fn().mockResolvedValue('This is example text')
         })
 
         test('success if match', async () => {
             const result = await toHaveText.call({}, el, /ExAmplE/i)
+
             expect(result.pass).toBe(true)
         })
 
         test('success if array matches with RegExp', async () => {
             const result = await toHaveText.call({}, el, ['WDIO', /ExAmPlE/i])
+
             expect(result.pass).toBe(true)
         })
 
         test('success if array matches with text', async () => {
             const result = await toHaveText.call({}, el, ['This is example text', /Webdriver/i])
+
             expect(result.pass).toBe(true)
         })
 
@@ -376,11 +357,13 @@ describe('toHaveText', () => {
             const result = await toHaveText.call({}, el, ['ThIs Is ExAmPlE tExT', /Webdriver/i], {
                 ignoreCase: true,
             })
+
             expect(result.pass).toBe(true)
         })
 
         test('failure if no match', async () => {
             const result = await toHaveText.call({}, el, /Webdriver/i)
+
             expect(result.pass).toBe(false)
             expect(getExpectMessage(result.message())).toContain('to have text')
             expect(getExpected(result.message())).toContain('/Webdriver/i')
@@ -389,6 +372,7 @@ describe('toHaveText', () => {
 
         test('failure if array does not match with text', async () => {
             const result = await toHaveText.call({}, el, ['WDIO', /Webdriver/i])
+
             expect(result.pass).toBe(false)
             expect(getExpectMessage(result.message())).toContain('to have text')
             expect(getExpected(result.message())).toContain('/Webdriver/i')

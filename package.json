@@ -1,6 +1,6 @@
 {
   "name": "expect-webdriverio",
-  "version": "5.5.0",
+  "version": "5.6.4",
   "author": "Mykola Grybyk <mykola.grybyk@gmail.com>",
   "description": "WebdriverIO Assertion Library",
   "license": "MIT",
@@ -23,7 +23,7 @@
   "exports": {
     ".": [
       {
-        "types": "./types/standalone.d.ts",
+        "types": "./types/expect-webdriverio.d.ts",
         "import": "./lib/index.js"
       },
       "./lib/index.js"
@@ -33,54 +33,65 @@
         "types": "./jest.d.ts"
       }
     ],
-    "./types": "./types/jest-global.d.ts"
+    "./jasmine": [
+      {
+        "types": "./jasmine.d.ts"
+      }
+    ],
+    "./types": "./types/expect-global.d.ts",
+    "./expect-global": "./types/expect-global.d.ts"
   },
-  "types": "./types/standalone.d.ts",
+  "types": "./types/expect-webdriverio.d.ts",
   "typeScriptVersion": "3.8.3",
   "engines": {
-    "node": ">=18 || >=20 || >=22"
+    "node": ">=20"
   },
   "scripts": {
     "build": "run-s clean compile",
     "clean": "run-p clean:*",
     "clean:build": "rimraf ./lib",
-    "clean:tests": "rimraf test-types/**/node_modules && rimraf test-types/**/dist",
     "compile": "tsc --build tsconfig.build.json",
-    "tsc:root-types": "tsc jasmine.d.ts jest.d.ts",
+    "tsc:root-types": "node types-checks-filter-out-node_modules.js",
     "test": "run-s test:*",
-    "test:tsc": "tsc --project tsconfig.json --noEmit",
+    "test:tsc": "tsc --project tsconfig.json --noEmit --rootDir .",
     "test:lint": "eslint .",
     "test:unit": "vitest --run",
-    "test:types": "node test-types/copy && npm run ts && npm run clean:tests && npm run tsc:root-types",
-    "ts": "run-s ts:*",
-    "ts:default": "cd test-types/default && tsc -p ./tsconfig.json --incremental",
-    "ts:jest": "cd test-types/jest && tsc -p ./tsconfig.json --incremental",
-    "ts:jasmine": "cd test-types/jasmine && tsc -p ./tsconfig.json --incremental",
+    "test:types": "npm run ts && npm run tsc:root-types",
+    "ts": "run-s ts:* ts:*:*",
+    "ts:jest:@jest/global": "cd test-types/jest-@jest_global && tsc --project ./tsconfig.json",
+    "ts:jest:@types-jest": "cd test-types/jest-@types_jest && tsc --project ./tsconfig.json",
+    "ts:mocha": "cd test-types/mocha && tsc --project ./tsconfig.json",
+    "ts:jasmine": "cd test-types/jasmine && tsc --project ./tsconfig.json",
+    "ts:jasmine-async": "cd test-types/jasmine-async && tsc --project ./tsconfig.json",
+    "checks:all": "npm run build && npm run compile && npm run tsc:root-types && npm run test && npm run ts",
     "watch": "npm run compile -- --watch",
     "prepare": "husky install"
   },
   "dependencies": {
-    "@vitest/snapshot": "^4.0.12",
+    "@vitest/snapshot": "^4.0.16",
     "deep-eql": "^5.0.2",
     "expect": "^30.2.0",
     "jest-matcher-utils": "^30.2.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
+    "@types/jasmine": "^5.1.8",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
-    "@vitest/coverage-v8": "^4.0.12",
+    "@types/mocha": "^10.0.10",
+    "@jest/globals": "^30.2.0",
+    "@vitest/coverage-v8": "^4.0.16",
     "@wdio/eslint": "^0.1.2",
     "@wdio/types": "^9.20.0",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.2",
     "husky": "^9.1.7",
     "npm-run-all2": "^8.0.4",
-    "release-it": "^19.0.6",
+    "release-it": "^19.1.0",
     "rimraf": "^6.1.2",
     "shelljs": "^0.10.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.12",
-    "webdriverio": "^9.20.1"
+    "vitest": "^4.0.16",
+    "webdriverio": "^9.21.0"
   },
   "peerDependencies": {
     "@wdio/globals": "^9.0.0",

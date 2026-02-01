@@ -3,6 +3,7 @@ import { $ } from '@wdio/globals'
 
 import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 import { toHaveId } from '../../../src/matchers/element/toHaveId.js'
+import type { AssertionResult } from 'expect-webdriverio'
 
 vi.mock('@wdio/globals')
 
@@ -25,25 +26,25 @@ describe('toHaveId', () => {
     })
 
     describe('failure', () => {
-        let result: any
+        let result: AssertionResult
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
 
         beforeEach(async () => {
-            result = await toHaveId.call({}, el, 'an attribute', { beforeAssertion, afterAssertion })
+            result = await toHaveId.call({}, el, 'an attribute', { beforeAssertion, afterAssertion, wait: 0 })
         })
 
         test('failure', () => {
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toHaveId',
                 expectedValue: 'an attribute',
-                options: { beforeAssertion, afterAssertion }
+                options: { beforeAssertion, afterAssertion, wait: 0 }
             })
             expect(result.pass).toBe(false)
             expect(afterAssertion).toBeCalledWith({
                 matcherName: 'toHaveId',
                 expectedValue: 'an attribute',
-                options: { beforeAssertion, afterAssertion },
+                options: { beforeAssertion, afterAssertion, wait: 0 },
                 result
             })
         })

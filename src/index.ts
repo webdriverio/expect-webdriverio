@@ -1,13 +1,12 @@
-/// <reference types="../types/standalone.d.ts" />
+/// <reference types="../types/expect-webdriverio.d.ts" />
 import { expect as expectLib } from 'expect'
-import type { RawMatcherFn } from './types.js'
-
+import type { WdioMatchersObject } from './types.js'
 import * as wdioMatchers from './matchers.js'
 import { DEFAULT_OPTIONS } from './constants.js'
 import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
 
-export const matchers = new Map<string, RawMatcherFn>()
+export const matchers: WdioMatchersObject = new Map<string, RawMatcherFn>()
 const filteredMatchers = {}
 const extend = expectLib.extend
 

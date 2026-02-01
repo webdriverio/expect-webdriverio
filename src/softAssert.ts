@@ -17,6 +17,14 @@ interface TestIdentifier {
  */
 export class SoftAssertService {
     private static instance: SoftAssertService
+    /**
+     * Fallback test ID used when no test context is set (e.g., in Cucumber steps).
+     *
+     * NOTE: usage of this fallback ID in parallel execution environments may result
+     * in soft assertion failures from different tests being aggregated together.
+     * Ensure proper test context is set in hooks whenever possible.
+     */
+    public static readonly GLOBAL_TEST_ID = '__global_soft_assert_context__'
     private failureMap: Map<string, SoftFailure[]> = new Map()
     private currentTest: TestIdentifier | null = null
 
@@ -58,11 +66,17 @@ export class SoftAssertService {
 
     /**
      * Add a soft failure for the current test
+     * If no test context is set, failures are stored under a global fallback ID
+     * to ensure soft assertions work even when hooks haven't set the context
      */
     public addFailure(error: Error, matcherName: string): void {
-        const testId = this.getCurrentTestId()
-        if (!testId) {
-            throw error // If no test context, throw the error immediately
+        // Use current test ID or fallback to global ID for frameworks where
+        // the test context might not be set (e.g., Cucumber without proper hook integration)
+        const testId = this.getCurrentTestId() || SoftAssertService.GLOBAL_TEST_ID
+
+        // Ensure the failure map has an entry for this test ID
+        if (!this.failureMap.has(testId)) {
+            this.failureMap.set(testId, [])
         }
 
         // Extract stack information to get file and line number
@@ -77,40 +91,34 @@ export class SoftAssertService {
             }
         }
 
-        const failures = this.failureMap.get(testId) || []
-        failures.push({ error, matcherName, location })
-        this.failureMap.set(testId, failures)
+        // We know the entry exists from the check above
+        this.failureMap.get(testId)!.push({ error, matcherName, location })
     }
 
     /**
      * Get all failures for a specific test
+     * Falls back to global test ID if no context is set
      */
     public getFailures(testId?: string): SoftFailure[] {
-        const id = testId || this.getCurrentTestId()
-        if (!id) {
-            return []
-        }
+        const id = testId || this.getCurrentTestId() || SoftAssertService.GLOBAL_TEST_ID
         return this.failureMap.get(id) || []
     }
 
     /**
      * Clear failures for a specific test
+     * Falls back to global test ID if no context is set
      */
     public clearFailures(testId?: string): void {
-        const id = testId || this.getCurrentTestId()
-        if (id) {
-            this.failureMap.delete(id)
-        }
+        const id = testId || this.getCurrentTestId() || SoftAssertService.GLOBAL_TEST_ID
+        this.failureMap.delete(id)
     }
 
     /**
      * Throw an aggregated error if there are failures for the current test
+     * Falls back to global test ID if no context is set
      */
     public assertNoFailures(testId?: string): void {
-        const id = testId || this.getCurrentTestId()
-        if (!id) {
-            return
-        }
+        const id = testId || this.getCurrentTestId() || SoftAssertService.GLOBAL_TEST_ID
 
         const failures = this.getFailures(id)
         if (failures.length === 0) {

@@ -50,7 +50,7 @@ describe('suite', () => {
 WebdriverIO test runner
 - Mocha https://github.com/mgrybyk/webdriverio-devtools
 - Cucumber https://gitlab.com/bar_foo/wdio-cucumber-typescript
-- Jasmine https://github.com/mgrybyk/wdio-jasmine-boilerplate
+- Jasmine https://github.com/webdriverio/jasmine-boilerplate
 
 Standalone
 - Jest https://github.com/erwinheitzman/jest-webdriverio-standalone-boilerplate

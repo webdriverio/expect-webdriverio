@@ -1,12 +1,8 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
     test: {
         include: ['test/**/*.test.ts'],
-        /**
-         * not to ESM ported packages
-         */
         exclude: [
             'dist', '.idea', '.git', '.cache', 'lib',
             '**/node_modules/**'
@@ -17,19 +13,23 @@ export default defineConfig({
             exclude: [
                 '**/build/**',
                 '**/__fixtures__/**',
+                '**/__mocks__/**',
                 '**/*.test.ts',
                 'lib',
                 'test-types',
                 '.eslintrc.cjs',
                 'jasmine.d.ts',
                 'jest.d.ts',
-                'types'
+                'types',
+                'eslint.config.mjs',
+                'vitest.config.ts',
+                'types-checks-filter-out-node_modules.js',
             ],
             thresholds: {
-                lines: 87,
-                functions: 85,
-                statements: 87,
-                branches: 78
+                lines: 88,
+                functions: 86,
+                statements: 88,
+                branches: 79,
             }
         }
     }

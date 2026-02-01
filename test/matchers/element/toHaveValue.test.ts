@@ -3,24 +3,25 @@ import { $ } from '@wdio/globals'
 
 import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils.js'
 import { toHaveValue } from '../../../src/matchers/element/toHaveValue.js'
+import type { AssertionResult } from 'expect-webdriverio'
 
 vi.mock('@wdio/globals')
 
 describe('toHaveValue', () => {
-    let el: any
+    let el: ChainablePromiseElement
 
     beforeEach(async () => {
         el = await $('sel')
-        el._value = vi.fn().mockImplementation(() => {
-            return 'This is an example value'
-        })
+        el.getProperty = vi.fn().mockResolvedValue('This is an example value')
     })
 
     describe('success', () => {
         test('exact passes', async () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
+
             const result = await toHaveValue.call({}, el, 'This is an example value', { beforeAssertion, afterAssertion })
+
             expect(result.pass).toBe(true)
             expect(beforeAssertion).toBeCalledWith({
                 matcherName: 'toHaveElementProperty',
@@ -37,17 +38,19 @@ describe('toHaveValue', () => {
 
         test('assymetric passes', async () => {
             const result = await toHaveValue.call({}, el, expect.stringContaining('example value'))
+
             expect(result.pass).toBe(true)
         })
 
         test('RegExp passes', async () => {
             const result = await toHaveValue.call({}, el, /ExAmPlE/i)
+
             expect(result.pass).toBe(true)
         })
     })
 
     describe('failure', () => {
-        let result: any
+        let result: AssertionResult
 
         beforeEach(async () => {
             result = await toHaveValue.call({}, el, 'webdriver')
@@ -71,7 +74,7 @@ describe('toHaveValue', () => {
     })
 
     describe('failure with RegExp', () => {
-        let result: any
+        let result: AssertionResult
 
         beforeEach(async () => {
             result = await toHaveValue.call({}, el, /WDIO/)
