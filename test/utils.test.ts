@@ -338,6 +338,7 @@ Received: "displayed"`)
                     expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), true, options)
                 })
             })
+        })
 
         describe('given multiple elements', () => {
             const elements = $$('elements')
@@ -512,5 +513,4 @@ Expect ${selectorName} not to be displayed
             })
         })
     })
-
 })

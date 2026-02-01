@@ -16,127 +16,232 @@ describe(waitUntil, () => {
 
     describe('when condition returns single boolean', () => {
 
-        describe("when condition's result is true (pass=true), so usually success or failure with `.not`", () => {
-            let successCondition: () => Promise<boolean>
+        describe('given we should wait for the condition to be met (modifier `.not` is not used)', () => {
+            const isNot = undefined
 
-            beforeEach(() => {
-                successCondition = vi.fn().mockResolvedValue(true)
+            describe('should be pass=true for normal success', () => {
+                let successCondition: () => Promise<boolean>
+
+                beforeEach(() => {
+                    successCondition = vi.fn().mockResolvedValue(true)
+                })
+
+                test('should return true when condition is met', async () => {
+                    const result = await waitUntil(successCondition, isNot, { wait: 1000, interval: 100 })
+
+                    expect(result).toBe(true)
+                    expect(successCondition).toBeCalledTimes(1)
+                })
+
+                test('should return true with wait 0', async () => {
+                    const result = await waitUntil(successCondition, isNot, { wait: 0 })
+
+                    expect(result).toBe(true)
+                    expect(successCondition).toBeCalledTimes(1)
+                })
+
+                test('should return true when condition is met within wait time', async () => {
+                    const condition = vi.fn()
+                        .mockResolvedValueOnce(false)
+                        .mockResolvedValueOnce(false)
+                        .mockResolvedValueOnce(true)
+
+                    const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+
+                    expect(result).toBe(true)
+                    expect(condition).toBeCalledTimes(3)
+                })
+
+                test('should return true when condition errors but still is met within wait time', async () => {
+                    const condition = vi.fn()
+                        .mockRejectedValueOnce(new Error('Test error'))
+                        .mockRejectedValueOnce(new Error('Test error'))
+                        .mockResolvedValueOnce(true)
+
+                    const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+
+                    expect(result).toBe(true)
+                    expect(condition).toBeCalledTimes(3)
+                })
             })
 
-            test('should return true with options', async () => {
-                const result = await waitUntil(successCondition, undefined, { wait: 15, interval: 200 })
+            describe('should be pass=false for normal failure', () => {
 
-                expect(result).toBe(true)
-                expect(successCondition).toBeCalledTimes(1)
+                let failureCondition: () => Promise<boolean>
+
+                beforeEach(() => {
+                    failureCondition = vi.fn().mockResolvedValue(false)
+                })
+
+                test('should return false when condition is not met within wait time', async () => {
+                    const result = await waitUntil(failureCondition, isNot, { wait: 180, interval: 50 })
+
+                    expect(result).toBe(false)
+                    expect(failureCondition).toBeCalledTimes(4)
+                })
+
+                test('should return false when condition is not met and wait is 0', async () => {
+                    const result = await waitUntil(failureCondition, isNot, { wait: 0 })
+
+                    expect(result).toBe(false)
+                    expect(failureCondition).toBeCalledTimes(1)
+                })
+
+                test('should return false if condition throws but still return false', async () => {
+                    const condition = vi.fn()
+                        .mockRejectedValueOnce(new Error('Always failing'))
+                        .mockRejectedValueOnce(new Error('Always failing'))
+                        .mockResolvedValue(false)
+
+                    const result = await waitUntil(condition, isNot, { wait: 180, interval: 50 })
+
+                    expect(result).toBe(false)
+                    expect(condition).toBeCalledTimes(4)
+                })
+
+                test('should return false with default options', async () => {
+                    const result = await waitUntil(failureCondition, undefined, {})
+
+                    expect(result).toBe(false)
+                    expect(failureCondition).toHaveBeenCalled()
+                })
             })
 
-            test('should return true with wait 0', async () => {
-                const result = await waitUntil(successCondition, undefined, { wait: 0 })
+            describe('when condition throws', () => {
+                const error = new Error('failing')
 
-                expect(result).toBe(true)
-                expect(successCondition).toBeCalledTimes(1)
-            })
+                test('should throw with wait', async () => {
+                    const condition = vi.fn().mockRejectedValue(error)
 
-            test('should return true when condition is met with a delay', async () => {
-                const condition = vi.fn()
-                    .mockResolvedValueOnce(false)
-                    .mockResolvedValueOnce(false)
-                    .mockResolvedValue(true)
+                    await expect(() => waitUntil(condition, isNot, { wait: 180, interval: 50 })).rejects.toThrowError('failing')
+                    expect(condition).toBeCalledTimes(4)
+                })
 
-                const result = await waitUntil(condition, undefined, { wait: 250, interval: 100 })
+                test('should throw with wait 0', async () => {
+                    const condition = vi.fn().mockRejectedValue(error)
 
-                expect(result).toBe(true)
-                expect(condition).toBeCalledTimes(3)
-            })
-
-            test('should return true when condition errors but still is met within wait time', async () => {
-                const condition = vi.fn()
-                    .mockRejectedValueOnce(new Error('Test error'))
-                    .mockRejectedValueOnce(new Error('Test error'))
-                    .mockResolvedValueOnce(true)
-
-                const result = await waitUntil(condition, undefined, { wait: 250, interval: 100 })
-
-                expect(result).toBe(true)
-                expect(condition).toBeCalledTimes(3)
+                    await expect(() => waitUntil(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
+                    expect(condition).toBeCalledTimes(1)
+                })
             })
         })
 
-        describe("when condition's result is false (pass=false), so usually failure or success with `.not`", () => {
+        describe('given we should wait for the reverse condition to be met since element state can take time to update (modifier `.not` is true to for reverse condition)', () => {
+            const isNot = true
+            describe('should be pass=false for normal success (inverted later by jest expect library)', () => {
+                let successCondition: () => Promise<boolean>
 
-            let failureCondition: () => Promise<boolean>
+                beforeEach(() => {
+                    successCondition = vi.fn().mockResolvedValue(false)
+                })
 
-            beforeEach(() => {
-                failureCondition = vi.fn().mockResolvedValue(false)
+                test('should return success (false) when condition is met', async () => {
+                    const result = await waitUntil(successCondition, isNot, { wait: 1000, interval: 100 })
+
+                    expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
+                    expect(successCondition).toBeCalledTimes(1)
+                })
+
+                test('should return success (false) with wait 0', async () => {
+                    const result = await waitUntil(successCondition, isNot, { wait: 0 })
+
+                    expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
+                    expect(successCondition).toBeCalledTimes(1)
+                })
+
+                test('should return success (false) when condition is met within wait time', async () => {
+                    const condition = vi.fn()
+                        .mockResolvedValueOnce(true)
+                        .mockResolvedValueOnce(true)
+                        .mockResolvedValueOnce(false)
+
+                    const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+
+                    expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
+                    expect(condition).toBeCalledTimes(3)
+                })
+
+                test('should return success (false) when condition errors but still is met within wait time', async () => {
+                    const condition = vi.fn()
+                        .mockRejectedValueOnce(new Error('Test error'))
+                        .mockRejectedValueOnce(new Error('Test error'))
+                        .mockResolvedValueOnce(false)
+
+                    const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+
+                    expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
+                    expect(condition).toBeCalledTimes(3)
+                })
             })
 
-            test('should return false when condition is not met within wait time', async () => {
-                const result = await waitUntil(failureCondition, undefined, { wait: 250, interval: 100 })
+            describe('should be pass=true for normal failure', () => {
+                let failureCondition: () => Promise<boolean>
 
-                expect(result).toBe(false)
-                expect(failureCondition).toBeCalledTimes(3)
+                beforeEach(() => {
+                    failureCondition = vi.fn().mockResolvedValue(true)
+                })
+
+                test('should return failure (true) when condition is not met within wait time', async () => {
+                    const result = await waitUntil(failureCondition, isNot, { wait: 180, interval: 50 })
+
+                    expect(result).toBe(true)
+                    expect(failureCondition).toBeCalledTimes(4)
+                })
+
+                test('should return true when condition is not met and wait is 0', async () => {
+                    const result = await waitUntil(failureCondition, isNot, { wait: 0 })
+
+                    expect(result).toBe(true)
+                })
+
+                test('should return true if condition throws but still return true', async () => {
+                    const condition = vi.fn()
+                        .mockRejectedValueOnce(new Error('Always failing'))
+                        .mockRejectedValueOnce(new Error('Always failing'))
+                        .mockResolvedValue(true)
+
+                    const result = await waitUntil(condition, isNot, { wait: 190, interval: 50 })
+
+                    expect(result).toBe(true)
+                    expect(condition).toBeCalledTimes(4)
+                })
             })
 
-            test('should return false when condition is not met and wait is 0', async () => {
-                const result = await waitUntil(failureCondition, undefined, { wait: 0 })
+            describe('when condition throws', () => {
+                const error = new Error('failing')
 
-                expect(result).toBe(false)
-                expect(failureCondition).toBeCalledTimes(1)
-            })
+                test('should throw with wait', async () => {
+                    const condition = vi.fn().mockRejectedValue(error)
 
-            test('should return false if condition throws but still return false', async () => {
-                const condition = vi.fn()
-                    .mockRejectedValueOnce(new Error('Always failing'))
-                    .mockRejectedValueOnce(new Error('Always failing'))
-                    .mockResolvedValue(false)
+                    await expect(() => waitUntil(condition, isNot, { wait: 200, interval: 50 })).rejects.toThrowError('failing')
+                })
 
-                const result = await waitUntil(condition, undefined, { wait: 250, interval: 100 })
+                test('should throw with wait 0', async () => {
+                    const condition = vi.fn().mockRejectedValue(error)
 
-                expect(result).toBe(false)
-                expect(condition).toBeCalledTimes(3)
-            })
+                    await expect(() => waitUntil(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
 
-            test('should return false with default options', async () => {
-                const result = await waitUntil(failureCondition, undefined, {})
-
-                expect(result).toBe(false)
-                expect(failureCondition).toHaveBeenCalled()
-            })
-        })
-
-        describe('when condition always throws', () => {
-            const error = new Error('failing')
-
-            test('should throw with wait', async () => {
-                const condition = vi.fn().mockRejectedValue(error)
-
-                await expect(() => waitUntil(condition, undefined, { wait: 250, interval: 100 })).rejects.toThrowError('failing')
-            })
-
-            test('should throw with wait 0', async () => {
-                const condition = vi.fn().mockRejectedValue(error)
-
-                await expect(() => waitUntil(condition, undefined, { wait: 0 })).rejects.toThrowError('failing')
-
+                })
             })
         })
     })
 
     describe('when condition returns single ConditionResult', () => {
 
-        describe('given isNot is false (or undefined)', () => {
-            const isNot = false
+        describe('given we should wait for the condition to be met (modifier `.not` is not used)', () => {
+            const isNot = undefined
 
-            describe("when condition's result is true (pass=true), so success", () => {
+            describe('should be pass=true for normal success', () => {
                 let successCondition: () => Promise<ConditionResult>
                 const successResult: ConditionResult = { success: true, results: [true] }
+                const failureResult: ConditionResult = { success: false, results: [false] }
 
                 beforeEach(() => {
                     successCondition = vi.fn().mockResolvedValue(successResult)
                 })
 
-                test('should return true with options', async () => {
-                    const result = await waitUntil(successCondition, isNot, { wait: 15, interval: 200 })
+                test('should return true when condition is met', async () => {
+                    const result = await waitUntil(successCondition, isNot, { wait: 1000, interval: 100 })
 
                     expect(result).toBe(true)
                     expect(successCondition).toBeCalledTimes(1)
@@ -149,13 +254,13 @@ describe(waitUntil, () => {
                     expect(successCondition).toBeCalledTimes(1)
                 })
 
-                test('should return true when condition is met with a delay', async () => {
+                test('should return true when condition is met within wait time', async () => {
                     const condition = vi.fn()
-                        .mockResolvedValueOnce({ success: false, results: [false] })
-                        .mockResolvedValueOnce({ success: false, results: [false] })
+                        .mockResolvedValueOnce(failureResult)
+                        .mockResolvedValueOnce(failureResult)
                         .mockResolvedValueOnce(successResult)
 
-                    const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
+                    const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
 
                     expect(result).toBe(true)
                     expect(condition).toBeCalledTimes(3)
@@ -167,14 +272,14 @@ describe(waitUntil, () => {
                         .mockRejectedValueOnce(new Error('Test error'))
                         .mockResolvedValueOnce(successResult)
 
-                    const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
+                    const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
 
                     expect(result).toBe(true)
                     expect(condition).toBeCalledTimes(3)
                 })
             })
 
-            describe("when condition's result is false (pass=false), so failure", () => {
+            describe('should be pass=false for normal failure', () => {
                 let failureCondition: () => Promise<ConditionResult>
                 const failureResult: ConditionResult = { success: false, results: [false] }
 
@@ -183,10 +288,10 @@ describe(waitUntil, () => {
                 })
 
                 test('should return false when condition is not met within wait time', async () => {
-                    const result = await waitUntil(failureCondition, isNot, { wait: 250, interval: 100 })
+                    const result = await waitUntil(failureCondition, isNot, { wait: 180, interval: 50 })
 
                     expect(result).toBe(false)
-                    expect(failureCondition).toBeCalledTimes(3)
+                    expect(failureCondition).toBeCalledTimes(4)
                 })
 
                 test('should return false when condition is not met and wait is 0', async () => {
@@ -202,142 +307,103 @@ describe(waitUntil, () => {
                         .mockRejectedValueOnce(new Error('Always failing'))
                         .mockResolvedValue(failureResult)
 
-                    const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
+                    const result = await waitUntil(condition, isNot, { wait: 180, interval: 50 })
 
                     expect(result).toBe(false)
-                    expect(condition).toBeCalledTimes(3)
+                    expect(condition).toBeCalledTimes(4)
                 })
 
                 test('should return false with default options', async () => {
-                    const result = await waitUntil(failureCondition, isNot, {})
+                    const result = await waitUntil(failureCondition, undefined, {})
 
                     expect(result).toBe(false)
                     expect(failureCondition).toHaveBeenCalled()
-                })
-            })
-
-            describe('when condition always throws', () => {
-                const error = new Error('failing')
-
-                test('should throw with wait', async () => {
-                    const condition = vi.fn().mockRejectedValue(error)
-
-                    await expect(() => waitUntil(condition, isNot, { wait: 250, interval: 100 })).rejects.toThrowError('failing')
-                })
-
-                test('should throw with wait 0', async () => {
-                    const condition = vi.fn().mockRejectedValue(error)
-
-                    await expect(() => waitUntil(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
                 })
             })
         })
 
-        describe('given isNot is true, so pass=true means failure and pass=false means success with `.not`', () => {
+        describe('given we should wait for the reverse condition to be met since element state can take time to update (modifier `.not` is true to for reverse condition)', () => {
             const isNot = true
-
-            describe("when condition's result is true (pass=true), so failure for `.not`", () => {
+            describe('should be pass=false for normal success (inverted later by jest expect library)', () => {
                 let successCondition: () => Promise<ConditionResult>
-                const successResult: ConditionResult = { success: true, results: [true] }
+                const successResult: ConditionResult = { success: false, results: [false] }
+                const failureResult: ConditionResult = { success: true, results: [true] }
 
                 beforeEach(() => {
                     successCondition = vi.fn().mockResolvedValue(successResult)
                 })
 
-                test('should return true with options', async () => {
-                    const result = await waitUntil(successCondition, isNot, { wait: 15, interval: 200 })
+                test('should return success (false) when condition is met', async () => {
+                    const result = await waitUntil(successCondition, isNot, { wait: 1000, interval: 100 })
 
-                    expect(result).toBe(true)
+                    expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
                     expect(successCondition).toBeCalledTimes(1)
                 })
 
-                test('should return true with wait 0', async () => {
+                test('should return success (false) with wait 0', async () => {
                     const result = await waitUntil(successCondition, isNot, { wait: 0 })
 
-                    expect(result).toBe(true)
+                    expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
                     expect(successCondition).toBeCalledTimes(1)
                 })
 
-                test('should return true when condition is met with a delay', async () => {
+                test('should return success (false) when condition is met within wait time', async () => {
                     const condition = vi.fn()
-                        .mockResolvedValueOnce({ success: false, results: [false] })
-                        .mockResolvedValueOnce({ success: false, results: [false] })
+                        .mockResolvedValueOnce(failureResult)
+                        .mockResolvedValueOnce(failureResult)
                         .mockResolvedValueOnce(successResult)
 
-                    const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
+                    const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
 
-                    expect(result).toBe(true)
+                    expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
                     expect(condition).toBeCalledTimes(3)
                 })
 
-                test('should return true when condition errors but still is met within wait time', async () => {
+                test('should return success (false) when condition errors but still is met within wait time', async () => {
                     const condition = vi.fn()
                         .mockRejectedValueOnce(new Error('Test error'))
                         .mockRejectedValueOnce(new Error('Test error'))
                         .mockResolvedValueOnce(successResult)
 
-                    const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
+                    const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
 
-                    expect(result).toBe(true)
+                    expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
                     expect(condition).toBeCalledTimes(3)
                 })
             })
 
-            describe("when condition's result is false (pass=false), so success for `.not`", () => {
+            describe('should be pass=true for normal failure', () => {
                 let failureCondition: () => Promise<ConditionResult>
-                const failureResult: ConditionResult = { success: false, results: [false] }
+                const failureResult: ConditionResult = { success: true, results: [true] }
 
                 beforeEach(() => {
                     failureCondition = vi.fn().mockResolvedValue(failureResult)
                 })
 
-                test('should return false when condition is not met within wait time', async () => {
-                    const result = await waitUntil(failureCondition, isNot, { wait: 250, interval: 100 })
+                test('should return failure (true) when condition is not met within wait time', async () => {
+                    const result = await waitUntil(failureCondition, isNot, { wait: 180, interval: 50 })
 
-                    expect(result).toBe(false)
-                    expect(failureCondition).toBeCalledTimes(3)
+                    expect(result).toBe(true)
+                    expect(failureCondition).toBeCalledTimes(4)
                 })
 
-                test('should return false when condition is not met and wait is 0', async () => {
+                test('should return true when condition is not met and wait is 0', async () => {
                     const result = await waitUntil(failureCondition, isNot, { wait: 0 })
 
-                    expect(result).toBe(false)
+                    expect(result).toBe(true)
                     expect(failureCondition).toBeCalledTimes(1)
                 })
 
-                test('should return false if condition throws but still return false', async () => {
+                test('should return true if condition throws but still return true', async () => {
                     const condition = vi.fn()
                         .mockRejectedValueOnce(new Error('Always failing'))
                         .mockRejectedValueOnce(new Error('Always failing'))
                         .mockResolvedValue(failureResult)
 
-                    const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
+                    const result = await waitUntil(condition, isNot, { wait: 190, interval: 50 })
 
-                    expect(result).toBe(false)
-                    expect(condition).toBeCalledTimes(3)
-                })
-
-                test('should return false with default options', async () => {
-                    const result = await waitUntil(failureCondition, isNot, {})
-
-                    expect(result).toBe(false)
-                    expect(failureCondition).toHaveBeenCalled()
-                })
-            })
-
-            describe('when condition always throws', () => {
-                const error = new Error('failing')
-
-                test('should throw with wait', async () => {
-                    const condition = vi.fn().mockRejectedValue(error)
-
-                    await expect(() => waitUntil(condition, isNot, { wait: 250, interval: 100 })).rejects.toThrowError('failing')
-                })
-
-                test('should throw with wait 0', async () => {
-                    const condition = vi.fn().mockRejectedValue(error)
-
-                    await expect(() => waitUntil(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
+                    expect(result).toBe(true)
+                    expect(condition).toBeCalledTimes(4)
                 })
             })
         })
@@ -345,20 +411,21 @@ describe(waitUntil, () => {
 
     describe('when condition returns multiple ConditionResult', () => {
         describe('when ConditionResult are all the same', () => {
+            describe('given we should wait for the condition to be met (modifier `.not` is not used)', () => {
+                const successResult: ConditionResult = { success: true, results: [true, true] }
+                const failureResult: ConditionResult = { success: false, results: [false, false] }
 
-            describe('given isNot is false (or undefined)', () => {
-                const isNot = false
+                const isNot = undefined
 
-                describe("when condition's result is true (pass=true), so success", () => {
+                describe('should be pass=true for normal success', () => {
                     let successCondition: () => Promise<ConditionResult>
-                    const successResult: ConditionResult = { success: true, results: [true, true] }
 
                     beforeEach(() => {
                         successCondition = vi.fn().mockResolvedValue(successResult)
                     })
 
-                    test('should return true with options', async () => {
-                        const result = await waitUntil(successCondition, isNot, { wait: 15, interval: 200 })
+                    test('should return true when condition is met', async () => {
+                        const result = await waitUntil(successCondition, isNot, { wait: 1000, interval: 100 })
 
                         expect(result).toBe(true)
                         expect(successCondition).toBeCalledTimes(1)
@@ -371,13 +438,13 @@ describe(waitUntil, () => {
                         expect(successCondition).toBeCalledTimes(1)
                     })
 
-                    test('should return true when condition is met with a delay', async () => {
+                    test('should return true when condition is met within wait time', async () => {
                         const condition = vi.fn()
-                            .mockResolvedValueOnce({ success: false, results: [false, false] })
-                            .mockResolvedValueOnce({ success: false, results: [false, false] })
-                            .mockResolvedValueOnce({ success: true, results: [true, true] })
+                            .mockResolvedValueOnce(failureResult)
+                            .mockResolvedValueOnce(failureResult)
+                            .mockResolvedValueOnce(successResult)
 
-                        const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
+                        const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
 
                         expect(result).toBe(true)
                         expect(condition).toBeCalledTimes(3)
@@ -387,28 +454,27 @@ describe(waitUntil, () => {
                         const condition = vi.fn()
                             .mockRejectedValueOnce(new Error('Test error'))
                             .mockRejectedValueOnce(new Error('Test error'))
-                            .mockResolvedValueOnce(true)
+                            .mockResolvedValueOnce(successResult)
 
-                        const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
+                        const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
 
                         expect(result).toBe(true)
                         expect(condition).toBeCalledTimes(3)
                     })
                 })
 
-                describe("when condition's result is false (pass=false), so failure", () => {
+                describe('should be pass=false for normal failure', () => {
                     let failureCondition: () => Promise<ConditionResult>
-                    const failureResult: ConditionResult = { success: false, results: [false, false] }
 
                     beforeEach(() => {
                         failureCondition = vi.fn().mockResolvedValue(failureResult)
                     })
 
                     test('should return false when condition is not met within wait time', async () => {
-                        const result = await waitUntil(failureCondition, isNot, { wait: 250, interval: 100 })
+                        const result = await waitUntil(failureCondition, isNot, { wait: 180, interval: 50 })
 
                         expect(result).toBe(false)
-                        expect(failureCondition).toBeCalledTimes(3)
+                        expect(failureCondition).toBeCalledTimes(4)
                     })
 
                     test('should return false when condition is not met and wait is 0', async () => {
@@ -422,258 +488,287 @@ describe(waitUntil, () => {
                         const condition = vi.fn()
                             .mockRejectedValueOnce(new Error('Always failing'))
                             .mockRejectedValueOnce(new Error('Always failing'))
-                            .mockResolvedValue(false)
+                            .mockResolvedValue(failureResult)
 
-                        const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
-
-                        expect(result).toBe(false)
-                        expect(condition).toBeCalledTimes(3)
-                    })
-
-                    test('should return false with default options', async () => {
-                        const result = await waitUntil(failureCondition, isNot, {})
-
-                        expect(result).toBe(false)
-                        expect(failureCondition).toHaveBeenCalled()
-                    })
-                })
-
-                describe('when condition always throws', () => {
-                    const error = new Error('failing')
-
-                    test('should throw with wait', async () => {
-                        const condition = vi.fn().mockRejectedValue(error)
-
-                        await expect(() => waitUntil(condition, isNot, { wait: 250, interval: 100 })).rejects.toThrowError('failing')
-                    })
-
-                    test('should throw with wait 0', async () => {
-                        const condition = vi.fn().mockRejectedValue(error)
-
-                        await expect(() => waitUntil(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
-                    })
-                })
-            })
-
-            describe('given isNot is true, so pass=true means failure and pass=false means success with `.not`', () => {
-                const isNot = true
-
-                describe("when condition's result is true (pass=true), so failure for `.not`", () => {
-                    let successCondition: () => Promise<ConditionResult>
-                    const successResult: ConditionResult = { success: true, results: [true, true] }
-
-                    beforeEach(() => {
-                        successCondition = vi.fn().mockResolvedValue(successResult)
-                    })
-
-                    test('should return true with options', async () => {
-                        const result = await waitUntil(successCondition, isNot, { wait: 15, interval: 200 })
-
-                        expect(result).toBe(true)
-                        expect(successCondition).toBeCalledTimes(1)
-                    })
-
-                    test('should return true with wait 0', async () => {
-                        const result = await waitUntil(successCondition, isNot, { wait: 0 })
-
-                        expect(result).toBe(true)
-                        expect(successCondition).toBeCalledTimes(1)
-                    })
-
-                    test('should return true when condition is met with a delay', async () => {
-                        const condition = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(true)
-
-                        const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
-
-                        expect(result).toBe(true)
-                        expect(condition).toBeCalledTimes(3)
-                    })
-
-                    test('should return true when condition errors but still is met within wait time', async () => {
-                        const condition = vi.fn().mockRejectedValueOnce(new Error('Test error')).mockRejectedValueOnce(new Error('Test error')).mockResolvedValueOnce(true)
-
-                        const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
-
-                        expect(result).toBe(true)
-                        expect(condition).toBeCalledTimes(3)
-                    })
-                })
-
-                describe("when condition's result is false (pass=false), so success for `.not`", () => {
-                    let failureCondition: () => Promise<ConditionResult>
-                    const failureResult: ConditionResult = { success: false, results: [false, false] }
-
-                    beforeEach(() => {
-                        failureCondition = vi.fn().mockResolvedValue(failureResult)
-                    })
-
-                    test('should return false when condition is not met within wait time', async () => {
-                        const result = await waitUntil(failureCondition, isNot, { wait: 250, interval: 100 })
-
-                        expect(result).toBe(false)
-                        expect(failureCondition).toBeCalledTimes(3)
-                    })
-
-                    test('should return false when condition is not met and wait is 0', async () => {
-                        const result = await waitUntil(failureCondition, isNot, { wait: 0 })
-
-                        expect(result).toBe(false)
-                        expect(failureCondition).toBeCalledTimes(1)
-                    })
-
-                    test('should return false if condition throws but still return false', async () => {
-                        const condition = vi.fn().mockRejectedValueOnce(new Error('Always failing')).mockRejectedValueOnce(new Error('Always failing')).mockResolvedValue(false)
-
-                        const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
-
-                        expect(result).toBe(false)
-                        expect(condition).toBeCalledTimes(3)
-                    })
-
-                    test('should return false with default options', async () => {
-                        const result = await waitUntil(failureCondition, isNot, {})
-
-                        expect(result).toBe(false)
-                        expect(failureCondition).toHaveBeenCalled()
-                    })
-                })
-
-                describe('when condition always throws', () => {
-                    const error = new Error('failing')
-
-                    test('should throw with wait', async () => {
-                        const condition = vi.fn().mockRejectedValue(error)
-
-                        await expect(() => waitUntil(condition, isNot, { wait: 250, interval: 100 })).rejects.toThrowError('failing')
-                    })
-
-                    test('should throw with wait 0', async () => {
-                        const condition = vi.fn().mockRejectedValue(error)
-
-                        await expect(() => waitUntil(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
-                    })
-                })
-            })
-        })
-
-        describe('when ConditionResult are not all the same, so always failure with or without `.not`', () => {
-            const failureResult: ConditionResult = { success: false, results: [true, false] }
-
-            describe('given isNot is false (or undefined), should be failure (pass=false)', () => {
-                const isNot = false
-
-                describe("when one of the condition's result is false (pass=false), so failure", () => {
-                    let failureCondition: () => Promise<ConditionResult>
-
-                    beforeEach(() => {
-                        failureCondition = vi.fn().mockResolvedValue(failureResult)
-                    })
-
-                    test('should return false when condition is not met within wait time', async () => {
-                        const result = await waitUntil(failureCondition, isNot, { wait: 250, interval: 100 })
-
-                        expect(result).toBe(false)
-                        expect(failureCondition).toBeCalledTimes(3)
-                    })
-
-                    test('should return false when condition is not met and wait is 0', async () => {
-                        const result = await waitUntil(failureCondition, isNot, { wait: 0 })
-
-                        expect(result).toBe(false)
-                        expect(failureCondition).toBeCalledTimes(1)
-                    })
-
-                    test('should return false if condition throws but still return false', async () => {
-                        const condition = vi.fn().mockRejectedValueOnce(new Error('Always failing')).mockRejectedValueOnce(new Error('Always failing')).mockResolvedValue(false)
-
-                        const result = await waitUntil(condition, isNot, { wait: 18, interval: 5 })
+                        const result = await waitUntil(condition, isNot, { wait: 180, interval: 50 })
 
                         expect(result).toBe(false)
                         expect(condition).toBeCalledTimes(4)
                     })
 
                     test('should return false with default options', async () => {
-                        const result = await waitUntil(failureCondition, isNot, {})
+                        const result = await waitUntil(failureCondition, undefined, {})
 
                         expect(result).toBe(false)
                         expect(failureCondition).toHaveBeenCalled()
                     })
                 })
-
-                describe('when condition always throws', () => {
-                    const error = new Error('failing')
-
-                    test('should throw with wait', async () => {
-                        const condition = vi.fn().mockRejectedValue(error)
-
-                        await expect(() => waitUntil(condition, isNot, { wait: 250, interval: 100 })).rejects.toThrowError('failing')
-                    })
-
-                    test('should throw with wait 0', async () => {
-                        const condition = vi.fn().mockRejectedValue(error)
-
-                        await expect(() => waitUntil(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
-                    })
-                })
             })
 
-            describe('given isNot is true, should also be failure (pass=true)', () => {
+            describe('given we should wait for the reverse condition to be met since element state can take time to update (modifier `.not` is true to for reverse condition)', () => {
                 const isNot = true
+                describe('should be pass=false for normal success (inverted later by jest expect library)', () => {
+                    let successCondition: () => Promise<ConditionResult>
+                    const successResult: ConditionResult = { success: false, results: [false, false] }
+                    const failureResult: ConditionResult = { success: true, results: [true, true] }
 
-                describe("when one of the condition's result is true (pass=true), so failure for `.not`", () => {
+                    beforeEach(() => {
+                        successCondition = vi.fn().mockResolvedValue(successResult)
+                    })
+
+                    test('should return success (false) when condition is met', async () => {
+                        const result = await waitUntil(successCondition, isNot, { wait: 1000, interval: 100 })
+
+                        expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
+                        expect(successCondition).toBeCalledTimes(1)
+                    })
+
+                    test('should return success (false) with wait 0', async () => {
+                        const result = await waitUntil(successCondition, isNot, { wait: 0 })
+
+                        expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
+                        expect(successCondition).toBeCalledTimes(1)
+                    })
+
+                    test('should return success (false) when condition is met within wait time', async () => {
+                        const condition = vi.fn()
+                            .mockResolvedValueOnce(failureResult)
+                            .mockResolvedValueOnce(failureResult)
+                            .mockResolvedValueOnce(successResult)
+
+                        const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+
+                        expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
+                        expect(condition).toBeCalledTimes(3)
+                    })
+
+                    test('should return success (false) when condition errors but still is met within wait time', async () => {
+                        const condition = vi.fn()
+                            .mockRejectedValueOnce(new Error('Test error'))
+                            .mockRejectedValueOnce(new Error('Test error'))
+                            .mockResolvedValueOnce(successResult)
+
+                        const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+
+                        expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
+                        expect(condition).toBeCalledTimes(3)
+                    })
+                })
+
+                describe('should be pass=true for normal failure', () => {
                     let failureCondition: () => Promise<ConditionResult>
+                    const failureResult: ConditionResult = { success: true, results: [true] }
 
                     beforeEach(() => {
                         failureCondition = vi.fn().mockResolvedValue(failureResult)
                     })
 
-                    test('should return true when condition is not met within wait time', async () => {
-                        const result = await waitUntil(failureCondition, isNot, { wait: 250, interval: 100 })
+                    test('should return failure (true) when condition is not met within wait time', async () => {
+                        const result = await waitUntil(failureCondition, isNot, { wait: 180, interval: 50 })
 
-                        expect(result).toBe(true) // failure for .not
-                        expect(failureCondition).toBeCalledTimes(3)
+                        expect(result).toBe(true)
+                        expect(failureCondition).toBeCalledTimes(4)
                     })
 
                     test('should return true when condition is not met and wait is 0', async () => {
                         const result = await waitUntil(failureCondition, isNot, { wait: 0 })
 
-                        expect(result).toBe(true) // failure for .not
+                        expect(result).toBe(true)
+                    })
+
+                    test('should return true if condition throws but still return true', async () => {
+                        const condition = vi.fn()
+                            .mockRejectedValueOnce(new Error('Always failing'))
+                            .mockRejectedValueOnce(new Error('Always failing'))
+                            .mockResolvedValue(failureResult)
+
+                        const result = await waitUntil(condition, isNot, { wait: 190, interval: 50 })
+
+                        expect(result).toBe(true)
+                        expect(condition).toBeCalledTimes(4)
+                    })
+                })
+            })
+        })
+
+        describe('when ConditionResult are not always the same', () => {
+
+            describe('given we should wait for the condition to be met (modifier `.not` is not used)', () => {
+                const isNot = undefined
+
+                const failureResult1: ConditionResult = { success: false, results: [true, false] }
+                const failureResult2: ConditionResult = { success: false, results: [false, true] }
+
+                describe('should be pass=true for normal success', () => {
+                    const successResult: ConditionResult = { success: true, results: [true, true] }
+
+                    test('should return true when condition is met within wait time', async () => {
+                        const condition = vi.fn()
+                            .mockResolvedValueOnce(failureResult1)
+                            .mockResolvedValueOnce(failureResult2)
+                            .mockResolvedValueOnce(successResult)
+
+                        const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+
+                        expect(result).toBe(true)
+                        expect(condition).toBeCalledTimes(3)
+                    })
+
+                    test('should return true when condition errors but still is met within wait time', async () => {
+                        const condition = vi.fn()
+                            .mockRejectedValueOnce(new Error('Test error'))
+                            .mockRejectedValueOnce(failureResult1)
+                            .mockResolvedValueOnce(successResult)
+
+                        const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+
+                        expect(result).toBe(true)
+                        expect(condition).toBeCalledTimes(3)
+                    })
+                })
+
+                describe('should be pass=false for normal failure', () => {
+                    let failureCondition: () => Promise<ConditionResult>
+
+                    beforeEach(() => {
+                        failureCondition = vi.fn().mockResolvedValue(failureResult1)
+                    })
+
+                    test('should return false when condition is not met within wait time', async () => {
+                        const result = await waitUntil(failureCondition, isNot, { wait: 180, interval: 50 })
+
+                        expect(result).toBe(false)
+                        expect(failureCondition).toBeCalledTimes(4)
+                    })
+
+                    test('should return false when condition is not met and wait is 0', async () => {
+                        const result = await waitUntil(failureCondition, isNot, { wait: 0 })
+
+                        expect(result).toBe(false)
+                        expect(failureCondition).toBeCalledTimes(1)
+                    })
+
+                    test('should return false if condition throws but still return false', async () => {
+                        const condition = vi.fn()
+                            .mockRejectedValueOnce(new Error('Always failing'))
+                            .mockRejectedValueOnce(new Error('Always failing'))
+                            .mockResolvedValue(failureResult2)
+
+                        const result = await waitUntil(condition, isNot, { wait: 180, interval: 50 })
+
+                        expect(result).toBe(false)
+                        expect(condition).toBeCalledTimes(4)
+                    })
+
+                    test('should return false with default options', async () => {
+                        const result = await waitUntil(failureCondition, undefined, {})
+
+                        expect(result).toBe(false)
+                        expect(failureCondition).toHaveBeenCalled()
+                    })
+                })
+            })
+
+            describe('given we should wait for the reverse condition to be met since element state can take time to update (modifier `.not` is true to for reverse condition)', () => {
+                const isNot = true
+
+                const failureResult1: ConditionResult = { success: false, results: [true, false] }
+                const failureResult2: ConditionResult = { success: false, results: [false, true] }
+
+                describe('should be pass=false for normal success (inverted later by jest expect library)', () => {
+                    let condition: () => Promise<ConditionResult>
+                    const successResult: ConditionResult = { success: false, results: [false, false] }
+
+                    beforeEach(() => {
+                        condition = vi.fn()
+                            .mockResolvedValueOnce(failureResult1)
+                            .mockResolvedValueOnce(failureResult2)
+                            .mockResolvedValueOnce(successResult)
+                    })
+
+                    test('should return success (false) when condition is met within wait time', async () => {
+
+                        const result = await waitUntil(condition, isNot, { wait: 180, interval: 50 })
+
+                        expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
+                        expect(condition).toBeCalledTimes(3)
+                    })
+
+                    test('should return success (false) when condition errors but still is met within wait time', async () => {
+                        const condition = vi.fn()
+                            .mockRejectedValueOnce(new Error('Test error'))
+                            .mockRejectedValueOnce(failureResult1)
+                            .mockResolvedValueOnce(successResult)
+
+                        const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+
+                        expect(result).toBe(false) // success for .not, boolean is inverted later by jest's expect library
+                        expect(condition).toBeCalledTimes(3)
+                    })
+                })
+
+                describe('should be pass=true for normal failure', () => {
+                    let failureCondition: () => Promise<ConditionResult>
+
+                    beforeEach(() => {
+                        failureCondition = vi.fn().mockResolvedValue(failureResult1)
+                    })
+
+                    test('should return failure (true) when condition is not met within wait time', async () => {
+                        const result = await waitUntil(failureCondition, isNot, { wait: 180, interval: 50 })
+
+                        expect(result).toBe(true)
+                        expect(failureCondition).toBeCalledTimes(4)
+                    })
+
+                    test('should return fail (true) with wait 0', async () => {
+                        const result = await waitUntil(failureCondition, isNot, { wait: 0 })
+
+                        expect(result).toBe(true) // failure for .not, boolean is inverted later by jest's expect library
                         expect(failureCondition).toBeCalledTimes(1)
                     })
 
                     test('should return true if condition throws but still return failure', async () => {
-                        const condition = vi.fn().mockRejectedValueOnce(new Error('failing')).mockRejectedValueOnce(new Error('failing')).mockResolvedValue(failureResult)
+                        const condition = vi.fn()
+                            .mockRejectedValueOnce(new Error('Always failing'))
+                            .mockRejectedValueOnce(new Error('Always failing'))
+                            .mockResolvedValue(failureResult2)
 
-                        const result = await waitUntil(condition, isNot, { wait: 250, interval: 100 })
+                        const result = await waitUntil(condition, isNot, { wait: 190, interval: 50 })
 
-                        expect(result).toBe(true) // failure for .not
-                        expect(condition).toBeCalledTimes(3)
-                    })
-
-                    test('should return true with default options', async () => {
-                        const result = await waitUntil(failureCondition, isNot, {})
-
-                        expect(result).toBe(true) // failure for .not
-                        expect(failureCondition).toHaveBeenCalled()
-                    })
-                })
-
-                describe('when condition always throws', () => {
-                    const error = new Error('failing')
-
-                    test('should throw with wait', async () => {
-                        const condition = vi.fn().mockRejectedValue(error)
-
-                        await expect(() => waitUntil(condition, isNot, { wait: 250, interval: 100 })).rejects.toThrowError('failing')
-                    })
-
-                    test('should throw with wait 0', async () => {
-                        const condition = vi.fn().mockRejectedValue(error)
-
-                        await expect(() => waitUntil(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
+                        expect(result).toBe(true)
+                        expect(condition).toBeCalledTimes(4)
                     })
                 })
             })
+        })
+    })
+
+    describe('when not results aka no elements found cases we DO NOT RETRY', () => {
+        const emptyResult: ConditionResult = { success: false, results: [] }
+
+        let emptyCondition: () => Promise<boolean>
+
+        beforeEach(() => {
+            emptyCondition = vi.fn().mockResolvedValue(emptyResult)
+        })
+
+        test('should NOT RETRY and fails with pass=false when isNot is undefined', async () => {
+            const isNot = undefined
+
+            const result = await waitUntil(emptyCondition, isNot, { wait: 280, interval: 100 })
+
+            expect(result).toBe(false)
+            expect(emptyCondition).toBeCalledTimes(1)
+        })
+
+        test('should NOT RETRY and fails with pass=true when isNot is true', async () => {
+            const isNot = true
+
+            const result = await waitUntil(emptyCondition, isNot, { wait: 280, interval: 100 })
+
+            expect(result).toBe(true) // failure for .not, boolean is inverted later by jest's expect library
+            expect(emptyCondition).toBeCalledTimes(1)
         })
     })
 })

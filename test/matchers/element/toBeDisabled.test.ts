@@ -252,6 +252,8 @@ Expect $$(\`sel\`) not to be disabled
 
         test('not - success (with wait) - pass should be false', async () => {
             elements.forEach(element => {
+                vi.mocked(element.isEnabled).mockResolvedValueOnce(false)
+                vi.mocked(element.isEnabled).mockResolvedValueOnce(false)
                 vi.mocked(element.isEnabled).mockResolvedValue(true)
             })
 
@@ -261,9 +263,8 @@ Expect $$(\`sel\`) not to be disabled
                 wait: 500,
                 interval: 100,
             })
-            elements.forEach(element => {
-                expect(element.isEnabled).toHaveBeenCalledTimes(5)
-            })
+            expect(elements[0].isEnabled).toHaveBeenCalledTimes(3)
+            expect(elements[1].isEnabled).toHaveBeenCalledTimes(3)
             expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
