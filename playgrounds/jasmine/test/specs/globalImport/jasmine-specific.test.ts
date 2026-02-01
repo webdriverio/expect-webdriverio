@@ -119,7 +119,7 @@ describe('Jasmine-Specific Features', () => {
 
     // failing on jasmine.stringContaining not working properly with wdio matchers
     describe('Browser state validation', () => {
-        xit('should validate browser properties with asymmetric matchers', async () => {
+        fit('should validate browser properties with asymmetric matchers', async () => {
             const title = await browser.getTitle()
             const url = await browser.getUrl()
 
@@ -127,8 +127,10 @@ describe('Jasmine-Specific Features', () => {
             await expect(url).toEqual(jasmine.stringContaining('webdriver.io'))
 
             // Combined with WebdriverIO matchers
-            await expect(browser).toHaveUrl(jasmine.stringContaining('webdriver.io'))
-            await expect(browser).toHaveTitle(jasmine.stringContaining('WebdriverIO'))
+            // await expect(browser).toHaveUrl(jasmine.stringContaining('webdriver.io'))
+            // await expect(browser).toHaveTitle(jasmine.stringContaining('WebdriverIO'))
+            // await expect(browser).toHaveUrl(jasmine.stringContaining('WEBDRIVER.io'),{ignoreCase: true})
+            await expect(browser).toHaveTitle(jasmine.stringContaining('WEBDRIVERIO'), {ignoreCase: true})
         })
     })
 

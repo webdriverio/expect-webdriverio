@@ -14,6 +14,10 @@ declare namespace jasmine {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- U is required to properly override Jasmine's AsyncMatchers
     interface AsyncMatchers<T, U> extends ExpectWebdriverIO.CustomMatchers<Promise<void>, T> {}
+
+    // Needed to reference it below for the withContext method
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface Matchers<T> {}
 }
 
 declare namespace ExpectWebdriverIO {
@@ -39,12 +43,12 @@ declare namespace ExpectWebdriverIO {
          * @param actual The value to apply matchers against.
          */
         <T = unknown>(actual: T): {
-            withContext(message: string): jasmine.AsyncMatchers<T, U> & jasmine.Matchers<T>;
-        } & jasmine.AsyncMatchers<T, void> & jasmine.Matchers<T>
+            withContext(message: string): jasmine.AsyncMatchers<T, Promise<void>> & jasmine.Matchers<T>;
+        } & jasmine.AsyncMatchers<T, Promise<void>> & jasmine.Matchers<T>
     }
 }
 
-//// @ts-expect-error: IDE might flags this one but just does be concerned by it. This way the `tsc:root-types` can pass!
+// @ts-expect-error: IDE might flags this one but just does be concerned by it. This way the `tsc:root-types` can pass!
 declare const expect: ExpectWebdriverIO.JasmineExpect
 declare namespace NodeJS {
     interface Global {
