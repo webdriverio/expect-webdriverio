@@ -22,6 +22,7 @@ export async function toHaveHTML(
     expectedValue: string | RegExp | WdioAsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ) {
+    const isNot = this.isNot
     const { expectation = 'HTML', verb = 'have' } = this
 
     await options.beforeAssertion?.({
@@ -43,7 +44,7 @@ export async function toHaveHTML(
         actualHTML = result.values
 
         return result.success
-    }, options)
+    }, isNot, options)
 
     const message = enhanceError(el, wrapExpectedWithArray(el, actualHTML, expectedValue), actualHTML, this, verb, expectation, '', options)
 

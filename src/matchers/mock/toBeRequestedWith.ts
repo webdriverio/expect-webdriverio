@@ -24,7 +24,8 @@ export async function toBeRequestedWith(
     expectedValue: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'called with', verb = 'be', isNot } = this
+    const isNot = this.isNot || false
+    const { expectation = 'called with', verb = 'be' } = this
 
     await options.beforeAssertion?.({
         matcherName: 'toBeRequestedWith',
@@ -53,6 +54,7 @@ export async function toBeRequestedWith(
 
             return false
         },
+        isNot,
         { ...options, wait: isNot ? 0 : options.wait }
     )
 

@@ -8,6 +8,7 @@ export async function toBeElementsArrayOfSize(
     expectedValue: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
+    const isNot = this.isNot
     const { expectation = 'elements array of size', verb = 'be' } = this
 
     await options.beforeAssertion?.({
@@ -37,7 +38,7 @@ export async function toBeElementsArrayOfSize(
         }
         elements = await refetchElements(elements, numberOptions.wait, true)
         return false
-    }, { ...numberOptions, ...options })
+    }, isNot, { ...numberOptions, ...options })
 
     if (Array.isArray(received) && pass) {
         for (let index = originalLength; index < elements.length; index++) {

@@ -7,6 +7,7 @@ export async function toBeRequestedTimes(
     expectedValue: number | ExpectWebdriverIO.NumberOptions = {},
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
+    const isNot = this.isNot || false
     const { expectation = `called${typeof expectedValue === 'number' ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`, verb = 'be' } = this
 
     await options.beforeAssertion?.({
@@ -24,7 +25,7 @@ export async function toBeRequestedTimes(
     const pass = await waitUntil(async () => {
         actual = received.calls.length
         return compareNumbers(actual, numberOptions)
-    }, { ...numberOptions, ...options })
+    }, isNot, { ...numberOptions, ...options })
 
     const error = numberError(numberOptions)
     const message = enhanceError('mock', error, actual, this, verb, expectation, '', numberOptions)

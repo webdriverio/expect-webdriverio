@@ -22,6 +22,7 @@ export async function toHaveWidth(
     expectedValue: number | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
+    const isNot = this.isNot
     const { expectation = 'width', verb = 'have' } = this
 
     await options.beforeAssertion?.({
@@ -52,6 +53,7 @@ export async function toHaveWidth(
 
             return result.success
         },
+        isNot,
         { ...numberOptions, ...options }
     )
 
