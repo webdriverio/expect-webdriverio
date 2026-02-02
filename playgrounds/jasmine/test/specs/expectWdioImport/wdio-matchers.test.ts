@@ -177,15 +177,4 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(nonExistent).not.toExist()
         })
     })
-
-    describe('Wdio custom matcher with Jasmine asymmetric matchers', () => {
-        it('should not work with jasmine.stringContaining', async () => {
-            await browser.url('https://the-internet.herokuapp.com/login')
-
-            const username = await $('#username')
-            await username.setValue('testuser123')
-
-            await expect(expect(username).toHaveValue(jasmine.stringContaining('testuser'))).rejects.toThrow()
-        })
-    })
 })

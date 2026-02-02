@@ -15,10 +15,11 @@ export const config: WebdriverIO.Config = {
     // ==================
     //
     specs: [
-        // './test/specs/**/*.test.ts',
+        './test/specs/**/*.test.ts',
         // './test/specs/expectWdioImport/basic-matchers.test.ts',
         // './test/specs/expectWdioImport/wdio-matchers.test.ts'
-        './test/specs/globalImport/jasmine-specific.test.ts',
+        // './test/specs/globalImport/jasmine-specific.test.ts',
+        //'./test/specs/globalImport/snapshot.test.ts',
     ],
 
     //
