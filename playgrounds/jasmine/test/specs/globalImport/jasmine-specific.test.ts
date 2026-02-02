@@ -64,14 +64,12 @@ describe('Jasmine-Specific Features', () => {
             await expect(searchButton).withContext('Search button should exist on the homepage').toExist()
         })
 
-        // TODO failing on jasmine.stringContaining not working properly with wdio matchers
-        xit('should use asymmetric matchers in toHaveAttribute', async () => {
+        it('should use asymmetric matchers in toHaveAttribute', async () => {
             const docsLink = await $('a[href="/docs/gettingstarted"]')
             await expect(docsLink).toHaveAttribute('href', jasmine.stringContaining('docs'))
         })
 
-        // TODO failing on jasmine.stringContaining not working properly with wdio matchers
-        xit('should use asymmetric matchers in toHaveText', async () => {
+        it('should use asymmetric matchers in toHaveText', async () => {
             const heading = await $$('h1')[1]
             await expect(heading).toHaveText(jasmine.stringContaining('Open'))
         })
@@ -91,8 +89,7 @@ describe('Jasmine-Specific Features', () => {
     })
 
     describe('Array and collection validation', () => {
-        // TODO asymmetric matchers are not working properly in this test
-        xit('should validate collections with jasmine matchers', async () => {
+        it('should validate collections with jasmine matchers', async () => {
             const navLinks = await $$('nav a')
             const count = navLinks.length
 
@@ -117,9 +114,8 @@ describe('Jasmine-Specific Features', () => {
         })
     })
 
-    // failing on jasmine.stringContaining not working properly with wdio matchers
     describe('Browser state validation', () => {
-        fit('should validate browser properties with asymmetric matchers', async () => {
+        it('should validate browser properties with asymmetric matchers', async () => {
             const title = await browser.getTitle()
             const url = await browser.getUrl()
 
@@ -127,9 +123,9 @@ describe('Jasmine-Specific Features', () => {
             await expect(url).toEqual(jasmine.stringContaining('webdriver.io'))
 
             // Combined with WebdriverIO matchers
-            // await expect(browser).toHaveUrl(jasmine.stringContaining('webdriver.io'))
-            // await expect(browser).toHaveTitle(jasmine.stringContaining('WebdriverIO'))
-            // await expect(browser).toHaveUrl(jasmine.stringContaining('WEBDRIVER.io'),{ignoreCase: true})
+            await expect(browser).toHaveUrl(jasmine.stringContaining('webdriver.io'))
+            await expect(browser).toHaveTitle(jasmine.stringContaining('WebdriverIO'))
+            await expect(browser).toHaveUrl(jasmine.stringContaining('WEBDRIVER.io'),{ignoreCase: true})
             await expect(browser).toHaveTitle(jasmine.stringContaining('WEBDRIVERIO'), {ignoreCase: true})
         })
     })
@@ -148,8 +144,7 @@ describe('Jasmine-Specific Features', () => {
             await expect(size.height).toBeGreaterThan(0)
         })
 
-        // TODO failing with Error: Can't call getText on element with selector ".non-existent-element-xyz" because element wasn't found
-        xit('should validate element attributes', async () => {
+        it('should validate element attributes', async () => {
             const searchButton = await $('.DocSearch-Button')
             const classList = await searchButton.getAttribute('class')
 
@@ -181,7 +176,7 @@ describe('Jasmine-Specific Features', () => {
     })
 
     describe('Jasmine core matcher use cases with expect', () => {
-        fit('should use all core Jasmine matchers with expect', async () => {
+        it('should use all core Jasmine matchers with expect', async () => {
             const title = await browser.getTitle()
             const navLinks = await $$('nav a')
             const count = navLinks.length

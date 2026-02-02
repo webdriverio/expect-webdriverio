@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-// Desired since we do not want to overwrite the global `expect` from Jasmine
 import { expect as wdioExpect } from 'expect-webdriverio'
-describe('type assertions', () => {
+describe('Jasmine expectAsync type agumentations', () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
     const chainableArray = {} as ChainablePromiseArray
 
@@ -20,65 +19,65 @@ describe('type assertions', () => {
 
         describe('toHaveUrl', () => {
             it('should be supported correctly', async () => {
-                expectPromiseVoid = wdioExpect(browser).toHaveUrl('https://example.com')
-                expectPromiseVoid = wdioExpect(browser).not.toHaveUrl('https://example.com')
+                expectPromiseVoid = expectAsync(browser).toHaveUrl('https://example.com')
+                expectPromiseVoid = expectAsync(browser).not.toHaveUrl('https://example.com')
 
                 // Asymmetric matchers
-                expectPromiseVoid = wdioExpect(browser).toHaveUrl(wdioExpect.stringContaining('WebdriverIO'))
-                expectPromiseVoid = wdioExpect(browser).toHaveUrl(wdioExpect.not.stringContaining('WebdriverIO'))
-                expectPromiseVoid = wdioExpect(browser).toHaveUrl(wdioExpect.any(String))
-                expectPromiseVoid = wdioExpect(browser).toHaveUrl(wdioExpect.anything())
+                expectPromiseVoid = expectAsync(browser).toHaveUrl(wdioExpect.stringContaining('WebdriverIO'))
+                expectPromiseVoid = expectAsync(browser).toHaveUrl(wdioExpect.not.stringContaining('WebdriverIO'))
+                expectPromiseVoid = expectAsync(browser).toHaveUrl(wdioExpect.any(String))
+                expectPromiseVoid = expectAsync(browser).toHaveUrl(wdioExpect.anything())
 
                 // @ts-expect-error
-                expectVoid = wdioExpect(browser).toHaveUrl('https://example.com')
+                expectVoid = expectAsync(browser).toHaveUrl('https://example.com')
                 // @ts-expect-error
-                expectVoid = wdioExpect(browser).not.toHaveUrl('https://example.com')
+                expectVoid = expectAsync(browser).not.toHaveUrl('https://example.com')
                 // @ts-expect-error
-                expectVoid = wdioExpect(browser).toHaveUrl(wdioExpect.stringContaining('WebdriverIO'))
+                expectVoid = expectAsync(browser).toHaveUrl(wdioExpect.stringContaining('WebdriverIO'))
 
                 // @ts-expect-error
-                await wdioExpect(browser).toHaveUrl(6)
+                await expectAsync(browser).toHaveUrl(6)
             })
 
             it('should have ts errors when actual is not a Browser element', async () => {
                 // @ts-expect-error
-                await wdioExpect(element).toHaveUrl('https://example.com')
+                await expectAsync(element).toHaveUrl('https://example.com')
                 // @ts-expect-error
-                await wdioExpect(element).not.toHaveUrl('https://example.com')
+                await expectAsync(element).not.toHaveUrl('https://example.com')
                 // @ts-expect-error
-                await wdioExpect(true).toHaveUrl('https://example.com')
+                await expectAsync(true).toHaveUrl('https://example.com')
                 // @ts-expect-error
-                await wdioExpect(true).not.toHaveUrl('https://example.com')
+                await expectAsync(true).not.toHaveUrl('https://example.com')
             })
         })
 
         describe('toHaveTitle', () => {
             it('should be supported correctly', async () => {
-                expectPromiseVoid = wdioExpect(browser).toHaveTitle('https://example.com')
-                expectPromiseVoid = wdioExpect(browser).not.toHaveTitle('https://example.com')
+                expectPromiseVoid = expectAsync(browser).toHaveTitle('https://example.com')
+                expectPromiseVoid = expectAsync(browser).not.toHaveTitle('https://example.com')
 
                 // Asymmetric matchers
-                expectPromiseVoid = wdioExpect(browser).toHaveTitle(wdioExpect.stringContaining('WebdriverIO'))
-                expectPromiseVoid = wdioExpect(browser).toHaveTitle(wdioExpect.any(String))
-                expectPromiseVoid = wdioExpect(browser).toHaveTitle(wdioExpect.anything())
+                expectPromiseVoid = expectAsync(browser).toHaveTitle(wdioExpect.stringContaining('WebdriverIO'))
+                expectPromiseVoid = expectAsync(browser).toHaveTitle(wdioExpect.any(String))
+                expectPromiseVoid = expectAsync(browser).toHaveTitle(wdioExpect.anything())
 
                 // @ts-expect-error
-                expectVoid = wdioExpect(browser).toHaveTitle('https://example.com')
+                expectVoid = expectAsync(browser).toHaveTitle('https://example.com')
                 // @ts-expect-error
-                expectVoid = wdioExpect(browser).not.toHaveTitle('https://example.com')
+                expectVoid = expectAsync(browser).not.toHaveTitle('https://example.com')
                 // @ts-expect-error
-                expectVoid = wdioExpect(browser).toHaveTitle(wdioExpect.stringContaining('WebdriverIO'))
+                expectVoid = expectAsync(browser).toHaveTitle(wdioExpect.stringContaining('WebdriverIO'))
             })
 
             it('should have ts errors when actual is not a Browser element', async () => {
                 // @ts-expect-error
-                await wdioExpect(element).toHaveTitle('https://example.com')
+                await expectAsync(element).toHaveTitle('https://example.com')
                 // @ts-expect-error
-                await wdioExpect(element).not.toHaveTitle('https://example.com')
+                await expectAsync(element).not.toHaveTitle('https://example.com')
                 // @ts-expect-error
-                await wdioExpect(true).toHaveTitle('https://example.com')
+                await expectAsync(true).toHaveTitle('https://example.com')
                 // @ts-expect-error
-                await wdioExpect(true).not.toHaveTitle('https://example.com')
+                await expectAsync(true).not.toHaveTitle('https://example.com')
             })
         })
     })
@@ -88,244 +87,244 @@ describe('type assertions', () => {
         describe('toBeDisabled', () => {
             it('should be supported correctly', async () => {
                 // Element
-                expectPromiseVoid = wdioExpect(element).toBeDisabled()
-                expectPromiseVoid = wdioExpect(element).not.toBeDisabled()
+                expectPromiseVoid = expectAsync(element).toBeDisabled()
+                expectPromiseVoid = expectAsync(element).not.toBeDisabled()
 
                 // Element array
-                expectPromiseVoid = wdioExpect(elementArray).toBeDisabled()
-                expectPromiseVoid = wdioExpect(elementArray).not.toBeDisabled()
+                expectPromiseVoid = expectAsync(elementArray).toBeDisabled()
+                expectPromiseVoid = expectAsync(elementArray).not.toBeDisabled()
 
                 // Chainable element
-                expectPromiseVoid = wdioExpect(chainableElement).toBeDisabled()
-                expectPromiseVoid = wdioExpect(chainableElement).not.toBeDisabled()
+                expectPromiseVoid = expectAsync(chainableElement).toBeDisabled()
+                expectPromiseVoid = expectAsync(chainableElement).not.toBeDisabled()
 
                 // Chainable element array
-                expectPromiseVoid = wdioExpect(chainableArray).toBeDisabled()
-                expectPromiseVoid = wdioExpect(chainableArray).not.toBeDisabled()
+                expectPromiseVoid = expectAsync(chainableArray).toBeDisabled()
+                expectPromiseVoid = expectAsync(chainableArray).not.toBeDisabled()
 
                 // @ts-expect-error
-                expectVoid = wdioExpect(element).toBeDisabled()
+                expectVoid = expectAsync(element).toBeDisabled()
                 // @ts-expect-error
-                expectVoid = wdioExpect(element).not.toBeDisabled()
+                expectVoid = expectAsync(element).not.toBeDisabled()
             })
 
             it('should have ts errors when actual is not an element', async () => {
                 // @ts-expect-error
-                await wdioExpect(browser).toBeDisabled()
+                await expectAsync(browser).toBeDisabled()
                 // @ts-expect-error
-                await wdioExpect(browser).not.toBeDisabled()
+                await expectAsync(browser).not.toBeDisabled()
                 // @ts-expect-error
-                await wdioExpect(true).toBeDisabled()
+                await expectAsync(true).toBeDisabled()
                 // @ts-expect-error
-                await wdioExpect(true).not.toBeDisabled()
+                await expectAsync(true).not.toBeDisabled()
             })
         })
 
         describe('toHaveText', () => {
             it('should be supported correctly', async () => {
-                expectPromiseVoid = wdioExpect(element).toHaveText('text')
-                expectPromiseVoid = wdioExpect(element).toHaveText(/text/)
-                expectPromiseVoid = wdioExpect(element).toHaveText(['text1', 'text2'])
-                expectPromiseVoid = wdioExpect(element).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])
-                expectPromiseVoid = wdioExpect(element).toHaveText([/text1/, /text2/])
-                expectPromiseVoid = wdioExpect(element).toHaveText(['text1', /text1/, wdioExpect.stringContaining('text3')])
-                await wdioExpect(element).toHaveText(
+                expectPromiseVoid = expectAsync(element).toHaveText('text')
+                expectPromiseVoid = expectAsync(element).toHaveText(/text/)
+                expectPromiseVoid = expectAsync(element).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expectAsync(element).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])
+                expectPromiseVoid = expectAsync(element).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expectAsync(element).toHaveText(['text1', /text1/, wdioExpect.stringContaining('text3')])
+                await expectAsync(element).toHaveText(
                     'My-Ex-Am-Ple',
                     {
                         replace: [[/-/g, ' '], [/[A-Z]+/g, (match: string) => match.toLowerCase()]]
                     }
                 )
 
-                expectPromiseVoid = wdioExpect(element).not.toHaveText('text')
+                expectPromiseVoid = expectAsync(element).not.toHaveText('text')
 
                 // @ts-expect-error
-                expectVoid = wdioExpect(element).toHaveText('text')
+                expectVoid = expectAsync(element).toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect(element).toHaveText(6)
+                await expectAsync(element).toHaveText(6)
 
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveText('text')
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveText(/text/)
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveText(['text1', 'text2'])
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveText([/text1/, /text2/])
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveText(['text1', /text1/, wdioExpect.stringContaining('text3')])
+                expectPromiseVoid = expectAsync(chainableElement).toHaveText('text')
+                expectPromiseVoid = expectAsync(chainableElement).toHaveText(/text/)
+                expectPromiseVoid = expectAsync(chainableElement).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expectAsync(chainableElement).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])
+                expectPromiseVoid = expectAsync(chainableElement).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expectAsync(chainableElement).toHaveText(['text1', /text1/, wdioExpect.stringContaining('text3')])
 
-                expectPromiseVoid = wdioExpect(chainableElement).not.toHaveText('text')
-
-                // @ts-expect-error
-                expectVoid = wdioExpect(chainableElement).toHaveText('text')
-                // @ts-expect-error
-                await wdioExpect(chainableElement).toHaveText(6)
-
-                expectPromiseVoid = wdioExpect(elementArray).toHaveText('text')
-                expectPromiseVoid = wdioExpect(elementArray).toHaveText(/text/)
-                expectPromiseVoid = wdioExpect(elementArray).toHaveText(['text1', 'text2'])
-                expectPromiseVoid = wdioExpect(elementArray).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])
-                expectPromiseVoid = wdioExpect(elementArray).toHaveText([/text1/, /text2/])
-                expectPromiseVoid = wdioExpect(elementArray).toHaveText(['text1', /text1/, wdioExpect.stringContaining('text3')])
-
-                expectPromiseVoid = wdioExpect(elementArray).not.toHaveText('text')
+                expectPromiseVoid = expectAsync(chainableElement).not.toHaveText('text')
 
                 // @ts-expect-error
-                expectVoid = wdioExpect(elementArray).toHaveText('text')
+                expectVoid = expectAsync(chainableElement).toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect(elementArray).toHaveText(6)
+                await expectAsync(chainableElement).toHaveText(6)
 
-                expectPromiseVoid = wdioExpect(chainableArray).toHaveText('text')
-                expectPromiseVoid = wdioExpect(chainableArray).toHaveText(/text/)
-                expectPromiseVoid = wdioExpect(chainableArray).toHaveText(['text1', 'text2'])
-                expectPromiseVoid = wdioExpect(chainableArray).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])
-                expectPromiseVoid = wdioExpect(chainableArray).toHaveText([/text1/, /text2/])
-                expectPromiseVoid = wdioExpect(chainableArray).toHaveText(['text1', /text1/, wdioExpect.stringContaining('text3')])
+                expectPromiseVoid = expectAsync(elementArray).toHaveText('text')
+                expectPromiseVoid = expectAsync(elementArray).toHaveText(/text/)
+                expectPromiseVoid = expectAsync(elementArray).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expectAsync(elementArray).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])
+                expectPromiseVoid = expectAsync(elementArray).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expectAsync(elementArray).toHaveText(['text1', /text1/, wdioExpect.stringContaining('text3')])
 
-                expectPromiseVoid = wdioExpect(chainableArray).not.toHaveText('text')
-
-                // @ts-expect-error
-                expectVoid = wdioExpect(chainableArray).toHaveText('text')
-                // @ts-expect-error
-                await wdioExpect(chainableArray).toHaveText(6)
+                expectPromiseVoid = expectAsync(elementArray).not.toHaveText('text')
 
                 // @ts-expect-error
-                await wdioExpect(browser).toHaveText('text')
+                expectVoid = expectAsync(elementArray).toHaveText('text')
+                // @ts-expect-error
+                await expectAsync(elementArray).toHaveText(6)
+
+                expectPromiseVoid = expectAsync(chainableArray).toHaveText('text')
+                expectPromiseVoid = expectAsync(chainableArray).toHaveText(/text/)
+                expectPromiseVoid = expectAsync(chainableArray).toHaveText(['text1', 'text2'])
+                expectPromiseVoid = expectAsync(chainableArray).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])
+                expectPromiseVoid = expectAsync(chainableArray).toHaveText([/text1/, /text2/])
+                expectPromiseVoid = expectAsync(chainableArray).toHaveText(['text1', /text1/, wdioExpect.stringContaining('text3')])
+
+                expectPromiseVoid = expectAsync(chainableArray).not.toHaveText('text')
+
+                // @ts-expect-error
+                expectVoid = expectAsync(chainableArray).toHaveText('text')
+                // @ts-expect-error
+                await expectAsync(chainableArray).toHaveText(6)
+
+                // @ts-expect-error
+                await expectAsync(browser).toHaveText('text')
             })
 
             it('should have ts errors when actual is not an element', async () => {
                 // @ts-expect-error
-                await wdioExpect(browser).toHaveText('text')
+                await expectAsync(browser).toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect(browser).not.toHaveText('text')
+                await expectAsync(browser).not.toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect(true).toHaveText('text')
+                await expectAsync(true).toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect(true).toHaveText('text')
+                await expectAsync(true).toHaveText('text')
             })
 
             it('should have ts errors when actual is string or Promise<string>', async () => {
                 // @ts-expect-error
-                await wdioExpect('text').toHaveText('text')
+                await expectAsync('text').toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect('text').not.toHaveText('text')
+                await expectAsync('text').not.toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect(Promise.resolve('text')).toHaveText('text')
+                await expectAsync(Promise.resolve('text')).toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect(Promise.resolve('text')).toHaveText('text')
+                await expectAsync(Promise.resolve('text')).toHaveText('text')
             })
         })
 
         describe('toHaveHeight', () => {
             it('should be supported correctly', async () => {
-                expectPromiseVoid = wdioExpect(element).toHaveHeight(100)
-                expectPromiseVoid = wdioExpect(element).toHaveHeight(100, { message: 'Custom error message' })
-                expectPromiseVoid = wdioExpect(element).not.toHaveHeight(100)
-                expectPromiseVoid = wdioExpect(element).not.toHaveHeight(100, { message: 'Custom error message' })
+                expectPromiseVoid = expectAsync(element).toHaveHeight(100)
+                expectPromiseVoid = expectAsync(element).toHaveHeight(100, { message: 'Custom error message' })
+                expectPromiseVoid = expectAsync(element).not.toHaveHeight(100)
+                expectPromiseVoid = expectAsync(element).not.toHaveHeight(100, { message: 'Custom error message' })
 
-                expectPromiseVoid = wdioExpect(element).toHaveHeight({ width: 100, height: 200 })
-                expectPromiseVoid = wdioExpect(element).toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })
-                expectPromiseVoid = wdioExpect(element).not.toHaveHeight({ width: 100, height: 200 })
-                expectPromiseVoid = wdioExpect(element).not.toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })
-
-                // @ts-expect-error
-                expectVoid = wdioExpect(element).toHaveHeight(100)
-                // @ts-expect-error
-                expectVoid = wdioExpect(element).not.toHaveHeight(100)
+                expectPromiseVoid = expectAsync(element).toHaveHeight({ width: 100, height: 200 })
+                expectPromiseVoid = expectAsync(element).toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })
+                expectPromiseVoid = expectAsync(element).not.toHaveHeight({ width: 100, height: 200 })
+                expectPromiseVoid = expectAsync(element).not.toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })
 
                 // @ts-expect-error
-                expectVoid = wdioExpect(element).toHaveHeight({ width: 100, height: 200 })
+                expectVoid = expectAsync(element).toHaveHeight(100)
                 // @ts-expect-error
-                expectVoid = wdioExpect(element).not.toHaveHeight({ width: 100, height: 200 })
+                expectVoid = expectAsync(element).not.toHaveHeight(100)
 
                 // @ts-expect-error
-                await wdioExpect(browser).toHaveHeight(100)
+                expectVoid = expectAsync(element).toHaveHeight({ width: 100, height: 200 })
+                // @ts-expect-error
+                expectVoid = expectAsync(element).not.toHaveHeight({ width: 100, height: 200 })
+
+                // @ts-expect-error
+                await expectAsync(browser).toHaveHeight(100)
             })
 
             it('should have ts errors when actual is string or Promise<string>', async () => {
                 // @ts-expect-error
-                await wdioExpect('text').toHaveText('text')
+                await expectAsync('text').toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect('text').not.toHaveText('text')
+                await expectAsync('text').not.toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect(Promise.resolve('text')).toHaveText('text')
+                await expectAsync(Promise.resolve('text')).toHaveText('text')
                 // @ts-expect-error
-                await wdioExpect(Promise.resolve('text')).toHaveText('text')
+                await expectAsync(Promise.resolve('text')).toHaveText('text')
             })
         })
 
         describe('toMatchSnapshot', () => {
 
             it('should be supported correctly', async () => {
-                expectPromiseVoid = wdioExpect(element).toMatchSnapshot()
-                expectPromiseVoid = wdioExpect(element).toMatchSnapshot('test label')
-                expectPromiseVoid = wdioExpect(element).not.toMatchSnapshot('test label')
+                expectPromiseVoid = expectAsync(element).toMatchSnapshot()
+                expectPromiseVoid = expectAsync(element).toMatchSnapshot('test label')
+                expectPromiseVoid = expectAsync(element).not.toMatchSnapshot('test label')
 
-                expectPromiseVoid = wdioExpect(chainableElement).toMatchSnapshot()
-                expectPromiseVoid = wdioExpect(chainableElement).toMatchSnapshot('test label')
-                expectPromiseVoid = wdioExpect(chainableElement).not.toMatchSnapshot('test label')
+                expectPromiseVoid = expectAsync(chainableElement).toMatchSnapshot()
+                expectPromiseVoid = expectAsync(chainableElement).toMatchSnapshot('test label')
+                expectPromiseVoid = expectAsync(chainableElement).not.toMatchSnapshot('test label')
 
                 //@ts-expect-error
-                expectVoid = wdioExpect(element).toMatchSnapshot()
+                expectVoid = expectAsync(element).toMatchSnapshot()
                 //@ts-expect-error
-                expectVoid = wdioExpect(element).not.toMatchSnapshot()
+                expectVoid = expectAsync(element).not.toMatchSnapshot()
                 //@ts-expect-error
-                expectVoid = wdioExpect(chainableElement).toMatchSnapshot()
+                expectVoid = expectAsync(chainableElement).toMatchSnapshot()
                 //@ts-expect-error
-                expectVoid = wdioExpect(chainableElement).not.toMatchSnapshot()
+                expectVoid = expectAsync(chainableElement).not.toMatchSnapshot()
             })
         })
 
         describe('toMatchInlineSnapshot', () => {
 
             it('should be correctly supported', async () => {
-                expectPromiseVoid = wdioExpect(element).toMatchInlineSnapshot()
-                expectPromiseVoid = wdioExpect(element).toMatchInlineSnapshot('test snapshot')
-                expectPromiseVoid = wdioExpect(element).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectPromiseVoid = expectAsync(element).toMatchInlineSnapshot()
+                expectPromiseVoid = expectAsync(element).toMatchInlineSnapshot('test snapshot')
+                expectPromiseVoid = expectAsync(element).toMatchInlineSnapshot('test snapshot', 'test label')
 
-                expectPromiseVoid = wdioExpect(chainableElement).toMatchInlineSnapshot()
-                expectPromiseVoid = wdioExpect(chainableElement).toMatchInlineSnapshot('test snapshot')
-                expectPromiseVoid = wdioExpect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectPromiseVoid = expectAsync(chainableElement).toMatchInlineSnapshot()
+                expectPromiseVoid = expectAsync(chainableElement).toMatchInlineSnapshot('test snapshot')
+                expectPromiseVoid = expectAsync(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
 
                 //@ts-expect-error
-                expectVoid = wdioExpect(element).toMatchInlineSnapshot()
+                expectVoid = expectAsync(element).toMatchInlineSnapshot()
                 //@ts-expect-error
-                expectVoid = wdioExpect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectVoid = expectAsync(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
             })
 
             it('should be correctly supported with getCSSProperty()', async () => {
-                expectPromiseVoid = wdioExpect(element.getCSSProperty('test')).toMatchInlineSnapshot()
-                expectPromiseVoid = wdioExpect(element.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')
-                expectPromiseVoid = wdioExpect(element.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectPromiseVoid = expectAsync(element.getCSSProperty('test')).toMatchInlineSnapshot()
+                expectPromiseVoid = expectAsync(element.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')
+                expectPromiseVoid = expectAsync(element.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')
 
-                expectPromiseVoid = wdioExpect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot()
-                expectPromiseVoid = wdioExpect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')
-                expectPromiseVoid = wdioExpect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectPromiseVoid = expectAsync(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot()
+                expectPromiseVoid = expectAsync(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')
+                expectPromiseVoid = expectAsync(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')
 
                 //@ts-expect-error
-                expectVoid = wdioExpect(element).toMatchInlineSnapshot()
+                expectVoid = expectAsync(element).toMatchInlineSnapshot()
                 //@ts-expect-error
-                expectVoid = wdioExpect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectVoid = expectAsync(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
             })
         })
 
         describe('toBeElementsArrayOfSize', async () => {
 
             it('should work correctly when actual is chainableArray', async () => {
-                expectPromiseVoid = wdioExpect(chainableArray).toBeElementsArrayOfSize(5)
-                expectPromiseVoid = wdioExpect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })
+                expectPromiseVoid = expectAsync(chainableArray).toBeElementsArrayOfSize(5)
+                expectPromiseVoid = expectAsync(chainableArray).toBeElementsArrayOfSize({ lte: 10 })
 
                 // @ts-expect-error
-                expectVoid = wdioExpect(chainableArray).toBeElementsArrayOfSize(5)
+                expectVoid = expectAsync(chainableArray).toBeElementsArrayOfSize(5)
                 // @ts-expect-error
-                expectVoid = wdioExpect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })
+                expectVoid = expectAsync(chainableArray).toBeElementsArrayOfSize({ lte: 10 })
             })
 
             it('should not work when actual is not chainableArray', async () => {
             // @ts-expect-error
-                await wdioExpect(chainableElement).toBeElementsArrayOfSize(5)
+                await expectAsync(chainableElement).toBeElementsArrayOfSize(5)
                 // @ts-expect-error
-                await wdioExpect(chainableElement).toBeElementsArrayOfSize({ lte: 10 })
+                await expectAsync(chainableElement).toBeElementsArrayOfSize({ lte: 10 })
                 // @ts-expect-error
-                await wdioExpect(true).toBeElementsArrayOfSize(5)
+                await expectAsync(true).toBeElementsArrayOfSize(5)
                 // @ts-expect-error
-                await wdioExpect(true).toBeElementsArrayOfSize({ lte: 10 })
+                await expectAsync(true).toBeElementsArrayOfSize({ lte: 10 })
             })
         })
     })
@@ -333,165 +332,31 @@ describe('type assertions', () => {
     describe('Custom matchers', () => {
         describe('using `ExpectWebdriverIO` namespace augmentation', () => {
             it('should supported correctly a non-promise custom matcher', async () => {
-                expectPromiseVoid = wdioExpect('test').toBeCustom()
-                expectPromiseVoid = wdioExpect('test').not.toBeCustom()
+                expectPromiseVoid = expectAsync('test').toBeCustom()
+                expectPromiseVoid = expectAsync('test').not.toBeCustom()
 
                 // @ts-expect-error
-                expectVoid = wdioExpect('test').toBeCustom()
+                expectVoid = expectAsync('test').toBeCustom()
                 // @ts-expect-error
-                expectVoid = wdioExpect('test').not.toBeCustom()
-
-                expectPromiseVoid = wdioExpect(1).toBeWithinRange(0, 2)
+                expectVoid = expectAsync('test').not.toBeCustom()
             })
 
             it('should supported correctly a promise custom matcher with only chainableElement as actual', async () => {
-                expectPromiseVoid = wdioExpect(chainableElement).toBeCustomPromise()
-                expectPromiseVoid = wdioExpect(chainableElement).toBeCustomPromise(wdioExpect.stringContaining('test'))
-                expectPromiseVoid = wdioExpect(chainableElement).not.toBeCustomPromise(wdioExpect.not.stringContaining('test'))
+                expectPromiseVoid = expectAsync(chainableElement).toBeCustomPromise()
+                expectPromiseVoid = expectAsync(chainableElement).toBeCustomPromise(wdioExpect.stringContaining('test'))
+                expectPromiseVoid = expectAsync(chainableElement).not.toBeCustomPromise(wdioExpect.not.stringContaining('test'))
 
                 // @ts-expect-error
-                wdioExpect('test').toBeCustomPromise()
+                expectAsync('test').toBeCustomPromise()
                 // @ts-expect-error
-                expectVoid = wdioExpect(chainableElement).toBeCustomPromise()
+                expectVoid = expectAsync(chainableElement).toBeCustomPromise()
                 // @ts-expect-error
-                expectVoid = wdioExpect(chainableElement).toBeCustomPromise(wdioExpect.stringContaining('test'))
+                expectVoid = expectAsync(chainableElement).toBeCustomPromise(wdioExpect.stringContaining('test'))
                 // @ts-expect-error
-                expectVoid = wdioExpect(chainableElement).not.toBeCustomPromise(wdioExpect.stringContaining('test'))
+                expectVoid = expectAsync(chainableElement).not.toBeCustomPromise(wdioExpect.stringContaining('test'))
                 // @ts-expect-error
-                wdioExpect(chainableElement).toBeCustomPromise(wdioExpect.stringContaining(6))
+                expectAsync(chainableElement).toBeCustomPromise(wdioExpect.stringContaining(6))
             })
-
-            it('should support custom asymmetric matcher', async () => {
-                const expectString1 : ExpectWebdriverIO.PartialMatcher<string> = wdioExpect.toBeCustom()
-                const expectString2 : ExpectWebdriverIO.PartialMatcher<string> = wdioExpect.not.toBeCustom()
-
-                expectPromiseVoid = wdioExpect(chainableElement).toBeCustomPromise(wdioExpect.toBeCustom())
-
-                // @ts-expect-error
-                expectPromiseVoid = wdioExpect.toBeCustom()
-                // @ts-expect-error
-                expectPromiseVoid = wdioExpect.not.toBeCustom()
-
-                //@ts-expect-error
-                expectVoid = wdioExpect(chainableElement).toBeCustomPromise(wdioExpect.toBeCustom())
-            })
-        })
-
-        describe('using `expect` module declaration', () => {
-
-            it('should support a simple matcher', async () => {
-                expectPromiseVoid = wdioExpect(5).toBeWithinRange(1, 10)
-
-                // Or as an asymmetric matcher:
-                expectPromiseVoid = wdioExpect({ value: 5 }).toEqual({
-                    value: wdioExpect.toBeWithinRange(1, 10)
-                })
-
-                // @ts-expect-error
-                expectVoid = wdioExpect(5).toBeWithinRange(1, '10')
-                // @ts-expect-error
-                expectPromiseVoid = wdioExpect(5).toBeWithinRange('1')
-            })
-
-            it('should support a simple custom matcher with a chainable element matcher with promise', async () => {
-                wdioExpect(chainableElement)
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveSimpleCustomProperty('text')
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveSimpleCustomProperty(wdioExpect.stringContaining('text'))
-                expectPromiseVoid = wdioExpect(chainableElement).not.toHaveSimpleCustomProperty(wdioExpect.not.stringContaining('text'))
-
-                // Or as a custom asymmetric matcher:
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveSimpleCustomProperty(
-                    wdioExpect.toHaveSimpleCustomProperty('string')
-                )
-                const expectString1:string = wdioExpect.toHaveSimpleCustomProperty('string')
-                const expectString2:string = wdioExpect.not.toHaveSimpleCustomProperty('string')
-
-                // @ts-expect-error
-                expectVoid = wdioExpect.toHaveSimpleCustomProperty(chainableElement)
-                // @ts-expect-error
-                expectVoid = wdioExpect.not.toHaveSimpleCustomProperty(chainableElement)
-
-                // @ts-expect-error
-                expectVoid = wdioExpect.toHaveSimpleCustomProperty(chainableElement)
-            })
-
-            it('should support a chainable element matcher with promise', async () => {
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveCustomProperty('text')
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveCustomProperty(wdioExpect.stringContaining('text'))
-                expectPromiseVoid = wdioExpect(chainableElement).not.toHaveCustomProperty(wdioExpect.not.stringContaining('text'))
-
-                // Or as a custom asymmetric matcher:
-                expectPromiseVoid = wdioExpect(chainableElement).toHaveCustomProperty(
-                    await wdioExpect.toHaveCustomProperty(chainableElement)
-                )
-                const expectPromiseWdioElement1: Promise<ExpectWebdriverIO.PartialMatcher<string>> = wdioExpect.toHaveCustomProperty(chainableElement)
-                const expectPromiseWdioElement2: Promise<ExpectWebdriverIO.PartialMatcher<string>> = wdioExpect.not.toHaveCustomProperty(chainableElement)
-
-                // @ts-expect-error
-                expectVoid = wdioExpect.toHaveCustomProperty(chainableElement)
-                // @ts-expect-error
-                expectVoid = wdioExpect.not.toHaveCustomProperty(chainableElement)
-
-                // @ts-expect-error
-                expectVoid = wdioExpect.toHaveCustomProperty(chainableElement)
-                // @ts-expect-error
-                wdioExpect.toHaveCustomProperty('test')
-
-                await wdioExpect(chainableElement).toHaveCustomProperty(
-                    await wdioExpect.toHaveCustomProperty(chainableElement)
-                )
-            })
-        })
-    })
-
-    describe('toBe', () => {
-
-        it('should expect void type when actual is a boolean', async () => {
-            expectPromiseVoid = wdioExpect(true).toBe(true)
-            expectPromiseVoid = wdioExpect(true).not.toBe(true)
-
-            //@ts-expect-error
-            expectVoid = wdioExpect(true).toBe(true)
-            //@ts-expect-error
-            expectVoid = wdioExpect(true).not.toBe(true)
-        })
-
-        it('should not expect Promise when actual is a chainable since toBe does not need to be awaited', async () => {
-            expectPromiseVoid = wdioExpect(chainableElement).toBe(true)
-            expectPromiseVoid = wdioExpect(chainableElement).not.toBe(true)
-
-            //@ts-expect-error
-            expectVoid = wdioExpect(chainableElement).toBe(true)
-            //@ts-expect-error
-            expectVoid = wdioExpect(chainableElement).not.toBe(true)
-        })
-
-        it('should still expect void type when actual is a Promise since we do not overload them', async () => {
-            const promiseBoolean = Promise.resolve(true)
-
-            expectPromiseVoid = wdioExpect(promiseBoolean).toBe(true)
-            expectPromiseVoid = wdioExpect(promiseBoolean).not.toBe(true)
-
-            //@ts-expect-error
-            expectVoid = wdioExpect(promiseBoolean).toBe(true)
-            //@ts-expect-error
-            expectVoid = wdioExpect(promiseBoolean).toBe(true)
-        })
-
-        it('should work with string', async () => {
-            expectPromiseVoid = wdioExpect('text').toBe(true)
-            expectPromiseVoid = wdioExpect('text').not.toBe(true)
-            expectPromiseVoid = wdioExpect('text').toBe(wdioExpect.stringContaining('text'))
-            expectPromiseVoid = wdioExpect('text').not.toBe(wdioExpect.stringContaining('text'))
-
-            //@ts-expect-error
-            expectVoid = wdioExpect('text').toBe(true)
-            //@ts-expect-error
-            expectVoid = wdioExpect('text').not.toBe(true)
-            //@ts-expect-error
-            expectVoid = wdioExpect('text').toBe(wdioExpect.stringContaining('text'))
-            //@ts-expect-error
-            expectVoid = wdioExpect('text').not.toBe(wdioExpect.stringContaining('text'))
         })
     })
 
@@ -500,9 +365,9 @@ describe('type assertions', () => {
 
         it('should not compile', async () => {
             //@ts-expect-error
-            wdioExpect(booleanPromise).resolves.toBe(true)
+            expectAsync(booleanPromise).resolves.toBe(true)
             //@ts-expect-error
-            wdioExpect(booleanPromise).rejects.toBe(true)
+            expectAsync(booleanPromise).rejects.toBe(true)
         })
 
     })
@@ -511,15 +376,15 @@ describe('type assertions', () => {
         const promiseNetworkMock = Promise.resolve(networkMock)
 
         it('should not have ts errors when typing to Promise', async () => {
-            expectPromiseVoid = wdioExpect(promiseNetworkMock).toBeRequested()
-            expectPromiseVoid = wdioExpect(promiseNetworkMock).toBeRequestedTimes(2)
-            expectPromiseVoid = wdioExpect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 })
+            expectPromiseVoid = expectAsync(promiseNetworkMock).toBeRequested()
+            expectPromiseVoid = expectAsync(promiseNetworkMock).toBeRequestedTimes(2)
+            expectPromiseVoid = expectAsync(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 })
 
-            expectPromiseVoid = wdioExpect(promiseNetworkMock).not.toBeRequested()
-            expectPromiseVoid = wdioExpect(promiseNetworkMock).not.toBeRequestedTimes(2)
-            expectPromiseVoid = wdioExpect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 })
+            expectPromiseVoid = expectAsync(promiseNetworkMock).not.toBeRequested()
+            expectPromiseVoid = expectAsync(promiseNetworkMock).not.toBeRequestedTimes(2)
+            expectPromiseVoid = expectAsync(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 })
 
-            expectPromiseVoid = wdioExpect(promiseNetworkMock).toBeRequestedWith({
+            expectPromiseVoid = expectAsync(promiseNetworkMock).toBeRequestedWith({
                 url: 'http://localhost:8080/api',
                 method: 'POST',
                 statusCode: 200,
@@ -529,7 +394,7 @@ describe('type assertions', () => {
                 response: { success: true },
             })
 
-            expectPromiseVoid = wdioExpect(promiseNetworkMock).toBeRequestedWith({
+            expectPromiseVoid = expectAsync(promiseNetworkMock).toBeRequestedWith({
                 url: wdioExpect.stringContaining('test'),
                 method: 'POST',
                 statusCode: 200,
@@ -539,7 +404,7 @@ describe('type assertions', () => {
                 response: wdioExpect.objectContaining({ success: true }),
             })
 
-            expectPromiseVoid = wdioExpect(promiseNetworkMock).toBeRequestedWith({
+            expectPromiseVoid = expectAsync(promiseNetworkMock).toBeRequestedWith({
                 url: wdioExpect.stringMatching(/.*\/api\/.*/i),
                 method: ['POST', 'PUT'],
                 statusCode: [401, 403],
@@ -551,21 +416,21 @@ describe('type assertions', () => {
 
         it('should have ts errors when typing to void', async () => {
             // @ts-expect-error
-            expectVoid = wdioExpect(promiseNetworkMock).toBeRequested()
+            expectVoid = expectAsync(promiseNetworkMock).toBeRequested()
             // @ts-expect-error
-            expectVoid = wdioExpect(promiseNetworkMock).toBeRequestedTimes(2) // await wdioExpect(mock).toBeRequestedTimes({ eq: 2 })
+            expectVoid = expectAsync(promiseNetworkMock).toBeRequestedTimes(2) // await expectAsync(mock).toBeRequestedTimes({ eq: 2 })
             // @ts-expect-error
-            expectVoid = wdioExpect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+            expectVoid = expectAsync(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
 
             // @ts-expect-error
-            expectVoid = wdioExpect(promiseNetworkMock).not.toBeRequested()
+            expectVoid = expectAsync(promiseNetworkMock).not.toBeRequested()
             // @ts-expect-error
-            expectVoid = wdioExpect(promiseNetworkMock).not.toBeRequestedTimes(2) // await wdioExpect(mock).toBeRequestedTimes({ eq: 2 })
+            expectVoid = expectAsync(promiseNetworkMock).not.toBeRequestedTimes(2) // await expectAsync(mock).toBeRequestedTimes({ eq: 2 })
             // @ts-expect-error
-            expectVoid = wdioExpect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+            expectVoid = expectAsync(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
 
             // @ts-expect-error
-            expectVoid = wdioExpect(promiseNetworkMock).toBeRequestedWith({
+            expectVoid = expectAsync(promiseNetworkMock).toBeRequestedWith({
                 url: 'http://localhost:8080/api',
                 method: 'POST',
                 statusCode: 200,
@@ -576,7 +441,7 @@ describe('type assertions', () => {
             })
 
             // @ts-expect-error
-            expectVoid = wdioExpect(promiseNetworkMock).toBeRequestedWith(wdioExpect.objectContaining({
+            expectVoid = expectAsync(promiseNetworkMock).toBeRequestedWith(wdioExpect.objectContaining({
                 response: { success: true },
             }))
         })
@@ -617,7 +482,7 @@ describe('type assertions', () => {
             wdioExpect.not.arrayOf(wdioExpect.stringContaining('WebdriverIO'))
         })
 
-        describe('Soft Assertions', async () => {
+        describe('Soft Assertions on (not supported)', async () => {
             const actualString: string = 'Test Page'
             const actualPromiseString: Promise<string> = Promise.resolve('Test Page')
 
@@ -689,146 +554,7 @@ describe('type assertions', () => {
                     // @ts-expect-error
                     expectVoid = wdioExpect.soft(chainableArray).not.toBeDisplayed()
                 })
-
-                // Those should return a Promise<void> but soft assertions is not even working at runtime.
-                // See Jasmine point 6 in the following issue: https://github.com/webdriverio/expect-webdriverio/issues/1893
-                // it('should work with custom matcher and custom asymmetric matchers from `expect` module', async () => {
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty('text')
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty(wdioExpect.stringContaining('text'))
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).not.toHaveCustomProperty(wdioExpect.not.stringContaining('text'))
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty(
-                //         wdioExpect.toHaveCustomProperty(chainableElement)
-                //     )
-
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty('text')
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty(wdioExpect.stringContaining('text'))
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).not.toHaveCustomProperty(wdioExpect.not.stringContaining('text'))
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty(
-                //         wdioExpect.toHaveCustomProperty(chainableElement)
-                //     )
-
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty('text')
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty(wdioExpect.stringContaining('text'))
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).not.toHaveCustomProperty(wdioExpect.not.stringContaining('text'))
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty(
-                //         wdioExpect.toHaveCustomProperty(chainableElement)
-                //     )
-
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty('text')
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty(wdioExpect.stringContaining('text'))
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).not.toHaveCustomProperty(wdioExpect.not.stringContaining('text'))
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toHaveCustomProperty(
-                //         wdioExpect.toHaveCustomProperty(chainableElement)
-                //     )
-                // })
-
-                // it('should work with custom matcher and custom asymmetric matchers from `ExpectWebDriverIO` namespace', async () => {
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toBeCustomPromise('text')
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toBeCustomPromise(wdioExpect.stringContaining('text'))
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).not.toBeCustomPromise(wdioExpect.not.stringContaining('text'))
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toBeCustomPromise(
-                //         wdioExpect.toBeCustomPromise(chainableElement)
-                //     )
-
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toBeCustomPromise('text')
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toBeCustomPromise(wdioExpect.stringContaining('text'))
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).not.toBeCustomPromise(wdioExpect.not.stringContaining('text'))
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toBeCustomPromise(
-                //         wdioExpect.toBeCustomPromise(chainableElement)
-                //     )
-
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toBeCustomPromise('text')
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toBeCustomPromise(wdioExpect.stringContaining('text'))
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).not.toBeCustomPromise(wdioExpect.not.stringContaining('text'))
-                //     expectPromiseVoid = wdioExpect.soft(chainableElement).toBeCustomPromise(
-                //         wdioExpect.toBeCustomPromise(chainableElement)
-                //     )
-
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toBeCustomPromise('text')
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toBeCustomPromise(wdioExpect.stringContaining('text'))
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).not.toBeCustomPromise(wdioExpect.not.stringContaining('text'))
-                //     // @ts-expect-error
-                //     expectVoid = wdioExpect.soft(chainableElement).toBeCustomPromise(
-                //         wdioExpect.toBeCustomPromise(chainableElement)
-                //     )
-                // })
             })
-
-            describe('wdioExpect.getSoftFailures', () => {
-                it('should be of type `SoftFailure`', async () => {
-                    const expectSoftFailure1: ExpectWebdriverIO.SoftFailure[] = wdioExpect.getSoftFailures()
-
-                    // @ts-expect-error
-                    expectVoid = wdioExpect.getSoftFailures()
-                })
-            })
-
-            describe('wdioExpect.assertSoftFailures', () => {
-                it('should be of type void', async () => {
-                    expectVoid = wdioExpect.assertSoftFailures()
-
-                    // @ts-expect-error
-                    expectPromiseVoid = wdioExpect.assertSoftFailures()
-                })
-            })
-
-            describe('wdioExpect.clearSoftFailures', () => {
-                it('should be of type void', async () => {
-                    expectVoid = wdioExpect.clearSoftFailures()
-
-                    // @ts-expect-error
-                    expectPromiseVoid = wdioExpect.clearSoftFailures()
-                })
-            })
-        })
-    })
-
-    describe('Asymmetric matchers', () => {
-        const string: string = 'WebdriverIO is a test framework'
-        const array: string[] = ['WebdriverIO', 'Test']
-        const object: { name: string } = { name: 'WebdriverIO' }
-        const number: number = 1
-
-        it('should have no ts error using asymmetric matchers', async () => {
-            wdioExpect(string).toEqual(wdioExpect.stringContaining('WebdriverIO'))
-            wdioExpect(array).toEqual(wdioExpect.arrayContaining(['WebdriverIO', 'Test']))
-            wdioExpect(object).toEqual(wdioExpect.objectContaining({ name: 'WebdriverIO' }))
-            wdioExpect(number).toEqual(wdioExpect.closeTo(1.0001, 0.0001))
-            wdioExpect(['apple', 'banana', 'cherry']).toEqual(wdioExpect.arrayOf(wdioExpect.any(String)))
-        })
-    })
-
-    describe('Jasmine only cases', () => {
-        let expectPromiseLikeVoid: PromiseLike<void>
-
-        it('should not overwrite the jasmine global expect', async () => {
-            const expectVoid: jasmine.ArrayLikeMatchers<string> = expect('test')
-        })
-        it('should support expectAsync correctly for non wdio types', async () => {
-            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).toBeResolved()
-            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).toBeResolvedTo(wdioExpect.stringContaining('test error'))
-            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).not.toBeResolvedTo(wdioExpect.not.stringContaining('test error'))
-            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).toBeRejected()
-            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).not.toBeResolved()
-            expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).not.toBeRejected()
-        })
-        it('should work with Jasmine withContext', async () => {
-            await expect('title').withContext('checking title').toBe('title')
         })
     })
 })
