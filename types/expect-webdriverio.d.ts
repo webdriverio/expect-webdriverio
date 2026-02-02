@@ -110,7 +110,7 @@ interface WdioNetworkMatchers<_R, ActualT> {
     /**
      * Check that `WebdriverIO.Mock` was called with the specific parameters
      */
-    toBeRequestedWith: FnWhenMock<ActualT, (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+    toBeRequestedWith: FnWhenMock<ActualT, (requestedWith: ExpectWebdriverIO.RequestedWith | ExpectWebdriverIO.PartialMatcher<ExpectWebdriverIO.RequestedWith>, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 }
 
 /**
