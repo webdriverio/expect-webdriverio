@@ -1,63 +1,68 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 import { toHaveHref } from '../../../src/matchers/element/toHaveHref.js'
 import type { AssertionResult } from 'expect-webdriverio'
 
 vi.mock('@wdio/globals')
 
-describe('toHaveHref', () => {
-    let el: ChainablePromiseElement
+describe(toHaveHref, () => {
 
-    beforeEach(async () => {
-        el = await $('sel')
-        el.getAttribute = vi.fn().mockImplementation((attribute: string) => {
-            if (attribute === 'href') {
-                return 'https://www.example.com'
-            }
-            return null
-        })
+    let thisContext: { 'toHaveHref': typeof toHaveHref }
+
+    beforeEach(() => {
+        thisContext = { 'toHaveHref': toHaveHref }
     })
 
-    test('success when contains', async () => {
-        const beforeAssertion = vi.fn()
-        const afterAssertion = vi.fn()
-        const result = await toHaveHref.call({}, el, 'https://www.example.com', { beforeAssertion, afterAssertion })
-        expect(result.pass).toBe(true)
-        expect(beforeAssertion).toBeCalledWith({
-            matcherName: 'toHaveHref',
-            expectedValue: 'https://www.example.com',
-            options: { beforeAssertion, afterAssertion }
-        })
-        expect(afterAssertion).toBeCalledWith({
-            matcherName: 'toHaveHref',
-            expectedValue: 'https://www.example.com',
-            options: { beforeAssertion, afterAssertion },
-            result
-        })
-    })
-
-    describe('failure when doesnt contain', () => {
-        let result: AssertionResult
+    describe('given a single element', () => {
+        let el: ChainablePromiseElement
 
         beforeEach(async () => {
-            result = await toHaveHref.call({}, el, 'an href')
+            el = await $('sel')
+            vi.mocked(el.getAttribute)
+                .mockImplementation(async (attribute: string) => {
+                    if (attribute === 'href') {
+                        return 'https://www.example.com'
+                    }
+                    return null
+                })
         })
 
-        test('failure', () => {
-            expect(result.pass).toBe(false)
+        test('success when contains', async () => {
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+
+            const result = await thisContext.toHaveHref(el, 'https://www.example.com', { wait: 0, beforeAssertion, afterAssertion })
+
+            expect(result.pass).toBe(true)
+            expect(beforeAssertion).toBeCalledWith({
+                matcherName: 'toHaveHref',
+                expectedValue: 'https://www.example.com',
+                options: { beforeAssertion, afterAssertion, wait: 0 }
+            })
+            expect(afterAssertion).toBeCalledWith({
+                matcherName: 'toHaveHref',
+                expectedValue: 'https://www.example.com',
+                options: { beforeAssertion, afterAssertion, wait: 0 },
+                result
+            })
         })
 
-        describe('message shows correctly', () => {
-            test('expect message', () => {
-                expect(getExpectMessage(result.message())).toContain('to have attribute href')
+        describe('failure when doesnt contain', () => {
+            let result: AssertionResult
+
+            beforeEach(async () => {
+                result = await thisContext.toHaveHref(el, 'an href')
             })
-            test('expected message', () => {
-                expect(getExpected(result.message())).toContain('an href')
-            })
-            test('received message', () => {
-                expect(getReceived(result.message())).toContain('https://www.example.com')
+
+            test('failure with proper failure message', () => {
+                expect(result.pass).toBe(false)
+                expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have attribute href
+
+Expected: "an href"
+Received: "https://www.example.com"`
+                )
             })
         })
     })

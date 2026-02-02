@@ -1,66 +1,58 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
+import { validateNumberOptionsArray } from '../../util/numberOptionsUtil.js'
 import {
-    compareNumbers,
     enhanceError,
-    executeCommand,
-    numberError,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, options: ExpectWebdriverIO.NumberOptions) {
+async function condition(el: WebdriverIO.Element, value: NumberMatcher) {
     const children = await el.$$('./*').getElements()
 
-    // If no options passed in + children exists
-    if (
-        typeof options.lte !== 'number' &&
-        typeof options.gte !== 'number' &&
-        typeof options.eq !== 'number'
-    ) {
-        return {
-            result: children.length > 0,
-            value: children?.length
-        }
-    }
-
     return {
-        result: compareNumbers(children?.length, options),
+        result: value.equals(children?.length),
         value: children?.length
     }
 }
 
 export async function toHaveChildren(
-    received: WdioElementMaybePromise,
-    expectedValue?: number | ExpectWebdriverIO.NumberOptions,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue?: MaybeArray<number | ExpectWebdriverIO.NumberOptions>,
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'children', verb = 'have' } = this
+    const { expectation = 'children', verb = 'have', matcherName = 'toHaveChildren', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveChildren',
+        matcherName,
         expectedValue,
         options,
     })
 
-    const numberOptions: ExpectWebdriverIO.NumberOptions = typeof expectedValue === 'number'
-        ? { eq: expectedValue } as ExpectWebdriverIO.NumberOptions
-        : expectedValue || {}
+    const  { numberMatcher, numberCommandOptions } = validateNumberOptionsArray(expectedValue ?? { gte: 1 })
 
-    let el = await received?.getElement()
+    let el
     let children
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, condition, numberOptions, [numberOptions])
-        el = result.el as WebdriverIO.Element
-        children = result.values
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand(received,
+                undefined,
+                async (elements) => defaultMultipleElementsIterationStrategy(elements, numberMatcher, condition)
+            )
 
-        return result.success
-    }, isNot, { ...numberOptions, ...options })
+            el = result.elementOrArray
+            children = result.valueOrArray
 
-    const error = numberError(numberOptions)
-    const expectedArray = wrapExpectedWithArray(el, children, error)
-    const message = enhanceError(el, expectedArray, children, this, verb, expectation, '', numberOptions)
+            return result
+        },
+        isNot,
+        { wait: numberCommandOptions?.wait ?? options.wait, interval: numberCommandOptions?.interval ?? options.interval }
+    )
+
+    const expectedArray = wrapExpectedWithArray(el, children, numberMatcher)
+    const message = enhanceError(el, expectedArray, children, this, verb, expectation, '', { ...numberCommandOptions, ...options })
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

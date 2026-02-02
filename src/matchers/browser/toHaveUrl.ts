@@ -6,21 +6,24 @@ export async function toHaveUrl(
     expectedValue: string | RegExp | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'url', verb = 'have' } = this
+    const { expectation = 'url', verb = 'have', matcherName = 'toHaveUrl', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveUrl',
+        matcherName,
         expectedValue,
         options,
     })
 
     let actual
-    const pass = await waitUntil(async () => {
-        actual = await browser.getUrl()
+    const pass = await waitUntil(
+        async () => {
+            actual = await browser.getUrl()
 
-        return compareText(actual, expectedValue, options).result
-    }, isNot, options)
+            return compareText(actual, expectedValue, options).result
+        },
+        isNot,
+        options
+    )
 
     const message = enhanceError('window', expectedValue, actual, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
@@ -29,7 +32,7 @@ export async function toHaveUrl(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveUrl',
+        matcherName,
         expectedValue,
         options,
         result

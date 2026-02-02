@@ -10,25 +10,27 @@ export async function toHaveClipboardText(
     expectedValue: string | RegExp | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'clipboard text', verb = 'have' } = this
+    const { expectation = 'clipboard text', verb = 'have', matcherName = 'toHaveClipboardText', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveClipboardText',
+        matcherName,
         expectedValue,
         options,
     })
 
     let actual
-    const pass = await waitUntil(async () => {
-        await browser.setPermissions({ name: 'clipboard-read' }, 'granted')
+    const pass = await waitUntil(
+        async () => {
+            await browser.setPermissions({ name: 'clipboard-read' }, 'granted')
             /**
              * changes are that some browser don't support the clipboard API yet
              */
-            .catch((err) => log.warn(`Couldn't set clipboard permissions: ${err}`))
-        actual = await browser.execute(() => window.navigator.clipboard.readText())
-        return compareText(actual, expectedValue, options).result
-    }, isNot, options)
+                .catch((err) => log.warn(`Couldn't set clipboard permissions: ${err}`))
+            actual = await browser.execute(() => window.navigator.clipboard.readText())
+            return compareText(actual, expectedValue, options).result
+        },
+        isNot,
+        options)
 
     const message = enhanceError('browser', expectedValue, actual, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
@@ -37,7 +39,7 @@ export async function toHaveClipboardText(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveClipboardText',
+        matcherName,
         expectedValue,
         options,
         result

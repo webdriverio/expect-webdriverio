@@ -1,9 +1,9 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
 import {
     compareStyle,
     enhanceError,
-    executeCommand,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
@@ -13,29 +13,35 @@ async function condition(el: WebdriverIO.Element, style: { [key: string]: string
 }
 
 export async function toHaveStyle(
-    received: WdioElementMaybePromise,
-    expectedValue: { [key: string]: string; },
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<{ [key: string]: string; }>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'style', verb = 'have' } = this
+    const { expectation = 'style', verb = 'have', isNot, matcherName = 'toHaveStyle' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveStyle',
+        matcherName,
         expectedValue,
         options,
     })
 
-    let el = await received?.getElement()
+    let el
     let actualStyle
 
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
-        el = result.el as WebdriverIO.Element
-        actualStyle = result.values
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand(received,
+                undefined,
+                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (element, expected) => condition(element, expected, options))
+            )
+            el = result.elementOrArray
+            actualStyle = result.valueOrArray
 
-        return result.success
-    }, isNot, options)
+            return result
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
     const message = enhanceError(el, wrapExpectedWithArray(el, actualStyle, expectedValue), actualStyle, this, verb, expectation, '', options)
 
@@ -45,7 +51,7 @@ export async function toHaveStyle(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveStyle',
+        matcherName,
         expectedValue,
         options,
         result

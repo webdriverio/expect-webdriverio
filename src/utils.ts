@@ -3,13 +3,12 @@ import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
 
-import { DEFAULT_OPTIONS } from './constants.js'
-import type { WdioElementMaybePromise } from './types.js'
+import type { WdioElementOrArrayMaybePromise, WdioElements } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
-import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
+import { waitUntil } from './util/waitUntil.js'
+import { DEFAULT_OPTIONS } from './constants.js'
 
 const asymmetricMatcher =
     typeof Symbol === 'function' && Symbol.for
@@ -31,83 +30,33 @@ function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetri
     return isAsymmetricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
 }
 
-/**
- * wait for expectation to succeed
- * @param condition function
- * @param isNot     https://jestjs.io/docs/expect#thisisnot
- * @param options   wait, interval, etc
- */
-const waitUntil = async (
-    condition: () => Promise<boolean>,
-    isNot = false,
-    { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
-): Promise<boolean> => {
-    // single attempt
-    if (wait === 0) {
-        return await condition()
-    }
-
-    let error: Error | undefined
-
-    // wait for condition to be truthy
-    try {
-        const start = Date.now()
-        while (true) {
-            if (Date.now() - start > wait) {
-                throw new Error('timeout')
-            }
-
-            try {
-                const result = isNot !== (await condition())
-                error = undefined
-                if (result) {
-                    break
-                }
-                await sleep(interval)
-            } catch (err) {
-                error = err
-                await sleep(interval)
-            }
-        }
-
-        if (error) {
-            throw error
-        }
-
-        return !isNot
-    } catch {
-        if (error) {
-            throw error
-        }
-
-        return isNot
-    }
-}
-
 async function executeCommandBe(
-    received: WdioElementMaybePromise,
+    nonAwaitedElements: WdioElementOrArrayMaybePromise | undefined,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): ExpectWebdriverIO.AsyncAssertionResult {
-    const { isNot, expectation, verb = 'be' } = this
+    const { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = options
 
-    let el = await received?.getElement()
+    let awaitedElements: WdioElements | WebdriverIO.Element | undefined
+    let allResults: boolean[] = []
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(
-                this,
-                el,
-                async (element ) => ({ result: await command(element as WebdriverIO.Element) }),
-                options
+            const  { elementOrArray, success, results } = await executeCommand(
+                nonAwaitedElements,
+                async (element) => ({ result: await command(element) })
             )
-            el = result.el as WebdriverIO.Element
-            return result.success
+
+            awaitedElements = elementOrArray
+            allResults = results
+
+            return { success, results }
         },
-        isNot,
-        options
+        this.isNot,
+        { wait, interval }
     )
 
-    const message = enhanceErrorBe(el, pass, this, verb, expectation, options)
+    const  { verb = 'be' } = this
+    const message = enhanceErrorBe(awaitedElements, allResults, { ...this, verb }, options)
 
     return {
         pass,
@@ -224,12 +173,21 @@ export const compareText = (
     }
 }
 
+/**
+ * Compare actual text with array of expected texts in a non-strict way
+ * if the actual text matches with any of the expected texts, it returns true
+ *
+ * @param actual
+ * @param expectedArray
+ * @param param2
+ * @returns
+ */
 export const compareTextWithArray = (
     actual: string,
     expectedArray: Array<string | RegExp | WdioAsymmetricMatcher<string>>,
     {
         ignoreCase = false,
-        trim = false,
+        trim = true,
         containing = false,
         atStart = false,
         atEnd = false,
@@ -292,7 +250,7 @@ export const compareTextWithArray = (
     }
 }
 
-export const compareObject = (actual: object | number, expected: string | number | object) => {
+export const compareObject = <T>(actual: T, expected: unknown) => {
     if (typeof actual !== 'object' || Array.isArray(actual)) {
         return {
             value: actual,
@@ -365,25 +323,9 @@ export const compareStyle = async (
     }
 }
 
-function aliasFn(
-    fn: (...args: unknown[]) => void,
-    {
-        verb,
-        expectation,
-    }: {
-        verb?: string
-        expectation?: string
-    } = {},
-    ...args: unknown[]
-): unknown {
-    this.verb = verb
-    this.expectation = expectation
-    return fn.apply(this, args)
-}
-
 export {
-    aliasFn, compareNumbers, enhanceError, executeCommand,
-    executeCommandBe, numberError, waitUntil, wrapExpectedWithArray
+    compareNumbers, enhanceError,
+    executeCommandBe, waitUntil, wrapExpectedWithArray
 }
 
 function replaceActual(

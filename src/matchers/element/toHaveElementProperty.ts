@@ -1,9 +1,9 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
 import {
     compareText,
     enhanceError,
-    executeCommand,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
@@ -11,12 +11,12 @@ import {
 async function condition(
     el: WebdriverIO.Element,
     property: string,
-    value: unknown,
+    expected: string | number | null | RegExp | WdioAsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { asString = false } = options
 
-    let prop = await el.getProperty(property)
+    const prop = await el.getProperty(property)
 
     // As specified in the w3c spec, cases where property does not exist
     if (prop === null || prop === undefined) {
@@ -24,54 +24,55 @@ async function condition(
     }
 
     // As specified in the w3c spec, cases where property simply exists, missing undefined here?
-    if (value === null) {
+    if (expected === null) {
         return { result: true, value: prop }
     }
 
-    if (!(value instanceof RegExp) && typeof prop !== 'string' && !asString) {
-        return { result: prop === value, value: prop }
+    if (!(expected instanceof RegExp) && typeof prop !== 'string' && !asString) {
+        return { result: prop === expected, value: prop }
     }
 
-    prop = prop.toString()
-    return compareText(prop as string, value as string | RegExp | WdioAsymmetricMatcher<string>, options)
+    // To review the cast to be more type safe but for now let's keep the existing behavior to ensure no regression
+    return compareText(prop.toString(), expected as string | RegExp | WdioAsymmetricMatcher<string>, options)
 }
 
 export async function toHaveElementProperty(
-    received: WdioElementMaybePromise,
+    received: WdioElementOrArrayMaybePromise,
     property: string,
-    value?: string | RegExp | WdioAsymmetricMatcher<string> | null,
+    expectedValue: MaybeArray<string | number | null | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'property', verb = 'have' } = this
+    const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveElementProperty',
-        expectedValue: [property, value],
+        matcherName,
+        expectedValue: [property, expectedValue],
         options,
     })
 
-    let el = await received?.getElement()
+    let el
     let prop: unknown
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [property, value])
-            el = result.el as WebdriverIO.Element
-            prop = result.values
+            const result = await executeCommand(received, undefined,
+                (elements) => defaultMultipleElementsIterationStrategy(
+                    elements,
+                    expectedValue,
+                    (element, expected) => condition(element, property, expected, options),
+                    { supportArrayForSingleElement: true }
+                )
+            )
+            el = result.elementOrArray
+            prop = result.valueOrArray
 
-            return result.success
+            return result
         },
         isNot,
-        options
+        { wait: options.wait, interval: options.interval }
     )
 
-    let message: string
-    if (value === undefined) {
-        message = enhanceError(el, !isNot, pass, this, verb, expectation, property, options)
-    } else {
-        const expected = wrapExpectedWithArray(el, prop, value)
-        message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
-    }
+    const expected = wrapExpectedWithArray(el, prop, expectedValue)
+    const message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
@@ -79,8 +80,8 @@ export async function toHaveElementProperty(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveElementProperty',
-        expectedValue: [property, value],
+        matcherName,
+        expectedValue: [property, expectedValue],
         options,
         result
     })

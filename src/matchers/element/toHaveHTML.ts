@@ -1,15 +1,16 @@
-import type { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio'
 
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
-    compareText, compareTextWithArray,
+    compareText,
+    compareTextWithArray,
     enhanceError,
-    executeCommand,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
 
-async function condition(el: WebdriverIO.Element, html: string | RegExp | WdioAsymmetricMatcher<string> | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions) {
+async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>, options: ExpectWebdriverIO.HTMLOptions) {
     const actualHTML = await el.getHTML(options)
     if (Array.isArray(html)) {
         return compareTextWithArray(actualHTML, html, options)
@@ -17,36 +18,44 @@ async function condition(el: WebdriverIO.Element, html: string | RegExp | WdioAs
     return compareText(actualHTML, html, options)
 }
 
+async function multipleElementsStrategyCompare(el: WebdriverIO.Element, html: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.HTMLOptions) {
+    const actualHTML = await el.getHTML(options)
+    return compareText(actualHTML, html, options)
+}
+
 export async function toHaveHTML(
-    received: ChainablePromiseArray | ChainablePromiseElement,
-    expectedValue: string | RegExp | WdioAsymmetricMatcher<string> | Array<string | RegExp>,
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'HTML', verb = 'have' } = this
+    const { expectation = 'HTML', verb = 'have', isNot, matcherName = 'toHaveHTML' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveHTML',
+        matcherName,
         expectedValue,
         options,
     })
 
-    let el = 'getElement' in received
-        ? await received?.getElement()
-        : 'getElements' in received
-            ? await received?.getElements()
-            : received
+    let elements
     let actualHTML
 
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
-        el = result.el as WebdriverIO.Element
-        actualHTML = result.values
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand(received,
+                (element) => singleElementCompare(element, expectedValue, options),
+                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (el, html) => multipleElementsStrategyCompare(el, html, options))
+            )
+            elements = result.elementOrArray
+            actualHTML = result.valueOrArray
 
-        return result.success
-    }, isNot, options)
+            return result
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
-    const message = enhanceError(el, wrapExpectedWithArray(el, actualHTML, expectedValue), actualHTML, this, verb, expectation, '', options)
+    const expectedValues = wrapExpectedWithArray(elements, actualHTML, expectedValue)
+    const message = enhanceError(elements, expectedValues, actualHTML, this, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
@@ -54,7 +63,7 @@ export async function toHaveHTML(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveHTML',
+        matcherName,
         expectedValue,
         options,
         result

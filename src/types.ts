@@ -11,8 +11,14 @@ export type WdioElementsMaybePromise =
     WdioElements |
     ChainablePromiseArray
 
+export type WdioElementOrArrayMaybePromise =
+    WdioElementMaybePromise |
+    WdioElementsMaybePromise
+
 export type RawMatcherFn<Context extends MatcherContext = MatcherContext> = {
     (this: Context, actual: unknown, ...expected: unknown[]): ExpectationResult;
 }
 
 export type WdioMatchersObject = Map<string, RawMatcherFn>
+
+export type MaybeArray<T> = T | T[]
