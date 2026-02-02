@@ -1,4 +1,4 @@
-import { expect, matchers } from './index.js'
+import { expect, wdioCustomMatchers } from './index.js'
 import { SoftAssertService } from './softAssert.js'
 
 /**
@@ -24,7 +24,7 @@ const createSoftExpect = <T = unknown>(actual: T): ExpectWebdriverIO.Matchers<Pr
             }
 
             // Handle matchers
-            if (matchers.has(propName)) {
+            if (wdioCustomMatchers.has(propName)) {
                 return createSoftMatcher(actual, propName, softService)
             }
 
@@ -41,7 +41,7 @@ const createSoftNotProxy = <T>(actual: T, softService: SoftAssertService) => {
     return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void>, T>, {
         get(target, prop) {
             const propName = String(prop)
-            if (matchers.has(propName)) {
+            if (wdioCustomMatchers.has(propName)) {
                 return createSoftMatcher(actual, propName, softService, 'not')
             }
             return undefined
@@ -56,7 +56,7 @@ const createSoftChainProxy = <T>(actual: T, chainType: string, softService: Soft
     return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void>, T>, {
         get(target, prop) {
             const propName = String(prop)
-            if (matchers.has(propName)) {
+            if (wdioCustomMatchers.has(propName)) {
                 return createSoftMatcher(actual, propName, softService, chainType)
             }
             return undefined
