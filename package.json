@@ -98,9 +98,7 @@
     "shelljs": "^0.10.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16",
-    "webdriverio": "^9.21.0",
-    "jasmine": "^5.1.2",
-    "jasmine-core": "^5.1.2"
+    "webdriverio": "^9.21.0"
   },
   "peerDependencies": {
     "@wdio/globals": "^9.0.0",

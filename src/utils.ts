@@ -19,30 +19,24 @@ export function isJasmineAsymmetricMatcher<T>(expected: unknown): expected is Ja
     return isAsymmetricMatcher(expected) && 'expected' in expected
 }
 
-export function isAsymmetricMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> | JasmineAsymmetricMatcher<unknown> {
+export function isAsymmetricMatcher<T>(expected: unknown): expected is WdioAsymmetricMatcher<T> | JasmineAsymmetricMatcher<T> {
     return (
         typeof expected === 'object' &&
         !!expected &&
         'asymmetricMatch' in expected &&
-        Boolean(expected.asymmetricMatch)
+        !!expected.asymmetricMatch
     )
 }
 
-export function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> | JasmineAsymmetricMatcher<unknown> {
+export function isStringContainingMatcherLike(expected: unknown): expected is WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> {
     return !!expected && expected.constructor.name === 'StringContaining'
 }
 
-export function isStrictStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> | JasmineAsymmetricMatcher<unknown> {
-    if (isStringContainingMatcher(expected)) {
-        if (isWdioAsymmetricMatcher(expected)) {
-            return expected.toString().includes('StringContaining')
-        }
-        return true
-    }
-    return false
+export function isStrictlyStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> {
+    return isStringContainingMatcherLike(expected) && (!isWdioAsymmetricMatcher(expected) || expected.toString().includes('StringContaining'))
 }
 
-export function getValueFromAsymmetricMatcher<T>(
+export function getAsymmetricMatcherValue<T>(
     expected: WdioAsymmetricMatcher<T> | JasmineAsymmetricMatcher<T>
 ): T {
     if ('expected' in expected) {
@@ -50,7 +44,7 @@ export function getValueFromAsymmetricMatcher<T>(
     } else if ('sample' in expected) {
         return expected.sample
     }
-    throw new Error('Could not extract value from asymmetric matcher: ' + expected)
+    throw new Error(`Could not extract value from asymmetric matcher: ${String(expected)}`)
 }
 
 /**
@@ -191,9 +185,9 @@ export const compareText = (
         actual = actual.toLowerCase()
         if (typeof expected === 'string') {
             expected = expected.toLowerCase()
-        } else if (isStringContainingMatcher(expected)) {
-            const sample = getValueFromAsymmetricMatcher<string>(expected).toString().toLocaleLowerCase()
-            expected = (isStrictStringContainingMatcher(expected)
+        } else if (isStringContainingMatcherLike(expected)) {
+            const sample = getAsymmetricMatcherValue<string>(expected).toString().toLocaleLowerCase()
+            expected = (isStrictlyStringContainingMatcher(expected)
                 ? expect.stringContaining(sample)
                 : expect.not.stringContaining(sample)) as WdioAsymmetricMatcher<string>
         }
@@ -279,7 +273,7 @@ export const compareTextWithArray = (
             if (typeof item === 'string') {
                 return item.toLowerCase()
             }
-            if (isStringContainingMatcher(item)) {
+            if (isStringContainingMatcherLike(item)) {
                 return (item.toString() === 'StringContaining'
                     ? expect.stringContaining(item.sample?.toString().toLowerCase())
                     : expect.not.stringContaining(item.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>

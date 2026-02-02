@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest'
-import { compareNumbers, compareObject, compareText, compareTextWithArray, isAsymmetricMatcher, isStringContainingMatcher, waitUntil } from '../src/utils'
+import { compareNumbers, compareObject, compareText, compareTextWithArray, getAsymmetricMatcherValue, isAsymmetricMatcher, isStrictlyStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
 
 describe('utils', () => {
 
@@ -386,7 +386,7 @@ describe('utils', () => {
                 // @ts-expect-error
                 expect(() => new StringContaining(123)).toThrow('Expected is not a string')
             })
-            test('toString and getExpectedType', () => {
+            test('jasmineToString and getExpectedType', () => {
                 const matcher = new StringContaining('foo')
                 expect(matcher.jasmineToString()).toBe('<jasmine.stringContaining>')
                 expect(matcher.getExpectedType()).toBe('string')
@@ -396,19 +396,58 @@ describe('utils', () => {
         test.for([
             expect.stringContaining('foo'),
             new StringContaining('foo')
-        ])('isAsymmetricMatcher should work with %s matcher', async (asymmetricMatcher) => {
+        ])('should work with %s matcher', async (asymmetricMatcher) => {
             const isAsymmetric = isAsymmetricMatcher(asymmetricMatcher)
 
             expect(isAsymmetric).toBe(true)
         })
+    })
 
+    describe(isStringContainingMatcherLike, () => {
         test.for([
             expect.stringContaining('foo'),
+            expect.not.stringContaining('foo'),
             new StringContaining('foo')
-        ])('isStringContainingMatcher should work with %s matcher', async (asymmetricMatcher) => {
-            const isAsymmetric = isStringContainingMatcher(asymmetricMatcher)
+        ])('should work with %s matcher', async (asymmetricMatcher) => {
+            const isStringContaining = isStringContainingMatcherLike(asymmetricMatcher)
 
-            expect(isAsymmetric).toBe(true)
+            expect(isStringContaining).toBe(true)
+        })
+    })
+
+    describe(isStrictlyStringContainingMatcher, () => {
+        test.for([
+            // expect.stringContaining('foo'),
+            new StringContaining('foo')
+        ])('should work with %s matcher', async (asymmetricMatcher) => {
+            const isStrictlyStringContaining = isStrictlyStringContainingMatcher(asymmetricMatcher)
+
+            expect(isStrictlyStringContaining).toBe(true)
+        })
+
+        test('should work with %s matcher', async () => {
+            const asymmetricMatcher = expect.not.stringContaining('foo')
+
+            const isStrictlyStringContaining = isStrictlyStringContainingMatcher(asymmetricMatcher)
+
+            expect(isStrictlyStringContaining).toBe(false)
+        })
+    })
+
+    describe(getAsymmetricMatcherValue, () => {
+        test.for([
+            expect.stringContaining('foo'),
+            expect.not.stringContaining('foo'),
+            new StringContaining('foo'),
+        ])('should return expected value of matcher', (asymmetricMatcher) => {
+
+            const value = getAsymmetricMatcherValue(asymmetricMatcher)
+
+            expect(value).toBe('foo')
+        })
+
+        test('should throw when unknown matcher', () => {
+            expect(() => getAsymmetricMatcherValue({} as any)).toThrow('Could not extract value from asymmetric matcher: [object Object]')
         })
     })
 })

@@ -983,18 +983,10 @@ await expect(browser).toHaveTitle(expect.not.stringContaining('some title'))
 
 ### Jasmine
 
-Even under `@wdio/jasmine-framework`, Jasmine asymmetric matchers do not work with WebdriverIO matchers. 
+Under `@wdio/jasmine-framework`, Jasmine asymmetric matchers now works with WebdriverIO matchers and the global import 
 
 ```ts
-// DOES NOT work
+// Jasmine stringContaining works just lik expect one's
 await expect(browser).toHaveTitle(jasmine.stringContaining('some title'))
-
-// Use expect
 await expect(browser).toHaveTitle(expect.stringContaining('some title'))
-```
-
-However, when using Jasmine original matchers, both works.
-```ts
-await expect(url).toEqual(jasmine.stringMatching(/^https:\/\//))
-await expect(url).toEqual(expect.stringMatching(/^https:\/\//))
 ```
