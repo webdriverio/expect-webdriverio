@@ -412,6 +412,10 @@ describe('Jasmine expectAsync type agumentations', () => {
                 postData: wdioExpect.objectContaining({ released: true, title: wdioExpect.stringContaining('foobar') }),
                 response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
             })
+
+            expectPromiseVoid = expectAsync(promiseNetworkMock).toBeRequestedWith(jasmine.objectContaining({
+                method: 'POST'
+            }))
         })
 
         it('should have ts errors when typing to void', async () => {
