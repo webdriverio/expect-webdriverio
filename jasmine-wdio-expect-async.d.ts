@@ -1,5 +1,13 @@
 /// <reference types="./types/expect-webdriverio.d.ts"/>
 
+/**
+ * Augment the Jasmine namespace to match the behavior of `@wdio/jasmine-framework`.
+ * Only custom WDIO matchers are available under `expectAsync`, as well as Jasmine's built-in matchers.
+ * `expectAsync` is forced into the `expect` global ambient, making all Jasmine sync-matchers asynchronous.
+ *
+ * When using `@wdio/jasmine-framework`, specify `expect-webdriverio/jasmine-wdio-expect-async` in the tsconfig.json's types.
+ */
+
 declare namespace jasmine {
 
     /**
@@ -9,7 +17,6 @@ declare namespace jasmine {
      * Both T,U must stay named as they are to override the default `AsyncMatchers` type from Jasmine.
      *
      * We force Matchers to return a `Promise<void>` since Jasmine's `expectAsync` expects a promise in all cases (different from Jest)
-     * With Jasmine, only custom matchers are available under `expectAsync`, and not the one from Jest `expect` Library.
      */
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- U is required to properly override Jasmine's AsyncMatchers
@@ -27,7 +34,7 @@ declare namespace ExpectWebdriverIO {
 
     /**
      * Overrides the default WDIO expect specifically for Jasmine, since `expectAsync` is forced into `expect`, making all matchers fully asynchronous. This is not the case under Jest or Mocha.
-     * Using `jasmine.AsyncMatchers` pull on WdioMatchers above but also allow to using Jasmine's built-in matchers and also `withContext` matcher.
+     * Using `jasmine.AsyncMatchers` includes the WdioMatchers from above, but also allows using Jasmine's built-in matchers and the `withContext` matcher.
      */
     interface JasmineExpect extends ExpectWebdriverIO.JasmineAsymmetricMatchers, ExpectLibInverse<ExpectWebdriverIO.JasmineAsymmetricMatchers> {
         /**
@@ -38,8 +45,6 @@ declare namespace ExpectWebdriverIO {
          *  - T: the type of the actual value, e.g. any type, not just WebdriverIO.Browser or WebdriverIO.Element
          *  - R: the type of the return value, e.g. Promise<void> or void
          *
-         * Note: The function must stay here in the namespace to overwrite correctly the expect function from the expect library.
-         *
          * @param actual The value to apply matchers against.
          */
         <T = unknown>(actual: T): {
@@ -48,14 +53,14 @@ declare namespace ExpectWebdriverIO {
     }
 }
 
-// @ts-expect-error: IDE might flags this one but just does be concerned by it. This way the `tsc:root-types` can pass!
+/**
+ * Under `@wdio/jasmine-framework`, the global `expect` is overridden to use Jasmine's `expectAsync`.
+ * It contains custom WebdriverIO matchers as well as Jasmine's built-in async & sync matchers but not the basic Jest's expect library matchers.
+ */
+// @ts-expect-error: IDE might flag this, but ignore it. This way the `tsc:root-types` can pass!
 declare const expect: ExpectWebdriverIO.JasmineExpect
 declare namespace NodeJS {
     interface Global {
-        /**
-         * Under `@wdio/jasmine-framework`, the global `expect` is overridden to use Jasmine's expectAsync.
-         * It contains custom WebdriverIO matchers as well as Jasmine's async & sync matchers but not the basic Jest's expect library matchers.
-         */
         expect: ExpectWebdriverIO.JasmineExpect
     }
 }

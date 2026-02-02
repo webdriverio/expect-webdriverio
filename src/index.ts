@@ -6,7 +6,14 @@ import { DEFAULT_OPTIONS } from './constants.js'
 import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
 
-export const matchers: WdioMatchersObject = new Map<string, RawMatcherFn>()
+/**
+ * Contains only the custom WDIO matchers to be used with `expect.extend()`.
+ */
+export const wdioCustomMatchers: WdioMatchersObject = new Map<string, RawMatcherFn>()
+
+// @deprecated use `wdioCustomMatchers` instead
+export const matchers = wdioCustomMatchers
+
 const filteredMatchers = {}
 const extend = expectLib.extend
 
@@ -22,7 +29,7 @@ expectLib.extend = (m) => {
         return
     }
 
-    Object.entries(m).forEach(([name, matcher]) => matchers.set(name, matcher))
+    Object.entries(m).forEach(([name, matcher]) => wdioCustomMatchers.set(name, matcher))
     return extend(m)
 }
 
