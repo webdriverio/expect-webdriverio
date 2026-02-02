@@ -6,7 +6,7 @@ describe('Basic Expect Matchers', () => {
     })
 
     describe('Expect matchers', () => {
-        test('Basic matchers', async () => {
+        it('Basic matchers', async () => {
             // Equality
             expect(2 + 2).toBe(4);
             expect({a: 1}).toEqual({a: 1});
