@@ -10,7 +10,7 @@ const afterAssertion = vi.fn()
 
 describe(toHaveClipboardText, () => {
     test('success', async () => {
-        browser.execute = vi.fn().mockResolvedValue('some clipboard text')
+        vi.mocked(browser.execute).mockResolvedValue('some clipboard text')
 
         const result = await toHaveClipboardText(browser, 'some ClipBoard text', { ignoreCase: true, beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
@@ -28,7 +28,7 @@ describe(toHaveClipboardText, () => {
     })
 
     test('failure check with message', async () => {
-        browser.execute = vi.fn().mockResolvedValue('actual text')
+        vi.mocked(browser.execute).mockResolvedValue('actual text')
 
         const result = await toHaveClipboardText(browser, 'expected text', { wait: 1 })
 
@@ -42,7 +42,7 @@ Received: "actual text"`
     })
 
     test('should log warning if setPermissions fails', async () => {
-        browser.execute = vi.fn().mockResolvedValue('text')
+        vi.mocked(browser.execute).mockResolvedValue('text')
         vi.mocked(browser.setPermissions).mockRejectedValueOnce(new Error('unsupported'))
 
         const result = await toHaveClipboardText(browser, 'text', { wait: 0 })

@@ -5,7 +5,7 @@ import { executeCommand, defaultMultipleElementsIterationStrategy } from '../../
 vi.mock('@wdio/globals')
 
 describe(executeCommand, () => {
-    const conditionPass = vi.fn().mockImplementation(async (_element: WebdriverIO.Element) => {
+    const conditionPass = vi.fn(async (_element: WebdriverIO.Element) => {
         return ({ result: true, value: 'myValue' })
     })
 
@@ -42,7 +42,7 @@ describe(executeCommand, () => {
         })
 
         test('Element with value result being an array', async () => {
-            const conditionPassWithValueArray = vi.fn().mockImplementation(async (_element: WebdriverIO.Element) => {
+            const conditionPassWithValueArray = vi.fn(async (_element: WebdriverIO.Element) => {
                 return ({ result: true, value: ['myValue'] })
             })
 
@@ -59,7 +59,7 @@ describe(executeCommand, () => {
         })
 
         test('Element with value result being an array of array', async () => {
-            const conditionPassWithValueArray = vi.fn().mockImplementation(async (_element: WebdriverIO.Element) => {
+            const conditionPassWithValueArray = vi.fn(async (_element: WebdriverIO.Element) => {
                 return ({ result: true, value: [['myValue']] })
             })
 
@@ -76,7 +76,7 @@ describe(executeCommand, () => {
         })
 
         test('when condition is not met', async () => {
-            const conditionPass = vi.fn().mockImplementation(async (_element: WebdriverIO.Element) => {
+            const conditionPass = vi.fn(async (_element: WebdriverIO.Element) => {
                 return ({ result: false })
             })
             const chainable = $(selector)
@@ -144,7 +144,7 @@ describe(executeCommand, () => {
         })
 
         test('Arrray of value', async () => {
-            const conditionPassWithValueArray = vi.fn().mockImplementation(async (_element: WebdriverIO.Element) => {
+            const conditionPassWithValueArray = vi.fn(async (_element: WebdriverIO.Element) => {
                 return ({ result: true, value: ['myValue'] })
             })
 
@@ -227,11 +227,11 @@ describe(defaultMultipleElementsIterationStrategy, () => {
 
     describe('given single element', () => {
         let singleElement: WebdriverIO.Element
-        let condition: any
+        let condition: (el: WebdriverIO.Element, expected: any) => Promise<{ result: boolean; value: any }>
 
         beforeEach(async () => {
             singleElement = await $('single-mock-element').getElement()
-            condition = vi.fn().mockImplementation(async (_el, expected) => ({ result: true, value: expected }))
+            condition = vi.fn(async (_el, expected) => ({ result: true, value: expected }))
         })
 
         test('should handle single element and single expected value', async () => {
@@ -256,7 +256,7 @@ describe(defaultMultipleElementsIterationStrategy, () => {
 
     describe('given multiple elements', () => {
         let elements: WebdriverIO.ElementArray
-        let condition: () => Promise<{ result: boolean; value: string }>
+        let condition: (el: WebdriverIO.Element, expected: any) => Promise<{ result: boolean; value: any }>
 
         beforeEach(async () => {
             elements = await $$('elements').getElements()

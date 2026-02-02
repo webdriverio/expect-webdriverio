@@ -4,7 +4,7 @@
  */
 import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
-import type { Size } from '../../../src/matchers/element/toHaveSize.js'
+import type { Size } from '../../../src/matchers.js'
 
 vi.mock('@wdio/globals')
 vi.mock('../../../src/constants.js', async () => ({
@@ -48,14 +48,12 @@ const getElementMethods = () => ({
     getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
     getCSSProperty: vi.spyOn({ getCSSProperty: async (_prop: string, _pseudo?: string) =>
         ({ value: 'colorValue', parsed: {} } satisfies ParsedCSSValue) }, 'getCSSProperty'),
-    getSize: vi.spyOn({ getSize: async (prop?: 'width' | 'height') => {
-        if (prop === 'width') { return 100 }
-        if (prop === 'height') { return 50 }
-        return { width: 100, height: 50 } satisfies Size
-    } },
-    // Force wrong size & number typing, fixed by https://github.com/webdriverio/webdriverio/pull/15003
-    'getSize') as unknown as WebdriverIO.Element['getSize'],
-    // getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
+    // We cannot type-safely mock overloaded functions, so we force the below implementation
+    getSize: vi.fn().mockImplementation(async function(this: WebdriverIO.Element, prop?: 'width' | 'height'): Promise<number | Size> {
+        if (prop === 'width') { return Promise.resolve(100) }
+        if (prop === 'height') { return Promise.resolve(50) }
+        return Promise.resolve({ width: 100, height: 50 })
+    }),
     $,
     $$,
 } satisfies Partial<WebdriverIO.Element>)
@@ -95,7 +93,7 @@ export const notFoundElementFactory = (_selector: string, index?: number, parent
     const elementId = `${_selector}${index ? '-' + index : ''}`
     const error = (functionName: string) => new Error(`Can't call ${functionName} on element with selector ${elementId} because element wasn't found`)
 
-    // Mimic element not found by throwing error on any method call beisde isExisting
+    // Mimic element not found by throwing error on any method call besides isExisting
     const notFoundElement = new Proxy(element, {
         get(target, prop) {
             if (prop in element) {

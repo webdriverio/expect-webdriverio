@@ -24,7 +24,7 @@ describe(toHaveHref, () => {
                     if (attribute === 'href') {
                         return 'https://www.example.com'
                     }
-                    return null as unknown as string /* typing requiring because of a bug, see https://github.com/webdriverio/webdriverio/pull/15003 */
+                    return null
                 })
         })
 

@@ -188,7 +188,7 @@ Received      : 2`
         })
 
         test('refresh multiple time actual elements but does not update it since it failed', async () => {
-            browser.$$ = vi.fn().mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
+            vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
             const elements = await $$('elements')
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 100, interval: 20 })
@@ -233,7 +233,7 @@ Received      : 2`
         })
 
         test('refresh once the element array with the NumberOptions wait value', async () => {
-            browser.$$ = vi.fn().mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
+            vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
             const elements = await $$('elements')
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5, wait: 450 })
@@ -249,7 +249,7 @@ Received      : 2`
         })
 
         test('refresh once the element array with the DEFAULT_OPTIONS wait value', async () => {
-            browser.$$ = vi.fn().mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
+            vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
             const elements = await $$('elements')
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { beforeAssertion: undefined, afterAssertion: undefined })

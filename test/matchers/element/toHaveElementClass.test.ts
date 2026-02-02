@@ -24,7 +24,7 @@ describe(toHaveElementClass, () => {
                 if (attribute === 'class') {
                     return 'some-class another-class yet-another-class'
                 }
-                return null as unknown as string /* casting required since wdio as bug typing see https://github.com/webdriverio/webdriverio/pull/15003 */
+                return null
             })
         })
 
@@ -118,18 +118,18 @@ Received: "some-class another-class yet-another-class"`)
 
         describe('options', () => {
             test('should fail when class is not a string', async () => {
-                vi.mocked(el.getAttribute).mockImplementation(async () => {
-                    return null as unknown as string // casting required since wdio as bug typing see
-                })
+                vi.mocked(el.getAttribute).mockResolvedValue(null)
+
                 const result = await thisContext.toHaveElementClass(el, 'some-class')
+
                 expect(result.pass).toBe(false)
             })
 
             test('should pass when trimming the attribute', async () => {
-                vi.mocked(el.getAttribute).mockImplementation(async () => {
-                    return '  some-class  '
-                })
+                vi.mocked(el.getAttribute).mockResolvedValue('  some-class  ')
+
                 const result = await thisContext.toHaveElementClass(el, 'some-class', { wait: 0, trim: true })
+
                 expect(result.pass).toBe(true)
             })
 
@@ -197,7 +197,7 @@ Received: "some-class another-class yet-another-class"` )
                     if (attribute === 'class') {
                         return 'some-class another-class yet-another-class'
                     }
-                    return null as unknown as string /* casting required since wdio as bug typing see https://github.com/webdriverio/webdriverio/pull/15003 */
+                    return null
                 })
             })
         })
@@ -319,9 +319,7 @@ Expect ${selectorName} to have class
         describe('options', () => {
             test('should fail when class is not a string', async () => {
                 elements.forEach((el) => {
-                    vi.mocked(el.getAttribute).mockImplementation(async () => {
-                        return null as unknown as string // casting required since wdio as bug typing see
-                    })
+                    vi.mocked(el.getAttribute).mockResolvedValue(null)
                 })
 
                 const result = await thisContext.toHaveElementClass(elements, 'some-class')
@@ -331,9 +329,7 @@ Expect ${selectorName} to have class
 
             test('should pass when trimming the attribute', async () => {
                 elements.forEach((el) => {
-                    vi.mocked(el.getAttribute).mockImplementation(async () => {
-                        return '  some-class  '
-                    })
+                    vi.mocked(el.getAttribute).mockResolvedValue('  some-class  ')
                 })
 
                 const result = await thisContext.toHaveElementClass(elements, 'some-class', { wait: 0, trim: true })

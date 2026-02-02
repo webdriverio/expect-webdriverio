@@ -10,8 +10,8 @@ describe(toHaveSize, async () => {
     let thisContext: { toHaveSize: typeof toHaveSize }
     let thisNotContext: { isNot: true; toHaveSize: typeof toHaveSize }
 
-    const expectedValue = { width: 32, height: 32 }
-    const wrongValue = { width: 15, height: 32 }
+    const expectedValue: Size = { width: 32, height: 32 }
+    const wrongValue: Size = { width: 15, height: 32 }
 
     beforeEach(async () => {
         thisContext =  { toHaveSize }
@@ -27,7 +27,7 @@ describe(toHaveSize, async () => {
 
         beforeEach(() => {
             el = element
-            vi.mocked(el.getSize).mockResolvedValue(expectedValue as unknown as Size & number) // GetSize typing is broken see fixed in https://github.com/webdriverio/webdriverio/pull/15003
+            vi.mocked(el.getSize).mockResolvedValue(expectedValue as unknown as Size & number) // vitest does not support overloads function well
         })
 
         test('wait for success', async () => {

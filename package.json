@@ -82,7 +82,7 @@
     "@jest/globals": "^30.2.0",
     "@vitest/coverage-v8": "^4.0.16",
     "@wdio/eslint": "^0.1.2",
-    "@wdio/types": "^9.20.0",
+    "@wdio/types": "^9.23.3",
     "eslint": "^9.39.2",
     "husky": "^9.1.7",
     "npm-run-all2": "^8.0.4",
@@ -91,7 +91,7 @@
     "shelljs": "^0.10.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16",
-    "webdriverio": "^9.21.0"
+    "webdriverio": "^9.23.3"
   },
   "peerDependencies": {
     "@wdio/globals": "^9.0.0",

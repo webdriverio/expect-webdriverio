@@ -23,7 +23,7 @@ describe(toHaveId, () => {
                 if (attribute === 'id') {
                     return 'test id'
                 }
-                return null as unknown as string // casting to fix typing issue, see https://github.com/webdriverio/webdriverio/pull/15003
+                return null
             })
         })
 

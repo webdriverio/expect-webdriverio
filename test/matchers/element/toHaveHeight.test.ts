@@ -20,12 +20,11 @@ describe(toHaveHeight, () => {
         beforeEach(async () => {
             el = await $('sel')
 
-            vi.mocked(el.getSize as () => Promise<number> /* typing requiring because of a bug, see https://github.com/webdriverio/webdriverio/pull/15003 */)
-                .mockResolvedValue(32)
+            el.getSize = vi.fn().mockResolvedValue(32)
         })
 
         test('wait for success', async () => {
-            vi.mocked(el.getSize as () => Promise<number>)
+            el.getSize = vi.fn()
                 .mockResolvedValueOnce(50)
                 .mockResolvedValueOnce(32)
             const beforeAssertion = vi.fn()
@@ -108,7 +107,7 @@ Received      : 32`
         })
 
         test('message', async () => {
-            vi.mocked(el.getSize as () => Promise<number>).mockResolvedValue(1)
+            el.getSize = vi.fn().mockResolvedValue(1)
 
             const result = await thisContext.toHaveHeight(el, 50)
 
