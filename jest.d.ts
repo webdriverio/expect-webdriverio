@@ -7,7 +7,7 @@
 
 declare namespace jest {
 
-    interface Matchers<R extends void | Promise<void>, T> extends ExpectWebdriverIO.CustomMatchers<R, T> {
+    interface Matchers<R extends void | Promise<void>, T> extends ExpectWebdriverIO.Matchers<R, T> {
 
         /**
          * Below are overloaded Jest's matchers not part of `expect` but of `jest-snapshot`.

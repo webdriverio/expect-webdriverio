@@ -2,6 +2,7 @@
 
 import { expect } from 'expect-webdriverio'
 import { describe, it, expect as jestExpect } from '@jest/globals'
+import { expectTypeOf } from 'vitest'
 
 describe('type assertions', async () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
@@ -13,72 +14,55 @@ describe('type assertions', async () => {
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
 
     // Type assertions
-    let expectPromiseVoid: Promise<void>
-    let expectVoid: void
 
     describe('Browser', () => {
         const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
 
         describe('toHaveUrl', () => {
             it('should be supported correctly', async () => {
-                expectPromiseVoid = expect(browser).toHaveUrl('https://example.com')
-                expectPromiseVoid = expect(browser).not.toHaveUrl('https://example.com')
+                expectTypeOf(expect(browser).toHaveUrl('https://example.com')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveUrl('https://example.com')).toEqualTypeOf<Promise<void>>()
 
                 // Asymmetric matchers
-                expectPromiseVoid = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
-                expectPromiseVoid = expect(browser).toHaveUrl(expect.not.stringContaining('WebdriverIO'))
-                expectPromiseVoid = expect(browser).toHaveUrl(expect.any(String))
-                expectPromiseVoid = expect(browser).toHaveUrl(expect.anything())
+                expectTypeOf(expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveUrl(expect.not.stringContaining('WebdriverIO'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveUrl(expect.any(String))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveUrl(expect.anything())).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectVoid = expect(browser).toHaveUrl('https://example.com')
-                // @ts-expect-error
-                expectVoid = expect(browser).not.toHaveUrl('https://example.com')
-                // @ts-expect-error
-                expectVoid = expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))
+                expectTypeOf(expect(browser).toHaveUrl('https://example.com')).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(browser).not.toHaveUrl('https://example.com')).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(browser).toHaveUrl(expect.stringContaining('WebdriverIO'))).not.toEqualTypeOf<void>()
 
-                // @ts-expect-error
                 await expect(browser).toHaveUrl(6)
             })
 
             it('should have ts errors when actual is not a Browser element', async () => {
-                // @ts-expect-error
                 await expect(element).toHaveUrl('https://example.com')
-                // @ts-expect-error
                 await expect(element).not.toHaveUrl('https://example.com')
-                // @ts-expect-error
                 await expect(true).toHaveUrl('https://example.com')
-                // @ts-expect-error
                 await expect(true).not.toHaveUrl('https://example.com')
             })
         })
 
         describe('toHaveTitle', () => {
             it('should be supported correctly', async () => {
-                expectPromiseVoid = expect(browser).toHaveTitle('https://example.com')
-                expectPromiseVoid = expect(browser).not.toHaveTitle('https://example.com')
+                expectTypeOf(expect(browser).toHaveTitle('https://example.com')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveTitle('https://example.com')).toEqualTypeOf<Promise<void>>()
 
                 // Asymmetric matchers
-                expectPromiseVoid = expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
-                expectPromiseVoid = expect(browser).toHaveTitle(expect.any(String))
-                expectPromiseVoid = expect(browser).toHaveTitle(expect.anything())
+                expectTypeOf(expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveTitle(expect.any(String))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveTitle(expect.anything())).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectVoid = expect(browser).toHaveTitle('https://example.com')
-                // @ts-expect-error
-                expectVoid = expect(browser).not.toHaveTitle('https://example.com')
-                // @ts-expect-error
-                expectVoid = expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+                expectTypeOf(expect(browser).toHaveTitle('https://example.com')).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(browser).not.toHaveTitle('https://example.com')).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))).not.toEqualTypeOf<void>()
             })
 
             it('should have ts errors when actual is not a Browser element', async () => {
-                // @ts-expect-error
                 await expect(element).toHaveTitle('https://example.com')
-                // @ts-expect-error
                 await expect(element).not.toHaveTitle('https://example.com')
-                // @ts-expect-error
                 await expect(true).toHaveTitle('https://example.com')
-                // @ts-expect-error
                 await expect(true).not.toHaveTitle('https://example.com')
             })
         })
@@ -89,47 +73,41 @@ describe('type assertions', async () => {
         describe('toBeDisabled', () => {
             it('should be supported correctly', async () => {
                 // Element
-                expectPromiseVoid = expect(element).toBeDisabled()
-                expectPromiseVoid = expect(element).not.toBeDisabled()
+                expectTypeOf(expect(element).toBeDisabled()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toBeDisabled()).toEqualTypeOf<Promise<void>>()
 
                 // Element array
-                expectPromiseVoid = expect(elementArray).toBeDisabled()
-                expectPromiseVoid = expect(elementArray).not.toBeDisabled()
+                expectTypeOf(expect(elementArray).toBeDisabled()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).not.toBeDisabled()).toEqualTypeOf<Promise<void>>()
 
                 // Chainable element
-                expectPromiseVoid = expect(chainableElement).toBeDisabled()
-                expectPromiseVoid = expect(chainableElement).not.toBeDisabled()
+                expectTypeOf(expect(chainableElement).toBeDisabled()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).not.toBeDisabled()).toEqualTypeOf<Promise<void>>()
 
                 // Chainable element array
-                expectPromiseVoid = expect(chainableArray).toBeDisabled()
-                expectPromiseVoid = expect(chainableArray).not.toBeDisabled()
+                expectTypeOf(expect(chainableArray).toBeDisabled()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).not.toBeDisabled()).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectVoid = expect(element).toBeDisabled()
-                // @ts-expect-error
-                expectVoid = expect(element).not.toBeDisabled()
+                expectTypeOf(expect(element).toBeDisabled()).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(element).not.toBeDisabled()).not.toEqualTypeOf<void>()
             })
 
             it('should have ts errors when actual is not an element', async () => {
-                // @ts-expect-error
                 await expect(browser).toBeDisabled()
-                // @ts-expect-error
                 await expect(browser).not.toBeDisabled()
-                // @ts-expect-error
                 await expect(true).toBeDisabled()
-                // @ts-expect-error
                 await expect(true).not.toBeDisabled()
             })
         })
 
         describe('toHaveText', () => {
             it('should be supported correctly', async () => {
-                expectPromiseVoid = expect(element).toHaveText('text')
-                expectPromiseVoid = expect(element).toHaveText(/text/)
-                expectPromiseVoid = expect(element).toHaveText(['text1', 'text2'])
-                expectPromiseVoid = expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
-                expectPromiseVoid = expect(element).toHaveText([/text1/, /text2/])
-                expectPromiseVoid = expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+                expectTypeOf(expect(element).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
                 await expect(element).toHaveText(
                     'My-Ex-Am-Ple',
                     {
@@ -137,116 +115,90 @@ describe('type assertions', async () => {
                     }
                 )
 
-                expectPromiseVoid = expect(element).not.toHaveText('text')
+                expectTypeOf(expect(element).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectVoid = expect(element).toHaveText('text')
-                // @ts-expect-error
+                expectTypeOf(expect(element).toHaveText('text')).not.toEqualTypeOf<void>()
                 await expect(element).toHaveText(6)
 
-                expectPromiseVoid = expect(chainableElement).toHaveText('text')
-                expectPromiseVoid = expect(chainableElement).toHaveText(/text/)
-                expectPromiseVoid = expect(chainableElement).toHaveText(['text1', 'text2'])
-                expectPromiseVoid = expect(chainableElement).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
-                expectPromiseVoid = expect(chainableElement).toHaveText([/text1/, /text2/])
-                expectPromiseVoid = expect(chainableElement).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+                expectTypeOf(expect(chainableElement).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
 
-                expectPromiseVoid = expect(chainableElement).not.toHaveText('text')
+                expectTypeOf(expect(chainableElement).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectVoid = expect(chainableElement).toHaveText('text')
-                // @ts-expect-error
+                expectTypeOf(expect(chainableElement).toHaveText('text')).not.toEqualTypeOf<void>()
                 await expect(chainableElement).toHaveText(6)
 
-                expectPromiseVoid = expect(elementArray).toHaveText('text')
-                expectPromiseVoid = expect(elementArray).toHaveText(/text/)
-                expectPromiseVoid = expect(elementArray).toHaveText(['text1', 'text2'])
-                expectPromiseVoid = expect(elementArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
-                expectPromiseVoid = expect(elementArray).toHaveText([/text1/, /text2/])
-                expectPromiseVoid = expect(elementArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+                expectTypeOf(expect(elementArray).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
 
-                expectPromiseVoid = expect(elementArray).not.toHaveText('text')
+                expectTypeOf(expect(elementArray).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectVoid = expect(elementArray).toHaveText('text')
-                // @ts-expect-error
+                expectTypeOf(expect(elementArray).toHaveText('text')).not.toEqualTypeOf<void>()
                 await expect(elementArray).toHaveText(6)
 
-                expectPromiseVoid = expect(chainableArray).toHaveText('text')
-                expectPromiseVoid = expect(chainableArray).toHaveText(/text/)
-                expectPromiseVoid = expect(chainableArray).toHaveText(['text1', 'text2'])
-                expectPromiseVoid = expect(chainableArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])
-                expectPromiseVoid = expect(chainableArray).toHaveText([/text1/, /text2/])
-                expectPromiseVoid = expect(chainableArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])
+                expectTypeOf(expect(chainableArray).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
 
-                expectPromiseVoid = expect(chainableArray).not.toHaveText('text')
+                expectTypeOf(expect(chainableArray).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectVoid = expect(chainableArray).toHaveText('text')
-                // @ts-expect-error
+                expectTypeOf(expect(chainableArray).toHaveText('text')).not.toEqualTypeOf<void>()
                 await expect(chainableArray).toHaveText(6)
 
-                // @ts-expect-error
                 await expect(browser).toHaveText('text')
             })
 
             it('should have ts errors when actual is not an element', async () => {
-                // @ts-expect-error
                 await expect(browser).toHaveText('text')
-                // @ts-expect-error
                 await expect(browser).not.toHaveText('text')
-                // @ts-expect-error
                 await expect(true).toHaveText('text')
-                // @ts-expect-error
                 await expect(true).toHaveText('text')
             })
 
             it('should have ts errors when actual is string or Promise<string>', async () => {
-                // @ts-expect-error
                 await expect('text').toHaveText('text')
-                // @ts-expect-error
                 await expect('text').not.toHaveText('text')
-                // @ts-expect-error
                 await expect(Promise.resolve('text')).toHaveText('text')
-                // @ts-expect-error
                 await expect(Promise.resolve('text')).toHaveText('text')
             })
         })
 
         describe('toHaveHeight', () => {
             it('should be supported correctly', async () => {
-                expectPromiseVoid = expect(element).toHaveHeight(100)
-                expectPromiseVoid = expect(element).toHaveHeight(100, { message: 'Custom error message' })
-                expectPromiseVoid = expect(element).not.toHaveHeight(100)
-                expectPromiseVoid = expect(element).not.toHaveHeight(100, { message: 'Custom error message' })
+                expectTypeOf(expect(element).toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHeight(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveHeight(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
 
-                expectPromiseVoid = expect(element).toHaveHeight({ width: 100, height: 200 })
-                expectPromiseVoid = expect(element).toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })
-                expectPromiseVoid = expect(element).not.toHaveHeight({ width: 100, height: 200 })
-                expectPromiseVoid = expect(element).not.toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })
+                expectTypeOf(expect(element).toHaveHeight({ width: 100, height: 200 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveHeight({ width: 100, height: 200 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectVoid = expect(element).toHaveHeight(100)
-                // @ts-expect-error
-                expectVoid = expect(element).not.toHaveHeight(100)
+                expectTypeOf(expect(element).toHaveHeight(100)).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(element).not.toHaveHeight(100)).not.toEqualTypeOf<void>()
 
-                // @ts-expect-error
-                expectVoid = expect(element).toHaveHeight({ width: 100, height: 200 })
-                // @ts-expect-error
-                expectVoid = expect(element).not.toHaveHeight({ width: 100, height: 200 })
+                expectTypeOf(expect(element).toHaveHeight({ width: 100, height: 200 })).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(element).not.toHaveHeight({ width: 100, height: 200 })).not.toEqualTypeOf<void>()
 
-                // @ts-expect-error
                 await expect(browser).toHaveHeight(100)
             })
 
             it('should have ts errors when actual is string or Promise<string>', async () => {
-                // @ts-expect-error
                 await expect('text').toHaveText('text')
-                // @ts-expect-error
                 await expect('text').not.toHaveText('text')
-                // @ts-expect-error
                 await expect(Promise.resolve('text')).toHaveText('text')
-                // @ts-expect-error
                 await expect(Promise.resolve('text')).toHaveText('text')
             })
         })
@@ -254,78 +206,72 @@ describe('type assertions', async () => {
         describe('toMatchSnapshot', () => {
 
             it('should be supported correctly', async () => {
-                expectVoid = expect(element).toMatchSnapshot()
-                expectVoid = expect(element).toMatchSnapshot('test label')
-                expectVoid = expect(element).not.toMatchSnapshot('test label')
+                expectTypeOf(expect(element).toMatchSnapshot()).toEqualTypeOf<void>()
+                expectTypeOf(expect(element).toMatchSnapshot('test label')).toEqualTypeOf<void>()
+                expectTypeOf(expect(element).not.toMatchSnapshot('test label')).toEqualTypeOf<void>()
 
-                expectPromiseVoid = expect(chainableElement).toMatchSnapshot()
-                expectPromiseVoid = expect(chainableElement).toMatchSnapshot('test label')
-                expectPromiseVoid = expect(chainableElement).not.toMatchSnapshot('test label')
+                expectTypeOf(expect(chainableElement).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).not.toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
 
                 //@ts-expect-error
-                expectPromiseVoid = expect(element).toMatchSnapshot()
+                expectTypeOf(expect(element).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
                 //@ts-expect-error
-                expectPromiseVoid = expect(element).not.toMatchSnapshot()
+                expectTypeOf(expect(element).not.toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
                 //@ts-expect-error
-                expectVoid = expect(chainableElement).toMatchSnapshot()
+                expectTypeOf(expect(chainableElement).toMatchSnapshot()).toEqualTypeOf<void>()
                 //@ts-expect-error
-                expectVoid = expect(chainableElement).not.toMatchSnapshot()
+                expectTypeOf(expect(chainableElement).not.toMatchSnapshot()).toEqualTypeOf<void>()
             })
         })
 
         describe('toMatchInlineSnapshot', () => {
 
             it('should be correctly supported', async () => {
-                expectVoid = expect(element).toMatchInlineSnapshot()
-                expectVoid = expect(element).toMatchInlineSnapshot('test snapshot')
-                expectVoid = expect(element).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectTypeOf(expect(element).toMatchInlineSnapshot()).toEqualTypeOf<void>()
+                expectTypeOf(expect(element).toMatchInlineSnapshot('test snapshot')).toEqualTypeOf<void>()
+                expectTypeOf(expect(element).toMatchInlineSnapshot('test snapshot', 'test label')).toEqualTypeOf<void>()
 
-                expectPromiseVoid = expect(chainableElement).toMatchInlineSnapshot()
-                expectPromiseVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot')
-                expectPromiseVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectTypeOf(expect(chainableElement).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toMatchInlineSnapshot('test snapshot')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')).toEqualTypeOf<Promise<void>>()
 
                 //@ts-expect-error
-                expectPromiseVoid = expect(element).toMatchInlineSnapshot()
+                expectTypeOf(expect(element).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
                 //@ts-expect-error
-                expectVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectTypeOf(expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')).toEqualTypeOf<void>()
             })
 
             it('should be correctly supported with getCSSProperty()', async () => {
-                expectPromiseVoid = expect(element.getCSSProperty('test')).toMatchInlineSnapshot()
-                expectPromiseVoid = expect(element.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')
-                expectPromiseVoid = expect(element.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectTypeOf(expect(element.getCSSProperty('test')).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')).toEqualTypeOf<Promise<void>>()
 
-                expectPromiseVoid = expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot()
-                expectPromiseVoid = expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')
-                expectPromiseVoid = expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectTypeOf(expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')).toEqualTypeOf<Promise<void>>()
 
                 //@ts-expect-error
-                expectPromiseVoid = expect(element).toMatchInlineSnapshot()
+                expectTypeOf(expect(element).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
                 //@ts-expect-error
-                expectVoid = expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectTypeOf(expect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')).toEqualTypeOf<void>()
             })
         })
 
         describe('toBeElementsArrayOfSize', async () => {
 
             it('should work correctly when actual is chainableArray', async () => {
-                expectPromiseVoid = expect(chainableArray).toBeElementsArrayOfSize(5)
-                expectPromiseVoid = expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize(5)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectVoid = expect(chainableArray).toBeElementsArrayOfSize(5)
-                // @ts-expect-error
-                expectVoid = expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize(5)).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })).not.toEqualTypeOf<void>()
             })
 
             it('should not work when actual is not chainableArray', async () => {
-            // @ts-expect-error
                 await expect(chainableElement).toBeElementsArrayOfSize(5)
-                // @ts-expect-error
                 await expect(chainableElement).toBeElementsArrayOfSize({ lte: 10 })
-                // @ts-expect-error
                 await expect(true).toBeElementsArrayOfSize(5)
-                // @ts-expect-error
                 await expect(true).toBeElementsArrayOfSize({ lte: 10 })
             })
         })
@@ -334,31 +280,24 @@ describe('type assertions', async () => {
     describe('Custom matchers', () => {
         describe('using `ExpectWebdriverIO` namespace augmentation', () => {
             it('should supported correctly a non-promise custom matcher', async () => {
-                expectVoid = expect('test').toBeCustom()
-                expectVoid = expect('test').not.toBeCustom()
+                expectTypeOf(expect('test').toBeCustom()).toEqualTypeOf<void>()
+                expectTypeOf(expect('test').not.toBeCustom()).toEqualTypeOf<void>()
 
-                // @ts-expect-error
-                expectPromiseVoid = expect('test').toBeCustom()
-                // @ts-expect-error
-                expectPromiseVoid = expect('test').not.toBeCustom()
+                expectTypeOf(expect('test').toBeCustom()).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect('test').not.toBeCustom()).not.toEqualTypeOf<Promise<void>>()
 
-                expectVoid = expect(1).toBeWithinRange(0, 2)
+                expectTypeOf(expect(1).toBeWithinRange(0, 2)).toEqualTypeOf<void>()
             })
 
             it('should supported correctly a promise custom matcher with only chainableElement as actual', async () => {
-                expectPromiseVoid = expect(chainableElement).toBeCustomPromise()
-                expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
-                expectPromiseVoid = expect(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('test'))
+                expectTypeOf(expect(chainableElement).toBeCustomPromise()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('test'))).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
                 expect('test').toBeCustomPromise()
-                // @ts-expect-error
-                expectVoid = expect(chainableElement).toBeCustomPromise()
-                // @ts-expect-error
-                expectVoid = expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))
-                // @ts-expect-error
-                expectVoid = expect(chainableElement).not.toBeCustomPromise(expect.stringContaining('test'))
-                // @ts-expect-error
+                expectTypeOf(expect(chainableElement).toBeCustomPromise()).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(chainableElement).toBeCustomPromise(expect.stringContaining('test'))).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(chainableElement).not.toBeCustomPromise(expect.stringContaining('test'))).not.toEqualTypeOf<void>()
                 expect(chainableElement).toBeCustomPromise(expect.stringContaining(6))
             })
 
@@ -366,75 +305,64 @@ describe('type assertions', async () => {
                 const expectString1 : ExpectWebdriverIO.PartialMatcher<string> = expect.toBeCustom()
                 const expectString2 : ExpectWebdriverIO.PartialMatcher<string> = expect.not.toBeCustom()
 
-                expectPromiseVoid = expect(chainableElement).toBeCustomPromise(expect.toBeCustom())
+                expectTypeOf(expect(chainableElement).toBeCustomPromise(expect.toBeCustom())).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectPromiseVoid = expect.toBeCustom()
-                // @ts-expect-error
-                expectPromiseVoid = expect.not.toBeCustom()
+                expectTypeOf(expect.toBeCustom()).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect.not.toBeCustom()).not.toEqualTypeOf<Promise<void>>()
 
                 //@ts-expect-error
-                expectVoid = expect(chainableElement).toBeCustomPromise(expect.toBeCustom())
+                expectTypeOf(expect(chainableElement).toBeCustomPromise(expect.toBeCustom())).toEqualTypeOf<void>()
             })
         })
 
         describe('using `expect` module declaration', () => {
 
             it('should support a simple matcher', async () => {
-                expectVoid = expect(5).toBeWithinRange(1, 10)
+                expectTypeOf(expect(5).toBeWithinRange(1, 10)).toEqualTypeOf<void>()
 
                 // Or as an asymmetric matcher:
-                expectVoid = expect({ value: 5 }).toEqual({
+                expectTypeOf(expect({ value: 5 }).toEqual({
                     value: expect.toBeWithinRange(1, 10)
-                })
+                })).toEqualTypeOf<void>()
 
-                // @ts-expect-error
-                expectVoid = expect(5).toBeWithinRange(1, '10')
-                // @ts-expect-error
-                expectPromiseVoid = expect(5).toBeWithinRange('1')
+                expectTypeOf(expect(5).toBeWithinRange(1, '10')).not.toEqualTypeOf<void>()
+                expectTypeOf(expect(5).toBeWithinRange('1')).not.toEqualTypeOf<Promise<void>>()
             })
 
             it('should support a simple custom matcher with a chainable element matcher with promise', async () => {
-                expectPromiseVoid = expect(chainableElement).toHaveSimpleCustomProperty('text')
-                expectPromiseVoid = expect(chainableElement).toHaveSimpleCustomProperty(expect.stringContaining('text'))
-                expectPromiseVoid = expect(chainableElement).not.toHaveSimpleCustomProperty(expect.not.stringContaining('text'))
+                expectTypeOf(expect(chainableElement).toHaveSimpleCustomProperty('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveSimpleCustomProperty(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).not.toHaveSimpleCustomProperty(expect.not.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
 
                 // Or as a custom asymmetric matcher:
-                expectPromiseVoid = expect(chainableElement).toHaveSimpleCustomProperty(
+                expectTypeOf(expect(chainableElement).toHaveSimpleCustomProperty(
                     expect.toHaveSimpleCustomProperty('string')
-                )
+                )).toEqualTypeOf<Promise<void>>()
                 const expectString1:string = expect.toHaveSimpleCustomProperty('string')
                 const expectString2:string = expect.not.toHaveSimpleCustomProperty('string')
 
-                // @ts-expect-error
-                expectVoid = expect.toHaveSimpleCustomProperty(chainableElement)
-                // @ts-expect-error
-                expectVoid = expect.not.toHaveSimpleCustomProperty(chainableElement)
+                expectTypeOf(expect.toHaveSimpleCustomProperty(chainableElement)).not.toEqualTypeOf<void>()
+                expectTypeOf(expect.not.toHaveSimpleCustomProperty(chainableElement)).not.toEqualTypeOf<void>()
 
-                // @ts-expect-error
-                expectVoid = expect.toHaveSimpleCustomProperty(chainableElement)
+                expectTypeOf(expect.toHaveSimpleCustomProperty(chainableElement)).not.toEqualTypeOf<void>()
             })
 
             it('should support a chainable element matcher with promise', async () => {
-                expectPromiseVoid = expect(chainableElement).toHaveCustomProperty('text')
-                expectPromiseVoid = expect(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))
-                expectPromiseVoid = expect(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))
+                expectTypeOf(expect(chainableElement).toHaveCustomProperty('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
 
                 // Or as a custom asymmetric matcher:
-                expectPromiseVoid = expect(chainableElement).toHaveCustomProperty(
+                expectTypeOf(expect(chainableElement).toHaveCustomProperty(
                     await expect.toHaveCustomProperty(chainableElement)
-                )
+                )).toEqualTypeOf<Promise<void>>()
                 const expectPromiseWdioElement1: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.toHaveCustomProperty(chainableElement)
                 const expectPromiseWdioElement2: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.not.toHaveCustomProperty(chainableElement)
 
-                // @ts-expect-error
-                expectVoid = expect.toHaveCustomProperty(chainableElement)
-                // @ts-expect-error
-                expectVoid = expect.not.toHaveCustomProperty(chainableElement)
+                expectTypeOf(expect.toHaveCustomProperty(chainableElement)).not.toEqualTypeOf<void>()
+                expectTypeOf(expect.not.toHaveCustomProperty(chainableElement)).not.toEqualTypeOf<void>()
 
-                // @ts-expect-error
-                expectVoid = expect.toHaveCustomProperty(chainableElement)
-                // @ts-expect-error
+                expectTypeOf(expect.toHaveCustomProperty(chainableElement)).not.toEqualTypeOf<void>()
                 expect.toHaveCustomProperty('test')
 
                 await expect(chainableElement).toHaveCustomProperty(
@@ -447,51 +375,51 @@ describe('type assertions', async () => {
     describe('toBe', () => {
 
         it('should expect void type when actual is a boolean', async () => {
-            expectVoid = expect(true).toBe(true)
-            expectVoid = expect(true).not.toBe(true)
+            expectTypeOf(expect(true).toBe(true)).toEqualTypeOf<void>()
+            expectTypeOf(expect(true).not.toBe(true)).toEqualTypeOf<void>()
 
             //@ts-expect-error
-            expectPromiseVoid = expect(true).toBe(true)
+            expectTypeOf(expect(true).toBe(true)).toEqualTypeOf<Promise<void>>()
             //@ts-expect-error
-            expectPromiseVoid = expect(true).not.toBe(true)
+            expectTypeOf(expect(true).not.toBe(true)).toEqualTypeOf<Promise<void>>()
         })
 
         it('should not expect Promise when actual is a chainable since toBe does not need to be awaited', async () => {
-            expectVoid = expect(chainableElement).toBe(true)
-            expectVoid = expect(chainableElement).not.toBe(true)
+            expectTypeOf(expect(chainableElement).toBe(true)).toEqualTypeOf<void>()
+            expectTypeOf(expect(chainableElement).not.toBe(true)).toEqualTypeOf<void>()
 
             //@ts-expect-error
-            expectPromiseVoid = expect(chainableElement).toBe(true)
+            expectTypeOf(expect(chainableElement).toBe(true)).toEqualTypeOf<Promise<void>>()
             //@ts-expect-error
-            expectPromiseVoid = expect(chainableElement).not.toBe(true)
+            expectTypeOf(expect(chainableElement).not.toBe(true)).toEqualTypeOf<Promise<void>>()
         })
 
         it('should still expect void type when actual is a Promise since we do not overload them', async () => {
             const promiseBoolean = Promise.resolve(true)
 
-            expectVoid = expect(promiseBoolean).toBeDefined()
-            expectVoid = expect(promiseBoolean).not.toBeDefined()
+            expectTypeOf(expect(promiseBoolean).toBeDefined()).toEqualTypeOf<void>()
+            expectTypeOf(expect(promiseBoolean).not.toBeDefined()).toEqualTypeOf<void>()
 
             //@ts-expect-error
-            expectPromiseVoid = expect(promiseBoolean).toBeDefined()
+            expectTypeOf(expect(promiseBoolean).toBeDefined()).toEqualTypeOf<Promise<void>>()
             //@ts-expect-error
-            expectPromiseVoid = expect(promiseBoolean).toBe(true)
+            expectTypeOf(expect(promiseBoolean).toBe(true)).toEqualTypeOf<Promise<void>>()
         })
 
         it('should work with string', async () => {
-            expectVoid = expect('text').toBe(true)
-            expectVoid = expect('text').not.toBe(true)
-            expectVoid = expect('text').toBe(expect.stringContaining('text'))
-            expectVoid = expect('text').not.toBe(expect.stringContaining('text'))
+            expectTypeOf(expect('text').toBe(true)).toEqualTypeOf<void>()
+            expectTypeOf(expect('text').not.toBe(true)).toEqualTypeOf<void>()
+            expectTypeOf(expect('text').toBe(expect.stringContaining('text'))).toEqualTypeOf<void>()
+            expectTypeOf(expect('text').not.toBe(expect.stringContaining('text'))).toEqualTypeOf<void>()
 
             //@ts-expect-error
-            expectPromiseVoid = expect('text').toBe(true)
+            expectTypeOf(expect('text').toBe(true)).toEqualTypeOf<Promise<void>>()
             //@ts-expect-error
-            expectPromiseVoid = expect('text').not.toBe(true)
+            expectTypeOf(expect('text').not.toBe(true)).toEqualTypeOf<Promise<void>>()
             //@ts-expect-error
-            expectPromiseVoid = expect('text').toBe(expect.stringContaining('text'))
+            expectTypeOf(expect('text').toBe(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
             //@ts-expect-error
-            expectPromiseVoid = expect('text').not.toBe(expect.stringContaining('text'))
+            expectTypeOf(expect('text').not.toBe(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
         })
     })
 
@@ -499,21 +427,21 @@ describe('type assertions', async () => {
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
         it('should work with resolves & rejects correctly', async () => {
-            expectPromiseVoid = expect(booleanPromise).resolves.toBe(true)
-            expectPromiseVoid = expect(booleanPromise).rejects.toBe(true)
+            expectTypeOf(expect(booleanPromise).resolves.toBe(true)).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(booleanPromise).rejects.toBe(true)).toEqualTypeOf<Promise<void>>()
 
             //@ts-expect-error
-            expectVoid = expect(booleanPromise).resolves.toBe(true)
+            expectTypeOf(expect(booleanPromise).resolves.toBe(true)).toEqualTypeOf<void>()
             //@ts-expect-error
-            expectVoid = expect(booleanPromise).rejects.toBe(true)
+            expectTypeOf(expect(booleanPromise).rejects.toBe(true)).toEqualTypeOf<void>()
 
         })
 
         it('should not support chainable and expect PromiseVoid with toBe', async () => {
             //@ts-expect-error
-            expectPromiseVoid = expect(chainableElement).toBe(true)
+            expectTypeOf(expect(chainableElement).toBe(true)).toEqualTypeOf<Promise<void>>()
             //@ts-expect-error
-            expectPromiseVoid = expect(chainableElement).not.toBe(true)
+            expectTypeOf(expect(chainableElement).not.toBe(true)).toEqualTypeOf<Promise<void>>()
         })
     })
 
@@ -521,15 +449,15 @@ describe('type assertions', async () => {
         const promiseNetworkMock = Promise.resolve(networkMock)
 
         it('should not have ts errors when typing to Promise', async () => {
-            expectPromiseVoid = expect(promiseNetworkMock).toBeRequested()
-            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedTimes(2)
-            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 })
+            expectTypeOf(expect(promiseNetworkMock).toBeRequested()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes(2)).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 })).toEqualTypeOf<Promise<void>>()
 
-            expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequested()
-            expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes(2)
-            expectPromiseVoid = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 })
+            expectTypeOf(expect(promiseNetworkMock).not.toBeRequested()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseNetworkMock).not.toBeRequestedTimes(2)).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 })).toEqualTypeOf<Promise<void>>()
 
-            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedWith({
                 url: 'http://localhost:8080/api',
                 method: 'POST',
                 statusCode: 200,
@@ -537,9 +465,9 @@ describe('type assertions', async () => {
                 responseHeaders: { Authorization: 'bar' },
                 postData: { title: 'foo', description: 'bar' },
                 response: { success: true },
-            })
+            })).toEqualTypeOf<Promise<void>>()
 
-            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedWith({
                 url: expect.stringContaining('test'),
                 method: 'POST',
                 statusCode: 200,
@@ -547,35 +475,28 @@ describe('type assertions', async () => {
                 responseHeaders: expect.objectContaining({ Authorization: 'bar' }),
                 postData: expect.objectContaining({ title: 'foo', description: 'bar' }),
                 response: expect.objectContaining({ success: true }),
-            })
+            })).toEqualTypeOf<Promise<void>>()
 
-            expectPromiseVoid = expect(promiseNetworkMock).toBeRequestedWith({
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedWith({
                 url: expect.stringMatching(/.*\/api\/.*/i),
                 method: ['POST', 'PUT'],
                 statusCode: [401, 403],
                 requestHeaders: headers => headers.Authorization.startsWith('Bearer '),
                 postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
                 response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
-            })
+            })).toEqualTypeOf<Promise<void>>()
         })
 
         it('should have ts errors when typing to void', async () => {
-            // @ts-expect-error
-            expectVoid = expect(promiseNetworkMock).toBeRequested()
-            // @ts-expect-error
-            expectVoid = expect(promiseNetworkMock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
-            // @ts-expect-error
-            expectVoid = expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+            expectTypeOf(expect(promiseNetworkMock).toBeRequested()).not.toEqualTypeOf<void>()
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes(2) ).not.toEqualTypeOf<void>() // await expect(mock).toBeRequestedTimes({ eq: 2 })
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }) ).not.toEqualTypeOf<void>() // request called at least 5 times but less than 11
 
-            // @ts-expect-error
-            expectVoid = expect(promiseNetworkMock).not.toBeRequested()
-            // @ts-expect-error
-            expectVoid = expect(promiseNetworkMock).not.toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
-            // @ts-expect-error
-            expectVoid = expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+            expectTypeOf(expect(promiseNetworkMock).not.toBeRequested()).not.toEqualTypeOf<void>()
+            expectTypeOf(expect(promiseNetworkMock).not.toBeRequestedTimes(2) ).not.toEqualTypeOf<void>() // await expect(mock).toBeRequestedTimes({ eq: 2 })
+            expectTypeOf(expect(promiseNetworkMock).not.toBeRequestedTimes({ gte: 5, lte: 10 }) ).not.toEqualTypeOf<void>() // request called at least 5 times but less than 11
 
-            // @ts-expect-error
-            expectVoid = expect(promiseNetworkMock).toBeRequestedWith({
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedWith({
                 url: 'http://localhost:8080/api',
                 method: 'POST',
                 statusCode: 200,
@@ -583,18 +504,16 @@ describe('type assertions', async () => {
                 responseHeaders: { Authorization: 'bar' },
                 postData: { title: 'foo', description: 'bar' },
                 response: { success: true },
-            })
+            })).not.toEqualTypeOf<void>()
 
-            // @ts-expect-error
-            expectVoid = expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
                 response: { success: true },
-            }))
+            }))).not.toEqualTypeOf<void>()
         })
     })
 
     describe('Expect', () => {
         it('should have ts errors when using a non existing expect.function', async () => {
-            // @ts-expect-error
             expect.unimplementedFunction()
         })
 
@@ -643,146 +562,116 @@ describe('type assertions', async () => {
             describe('expect.soft', () => {
                 it('should not need to be awaited/be a promise if actual is non-promise type', async () => {
                     const expectWdioMatcher1: WdioCustomMatchers<void, string> = expect.soft(actualString)
-                    expectVoid = expect.soft(actualString).toBe('Test Page')
-                    expectVoid = expect.soft(actualString).not.toBe('Test Page')
-                    expectVoid = expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))
+                    expectTypeOf(expect.soft(actualString).toBe('Test Page')).toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(actualString).not.toBe('Test Page')).toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<void>()
 
-                    // @ts-expect-error
-                    expectPromiseVoid = expect.soft(actualString).toBe('Test Page')
-                    // @ts-expect-error
-                    expectPromiseVoid = expect.soft(actualString).not.toBe('Test Page')
-                    // @ts-expect-error
-                    expectPromiseVoid = expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))
+                    expectTypeOf(expect.soft(actualString).toBe('Test Page')).not.toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(actualString).not.toBe('Test Page')).not.toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))).not.toEqualTypeOf<Promise<void>>()
                 })
 
                 it('should need to be awaited/be a promise if actual is promise type', async () => {
                     const expectWdioMatcher1: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>> = expect.soft(actualPromiseString)
-                    expectPromiseVoid = expect.soft(actualPromiseString).toBe('Test Page')
-                    expectPromiseVoid = expect.soft(actualPromiseString).not.toBe('Test Page')
-                    expectPromiseVoid = expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))
+                    expectTypeOf(expect.soft(actualPromiseString).toBe('Test Page')).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(actualPromiseString).not.toBe('Test Page')).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<Promise<void>>()
 
-                    // @ts-expect-error
-                    expectVoid = expect.soft(actualPromiseString).toBe('Test Page')
-                    // @ts-expect-error
-                    expectVoid = expect.soft(actualPromiseString).not.toBe('Test Page')
-                    // @ts-expect-error
-                    expectVoid = expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))
+                    expectTypeOf(expect.soft(actualPromiseString).toBe('Test Page')).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(actualPromiseString).not.toBe('Test Page')).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))).not.toEqualTypeOf<void>()
                 })
 
                 it('should support chainable element', async () => {
                     const expectElement: ExpectWebdriverIO.MatchersAndInverse<void, WebdriverIO.Element> = expect.soft(element)
                     const expectElementChainable: ExpectWebdriverIO.MatchersAndInverse<void, typeof chainableElement> = expect.soft(chainableElement)
 
-                    // @ts-expect-error
                     const expectElement2: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, WebdriverIO.Element> = expect.soft(element)
-                    // @ts-expect-error
                     const expectElementChainable2: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, typeof chainableElement> = expect.soft(chainableElement)
                 })
 
                 it('should support chainable element with wdio Matchers', async () => {
-                    expectPromiseVoid = expect.soft(element).toBeDisplayed()
-                    expectPromiseVoid = expect.soft(chainableElement).toBeDisplayed()
-                    expectPromiseVoid = expect.soft(chainableArray).toBeDisplayed()
+                    expectTypeOf(expect.soft(element).toBeDisplayed()).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).toBeDisplayed()).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableArray).toBeDisplayed()).toEqualTypeOf<Promise<void>>()
                     await expect.soft(element).toBeDisplayed()
                     await expect.soft(chainableElement).toBeDisplayed()
                     await expect.soft(chainableArray).toBeDisplayed()
 
-                    expectPromiseVoid = expect.soft(element).not.toBeDisplayed()
-                    expectPromiseVoid = expect.soft(chainableElement).not.toBeDisplayed()
-                    expectPromiseVoid = expect.soft(chainableArray).not.toBeDisplayed()
+                    expectTypeOf(expect.soft(element).not.toBeDisplayed()).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).not.toBeDisplayed()).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableArray).not.toBeDisplayed()).toEqualTypeOf<Promise<void>>()
                     await expect.soft(element).not.toBeDisplayed()
                     await expect.soft(chainableElement).not.toBeDisplayed()
                     await expect.soft(chainableArray).not.toBeDisplayed()
 
-                    // @ts-expect-error
-                    expectVoid = expect.soft(element).toBeDisplayed()
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toBeDisplayed()
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableArray).toBeDisplayed()
+                    expectTypeOf(expect.soft(element).toBeDisplayed()).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).toBeDisplayed()).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableArray).toBeDisplayed()).not.toEqualTypeOf<void>()
 
-                    // @ts-expect-error
-                    expectVoid = expect.soft(element).not.toBeDisplayed()
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).not.toBeDisplayed()
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableArray).not.toBeDisplayed()
+                    expectTypeOf(expect.soft(element).not.toBeDisplayed()).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).not.toBeDisplayed()).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableArray).not.toBeDisplayed()).not.toEqualTypeOf<void>()
                 })
 
                 it('should work with custom matcher and custom asymmetric matchers from `expect` module', async () => {
-                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty('text')
-                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))
-                    expectPromiseVoid = expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))
-                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty(
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty('text')).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty(
                         expect.toHaveCustomProperty(chainableElement)
-                    )
+                    )).toEqualTypeOf<Promise<void>>()
 
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty('text')
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty(
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty('text')).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty(
                         expect.toHaveCustomProperty(chainableElement)
-                    )
+                    )).not.toEqualTypeOf<void>()
 
-                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty('text')
-                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))
-                    expectPromiseVoid = expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))
-                    expectPromiseVoid = expect.soft(chainableElement).toHaveCustomProperty(
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty('text')).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty(
                         expect.toHaveCustomProperty(chainableElement)
-                    )
+                    )).toEqualTypeOf<Promise<void>>()
 
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty('text')
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toHaveCustomProperty(
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty('text')).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty(expect.stringContaining('text'))).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).not.toHaveCustomProperty(expect.not.stringContaining('text'))).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).toHaveCustomProperty(
                         expect.toHaveCustomProperty(chainableElement)
-                    )
+                    )).not.toEqualTypeOf<void>()
                 })
 
                 it('should work with custom matcher and custom asymmetric matchers from `ExpectWebDriverIO` namespace', async () => {
-                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise('text')
-                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))
-                    expectPromiseVoid = expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))
-                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise(
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise('text')).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise(
                         expect.toBeCustomPromise(chainableElement)
-                    )
+                    )).toEqualTypeOf<Promise<void>>()
 
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toBeCustomPromise('text')
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toBeCustomPromise(
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise('text')).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise(
                         expect.toBeCustomPromise(chainableElement)
-                    )
+                    )).not.toEqualTypeOf<void>()
 
-                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise('text')
-                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))
-                    expectPromiseVoid = expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))
-                    expectPromiseVoid = expect.soft(chainableElement).toBeCustomPromise(
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise('text')).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise(
                         expect.toBeCustomPromise(chainableElement)
-                    )
+                    )).toEqualTypeOf<Promise<void>>()
 
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toBeCustomPromise('text')
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))
-                    // @ts-expect-error
-                    expectVoid = expect.soft(chainableElement).toBeCustomPromise(
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise('text')).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise(expect.stringContaining('text'))).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).not.toBeCustomPromise(expect.not.stringContaining('text'))).not.toEqualTypeOf<void>()
+                    expectTypeOf(expect.soft(chainableElement).toBeCustomPromise(
                         expect.toBeCustomPromise(chainableElement)
-                    )
+                    )).not.toEqualTypeOf<void>()
                 })
             })
 
@@ -790,26 +679,23 @@ describe('type assertions', async () => {
                 it('should be of type `SoftFailure`', async () => {
                     const expectSoftFailure1: ExpectWebdriverIO.SoftFailure[] = expect.getSoftFailures()
 
-                    // @ts-expect-error
-                    expectVoid = expect.getSoftFailures()
+                    expectTypeOf(expect.getSoftFailures()).not.toEqualTypeOf<void>()
                 })
             })
 
             describe('expect.assertSoftFailures', () => {
                 it('should be of type void', async () => {
-                    expectVoid = expect.assertSoftFailures()
+                    expectTypeOf(expect.assertSoftFailures()).toEqualTypeOf<void>()
 
-                    // @ts-expect-error
-                    expectPromiseVoid = expect.assertSoftFailures()
+                    expectTypeOf(expect.assertSoftFailures()).not.toEqualTypeOf<Promise<void>>()
                 })
             })
 
             describe('expect.clearSoftFailures', () => {
                 it('should be of type void', async () => {
-                    expectVoid = expect.clearSoftFailures()
+                    expectTypeOf(expect.clearSoftFailures()).toEqualTypeOf<void>()
 
-                    // @ts-expect-error
-                    expectPromiseVoid = expect.clearSoftFailures()
+                    expectTypeOf(expect.clearSoftFailures()).not.toEqualTypeOf<Promise<void>>()
                 })
             })
         })
@@ -846,13 +732,11 @@ describe('type assertions', async () => {
                 const stringPromise = Promise.resolve('Hello Jest')
                 const rejectedPromise = Promise.reject(new Error('Failed'))
 
-                expectPromiseVoid = jestExpect(stringPromise).resolves.toBe('Hello Jest')
-                expectPromiseVoid = jestExpect(rejectedPromise).rejects.toThrow('Failed')
+                expectTypeOf(jestExpect(stringPromise).resolves.toBe('Hello Jest')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(rejectedPromise).rejects.toThrow('Failed')).toEqualTypeOf<Promise<void>>()
 
-                // @ts-expect-error
-                expectVoid = jestExpect(stringPromise).resolves.toBe('Hello Jest')
-                // @ts-expect-error
-                expectVoid = jestExpect(rejectedPromise).rejects.toThrow('Failed')
+                expectTypeOf(jestExpect(stringPromise).resolves.toBe('Hello Jest')).not.toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(rejectedPromise).rejects.toThrow('Failed')).not.toEqualTypeOf<void>()
             })
         })
 
@@ -862,63 +746,47 @@ describe('type assertions', async () => {
             it('should work with string', async () => {
                 const jsonString: string = '{}'
                 const propertyMatchers = 'test'
-                expectVoid = jestExpect(jsonString).toMatchSnapshot(propertyMatchers)
-                expectVoid = jestExpect(jsonString).toMatchSnapshot(propertyMatchers, snapshotName)
-                expectVoid = jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers)
-                expectVoid = jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers, snapshotName)
+                expectTypeOf(jestExpect(jsonString).toMatchSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(jsonString).toMatchSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
 
-                expectVoid = jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers)
-                expectVoid = jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers, snapshotName)
-                expectVoid = jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers)
-                expectVoid = jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+                expectTypeOf(jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
 
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(jsonString).toMatchSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(jsonString).toMatchSnapshot(propertyMatchers, snapshotName)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers, snapshotName)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers, snapshotName)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+                expectTypeOf(jestExpect(jsonString).toMatchSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(jsonString).toMatchSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(jsonString).toMatchInlineSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(jsonString).not.toMatchSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(jsonString).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
             })
 
             it('should with object', async () => {
                 const treeObject = { 1: 'test', 2: 'test2' }
                 const propertyMatchers = { 1: 'test' }
-                expectVoid = jestExpect(treeObject).toMatchSnapshot(propertyMatchers)
-                expectVoid = jestExpect(treeObject).toMatchSnapshot(propertyMatchers, snapshotName)
-                expectVoid = jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers)
-                expectVoid = jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers, snapshotName)
+                expectTypeOf(jestExpect(treeObject).toMatchSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(treeObject).toMatchSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
 
-                expectVoid = jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers)
-                expectVoid = jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers, snapshotName)
-                expectVoid = jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers)
-                expectVoid = jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+                expectTypeOf(jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
 
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(treeObject).toMatchSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(treeObject).toMatchSnapshot(propertyMatchers, snapshotName)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers, snapshotName)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers, snapshotName)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers)
-                // @ts-expect-error
-                expectPromiseVoid = jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)
+                expectTypeOf(jestExpect(treeObject).toMatchSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(treeObject).toMatchSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(treeObject).toMatchInlineSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(treeObject).not.toMatchSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(jestExpect(treeObject).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
             })
         })
     })
