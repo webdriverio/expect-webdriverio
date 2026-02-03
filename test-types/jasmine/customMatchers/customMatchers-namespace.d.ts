@@ -2,11 +2,16 @@
  * Custom matchers under the `ExpectWebdriverIO` namespace.
  * @see {@link https://webdriver.io/docs/custommatchers/#typescript-support}
  */
-declare namespace jasmine {
+declare namespace ExpectWebdriverIO {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface Matchers<R, T> {
+        toBeCustom(): Promise<void>;
+    }
+}
 
+declare namespace jasmine {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface AsyncMatchers<T, U> {
-        toBeCustom(): Promise<void>;
-        toBeCustomPromise: T extends ChainablePromiseElement ? (expected?: string | ExpectWebdriverIO.PartialMatcher<string> | Promise<ExpectWebdriverIO.PartialMatcher<string>>) => Promise<void> : never;
+        toBeCustomJasmine(): Promise<void>;
     }
 }

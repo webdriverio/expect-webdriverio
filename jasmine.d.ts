@@ -16,5 +16,5 @@ declare namespace jasmine {
      * We force Matchers to return a `Promise<void>` since under Jasmine's `expectAsync` everything is a promise.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    interface AsyncMatchers<T, U> extends ExpectWebdriverIO.CustomMatchers<Promise<void>, T> {}
+    interface AsyncMatchers<T, U> extends ExpectWebdriverIO.Matchers<Promise<void>, T> {}
 }

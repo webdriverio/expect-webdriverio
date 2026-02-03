@@ -508,9 +508,13 @@ declare namespace ExpectWebdriverIO {
         <T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<void, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
     }
 
-    interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
-
-    interface CustomMatchers<R extends void | Promise<void>, T> extends WdioCustomMatchers<R, T> {}
+    /**
+     * Matchers defining the custom wdio matchers.
+     * Matchers is documented as the interface to augment to add other custom matchers.
+     *
+     * We MUST NOT have Jest's expect Lib matchers here, so that we can use it with Jasmine augmentation as well.
+     */
+    interface Matchers<R extends void | Promise<void>, T> extends WdioCustomMatchers<R, T> {}
 
     interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
 
@@ -520,7 +524,7 @@ declare namespace ExpectWebdriverIO {
      * End of block overloading types from the expect library.
      */
 
-    type MatchersAndInverse<R extends void | Promise<void>, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibInverse<ExpectWebdriverIO.Matchers<R, ActualT>>
+    type MatchersAndInverse<R extends void | Promise<void>, ActualT> = (ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibMatchers<R, ActualT>) & ExpectLibInverse<ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibMatchers<R, ActualT>>
 
     /**
      * Take from expect library
@@ -593,7 +597,7 @@ declare namespace ExpectWebdriverIO {
         /**
          * name of the matcher, e.g. `toHaveText` or `toBeClickable`
          */
-        matcherName: keyof Matchers<void, unknown>,
+        matcherName: keyof (Matchers<void, unknown> & ExpectLibMatchers<void, unknown>),
         /**
          * Value that the user has passed in
          *
