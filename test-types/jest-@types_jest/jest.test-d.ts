@@ -2,7 +2,7 @@
 import { expectTypeOf } from 'vitest'
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 
-describe('Jest augmentation typing assertions tests', () => {
+describe('Jest augmentation typing assertions tests paired with `@types/jest`', () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
     const chainableArray = {} as ChainablePromiseArray
 
