@@ -193,7 +193,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ActualT,
         (
             property: string,
-            value?: string | RegExp | WdioAsymmetricMatcher<string> | null,
+            value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null,
             options?: ExpectWebdriverIO.StringOptions,
         ) => Promise<void>
     >

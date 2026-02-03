@@ -345,7 +345,7 @@ describe('Jasmine type agumentations', () => {
             expectTypeOf(wdioExpect(element).toBeClickable()).toEqualTypeOf<Promise<void>>()
         })
 
-        it('should support standard Jest Matchers', async () => {
+        it('should support standard Jest expect Library Matchers', async () => {
             expectTypeOf(wdioExpect({ a: 1 }).toHaveProperty('a')).toEqualTypeOf<void>()
             expectTypeOf(wdioExpect([1, 2]).toHaveLength(2)).toEqualTypeOf<void>()
             expectTypeOf(wdioExpect({ a: 1 }).toMatchObject({ a: 1 })).toEqualTypeOf<void>()
