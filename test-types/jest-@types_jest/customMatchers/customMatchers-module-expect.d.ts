@@ -2,19 +2,25 @@ import 'expect'
 
 /**
  * Custom matchers under the `expect` module.
+ *
+ * LIMITATION: This augmentation is specifically required for `expect.soft(...)` support.
+ * It does NOT affect the global `expect(...)` in Jest which uses `namespace jest`.
+ *
+ * For universal support, prefer augmenting `ExpectWebdriverIO` namespace.
+ *
  * @see {@link https://jestjs.io/docs/expect#expectextendmatchers}
  */
 declare module 'expect' {
     interface AsymmetricMatchers {
-        toBeWithinRange(floor: number, ceiling: number): void
-        toHaveSimpleCustomProperty(string: string): string
-        toHaveCustomProperty(element: ChainablePromiseElement | WebdriverIO.Element): Promise<ExpectWebdriverIO.PartialMatcher<string>>
+        toBeWithinRangeExpect(floor: number, ceiling: number): void
+        toHaveSimpleCustomPropertyExpect(string: string): string
+        toHaveCustomPropertyExpect(element: ChainablePromiseElement | WebdriverIO.Element): Promise<ExpectWebdriverIO.PartialMatcher<string>>
     }
 
     interface Matchers<R, T> {
-        toBeWithinRange(floor: number, ceiling: number): R
-        toHaveSimpleCustomProperty(string: string | ExpectWebdriverIO.PartialMatcher<string>): Promise<R>
-        toHaveCustomProperty:
+        toBeWithinRangeExpect(floor: number, ceiling: number): R
+        toHaveSimpleCustomPropertyExpect(string: string | ExpectWebdriverIO.PartialMatcher<string>): Promise<R>
+        toHaveCustomPropertyExpect:
         // Useful to typecheck the custom matcher so it is only used on elements
         T extends ChainablePromiseElement | WebdriverIO.Element ?
             (test: string | ExpectWebdriverIO.PartialMatcher<string> |

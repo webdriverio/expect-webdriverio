@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { expectTypeOf } from 'vitest'
+import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 
-describe('WebDriverIO Expect Type Assertions under Mocha', () => {
+describe('Jest augmentation typing assertions tests', () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
     const chainableArray = {} as ChainablePromiseArray
 
@@ -99,7 +99,6 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         describe('toHaveText', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(element).toHaveText('text')).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
@@ -253,8 +252,6 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             it('should supported correctly a non-promise custom matcher', async () => {
                 expectTypeOf(expect('test').toBeCustomWdio()).toEqualTypeOf<void>()
                 expectTypeOf(expect('test').not.toBeCustomWdio()).toEqualTypeOf<void>()
-
-                expectTypeOf(expect(1).toBeWithinRangeExpect(0, 2)).toEqualTypeOf<void>()
             })
 
             it('should supported correctly a promise custom matcher with only chainableElement as actual', async () => {
@@ -279,49 +276,49 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
         })
 
-        describe('using `expect` module declaration', () => {
+        describe('using `jest` namespace augmentation', () => {
 
             it('should support a simple matcher', async () => {
-                expectTypeOf(expect(5).toBeWithinRangeExpect(1, 10)).toEqualTypeOf<void>()
+                expectTypeOf(expect(5).toBeWithinRangeJest(1, 10)).toEqualTypeOf<void>()
 
                 // Or as an asymmetric matcher:
                 expectTypeOf(expect({ value: 5 }).toEqual({
-                    value: expect.toBeWithinRangeExpect(1, 10)
+                    value: expect.toBeWithinRangeJest(1, 10)
                 })).toEqualTypeOf<void>()
             })
 
             it('should support a simple custom matcher with a chainable element matcher with promise', async () => {
-                expectTypeOf(expect(chainableElement).toHaveSimpleCustomPropertyExpect('text')).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveSimpleCustomPropertyExpect(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).not.toHaveSimpleCustomPropertyExpect(expect.not.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveSimpleCustomPropertyJest('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveSimpleCustomPropertyJest(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).not.toHaveSimpleCustomPropertyJest(expect.not.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
 
                 // Or as a custom asymmetric matcher:
-                expectTypeOf(expect(chainableElement).toHaveSimpleCustomPropertyExpect(
-                    expect.toHaveSimpleCustomPropertyExpect('string')
+                expectTypeOf(expect(chainableElement).toHaveSimpleCustomPropertyJest(
+                    expect.toHaveSimpleCustomPropertyJest('string')
                 )).toEqualTypeOf<Promise<void>>()
-                const expectString1:string = expect.toHaveSimpleCustomPropertyExpect('string')
-                const expectString2:string = expect.not.toHaveSimpleCustomPropertyExpect('string')
+                const expectString1:string = expect.toHaveSimpleCustomPropertyJest('string')
+                const expectString2:string = expect.not.toHaveSimpleCustomPropertyJest('string')
             })
 
             it('should support a chainable element matcher with promise', async () => {
-                expectTypeOf(expect(chainableElement).toHaveCustomPropertyExpect('text')).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveCustomPropertyExpect(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).not.toHaveCustomPropertyExpect(expect.not.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveCustomPropertyJest('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveCustomPropertyJest(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).not.toHaveCustomPropertyJest(expect.not.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
 
                 // Or as a custom asymmetric matcher:
-                expectTypeOf(expect(chainableElement).toHaveCustomPropertyExpect(
-                    await expect.toHaveCustomPropertyExpect(chainableElement)
+                expectTypeOf(expect(chainableElement).toHaveCustomPropertyJest(
+                    await expect.toHaveCustomPropertyJest(chainableElement)
                 )).toEqualTypeOf<Promise<void>>()
-                const expectPromiseWdioElement1: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.toHaveCustomPropertyExpect(chainableElement)
-                const expectPromiseWdioElement2: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.not.toHaveCustomPropertyExpect(chainableElement)
+                const expectPromiseWdioElement1: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.toHaveCustomPropertyJest(chainableElement)
+                const expectPromiseWdioElement2: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.not.toHaveCustomPropertyJest(chainableElement)
 
-                expectTypeOf(expect.toHaveCustomPropertyExpect(chainableElement)).not.toEqualTypeOf<void>()
-                expectTypeOf(expect.not.toHaveCustomPropertyExpect(chainableElement)).not.toEqualTypeOf<void>()
+                expectTypeOf(expect.toHaveCustomPropertyJest(chainableElement)).not.toEqualTypeOf<void>()
+                expectTypeOf(expect.not.toHaveCustomPropertyJest(chainableElement)).not.toEqualTypeOf<void>()
 
-                expectTypeOf(expect.toHaveCustomPropertyExpect(chainableElement)).not.toEqualTypeOf<void>()
+                expectTypeOf(expect.toHaveCustomPropertyJest(chainableElement)).not.toEqualTypeOf<void>()
 
-                await expect(chainableElement).toHaveCustomPropertyExpect(
-                    await expect.toHaveCustomPropertyExpect(chainableElement)
+                await expect(chainableElement).toHaveCustomPropertyJest(
+                    await expect.toHaveCustomPropertyJest(chainableElement)
                 )
             })
         })
@@ -372,8 +369,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
         it('should have expect return Matchers with a Promise', async () => {
-            const expectPromiseBoolean1: ExpectWebdriverIO.Matchers<void, Promise<boolean>> & ExpectLibInverse<ExpectWebdriverIO.Matchers<void, Promise<boolean>>> & ExpectWebdriverIO.PromiseMatchers<boolean> = expect(booleanPromise)
-            const expectPromiseBoolean2: ExpectWebdriverIO.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
+            const expectPromiseBoolean1: jest.Matchers<void, Promise<boolean>> = expect(booleanPromise)
+            const expectPromiseBoolean2: jest.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
         })
 
         it('should return Promise<void> for resolves & rejects', async () => {
@@ -435,7 +432,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         })
     })
 
-    describe('Standard Jest expect Library Matchers', () => {
+    describe('Standard Jest Matchers', () => {
         it('should return void', async () => {
             const obj = { a: 1 }
             expectTypeOf(expect(obj).toHaveProperty('a')).toEqualTypeOf<void>()
@@ -536,10 +533,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expect.stringMatching(/WebdriverIO/)
             expect.arrayContaining(['WebdriverIO', 'Test'])
             expect.objectContaining({ name: 'WebdriverIO' })
-            // Was not there but works!
             expect.closeTo(5, 10)
             expect.arrayContaining(['WebdriverIO', 'Test'])
-            // New from jest 30!!
             expect.arrayOf(expect.stringContaining('WebdriverIO'))
 
             expect.anything()
@@ -656,4 +651,57 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expect(['apple', 'banana', 'cherry']).toEqual(expect.arrayOf(expect.any(String)))
         })
     })
+
+    describe('@types/jest only - original Matchers', () => {
+        describe('toMatchSnapshot & toMatchInlineSnapshot', () => {
+            const snapshotName: string = 'test-snapshot'
+
+            it('should work with string', async () => {
+                const jsonString: string = '{}'
+                const propertyMatchers = 'test'
+                expectTypeOf(expect(jsonString).toMatchSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(expect(jsonString).toMatchSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+                expectTypeOf(expect(jsonString).toMatchInlineSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(expect(jsonString).toMatchInlineSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+
+                expectTypeOf(expect(jsonString).not.toMatchSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(expect(jsonString).not.toMatchSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+                expectTypeOf(expect(jsonString).not.toMatchInlineSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(expect(jsonString).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+
+                expectTypeOf(expect(jsonString).toMatchSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(jsonString).toMatchSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(jsonString).toMatchInlineSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(jsonString).toMatchInlineSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(jsonString).not.toMatchSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(jsonString).not.toMatchSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(jsonString).not.toMatchInlineSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(jsonString).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should with object', async () => {
+                const treeObject = { 1: 'test', 2: 'test2' }
+                const propertyMatchers = { 1: 'test' }
+                expectTypeOf(expect(treeObject).toMatchSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(expect(treeObject).toMatchSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+                expectTypeOf(expect(treeObject).toMatchInlineSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(expect(treeObject).toMatchInlineSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+
+                expectTypeOf(expect(treeObject).not.toMatchSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(expect(treeObject).not.toMatchSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+                expectTypeOf(expect(treeObject).not.toMatchInlineSnapshot(propertyMatchers)).toEqualTypeOf<void>()
+                expectTypeOf(expect(treeObject).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)).toEqualTypeOf<void>()
+
+                expectTypeOf(expect(treeObject).toMatchSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(treeObject).toMatchSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(treeObject).toMatchInlineSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(treeObject).toMatchInlineSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(treeObject).not.toMatchSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(treeObject).not.toMatchSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(treeObject).not.toMatchInlineSnapshot(propertyMatchers)).not.toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(treeObject).not.toMatchInlineSnapshot(propertyMatchers, snapshotName)).not.toEqualTypeOf<Promise<void>>()
+            })
+        })
+    })
 })
+

@@ -232,8 +232,8 @@ describe('Jasmine type agumentations', () => {
         describe('Custom matchers', () => {
             describe('using `ExpectWebdriverIO` namespace augmentation', () => {
                 it('should return Promise<void> for a non-promise custom matcher', async () => {
-                    expectTypeOf(expectAsync('test').toBeCustom()).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expectAsync('test').not.toBeCustom()).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync('test').toBeCustomWdio()).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync('test').not.toBeCustomWdio()).toEqualTypeOf<Promise<void>>()
 
                     expectTypeOf(expectAsync('test').toBeCustomJasmine()).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync('test').not.toBeCustomJasmine()).toEqualTypeOf<Promise<void>>()
@@ -352,7 +352,7 @@ describe('Jasmine type agumentations', () => {
         })
 
         it('should support custom matchers', async () => {
-            expectTypeOf(wdioExpect('test').toBeCustom()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(wdioExpect('test').toBeCustomWdio()).toEqualTypeOf<Promise<void>>()
         })
 
         describe('Support soft Assertions on wdioExpect only (not supported on expect global since its Jasmine)', async () => {
