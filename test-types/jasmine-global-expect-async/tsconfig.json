@@ -6,8 +6,8 @@
     "module": "node18",
     "skipLibCheck": true,
     "types": [
-      "@types/jasmine",
-      "../../jasmine.d.ts"
+      "../../jasmine-wdio-expect-async.d.ts",
+      "@types/jasmine"
     ]
   }
 }

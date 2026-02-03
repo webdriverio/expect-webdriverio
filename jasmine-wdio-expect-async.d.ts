@@ -20,7 +20,7 @@ declare namespace jasmine {
      */
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- U is required to properly override Jasmine's AsyncMatchers
-    interface AsyncMatchers<T, U> extends ExpectWebdriverIO.CustomMatchers<Promise<void>, T> {}
+    interface AsyncMatchers<T, U> extends ExpectWebdriverIO.Matchers<Promise<void>, T> {}
 
     // Needed to reference it below for the withContext method
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -31,6 +31,15 @@ declare namespace ExpectWebdriverIO {
 
     // Should be the same as https://github.com/webdriverio/webdriverio/blob/ea0e3e00288abced4c739ff9e46c46977b7cdbd2/packages/wdio-jasmine-framework/src/index.ts#L21-L29
     interface JasmineAsymmetricMatchers extends Pick<ExpectWebdriverIO.AsymmetricMatchers, 'any' | 'anything' | 'arrayContaining' | 'objectContaining' | 'stringContaining' | 'stringMatching'> {}
+
+    // TODO dprevost review this!!!
+    type JasmineSyncMatchers<T> = {
+        [K in keyof jasmine.Matchers<T>]: K extends 'not'
+            ? JasmineSyncMatchers<T>
+            : jasmine.Matchers<T>[K] extends (...args: any) => any
+                ? (...args: any[]) => Promise<void>
+                : jasmine.Matchers<T>[K]
+    }
 
     /**
      * Overrides the default WDIO expect specifically for Jasmine, since `expectAsync` is forced into `expect`, making all matchers fully asynchronous. This is not the case under Jest or Mocha.
@@ -48,8 +57,8 @@ declare namespace ExpectWebdriverIO {
          * @param actual The value to apply matchers against.
          */
         <T = unknown>(actual: T): {
-            withContext(message: string): jasmine.AsyncMatchers<T, Promise<void>> & jasmine.Matchers<T>;
-        } & jasmine.AsyncMatchers<T, Promise<void>> & jasmine.Matchers<T>
+            withContext(message: string): jasmine.AsyncMatchers<T, Promise<void>> & JasmineSyncMatchers<T>;
+        } & jasmine.AsyncMatchers<T, Promise<void>> & JasmineSyncMatchers<T>
     }
 }
 
