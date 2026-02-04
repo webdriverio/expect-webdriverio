@@ -3,7 +3,7 @@ import 'expect'
 /**
  * Custom matchers under the `expect` module.
  *
- * LIMITATION: This augmentation is specifically required for `expect.soft(...)` support.
+ * LIMITATION: This augmentation get apply only on `expect.soft(...)`.
  * It does NOT affect the global `expect(...)` in Jest which uses `namespace jest`.
  *
  * For universal support, prefer augmenting `ExpectWebdriverIO` namespace.

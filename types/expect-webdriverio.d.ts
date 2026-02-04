@@ -597,7 +597,7 @@ declare namespace ExpectWebdriverIO {
         /**
          * name of the matcher, e.g. `toHaveText` or `toBeClickable`
          */
-        matcherName: keyof (Matchers<void, unknown> & ExpectLibMatchers<void, unknown>),
+        matcherName: keyof Matchers<void, unknown>
         /**
          * Value that the user has passed in
          *
