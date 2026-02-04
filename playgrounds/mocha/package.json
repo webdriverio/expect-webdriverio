@@ -1,0 +1,24 @@
+{
+  "name": "expect-wdio-playground",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Playground project for testing expect-webdriverio",
+  "scripts": {
+    "preinstall": "cd ../.. && npm i && npm run compile",
+    "typecheck": "tsc --noEmit",
+    "test": "wdio run wdio.conf.ts",
+    "lint": "eslint .",
+    "checks:all": "npm run typecheck && npm run lint && npm test"
+  },
+  "devDependencies": {
+    "@wdio/cli": "^9.4.0",
+    "@wdio/local-runner": "^9.4.0",
+    "@wdio/mocha-framework": "^9.4.0",
+    "@wdio/spec-reporter": "^9.4.0",
+    "@wdio/visual-service": "^9.1.2",
+    "eslint": "^9.39.2",
+    "expect-webdriverio": "file:../..",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

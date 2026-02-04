@@ -11,24 +11,40 @@ import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-const asymmetricMatcher =
-    typeof Symbol === 'function' && Symbol.for
-        ? Symbol.for('jest.asymmetricMatcher')
-        : 0x13_57_a5
-
-export function isAsymmetricMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> {
-    return (
-        typeof expected === 'object' &&
-        expected &&
-        '$$typeof' in expected &&
-        'asymmetricMatch' in expected &&
-        expected.$$typeof === asymmetricMatcher &&
-        Boolean(expected.asymmetricMatch)
-    ) as boolean
+export function isWdioAsymmetricMatcher<T>(expected: unknown): expected is WdioAsymmetricMatcher<T> {
+    return isAsymmetricMatcher(expected) && 'sample' in expected
 }
 
-function isStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<unknown> {
-    return isAsymmetricMatcher(expected) && ['StringContaining', 'StringNotContaining'].includes(expected.toString())
+export function isJasmineAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
+    return isAsymmetricMatcher(expected) && 'expected' in expected
+}
+
+export function isAsymmetricMatcher<T>(expected: unknown): expected is WdioAsymmetricMatcher<T> | JasmineAsymmetricMatcher<T> {
+    return (
+        typeof expected === 'object' &&
+        !!expected &&
+        'asymmetricMatch' in expected &&
+        !!expected.asymmetricMatch
+    )
+}
+
+export function isStringContainingMatcherLike(expected: unknown): expected is WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> {
+    return !!expected && expected.constructor.name === 'StringContaining'
+}
+
+export function isStrictlyStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> {
+    return isStringContainingMatcherLike(expected) && (!isWdioAsymmetricMatcher(expected) || expected.toString().includes('StringContaining'))
+}
+
+export function getAsymmetricMatcherValue<T>(
+    expected: WdioAsymmetricMatcher<T> | JasmineAsymmetricMatcher<T>
+): T {
+    if ('expected' in expected) {
+        return expected.expected
+    } else if ('sample' in expected) {
+        return expected.sample
+    }
+    throw new Error(`Could not extract value from asymmetric matcher: ${String(expected)}`)
 }
 
 /**
@@ -141,7 +157,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareText = (
     actual: string,
-    expected: string | RegExp | WdioAsymmetricMatcher<string>,
+    expected: string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>,
     {
         ignoreCase = false,
         trim = true,
@@ -169,10 +185,11 @@ export const compareText = (
         actual = actual.toLowerCase()
         if (typeof expected === 'string') {
             expected = expected.toLowerCase()
-        } else if (isStringContainingMatcher(expected)) {
-            expected = (expected.toString() === 'StringContaining'
-                ? expect.stringContaining(expected.sample?.toString().toLowerCase())
-                : expect.not.stringContaining(expected.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>
+        } else if (isStringContainingMatcherLike(expected)) {
+            const sample = getAsymmetricMatcherValue<string>(expected).toString().toLocaleLowerCase()
+            expected = (isStrictlyStringContainingMatcher(expected)
+                ? expect.stringContaining(sample)
+                : expect.not.stringContaining(sample)) as WdioAsymmetricMatcher<string>
         }
     }
 
@@ -256,7 +273,7 @@ export const compareTextWithArray = (
             if (typeof item === 'string') {
                 return item.toLowerCase()
             }
-            if (isStringContainingMatcher(item)) {
+            if (isStringContainingMatcherLike(item)) {
                 return (item.toString() === 'StringContaining'
                     ? expect.stringContaining(item.sample?.toString().toLowerCase())
                     : expect.not.stringContaining(item.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>

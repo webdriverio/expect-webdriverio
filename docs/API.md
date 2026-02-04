@@ -63,7 +63,7 @@ expect.clearSoftFailures();
 
 ### Integration with Test Frameworks
 
-The soft assertions feature integrates with WebdriverIO's test runner automatically. By default, it will report all soft assertion failures at the end of each test (Mocha/Jasmine) or step (Cucumber).
+The soft assertions feature integrates with WebdriverIO's test runner automatically. By default, it will report all soft assertion failures at the end of each test (Mocha) or step (Cucumber).
 
 To use with WebdriverIO, add the SoftAssertionService to your services list:
 
@@ -75,7 +75,7 @@ export const config = {
   // ...
   services: [
     // ...other services
-    [SoftAssertionService]
+    [SoftAssertionService,  {}]
   ],
   // ...
 }
@@ -113,8 +113,7 @@ This is useful if you want full control over when soft assertions are verified o
 
 ### Known limitations
 
-For Jasmine, using `wdio-jasmine-framework` will give a better plug-and-play experiences, else without it, the soft assertion service and custom matchers might not work/be registered correctly.
-Moreover, if Jasmine augmentation is used, the soft assertion function are not exposed in the typing, but could still work depending of your configuration. See [this issue](https://github.com/webdriverio/expect-webdriverio/issues/1893) for more details.
+The soft assertions service is not supported under Jasmine (e.g. `@wdio/jasmine-framework`) using the global import because Jasmine is already designed to provide similar behavior out of the box.
 
 ## Default Options
 
@@ -878,7 +877,68 @@ await expect(elem).toHaveElementClass(/Container/i)
 
 ## Default Matchers
 
-In addition to the `expect-webdriverio` matchers you can use builtin Jest's [expect](https://jestjs.io/docs/expect) assertions or [expect/expectAsync](https://jasmine.github.io/api/edge/global.html#expect) for Jasmine.
+In addition to the WebdriverIO matchers, `expect-webdriverio` also provides basic matchers from Jest's [expect](https://jestjs.io/docs/expect) library.
+
+```ts
+// Equality
+expect(2 + 2).toBe(4);
+expect({a: 1}).toEqual({a: 1});
+expect([1, 2, 3]).toStrictEqual([1, 2, 3]);
+expect(2 + 2).not.toBe(5);
+
+// Truthiness
+expect(null).toBeNull();
+expect(undefined).toBeUndefined();
+expect(0).toBeFalsy();
+expect(1).toBeTruthy();
+expect(NaN).toBeNaN();
+
+// Numbers
+expect(4).toBeGreaterThan(3);
+expect(4).toBeGreaterThanOrEqual(4);
+expect(4).toBeLessThan(5);
+expect(4).toBeLessThanOrEqual(4);
+expect(0.2 + 0.1).toBeCloseTo(0.3, 5);
+
+// Strings
+expect('team').toMatch(/team/);
+expect('Christoph').toContain('stop');
+
+// Arrays and iterables
+expect([1, 2, 3]).toContain(2);
+expect([{a: 1}, {b: 2}]).toContainEqual({a: 1});
+expect([1, 2, 3]).toHaveLength(3);
+
+// Objects
+expect({a: 1, b: 2}).toHaveProperty('a');
+expect({a: {b: 2}}).toHaveProperty('a.b', 2);
+
+// Errors
+expect(() => { throw new Error('error!') }).toThrow('error!');
+expect(() => { throw new TypeError('wrong type') }).toThrow(TypeError);
+
+// Asymmetric matchers
+expect({foo: 'bar', baz: 1}).toEqual(expect.objectContaining({foo: expect.any(String)}));
+expect([1, 2, 3]).toEqual(expect.arrayContaining([2]));
+expect('abc').toEqual(expect.stringContaining('b'));
+expect('abc').toEqual(expect.stringMatching(/b/));
+expect(123).toEqual(expect.any(Number));
+
+// Others
+expect(new Set([1, 2, 3])).toContain(2);
+
+// .resolves / .rejects (async)
+await expect(Promise.resolve(42)).resolves.toBe(42);
+await expect(Promise.reject(new Error('fail'))).rejects.toThrow('fail');
+```    
+
+### Jasmine
+
+For Jasmine, see the official documentation for [expect/expectAsync](https://jasmine.github.io/api/edge/global.html#expect), [matchers](https://jasmine.github.io/tutorials/your_first_suite#section-Matchers), and [async-matchers](https://jasmine.github.io/api/edge/async-matchers.html).
+
+**Note:**
+- With the global import in @wdio/jasmine-framework, only WebdriverIO custom matchers are registered on expectAsync (assigned to global expect), so all matchers are always async, even those that are normally synchronous.
+- Default matchers are still available if you import `expect` directly from `expect-webdriverio` instead of using the global.
 
 ## Modifiers
 
@@ -901,7 +961,7 @@ await expect(element).not.toBeDisplayed({ wait: 0 })
 await expect(browser).not.toHaveTitle('some title', { wait: 0 })
 ```
 
-Note: You can pair `.not` with asymmetric matchers, but to enable the wait-until behavior, `.not` must be used directly on the `expect()` call. 
+**Note:** You can pair `.not` with asymmetric matchers, but to enable the wait-until behavior, `.not` must be used directly on the `expect()` call. 
 
 ## Asymmetric Matchers
 
@@ -915,4 +975,14 @@ or
 
 ```ts
 await expect(browser).toHaveTitle(expect.not.stringContaining('some title'))
+```
+
+### Jasmine
+
+Under `@wdio/jasmine-framework`, Jasmine asymmetric matchers now works with WebdriverIO matchers and the global import 
+
+```ts
+// Jasmine stringContaining works just like expect one's
+await expect(browser).toHaveTitle(jasmine.stringContaining('some title'))
+await expect(browser).toHaveTitle(expect.stringContaining('some title'))
 ```
