@@ -6,15 +6,13 @@ import { matchers } from "expect-webdriverio";
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  expect.extend(matchers as Record<string, any>);
+    // Ad custom wdio matcher to Jest's expect
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect.extend(matchers as Record<string, any>);
 
-  // The enhanced expect already has matchers extended, no need to extend again
-  globalThis.standalone = await remote(config);
-  console.log('Browser session started with sessionId:', globalThis.standalone.sessionId);
+    globalThis.standalone = await remote(config);
 });
 
 afterAll(async () => {
-    console.log('Ending browser session with sessionId:', globalThis.standalone?.sessionId);
-  await globalThis.standalone?.deleteSession();
+    await globalThis.standalone?.deleteSession();
 });

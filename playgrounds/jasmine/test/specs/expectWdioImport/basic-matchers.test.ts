@@ -76,7 +76,6 @@ describe('Basic Expect Matchers available when pulling expect from expect-webdri
         it('should match object properties', async () => {
             const capabilities = await browser.capabilities
 
-            console.log('capabilities', expect(capabilities).toHaveProperty('browserName'))
             await expect(capabilities).toHaveProperty('browserName')
             await expect(capabilities).toMatchObject({
                 browserName: 'chrome'
