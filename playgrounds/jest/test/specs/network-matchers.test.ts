@@ -1,8 +1,6 @@
-import { browser } from '@wdio/globals'
-
 describe('Network Matchers', () => {
     it('should assert on network calls', async () => {
-        const mock = await browser.mock('https://webdriver.io/api/foo', {
+        const mock = await standalone.mock('https://webdriver.io/api/foo', {
             method: 'POST'
         })
         mock.respond({ success: true }, {
@@ -10,9 +8,9 @@ describe('Network Matchers', () => {
             headers: { Authorization: 'bar' }
         })
 
-        await browser.url('https://webdriver.io/')
+        await standalone.url('https://webdriver.io/')
 
-        await browser.execute(async () => {
+        await standalone.execute(async () => {
             await fetch('https://webdriver.io/api/foo', {
                 method: 'POST',
                 headers: { Authorization: 'foo' },

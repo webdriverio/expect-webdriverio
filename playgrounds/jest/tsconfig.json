@@ -5,10 +5,8 @@
     "moduleResolution": "bundler",
     "types": [
       "node",
-      "expect-webdriverio/expect-global",
       "@types/jest",
       "expect-webdriverio/jest",
-      "@wdio/globals/types", // Need to be last to so the above from the projects have priority
       "@wdio/visual-service"
     ],
     "resolveJsonModule": true,
