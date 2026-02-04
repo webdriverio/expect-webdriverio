@@ -1,6 +1,5 @@
 describe('Basic Expect Matchers', () => {
     beforeEach(async () => {
-        console.log('Navigating to WebdriverIO homepage', standalone)
         await standalone.url('https://webdriver.io')
         await expect(standalone).toHaveTitle('WebdriverIO', { containing: true })
     })
@@ -9,7 +8,6 @@ describe('Basic Expect Matchers', () => {
         it('should verify truthy values', async () => {
             const element = await standalone.$('.navbar')
             const isDisplayed = await element.isDisplayed()
-            console.log('expect', expect)
             expect(isDisplayed).toBe(true)
             expect(isDisplayed).toBeTruthy()
         })
