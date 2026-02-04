@@ -354,7 +354,7 @@ describe('Jasmine type agumentations', () => {
             expectTypeOf(expectAsync('test').withContext('foo').toBeCustomJasmine()).toEqualTypeOf<Promise<void>>()
 
             // Async Jasmine built-in matcher with context
-            expectTypeOf(expectAsync(Promise.resolve(true)).withContext('foo').toBeResolved()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expectAsync(Promise.resolve(true)).withContext('foo').toBeResolved()).toEqualTypeOf<PromiseLike<void>>()
 
             // Sync matcher with context
             expectTypeOf(expect(true).withContext('foo').toBe(true)).toEqualTypeOf<void>()

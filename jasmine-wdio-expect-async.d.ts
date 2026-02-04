@@ -32,11 +32,13 @@ declare namespace ExpectWebdriverIO {
     // Should be the same as https://github.com/webdriverio/webdriverio/blob/ea0e3e00288abced4c739ff9e46c46977b7cdbd2/packages/wdio-jasmine-framework/src/index.ts#L21-L29
     interface JasmineAsymmetricMatchers extends Pick<ExpectWebdriverIO.AsymmetricMatchers, 'any' | 'anything' | 'arrayContaining' | 'objectContaining' | 'stringContaining' | 'stringMatching'> {}
 
-    // TODO dprevost review this!!!
+    // Hack to convert all sync matchers to return Promise<void> since `wdio/jasmine-framework` forces `expect` to be async
     type JasmineSyncMatchers<T> = {
         [K in keyof jasmine.Matchers<T>]: K extends 'not'
             ? JasmineSyncMatchers<T>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             : jasmine.Matchers<T>[K] extends (...args: any) => any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ? (...args: any[]) => Promise<void>
                 : jasmine.Matchers<T>[K]
     }
