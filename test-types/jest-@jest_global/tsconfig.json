@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "noEmit": true,
-    "noImplicitAny": true,
-    "target": "es2022",
-    "module": "NodeNext",
-    "skipLibCheck": true,
-  }
-}
