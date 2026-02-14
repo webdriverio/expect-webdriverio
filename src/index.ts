@@ -2,7 +2,7 @@
 import { expect as expectLib } from 'expect'
 import type { WdioMatchersObject } from './types.js'
 import * as wdioMatchers from './matchers.js'
-import { DEFAULT_OPTIONS } from './constants.js'
+import { DEFAULT_OPTIONS, defaultOptionsList } from './constants.js'
 import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
 
@@ -52,12 +52,14 @@ Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
 export const expect = expectWithSoft
 
 export const getConfig = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
-export const setDefaultOptions = (options = {}): void => {
+export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOptions>): void => {
     Object.entries(options).forEach(([key, value]) => {
-        if (key in DEFAULT_OPTIONS) {
-            // @ts-ignore
-            DEFAULT_OPTIONS[key] = value
-        }
+        defaultOptionsList.forEach((option) => {
+            if (key in option) {
+                // @ts-ignore
+                option[key] = value
+            }
+        })
     })
 }
 export const setOptions = setDefaultOptions
