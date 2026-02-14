@@ -51,6 +51,7 @@ Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
 
 export const expect = expectWithSoft
 
+// TODO one day to rename to something more aligned with setDefaultOptions
 export const getConfig = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
 export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOptions>): void => {
     Object.entries(options).forEach(([key, value]) => {
@@ -62,6 +63,10 @@ export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOpti
         })
     })
 }
+
+/**
+ * @deprecated use setDefaultOptions instead
+ */
 export const setOptions = setDefaultOptions
 
 /**

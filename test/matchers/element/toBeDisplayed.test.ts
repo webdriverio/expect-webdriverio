@@ -198,7 +198,7 @@ Received: "not displayed"`
         let el: ChainablePromiseElement
 
         beforeEach(async () => {
-            // Reset to known state before each test
+            // Set global options to custom values before each test
             setOptions({ wait: 99, interval: 101 })
             el = await $('sel')
             el.isDisplayed = vi.fn().mockResolvedValue(true)
