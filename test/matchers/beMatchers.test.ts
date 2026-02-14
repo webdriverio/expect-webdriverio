@@ -1,7 +1,10 @@
-import { vi, test, describe, expect } from 'vitest'
+import { vi, test, describe, expect, afterEach, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 import { matcherLastWordName } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
+import { setOptions } from '../../src/index.js'
+import { DEFAULT_OPTIONS } from '../../src/constants.js'
+import { executeCommandBe } from '../../src/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -16,6 +19,15 @@ const beMatchers = {
     'toBePresent': 'isExisting',
     'toBeSelected': 'isSelected',
 } satisfies Partial<Record<keyof typeof Matchers, keyof WebdriverIO.Element>>
+
+vi.mock('../../src/utils.js', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await importOriginal<typeof import('../../src/utils.js')>()
+    return {
+        ...actual,
+        executeCommandBe: vi.fn(actual.executeCommandBe)
+    }
+})
 
 describe('be* matchers', () => {
     describe('Ensure all toBe matchers are covered', () => {
@@ -134,6 +146,35 @@ Expect $(\`sel\`) to be ${matcherLastWordName(matcherName)}
 Expected: "${matcherLastWordName(matcherName)}"
 Received: "not ${matcherLastWordName(matcherName)}"`
                 )
+            })
+
+            describe('global options', () => {
+                const defaultOptions = { ...DEFAULT_OPTIONS }
+
+                beforeEach(() => {
+                    // Set global options to custom values before each test
+                    setOptions({ wait: 99, interval: 101 })
+                })
+
+                afterEach(() => {
+                    // Reset options after each test to avoid side effects
+                    setOptions(defaultOptions)
+                    expect(DEFAULT_OPTIONS.wait).not.toBe(99)
+                })
+
+                test('should use globally set default options', async () => {
+                    const el = await $('sel')
+                    el.isDisplayed = vi.fn().mockResolvedValue(true)
+
+                    await matcherFn.call({}, el)
+
+                    expect(DEFAULT_OPTIONS.wait).toBe(99)
+                    expect(executeCommandBe).toHaveBeenCalledWith(
+                        el,
+                        expect.anything(),
+                        expect.objectContaining({ wait: 99, interval: 101 })
+                    )
+                })
             })
         })
     })
