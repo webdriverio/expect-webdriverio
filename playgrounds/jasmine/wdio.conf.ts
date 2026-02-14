@@ -17,7 +17,6 @@ export const config: WebdriverIO.Config = {
     specs: [
         './test/specs/**/*.test.ts'
         // './test/specs/**/jasmine-specific.test.ts',
-        // './test/specs/**/snapshot.test.ts'
     ],
 
     //
