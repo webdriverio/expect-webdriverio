@@ -253,18 +253,18 @@ describe('type assertions', () => {
         describe('toMatchSnapshot', () => {
 
             it('should be supported correctly', async () => {
-                expectVoid = wdioExpect(element).toMatchSnapshot()
-                expectVoid = wdioExpect(element).toMatchSnapshot('test label')
-                expectVoid = wdioExpect(element).not.toMatchSnapshot('test label')
+                expectPromiseVoid = wdioExpect(element).toMatchSnapshot()
+                expectPromiseVoid = wdioExpect(element).toMatchSnapshot('test label')
+                expectPromiseVoid = wdioExpect(element).not.toMatchSnapshot('test label')
 
                 expectPromiseVoid = wdioExpect(chainableElement).toMatchSnapshot()
                 expectPromiseVoid = wdioExpect(chainableElement).toMatchSnapshot('test label')
                 expectPromiseVoid = wdioExpect(chainableElement).not.toMatchSnapshot('test label')
 
                 //@ts-expect-error
-                expectPromiseVoid = wdioExpect(element).toMatchSnapshot()
+                expectVoid = wdioExpect(element).toMatchSnapshot()
                 //@ts-expect-error
-                expectPromiseVoid = wdioExpect(element).not.toMatchSnapshot()
+                expectVoid = wdioExpect(element).not.toMatchSnapshot()
                 //@ts-expect-error
                 expectVoid = wdioExpect(chainableElement).toMatchSnapshot()
                 //@ts-expect-error
@@ -275,16 +275,16 @@ describe('type assertions', () => {
         describe('toMatchInlineSnapshot', () => {
 
             it('should be correctly supported', async () => {
-                expectVoid = wdioExpect(element).toMatchInlineSnapshot()
-                expectVoid = wdioExpect(element).toMatchInlineSnapshot('test snapshot')
-                expectVoid = wdioExpect(element).toMatchInlineSnapshot('test snapshot', 'test label')
+                expectPromiseVoid = wdioExpect(element).toMatchInlineSnapshot()
+                expectPromiseVoid = wdioExpect(element).toMatchInlineSnapshot('test snapshot')
+                expectPromiseVoid = wdioExpect(element).toMatchInlineSnapshot('test snapshot', 'test label')
 
                 expectPromiseVoid = wdioExpect(chainableElement).toMatchInlineSnapshot()
                 expectPromiseVoid = wdioExpect(chainableElement).toMatchInlineSnapshot('test snapshot')
                 expectPromiseVoid = wdioExpect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
 
                 //@ts-expect-error
-                expectPromiseVoid = wdioExpect(element).toMatchInlineSnapshot()
+                expectVoid = wdioExpect(element).toMatchInlineSnapshot()
                 //@ts-expect-error
                 expectVoid = wdioExpect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
             })
@@ -299,7 +299,7 @@ describe('type assertions', () => {
                 expectPromiseVoid = wdioExpect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')
 
                 //@ts-expect-error
-                expectPromiseVoid = wdioExpect(element).toMatchInlineSnapshot()
+                expectVoid = wdioExpect(element).toMatchInlineSnapshot()
                 //@ts-expect-error
                 expectVoid = wdioExpect(chainableElement).toMatchInlineSnapshot('test snapshot', 'test label')
             })
@@ -826,6 +826,9 @@ describe('type assertions', () => {
             expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).toBeRejected()
             expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).not.toBeResolved()
             expectPromiseLikeVoid = expectAsync(Promise.resolve('test')).not.toBeRejected()
+        })
+        it('should work with Jasmine withContext', async () => {
+            await expect('title').withContext('checking title').toBe('title')
         })
     })
 })

@@ -38,6 +38,11 @@
         "types": "./jasmine.d.ts"
       }
     ],
+    "./jasmine-wdio-expect-async": [
+      {
+        "types": "./jasmine-wdio-expect-async.d.ts"
+      }
+    ],
     "./types": "./types/expect-global.d.ts",
     "./expect-global": "./types/expect-global.d.ts"
   },
@@ -65,7 +70,9 @@
     "ts:jasmine-async": "cd test-types/jasmine-async && tsc --project ./tsconfig.json",
     "checks:all": "npm run build && npm run compile && npm run tsc:root-types && npm run test && npm run ts",
     "watch": "npm run compile -- --watch",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "playgrounds:setup": "for dir in playgrounds/*/; do cd \"$dir\" && npm install && cd ../..; done",
+    "playgrounds:checks:all": "for dir in playgrounds/*/; do cd \"$dir\" && npm run checks:all && cd ../..; done"
   },
   "dependencies": {
     "@vitest/snapshot": "^4.0.16",
