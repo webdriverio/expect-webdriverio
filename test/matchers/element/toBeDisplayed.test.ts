@@ -3,8 +3,8 @@ import { $ } from '@wdio/globals'
 
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe } from '../../../src/utils.js'
-import { DEFAULT_OPTIONS, DEFAULT_OPTIONS_TO_BE_DISPLAYED } from '../../../src/constants.js'
-import { setOptions } from '../../../src/index.js'
+import { DEFAULT_OPTIONS } from '../../../src/constants.js'
+import { setDefaultOptions } from '../../../src/index.js'
 import type { ChainablePromiseElement } from 'webdriverio'
 
 vi.mock('@wdio/globals')
@@ -198,24 +198,19 @@ Received: "not displayed"`
         let el: ChainablePromiseElement
 
         beforeEach(async () => {
-            // Set global options to custom values before each test
-            setOptions({ wait: 99, interval: 101 })
+            setDefaultOptions({ wait: 99, interval: 101 })
             el = await $('sel')
             el.isDisplayed = vi.fn().mockResolvedValue(true)
 
         })
 
         afterEach(() => {
-            // Reset options after each test to avoid side effects
-            setOptions(defaultOptions)
-            expect(DEFAULT_OPTIONS.wait).not.toBe(99)
+            setDefaultOptions(defaultOptions)
         })
 
         test('should use globally set default options with executeCommandBe', async () => {
             await toBeDisplayed.call({}, el)
 
-            expect(DEFAULT_OPTIONS.wait).toBe(99)
-            expect(DEFAULT_OPTIONS_TO_BE_DISPLAYED.wait).toBe(99)
             expect(executeCommandBe).toHaveBeenCalledWith(
                 el,
                 expect.anything(),
