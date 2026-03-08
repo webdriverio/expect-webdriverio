@@ -14,24 +14,22 @@ export default defineConfig({
             enabled: true,
             exclude: [
                 '**/build/**',
-                '**/__fixtures__/**',
-                '**/__mocks__/**',
-                '**/*.test.ts',
+                '__mocks__/**',
+                'docs',
+                'playgrounds',
                 'lib',
+                'test',
                 'test-types',
                 '.eslintrc.cjs',
-                'jasmine.d.ts',
-                'jest.d.ts',
-                'types',
                 'eslint.config.mjs',
                 'vitest.config.ts',
                 'types-checks-filter-out-node_modules.js',
             ],
             thresholds: {
-                lines: 88.2,
-                functions: 86.9,
-                statements: 88.1,
-                branches: 79.6,
+                lines: 88.4,
+                functions: 86.7,
+                statements: 88.3,
+                branches: 80.8,
             }
         }
     }
