@@ -6,7 +6,7 @@ import { matchers } from "expect-webdriverio";
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-    // Ad custom wdio matcher to Jest's expect
+    // Add custom wdio matcher to Jest's expect
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect.extend(matchers as Record<string, any>);
 
