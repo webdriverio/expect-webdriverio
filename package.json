@@ -72,7 +72,8 @@
     "watch": "npm run compile -- --watch",
     "prepare": "husky install",
     "playgrounds:setup": "for dir in playgrounds/*/; do cd \"$dir\" && npm install && cd ../..; done",
-    "playgrounds:checks:all": "for dir in playgrounds/*/; do cd \"$dir\" && npm run checks:all && cd ../..; done"
+    "playgrounds:checks:all": "for dir in playgrounds/*/; do cd \"$dir\" && npm run checks:all && cd ../..; done",
+    "playgrounds:snapshots:update": "cd playgrounds/mocha && npm run snapshots:update && cd ../jest && npm run snapshots:update && cd ../.."
   },
   "dependencies": {
     "@vitest/snapshot": "^4.0.16",

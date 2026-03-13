@@ -8,7 +8,8 @@
     "typecheck": "tsc --noEmit",
     "test": "wdio run wdio.conf.ts",
     "lint": "eslint .",
-    "checks:all": "npm run typecheck && npm run lint && npm test"
+    "checks:all": "npm run typecheck && npm run lint && npm test",
+    "snapshots:update": "npm run test -- --spec snapshot.test.ts --updateSnapshots"
   },
   "devDependencies": {
     "@wdio/cli": "^9.4.0",

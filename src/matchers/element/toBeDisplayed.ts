@@ -1,18 +1,10 @@
 import { executeCommandBe } from '../../utils.js'
-import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
-
-const DEFAULT_OPTIONS_DISPLAYED: ExpectWebdriverIO.ToBeDisplayedOptions = {
-    ...DEFAULT_OPTIONS,
-    withinViewport: false,
-    contentVisibilityAuto: true,
-    opacityProperty: true,
-    visibilityProperty: true
-}
+import { DEFAULT_OPTIONS_TO_BE_DISPLAYED } from '../../constants.js'
 
 export async function toBeDisplayed(
     received: WdioElementMaybePromise,
-    options: ExpectWebdriverIO.ToBeDisplayedOptions = DEFAULT_OPTIONS_DISPLAYED,
+    options: ExpectWebdriverIO.ToBeDisplayedOptions = DEFAULT_OPTIONS_TO_BE_DISPLAYED,
 ) {
     this.expectation = this.expectation || 'displayed'
 
@@ -27,7 +19,7 @@ export async function toBeDisplayed(
         opacityProperty,
         visibilityProperty,
         ...commandOptions
-    } = { ...DEFAULT_OPTIONS_DISPLAYED, ...options }
+    } = { ...DEFAULT_OPTIONS_TO_BE_DISPLAYED, ...options }
 
     const result = await executeCommandBe.call(this, received, el => el?.isDisplayed({
         withinViewport,
