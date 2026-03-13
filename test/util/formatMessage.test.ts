@@ -1,176 +1,268 @@
 import { test, describe, beforeEach, expect } from 'vitest'
-import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
+import { printDiffOrStringify } from 'jest-matcher-utils'
 
-import { enhanceError, numberError } from '../../src/util/formatMessage.js'
+import { enhanceError, enhanceErrorBe, numberError } from '../../src/util/formatMessage.js'
 
 describe('formatMessage', () => {
-    describe('enhanceError', () => {
+    describe(enhanceError, () => {
         describe('default', () => {
-            let actual: string
+            let actualFailureMessage: string
+            const expected = 'Test Expected Value'
+            const actual = 'Test Actual Value'
 
             beforeEach(() => {
-                actual = enhanceError(
-                    'Test Subject',
-                    'Test Expected',
-                    'Test Actual',
+                actualFailureMessage = enhanceError(
+                    'window',
+                    expected,
+                    actual,
                     { isNot: false },
-                    'Test Verb',
-                    'Test Expectation',
-                    '',
-                    { message: '', containing: false }
+                    'have',
+                    'title',
                 )
             })
 
-            test('starting message', () => {
-                expect(actual).toMatch('Expect Test Subject to Test Verb Test Expectation')
+            test('message', () => {
+                expect(actualFailureMessage).toEqual(`\
+Expect window to have title
+
+Expected: "Test Expected Value"
+Received: "Test Actual Value"`)
             })
 
             test('diff string', () => {
-                const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
-                expect(actual).toMatch(diffString)
+                const diffString = printDiffOrStringify('Test Expected Value', 'Test Actual Value', 'Expected', 'Received', true)
+                expect(diffString).toEqual(`\
+Expected: "Test Expected Value"
+Received: "Test Actual Value"`)
+                expect(actualFailureMessage).toMatch(diffString)
             })
         })
 
         describe('isNot', () => {
-            let actual: string
-
-            describe('different', () => {
-                beforeEach(() => {
-                    actual = enhanceError(
-                        'Test Subject',
-                        'Test Expected',
-                        'Test Actual',
-                        { isNot: true },
-                        'Test Verb',
-                        'Test Expectation',
-                        '',
-                        { message: '', containing: false }
-                    )
-                })
-
-                test('starting message', () => {
-                    expect(actual).toMatch('Expect Test Subject not to Test Verb Test Expectation')
-                })
-
-                test('diff string', () => {
-                    const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected [not]', 'Received      ', true)
-                    expect(actual).toMatch(diffString)
-                })
-            })
+            let actualFailureMessage: string
+            const isNot = true
 
             describe('same', () => {
+                const expected = 'Test Same'
+                const actual = expected
+
                 beforeEach(() => {
-                    actual = enhanceError(
-                        'Test Subject',
-                        'Test Same',
-                        'Test Same',
-                        { isNot: true },
-                        'Test Verb',
-                        'Test Expectation',
-                        '',
-                        { message: '', containing: false }
+                    actualFailureMessage = enhanceError(
+                        'window',
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'title'
                     )
                 })
 
-                test('starting message', () => {
-                    expect(actual).toMatch('Expect Test Subject not to Test Verb Test Expectation')
+                test('message', () => {
+                    expect(actualFailureMessage).toEqual(`\
+Expect window not to have title
+
+Expected [not]: "Test Same"
+Received      : "Test Same"`)
                 })
 
                 test('diff string', () => {
-                    const diffString = `Expected [not]: ${printExpected('Test Same')}\n` +
-                        `Received      : ${printReceived('Test Same')}`
-                    expect(actual).toMatch(diffString)
+                    const diffString = `\
+Expected [not]: "Test Same"
+Received      : "Test Same"`
+                    expect(actualFailureMessage).toMatch(diffString)
                 })
             })
-
         })
 
         describe('containing', () => {
-            let actual: string
+            let actualFailureMessage: string
 
-            beforeEach(() => {
-                actual = enhanceError(
-                    'Test Subject',
-                    'Test Expected',
-                    'Test Actual',
-                    { isNot: false },
-                    'Test Verb',
-                    'Test Expectation',
-                    '',
-                    { message: '', containing: true }
-                )
+            describe('isNot false', () => {
+                const expected = 'Test Expected Value'
+                const actual = 'Test Actual Value'
+                const isNot = false
+
+                beforeEach(() => {
+                    actualFailureMessage = enhanceError(
+                        'window',
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'title',
+                        '',
+                        { message: '', containing: true }
+                    )
+                })
+
+                test('message', () => {
+                    expect(actualFailureMessage).toEqual(`\
+Expect window to have title containing
+
+Expected: "Test Expected Value"
+Received: "Test Actual Value"`)
+                })
             })
 
-            test('starting message', () => {
-                expect(actual).toMatch('Expect Test Subject to Test Verb Test Expectation containing')
-            })
+            describe('isNot true', () => {
+                const expected = 'same value'
+                const actual = expected
+                const isNot = true
 
-            test('diff string', () => {
-                const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
-                expect(actual).toMatch(diffString)
+                beforeEach(() => {
+                    actualFailureMessage = enhanceError(
+                        'window',
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'title',
+                        '',
+                        { message: '', containing: true }
+                    )
+                })
+
+                test('message', () => {
+                    expect(actualFailureMessage).toEqual(`\
+Expect window not to have title containing
+
+Expected [not]: "same value"
+Received      : "same value"`)
+                })
             })
         })
 
-        describe('message', () => {
-            let actual: string
+        describe('custom message', () => {
+            let actualFailureMessage: string
+            const customPrefixMessage = 'Test Message'
 
             beforeEach(() => {
-                actual = enhanceError(
-                    'Test Subject',
-                    'Test Expected',
-                    'Test Actual',
+                actualFailureMessage = enhanceError(
+                    'window',
+                    'Test Expected Value',
+                    'Test Actual Value',
                     { isNot: false },
-                    'Test Verb',
-                    'Test Expectation',
+                    'have',
+                    'title',
                     '',
-                    { message: 'Test Message', containing: false }
+                    { message: customPrefixMessage, containing: false }
                 )
             })
 
-            test('starting message', () => {
-                expect(actual).toMatch('Test Message\nExpect Test Subject to Test Verb Test Expectation')
-            })
+            test('message', () => {
+                expect(actualFailureMessage).toEqual(`\
+Test Message
+Expect window to have title
 
-            test('diff string', () => {
-                const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
-                expect(actual).toMatch(diffString)
+Expected: "Test Expected Value"
+Received: "Test Actual Value"`)
             })
         })
 
-        describe('arg2', () => {
-            let actual: string
+        describe('Expected Value Argument 2', () => {
+            let actualFailureMessage: string
+            const expectedArg2 = 'myPropertyName'
 
-            beforeEach(() => {
-                actual = enhanceError(
-                    'Test Subject',
-                    'Test Expected',
-                    'Test Actual',
-                    { isNot: false },
-                    'Test Verb',
-                    'Test Expectation',
-                    'Test Arg2',
-                    { message: 'Test Message', containing: false }
-                )
+            describe('isNot false', () => {
+                const expected = 'Expected Property Value'
+                const actual = 'Actual Property Value'
+                const isNot = false
+
+                beforeEach(() => {
+                    actualFailureMessage = enhanceError(
+                        'window',
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'property',
+                        expectedArg2,
+                    )
+                })
+
+                test('message', () => {
+                    expect(actualFailureMessage).toEqual(`\
+Expect window to have property myPropertyName
+
+Expected: "Expected Property Value"
+Received: "Actual Property Value"`)
+                })
             })
 
-            test('starting message', () => {
-                expect(actual).toMatch('Expect Test Subject to Test Verb Test Expectation Test Arg2')
-            })
+            describe('isNot true', () => {
+                const expected = 'Expected Property Value'
+                const actual = 'Actual Property Value'
+                const isNot = true
 
-            test('diff string', () => {
-                const diffString = printDiffOrStringify('Test Expected', 'Test Actual', 'Expected', 'Received', true)
-                expect(actual).toMatch(diffString)
+                beforeEach(() => {
+                    actualFailureMessage = enhanceError(
+                        'window',
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'property',
+                        expectedArg2,
+                    )
+                })
+
+                test('message', () => {
+                    expect(actualFailureMessage).toEqual(`\
+Expect window not to have property myPropertyName
+
+Expected [not]: "Expected Property Value"
+Received      : "Actual Property Value"`)
+                })
             })
         })
     })
 
-    describe('numberError', () => {
+    describe(numberError, () => {
         test('should return correct message', () => {
             expect(numberError()).toBe('no params')
             expect(numberError({ eq: 0 })).toBe(0)
             expect(numberError({ gte: 1 })).toBe('>= 1')
             expect(numberError({ lte: 1 })).toBe(' <= 1')
             expect(numberError({ gte: 2, lte: 1 })).toBe('>= 2 && <= 1')
+        })
+    })
+
+    describe(enhanceErrorBe, () => {
+        const subject = 'element'
+        const verb = 'be'
+        const expectation = 'displayed'
+        const options = {}
+
+        const isNot = false
+        test('when isNot is false', () => {
+            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, options )
+            expect(message).toEqual(`\
+Expect element to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
+        })
+
+        test('with custom message', () => {
+            const customMessage = 'Custom Error Message'
+            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, { ...options, message: customMessage })
+            expect(message).toEqual(`\
+Custom Error Message
+Expect element to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
+        })
+
+        test('when isNot is true', () => {
+            const isNot = true
+            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, options)
+            expect(message).toEqual(`\
+Expect element not to be displayed
+
+Expected: "not displayed"
+Received: "displayed"`)
+
         })
     })
 })
