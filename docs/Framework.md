@@ -60,10 +60,10 @@ Option 2: Reconfigure Jest's expect with the custom matchers and the soft assert
 ```ts
 // Configure the custom matchers:
 import { expect } from "@jest/globals";
-import { matchers } from "expect-webdriverio";
+import { wdioCustomMatchers } from "expect-webdriverio";
 
 beforeAll(async () => { 
-    expect.extend(matchers as Record<string, any>);
+    expect.extend(wdioCustomMatchers);
 });
 ```
 
