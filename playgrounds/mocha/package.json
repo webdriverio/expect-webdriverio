@@ -17,7 +17,7 @@
     "@wdio/mocha-framework": "^9.4.0",
     "@wdio/spec-reporter": "^9.4.0",
     "@wdio/visual-service": "^9.1.2",
-    "eslint": "^9.39.2",
+    "eslint": "^9.39.4",
     "eslint-plugin-mocha": "^11.2.0",
     "expect-webdriverio": "file:../..",
     "ts-node": "^10.9.2",
