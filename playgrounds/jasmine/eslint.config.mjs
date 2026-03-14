@@ -1,5 +1,6 @@
 import tsEslintPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
+import jasminePlugin from 'eslint-plugin-jasmine';
 
 export default {
   files: ['**/*.ts', '**/*.js'],
@@ -20,9 +21,11 @@ export default {
   },
   plugins: {
     '@typescript-eslint': tsEslintPlugin,
+    'jasmine': jasminePlugin,
   },
   rules: {
     ...tsEslintPlugin.configs['recommended'].rules,
     '@typescript-eslint/no-floating-promises': 'error',
+    'jasmine/no-focused-tests': 'error',
   },
 };

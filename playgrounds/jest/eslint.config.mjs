@@ -1,5 +1,6 @@
 import tsEslintPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
+import jestPlugin from 'eslint-plugin-jest';
 
 export default {
   files: ['**/*.ts', '**/*.js'],
@@ -20,9 +21,11 @@ export default {
   },
   plugins: {
     '@typescript-eslint': tsEslintPlugin,
+    'jest': jestPlugin,
   },
   rules: {
     ...tsEslintPlugin.configs['recommended'].rules,
     '@typescript-eslint/no-floating-promises': 'error',
+    'jest/no-focused-tests': 'error',
   },
 };

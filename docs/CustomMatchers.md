@@ -4,8 +4,8 @@
 
 To use WebdriverIO custom matchers (except asymmetric matchers) directly in:
 - **Jest**: Register matchers manually with `expect.extend`.
-- **Jasmine**: Register matchers manually with `jasmine.addAsyncMatchers`, then they will be available on `expectAsync`.
-    - Using `@wdio/jasmine-framework` provides a similar out-of-the-box experience.
+- **Jasmine**: Using `@wdio/jasmine-framework` provides an out-of-the-box experience.
+    - Else, register matchers manually with `jasmine.addAsyncMatchers`, then they will be available on `expectAsync`.
 - **Types**: Type augmentation for custom matchers is provided. See [Types.md](Types.md) for details.
 
 ## Adding your own matchers

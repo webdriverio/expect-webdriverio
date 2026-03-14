@@ -50,6 +50,9 @@ describe('Basic Expect Matchers', () => {
             expect('abc').toEqual(expect.stringContaining('b'));
             expect('abc').toEqual(expect.stringMatching(/b/));
             expect(123).toEqual(expect.any(Number));
+            expect({ foo: 'bar' }).toEqual({ foo: expect.anything() });
+            expect({ num: 1.1 }).toEqual({ num: expect.closeTo(1.101, 2) });
+            expect(() => { expect('title').toBe(expect.stringContaining('title')) }).toThrow();
 
             // Others
             expect(new Set([1, 2, 3])).toContain(2);

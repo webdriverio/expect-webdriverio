@@ -98,8 +98,74 @@ describe('Basic Expect Matchers available when pulling expect from expect-webdri
     })
 
     describe('Basis matcher with Jasmine asymmetric matchers', () => {
-        fit('should not work with jasmine.stringContaining', async () => {
-            expect(() => expect('title').toBe(jasmine.stringContaining('title'))).toThrow()
+        it('should have toEqual work with jasmine.stringContaining', async () => {
+            expect('title').toEqual(jasmine.stringContaining('title'))
+        })
+
+        it('should have toEqual work with jasmine.any', async () => {
+            expect('title').toEqual(jasmine.any(String))
+            expect(123).toEqual(jasmine.any(Number))
+        })
+
+        // TODO to support one day?
+        xit('should have toEqual work with jasmine.objectContaining', async () => {
+            expect({ a: 1, b: 2 }).toEqual(jasmine.objectContaining({ a: 1 }))
+        })
+
+        // TODO to support one day?
+        xit('should have toEqual work with jasmine.arrayContaining', async () => {
+            expect([1, 2, 3]).toEqual(jasmine.arrayContaining([2]))
+        })
+
+        it('should have toEqual work with jasmine.stringMatching', async () => {
+            expect('title').toEqual(jasmine.stringMatching(/itl/))
+        })
+
+        it('should have toEqual work with jasmine.anything', async () => {
+            expect({ foo: 'bar' }).toEqual({ foo: jasmine.anything() })
+        })
+
+        it('should have toBe not work with stringContaining', async () => {
+            expect(() => {
+                expect('title').toBe(jasmine.stringContaining('title'))
+            }).toThrow()
+        })
+    })
+
+    describe('Basis matcher with asymmetric matchers', () => {
+        it('should have toEqual work with expect.stringContaining', async () => {
+            expect('title').toEqual(expect.stringContaining('title'))
+        })
+
+        it('should have toEqual work with expect.any', async () => {
+            expect('title').toEqual(expect.any(String))
+            expect(123).toEqual(expect.any(Number))
+        })
+
+        it('should have toEqual work with expect.objectContaining', async () => {
+            expect({ a: 1, b: 2 }).toEqual(expect.objectContaining({ a: 1 }))
+        })
+
+        it('should have toEqual work with expect.arrayContaining', async () => {
+            expect([1, 2, 3]).toEqual(expect.arrayContaining([2]))
+        })
+
+        it('should have toEqual work with expect.stringMatching', async () => {
+            expect('title').toEqual(expect.stringMatching(/itl/))
+        })
+
+        it('should have toEqual work with expect.anything', async () => {
+            expect({ foo: 'bar' }).toEqual({ foo: expect.anything() })
+        })
+
+        it('should have toEqual work with expect.closeTo', async () => {
+            expect({ num: 1.1 }).toEqual({ num: expect.closeTo(1.101, 2) })
+        })
+
+        it('should have toBe not work with stringContaining', async () => {
+            expect(() => {
+                expect('title').toBe(expect.stringContaining('title'))
+            }).toThrow()
         })
     })
 })
