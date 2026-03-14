@@ -55,7 +55,8 @@ describe('Basic Expect Matchers', () => {
             const navLinks = await standalone.$$('nav a')
             const hrefs: string[] = []
             for (const link of navLinks) {
-                hrefs.push(await link.getAttribute('href'))
+                const href = await link.getAttribute('href')
+                if (href) hrefs.push(href)
             }
 
             expect(hrefs).toBeInstanceOf(Array)

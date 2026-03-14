@@ -12,11 +12,11 @@
     "snapshots:update": "npm run test -- --spec snapshot.test.ts --updateSnapshots"
   },
   "devDependencies": {
-    "@wdio/cli": "^9.4.0",
-    "@wdio/local-runner": "^9.4.0",
-    "@wdio/mocha-framework": "^9.4.0",
-    "@wdio/spec-reporter": "^9.4.0",
-    "@wdio/visual-service": "^9.1.2",
+    "@wdio/cli": "^9.25.0",
+    "@wdio/local-runner": "^9.25.0",
+    "@wdio/mocha-framework": "^9.25.0",
+    "@wdio/spec-reporter": "^9.25.0",
+    "@wdio/visual-service": "^9.1.6",
     "eslint": "^9.39.4",
     "eslint-plugin-mocha": "^11.2.0",
     "expect-webdriverio": "file:../..",

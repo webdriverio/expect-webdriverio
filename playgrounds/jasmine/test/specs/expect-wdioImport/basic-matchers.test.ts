@@ -63,7 +63,8 @@ describe('Basic Expect Matchers available when pulling expect from expect-webdri
             const navLinks = await $$('nav a')
             const hrefs: string[] = []
             for (const link of navLinks) {
-                hrefs.push(await link.getAttribute('href'))
+                const href = await link.getAttribute('href')
+                if (href) hrefs.push(href)
             }
 
             await expect(hrefs).toBeInstanceOf(Array)
