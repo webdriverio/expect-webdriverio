@@ -3,12 +3,11 @@
     "noEmit": true,
     "noImplicitAny": true,
     "target": "es2022",
-    "module": "node18",
+    "module": "NodeNext",
     "skipLibCheck": true,
     "types": [
       "@types/jasmine",
       "../../jasmine.d.ts",
-      "../../jasmine-wdio-expect-async.d.ts"
     ]
   }
 }
