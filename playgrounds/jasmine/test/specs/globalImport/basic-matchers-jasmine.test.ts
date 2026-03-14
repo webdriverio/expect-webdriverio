@@ -73,7 +73,7 @@ describe('Basic Matchers', () => {
     })
 
     // Simply showing not available matchers in Jasmine
-    xdescribe('Expect-only Matchers (not in Jasmine) and not available', () => {
+    xdescribe('Excluded tests showing unavailable matchers in Jasmine', () => {
         describe('Object matchers', () => {
             it('should match object properties', async () => {
                 const capabilities = await browser.capabilities
