@@ -6,6 +6,7 @@
  * `expectAsync` is forced into the `expect` global ambient, making all Jasmine sync-matchers asynchronous.
  *
  * When using `@wdio/jasmine-framework`, specify `expect-webdriverio/jasmine-wdio-expect-async` in the tsconfig.json's types.
+ * TODO move into `@wdio/jasmine-framework` and deprecated it from `expect-webdriverio`.
  */
 
 declare namespace jasmine {
