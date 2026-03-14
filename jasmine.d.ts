@@ -2,7 +2,7 @@
 
 /**
  * Augment the Jasmine namespace to include the WDIO custom async matchers only.
- * When using the vanilla Jasmine Library, use `jasmine.addAsyncMatchers(matchers)` and specify `expect-webdriverio/jasmine` in the tsconfig.json's types.
+ * When using the vanilla Jasmine Library, use `jasmine.addAsyncMatchers(wdioCustomMatchers)` and specify `expect-webdriverio/jasmine` in the tsconfig.json's types.
  */
 
 declare namespace jasmine {
