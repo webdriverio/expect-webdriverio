@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { expectTypeOf } from 'vitest'
 
@@ -267,8 +266,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
 
             it('should support custom asymmetric matcher', async () => {
-                const expectString1 : ExpectWebdriverIO.PartialMatcher<string> = expect.toBeCustomWdio()
-                const expectString2 : ExpectWebdriverIO.PartialMatcher<string> = expect.not.toBeCustomWdio()
+                expectTypeOf(expect.toBeCustomWdio()).toEqualTypeOf<ExpectWebdriverIO.PartialMatcher<string>>()
+                expectTypeOf(expect.not.toBeCustomWdio()).toEqualTypeOf<ExpectWebdriverIO.PartialMatcher<string>>()
 
                 expectTypeOf(expect(chainableElement).toBeCustomPromiseWdio(expect.toBeCustomWdio())).toEqualTypeOf<Promise<void>>()
 
@@ -299,8 +298,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableElement).toHaveSimpleCustomPropertyExpect(
                     expect.toHaveSimpleCustomPropertyExpect('string')
                 )).toEqualTypeOf<Promise<void>>()
-                const expectString1:string = expect.toHaveSimpleCustomPropertyExpect('string')
-                const expectString2:string = expect.not.toHaveSimpleCustomPropertyExpect('string')
+                expectTypeOf(expect.toHaveSimpleCustomPropertyExpect('string')).toEqualTypeOf<string>()
+                expectTypeOf(expect.not.toHaveSimpleCustomPropertyExpect('string')).toEqualTypeOf<string>()
             })
 
             it('should support a chainable element matcher with promise', async () => {
@@ -312,8 +311,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableElement).toHaveCustomPropertyExpect(
                     await expect.toHaveCustomPropertyExpect(chainableElement)
                 )).toEqualTypeOf<Promise<void>>()
-                const expectPromiseWdioElement1: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.toHaveCustomPropertyExpect(chainableElement)
-                const expectPromiseWdioElement2: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.not.toHaveCustomPropertyExpect(chainableElement)
+                expectTypeOf(expect.toHaveCustomPropertyExpect(chainableElement)).toEqualTypeOf<Promise<ExpectWebdriverIO.PartialMatcher<string>>>()
+                expectTypeOf(expect.not.toHaveCustomPropertyExpect(chainableElement)).toEqualTypeOf<Promise<ExpectWebdriverIO.PartialMatcher<string>>>()
 
                 expectTypeOf(expect.toHaveCustomPropertyExpect(chainableElement)).not.toEqualTypeOf<void>()
                 expectTypeOf(expect.not.toHaveCustomPropertyExpect(chainableElement)).not.toEqualTypeOf<void>()
@@ -372,8 +371,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
         it('should have expect return Matchers with a Promise', async () => {
-            const expectPromiseBoolean1: ExpectWebdriverIO.Matchers<void, Promise<boolean>> & ExpectLibInverse<ExpectWebdriverIO.Matchers<void, Promise<boolean>>> & ExpectWebdriverIO.PromiseMatchers<boolean> = expect(booleanPromise)
-            const expectPromiseBoolean2: ExpectWebdriverIO.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
+            expectTypeOf(expect(booleanPromise)).toMatchTypeOf<ExpectWebdriverIO.Matchers<void, Promise<boolean>> & ExpectLibInverse<ExpectWebdriverIO.Matchers<void, Promise<boolean>>> & ExpectWebdriverIO.PromiseMatchers<boolean>>()
+            expectTypeOf(expect(booleanPromise).not).toMatchTypeOf<ExpectWebdriverIO.Matchers<void, Promise<boolean>>>()
         })
 
         it('should return Promise<void> for resolves & rejects', async () => {
@@ -566,22 +565,22 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
             describe('expect.soft', () => {
                 it('should return void if actual is non-promise type', async () => {
-                    const expectWdioMatcher1: WdioCustomMatchers<void, string> = expect.soft(actualString)
+                    expectTypeOf(expect.soft(actualString)).toMatchTypeOf<WdioCustomMatchers<void, string>>()
                     expectTypeOf(expect.soft(actualString).toBe('Test Page')).toEqualTypeOf<void>()
                     expectTypeOf(expect.soft(actualString).not.toBe('Test Page')).toEqualTypeOf<void>()
                     expectTypeOf(expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<void>()
                 })
 
                 it('should return Promise<void> if actual is promise type', async () => {
-                    const expectWdioMatcher1: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>> = expect.soft(actualPromiseString)
+                    expectTypeOf(expect.soft(actualPromiseString)).toMatchTypeOf<ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>>>()
                     expectTypeOf(expect.soft(actualPromiseString).toBe('Test Page')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect.soft(actualPromiseString).not.toBe('Test Page')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<Promise<void>>()
                 })
 
                 it('should support chainable element', async () => {
-                    const expectElement: ExpectWebdriverIO.MatchersAndInverse<void, WebdriverIO.Element> = expect.soft(element)
-                    const expectElementChainable: ExpectWebdriverIO.MatchersAndInverse<void, typeof chainableElement> = expect.soft(chainableElement)
+                    expectTypeOf(expect.soft(element)).toEqualTypeOf<ExpectWebdriverIO.MatchersAndInverse<void, WebdriverIO.Element>>()
+                    expectTypeOf(expect.soft(chainableElement)).toEqualTypeOf<ExpectWebdriverIO.MatchersAndInverse<void, typeof chainableElement>>()
                 })
 
                 it('should return Promise<void> with WDIO matchers', async () => {
@@ -621,7 +620,6 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
             describe('expect.getSoftFailures', () => {
                 it('should return `SoftFailure[]`', async () => {
-                    const expectSoftFailure1: ExpectWebdriverIO.SoftFailure[] = expect.getSoftFailures()
                     expectTypeOf(expect.getSoftFailures()).toEqualTypeOf<ExpectWebdriverIO.SoftFailure[]>()
                 })
             })

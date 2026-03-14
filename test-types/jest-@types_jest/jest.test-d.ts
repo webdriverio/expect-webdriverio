@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { expectTypeOf } from 'vitest'
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 
@@ -264,8 +263,8 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
             })
 
             it('should support custom asymmetric matcher', async () => {
-                const expectString1 : ExpectWebdriverIO.PartialMatcher<string> = expect.toBeCustomWdio()
-                const expectString2 : ExpectWebdriverIO.PartialMatcher<string> = expect.not.toBeCustomWdio()
+                expectTypeOf(expect.toBeCustomWdio()).toEqualTypeOf<ExpectWebdriverIO.PartialMatcher<string>>()
+                expectTypeOf(expect.not.toBeCustomWdio()).toEqualTypeOf<ExpectWebdriverIO.PartialMatcher<string>>()
 
                 expectTypeOf(expect(chainableElement).toBeCustomPromiseWdio(expect.toBeCustomWdio())).toEqualTypeOf<Promise<void>>()
 
@@ -296,8 +295,8 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
                 expectTypeOf(expect(chainableElement).toHaveSimpleCustomPropertyJest(
                     expect.toHaveSimpleCustomPropertyJest('string')
                 )).toEqualTypeOf<Promise<void>>()
-                const expectString1:string = expect.toHaveSimpleCustomPropertyJest('string')
-                const expectString2:string = expect.not.toHaveSimpleCustomPropertyJest('string')
+                expectTypeOf(expect.toHaveSimpleCustomPropertyJest('string')).toEqualTypeOf<string>()
+                expectTypeOf(expect.not.toHaveSimpleCustomPropertyJest('string')).toEqualTypeOf<string>()
             })
 
             it('should support a chainable element matcher with promise', async () => {
@@ -309,8 +308,8 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
                 expectTypeOf(expect(chainableElement).toHaveCustomPropertyJest(
                     await expect.toHaveCustomPropertyJest(chainableElement)
                 )).toEqualTypeOf<Promise<void>>()
-                const expectPromiseWdioElement1: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.toHaveCustomPropertyJest(chainableElement)
-                const expectPromiseWdioElement2: Promise<ExpectWebdriverIO.PartialMatcher<string>> = expect.not.toHaveCustomPropertyJest(chainableElement)
+                expectTypeOf(expect.toHaveCustomPropertyJest(chainableElement)).toEqualTypeOf<Promise<ExpectWebdriverIO.PartialMatcher<string>>>()
+                expectTypeOf(expect.not.toHaveCustomPropertyJest(chainableElement)).toEqualTypeOf<Promise<ExpectWebdriverIO.PartialMatcher<string>>>()
 
                 expectTypeOf(expect.toHaveCustomPropertyJest(chainableElement)).not.toEqualTypeOf<void>()
                 expectTypeOf(expect.not.toHaveCustomPropertyJest(chainableElement)).not.toEqualTypeOf<void>()
@@ -369,8 +368,8 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
         it('should have expect return Matchers with a Promise', async () => {
-            const expectPromiseBoolean1: jest.Matchers<void, Promise<boolean>> = expect(booleanPromise)
-            const expectPromiseBoolean2: jest.Matchers<void, Promise<boolean>> = expect(booleanPromise).not
+            expectTypeOf(expect(booleanPromise)).toMatchTypeOf<jest.Matchers<void, Promise<boolean>>>()
+            expectTypeOf(expect(booleanPromise).not).toMatchTypeOf<jest.Matchers<void, Promise<boolean>>>()
         })
 
         it('should return Promise<void> for resolves & rejects', async () => {
@@ -561,22 +560,22 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
 
             describe('expect.soft', () => {
                 it('should return void if actual is non-promise type', async () => {
-                    const expectWdioMatcher1: WdioCustomMatchers<void, string> = expect.soft(actualString)
+                    expectTypeOf(expect.soft(actualString)).toMatchTypeOf<WdioCustomMatchers<void, string>>()
                     expectTypeOf(expect.soft(actualString).toBe('Test Page')).toEqualTypeOf<void>()
                     expectTypeOf(expect.soft(actualString).not.toBe('Test Page')).toEqualTypeOf<void>()
                     expectTypeOf(expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<void>()
                 })
 
                 it('should return Promise<void> if actual is promise type', async () => {
-                    const expectWdioMatcher1: ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>> = expect.soft(actualPromiseString)
+                    expectTypeOf(expect.soft(actualPromiseString)).toMatchTypeOf<ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>>>()
                     expectTypeOf(expect.soft(actualPromiseString).toBe('Test Page')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect.soft(actualPromiseString).not.toBe('Test Page')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<Promise<void>>()
                 })
 
                 it('should support chainable element', async () => {
-                    const expectElement: ExpectWebdriverIO.MatchersAndInverse<void, WebdriverIO.Element> = expect.soft(element)
-                    const expectElementChainable: ExpectWebdriverIO.MatchersAndInverse<void, typeof chainableElement> = expect.soft(chainableElement)
+                    expectTypeOf(expect.soft(element)).toEqualTypeOf<ExpectWebdriverIO.MatchersAndInverse<void, WebdriverIO.Element>>()
+                    expectTypeOf(expect.soft(chainableElement)).toEqualTypeOf<ExpectWebdriverIO.MatchersAndInverse<void, typeof chainableElement>>()
                 })
 
                 it('should return Promise<void> with WDIO matchers', async () => {
@@ -616,7 +615,6 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
 
             describe('expect.getSoftFailures', () => {
                 it('should return `SoftFailure[]`', async () => {
-                    const expectSoftFailure1: ExpectWebdriverIO.SoftFailure[] = expect.getSoftFailures()
                     expectTypeOf(expect.getSoftFailures()).toEqualTypeOf<ExpectWebdriverIO.SoftFailure[]>()
                 })
             })
