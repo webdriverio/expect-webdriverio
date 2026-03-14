@@ -60,7 +60,7 @@ const ALL_MATCHERS = [
 
 test('matchers', () => {
     expect([...matchers.keys()]).toEqual(ALL_MATCHERS)
-    expect(wdioCustomMatchers.size).toEqual(ALL_MATCHERS.length)
+    expect(Object.keys(wdioCustomMatchers).length).toEqual(ALL_MATCHERS.length)
 })
 
 test('allows to add matcher', () => {
@@ -70,7 +70,7 @@ test('allows to add matcher', () => {
     // @ts-expect-error not in types
     expectLib('foo').toBeCustom('foo')
     expect(matchers.keys()).toContain('toBeCustom')
-    expect(wdioCustomMatchers.keys()).toContain('toBeCustom')
+    expect(wdioCustomMatchers).toHaveProperty('toBeCustom')
 })
 
 test('Generic asymmetric matchers from Expect library should work', () => {

@@ -1,6 +1,6 @@
 /// <reference types="../types/expect-webdriverio.d.ts" />
 import { expect as expectLib } from 'expect'
-import type { WdioMatchersObject } from './types.js'
+import type { WdioMatchersObject, RawMatcherFn } from './types.js'
 import * as wdioMatchers from './matchers.js'
 import { DEFAULT_OPTIONS, defaultOptionsList } from './constants.js'
 import createSoftExpect from './softExpect.js'
@@ -9,18 +9,20 @@ import { SoftAssertService } from './softAssert.js'
 /**
  * Contains only the custom WDIO matchers to be used with `expect.extend()`.
  */
-export const wdioCustomMatchers: WdioMatchersObject = new Map<string, RawMatcherFn>()
+export const wdioCustomMatchers: WdioMatchersObject = {}
 
-// @deprecated use `wdioCustomMatchers` instead
-export const matchers = wdioCustomMatchers
+/**
+ * @deprecated use `wdioCustomMatchers` instead
+ */
+export const matchers = new Map<string, RawMatcherFn>()
 
-const filteredMatchers = {}
+const filteredMatchers: WdioMatchersObject = {}
 const extend = expectLib.extend
 
 // filter out matchers that aren't a function
 Object.keys(wdioMatchers).forEach(matcher => {
     if (typeof wdioMatchers[matcher as keyof typeof wdioMatchers] === 'function') {
-        filteredMatchers[matcher as keyof typeof filteredMatchers] = wdioMatchers[matcher as keyof typeof filteredMatchers]
+        filteredMatchers[matcher] = wdioMatchers[matcher as keyof typeof wdioMatchers] as RawMatcherFn
     }
 })
 
@@ -29,7 +31,10 @@ expectLib.extend = (m) => {
         return
     }
 
-    Object.entries(m).forEach(([name, matcher]) => wdioCustomMatchers.set(name, matcher))
+    Object.entries(m).forEach(([name, matcher]) => {
+        wdioCustomMatchers[name] = matcher
+        matchers.set(name, matcher)
+    })
     return extend(m)
 }
 

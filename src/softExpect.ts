@@ -24,7 +24,7 @@ const createSoftExpect = <T = unknown>(actual: T): ExpectWebdriverIO.Matchers<Pr
             }
 
             // Handle matchers
-            if (wdioCustomMatchers.has(propName)) {
+            if (propName in wdioCustomMatchers) {
                 return createSoftMatcher(actual, propName, softService)
             }
 
@@ -41,7 +41,7 @@ const createSoftNotProxy = <T>(actual: T, softService: SoftAssertService) => {
     return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void>, T>, {
         get(target, prop) {
             const propName = String(prop)
-            if (wdioCustomMatchers.has(propName)) {
+            if (propName in wdioCustomMatchers) {
                 return createSoftMatcher(actual, propName, softService, 'not')
             }
             return undefined
@@ -56,7 +56,7 @@ const createSoftChainProxy = <T>(actual: T, chainType: string, softService: Soft
     return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void>, T>, {
         get(target, prop) {
             const propName = String(prop)
-            if (wdioCustomMatchers.has(propName)) {
+            if (propName in wdioCustomMatchers) {
                 return createSoftMatcher(actual, propName, softService, chainType)
             }
             return undefined

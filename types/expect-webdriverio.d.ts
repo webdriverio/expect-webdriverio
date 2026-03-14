@@ -596,11 +596,19 @@ declare namespace ExpectWebdriverIO {
     type AsyncAssertionResult = ExpectLibAsyncExpectationResult
 
     /**
+     * @deprecated use `wdioCustomMatchers` instead
+     */
+    const matchers: Map<string, RawMatcherFn>
+
+    /**
      * Used by the wdio main project to configure the matchers in the runner when using Jasmine or Jest.
+     * Contains only the custom matchers from wdio, and not the ones from the expect library, to avoid any conflict with the matchers from the expect library when using Jasmine or Jest.
+     * Map to src/index.ts#wdioCustomMatchers
+     *
      * Equivalent as `MatchersObject` from the expect library.
      * @see https://github.com/jestjs/jest/blob/fd3d6cf9fe416b549a74b6577e5e1ea1130e3659/packages/expect/src/types.ts#L43C13-L43C27
      */
-    const matchers: Map<string, RawMatcherFn>
+    const wdioCustomMatchers: Record<string, RawMatcherFn>
 
     interface AssertionHookParams {
         /**
