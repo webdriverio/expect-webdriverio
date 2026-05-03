@@ -8,8 +8,8 @@ type Scenario = import('@wdio/types').Frameworks.Scenario
 type SnapshotResult = import('@vitest/snapshot').SnapshotResult
 type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
 
-type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
-type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
+type ChainablePromiseElement = ReturnType<WebdriverIO.Browser['$']>
+type ChainablePromiseArray = ReturnType<WebdriverIO.Browser['$$']>
 
 type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
 type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
