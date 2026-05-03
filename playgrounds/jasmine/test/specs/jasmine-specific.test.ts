@@ -39,7 +39,7 @@ describe('Jasmine-Specific Features', () => {
             const hrefs: string[] = []
             for (const link of navLinks) {
                 const href = await link.getAttribute('href')
-                if(href) hrefs.push(href)
+                if(href !== null) hrefs.push(href)
             }
             await expect(hrefs).toEqual(jasmine.arrayContaining(['/docs/gettingstarted']))
         })
