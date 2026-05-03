@@ -83,6 +83,12 @@ describe('type assertions', () => {
         })
     })
 
+    describe('toHaveHTML', () => {
+        it('should allow using HTMLOptions', async () => {
+            expectPromiseVoid = expect(element).toHaveHTML('html', { includeSelectorTag: true })
+        })
+    })
+
     describe('element', () => {
 
         describe('toBeDisabled', () => {
