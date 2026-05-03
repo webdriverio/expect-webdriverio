@@ -320,7 +320,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      */
     toHaveHTML: FnWhenElementOrArrayLike<ActualT, (
         html: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
-        options?: ExpectWebdriverIO.StringOptions
+        options?: ExpectWebdriverIO.HTMLOptions
     ) => Promise<void>>
 
     /**
