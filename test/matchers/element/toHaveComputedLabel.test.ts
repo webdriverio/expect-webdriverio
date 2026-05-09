@@ -1,7 +1,7 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils.js'
+import { getExpectMessage } from '../../__fixtures__/utils.js'
 import { toHaveComputedLabel } from '../../../src/matchers/element/toHaveComputedLabel.js'
 
 vi.mock('@wdio/globals')
@@ -271,18 +271,25 @@ Received      : "WebdriverIO"`
 
         test('failure if no match', async () => {
             const result = await toHaveComputedLabel.call({}, el, /Webdriver/i)
+
             expect(result.pass).toBe(false)
-            expect(getExpectMessage(result.message())).toContain('to have computed label')
-            expect(getExpected(result.message())).toContain('/Webdriver/i')
-            expect(getReceived(result.message())).toContain('This is example computed label')
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have computed label
+
+Expected: /Webdriver/i
+Received: "This is example computed label"`)
         })
 
         test('failure if array does not match with computed label', async () => {
             const result = await toHaveComputedLabel.call({}, el, ['div', /Webdriver/i])
+
             expect(result.pass).toBe(false)
-            expect(getExpectMessage(result.message())).toContain('to have computed label')
-            expect(getExpected(result.message())).toContain('/Webdriver/i')
-            expect(getExpected(result.message())).toContain('div')
+            expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have computed label
+
+Expected: ["div", /Webdriver/i]
+Received: "This is example computed label"`
+            )
         })
     })
 })

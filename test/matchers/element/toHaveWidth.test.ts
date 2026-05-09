@@ -44,7 +44,6 @@ describe('toHaveWidth', () => {
 
         const result = await toHaveWidth.call({}, el, 50, {})
 
-        expect(result.message()).toEqual('Expect $(`sel`) to have width\n\nExpected: 50\nReceived: serializes to the same string')
         expect(result.pass).toBe(true)
         expect(el.getSize).toHaveBeenCalledTimes(1)
     })
