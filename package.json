@@ -96,7 +96,7 @@
     "eslint": "^9.39.2",
     "husky": "^9.1.7",
     "npm-run-all2": "^8.0.4",
-    "release-it": "^19.1.0",
+    "release-it": "^20.0.1",
     "rimraf": "^6.1.2",
     "shelljs": "^0.10.0",
     "typescript": "^5.9.3",
