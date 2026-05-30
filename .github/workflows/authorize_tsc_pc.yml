@@ -1,0 +1,45 @@
+name: Authorize Technical Steering Committee and Project Committers
+
+on:
+  workflow_call:
+  # Make this a reusable workflow, no value needed
+  # https://docs.github.com/en/actions/using-workflows/reusing-workflows
+
+jobs:
+ authorize:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Check Technical Steering Committee membership
+      - id: check_tsc
+        uses: octokit/request-action@v2.4.0
+        # continue-on-error: true
+        with:
+          route: GET /orgs/:organisation/teams/:team/memberships/${{ github.actor }}
+          team: technical-steering-committee
+          organisation: webdriverio
+        env:
+          GITHUB_TOKEN: ${{ secrets.WDIO_BOT_GITHUB_TOKEN }}
+
+      # Step 2: Check Project Committers membership
+      - id: check_committers
+        uses: octokit/request-action@v2.4.0
+        # continue-on-error: true
+        with:
+          route: GET /orgs/:organisation/teams/:team/memberships/${{ github.actor }}
+          team: project-committers
+          organisation: webdriverio
+        env:
+          GITHUB_TOKEN: ${{ secrets.WDIO_BOT_GITHUB_TOKEN }}
+
+      # Step 3: Evaluate if either check returned a 200 OK status
+      - name: Evaluate Authorization
+        run: |
+          TSC_STATUS="${{ steps.check_tsc.outputs.status }}"
+          COMMITTERS_STATUS="${{ steps.check_committers.outputs.status }}"
+
+          if [ "$TSC_STATUS" = "200" ] || [ "$COMMITTERS_STATUS" = "200" ]; then
+            echo "Access granted: User belongs to an authorized team."
+          else
+            echo "Access denied: User is not a member of TSC or Project Committers."
+            exit 1
+          fi
