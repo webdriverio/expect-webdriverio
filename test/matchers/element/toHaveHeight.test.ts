@@ -1,7 +1,5 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $ } from '@wdio/globals'
-
-import { getExpectMessage } from '../../__fixtures__/utils.js'
 import { toHaveHeight } from '../../../src/matchers/element/toHaveHeight.js'
 
 vi.mock('@wdio/globals')
@@ -48,7 +46,6 @@ describe('toHaveHeight', () => {
 
         const result = await toHaveHeight.call({}, el, 32, {})
 
-        expect(result.message()).toEqual('Expect $(`sel`) to have height\n\nExpected: 32\nReceived: serializes to the same string')
         expect(result.pass).toBe(true)
         expect(el.getSize).toHaveBeenCalledTimes(1)
     })
@@ -130,6 +127,10 @@ Received      : 32`
 
         const result = await toHaveHeight.call({}, el, 50)
 
-        expect(getExpectMessage(result.message())).toContain('to have height')
+        expect(result.message()).toEqual(`\
+Expect $(\`sel\`) to have height
+
+Expected: 50
+Received: null`)
     })
 })

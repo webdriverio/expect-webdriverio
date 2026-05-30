@@ -2,7 +2,6 @@ import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 
 import { toBeRequestedWith } from '../../../src/matchers/mock/toBeRequestedWith.js'
 import type { local } from 'webdriver'
-import { removeColors, getExpectMessage, getExpected, getReceived } from '../../__fixtures__/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -457,27 +456,21 @@ Received      : {}`
             postData: expect.anything(),
             response: [...Array(50).keys()].map((_, id) => ({ id, name: `name_${id}` })),
         })
-        const wasNotCalled = removeColors(requested.message())
-        expect(getExpectMessage(wasNotCalled)).toBe('Expect mock to be called with')
-        expect(getExpected(wasNotCalled)).toBe(
-            'Expected: {' +
-                '"method": ["DELETE", "PUT"], ' +
-                '"postData": "Anything ", ' +
-                '"requestHeaders": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, ' +
-                '"response": [{"id": 0, "name": "name_0"}, "... 49 more items"], ' +
-                '"responseHeaders": {}, ' +
-                '"url": "() => false"}'
+        expect(requested.pass).toBe(false)
+        expect(requested.message()).toEqual(`\
+Expect mock to be called with
+
+Expected: {"method": ["DELETE", "PUT"], "postData": "Anything ", "requestHeaders": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, "response": [{"id": 0, "name": "name_0"}, "... 49 more items"], "responseHeaders": {}, "url": "() => false"}
+Received: "was not called"`
         )
-        expect(getReceived(wasNotCalled)).toBe('Received: "was not called"')
 
         mock.calls.push(mockPost)
-
         const notRequested = await toBeRequestedWith.call({ isNot: true }, mock, {
             url: () => true,
             method: mockPost.request.method,
         })
-        const wasCalled = removeColors(notRequested.message())
-        expect(wasCalled).toBe(
+
+        expect(notRequested.message()).toBe(
             `Expect mock not to be called with
 
 - Expected [not]  - 1
