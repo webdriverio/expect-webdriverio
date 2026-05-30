@@ -2,7 +2,9 @@ name: Authorize Technical Steering Committee and Project Committers
 
 on:
   workflow_call:
-  # Make this a reusable workflow, no value needed
+    secrets:
+      WDIO_BOT_GITHUB_TOKEN:
+        required: true
   # https://docs.github.com/en/actions/using-workflows/reusing-workflows
 
 jobs:
