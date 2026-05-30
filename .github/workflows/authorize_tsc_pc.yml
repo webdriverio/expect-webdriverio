@@ -6,7 +6,7 @@ on:
   # https://docs.github.com/en/actions/using-workflows/reusing-workflows
 
 jobs:
- authorize:
+  authorize:
     runs-on: ubuntu-latest
     steps:
       # Step 1: Check Technical Steering Committee membership
