@@ -12,7 +12,7 @@ jobs:
       # Step 1: Check Technical Steering Committee membership
       - id: check_tsc
         uses: octokit/request-action@v2.4.0
-        # continue-on-error: true
+        continue-on-error: true
         with:
           route: GET /orgs/:organisation/teams/:team/memberships/${{ github.actor }}
           team: technical-steering-committee
@@ -23,7 +23,7 @@ jobs:
       # Step 2: Check Project Committers membership
       - id: check_committers
         uses: octokit/request-action@v2.4.0
-        # continue-on-error: true
+        continue-on-error: true
         with:
           route: GET /orgs/:organisation/teams/:team/memberships/${{ github.actor }}
           team: project-committers
