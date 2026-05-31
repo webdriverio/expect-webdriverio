@@ -13,19 +13,19 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.10.5",
+    "@types/node": "^22.19.19",
     "@wdio/cli": "^9.4.0",
     "@wdio/globals": "^9.4.0",
     "@wdio/local-runner": "^9.4.0",
     "@wdio/mocha-framework": "^9.4.0",
     "@wdio/spec-reporter": "^9.4.0",
     "@wdio/visual-service": "^9.1.2",
-    "eslint": "^9.39.2",
+    "eslint": "^9.39.4",
     "expect-webdriverio": "file:../..",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "webdriverio": "9.25.0"
+    "webdriverio": "9.27.2"
   }
 }
