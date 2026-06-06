@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@types/jasmine": "^5.1.15",
-    "@wdio/jasmine-framework": "^9.4.0",
+    "@wdio/jasmine-framework": "^9.27.2",
     "expect-webdriverio": "file:../.."
   },
   "peerDependencies": {
