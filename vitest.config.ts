@@ -8,28 +8,28 @@ export default defineConfig({
             '**/node_modules/**'
         ],
         testTimeout: 15 * 1000,
+        clearMocks: true, // clears all mock call histories before each test
+        restoreMocks: true, // restores the original implementation of spies
         coverage: {
             enabled: true,
             exclude: [
                 '**/build/**',
-                '**/__fixtures__/**',
-                '**/__mocks__/**',
-                '**/*.test.ts',
+                '__mocks__/**',
+                'docs',
+                'playgrounds',
                 'lib',
+                'test',
                 'test-types',
                 '.eslintrc.cjs',
-                'jasmine.d.ts',
-                'jest.d.ts',
-                'types',
                 'eslint.config.mjs',
                 'vitest.config.ts',
                 'types-checks-filter-out-node_modules.js',
             ],
             thresholds: {
-                lines: 88,
-                functions: 86,
-                statements: 88,
-                branches: 79,
+                lines: 88.4,
+                functions: 86.7,
+                statements: 88.3,
+                branches: 80.8,
             }
         }
     }

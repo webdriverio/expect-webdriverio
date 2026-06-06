@@ -1,6 +1,6 @@
 {
   "name": "expect-webdriverio",
-  "version": "5.6.5",
+  "version": "5.6.7",
   "author": "Mykola Grybyk <mykola.grybyk@gmail.com>",
   "description": "WebdriverIO Assertion Library",
   "license": "MIT",
@@ -55,7 +55,9 @@
     "build": "run-s clean compile",
     "clean": "run-p clean:*",
     "clean:build": "rimraf ./lib",
-    "compile": "tsc --build tsconfig.build.json",
+    "compile": "run-s compile:*",
+    "compile:lib": "tsc --build tsconfig.build.json",
+    "compile:check": "if [ ! -f lib/index.js ] || [ $(find lib -type f | wc -l) -le 30 ]; then echo 'File structure under lib is broken'; exit 1; fi",
     "tsc:root-types": "node types-checks-filter-out-node_modules.js",
     "test": "run-s test:*",
     "test:tsc": "tsc --project tsconfig.json --noEmit --rootDir .",
@@ -75,30 +77,30 @@
     "playgrounds:snapshots:update": "cd playgrounds/mocha && npm run snapshots:update && cd ../jest && npm run snapshots:update && cd ../.."
   },
   "dependencies": {
-    "@vitest/snapshot": "^4.0.16",
+    "@vitest/snapshot": "^4.1.7",
     "deep-eql": "^5.0.2",
-    "expect": "^30.2.0",
-    "jest-matcher-utils": "^30.2.0"
+    "expect": "^30.4.1",
+    "jest-matcher-utils": "^30.4.1"
   },
   "devDependencies": {
-    "@jest/globals": "^30.3.0",
-    "@types/debug": "^4.1.12",
+    "@types/debug": "^4.1.13",
     "@types/jasmine": "^5.1.15",
     "@types/jest": "^30.0.0",
+    "@types/node": "^24.12.4",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^24.12.0",
-    "@vitest/coverage-v8": "^4.1.0",
+    "@jest/globals": "^30.4.1",
+    "@vitest/coverage-v8": "^4.1.7",
     "@wdio/eslint": "^0.1.3",
-    "@wdio/types": "^9.25.0",
+    "@wdio/types": "^9.27.2",
     "eslint": "^9.39.4",
     "husky": "^9.1.7",
-    "npm-run-all2": "^8.0.4",
-    "release-it": "^19.2.4",
+    "npm-run-all2": "^9.0.1",
+    "release-it": "^20.2.0",
     "rimraf": "^6.1.3",
     "shelljs": "^0.10.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.0",
-    "webdriverio": "^9.25.0"
+    "vitest": "^4.1.7",
+    "webdriverio": "^9.27.2"
   },
   "peerDependencies": {
     "@wdio/globals": "^9.0.0",

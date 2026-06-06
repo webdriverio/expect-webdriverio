@@ -78,8 +78,8 @@ describe('toBeDisabled', () => {
         expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to be disabled
 
-Expected [not]: "not disabled"
-Received      : "disabled"`
+Expected: "not disabled"
+Received: "disabled"`
         )
     })
 
@@ -102,8 +102,8 @@ Received      : "disabled"`
         expect(result.message()).toEqual(`\
 Expect $(\`sel\`) not to be disabled
 
-Expected [not]: "not disabled"
-Received      : "disabled"`
+Expected: "not disabled"
+Received: "disabled"`
         )
     })
 
