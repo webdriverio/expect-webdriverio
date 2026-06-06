@@ -20,7 +20,7 @@ type ExpectLibSyncExpectationResult = import('expect').SyncExpectationResult
 type ExpectLibAsyncExpectationResult = import('expect').AsyncExpectationResult
 type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
-type MatchersObject = import('expect').MatchersObject
+type MatchersObject = Parameters<typeof import('expect').expect.extend>[0]
 
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {

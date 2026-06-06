@@ -1,6 +1,6 @@
 /// <reference types="../types/expect-webdriverio.d.ts" />
 import { expect as expectLib } from 'expect'
-import type { WdioMatchersObject, RawMatcherFn } from './types.js'
+import type { RawMatcherFn } from './types.js'
 import * as wdioMatchers from './matchers.js'
 import { DEFAULT_OPTIONS, defaultOptionsList } from './constants.js'
 import createSoftExpect from './softExpect.js'
@@ -9,14 +9,14 @@ import { SoftAssertService } from './softAssert.js'
 /**
  * Contains only the custom WDIO matchers to be used with `expect.extend()`.
  */
-export const wdioCustomMatchers: WdioMatchersObject = {}
+export const wdioCustomMatchers: MatchersObject = {}
 
 /**
  * @deprecated use `wdioCustomMatchers` instead
  */
 export const matchers = new Map<string, RawMatcherFn>()
 
-const filteredMatchers: WdioMatchersObject = {}
+const filteredMatchers: MatchersObject = {}
 const extend = expectLib.extend
 
 // filter out matchers that aren't a function
@@ -38,9 +38,7 @@ expectLib.extend = (m) => {
     return extend(m)
 }
 
-type MatchersObject = Parameters<typeof expectLib.extend>[0]
-
-expectLib.extend(filteredMatchers as MatchersObject)
+expectLib.extend(filteredMatchers)
 
 // Extend the expect object with soft assertions
 const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect
