@@ -4,12 +4,12 @@
   "type": "module",
   "private": true,
   "description": "Playground projects common dependencies",
-    "workspaces": ["./jasmine", "./jest"],
+    "workspaces": ["./jasmine", "./jest", "./mocha"],
   "scripts": {
     "preinstall": "cd .. && npm run compile",
     "setup": "npm install",
     "checks:all": "npm exec --workspaces --call 'npm run checks:all'",
-    "snapshots:update": "cd mocha && npm run snapshots:update && cd ../jest && npm run snapshots:update && cd ../.."
+    "snapshots:update": "npm exec --workspace=mocha --workspace=jest --call 'npm run snapshots:update'"
   },
   "devDependencies": {
     "@wdio/cli": "^9.27.2",

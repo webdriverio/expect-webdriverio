@@ -29,9 +29,6 @@ export const config: WebdriverIO.Config = {
         browserName: 'chrome',
         'goog:chromeOptions': {
             args: ['--headless', '--disable-gpu']
-        },
-        'wdio-ics:options': {
-            logName: 'chrome-jasmine'
         }
     }],
 
