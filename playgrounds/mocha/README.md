@@ -2,23 +2,6 @@
 
 This playground project uses the local build of expect-webdriverio with WebDriverIO and Mocha framework.
 
-## Setup
-
-1. Build the parent project:
-   ```bash
-   cd ../.. && npm run build && cd playgrounds/mocha
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Run tests:
-   ```bash
-   npm test
-   ```
-
 ## Structure
 
 - `test/specs/` - E2E test files
