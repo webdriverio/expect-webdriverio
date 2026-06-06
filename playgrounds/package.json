@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "description": "Playground projects common dependencies",
-    "workspaces": ["./jasmine", "./jest", "./mocha"],
+  "workspaces": ["./jasmine", "./jest", "./mocha"],
   "scripts": {
     "preinstall": "cd .. && npm run compile",
     "setup": "npm install",
