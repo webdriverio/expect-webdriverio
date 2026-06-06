@@ -20,6 +20,7 @@ type ExpectLibSyncExpectationResult = import('expect').SyncExpectationResult
 type ExpectLibAsyncExpectationResult = import('expect').AsyncExpectationResult
 type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
+type MatchersObject = import('expect').MatchersObject
 
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
@@ -608,7 +609,7 @@ declare namespace ExpectWebdriverIO {
      * Equivalent as `MatchersObject` from the expect library.
      * @see https://github.com/jestjs/jest/blob/fd3d6cf9fe416b549a74b6577e5e1ea1130e3659/packages/expect/src/types.ts#L43C13-L43C27
      */
-    const wdioCustomMatchers: Record<string, RawMatcherFn>
+    const wdioCustomMatchers: MatchersObject
 
     interface AssertionHookParams {
         /**
