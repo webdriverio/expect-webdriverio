@@ -7,8 +7,7 @@
       "node",
       "expect-webdriverio/jasmine-wdio-expect-async",
       "@types/jasmine",
-      "@wdio/globals/types", // Need to be last to so the above from the projects have priority
-      "@wdio/visual-service",
+      "@wdio/globals/types" // Need to be last to so the above from the projects have priority
     ],
     "resolveJsonModule": true,
     "esModuleInterop": true,

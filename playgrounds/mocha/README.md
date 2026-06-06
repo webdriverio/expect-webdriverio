@@ -11,23 +11,6 @@ Because Mocha is the standard framework for `expect-webdriverio`, all features w
 *   **Visual Snapshots**: Visual snapshot testing directly integrates via `@wdio/visual-service`.
 *   **Global Options Configuration**: Easily set global wait times and other configurations (e.g., `setOptions({ wait: 250 })` in the `before` hook).
 
-## Setup
-
-1. Build the parent project:
-   ```bash
-   cd ../.. && npm run build && cd playgrounds/mocha
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Run tests:
-   ```bash
-   npm test
-   ```
-
 ## Structure
 
 - `test/specs/` - E2E test files covering various feature sets (basic matchers, soft expectations, snapshots, visual comparisons).
