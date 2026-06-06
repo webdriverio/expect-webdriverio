@@ -17,6 +17,7 @@
   },
   "peerDependencies": {
     "@wdio/cli": "*",
+    "@wdio/globals": "*",
     "@wdio/local-runner": "*",
     "@wdio/spec-reporter": "*",
     "@wdio/visual-service": "*"
