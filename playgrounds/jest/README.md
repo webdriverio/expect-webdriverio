@@ -1,6 +1,6 @@
 # Jest Playground
 
-This is a playground for E2E testing with Jest, ensuring the compatibility of `expect-webdriverio` and primarily serving to test Jest augmentation.
+This is a playground for E2E testing with Jest, ensuring the compatibility of `expect-webdriverio` and primarily serving to test Jest augmentation using a standalone wdio project.
 
 ## Notes and Limitations
 

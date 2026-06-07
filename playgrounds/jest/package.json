@@ -7,15 +7,14 @@
     "typecheck": "tsc --noEmit",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --verbose",
     "lint": "eslint .",
-    "checks:all": "npm run typecheck && npm run lint && npm test",
-    "snapshots:update": "npm run test -- --spec snapshot.test.ts --updateSnapshots"
+    "checks:all": "npm run typecheck && npm run lint && npm test"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "eslint-plugin-jest": "^29.15.0",
+    "eslint-plugin-jest": "^29.15.2",
     "expect-webdriverio": "file:../..",
-    "jest": "^30.3.0",
-    "ts-jest": "^29.4.6"
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11"
   },
   "peerDependencies": {
     "@wdio/cli": "*",
