@@ -50,6 +50,7 @@ describe('Jasmine-Specific Features', () => {
             const searchButton = await $('.DocSearch-Button')
 
             // WebdriverIO matcher
+            // @ts-expect-error -- toExist is not recognized properly fix incoming
             await expect(searchButton).toExist()
 
             // Jasmine matcher on element property
@@ -61,19 +62,23 @@ describe('Jasmine-Specific Features', () => {
         it('should use withContext on WDIO matcher', async () => {
             const searchButton = await $('.DocSearch-Button')
 
+            // @ts-expect-error -- toBeDisplayed is not recognized properly fix incoming
             await expect(searchButton).withContext('Search button should be visible on the homepage').toBeDisplayed()
+            // @ts-expect-error -- toExist is not recognized properly fix incoming
             await expect(searchButton).withContext('Search button should exist on the homepage').toExist()
         })
 
-        // TODO failing on jasmine.stringContaining not working properly with wdio matchers
+        // TODO fix incoming
         xit('should use asymmetric matchers in toHaveAttribute', async () => {
             const docsLink = await $('a[href="/docs/gettingstarted"]')
+            // @ts-expect-error -- toHaveAttribute with stringContaining is not recognized properly fix incoming
             await expect(docsLink).toHaveAttribute('href', jasmine.stringContaining('docs'))
         })
 
-        // TODO failing on jasmine.stringContaining not working properly with wdio matchers
+        // TODO fix incoming
         xit('should use asymmetric matchers in toHaveText', async () => {
             const heading = await $$('h1')[1]
+            // @ts-expect-error -- toHaveText with stringContaining is not recognized properly fix incoming
             await expect(heading).toHaveText(jasmine.stringContaining('Open'))
         })
     })
@@ -83,7 +88,9 @@ describe('Jasmine-Specific Features', () => {
             const searchButton = await $('.DocSearch-Button')
 
             // Validate button exists and has expected properties
+            // @ts-expect-error -- toExist is not recognized properly fix incoming
             await expect(searchButton).toExist()
+            // @ts-expect-error -- toBeClickable is not recognized properly fix incoming
             await expect(searchButton).toBeClickable()
 
             const buttonType = await searchButton.getAttribute('type')
@@ -92,7 +99,7 @@ describe('Jasmine-Specific Features', () => {
     })
 
     describe('Array and collection validation', () => {
-        // TODO asymmetric matchers are not working properly in this test
+        // TODO fix incoming
         xit('should validate collections with jasmine matchers', async () => {
             const navLinks = await $$('nav a')
             const count = navLinks.length
@@ -103,6 +110,7 @@ describe('Jasmine-Specific Features', () => {
 
             // WebdriverIO matcher with asymmetric matcher for attribute value
             const firstLink = navLinks[0]
+            // @ts-expect-error -- toHaveAttribute with any String is not recognized properly fix incoming
             await expect(firstLink).toHaveAttribute('href', jasmine.any(String))
         })
 
@@ -118,8 +126,8 @@ describe('Jasmine-Specific Features', () => {
         })
     })
 
-    // failing on jasmine.stringContaining not working properly with wdio matchers
     describe('Browser state validation', () => {
+        // TODO fix incoming
         xit('should validate browser properties with asymmetric matchers', async () => {
             const title = await browser.getTitle()
             const url = await browser.getUrl()
@@ -128,8 +136,14 @@ describe('Jasmine-Specific Features', () => {
             await expect(url).toEqual(jasmine.stringContaining('webdriver.io'))
 
             // Combined with WebdriverIO matchers
+            // @ts-expect-error -- toHaveUrl with stringContaining is not recognized properly fix incoming
             await expect(browser).toHaveUrl(jasmine.stringContaining('webdriver.io'))
+            // @ts-expect-error -- toHaveUrl with stringContaining is not recognized properly fix incoming
             await expect(browser).toHaveTitle(jasmine.stringContaining('WebdriverIO'))
+            // @ts-expect-error -- toHaveUrl with stringContaining and ignoreCase is not recognized properly fix incoming
+            await expect(browser).toHaveUrl(jasmine.stringContaining('WEBDRIVER.io'),{ignoreCase: true})
+            // @ts-expect-error -- toHaveTitle with stringContaining and ignoreCase is not recognized properly fix incoming
+            await expect(browser).toHaveTitle(jasmine.stringContaining('WEBDRIVERIO'), {ignoreCase: true})
         })
     })
 
@@ -147,12 +161,13 @@ describe('Jasmine-Specific Features', () => {
             await expect(size.height).toBeGreaterThan(0)
         })
 
-        // TODO failing with Error: Can't call getText on element with selector ".non-existent-element-xyz" because element wasn't found
+        // TODO fix incoming
         xit('should validate element attributes', async () => {
             const searchButton = await $('.DocSearch-Button')
             const classList = await searchButton.getAttribute('class')
 
             await expect(classList).toEqual(jasmine.stringContaining('DocSearch'))
+            // @ts-expect-error -- toHaveElementClass with stringContaining is not recognized properly fix incoming
             await expect(searchButton).toHaveElementClass(jasmine.stringContaining('DocSearch'))
         })
     })
@@ -165,12 +180,20 @@ describe('Jasmine-Specific Features', () => {
             await expect(title).not.toEqual(jasmine.stringMatching(/selenium/i))
         })
 
-        // TODO to keep? Failing since element not found
-        xit('should combine not with WebdriverIO matchers', async () => {
-            const nonExistent = await $('.non-existent-element-xyz')
+        it('should combine not.toBeDisplayed with WebdriverIO matchers', async () => {
+            const nonExistent = $('.non-existent-element-xyz')
 
+
+            // @ts-expect-error -- toBeDisplayed is not recognized properly fix incoming
             await expect(nonExistent).not.toBeDisplayed()
-            await expect(nonExistent).not.toHaveText(jasmine.any(String))
+        })
+
+
+        it('should combine not.toHaveText with WebdriverIO matchers', async () => {
+            const searchButton = await $('.DocSearch-Button')
+
+            // @ts-expect-error -- toHaveText with stringContaining is not recognized properly fix incoming
+            await expect(searchButton).not.toHaveText('test')
         })
     })
 
@@ -183,6 +206,12 @@ describe('Jasmine-Specific Features', () => {
             const tagName = await firstLink.getTagName()
             const arr = [1, 2, 3]
             const obj = { foo: 'bar', num: 42 }
+
+            // withContext with various matchers
+            await expect(title).toMatch(/WebdriverIO/)
+            await expect(title).withContext('Title should contain WebdriverIO').not.toMatch(/NOT WebdriverIO/)
+            await expect(arr).withContext('Array should contain 2').toContain(3)
+            await expect(obj).withContext('Object should have foo').toEqual(jasmine.objectContaining({ foo: 'bar' }))
 
             // Equality
             await expect(title).toEqual('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js | WebdriverIO')
@@ -203,22 +232,17 @@ describe('Jasmine-Specific Features', () => {
             await expect(title).toMatch(/WebdriverIO/)
             await expect(title).toEqual(jasmine.stringContaining('WebdriverIO'))
             await expect(obj).toBeInstanceOf(Object)
+            // @ts-expect-error -- toHaveProperty with any String is not recognized properly fix incoming
             await expect(Promise.resolve(1)).toBeResolved()
+            // @ts-expect-error -- toBeRejected is not recognized properly fix incoming
             await expect(Promise.reject('fail')).toBeRejected()
 
-            // @ts-expect-error -- toThrowError is not recognized properly to fix one day
+            // @ts-expect-error -- toThrowError is not recognized properly fix incoming
             await expect(Promise.resolve(42)).toBeResolvedTo(42)
-            // @ts-expect-error -- toBeRejectedWith is not recognized properly to fix one day
+            // @ts-expect-error -- toBeRejectedWith is not recognized properly fix incoming
             await expect(Promise.reject('fail')).toBeRejectedWith('fail')
-            // @ts-expect-error -- toThrowError is not recognized properly to fix one day
+
             await expect(() => { throw new Error('fail') }).toThrowError('fail')
-
-            // withContext with various matchers
-            await expect(title).withContext('Title should contain WebdriverIO').toMatch(/WebdriverIO/)
-            await expect(arr).withContext('Array should contain 2').toContain(2)
-            await expect(obj).withContext('Object should have foo').toEqual(jasmine.objectContaining({ foo: 'bar' }))
         })
-
-
     })
 })
