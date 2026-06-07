@@ -7,6 +7,9 @@ export default defineConfig({
             'dist', '.idea', '.git', '.cache', 'lib',
             '**/node_modules/**'
         ],
+        typecheck: {
+            enabled: false, // Not enable by default since we need to use vitest by command line to target different tsc config for each augmentations.
+        },
         testTimeout: 15 * 1000,
         clearMocks: true, // clears all mock call histories before each test
         restoreMocks: true, // restores the original implementation of spies
