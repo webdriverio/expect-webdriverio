@@ -1,5 +1,3 @@
-import { inject } from "vitest";
-
 export default {
   preset: 'ts-jest/presets/default-esm',
   moduleNameMapper: {
