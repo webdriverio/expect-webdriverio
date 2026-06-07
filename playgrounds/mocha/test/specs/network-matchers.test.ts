@@ -30,7 +30,6 @@ describe('Network Matchers', () => {
         })
 
         // Asymmetric matcher as argument (Validating the specific fix)
-        // @ts-expect-error -- Fix incoming
         await expect(mock).toBeRequestedWith(expect.objectContaining({
             method: 'POST'
         }))

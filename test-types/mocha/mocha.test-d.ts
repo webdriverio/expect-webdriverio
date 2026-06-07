@@ -188,10 +188,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         describe('toMatchSnapshot', () => {
 
             it('should return Promise<void>', async () => {
-                // TODO fix incoming
-                // expectTypeOf(expect(element).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
-                // expectTypeOf(expect(element).toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
-                // expectTypeOf(expect(element).not.toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(chainableElement).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
@@ -202,10 +201,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         describe('toMatchInlineSnapshot', () => {
 
             it('should return Promise<void>', async () => {
-                // TODO fix incoming
-                // expectTypeOf(expect(element).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
-                // expectTypeOf(expect(element).toMatchInlineSnapshot('test snapshot')).toEqualTypeOf<Promise<void>>()
-                // expectTypeOf(expect(element).toMatchInlineSnapshot('test snapshot', 'test label')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toMatchInlineSnapshot('test snapshot')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toMatchInlineSnapshot('test snapshot', 'test label')).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(chainableElement).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toMatchInlineSnapshot('test snapshot')).toEqualTypeOf<Promise<void>>()
@@ -221,8 +219,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')).toEqualTypeOf<Promise<void>>()
 
-                // TODO fix incoming
-                //expectTypeOf(expect(element).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
             })
         })
 
@@ -434,6 +431,14 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
                 response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
             })).toEqualTypeOf<Promise<void>>()
+
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
+                url: expect.stringMatching(/.*\/api\/.*/i),
+                method: ['POST', 'PUT'],
+                statusCode: [401, 403],
+                postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
+                response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
+            }))).toEqualTypeOf<Promise<void>>()
         })
     })
 
@@ -478,8 +483,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveElementProperty('prop', 'val')).toEqualTypeOf<Promise<void>>()
 
-                // TODO fix incoming
-                //expectTypeOf(expect(element).toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
             })
         })
 
