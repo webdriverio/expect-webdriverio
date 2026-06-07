@@ -8,7 +8,7 @@ export default defineConfig({
             '**/node_modules/**'
         ],
         typecheck: {
-            enabled: false, // Not enable by default since we need to use vitest by command line to target different tsc config for each augmentations.
+            enabled: false, // Not enable by default since in test-types, we need to use vitest by command line to target different tsc config for each augmentations.
         },
         testTimeout: 15 * 1000,
         clearMocks: true, // clears all mock call histories before each test
