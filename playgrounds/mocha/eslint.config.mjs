@@ -1,6 +1,7 @@
 
 import tsEslintPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
+import mochaPlugin from 'eslint-plugin-mocha';
 
 export default {
   files: ['**/*.ts', '**/*.js'],
@@ -21,9 +22,11 @@ export default {
   },
   plugins: {
     '@typescript-eslint': tsEslintPlugin,
+    'mocha': mochaPlugin,
   },
   rules: {
     ...tsEslintPlugin.configs['recommended'].rules,
     '@typescript-eslint/no-floating-promises': 'error',
+    'mocha/no-exclusive-tests': 'error',
   },
 };

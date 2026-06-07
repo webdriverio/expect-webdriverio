@@ -6,15 +6,15 @@ import 'expect'
  */
 declare module 'expect' {
     interface AsymmetricMatchers {
-        toBeWithinRange(floor: number, ceiling: number): void
-        toHaveSimpleCustomProperty(string: string): string
-        toHaveCustomProperty(element: ChainablePromiseElement | WebdriverIO.Element): Promise<ExpectWebdriverIO.PartialMatcher<string>>
+        toBeWithinRangeExpect(floor: number, ceiling: number): void
+        toHaveSimpleCustomPropertyExpect(string: string): string
+        toHaveCustomPropertyExpect(element: ChainablePromiseElement | WebdriverIO.Element): Promise<ExpectWebdriverIO.PartialMatcher<string>>
     }
 
     interface Matchers<R, T> {
-        toBeWithinRange(floor: number, ceiling: number): R
-        toHaveSimpleCustomProperty(string: string | ExpectWebdriverIO.PartialMatcher<string>): Promise<R>
-        toHaveCustomProperty:
+        toBeWithinRangeExpect(floor: number, ceiling: number): R
+        toHaveSimpleCustomPropertyExpect(string: string | ExpectWebdriverIO.PartialMatcher<string>): Promise<R>
+        toHaveCustomPropertyExpect:
         // Useful to typecheck the custom matcher so it is only used on elements
         T extends ChainablePromiseElement | WebdriverIO.Element ?
             (test: string | ExpectWebdriverIO.PartialMatcher<string> |

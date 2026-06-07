@@ -1,14 +1,18 @@
 /**
  * Custom matchers under the `ExpectWebdriverIO` namespace.
+ *
+ * RECOMMENDED: This augmentation works universally.
+ * It is supported by both the global `expect` in Jest/Jasmine AND `expect.soft`.
+ *
  * @see {@link https://webdriver.io/docs/custommatchers/#typescript-support}
  */
 declare namespace ExpectWebdriverIO {
     interface AsymmetricMatchers {
-        toBeCustom(): ExpectWebdriverIO.PartialMatcher<string>;
-        toBeCustomPromise(chainableElement: ChainablePromiseElement): Promise<ExpectWebdriverIO.PartialMatcher<string>>;
+        toBeCustomWdio(): ExpectWebdriverIO.PartialMatcher<string>;
+        toBeCustomPromiseWdio(chainableElement: ChainablePromiseElement): Promise<ExpectWebdriverIO.PartialMatcher<string>>;
     }
     interface Matchers<R, T> {
-        toBeCustom(): R;
-        toBeCustomPromise: T extends ChainablePromiseElement ? (expected?: string | ExpectWebdriverIO.PartialMatcher<string> | Promise<ExpectWebdriverIO.PartialMatcher<string>>) => Promise<R> : never;
+        toBeCustomWdio(): R;
+        toBeCustomPromiseWdio: T extends ChainablePromiseElement ? (expected?: string | ExpectWebdriverIO.PartialMatcher<string> | Promise<ExpectWebdriverIO.PartialMatcher<string>>) => Promise<R> : never;
     }
 }
