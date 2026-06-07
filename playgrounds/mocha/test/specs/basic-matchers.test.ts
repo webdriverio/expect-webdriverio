@@ -5,7 +5,7 @@ describe('Basic Expect Matchers', () => {
         await browser.url('https://webdriver.io')
     })
 
-    describe('Expect matchers', () => {
+   describe('Expect matchers', () => {
         it('Basic matchers', async () => {
             // Equality
             expect(2 + 2).toBe(4);

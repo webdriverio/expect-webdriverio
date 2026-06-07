@@ -6,8 +6,8 @@
     "module": "NodeNext",
     "skipLibCheck": true,
     "types": [
-      "@types/jasmine",
       "../../jasmine.d.ts",
+      "@types/jasmine",
     ]
   }
 }
