@@ -1,4 +1,5 @@
 import { browser } from '@wdio/globals'
+import { expect as wdioExpect } from 'expect-webdriverio'
 
 describe('Network Matchers', () => {
     let mock: WebdriverIO.Mock
@@ -34,16 +35,34 @@ describe('Network Matchers', () => {
         })
     })
 
-    it('should support asymmetric matchers', async () => {
-        await expect(mock).toBeRequestedWith(expect.objectContaining({
-            method: 'POST'
-        }))
+    it('should support asymmetric matchers (global)', async () => {
+        await expect(mock).toBeRequestedWith({
+            method: 'POST',
+            url: expect.stringContaining('/api/foo'),
+            postData: expect.objectContaining({
+                title: 'foo'
+            })
+        })
     })
 
     it('should support jasmine asymmetric matchers', async () => {
-        await expect(mock).toBeRequestedWith(jasmine.objectContaining({
-            method: 'POST'
-        }))
+        await expect(mock).toBeRequestedWith({
+            method: 'POST',
+            url: jasmine.stringContaining('/api/foo'),
+            postData: jasmine.objectContaining({
+                title: 'foo'
+            })
+        })
+    })
+
+        it('should support wdio expect asymmetric matchers', async () => {
+        await expect(mock).toBeRequestedWith({
+            method: 'POST',
+            url: wdioExpect.stringContaining('/api/foo'),
+            postData: wdioExpect.objectContaining({
+                title: 'foo'
+            })
+        })
     })
 })
 
