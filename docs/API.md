@@ -1018,4 +1018,4 @@ await expect(browser).toHaveTitle(jasmine.stringContaining('some title'))
 await expect(browser).toHaveTitle(expect.stringContaining('some title'))
 ```
 
-**Note:** Known limitations still exist with `jasmine.arrayContaining` and `jasmine.objectContaining` with basic matchers.
+**Note:** Known limitations still exist with `jasmine.arrayContaining` and `jasmine.objectContaining`.

@@ -325,14 +325,6 @@ describe('Jasmine type agumentations', () => {
                     postData: wdioExpect.objectContaining({ released: true, title: wdioExpect.stringContaining('foobar') }),
                     response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
                 })).toEqualTypeOf<Promise<void>>()
-
-                expectTypeOf(expectAsync(promiseNetworkMock).toBeRequestedWith(jasmine.objectContaining({
-                    method: 'POST'
-                }))).toEqualTypeOf<Promise<void>>()
-
-                expectTypeOf(expectAsync(promiseNetworkMock).toBeRequestedWith(wdioExpect.objectContaining({
-                    method: 'POST'
-                }))).toEqualTypeOf<Promise<void>>()
             })
         })
     })

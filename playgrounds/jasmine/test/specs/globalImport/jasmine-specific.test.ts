@@ -214,8 +214,11 @@ describe('Jasmine-Specific Features', () => {
             await expect(Promise.resolve(1)).toBeResolved()
             await expect(Promise.reject('fail')).toBeRejected()
 
+            // TODO dprevost to review?
             // @ts-expect-error -- toThrowError is not recognized properly fix incoming
             await expect(Promise.resolve(42)).toBeResolvedTo(42)
+
+            // TODO dprevost to review?
             // @ts-expect-error -- toBeRejectedWith is not recognized properly fix incoming
             await expect(Promise.reject('fail')).toBeRejectedWith('fail')
 
