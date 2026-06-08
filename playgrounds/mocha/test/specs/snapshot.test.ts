@@ -25,8 +25,13 @@ describe('Snapshot Testing', () => {
     })
 
     describe('DOM snapshots', () => {
-        it('should match element outerHTML snapshot', async () => {
+        it('should match element outerHTML snapshot (ChainablePromiseElement)', async () => {
             const logo = await $('.navbar__logo')
+            await expect(logo).toMatchSnapshot()
+        })
+
+        it('should match element outerHTML snapshot (Element)', async () => {
+            const logo = await $('.navbar__logo').getElement()
             await expect(logo).toMatchSnapshot()
         })
 

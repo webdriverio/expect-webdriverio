@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --verbose",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --verbose --forceExit",
     "lint": "eslint .",
     "checks:all": "npm run typecheck && npm run lint && npm test"
   },
