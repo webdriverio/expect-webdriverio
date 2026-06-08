@@ -21,7 +21,18 @@ declare namespace jasmine {
      */
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- U is required to properly override Jasmine's AsyncMatchers
-    interface AsyncMatchers<T, U> extends ExpectWebdriverIO.Matchers<Promise<void>, T> {}
+    interface AsyncMatchers<T, U> extends ExpectWebdriverIO.Matchers<Promise<void>, T> {
+        /**
+         * Override to unwrap Promise<T> since `expect` replaces `expectAsync` under @wdio/jasmine-framework.
+         * Without this, toBeResolvedTo expects Expected<Promise<X>> instead of Expected<X>.
+         */
+        toBeResolvedTo(expected: Expected<T extends PromiseLike<infer V> ? V : T>): PromiseLike<void>;
+
+        /**
+         * Rejection type is unknown since promises can reject with any value.
+         */
+        toBeRejectedWith(expected: unknown): PromiseLike<void>;
+    }
 
     // Needed to reference it below for the withContext method
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
