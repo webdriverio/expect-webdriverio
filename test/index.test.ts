@@ -5,6 +5,7 @@ test('index', () => {
     expect(setOptions.name).toBe('setDefaultOptions')
     expect(expectExport).toBeDefined()
     expect(utils.compareText).toBeDefined()
-    expect(Object.keys(wdioCustomMatchers).length).toEqual(42)
+
     expect(matchers.size).toEqual(42)
+    expect(Object.keys(wdioCustomMatchers).length).toEqual(42)
 })

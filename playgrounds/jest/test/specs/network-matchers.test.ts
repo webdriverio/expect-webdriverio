@@ -27,9 +27,10 @@ describe('Network Matchers', () => {
             method: 'POST'
         })
 
-        // Asymmetric matcher as argument (Validating the specific fix)
-        await expect(mock).toBeRequestedWith(expect.objectContaining({
-            method: 'POST'
-        }))
+        // Asymmetric matcher as argument
+        await expect(mock).toBeRequestedWith({
+            method: 'POST',
+            url: expect.stringContaining('/api/foo')
+        })
     })
 })
