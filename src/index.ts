@@ -12,7 +12,7 @@ import { SoftAssertService } from './softAssert.js'
 export const wdioCustomMatchers: MatchersObject = {}
 
 /**
- * @deprecated use `wdioCustomMatchers` instead
+ * @deprecated use `wdioCustomMatchers` instead. To remove in v6
  */
 export const matchers = new Map<string, RawMatcherFn>()
 
