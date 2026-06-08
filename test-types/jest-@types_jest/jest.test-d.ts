@@ -225,18 +225,18 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
         describe('toBeElementsArrayOfSize', async () => {
 
             it('should return Promise<void> when actual is chainableArray', async () => {
-                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize(5)).toMatchTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })).toMatchTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize(5)).toExtend<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })).toExtend<Promise<void>>()
             })
 
             it('should return Promise<void> when actual is element array', async () => {
-                expectTypeOf(expect(elementArray).toBeElementsArrayOfSize(5)).toMatchTypeOf<Promise<void>>()
-                expectTypeOf(expect(elementArray).toBeElementsArrayOfSize({ lte: 10 })).toMatchTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toBeElementsArrayOfSize(5)).toExtend<Promise<void>>()
+                expectTypeOf(expect(elementArray).toBeElementsArrayOfSize({ lte: 10 })).toExtend<Promise<void>>()
             })
 
             it('should return Promise<void> when actual is element[]', async () => {
-                expectTypeOf(expect(elements).toBeElementsArrayOfSize(5)).toMatchTypeOf<Promise<void>>()
-                expectTypeOf(expect(elements).toBeElementsArrayOfSize({ lte: 10 })).toMatchTypeOf<Promise<void>>()
+                expectTypeOf(expect(elements).toBeElementsArrayOfSize(5)).toExtend<Promise<void>>()
+                expectTypeOf(expect(elements).toBeElementsArrayOfSize({ lte: 10 })).toExtend<Promise<void>>()
             })
 
             it('should not work when actual is not chainableArray', async () => {
@@ -368,8 +368,8 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
         it('should have expect return Matchers with a Promise', async () => {
-            expectTypeOf(expect(booleanPromise)).toMatchTypeOf<jest.Matchers<void, Promise<boolean>>>()
-            expectTypeOf(expect(booleanPromise).not).toMatchTypeOf<jest.Matchers<void, Promise<boolean>>>()
+            expectTypeOf(expect(booleanPromise)).toExtend<jest.Matchers<void, Promise<boolean>>>()
+            expectTypeOf(expect(booleanPromise).not).toExtend<jest.Matchers<void, Promise<boolean>>>()
         })
 
         it('should return Promise<void> for resolves & rejects', async () => {
@@ -560,14 +560,14 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
 
             describe('expect.soft', () => {
                 it('should return void if actual is non-promise type', async () => {
-                    expectTypeOf(expect.soft(actualString)).toMatchTypeOf<WdioCustomMatchers<void, string>>()
+                    expectTypeOf(expect.soft(actualString)).toExtend<WdioCustomMatchers<void, string>>()
                     expectTypeOf(expect.soft(actualString).toBe('Test Page')).toEqualTypeOf<void>()
                     expectTypeOf(expect.soft(actualString).not.toBe('Test Page')).toEqualTypeOf<void>()
                     expectTypeOf(expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<void>()
                 })
 
                 it('should return Promise<void> if actual is promise type', async () => {
-                    expectTypeOf(expect.soft(actualPromiseString)).toMatchTypeOf<ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>>>()
+                    expectTypeOf(expect.soft(actualPromiseString)).toExtend<ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>>>()
                     expectTypeOf(expect.soft(actualPromiseString).toBe('Test Page')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect.soft(actualPromiseString).not.toBe('Test Page')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<Promise<void>>()

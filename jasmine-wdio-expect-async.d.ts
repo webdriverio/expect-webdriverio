@@ -10,7 +10,6 @@
  */
 
 declare namespace jasmine {
-
     /**
      * Async matchers for Jasmine to allow the typing of `expectAsync` with WebDriverIO matchers.
      * T is the type of the actual value
