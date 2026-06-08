@@ -42,7 +42,7 @@ describe('Type test', () => {
         })
 
         test('Wdio soft expect & matchers type tests', () => {
-        // Basic matchers
+            // Basic matchers
             expectTypeOf(expectWdio.soft(true)).toExtend<Matchers<void, boolean> & Inverse<Matchers<void, boolean>>>()
             expectTypeOf(expectWdio.soft(true).toBe(true)).toExtend<void>()
             expectTypeOf(expectWdio.soft(true).toBe(true)).not.toExtend<Promise<void>>()
