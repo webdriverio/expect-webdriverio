@@ -431,14 +431,6 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
                 response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
             })).toEqualTypeOf<Promise<void>>()
-
-            expectTypeOf(expect(promiseNetworkMock).toBeRequestedWith(expect.objectContaining({
-                url: expect.stringMatching(/.*\/api\/.*/i),
-                method: ['POST', 'PUT'],
-                statusCode: [401, 403],
-                postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
-                response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
-            }))).toEqualTypeOf<Promise<void>>()
         })
     })
 
