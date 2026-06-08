@@ -46,8 +46,7 @@ describe('Type test', () => {
             expectTypeOf(expectWdio.soft(true)).toExtend<Matchers<void, boolean> & Inverse<Matchers<void, boolean>>>()
             expectTypeOf(expectWdio.soft(true).toBe(true)).toExtend<void>()
             expectTypeOf(expectWdio.soft(true).toBe(true)).not.toExtend<Promise<void>>()
-            // TODO to fix one day? When non elements matchers + promise, we should stick to void and not have Promise<void>
-            //expectTypeOf(expectWdio.soft(Promise.resolve(true)).toBe(expect.any)).toBeVoid()
+            expectTypeOf(expectWdio.soft(Promise.resolve(true)).toBe(expect.any)).toExtend<Promise<void>>()
             expectTypeOf(expectWdio.soft(Promise.resolve(true)).resolves.toBe(expect.any)).toExtend<Promise<void>>()
 
             // element matchers
