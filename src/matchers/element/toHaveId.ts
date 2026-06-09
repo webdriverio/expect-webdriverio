@@ -4,7 +4,7 @@ import type { WdioElementMaybePromise } from '../../types.js'
 
 export async function toHaveId(
     el: WdioElementMaybePromise,
-    expectedValue: string | RegExp | WdioAsymmetricMatcher<string>,
+    expectedValue: string | RegExp | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     await options.beforeAssertion?.({

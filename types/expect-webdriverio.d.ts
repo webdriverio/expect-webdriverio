@@ -476,6 +476,8 @@ type JasmineAsymmetricMatcher<R> = {
     asymmetricMatch(other: unknown): boolean;
 }
 
+type AsymmetricMatcher<R> = WdioAsymmetricMatcher<R> | JasmineAsymmetricMatcher<R>
+
 declare namespace ExpectWebdriverIO {
     /**
      * When importing expect from 'expect-webdriverio', instead of using globals this is the one used.

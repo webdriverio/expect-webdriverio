@@ -330,6 +330,7 @@ const requestedWithParamToString = (
         return (
             param.constructor.name +
             ' ' +
+            // TODO dprevost is this jasmine compliant?
             (JSON.stringify((param as WdioAsymmetricMatcher<string>).sample) || '')
         )
     } else if (transformFn && typeof param === 'object' && param !== null) {
