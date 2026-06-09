@@ -1,28 +1,8 @@
 import { describe, test, expect, vi } from 'vitest'
 import { compareNumbers, compareObject, compareText, compareTextWithArray, getAsymmetricMatcherValue, isAsymmetricMatcher, isStrictlyStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
+import { jasmine } from './__mocks__/jasmine'
 
 describe('utils', () => {
-
-    // Jasmine's StringContaining mimic (from https://github.com/jasmine/jasmine/blob/main/src/core/asymmetric_equality/StringContaining.js)
-    class StringContaining {
-        expected: string
-        constructor(expected: string) {
-            if (typeof expected !== 'string') {
-                throw new Error('Expected is not a string')
-            }
-            this.expected = expected
-        }
-        asymmetricMatch(actual: unknown) {
-            return typeof actual === 'string' && actual.indexOf(this.expected) !== -1
-        }
-        jasmineToString() {
-            return '<jasmine.stringContaining>'
-        }
-        getExpectedType() {
-            return 'string'
-        }
-    }
-
     describe(compareText, () => {
         test('should pass when strings match', () => {
             expect(compareText('foo', 'foo', {}).result).toBe(true)
@@ -63,9 +43,9 @@ describe('utils', () => {
         })
 
         test('should support jasmine.asymmetric matchers and using ignoreCase', () => {
-            expect(compareText(' FOO ', new StringContaining('foo') as unknown as WdioAsymmetricMatcher<string>, { ignoreCase: true }).result).toBe(true)
-            expect(compareText(' Foo ', new StringContaining('FOO') as unknown as WdioAsymmetricMatcher<string>, { ignoreCase: true }).result).toBe(true)
-            expect(compareText(' foo ', new StringContaining('foo') as unknown as WdioAsymmetricMatcher<string>, { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' FOO ', jasmine.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' Foo ', jasmine.stringContaining('FOO'), { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' foo ', jasmine.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
         })
     })
 
@@ -119,6 +99,17 @@ describe('utils', () => {
             expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOOO'), expect.not.stringContaining('OO')], { ignoreCase: true }).result).toBe(true)
             expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOOO'), expect.not.stringContaining('OOO')], { ignoreCase: true }).result).toBe(true)
             expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOO'), expect.not.stringContaining('OO')], { ignoreCase: true }).result).toBe(false)
+        })
+
+        test('should support jasmine asymmetric matchers', () => {
+            expect(compareTextWithArray('foo', [jasmine.stringContaining('oobb'), jasmine.stringContaining('oo')], {}).result).toBe(true)
+        })
+
+        test('should support asymmetric matchers and using ignoreCase', () => {
+            expect(compareTextWithArray(' FOO ', [jasmine.stringContaining('foo'), jasmine.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
+            expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), jasmine.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
+            expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).result).toBe(true)
+            expect(compareTextWithArray('foo', [jasmine.stringContaining('FOOO'), 'FOO'], { ignoreCase: true }).result).toBe(true)
         })
     })
 
@@ -377,25 +368,25 @@ describe('utils', () => {
 
         describe('StringContaining (Jasmine mimic)', () => {
             test('matches when substring is present', () => {
-                const matcher = new StringContaining('foo')
+                const matcher = jasmine.stringContaining('foo')
                 expect(matcher.asymmetricMatch('foobar')).toBe(true)
                 expect(matcher.asymmetricMatch('barfoo')).toBe(true)
                 expect(matcher.asymmetricMatch('barbaz')).toBe(false)
             })
             test('throws if expected is not a string', () => {
                 // @ts-expect-error
-                expect(() => new StringContaining(123)).toThrow('Expected is not a string')
+                expect(() => jasmine.stringContaining(123)).toThrow('Expected is not a string')
             })
             test('jasmineToString and getExpectedType', () => {
-                const matcher = new StringContaining('foo')
-                expect(matcher.jasmineToString()).toBe('<jasmine.stringContaining>')
+                const matcher = jasmine.stringContaining('foo')
+                expect(matcher.jasmineToString()).toBe('<jasmine.stringContaining("foo")>')
                 expect(matcher.getExpectedType()).toBe('string')
             })
         })
 
         test.for([
             expect.stringContaining('foo'),
-            new StringContaining('foo')
+            jasmine.stringContaining('foo')
         ])('should work with %s matcher', async (asymmetricMatcher) => {
             const isAsymmetric = isAsymmetricMatcher(asymmetricMatcher)
 
@@ -407,7 +398,7 @@ describe('utils', () => {
         test.for([
             expect.stringContaining('foo'),
             expect.not.stringContaining('foo'),
-            new StringContaining('foo')
+            jasmine.stringContaining('foo')
         ])('should work with %s matcher', async (asymmetricMatcher) => {
             const isStringContaining = isStringContainingMatcherLike(asymmetricMatcher)
 
@@ -417,8 +408,8 @@ describe('utils', () => {
 
     describe(isStrictlyStringContainingMatcher, () => {
         test.for([
-            // expect.stringContaining('foo'),
-            new StringContaining('foo')
+            expect.stringContaining('foo'),
+            jasmine.stringContaining('foo')
         ])('should work with %s matcher', async (asymmetricMatcher) => {
             const isStrictlyStringContaining = isStrictlyStringContainingMatcher(asymmetricMatcher)
 
@@ -438,7 +429,7 @@ describe('utils', () => {
         test.for([
             expect.stringContaining('foo'),
             expect.not.stringContaining('foo'),
-            new StringContaining('foo'),
+            jasmine.stringContaining('foo')
         ])('should return expected value of matcher', (asymmetricMatcher) => {
 
             const value = getAsymmetricMatcherValue(asymmetricMatcher)

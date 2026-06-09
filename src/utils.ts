@@ -40,9 +40,9 @@ export function getAsymmetricMatcherValue<T>(
     expected: WdioAsymmetricMatcher<T> | JasmineAsymmetricMatcher<T>
 ): T {
     if ('expected' in expected) {
-        return expected.expected
+        return expected.expected // JasmineAsymmetricMatcher
     } else if ('sample' in expected) {
-        return expected.sample
+        return expected.sample // WdioAsymmetricMatcher
     }
     throw new Error(`Could not extract value from asymmetric matcher: ${String(expected)}`)
 }
@@ -243,7 +243,7 @@ export const compareText = (
 
 export const compareTextWithArray = (
     actual: string,
-    expectedArray: Array<string | RegExp | WdioAsymmetricMatcher<string>>,
+    expectedArray: Array<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>,
     {
         ignoreCase = false,
         trim = false,
@@ -274,9 +274,10 @@ export const compareTextWithArray = (
                 return item.toLowerCase()
             }
             if (isStringContainingMatcherLike(item)) {
-                return (item.toString() === 'StringContaining'
-                    ? expect.stringContaining(item.sample?.toString().toLowerCase())
-                    : expect.not.stringContaining(item.sample?.toString().toLowerCase())) as WdioAsymmetricMatcher<string>
+                const sample = getAsymmetricMatcherValue<string>(item).toString().toLocaleLowerCase()
+                return (isStrictlyStringContainingMatcher(item)
+                    ? expect.stringContaining(sample)
+                    : expect.not.stringContaining(sample)) as WdioAsymmetricMatcher<string>
             }
             return item
         })
