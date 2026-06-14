@@ -71,7 +71,7 @@
     "ts:mocha": "cd test-types/mocha && vitest --typecheck --typecheck.tsconfig ./tsconfig.json --run",
     "checks:all": "npm run build && npm run compile && npm run tsc:root-types && npm run test && npm run ts",
     "watch": "npm run compile -- --watch",
-    "prepare": "husky install",
+    "prepare": "husky",
     "playgrounds:setup": "cd playgrounds && npm run setup",
     "playgrounds:checks:all": "cd playgrounds && npm run checks:all",
     "playgrounds:snapshots:update": "cd playgrounds && npm run snapshots:update"
