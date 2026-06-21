@@ -305,12 +305,7 @@ const requestedWithParamToString = (
         param = param.toString()
     } else if (isAsymmetricMatcher(param)) {
         const sample = getAsymmetricMatcherValue(param)
-        return (
-            param.constructor.name +
-            ' ' +
-            // TODO dprevost is this jasmine compliant?
-            (JSON.stringify(sample) || '')
-        )
+        return `${param.constructor.name} ${JSON.stringify(sample)} || ''`
     } else if (transformFn && typeof param === 'object' && param !== null) {
         param = transformFn(param as ExpectWebdriverIO.JsonCompatible)
     }
