@@ -226,29 +226,6 @@ const headersMatcher = (
 //     )
 // }
 
-/**
- * is jasmine/jest special matcher
- *
- * Jest and Jasmine support special matchers like `jasmine.objectContaining`, `expect.arrayContaining`, etc.
- *
- * All these kind of objects have `sample` and `asymmetricMatch` function in their prototype
- * `expect.objectContaining({ foo: 'bar })` -> `{ sample: { foo: 'bar' }, [prototype]: asymmetricMatch() {} }`
- *
- * jasmine.any and jasmine.anything don't have `sample` property
- * @param filter
- */
-const isMatcher = (filter: unknown) => {
-    const proto = Object.getPrototypeOf(filter)
-    return (
-        typeof filter === 'object' &&
-        filter !== null &&
-        typeof proto === 'object' &&
-        proto &&
-        'asymmetricMatch' in proto &&
-        typeof proto.asymmetricMatch === 'function'
-    )
-}
-
 // const tryParseBody = (jsonString: string | undefined, fallback: any = null) => {
 //     try {
 //         return typeof jsonString === 'undefined' ? fallback : JSON.parse(jsonString)
