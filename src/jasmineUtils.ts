@@ -24,7 +24,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /* eslint-disable */
 
-// Extracted out of jasmine 2.5.2
+
+/**
+ * Extracted out of jasmine 2.5.2
+ * Used only in network matchers & in message formatting.
+ * TODO consolidate usage with other wdio matchers and upgrade to latest jasmine utils.
+ * @see https://github.com/jasmine/jasmine/blob/v2.5.2/src/core/matchers/matchersUtil.js
+ */
 export function equals(
     a: unknown,
     b: unknown,

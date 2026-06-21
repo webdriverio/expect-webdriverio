@@ -35,7 +35,7 @@ describe('Network Matchers', () => {
         })
     })
 
-    it('should support asymmetric matchers (global)', async () => {
+    it('should support wdio expect asymmetric matchers', async () => {
         await expect(mock).toBeRequestedWith({
             method: 'POST',
             url: expect.stringContaining('/api/foo'),
@@ -50,16 +50,6 @@ describe('Network Matchers', () => {
             method: 'POST',
             url: jasmine.stringContaining('/api/foo'),
             postData: jasmine.objectContaining({
-                title: 'foo'
-            })
-        })
-    })
-
-        it('should support wdio expect asymmetric matchers', async () => {
-        await expect(mock).toBeRequestedWith({
-            method: 'POST',
-            url: expect.stringContaining('/api/foo'),
-            postData: expect.objectContaining({
                 title: 'foo'
             })
         })
