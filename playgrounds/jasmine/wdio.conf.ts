@@ -20,6 +20,7 @@ export const config: WebdriverIO.Config = {
         //'./test/specs/expect-wdioImport/wdio-matchers.test.ts'
         //'./test/specs/globalImport/jasmine-specific.test.ts',
         //'./test/specs/globalImport/snapshot.test.ts',
+        //'./test/specs/globalImport/network-matchers.test.ts',
     ],
 
     //

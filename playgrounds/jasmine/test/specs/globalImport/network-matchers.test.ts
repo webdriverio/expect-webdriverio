@@ -53,5 +53,13 @@ describe('Network Matchers', () => {
             })
         })
     })
+
+    // Cannot be asserted so excluded and run on demand
+    xit('should support jasmine asymmetric matchers stringContaining with failures', async () => {
+        await expect(mock).toBeRequestedWith({
+            method: 'POST',
+            url: jasmine.stringContaining('/api/foo1'),
+        });
+    })
 })
 

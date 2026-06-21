@@ -1,6 +1,6 @@
 import type { local } from 'webdriver'
 
-import { waitUntil, enhanceError } from '../../utils.js'
+import { waitUntil, enhanceError, isAsymmetricMatcher, getAsymmetricMatcherValue } from '../../utils.js'
 import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
@@ -326,12 +326,13 @@ const requestedWithParamToString = (
 
     if (typeof param === 'function') {
         param = param.toString()
-    } else if (isMatcher(param)) {
+    } else if (isAsymmetricMatcher(param)) {
+        const sample = getAsymmetricMatcherValue(param)
         return (
             param.constructor.name +
             ' ' +
             // TODO dprevost is this jasmine compliant?
-            (JSON.stringify((param as WdioAsymmetricMatcher<string>).sample) || '')
+            (JSON.stringify(sample) || '')
         )
     } else if (transformFn && typeof param === 'object' && param !== null) {
         param = transformFn(param as ExpectWebdriverIO.JsonCompatible)
