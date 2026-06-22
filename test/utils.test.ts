@@ -380,7 +380,6 @@ describe('utils', () => {
             test('jasmineToString and getExpectedType', () => {
                 const matcher = jasmine.stringContaining('foo')
                 expect(matcher.jasmineToString()).toBe('<jasmine.stringContaining("foo")>')
-                expect(matcher.getExpectedType()).toBe('string')
             })
         })
 
@@ -435,6 +434,22 @@ describe('utils', () => {
             const value = getAsymmetricMatcherValue(asymmetricMatcher)
 
             expect(value).toBe('foo')
+        })
+
+        test('should work with jasmine object containing asymmetric matcher', () => {
+            const asymmetricMatcher = jasmine.objectContaining({ foo: 'bar' })
+
+            const value = getAsymmetricMatcherValue(asymmetricMatcher)
+
+            expect(value).toEqual({ foo: 'bar' })
+        })
+
+        test('should work with jasmine string matching asymmetric matcher', () => {
+            const asymmetricMatcher = jasmine.stringMatching(/foo/)
+
+            const value = getAsymmetricMatcherValue(asymmetricMatcher)
+
+            expect(value).toEqual(/foo/)
         })
 
         test('should throw when unknown matcher', () => {

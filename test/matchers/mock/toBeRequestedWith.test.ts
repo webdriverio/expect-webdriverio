@@ -495,7 +495,6 @@ Received: "was not called"`
         })
 
         expect(result.pass).toBe(false)
-        console.log(result.message())
         expect(stripAnsi(result.message())).toEqual(`\
 Expect mock to be called with
 
@@ -519,7 +518,6 @@ Expect mock to be called with
         })
 
         expect(result.pass).toBe(false)
-        console.log(result.message())
         expect(stripAnsi(result.message())).toEqual(`\
 Expect mock to be called with
 
@@ -532,6 +530,27 @@ Expect mock to be called with
 +     Object {},
 +     "... 2 more items",
 +   ],
+  }`)
+    })
+
+    test('with jasmine stringMatching asymmetric matchers', async () => {
+        const mock: any = new TestMock()
+        mock.calls.push({ ...mockPost })
+
+        const result = await toBeRequestedWith.call({}, mock, {
+            url: jasmine.stringMatching(/\/api\/foo1$/),
+        })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect mock to be called with
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+-   "url": "StringMatching /\\\\/api\\\\/foo1$/",
++   "url": "https://my-app/api/add-tags",
   }`)
     })
 

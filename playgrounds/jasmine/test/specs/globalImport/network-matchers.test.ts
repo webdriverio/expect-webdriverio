@@ -23,43 +23,87 @@ describe('Network Matchers', () => {
         })
     })
 
-    it('should assert on network calls', async () => {
-        await expect(mock).toBeRequested()
-        await expect(mock).toBeRequestedTimes(1)
+    describe('expect assertions (global)', () => {
+        it('should assert on network calls', async () => {
+            await expect(mock).toBeRequested()
+            await expect(mock).toBeRequestedTimes(1)
 
-        // Detailed check (simplified to match available Bidi fields)
-        await expect(mock).toBeRequestedWith({
-            url: 'https://webdriver.io/api/foo',
-            method: 'POST'
+            // Detailed check (simplified to match available Bidi fields)
+            await expect(mock).toBeRequestedWith({
+                url: 'https://webdriver.io/api/foo',
+                method: 'POST'
+            })
         })
-    })
 
-    it('should support asymmetric matchers (global)', async () => {
-        await expect(mock).toBeRequestedWith({
-            method: 'POST',
-            url: expect.stringContaining('/api/foo'),
-            postData: expect.objectContaining({
-                title: 'foo'
+
+        it('should support asymmetric matchers', async () => {
+            await expect(mock).toBeRequestedWith({
+                method: 'POST',
+                url: expect.stringContaining('/api/foo'),
+                requestHeaders: expect.objectContaining({
+                    Authorization: 'foo'
+                }),
+                postData: expect.objectContaining({
+                    title: 'foo'
+                })
+            })
+        })
+
+        it('should support string matching asymmetric matchers', async () => {
+            await expect(mock).toBeRequestedWith({
+                method: 'POST',
+                url: expect.stringMatching(/\/api\/foo$/),
             })
         })
     })
 
-    it('should support jasmine asymmetric matchers', async () => {
-        await expect(mock).toBeRequestedWith({
-            method: 'POST',
-            url: jasmine.stringContaining('/api/foo'),
-            postData: jasmine.objectContaining({
-                title: 'foo'
+    describe('jasmine assertions', () => {
+
+        it('should support jasmine asymmetric matchers', async () => {
+            await expect(mock).toBeRequestedWith({
+                method: 'POST',
+                url: jasmine.stringContaining('/api/foo'),
+                requestHeaders: jasmine.objectContaining({
+                    Authorization: 'foo'
+                }),
+                postData: jasmine.objectContaining({
+                    title: 'foo'
+                })
             })
         })
-    })
 
-    // Cannot be asserted so excluded and run on demand
-    xit('should support jasmine asymmetric matchers stringContaining with failures', async () => {
-        await expect(mock).toBeRequestedWith({
-            method: 'POST',
-            url: jasmine.stringContaining('/api/foo1'),
-        });
+        it('should support string matching asymmetric matchers', async () => {
+            await expect(mock).toBeRequestedWith({
+                method: 'POST',
+                url: jasmine.stringMatching(/\/api\/foo$/),
+            })
+        })
+
+        // Cannot be asserted so excluded and run on demand
+        xit('should support jasmine asymmetric matchers stringContaining with failures', async () => {
+            await expect(mock).toBeRequestedWith({
+                method: 'POST',
+                url: jasmine.stringContaining('/api/foo1'),
+            });
+        })
+
+        // Cannot be asserted so excluded and run on demand
+        xit('should support jasmine asymmetric matchers objectContaining with failures', async () => {
+            await expect(mock).toBeRequestedWith({
+                method: 'POST',
+                requestHeaders: jasmine.objectContaining({
+                    Authorization: 'foo1'
+                })
+            });
+        })
+
+        // Cannot be asserted so excluded and run on demand
+        xit('should support jasmine asymmetric matchers stringMatching with failures', async () => {
+            await expect(mock).toBeRequestedWith({
+                method: 'POST',
+                url: jasmine.stringMatching(/\/api\/foo1$/),
+            });
+        })
     })
 })
 

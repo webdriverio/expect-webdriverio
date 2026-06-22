@@ -470,13 +470,34 @@ type WdioAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
     sample: R;
 }
 
-type JasmineAsymmetricMatcher<R> = {
+type JasmineBaseAsymmetricMatcher = {
     jasmineToString(): string;
-    expected: R;
     asymmetricMatch(other: unknown): boolean;
 }
 
-type AsymmetricMatcher<R> = WdioAsymmetricMatcher<R> | JasmineAsymmetricMatcher<R>
+/**
+ * Jasmine asymetric matcher does not always use sample, some use expected. `any` uses even `expectedObject`
+ * @see https://github.com/jasmine/jasmine/tree/v5.13.0/src/core/asymmetric_equality
+ */
+type JasmineAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & ({
+    expected: R;
+} | {
+    sample: R;
+} | {
+    regexp: R;
+} | {
+    expectedObject: R;
+})
+
+type JasmineStringContainingAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & {
+    sample: R;
+}
+
+type JasmineStringMatchingAsymmetricMatcher<R extends string | RegExp> = JasmineBaseAsymmetricMatcher & {
+    regexp: R;
+}
+
+type AsymmetricMatcher<R> = WdioAsymmetricMatcher<R> | JasmineStringContainingAsymmetricMatcher<R> | (R extends string | RegExp ? JasmineStringMatchingAsymmetricMatcher<R> : never) | JasmineAsymmetricMatcher<R>
 
 declare namespace ExpectWebdriverIO {
     /**

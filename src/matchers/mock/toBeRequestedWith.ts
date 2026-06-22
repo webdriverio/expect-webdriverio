@@ -305,7 +305,8 @@ const requestedWithParamToString = (
         param = param.toString()
     } else if (isAsymmetricMatcher(param)) {
         const sample = getAsymmetricMatcherValue(param)
-        return `${param.constructor.name} ${JSON.stringify(sample) || ''}`
+        const sampleString = typeof sample === 'string' ? sample : sample instanceof RegExp ? sample.toString() : JSON.stringify(sample) || sample?.toString()
+        return `${param.constructor.name} ${sampleString || ''}`
     } else if (transformFn && typeof param === 'object' && param !== null) {
         param = transformFn(param as ExpectWebdriverIO.JsonCompatible)
     }

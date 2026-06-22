@@ -37,10 +37,14 @@ export function isStrictlyStringContainingMatcher(expected: unknown): expected i
 }
 
 export function getAsymmetricMatcherValue<T>(
-    expected: WdioAsymmetricMatcher<T> | JasmineAsymmetricMatcher<T>
+    expected: AsymmetricMatcher<T>
 ): T {
     if ('expected' in expected) {
-        return expected.expected // JasmineAsymmetricMatcher
+        return expected.expected // Jasmine string containing asymmetric matcher
+    } else if ('expectedObject' in expected) {
+        return expected.expectedObject // Jasmine any asymmetric matcher
+    } else if ('regexp' in expected) {
+        return expected.regexp // Jasmine string matching asymmetric matcher
     } else if ('sample' in expected) {
         return expected.sample // WdioAsymmetricMatcher
     }
