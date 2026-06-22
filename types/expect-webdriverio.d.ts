@@ -468,6 +468,7 @@ type WdioAsymmetricMatchers = ExpectLibAsymmetricMatchers
 type WdioAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
     // Overwrite protected properties of expect.AsymmetricMatcher to access them
     sample: R;
+    inverse?: boolean;
 }
 
 type JasmineBaseAsymmetricMatcher = {

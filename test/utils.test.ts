@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest'
-import { compareNumbers, compareObject, compareText, compareTextWithArray, getAsymmetricMatcherValue, isAsymmetricMatcher, isStrictlyStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
+import { compareNumbers, compareObject, compareText, compareTextWithArray, getAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
 import { jasmine } from './__mocks__/jasmine'
 
 describe('utils', () => {
@@ -414,22 +414,22 @@ describe('utils', () => {
         })
     })
 
-    describe(isStrictlyStringContainingMatcher, () => {
+    describe(isInversedStringContainingMatcher, () => {
         test.for([
             expect.stringContaining('foo'),
             jasmine.stringContaining('foo')
         ])('should work with %s matcher', async (asymmetricMatcher) => {
-            const isStrictlyStringContaining = isStrictlyStringContainingMatcher(asymmetricMatcher)
+            const isStrictlyStringContaining = isInversedStringContainingMatcher(asymmetricMatcher)
 
-            expect(isStrictlyStringContaining).toBe(true)
+            expect(isStrictlyStringContaining).toBe(false)
         })
 
         test('should work with %s matcher', async () => {
             const asymmetricMatcher = expect.not.stringContaining('foo')
 
-            const isStrictlyStringContaining = isStrictlyStringContainingMatcher(asymmetricMatcher)
+            const isStrictlyStringContaining = isInversedStringContainingMatcher(asymmetricMatcher)
 
-            expect(isStrictlyStringContaining).toBe(false)
+            expect(isStrictlyStringContaining).toBe(true)
         })
     })
 
