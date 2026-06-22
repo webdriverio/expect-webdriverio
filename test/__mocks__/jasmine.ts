@@ -1,3 +1,8 @@
+/**
+ * File mimicking Jasmine's asymmetric matchers for use in our tests
+ * @see https://github.com/jasmine/jasmine/tree/v5.13.0/src/core/asymmetric_equality
+ */
+
 interface AsymmetricTester {
     asymmetricMatch(actual: unknown, matchersUtil?: any): boolean;
     jasmineToString?(pp?: (val: any) => string): string;
