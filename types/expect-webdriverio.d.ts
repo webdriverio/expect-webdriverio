@@ -491,7 +491,7 @@ type JasmineAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & ({
 })
 
 type JasmineStringContainingAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & {
-    sample: R;
+    expected: R;
 }
 
 type JasmineStringMatchingAsymmetricMatcher<R extends string | RegExp> = JasmineBaseAsymmetricMatcher & {
