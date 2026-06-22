@@ -484,7 +484,7 @@ type JasmineAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & ({
 } | {
     sample: R;
 } | {
-    regexp: R;
+    regexp: string | RegExp;
 } | {
     expectedObject: R;
 })

@@ -29,12 +29,17 @@ describe('utils', () => {
             expect(compareText('qwe_AsD_zxc', 'asd', { ignoreCase: true, containing: true }).result).toBe(true)
         })
 
-        test('should support asymmetric matchers', () => {
+        test('should support stringContaining asymmetric matchers', () => {
             expect(compareText('foo', expect.stringContaining('oo'), {}).result).toBe(true)
             expect(compareText('foo', expect.not.stringContaining('oo'), {}).result).toBe(false)
         })
 
-        test('should support asymmetric matchers and using ignoreCase', () => {
+        test('should support stringMatching asymmetric matchers', () => {
+            expect(compareText('foo', expect.stringMatching(/.*oo.*/), {}).result).toBe(true)
+            expect(compareText('foo', expect.not.stringMatching(/.*oo.*/), {}).result).toBe(false)
+        })
+
+        test('should support stringContaining asymmetric and using ignoreCase', () => {
             expect(compareText(' FOO ', expect.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
             expect(compareText(' FOO ', expect.not.stringContaining('foo'), { ignoreCase: true }).result).toBe(false)
             expect(compareText(' Foo ', expect.stringContaining('FOO'), { ignoreCase: true }).result).toBe(true)
@@ -42,10 +47,14 @@ describe('utils', () => {
             expect(compareText(' foo ', expect.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
         })
 
-        test('should support jasmine.asymmetric matchers and using ignoreCase', () => {
+        test('should support jasmine.stringContaining matchers and using ignoreCase', () => {
             expect(compareText(' FOO ', jasmine.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
             expect(compareText(' Foo ', jasmine.stringContaining('FOO'), { ignoreCase: true }).result).toBe(true)
             expect(compareText(' foo ', jasmine.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
+        })
+
+        test('should support jasmine.stringMatching matchers', () => {
+            expect(compareText(' FOO ', jasmine.stringMatching(/.*foo.*/i), {}).result).toBe(true)
         })
     })
 

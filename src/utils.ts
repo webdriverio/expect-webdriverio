@@ -38,7 +38,7 @@ export function isStrictlyStringContainingMatcher(expected: unknown): expected i
 
 export function getAsymmetricMatcherValue<T>(
     expected: AsymmetricMatcher<T>
-): T {
+): string | RegExp | T {
     if ('expected' in expected) {
         return expected.expected // Jasmine string containing asymmetric matcher
     } else if ('expectedObject' in expected) {
