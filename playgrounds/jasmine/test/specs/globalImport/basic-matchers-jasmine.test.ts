@@ -70,6 +70,16 @@ describe('Basic Matchers', () => {
                 await expect(hrefs).toEqual(expect.arrayContaining(['/docs/gettingstarted']))
             })
         })
+
+        describe('Object matchers', () => {
+            it('should match object properties', async () => {
+                const capabilities = await browser.capabilities
+
+                await expect(capabilities).toEqual(jasmine.objectContaining({
+                    browserName: 'chrome'
+                }))
+            })
+        })
     })
 
     // Simply showing not available matchers in Jasmine

@@ -502,7 +502,7 @@ Expect mock to be called with
 + Received  + 1
 
   Object {
--   "url": "StringContaining \\"/API/\\"",
+-   "url": "StringContaining /API/",
 +   "url": "https://my-app/api/add-tags",
   }`)
     })
