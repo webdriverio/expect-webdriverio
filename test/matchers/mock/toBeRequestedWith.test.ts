@@ -486,7 +486,7 @@ Received: "was not called"`
         )
     })
 
-    test('with jasmine asymmetric matchers', async () => {
+    test('with jasmine stringContaining asymmetric matchers', async () => {
         const mock: any = new TestMock()
         mock.calls.push({ ...mockPost })
 
@@ -505,6 +505,33 @@ Expect mock to be called with
   Object {
 -   "url": "StringContaining \\"/API/\\"",
 +   "url": "https://my-app/api/add-tags",
+  }`)
+    })
+
+    test('with jasmine objectContaining asymmetric matchers', async () => {
+        const mock: any = new TestMock()
+        mock.calls.push({ ...mockPost })
+
+        const result = await toBeRequestedWith.call({}, mock, {
+            requestHeaders: jasmine.objectContaining({
+                Authorization: 'test',
+            }),
+        })
+
+        expect(result.pass).toBe(false)
+        console.log(result.message())
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect mock to be called with
+
+- Expected  - 1
++ Received  + 4
+
+  Object {
+-   "requestHeaders": "ObjectContaining {\\"Authorization\\":\\"test\\"}",
++   "requestHeaders": Array [
++     Object {},
++     "... 2 more items",
++   ],
   }`)
     })
 
