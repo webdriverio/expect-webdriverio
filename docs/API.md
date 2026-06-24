@@ -1016,6 +1016,17 @@ Under `@wdio/jasmine-framework`, some Jasmine asymmetric matchers now work with 
 // Jasmine's stringContaining works just like the one from expect
 await expect(browser).toHaveTitle(jasmine.stringContaining('some title'))
 await expect(browser).toHaveTitle(expect.stringContaining('some title'))
+
+// Jasmine's stringMatching works
+await expect(browser).toHaveUrl(jasmine.stringMatching('/WebdriverIO/'))
+
+// Jasmine's objectContaining works with Network Matchers
+await expect(mock).toBeRequestedWith({
+    method: 'POST',
+    requestHeaders: expect.objectContaining({
+        Authorization: 'foo'
+    }),
+})
 ```
 
 **Note:** Known limitations still exist with `jasmine.arrayContaining` and `jasmine.objectContaining`.
