@@ -215,6 +215,8 @@ describe('Jasmine-Specific Features', () => {
             await expect(Promise.resolve(1)).toBeResolved()
             await expect(Promise.reject('fail')).toBeRejected()
             await expect(Promise.resolve(42)).toBeResolvedTo(42)
+            await expect(Promise.resolve(42)).toBeResolvedTo(jasmine.any(Number))
+            await expect(Promise.resolve('success')).toBeResolvedTo(jasmine.stringContaining('success'))
             await expect(Promise.reject('fail')).toBeRejectedWith('fail')
 
             await expect(() => { throw new Error('fail') }).toThrowError('fail')
