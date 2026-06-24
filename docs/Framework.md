@@ -237,7 +237,7 @@ Expected in `tsconfig.json`:
 
 #### Asymmetric matchers
 Jasmine's asymmetric matchers got better but limitation can still exits. 
-- `jasmine.stringContaining` & `jasmine.stringContaining` works across the board
+- `jasmine.stringContaining`; `jasmine.stringMatching`; `jasmine.any(Type)` & `jasmine.anything()` works across the board
 - Network matchers does support `jasmine.objectContaining` while supports in other area like element matchers might be limited.
 - Wdio asymmmetrics matchers does work properly too
 
@@ -247,6 +247,8 @@ describe('My tests', async () => {
         // Working Jasmine asymmetric matcher
         await expectAsync(browser).toHaveUrl(jasmine.stringContaining('WebdriverIO'))
         await expectAsync(browser).toHaveUrl(jasmine.stringMatching('/WebdriverIO/'))
+        await expectAsync(browser).toHaveUrl(jasmine.any(String))
+        await expectAsync(browser).toHaveUrl(jasmine.anything())
 
         // Working wdio asymmetric matcher
         await expectAsync(browser).toHaveUrl(wdioExpect.stringContaining('WebdriverIO'))

@@ -1020,12 +1020,23 @@ await expect(browser).toHaveTitle(expect.stringContaining('some title'))
 // Jasmine's stringMatching works
 await expect(browser).toHaveUrl(jasmine.stringMatching('/WebdriverIO/'))
 
+// Jasmine's any & anything works
+await expect(browser).toHaveUrl(jasmine.any(String))
+await expect(browser).toHaveUrl(jasmine.anything())
+
 // Jasmine's objectContaining works with Network Matchers
 await expect(mock).toBeRequestedWith({
     method: 'POST',
     requestHeaders: expect.objectContaining({
         Authorization: 'foo'
     }),
+})
+
+// Jasmine's any & anything works with Network Matchers
+await expect(mock).toBeRequestedWith({
+    method: 'POST',
+    url: jasmine.any(String),
+    requestHeaders: jasmine.anything(),
 })
 ```
 
