@@ -59,7 +59,7 @@ describe('Network Matchers', () => {
 
     describe('jasmine assertions', () => {
 
-        it('should support jasmine asymmetric matchers', async () => {
+        it('should support jasmine stringContaining & objectContaining asymmetric matchers', async () => {
             await expect(mock).toBeRequestedWith({
                 method: 'POST',
                 url: jasmine.stringContaining('/api/foo'),
@@ -72,7 +72,15 @@ describe('Network Matchers', () => {
             })
         })
 
-        it('should support string matching asymmetric matchers', async () => {
+        it('should support jasmine any & anything asymmetric matchers', async () => {
+            await expect(mock).toBeRequestedWith({
+                method: 'POST',
+                url: jasmine.any(String),
+                requestHeaders: jasmine.anything(),
+            })
+        })
+
+        it('should support jasmine stringMatching asymmetric matchers', async () => {
             await expect(mock).toBeRequestedWith({
                 method: 'POST',
                 url: jasmine.stringMatching(/\/api\/foo$/),

@@ -128,6 +128,8 @@ describe('Jasmine-Specific Features', () => {
             await expect(browser).toHaveTitle(jasmine.stringContaining('WebdriverIO'))
             await expect(browser).toHaveUrl(jasmine.stringContaining('WEBDRIVER.io'),{ignoreCase: true})
             await expect(browser).toHaveTitle(jasmine.stringContaining('WEBDRIVERIO'), {ignoreCase: true})
+            await expect(browser).toHaveTitle(jasmine.any(String))
+            await expect(browser).toHaveTitle(jasmine.anything())
         })
     })
 

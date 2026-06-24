@@ -461,8 +461,25 @@ describe('utils', () => {
             expect(value).toEqual(/foo/)
         })
 
-        test('should throw when unknown matcher', () => {
-            expect(() => getAsymmetricMatcherValue({} as any)).toThrow('Could not extract value from asymmetric matcher: [object Object]')
+        test('should return undefined when unknown matcher', () => {
+            const value = getAsymmetricMatcherValue({} as any)
+            expect(value).toBeUndefined()
+        })
+
+        test('should work with jasmine.anything asymmetric matcher', () => {
+            const asymmetricMatcher = jasmine.anything()
+
+            const value = getAsymmetricMatcherValue(asymmetricMatcher)
+
+            expect(value).toBeUndefined()
+        })
+
+        test('should work with jasmine.any asymmetric matcher', () => {
+            const asymmetricMatcher = jasmine.any(String)
+
+            const value = getAsymmetricMatcherValue(asymmetricMatcher)
+
+            expect(value).toEqual(expect.any(Function))
         })
     })
 })

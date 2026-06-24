@@ -488,7 +488,8 @@ type JasmineAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & ({
     regexp: string | RegExp;
 } | {
     expectedObject: R;
-})
+} | {} // jasmine.anything()
+)
 
 type JasmineStringContainingAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & {
     expected: R;
@@ -497,6 +498,8 @@ type JasmineStringContainingAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher 
 type JasmineStringMatchingAsymmetricMatcher<R extends string | RegExp> = JasmineBaseAsymmetricMatcher & {
     regexp: R;
 }
+
+type JasmineStringAsymmetricMatcher<R extends string | RegExp> = JasmineStringContainingAsymmetricMatcher<R> | JasmineStringMatchingAsymmetricMatcher<R>
 
 type AsymmetricMatcher<R> = WdioAsymmetricMatcher<R> | JasmineStringContainingAsymmetricMatcher<R> | (R extends string | RegExp ? JasmineStringMatchingAsymmetricMatcher<R> : never) | JasmineAsymmetricMatcher<R>
 

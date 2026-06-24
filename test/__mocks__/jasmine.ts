@@ -20,6 +20,65 @@ function hasProperty(obj: any, property: string | symbol): boolean {
 }
 
 /**
+ * Jasmine's Anything mimic
+ * See https://github.com/jasmine/jasmine/blob/v5.13.0/src/core/asymmetric_equality/Anything.js
+ * */
+class Anything implements AsymmetricTester {
+    asymmetricMatch(actual: unknown): boolean {
+        return actual !== undefined && actual !== null
+    }
+
+    jasmineToString(): string {
+        return '<jasmine.anything>'
+    }
+}
+
+/**
+ * Jasmine's Any mimic
+ * See https://github.com/jasmine/jasmine/blob/v5.13.0/src/core/asymmetric_equality/Any.js
+ * */
+class Any implements AsymmetricTester {
+    expectedObject: any
+
+    constructor(expectedObject: any) {
+        if (typeof expectedObject === 'undefined') {
+            throw new TypeError(
+                'jasmine.any() expects to be passed a constructor function. ' +
+                'Please pass one or use jasmine.anything() to match any object.'
+            )
+        }
+        this.expectedObject = expectedObject
+    }
+
+    asymmetricMatch(actual: unknown): boolean {
+        if (this.expectedObject === String) {
+            return typeof actual === 'string' || actual instanceof String
+        }
+        if (this.expectedObject === Number) {
+            return typeof actual === 'number' || actual instanceof Number
+        }
+        if (this.expectedObject === Function) {
+            return typeof actual === 'function' || actual instanceof Function
+        }
+        if (this.expectedObject === Object) {
+            return actual !== null && typeof actual === 'object'
+        }
+        if (this.expectedObject === Boolean) {
+            return typeof actual === 'boolean'
+        }
+        if (typeof Symbol !== 'undefined' && this.expectedObject === Symbol) {
+            return typeof actual === 'symbol'
+        }
+        return actual instanceof this.expectedObject
+    }
+
+    jasmineToString(): string {
+        const name = this.expectedObject.name || this.expectedObject.toString()
+        return `<jasmine.any(${name})>`
+    }
+}
+
+/**
  * Jasmine's StringMatching mimic
  * See https://github.com/jasmine/jasmine/blob/v5.13.0/src/core/asymmetric_equality/StringMatching.js
  * */
@@ -111,6 +170,8 @@ class ObjectContaining implements AsymmetricTester {
 
 // Expose them via a namespace factory matching Jasmine's API syntax
 export const jasmine = {
+    anything: () => new Anything(),
+    any: (expectedObject: any) => new Any(expectedObject),
     stringMatching: (expected: string | RegExp) => new StringMatching(expected),
     stringContaining: (expected: string) => new StringContaining(expected),
     objectContaining: (sample: Record<string | symbol, any>) => new ObjectContaining(sample)

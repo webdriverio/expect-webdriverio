@@ -24,7 +24,7 @@ export function isAsymmetricMatcher<T>(expected: unknown): expected is WdioAsymm
     )
 }
 
-export function isStringContainingMatcherLike(expected: unknown): expected is WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> {
+export function isStringContainingMatcherLike(expected: unknown): expected is WdioAsymmetricMatcher<string> | JasmineStringAsymmetricMatcher<string> {
     return !!expected && expected.constructor.name === 'StringContaining'
 }
 
@@ -35,9 +35,22 @@ export function isInversedStringContainingMatcher(expected: unknown): expected i
     return isStringContainingMatcherLike(expected) && (expected as WdioAsymmetricMatcher<string>).inverse === true
 }
 
+export function getStringAsymmetricMatcherValue(
+    expected: WdioAsymmetricMatcher<string> | JasmineStringAsymmetricMatcher<string>
+): string | RegExp {
+    if ('expected' in expected) {
+        return expected.expected // Jasmine string containing asymmetric matcher
+    } else if ('regexp' in expected) {
+        return expected.regexp // Jasmine string matching asymmetric matcher
+    } else if ('sample' in expected) {
+        return expected.sample // WdioAsymmetricMatcher
+    }
+    throw new Error(`Could not extract value from asymmetric matcher: ${expected}. Please report this issue to the expect-webdriverio maintainers.`)
+}
+
 export function getAsymmetricMatcherValue<T>(
     expected: AsymmetricMatcher<T>
-): string | RegExp | T {
+): string | RegExp | T | undefined {
     if ('expected' in expected) {
         return expected.expected // Jasmine string containing asymmetric matcher
     } else if ('expectedObject' in expected) {
@@ -47,7 +60,9 @@ export function getAsymmetricMatcherValue<T>(
     } else if ('sample' in expected) {
         return expected.sample // WdioAsymmetricMatcher
     }
-    throw new Error(`Could not extract value from asymmetric matcher: ${String(expected)}`)
+
+    // Jasmine anything, truthy, falsy, empty, notEmpty asymmetric matchers do not have a sample or expected value. So cannot throw an error here. Return undefined to indicate that there is no value to extract.
+    return undefined
 }
 
 /**
@@ -189,7 +204,7 @@ export const compareText = (
         if (typeof expected === 'string') {
             expected = expected.toLowerCase()
         } else if (isStringContainingMatcherLike(expected)) {
-            const sample = getAsymmetricMatcherValue<string>(expected).toString().toLocaleLowerCase()
+            const sample = getStringAsymmetricMatcherValue(expected).toString().toLocaleLowerCase()
             expected = (isInversedStringContainingMatcher(expected)
                 ? expect.not.stringContaining(sample)
                 : expect.stringContaining(sample)) as WdioAsymmetricMatcher<string>
@@ -277,7 +292,7 @@ export const compareTextWithArray = (
                 return item.toLowerCase()
             }
             if (isStringContainingMatcherLike(item)) {
-                const sample = getAsymmetricMatcherValue<string>(item).toString().toLocaleLowerCase()
+                const sample = getStringAsymmetricMatcherValue(item).toString().toLocaleLowerCase()
                 return (isInversedStringContainingMatcher(item)
                     ? expect.not.stringContaining(sample)
                     : expect.stringContaining(sample)) as WdioAsymmetricMatcher<string>
