@@ -28,7 +28,10 @@ export function isStringContainingMatcherLike(expected: unknown): expected is Wd
     return !!expected && expected.constructor.name === 'StringContaining'
 }
 
-export function isInversedStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> {
+/**
+ * Detect `not.stringContaining` matcher. Jasmine does not have an inverse stringContaining matcher.
+ */
+export function isInversedStringContainingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<string> {
     return isStringContainingMatcherLike(expected) && (expected as WdioAsymmetricMatcher<string>).inverse === true
 }
 
