@@ -67,8 +67,17 @@ describe('Basic Matchers', () => {
 
                 await expect(hrefs).toBeInstanceOf(Array)
                 await expect(hrefs.length).toBeGreaterThan(0)
-                // @ts-expect-error -- toEqual with arrayContaining should work but is not typed correctly in Jasmine
                 await expect(hrefs).toEqual(expect.arrayContaining(['/docs/gettingstarted']))
+            })
+        })
+
+        describe('Object matchers', () => {
+            it('should match object properties', async () => {
+                const capabilities = await browser.capabilities
+
+                await expect(capabilities).toEqual(jasmine.objectContaining({
+                    browserName: 'chrome'
+                }))
             })
         })
     })

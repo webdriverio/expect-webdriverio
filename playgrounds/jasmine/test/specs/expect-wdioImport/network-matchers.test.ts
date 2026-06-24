@@ -1,9 +1,10 @@
 import { browser } from '@wdio/globals'
+import { expect } from 'expect-webdriverio'
 
 describe('Network Matchers', () => {
     let mock: WebdriverIO.Mock
 
-    before(async () => {
+    beforeAll(async () => {
         mock = await browser.mock('https://webdriver.io/api/foo', {
             method: 'POST'
         })
@@ -24,41 +25,34 @@ describe('Network Matchers', () => {
     })
 
     it('should assert on network calls', async () => {
+        await expect(mock).toBeRequested()
+        await expect(mock).toBeRequestedTimes(1)
+
+        // Detailed check (simplified to match available Bidi fields)
         await expect(mock).toBeRequestedWith({
             url: 'https://webdriver.io/api/foo',
             method: 'POST'
         })
     })
 
-    it('should work with asymmetric matchers', async () => {
-        // Asymmetric matcher as argument
+    it('should support wdio expect asymmetric matchers', async () => {
         await expect(mock).toBeRequestedWith({
             method: 'POST',
-            url: expect.stringContaining('/api/foo')
+            url: expect.stringContaining('/api/foo'),
+            postData: expect.objectContaining({
+                title: 'foo'
+            })
         })
-
     })
 
-    it('should support inverted wdio expect asymmetric matchers', async () => {
-        await expect(
-             expect(mock).toBeRequestedWith({
+    it('should support jasmine asymmetric matchers', async () => {
+        await expect(mock).toBeRequestedWith({
             method: 'POST',
-            url: expect.not.stringContaining('/api/foo'),
-        })).rejects.toThrow(
-// TODO assert the message one day since the message does not contains the `not`.
-//             { message: `\
-// Expect mock to be called with
-
-// - Expected  - 1
-// + Received  + 1
-
-//   Object {
-//     "method": "POST",
-// -   "url": "StringContaining \\\"/api/foo\\\"",
-// +   "url": "https://webdriver.io/api/foo",
-//   }`
-//                 }
-            )
+            url: jasmine.stringContaining('/api/foo'),
+            postData: jasmine.objectContaining({
+                title: 'foo'
+            })
+        })
     })
-
 })
+

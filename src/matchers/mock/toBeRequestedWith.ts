@@ -1,6 +1,6 @@
 import type { local } from 'webdriver'
 
-import { waitUntil, enhanceError } from '../../utils.js'
+import { waitUntil, enhanceError, isAsymmetricMatcher, getAsymmetricMatcherValue } from '../../utils.js'
 import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 
@@ -226,29 +226,6 @@ const headersMatcher = (
 //     )
 // }
 
-/**
- * is jasmine/jest special matcher
- *
- * Jest and Jasmine support special matchers like `jasmine.objectContaining`, `expect.arrayContaining`, etc.
- *
- * All these kind of objects have `sample` and `asymmetricMatch` function in their prototype
- * `expect.objectContaining({ foo: 'bar })` -> `{ sample: { foo: 'bar' }, [prototype]: asymmetricMatch() {} }`
- *
- * jasmine.any and jasmine.anything don't have `sample` property
- * @param filter
- */
-const isMatcher = (filter: unknown) => {
-    const proto = Object.getPrototypeOf(filter)
-    return (
-        typeof filter === 'object' &&
-        filter !== null &&
-        typeof proto === 'object' &&
-        proto &&
-        'asymmetricMatch' in proto &&
-        typeof proto.asymmetricMatch === 'function'
-    )
-}
-
 // const tryParseBody = (jsonString: string | undefined, fallback: any = null) => {
 //     try {
 //         return typeof jsonString === 'undefined' ? fallback : JSON.parse(jsonString)
@@ -326,12 +303,10 @@ const requestedWithParamToString = (
 
     if (typeof param === 'function') {
         param = param.toString()
-    } else if (isMatcher(param)) {
-        return (
-            param.constructor.name +
-            ' ' +
-            (JSON.stringify((param as WdioAsymmetricMatcher<string>).sample) || '')
-        )
+    } else if (isAsymmetricMatcher(param)) {
+        const sample = getAsymmetricMatcherValue(param)
+        const sampleString = typeof sample === 'string' ? sample : sample instanceof RegExp ? sample.toString() : JSON.stringify(sample) || sample?.toString()
+        return `${param.constructor.name} ${sampleString || ''}`
     } else if (transformFn && typeof param === 'object' && param !== null) {
         param = transformFn(param as ExpectWebdriverIO.JsonCompatible)
     }

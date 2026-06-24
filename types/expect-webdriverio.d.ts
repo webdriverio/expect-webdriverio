@@ -468,7 +468,40 @@ type WdioAsymmetricMatchers = ExpectLibAsymmetricMatchers
 type WdioAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
     // Overwrite protected properties of expect.AsymmetricMatcher to access them
     sample: R;
+    inverse?: boolean;
 }
+
+type JasmineBaseAsymmetricMatcher = {
+    jasmineToString(): string;
+    asymmetricMatch(other: unknown): boolean;
+}
+
+/**
+ * Jasmine asymetric matcher does not always use sample, some use expected. `any` uses even `expectedObject`
+ * @see https://github.com/jasmine/jasmine/tree/v5.13.0/src/core/asymmetric_equality
+ */
+type JasmineAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & ({
+    expected: R;
+} | {
+    sample: R;
+} | {
+    regexp: string | RegExp;
+} | {
+    expectedObject: R;
+} | {} // jasmine.anything()
+)
+
+type JasmineStringContainingAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & {
+    expected: R;
+}
+
+type JasmineStringMatchingAsymmetricMatcher<R extends string | RegExp> = JasmineBaseAsymmetricMatcher & {
+    regexp: R;
+}
+
+type JasmineStringAsymmetricMatcher<R extends string | RegExp> = JasmineStringContainingAsymmetricMatcher<R> | JasmineStringMatchingAsymmetricMatcher<R>
+
+type AsymmetricMatcher<R> = WdioAsymmetricMatcher<R> | JasmineStringContainingAsymmetricMatcher<R> | (R extends string | RegExp ? JasmineStringMatchingAsymmetricMatcher<R> : never) | JasmineAsymmetricMatcher<R>
 
 declare namespace ExpectWebdriverIO {
     /**
@@ -512,7 +545,13 @@ declare namespace ExpectWebdriverIO {
         <T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<void, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
     }
 
-    interface Matchers<R extends void | Promise<void>, T> extends WdioMatchers<R, T> {}
+    /**
+     * Matchers defining the custom wdio matchers.
+     * Matchers is documented as the interface to augment to add other custom matchers.
+     *
+     * We MUST NOT have Jest's expect Lib matchers here, so that we can use it with Jasmine augmentation as well.
+     */
+    interface Matchers<R extends void | Promise<void>, T> extends WdioCustomMatchers<R, T> {}
 
     interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
 
@@ -522,7 +561,7 @@ declare namespace ExpectWebdriverIO {
      * End of block overloading types from the expect library.
      */
 
-    type MatchersAndInverse<R extends void | Promise<void>, ActualT> = ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibInverse<ExpectWebdriverIO.Matchers<R, ActualT>>
+    type MatchersAndInverse<R extends void | Promise<void>, ActualT> = (ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibMatchers<R, ActualT>) & ExpectLibInverse<ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibMatchers<R, ActualT>>
 
     /**
      * Take from expect library

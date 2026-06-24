@@ -9,7 +9,7 @@
     "preinstall": "cd .. && npm run compile",
     "setup": "npm install",
     "checks:all": "npm exec --workspaces --call 'npm run checks:all'",
-    "snapshots:update": "npm exec --workspace=mocha --workspace=jest --call 'npm run snapshots:update'"
+    "snapshots:update": "npm exec --workspace=mocha --call 'npm run snapshots:update'"
   },
   "devDependencies": {
     "@wdio/cli": "^9.27.2",

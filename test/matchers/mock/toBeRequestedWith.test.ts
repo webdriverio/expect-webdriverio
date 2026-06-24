@@ -2,6 +2,8 @@ import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 
 import { toBeRequestedWith } from '../../../src/matchers/mock/toBeRequestedWith.js'
 import type { local } from 'webdriver'
+import { jasmine } from '../../__mocks__/jasmine.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -129,12 +131,12 @@ describe('toBeRequestedWith', () => {
         const afterAssertion = vi.fn()
         const result = await toBeRequestedWith.call({}, mock, params, { beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
-        expect(beforeAssertion).toBeCalledWith({
+        expect(beforeAssertion).toHaveBeenCalledWith({
             matcherName: 'toBeRequestedWith',
             expectedValue: params,
             options: { beforeAssertion, afterAssertion },
         })
-        expect(afterAssertion).toBeCalledWith({
+        expect(afterAssertion).toHaveBeenCalledWith({
             matcherName: 'toBeRequestedWith',
             expectedValue: params,
             options: { beforeAssertion, afterAssertion },
@@ -483,4 +485,73 @@ Received: "was not called"`
   }`
         )
     })
+
+    test('with jasmine stringContaining asymmetric matchers', async () => {
+        const mock: any = new TestMock()
+        mock.calls.push({ ...mockPost })
+
+        const result = await toBeRequestedWith.call({}, mock, {
+            url: jasmine.stringContaining('/API/'),
+        })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect mock to be called with
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+-   "url": "StringContaining /API/",
++   "url": "https://my-app/api/add-tags",
+  }`)
+    })
+
+    test('with jasmine objectContaining asymmetric matchers', async () => {
+        const mock: any = new TestMock()
+        mock.calls.push({ ...mockPost })
+
+        const result = await toBeRequestedWith.call({}, mock, {
+            requestHeaders: jasmine.objectContaining({
+                Authorization: 'test',
+            }),
+        })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect mock to be called with
+
+- Expected  - 1
++ Received  + 4
+
+  Object {
+-   "requestHeaders": "ObjectContaining {\\"Authorization\\":\\"test\\"}",
++   "requestHeaders": Array [
++     Object {},
++     "... 2 more items",
++   ],
+  }`)
+    })
+
+    test('with jasmine stringMatching asymmetric matchers', async () => {
+        const mock: any = new TestMock()
+        mock.calls.push({ ...mockPost })
+
+        const result = await toBeRequestedWith.call({}, mock, {
+            url: jasmine.stringMatching(/\/api\/foo1$/),
+        })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect mock to be called with
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+-   "url": "StringMatching /\\\\/api\\\\/foo1$/",
++   "url": "https://my-app/api/add-tags",
+  }`)
+    })
+
 })

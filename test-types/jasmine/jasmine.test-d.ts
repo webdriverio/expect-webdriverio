@@ -256,12 +256,11 @@ describe('Jasmine type agumentations', () => {
 
         describe('Jasmine vs Jest pollution', () => {
             it('should not include Jest expect library matchers on expectAsync', () => {
-                // toHaveProperty is a Jest matcher, not Jasmine
-                // TODO fix incoming
-                // expectTypeOf(expectAsync('foo')).not.toHaveProperty('toHaveProperty')
-                // expectTypeOf(expectAsync('foo')).not.toHaveProperty('toMatchObject')
-                // expectTypeOf(expectAsync('foo')).not.toHaveProperty('toStrictEqual')
-                // expectTypeOf(expectAsync('foo')).not.toHaveProperty('toHaveLength')
+            // toHaveProperty is a Jest matcher, not Jasmine
+                expectTypeOf(expectAsync('foo')).not.toHaveProperty('toHaveProperty')
+                expectTypeOf(expectAsync('foo')).not.toHaveProperty('toMatchObject')
+                expectTypeOf(expectAsync('foo')).not.toHaveProperty('toStrictEqual')
+                expectTypeOf(expectAsync('foo')).not.toHaveProperty('toHaveLength')
             })
         })
 
@@ -326,15 +325,6 @@ describe('Jasmine type agumentations', () => {
                     postData: wdioExpect.objectContaining({ released: true, title: wdioExpect.stringContaining('foobar') }),
                     response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
                 })).toEqualTypeOf<Promise<void>>()
-
-                // TODO fix incoming
-                // expectTypeOf(expectAsync(promiseNetworkMock).toBeRequestedWith(jasmine.objectContaining({
-                //     method: 'POST'
-                // }))).toEqualTypeOf<Promise<void>>()
-
-                // expectTypeOf(expectAsync(promiseNetworkMock).toBeRequestedWith(wdioExpect.objectContaining({
-                //     method: 'POST'
-                // }))).toEqualTypeOf<Promise<void>>()
             })
         })
     })

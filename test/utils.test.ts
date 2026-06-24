@@ -1,8 +1,9 @@
 import { describe, test, expect, vi } from 'vitest'
-import { compareNumbers, compareObject, compareText, compareTextWithArray, waitUntil } from '../src/utils'
+import { compareNumbers, compareObject, compareText, compareTextWithArray, getAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
+import { jasmine } from './__mocks__/jasmine'
 
 describe('utils', () => {
-    describe('compareText', () => {
+    describe(compareText, () => {
         test('should pass when strings match', () => {
             expect(compareText('foo', 'foo', {}).result).toBe(true)
         })
@@ -28,17 +29,32 @@ describe('utils', () => {
             expect(compareText('qwe_AsD_zxc', 'asd', { ignoreCase: true, containing: true }).result).toBe(true)
         })
 
-        test('should support asymmetric matchers', () => {
+        test('should support stringContaining asymmetric matchers', () => {
             expect(compareText('foo', expect.stringContaining('oo'), {}).result).toBe(true)
             expect(compareText('foo', expect.not.stringContaining('oo'), {}).result).toBe(false)
         })
 
-        test('should support asymmetric matchers and using ignoreCase', () => {
+        test('should support stringMatching asymmetric matchers', () => {
+            expect(compareText('foo', expect.stringMatching(/.*oo.*/), {}).result).toBe(true)
+            expect(compareText('foo', expect.not.stringMatching(/.*oo.*/), {}).result).toBe(false)
+        })
+
+        test('should support stringContaining asymmetric and using ignoreCase', () => {
             expect(compareText(' FOO ', expect.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
             expect(compareText(' FOO ', expect.not.stringContaining('foo'), { ignoreCase: true }).result).toBe(false)
             expect(compareText(' Foo ', expect.stringContaining('FOO'), { ignoreCase: true }).result).toBe(true)
             expect(compareText(' Foo ', expect.not.stringContaining('FOO'), { ignoreCase: true }).result).toBe(false)
             expect(compareText(' foo ', expect.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
+        })
+
+        test('should support jasmine.stringContaining matchers and using ignoreCase', () => {
+            expect(compareText(' FOO ', jasmine.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' Foo ', jasmine.stringContaining('FOO'), { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' foo ', jasmine.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
+        })
+
+        test('should support jasmine.stringMatching matchers', () => {
+            expect(compareText(' FOO ', jasmine.stringMatching(/.*foo.*/i), {}).result).toBe(true)
         })
     })
 
@@ -92,6 +108,17 @@ describe('utils', () => {
             expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOOO'), expect.not.stringContaining('OO')], { ignoreCase: true }).result).toBe(true)
             expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOOO'), expect.not.stringContaining('OOO')], { ignoreCase: true }).result).toBe(true)
             expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOO'), expect.not.stringContaining('OO')], { ignoreCase: true }).result).toBe(false)
+        })
+
+        test('should support jasmine asymmetric matchers', () => {
+            expect(compareTextWithArray('foo', [jasmine.stringContaining('oobb'), jasmine.stringContaining('oo')], {}).result).toBe(true)
+        })
+
+        test('should support asymmetric matchers and using ignoreCase', () => {
+            expect(compareTextWithArray(' FOO ', [jasmine.stringContaining('foo'), jasmine.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
+            expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), jasmine.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
+            expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).result).toBe(true)
+            expect(compareTextWithArray('foo', [jasmine.stringContaining('FOOO'), 'FOO'], { ignoreCase: true }).result).toBe(true)
         })
     })
 
@@ -343,6 +370,116 @@ describe('utils', () => {
 
                 })
             })
+        })
+    })
+
+    describe(isAsymmetricMatcher, () => {
+
+        describe('StringContaining (Jasmine mimic)', () => {
+            test('matches when substring is present', () => {
+                const matcher = jasmine.stringContaining('foo')
+                expect(matcher.asymmetricMatch('foobar')).toBe(true)
+                expect(matcher.asymmetricMatch('barfoo')).toBe(true)
+                expect(matcher.asymmetricMatch('barbaz')).toBe(false)
+            })
+            test('throws if expected is not a string', () => {
+                // @ts-expect-error
+                expect(() => jasmine.stringContaining(123)).toThrow('Expected is not a string')
+            })
+            test('jasmineToString and getExpectedType', () => {
+                const matcher = jasmine.stringContaining('foo')
+                expect(matcher.jasmineToString()).toBe('<jasmine.stringContaining("foo")>')
+            })
+        })
+
+        test.for([
+            expect.stringContaining('foo'),
+            jasmine.stringContaining('foo')
+        ])('should work with %s matcher', async (asymmetricMatcher) => {
+            const isAsymmetric = isAsymmetricMatcher(asymmetricMatcher)
+
+            expect(isAsymmetric).toBe(true)
+        })
+    })
+
+    describe(isStringContainingMatcherLike, () => {
+        test.for([
+            expect.stringContaining('foo'),
+            expect.not.stringContaining('foo'),
+            jasmine.stringContaining('foo')
+        ])('should work with %s matcher', async (asymmetricMatcher) => {
+            const isStringContaining = isStringContainingMatcherLike(asymmetricMatcher)
+
+            expect(isStringContaining).toBe(true)
+        })
+    })
+
+    describe(isInversedStringContainingMatcher, () => {
+        test.for([
+            expect.stringContaining('foo'),
+            jasmine.stringContaining('foo')
+        ])('should work with %s matcher', async (asymmetricMatcher) => {
+            const isStrictlyStringContaining = isInversedStringContainingMatcher(asymmetricMatcher)
+
+            expect(isStrictlyStringContaining).toBe(false)
+        })
+
+        test('should work with %s matcher', async () => {
+            const asymmetricMatcher = expect.not.stringContaining('foo')
+
+            const isStrictlyStringContaining = isInversedStringContainingMatcher(asymmetricMatcher)
+
+            expect(isStrictlyStringContaining).toBe(true)
+        })
+    })
+
+    describe(getAsymmetricMatcherValue, () => {
+        test.for([
+            expect.stringContaining('foo'),
+            expect.not.stringContaining('foo'),
+            jasmine.stringContaining('foo')
+        ])('should return expected value of matcher', (asymmetricMatcher) => {
+
+            const value = getAsymmetricMatcherValue(asymmetricMatcher)
+
+            expect(value).toBe('foo')
+        })
+
+        test('should work with jasmine object containing asymmetric matcher', () => {
+            const asymmetricMatcher = jasmine.objectContaining({ foo: 'bar' })
+
+            const value = getAsymmetricMatcherValue(asymmetricMatcher)
+
+            expect(value).toEqual({ foo: 'bar' })
+        })
+
+        test('should work with jasmine string matching asymmetric matcher', () => {
+            const asymmetricMatcher = jasmine.stringMatching(/foo/)
+
+            const value = getAsymmetricMatcherValue(asymmetricMatcher)
+
+            expect(value).toEqual(/foo/)
+        })
+
+        test('should return undefined when unknown matcher', () => {
+            const value = getAsymmetricMatcherValue({} as any)
+            expect(value).toBeUndefined()
+        })
+
+        test('should work with jasmine.anything asymmetric matcher', () => {
+            const asymmetricMatcher = jasmine.anything()
+
+            const value = getAsymmetricMatcherValue(asymmetricMatcher)
+
+            expect(value).toBeUndefined()
+        })
+
+        test('should work with jasmine.any asymmetric matcher', () => {
+            const asymmetricMatcher = jasmine.any(String)
+
+            const value = getAsymmetricMatcherValue(asymmetricMatcher)
+
+            expect(value).toEqual(expect.any(Function))
         })
     })
 })

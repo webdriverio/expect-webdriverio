@@ -60,10 +60,10 @@ Option 2: Reconfigure Jest's expect with the custom matchers and the soft assert
 ```ts
 // Configure the custom matchers:
 import { expect } from "@jest/globals";
-import { matchers } from "expect-webdriverio";
+import { wdioCustomMatchers } from "expect-webdriverio";
 
 beforeAll(async () => { 
-    expect.extend(matchers as Record<string, any>);
+    expect.extend(wdioCustomMatchers);
 });
 ```
 
@@ -197,9 +197,9 @@ Expected in `tsconfig.json`:
   "compilerOptions": {
     "types": [
       "@wdio/globals/types",
-      "@wdio/jasmine-framework",
+      // Force expect to return Promises (In beta testing, expect breaking changes, will move into @wdio/jasmine-framework one day)
+      "expect-webdriverio/jasmine-wdio-expect-async",
       "@types/jasmine",
-      "expect-webdriverio/jasmine-wdio-expect-async", // Force expect to return Promises
     ]
   }
 }
@@ -236,11 +236,21 @@ Expected in `tsconfig.json`:
 
 
 #### Asymmetric matchers
-Asymmetric matchers have limited support. Even though `jasmine.stringContaining` does not produce a typing error, it may not work even with `@wdio/jasmine-framework`. However, the example below should work:
+Jasmine's asymmetric matchers got better but limitation can still exits. 
+- `jasmine.stringContaining`; `jasmine.stringMatching`; `jasmine.any(Type)` & `jasmine.anything()` works across the board
+- Network matchers does support `jasmine.objectContaining` while supports in other area like element matchers might be limited.
+- Wdio asymmmetrics matchers does work properly too
 
 ```ts
 describe('My tests', async () => {
     it('should verify my browser to have the expected url', async () => {
+        // Working Jasmine asymmetric matcher
+        await expectAsync(browser).toHaveUrl(jasmine.stringContaining('WebdriverIO'))
+        await expectAsync(browser).toHaveUrl(jasmine.stringMatching('/WebdriverIO/'))
+        await expectAsync(browser).toHaveUrl(jasmine.any(String))
+        await expectAsync(browser).toHaveUrl(jasmine.anything())
+
+        // Working wdio asymmetric matcher
         await expectAsync(browser).toHaveUrl(wdioExpect.stringContaining('WebdriverIO'))
     })
 })     

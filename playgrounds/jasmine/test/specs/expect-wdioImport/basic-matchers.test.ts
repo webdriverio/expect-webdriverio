@@ -88,57 +88,46 @@ describe('Basic Expect Matchers available when pulling expect from expect-webdri
         it('should handle promises', async () => {
             const titlePromise = browser.getTitle()
 
-            // @ts-expect-error - to fix
             await expect(titlePromise).resolves.toContain('WebdriverIO')
         })
 
         it('should not reject', async () => {
             const urlPromise = browser.getUrl()
 
-            // @ts-expect-error - to fix
             await expect(urlPromise).resolves.toBeDefined()
         })
     })
 
     describe('Basis matcher with Jasmine asymmetric matchers', () => {
         it('should have toEqual work with jasmine.stringContaining', async () => {
-            // eslint-disable-next-line -- to fix
             expect('title').toEqual(jasmine.stringContaining('title'))
         })
 
         it('should have toEqual work with jasmine.any', async () => {
-            // eslint-disable-next-line -- to fix
             expect('title').toEqual(jasmine.any(String))
-            // eslint-disable-next-line -- to fix
             expect(123).toEqual(jasmine.any(Number))
         })
 
         // TODO to support one day?
         xit('should have toEqual work with jasmine.objectContaining', async () => {
-            // eslint-disable-next-line -- to fix
             expect({ a: 1, b: 2 }).toEqual(jasmine.objectContaining({ a: 1 }))
         })
 
         // TODO to support one day?
         xit('should have toEqual work with jasmine.arrayContaining', async () => {
-            // eslint-disable-next-line -- to fix
             expect([1, 2, 3]).toEqual(jasmine.arrayContaining([2]))
         })
 
         it('should have toEqual work with jasmine.stringMatching', async () => {
-            // eslint-disable-next-line -- to fix
             expect('title').toEqual(jasmine.stringMatching(/itl/))
         })
 
         it('should have toEqual work with jasmine.anything', async () => {
-            // eslint-disable-next-line -- to fix
             expect({ foo: 'bar' }).toEqual({ foo: jasmine.anything() })
         })
 
         it('should have toBe not work with stringContaining', async () => {
-            // eslint-disable-next-line -- to fix
             expect(() => {
-                // eslint-disable-next-line -- to fix
                 expect('title').toBe(jasmine.stringContaining('title'))
             }).toThrow()
         })
@@ -146,46 +135,36 @@ describe('Basic Expect Matchers available when pulling expect from expect-webdri
 
     describe('Basis matcher with asymmetric matchers', () => {
         it('should have toEqual work with expect.stringContaining', async () => {
-            // eslint-disable-next-line -- to fix
             expect('title').toEqual(expect.stringContaining('title'))
         })
 
         it('should have toEqual work with expect.any', async () => {
-            // eslint-disable-next-line -- to fix
             expect('title').toEqual(expect.any(String))
-            // eslint-disable-next-line -- to fix
             expect(123).toEqual(expect.any(Number))
         })
 
         it('should have toEqual work with expect.objectContaining', async () => {
-            // eslint-disable-next-line -- to fix
             expect({ a: 1, b: 2 }).toEqual(expect.objectContaining({ a: 1 }))
         })
 
         it('should have toEqual work with expect.arrayContaining', async () => {
-            // eslint-disable-next-line -- to fix
             expect([1, 2, 3]).toEqual(expect.arrayContaining([2]))
         })
 
         it('should have toEqual work with expect.stringMatching', async () => {
-            // eslint-disable-next-line -- to fix
             expect('title').toEqual(expect.stringMatching(/itl/))
         })
 
         it('should have toEqual work with expect.anything', async () => {
-            // eslint-disable-next-line -- to fix
             expect({ foo: 'bar' }).toEqual({ foo: expect.anything() })
         })
 
         it('should have toEqual work with expect.closeTo', async () => {
-            // eslint-disable-next-line -- to fix
             expect({ num: 1.1 }).toEqual({ num: expect.closeTo(1.101, 2) })
         })
 
         it('should have toBe not work with stringContaining', async () => {
-            // eslint-disable-next-line -- to fix
             expect(() => {
-                // eslint-disable-next-line -- to fix
                 expect('title').toBe(expect.stringContaining('title'))
             }).toThrow()
         })

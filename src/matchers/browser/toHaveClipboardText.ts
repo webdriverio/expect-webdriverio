@@ -7,7 +7,7 @@ const log = logger('expect-webdriverio')
 
 export async function toHaveClipboardText(
     browser: WebdriverIO.Browser,
-    expectedValue: string | RegExp | WdioAsymmetricMatcher<string>,
+    expectedValue: string | RegExp | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const isNot = this.isNot
