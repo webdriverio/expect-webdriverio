@@ -197,9 +197,9 @@ Expected in `tsconfig.json`:
   "compilerOptions": {
     "types": [
       "@wdio/globals/types",
-      "@wdio/jasmine-framework",
+      // Force expect to return Promises (In beta testing, expect breaking changes, will move into @wdio/jasmine-framework one day)
+      "expect-webdriverio/jasmine-wdio-expect-async",
       "@types/jasmine",
-      "expect-webdriverio/jasmine-wdio-expect-async", // Force expect to return Promises
     ]
   }
 }

@@ -1,6 +1,7 @@
 /// <reference types="./types/expect-webdriverio.d.ts"/>
 
 /**
+ * Note: Under development, until proven, expect breaking changes!
  * Augment the Jasmine namespace to match the behavior of `@wdio/jasmine-framework`.
  * Only custom WDIO matchers are available under `expectAsync`, as well as Jasmine's built-in matchers.
  * `expectAsync` is forced into the `expect` global ambient, making all Jasmine sync-matchers asynchronous.
