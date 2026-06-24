@@ -220,6 +220,9 @@ describe('Jasmine-Specific Features', () => {
             await expect(Promise.reject('fail')).toBeRejectedWith('fail')
 
             await expect(() => { throw new Error('fail') }).toThrowError('fail')
+            await expect(function() { throw 'things'; }).toThrow('things');
+            await expect(function() { throw undefined }).toThrow();
+            await expect(function() { throw new TypeError('type error'); }).toThrowMatching((e: unknown) => e instanceof TypeError);
         })
     })
 })
