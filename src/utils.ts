@@ -7,10 +7,10 @@ import type { WdioElementOrArrayMaybePromise, WdioElements } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
-import { waitUntil } from './util/waitUntil.js'
 import { DEFAULT_OPTIONS } from './constants.js'
+import { waitUntil } from './util/waitUntil.js'
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+//const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
     return isAsymmetricMatcher(expected) && 'expected' in expected
@@ -66,65 +66,66 @@ export function getAsymmetricMatcherValue<T>(
     return undefined
 }
 
-/**
- * wait for expectation to succeed
- * @param condition function
- * @param isNot     https://jestjs.io/docs/expect#thisisnot
- * @param options   wait, interval, etc
- */
-const waitUntil = async (
-    condition: () => Promise<boolean>,
-    isNot = false,
-    { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
-): Promise<boolean> => {
-    // single attempt
-    if (wait === 0) {
-        return await condition()
-    }
+// /**
+//  * wait for expectation to succeed
+//  * @param condition function
+//  * @param isNot     https://jestjs.io/docs/expect#thisisnot
+//  * @param options   wait, interval, etc
+//  */
+// const waitUntil = async (
+//     condition: () => Promise<boolean>,
+//     isNot = false,
+//     { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
+// ): Promise<boolean> => {
+//     // single attempt
+//     if (wait === 0) {
+//         return await condition()
+//     }
 
-    let error: Error | undefined
+//     let error: Error | undefined
 
-    // wait for condition to be truthy
-    try {
-        const start = Date.now()
-        while (true) {
-            if (Date.now() - start > wait) {
-                throw new Error('timeout')
-            }
+//     // wait for condition to be truthy
+//     try {
+//         const start = Date.now()
+//         while (true) {
+//             if (Date.now() - start > wait) {
+//                 throw new Error('timeout')
+//             }
 
-            try {
-                const result = isNot !== (await condition())
-                error = undefined
-                if (result) {
-                    break
-                }
-                await sleep(interval)
-            } catch (err) {
-                error = err
-                await sleep(interval)
-            }
-        }
+//             try {
+//                 const result = isNot !== (await condition())
+//                 error = undefined
+//                 if (result) {
+//                     break
+//                 }
+//                 await sleep(interval)
+//             } catch (err) {
+//                 error = err
+//                 await sleep(interval)
+//             }
+//         }
 
-        if (error) {
-            throw error
-        }
+//         if (error) {
+//             throw error
+//         }
 
-        return !isNot
-    } catch {
-        if (error) {
-            throw error
-        }
+//         return !isNot
+//     } catch {
+//         if (error) {
+//             throw error
+//         }
 
-        return isNot
-    }
-}
+//         return isNot
+//     }
+// }
 
 async function executeCommandBe(
     nonAwaitedElements: WdioElementOrArrayMaybePromise | undefined,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): ExpectWebdriverIO.AsyncAssertionResult {
-    const { isNot, wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = options
+    const { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = options
+    const  { isNot, verb = 'be' } = this
 
     let awaitedElements: WdioElements | WebdriverIO.Element | undefined
     let allResults: boolean[] = []
@@ -140,11 +141,10 @@ async function executeCommandBe(
 
             return { success, results }
         },
-        this.isNot,
+        isNot,
         { wait, interval }
     )
 
-    const  { verb = 'be' } = this
     const message = enhanceErrorBe(awaitedElements, allResults, { ...this, verb }, options)
 
     return {

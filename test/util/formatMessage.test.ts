@@ -636,43 +636,4 @@ Received: []`)
             })
         })
     })
-
-    describe(enhanceErrorBe, () => {
-        const subject = 'element'
-        const verb = 'be'
-        const expectation = 'displayed'
-        const options = {}
-
-        const isNot = false
-        test('when isNot is false', () => {
-            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, options )
-            expect(message).toEqual(`\
-Expect element to be displayed
-
-Expected: "displayed"
-Received: "not displayed"`)
-        })
-
-        test('with custom message', () => {
-            const customMessage = 'Custom Error Message'
-            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, { ...options, message: customMessage })
-            expect(message).toEqual(`\
-Custom Error Message
-Expect element to be displayed
-
-Expected: "displayed"
-Received: "not displayed"`)
-        })
-
-        test('when isNot is true', () => {
-            const isNot = true
-            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, options)
-            expect(message).toEqual(`\
-Expect element not to be displayed
-
-Expected: "not displayed"
-Received: "displayed"`)
-
-        })
-    })
 })

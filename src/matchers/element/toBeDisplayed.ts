@@ -1,5 +1,6 @@
 import { executeCommandBe } from '../../utils.js'
 import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import { DEFAULT_OPTIONS_TO_BE_DISPLAYED } from '../../constants.js'
 
 export async function toBeDisplayed(
     received: WdioElementOrArrayMaybePromise,

@@ -1,9 +1,11 @@
-import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import { lastMatcherWords } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 import { executeCommandBe, waitUntil } from '../../src/utils.js'
 import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeExisting, toBeFocused, toBePresent, toBeSelected, toExist } from '../../src/matchers.js'
+import { setOptions } from 'expect-webdriverio'
+import { DEFAULT_OPTIONS } from '../../src/constants.js'
 
 vi.mock('@wdio/globals')
 
@@ -18,16 +20,18 @@ vi.mock('../../src/utils.js', async (importOriginal) => {
     }
 })
 
-const beMatchers = new Map([
-    [toBeChecked, 'isSelected' satisfies keyof WebdriverIO.Element],
-    [toBeClickable, 'isClickable' satisfies keyof WebdriverIO.Element],
-    [toBeDisplayedInViewport, 'isDisplayed' satisfies keyof WebdriverIO.Element],
-    [toBeEnabled, 'isEnabled' satisfies keyof WebdriverIO.Element],
-    [toBeExisting, 'isExisting' satisfies keyof WebdriverIO.Element],
-    [toBeFocused, 'isFocused' satisfies keyof WebdriverIO.Element],
-    [toBePresent, 'isExisting' satisfies keyof WebdriverIO.Element],
-    [toBeSelected, 'isSelected' satisfies keyof WebdriverIO.Element],
-    [toExist, 'isExisting' satisfies keyof WebdriverIO.Element],
+type BooleanElementMethod = 'isSelected' | 'isClickable' | 'isDisplayed' | 'isEnabled' | 'isExisting' | 'isFocused'
+
+const beMatchers = new Map<Function, BooleanElementMethod>([
+    [toBeChecked, 'isSelected'],
+    [toBeClickable, 'isClickable'],
+    [toBeDisplayedInViewport, 'isDisplayed'],
+    [toBeEnabled, 'isEnabled'],
+    [toBeExisting, 'isExisting'],
+    [toBeFocused, 'isFocused'],
+    [toBePresent, 'isExisting'],
+    [toBeSelected, 'isSelected'],
+    [toExist, 'isExisting'],
 ])
 
 describe('be* matchers', () => {
@@ -44,7 +48,7 @@ describe('be* matchers', () => {
     })
 
     beMatchers.forEach((elFnName, matcherFn) => {
-        const elementFnName = elFnName as keyof WebdriverIO.Element
+        const elementFnName = elFnName
         const selectorName = '$$(`sel`)'
 
         describe(matcherFn.name, () => {
@@ -318,7 +322,7 @@ Expect ${selectorName} not ${verb} ${lastMatcherWords(matcherFn.name)}
 
                 test('not - success - pass should be false', async () => {
                     for (const element of elements) {
-                        vi.mocked(element[elementFnName]).mockResolvedValue(false,  { wait: 0 })
+                        vi.mocked(element[elementFnName]).mockResolvedValue(false)
                     }
 
                     const result = await thisNotContext.matcherFn(elements)

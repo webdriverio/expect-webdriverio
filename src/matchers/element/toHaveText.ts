@@ -22,7 +22,7 @@ async function singleElementCompare(el: WebdriverIO.Element, text: MaybeArray<st
 }
 
 // Same as singleElementCompare (e.g `$()`) but with a deprecation notice for `compareTextWithArray` removal to have the same behavior across all matchers with `$$()`
-async function multipleElementsStrategyCompare(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
+async function multipleElementsStrategyCompare(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
     const checkAllValuesMatchCondition = Array.isArray(text) ?
     // @deprecated: using compareTextWithArray for $$() is deprecated and will be removed in future versions since it does not do a strict comparison per element.

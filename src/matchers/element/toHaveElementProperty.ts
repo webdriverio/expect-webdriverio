@@ -11,7 +11,7 @@ import {
 async function condition(
     el: WebdriverIO.Element,
     property: string,
-    expected: string | number | null | RegExp | WdioAsymmetricMatcher<string>,
+    expected: string | number | null | RegExp | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { asString = false } = options

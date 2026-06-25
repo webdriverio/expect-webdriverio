@@ -18,7 +18,7 @@ async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArray<st
     return compareText(actualHTML, html, options)
 }
 
-async function multipleElementsStrategyCompare(el: WebdriverIO.Element, html: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.HTMLOptions) {
+async function multipleElementsStrategyCompare(el: WebdriverIO.Element, html: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.HTMLOptions) {
     const actualHTML = await el.getHTML(options)
     return compareText(actualHTML, html, options)
 }

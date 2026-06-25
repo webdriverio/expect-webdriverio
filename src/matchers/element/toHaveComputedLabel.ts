@@ -23,7 +23,7 @@ async function singleElementCompare(
 
 async function multipleElementsStrategyCompare(
     el: WebdriverIO.Element,
-    label: string | RegExp | WdioAsymmetricMatcher<string>,
+    label: string | RegExp | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.HTMLOptions
 ) {
     const actualLabel = await el.getComputedLabel()

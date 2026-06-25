@@ -99,7 +99,7 @@ ${label.received}: ${printReceived(actual)}`
     }
 
     // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
-    const diffString = equals(actual, expected) ?`\
+    diffString = equals(actual, expected) ?`\
 ${label.expected}: ${printExpected(expected)}
 ${label.received}: ${printReceived(actual)}`
         : printDiffOrStringify(expected, actual, label.expected, label.received, true)

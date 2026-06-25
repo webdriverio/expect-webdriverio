@@ -4,6 +4,7 @@
  */
 import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
+import type { Size } from '../../../src/matchers/element/toHaveSize'
 
 vi.mock('@wdio/globals')
 vi.mock('../../../src/constants.js', async () => ({
@@ -190,13 +191,16 @@ export function chainableElementArrayFactory(selector: string, length: number) {
     return runtimeChainablePromiseArray
 }
 
-export const browser = {
-    $,
-    $$,
-    execute: vi.fn(),
-    setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
-    getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
-    getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
-    call(fn: Function) { return fn() },
-} satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+export const browserFactory = (): WebdriverIO.Browser => {
+    return  {
+        $,
+        $$,
+        execute: vi.fn(),
+        setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
+        getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
+        getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
+        call(fn: Function) { return fn() },
+    } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+}
 
+export const browser = browserFactory()

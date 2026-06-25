@@ -23,7 +23,7 @@ async function singleElementCompare(
 
 async function multipleElementsStrategyCompare(
     el: WebdriverIO.Element,
-    role: string | RegExp | WdioAsymmetricMatcher<string>,
+    role: string | RegExp | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.HTMLOptions
 ) {
     const actualRole = await el.getComputedRole()

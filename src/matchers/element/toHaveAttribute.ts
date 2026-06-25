@@ -17,7 +17,7 @@ async function conditionAttributeIsPresent(el: WebdriverIO.Element, attribute: s
 
 }
 
-async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
+async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
     const attributeValue = await el.getAttribute(attribute)
     if (typeof attributeValue !== 'string') {
         return { result: false, value: attributeValue }

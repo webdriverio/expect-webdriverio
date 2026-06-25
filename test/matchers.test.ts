@@ -1,6 +1,6 @@
 import { test, expect, vi, describe } from 'vitest'
-import { matchers, expect as expectLib, wdioCustomMatchers } from '../src/index.js'
-import { $ } from '@wdio/globals'
+import { matchers, expect as expectLib } from '../src/index.js'
+import { $, $$ } from '@wdio/globals'
 
 vi.mock('@wdio/globals')
 
@@ -13,9 +13,10 @@ vi.mock('../src/constants.js', async () => ({
         interval: 5
     }
 }))
+
+const ALL_MATCHERS = [
     // browser
     'toHaveClipboardText',
-    'toHaveLocalStorageItem',
     'toHaveTitle',
     'toHaveUrl',
 
@@ -66,7 +67,6 @@ vi.mock('../src/constants.js', async () => ({
 
 test('matchers', () => {
     expect([...matchers.keys()]).toEqual(ALL_MATCHERS)
-    expect(Object.keys(wdioCustomMatchers)).toEqual(ALL_MATCHERS)
 })
 
 test('allows to add matcher', () => {
@@ -76,7 +76,6 @@ test('allows to add matcher', () => {
     // @ts-expect-error not in types
     expectLib('foo').toBeCustom('foo')
     expect(matchers.keys()).toContain('toBeCustom')
-    expect(Object.keys(wdioCustomMatchers)).toContain('toBeCustom')
 })
 
 test('Generic asymmetric matchers from Expect library should work', () => {
