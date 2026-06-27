@@ -20,7 +20,7 @@ export async function executeCommand<T>(
     singleElementCompareStrategy?: (awaitedElement: WebdriverIO.Element) => Promise<
         { result: boolean; value?: T }
     >,
-    mutipleElementsCompareStrategy?: (awaitedElements: WebdriverIO.Element | WdioElements) => Promise<
+    multipleElementsCompareStrategy?: (awaitedElements: WebdriverIO.Element | WdioElements) => Promise<
         { result: boolean; value?: T }[]
     >
 ): Promise<{ elementOrArray: WdioElements | WebdriverIO.Element | undefined; success: boolean; valueOrArray: T | undefined | Array<T | undefined>, results: boolean[] }> {
@@ -41,7 +41,7 @@ export async function executeCommand<T>(
             results: []
         }
     }
-    if (!singleElementCompareStrategy && !mutipleElementsCompareStrategy) { throw new Error('No condition or customMultipleElementCompareStrategy provided to executeCommand') }
+    if (!singleElementCompareStrategy && !multipleElementsCompareStrategy) { throw new Error('No condition or customMultipleElementCompareStrategy provided to executeCommand') }
 
     const elementOrArray = element ? element : elements ? elements : undefined
 
@@ -53,8 +53,8 @@ export async function executeCommand<T>(
     let results
     if (singleElementCompareStrategy && element) {
         results = [await singleElementCompareStrategy(element)]
-    } else if (mutipleElementsCompareStrategy) {
-        results = await mutipleElementsCompareStrategy(elementOrArray)
+    } else if (multipleElementsCompareStrategy) {
+        results = await multipleElementsCompareStrategy(elementOrArray)
     } else if (singleElementCompareStrategy && elements) {
         results = await map(elements, (el: WebdriverIO.Element) => singleElementCompareStrategy(el))
     } else  {
