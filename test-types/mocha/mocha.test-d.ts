@@ -459,9 +459,6 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
         describe('Class Matchers', () => {
             it('should return Promise<void>', async () => {
-                expectTypeOf(expect(element).toHaveClass('class')).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveClass(expect.stringContaining('class'))).toEqualTypeOf<Promise<void>>()
-
                 expectTypeOf(expect(element).toHaveElementClass('class')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveElementClass(expect.stringContaining('class'))).toEqualTypeOf<Promise<void>>()
             })
