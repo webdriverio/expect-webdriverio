@@ -3,6 +3,7 @@ import { $ } from '@wdio/globals'
 
 import { toHaveId } from '../../../src/matchers/element/toHaveId.js'
 import type { AssertionResult } from 'expect-webdriverio'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -42,20 +43,20 @@ describe(toHaveId, () => {
             })
 
             test('failure with proper failure callbacks and message', () => {
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveId',
                     expectedValue: 'an attribute',
                     options: { beforeAssertion, afterAssertion, wait: 1 }
                 })
                 expect(result.pass).toBe(false)
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveId',
                     expectedValue: 'an attribute',
                     options: { beforeAssertion, afterAssertion, wait: 1 },
                     result
                 })
 
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute id
 
 Expected: "an attribute"

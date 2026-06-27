@@ -2,6 +2,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 
 import { toHaveAttribute } from '../../../src/matchers/element/toHaveAttribute.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -30,12 +31,12 @@ describe(toHaveAttribute, () => {
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined, { beforeAssertion, afterAssertion })
 
                 expect(result.pass).toBe(true)
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
                     expectedValue: ['attribute_name', undefined],
                     options: { beforeAssertion, afterAssertion }
                 })
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
                     expectedValue: ['attribute_name', undefined],
                     options: { beforeAssertion, afterAssertion },
@@ -62,7 +63,7 @@ describe(toHaveAttribute, () => {
                     const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined)
 
                     expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute attribute_name
 
 Expected: true
@@ -126,7 +127,7 @@ Received: false`
                     const result = await thisContext.toHaveAttribute(el, 'attribute_name', 'Correct')
 
                     expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute attribute_name
 
 Expected: "Correct"
@@ -142,7 +143,7 @@ Received: "Wrong"`
                     const result = await thisContext.toHaveAttribute(el, 'attribute_name', /WDIO/)
 
                     expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute attribute_name
 
 Expected: /WDIO/
@@ -220,12 +221,12 @@ Received: "Wrong"`
                 const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined, { beforeAssertion, afterAssertion })
 
                 expect(result.pass).toBe(true)
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
                     expectedValue: ['attribute_name', undefined],
                     options: { beforeAssertion, afterAssertion }
                 })
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
                     expectedValue: ['attribute_name', undefined],
                     options: { beforeAssertion, afterAssertion },
@@ -253,7 +254,7 @@ Received: "Wrong"`
                     const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined)
 
                     expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have attribute attribute_name
 
 Expected: true
@@ -307,7 +308,7 @@ Received: false`
                     const result = await thisContext.toHaveAttribute(els, 'attribute_name', 'Correct')
 
                     expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have attribute attribute_name
 
 - Expected  - 2
@@ -332,7 +333,7 @@ Expect $$(\`sel\`) to have attribute attribute_name
                     const result = await thisContext.toHaveAttribute(els, 'attribute_name', /WDIO/)
 
                     expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have attribute attribute_name
 
 - Expected  - 2
@@ -425,7 +426,7 @@ Expect $$(\`sel\`) to have attribute attribute_name
             const result = await thisContext.toHaveAttribute([], 'attribute_name', 'some value')
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect [] to have attribute attribute_name
 
 Expected: "some value"

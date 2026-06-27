@@ -61,7 +61,7 @@ export const enhanceError = (
 
     const isElementsSubject = isElementArrayLike(subject)
 
-    subject = subject = isElementOrNotEmptyElementArray(subject) ? getSelectors(subject) : toJsonString(subject)
+    subject = isElementOrNotEmptyElementArray(subject) ? getSelectors(subject) : toJsonString(subject)
 
     let contain = ''
     if (containing) {
@@ -97,12 +97,6 @@ ${label.received}: ${printReceived(actual)}`
     } else {
         diffString = printDiffOrStringify(expected, actual, label.expected, label.received, true)
     }
-
-    // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
-    diffString = equals(actual, expected) ?`\
-${label.expected}: ${printExpected(expected)}
-${label.received}: ${printReceived(actual)}`
-        : printDiffOrStringify(expected, actual, label.expected, label.received, true)
 
     if (message) {
         message += '\n'

@@ -3,6 +3,7 @@ import { browser } from '@wdio/globals'
 import { toHaveUrl } from '../../src/matchers/browser/toHaveUrl.js'
 import { toHaveTitle } from '../../src/matchers/browser/toHaveTitle.js'
 import { matcherNameLastWords } from '../__fixtures__/utils'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -73,7 +74,7 @@ describe('browser matchers', () => {
                 const result = await thisNotContext.matcherFn(browser, validText, { wait: 0, trim: false })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect window not to have ${matcherNameLastWords(matcherFn.name)}
 
 Expected [not]: " Valid Text "
@@ -95,7 +96,7 @@ Received      : " Valid Text "`
                 const result = await thisNotContext.matcherFn(browser, validText, { wait: 1, trim: false })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect window not to have ${matcherNameLastWords(matcherFn.name)}
 
 Expected [not]: " Valid Text "
@@ -116,7 +117,7 @@ Received      : " Valid Text "`
                 const result = await thisContext.matcherFn(browser, validText)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect window to have ${matcherNameLastWords(matcherFn.name)}
 
 Expected: " Valid Text "

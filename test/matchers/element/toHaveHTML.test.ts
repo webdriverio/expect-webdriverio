@@ -1,6 +1,7 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import { toHaveHTML } from '../../../src/matchers/element/toHaveHTML.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -36,12 +37,12 @@ describe(toHaveHTML, () => {
 
             expect(result.pass).toBe(true)
             expect(element.getHTML).toHaveBeenCalledTimes(3)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveHTML',
                 expectedValue: '<div>foo</div>',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveHTML',
                 expectedValue: '<div>foo</div>',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 },
@@ -81,7 +82,7 @@ describe(toHaveHTML, () => {
             const result = await thisNotContext.toHaveHTML(element, '<div>foo</div>')
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have HTML
 
 Expected [not]: "<div>foo</div>"
@@ -156,7 +157,7 @@ Received      : "<div>foo</div>"`
             vi.mocked(element.getHTML).mockResolvedValue('')
             const result = await thisContext.toHaveHTML(element, '<div>foo</div>')
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have HTML
 
 Expected: "<div>foo</div>"
@@ -249,7 +250,7 @@ Received: ""`)
             test('failure if no match', async () => {
                 const result = await thisContext.toHaveHTML(element, /Webdriver/i)
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have HTML
 
 Expected: /Webdriver/i
@@ -261,7 +262,7 @@ Received: "This is example HTML"`
                 const result = await thisContext.toHaveHTML(element, ['div', /Webdriver/i])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have HTML
 
 Expected: ["div", /Webdriver/i]
@@ -296,12 +297,12 @@ Received: "This is example HTML"`
 
             expect(result.pass).toBe(true)
             elements.forEach(el => expect(el.getHTML).toHaveBeenCalledTimes(3))
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveHTML',
                 expectedValue: '<div>foo</div>',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveHTML',
                 expectedValue: '<div>foo</div>',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 },
@@ -341,7 +342,7 @@ Received: "This is example HTML"`
             const result = await thisNotContext.toHaveHTML(elements, '<div>foo</div>')
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have HTML
 
 Expected [not]: ["<div>foo</div>", "<div>foo</div>"]
@@ -356,7 +357,7 @@ Received      : ["<div>foo</div>", "<div>foo</div>"]`
             const result = await thisNotContext.toHaveHTML(elements, '<div>foo</div>')
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have HTML
 
 Expected [not]: ["<div>foo</div>", "<div>foo</div>"]
@@ -440,7 +441,7 @@ Received      : ["<div>foo</div>", "<div>fii</div>"]`
 
             const result = await thisContext.toHaveHTML(elements, '<div>foo</div>')
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have HTML
 
 - Expected  - 2
@@ -460,7 +461,7 @@ Expect $$(\`sel\`) to have HTML
 
             const result = await thisContext.toHaveHTML(elements, ['div', '<div>foo</div>'])
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have HTML
 
 - Expected  - 1
@@ -479,7 +480,7 @@ Expect $$(\`sel\`) to have HTML
 
             const result = await thisContext.toHaveHTML(elements, ['div', '<div>foo</div>', 'toto'], { trim: true, wait: 0 })
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have HTML
 
 - Expected  - 3
@@ -549,7 +550,7 @@ Expect $$(\`sel\`) to have HTML
                 const result = await thisContext.toHaveHTML(elements, /Webdriver/i)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have HTML
 
 - Expected  - 2
@@ -568,7 +569,7 @@ Expect $$(\`sel\`) to have HTML
                 const result = await thisContext.toHaveHTML(elements, ['div', /Webdriver/i])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have HTML
 
 - Expected  - 2

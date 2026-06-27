@@ -2,6 +2,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 
 import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -25,12 +26,12 @@ describe(toHaveElementProperty, () => {
 
             expect(result.pass).toBe(true)
             expect(el.getProperty).toHaveBeenCalledTimes(1)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveElementProperty',
                 expectedValue: ['property', 'iPhone'],
                 options: { wait: 0, ignoreCase: true, beforeAssertion, afterAssertion }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveElementProperty',
                 expectedValue: ['property', 'iPhone'],
                 options: { wait: 0, ignoreCase: true, beforeAssertion, afterAssertion },
@@ -53,7 +54,7 @@ describe(toHaveElementProperty, () => {
             const result = await thisContext.toHaveElementProperty(el, 'property', [5])
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property property
 
 Expected: [5]
@@ -69,7 +70,7 @@ Received: [5]`
             const result = await thisContext.toHaveElementProperty(el, 'property', { foo: 'bar' } )
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property property
 
 Expected: {"foo": "bar"}
@@ -92,7 +93,7 @@ Received: {"foo": "bar"}`
             const result = await thisIsNotContext.toHaveElementProperty(el, 'property', 'iphone')
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have property property
 
 Expected [not]: "iphone"
@@ -151,7 +152,7 @@ Received      : "iphone"`)
                 const result = await thisContext.toHaveElementProperty(el, 'property', /WDIO/)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property property
 
 Expected: /WDIO/
@@ -182,12 +183,12 @@ Received: "iphone"`)
                 els.forEach(el =>
                     expect(el.getProperty).toHaveBeenCalledTimes(1)
                 )
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveElementProperty',
                     expectedValue: ['property', 'iPhone'],
                     options: { wait: 0, ignoreCase: true, beforeAssertion, afterAssertion }
                 })
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveElementProperty',
                     expectedValue: ['property', 'iPhone'],
                     options: { wait: 0, ignoreCase: true, beforeAssertion, afterAssertion },
@@ -210,7 +211,7 @@ Received: "iphone"`)
                 const result = await thisIsNotContext.toHaveElementProperty(els, 'property', 'iphone')
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have property property
 
 Expected [not]: ["iphone", "iphone"]
@@ -270,7 +271,7 @@ Received      : ["iphone", "iphone"]`
                     const result = await thisContext.toHaveElementProperty(els, 'property', /WDIO/)
 
                     expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have property property
 
 - Expected  - 2
@@ -297,12 +298,12 @@ Expect $$(\`sel\`) to have property property
                 els.forEach(el =>
                     expect(el.getProperty).toHaveBeenCalledTimes(1)
                 )
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveElementProperty',
                     expectedValue: ['property', ['iPhone', 'iPhone']],
                     options: { wait: 0, ignoreCase: true, beforeAssertion, afterAssertion }
                 })
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveElementProperty',
                     expectedValue: ['property', ['iPhone', 'iPhone']],
                     options: { wait: 0, ignoreCase: true, beforeAssertion, afterAssertion },
@@ -325,7 +326,7 @@ Expect $$(\`sel\`) to have property property
                 const result = await thisIsNotContext.toHaveElementProperty(els, 'property', ['iphone', 'iphone'])
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have property property
 
 Expected [not]: ["iphone", "iphone"]
@@ -350,7 +351,7 @@ Received      : ["iphone", "iphone"]`
                 const result = await thisContext.toHaveElementProperty(els, 'property', ['iphone', 'iphone'])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toContain(`\
+                expect(stripAnsi(result.message())).toContain(`\
 Expect $$(\`sel\`) to have property property
 
 - Expected  - 2
@@ -411,7 +412,7 @@ Expect $$(\`sel\`) to have property property
                     const result = await thisContext.toHaveElementProperty(els, 'property', /WDIO/)
 
                     expect(result.pass).toBe(false)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have property property
 
 - Expected  - 2

@@ -5,6 +5,7 @@ import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren'
 import { waitUntil } from '../../../src/util/waitUntil'
 import { chainableElementArrayFactory } from '../../__mocks__/@wdio/globals'
 import type { ChainablePromiseArray } from 'webdriverio'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -28,11 +29,11 @@ describe(toHaveChildren, () => {
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
 
             expect(result.pass).toBe(true)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveChildren',
                 options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveChildren',
                 options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
                 result
@@ -47,13 +48,13 @@ describe(toHaveChildren, () => {
 
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
             expect(result.pass).toBe(true)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveChildren',
                 options: { beforeAssertion, afterAssertion },
                 expectedValue: { eq: 2, wait: 0, interval: 5 }
 
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveChildren',
                 options: { beforeAssertion, afterAssertion },
                 result,
@@ -73,7 +74,7 @@ describe(toHaveChildren, () => {
             const result = await thisContext.toHaveChildren(el, undefined)
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have children
 
 Expected: ">= 1"
@@ -103,7 +104,7 @@ Received: 0`
             const result = await thisContext.toHaveChildren(el, { eq: 3 })
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have children
 
 Expected: 3
@@ -115,7 +116,7 @@ Received: 2`
             const result = await thisContext.toHaveChildren(el, { lte: 1 })
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have children
 
 Expected: "<= 1"
@@ -127,7 +128,7 @@ Received: 2`
             const result = await thisNotContext.toHaveChildren(el, { eq: 2 })
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have children
 
 Expected [not]: 2
@@ -140,7 +141,7 @@ Received      : 2`
             const result = await thisNotContext.toHaveChildren(el, { lte: 2 })
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have children
 
 Expected [not]: "<= 2"
@@ -172,11 +173,11 @@ Received      : 2`
                 expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
 
                 expect(result.pass).toBe(true)
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
                     options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
                 })
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
                     options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
                     result
@@ -191,13 +192,13 @@ Received      : 2`
 
                 expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
                 expect(result.pass).toBe(true)
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
                     options: { beforeAssertion, afterAssertion },
                     expectedValue: { eq: 2, wait: 0, interval: 5 }
 
                 })
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
                     options: { beforeAssertion, afterAssertion },
                     result,
@@ -217,7 +218,7 @@ Received      : 2`
                 const result = await thisContext.toHaveChildren(elements, undefined)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have children
 
 - Expected  - 2
@@ -254,7 +255,7 @@ Expect $$(\`sel\`) to have children
                 const result = await thisContext.toHaveChildren(elements, { eq: 3 })
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have children
 
 - Expected  - 2
@@ -273,7 +274,7 @@ Expect $$(\`sel\`) to have children
                 const result = await thisContext.toHaveChildren(elements, { lte: 1 })
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have children
 
 - Expected  - 2
@@ -292,7 +293,7 @@ Expect $$(\`sel\`) to have children
                 const result = await thisNotContext.toHaveChildren(elements, { eq: 2 })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
 Expected [not]: [2, 2]
@@ -304,7 +305,7 @@ Received      : [2, 2]`
                 const result = await thisNotContext.toHaveChildren(elements, { lte: 2 })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
 Expected [not]: ["<= 2", "<= 2"]
@@ -347,7 +348,7 @@ Received      : [2, 2]`
                 const result = await thisContext.toHaveChildren(elements, [{ eq: 3 }, { eq: 3 }])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have children
 
 - Expected  - 2
@@ -366,7 +367,7 @@ Expect $$(\`sel\`) to have children
                 const result = await thisContext.toHaveChildren(elements, [{ lte: 1 }, { lte: 1 }])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have children
 
 - Expected  - 2
@@ -385,7 +386,7 @@ Expect $$(\`sel\`) to have children
                 const result = await thisContext.toHaveChildren(elements, [{ lte: 1 }, { gte: 1 }])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have children
 
 - Expected  - 2
@@ -404,7 +405,7 @@ Expect $$(\`sel\`) to have children
                 const result = await thisNotContext.toHaveChildren(elements, [{ eq: 2 }, { eq: 2 }])
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
 Expected [not]: [2, 2]
@@ -415,7 +416,7 @@ Received      : [2, 2]`)
                 const result = await thisNotContext.toHaveChildren(elements, [{ lte: 2 }, { lte: 2 }])
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
 Expected [not]: ["<= 2", "<= 2"]
@@ -426,7 +427,7 @@ Received      : [2, 2]`)
                 const result = await thisNotContext.toHaveChildren(elements, [{ lte: 2 }, { gte: 2 }])
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
 Expected [not]: ["<= 2", ">= 2"]

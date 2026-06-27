@@ -4,19 +4,33 @@ import { $, $$ } from '@wdio/globals'
 
 vi.mock('@wdio/globals')
 
-vi.mock('../src/constants.js', async () => ({
-    DEFAULT_OPTIONS: {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-        ...(await vi.importActual<typeof import('../src/constants.js')>('../src/constants.js')).DEFAULT_OPTIONS,
+vi.mock('../src/constants.js', async () => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await vi.importActual<typeof import('../src/constants.js')>('../src/constants.js')
+    const DEFAULT_OPTIONS = {
+        ...actual.DEFAULT_OPTIONS,
         // speed up tests by lowering default wait timeout
         wait : 15,
         interval: 5
     }
-}))
+    const DEFAULT_OPTIONS_TO_BE_DISPLAYED = {
+
+        ...actual.DEFAULT_OPTIONS_TO_BE_DISPLAYED,
+        // speed up tests by lowering default wait timeout
+        wait : 20,
+        interval: 5
+    }
+    return {
+        DEFAULT_OPTIONS,
+        DEFAULT_OPTIONS_TO_BE_DISPLAYED,
+        defaultOptionsList: [DEFAULT_OPTIONS, DEFAULT_OPTIONS_TO_BE_DISPLAYED]
+    }
+})
 
 const ALL_MATCHERS = [
     // browser
     'toHaveClipboardText',
+    'toHaveLocalStorageItem',
     'toHaveTitle',
     'toHaveUrl',
 

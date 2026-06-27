@@ -2,6 +2,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import { toBeDisabled } from '../../../src/matchers/element/toBeDisabled.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -38,11 +39,11 @@ describe(toBeDisabled, () => {
 
             expect(result.pass).toBe(true)
             expect(el.isEnabled).toHaveBeenCalledTimes(2)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toBeDisabled',
                 options: { beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toBeDisabled',
                 options: { beforeAssertion, afterAssertion, wait: 500 },
                 result
@@ -69,7 +70,7 @@ describe(toBeDisabled, () => {
             const result = await thisContext.toBeDisabled(el, { wait: 0 })
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to be disabled
 
 Expected: "disabled"
@@ -88,7 +89,7 @@ Received: "not disabled"`)
             const result = await thisNotContext.toBeDisabled(el)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to be disabled
 
 Expected: "not disabled"
@@ -155,11 +156,11 @@ Received: "disabled"`)
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 500, interval: 100 })
 
             expect(result.pass).toBe(true)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toBeDisabled',
                 options: { beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toBeDisabled',
                 options: { beforeAssertion, afterAssertion, wait: 500 },
                 result
@@ -219,7 +220,7 @@ Received: "disabled"`)
             const result = await thisNotContext.toBeDisabled(elements)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to be disabled
 
 - Expected  - 2
@@ -276,7 +277,7 @@ Expect $$(\`sel\`) not to be disabled
             })
 
             const result = await thisContext.toBeDisabled(elements)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to be disabled
 
 - Expected  - 2
@@ -294,7 +295,7 @@ Expect $$(\`sel\`) to be disabled
             vi.mocked(elements[0].isEnabled).mockResolvedValue(true)
 
             const result = await thisContext.toBeDisabled(elements)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to be disabled
 
 - Expected  - 1

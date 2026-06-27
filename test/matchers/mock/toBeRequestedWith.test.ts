@@ -188,7 +188,7 @@ describe(toBeRequestedWith, () => {
 
         const result = await thisNotContext.toBeRequestedWith(mock, {}, { wait: 20 })
         expect(result.pass).toBe(true) // failure, boolean inverted later because of .not
-        expect(result.message()).toEqual(`\
+        expect(stripAnsi(result.message())).toEqual(`\
 Expect mock not to be called with
 
 Expected [not]: {}
@@ -452,7 +452,7 @@ Received      : {}`
 
             const result = await toBeRequestedWith(mock, { method: 1234 } as any)
             expect(result.pass).toBe(false)
-            expect(global.console.error).toBeCalledWith(
+            expect(global.console.error).toHaveBeenCalledWith(
                 'expect.toBeRequestedWith: unsupported value passed to method 1234'
             )
         })

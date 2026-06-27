@@ -3,6 +3,7 @@ import { $ } from '@wdio/globals'
 
 import { toHaveValue } from '../../../src/matchers/element/toHaveValue.js'
 import type { AssertionResult } from 'expect-webdriverio'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -30,12 +31,12 @@ describe(toHaveValue, () => {
                 const result = await thisContext.toHaveValue(el, 'This is an example value', { wait: 0, beforeAssertion, afterAssertion })
 
                 expect(result.pass).toBe(true)
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveValue',
                     expectedValue: ['value', 'This is an example value'],
                     options: { beforeAssertion, afterAssertion, wait: 0 }
                 })
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveValue',
                     expectedValue: ['value', 'This is an example value'],
                     options: { beforeAssertion, afterAssertion, wait: 0 },
@@ -65,7 +66,7 @@ describe(toHaveValue, () => {
 
             test('does not pass with proper failure message', () => {
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property value
 
 Expected: "webdriver"
@@ -83,7 +84,7 @@ Received: "This is an example value"`
 
             test('does not pass with proper failure message', () => {
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property value
 
 Expected: /WDIO/

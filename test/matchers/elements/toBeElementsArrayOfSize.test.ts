@@ -5,6 +5,7 @@ import { toBeElementsArrayOfSize } from '../../../src/matchers/elements/toBeElem
 import { chainableElementArrayFactory, elementArrayFactory, elementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import { refetchElements } from '../../../src/util/refetchElements.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -47,12 +48,12 @@ describe(toBeElementsArrayOfSize, async () => {
                     expect.objectContaining({ wait: 0 })
                 )
                 expect(result.pass).toBe(true)
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toBeElementsArrayOfSize',
                     expectedValue: 2,
                     options: { beforeAssertion, afterAssertion, wait: 0 }
                 })
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toBeElementsArrayOfSize',
                     expectedValue: 2,
                     options: { beforeAssertion, afterAssertion, wait: 0 },
@@ -74,7 +75,7 @@ describe(toBeElementsArrayOfSize, async () => {
                 const result = await thisContext.toBeElementsArrayOfSize(els, 5)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to be elements array of size
 
 Expected: 5
@@ -86,7 +87,7 @@ Received: 2`
                 const result = await thisNotContext.toBeElementsArrayOfSize(els, 2)
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later in .not cases
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be elements array of size
 
 Expected [not]: 2
@@ -98,7 +99,7 @@ Received      : 2`
                 const result = await thisNotContext.toBeElementsArrayOfSize(els, { lte: 3 })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later in .not cases
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be elements array of size
 
 Expected [not]: "<= 3"
@@ -110,7 +111,7 @@ Received      : 2`
                 const result = await thisNotContext.toBeElementsArrayOfSize(els, { gte: 1 })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later in .not cases
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be elements array of size
 
 Expected [not]: ">= 1"
@@ -314,7 +315,7 @@ Received      : 2`
             const result = await thisContext.toBeElementsArrayOfSize(els as any, 0)
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to be elements array of size
 
 Expected: 0

@@ -3,6 +3,7 @@ import { $ } from '@wdio/globals'
 
 import { toHaveHref } from '../../../src/matchers/element/toHaveHref.js'
 import type { AssertionResult } from 'expect-webdriverio'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -35,12 +36,12 @@ describe(toHaveHref, () => {
             const result = await thisContext.toHaveHref(el, 'https://www.example.com', { wait: 0, beforeAssertion, afterAssertion })
 
             expect(result.pass).toBe(true)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveHref',
                 expectedValue: 'https://www.example.com',
                 options: { beforeAssertion, afterAssertion, wait: 0 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveHref',
                 expectedValue: 'https://www.example.com',
                 options: { beforeAssertion, afterAssertion, wait: 0 },
@@ -57,7 +58,7 @@ describe(toHaveHref, () => {
 
             test('failure with proper failure message', () => {
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute href
 
 Expected: "an href"

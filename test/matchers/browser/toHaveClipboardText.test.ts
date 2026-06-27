@@ -2,6 +2,7 @@ import { vi, test, expect, describe } from 'vitest'
 import { browser } from '@wdio/globals'
 
 import { toHaveClipboardText } from '../../../src/matchers/browser/toHaveClipboardText'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -14,12 +15,12 @@ describe(toHaveClipboardText, () => {
 
         const result = await toHaveClipboardText(browser, 'some ClipBoard text', { ignoreCase: true, beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
-        expect(beforeAssertion).toBeCalledWith({
+        expect(beforeAssertion).toHaveBeenCalledWith({
             matcherName: 'toHaveClipboardText',
             expectedValue: 'some ClipBoard text',
             options: { ignoreCase: true, beforeAssertion, afterAssertion }
         })
-        expect(afterAssertion).toBeCalledWith({
+        expect(afterAssertion).toHaveBeenCalledWith({
             matcherName: 'toHaveClipboardText',
             expectedValue: 'some ClipBoard text',
             options: { ignoreCase: true, beforeAssertion, afterAssertion },
@@ -33,7 +34,7 @@ describe(toHaveClipboardText, () => {
         const result = await toHaveClipboardText(browser, 'expected text', { wait: 1 })
 
         expect(result.pass).toBe(false)
-        expect(result.message()).toEqual(`\
+        expect(stripAnsi(result.message())).toEqual(`\
 Expect browser to have clipboard text
 
 Expected: "expected text"

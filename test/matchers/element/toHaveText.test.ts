@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio'
 import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -39,12 +40,12 @@ describe(toHaveText, async () => {
 
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(3)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveText',
                 expectedValue: 'WebdriverIO',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveText',
                 expectedValue: 'WebdriverIO',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 },
@@ -80,7 +81,7 @@ describe(toHaveText, async () => {
             const result = await thisContext.toHaveText(el, 'WebdriverIO', { wait: 0 })
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have text
 
 Expected: "WebdriverIO"
@@ -105,7 +106,7 @@ Received: "webdriverio"`
             const result = await thisNotContext.toHaveText(el, 'WebdriverIO')
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have text
 
 Expected [not]: "WebdriverIO"
@@ -189,7 +190,7 @@ Received      : "WebdriverIO"`)
 
             const result = await thisContext.toHaveText(el, 'WebdriverIO')
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have text
 
 Expected: "WebdriverIO"
@@ -328,7 +329,7 @@ Received: ""`
                 const result = await thisContext.toHaveText(el, /Webdriver/i)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have text
 
 Expected: /Webdriver/i
@@ -340,7 +341,7 @@ Received: "This is example text"`
                 const result = await thisContext.toHaveText(el, ['WDIO', /Webdriver/i])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have text
 
 Expected: ["WDIO", /Webdriver/i]
@@ -402,7 +403,7 @@ Received: "This is example text"`
                 const result = await thisContext.toHaveText(els, 'webdriverio', { message: 'Test', wait: 0 })
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Test
 Expect ${selectorName} to have text
 
@@ -424,7 +425,7 @@ Expect ${selectorName} to have text
                 const result = await thisContext.toHaveText(els, 'webdriverio', { message: 'Test', wait: 0 })
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Test
 Expect ${selectorName} to have text
 
@@ -443,7 +444,7 @@ Expect ${selectorName} to have text
                 const result = await thisContext.toHaveText(els, 'webdriverio', { message: 'Test', wait: 0 })
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Test
 Expect ${selectorName} to have text
 
@@ -494,7 +495,7 @@ Expect ${selectorName} to have text
                 const result = await thisContext.toHaveText(els, ['webdriverio', 'get started'])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
 - Expected  - 2
@@ -513,7 +514,7 @@ Expect ${selectorName} to have text
                 const result = await thisContext.toHaveText(els, ['webdriverIO', 'Get Started'])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
 - Expected  - 1
@@ -531,7 +532,7 @@ Expect ${selectorName} to have text
                 const result = await thisContext.toHaveText(els, ['WebdriverIO', 'get started'])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
 - Expected  - 1
@@ -562,7 +563,7 @@ Expect ${selectorName} to have text
                 const result = await thisContext.toHaveText(els, ['webdriverio', 'webdriverio', 'webdriverIO'])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
 - Expected  - 3
@@ -582,7 +583,7 @@ Expect ${selectorName} to have text
                 const result = await thisContext.toHaveText(els, ['webdriverio', 'get started'], { message: 'Test', wait: 0 })
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Test
 Expect ${selectorName} to have text
 
@@ -602,7 +603,7 @@ Expect ${selectorName} to have text
                 const result = await thisNotContext.toHaveText(elements, ['WebdriverIO', 'Get Started'])
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
 Expected [not]: ["WebdriverIO", "Get Started"]
@@ -613,7 +614,7 @@ Received      : ["WebdriverIO", "Get Started"]`)
                 const result = await thisNotContext.toHaveText(elements, ['WebdriverIO', 'OK Get Started'])
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
 Expected [not]: ["WebdriverIO", "OK Get Started"]
@@ -633,7 +634,7 @@ Received      : ["WebdriverIO", "Get Started"]`)
             const result = await thisContext.toHaveText([], 'webdriverio')
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect [] to have text
 
 Expected: "webdriverio"
@@ -667,7 +668,7 @@ Received: undefined`)
             const result = await thisContext.toHaveText(actual as any, 'webdriverio')
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
 Expected: "webdriverio"

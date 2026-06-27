@@ -2,6 +2,7 @@ import { $, $$ } from '@wdio/globals'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveElementClass } from '../../../src/matchers/element/toHaveElementClass.js'
 import type { AssertionResult } from 'expect-webdriverio'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -35,12 +36,12 @@ describe(toHaveElementClass, () => {
             const result = await thisContext.toHaveElementClass(el, 'some-class', { wait: 0, beforeAssertion, afterAssertion })
 
             expect(result.pass).toBe(true)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveElementClass',
                 expectedValue: 'some-class',
                 options: { beforeAssertion, afterAssertion, wait: 0 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveElementClass',
                 expectedValue: 'some-class',
                 options: { beforeAssertion, afterAssertion, wait: 0 },
@@ -66,7 +67,7 @@ describe(toHaveElementClass, () => {
             const result = await thisContext.toHaveElementClass(el, [expect.stringContaining('notsome-class'), expect.stringContaining('notanother-class')])
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have class
 
 Expected: [StringContaining "notsome-class", StringContaining "notanother-class"]
@@ -90,7 +91,7 @@ Received: "some-class another-class yet-another-class"`
             const result = await thisContext.toHaveElementClass(el, 'someclass', { wait: 0, message: 'Not found!' })
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Not found!
 Expect $(\`sel\`) to have class
 
@@ -158,7 +159,7 @@ Received: "some-class another-class yet-another-class"`)
 
             test('failure', () => {
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have class
 
 Expected: "test"
@@ -175,7 +176,7 @@ Received: "some-class another-class yet-another-class"` )
 
             test('failure', () => {
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have class
 
 Expected: /WDIO/
@@ -209,12 +210,12 @@ Received: "some-class another-class yet-another-class"` )
             const result = await thisContext.toHaveElementClass(elements, 'some-class', { wait: 0, beforeAssertion, afterAssertion })
 
             expect(result.pass).toBe(true)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveElementClass',
                 expectedValue: 'some-class',
                 options: { beforeAssertion, afterAssertion, wait: 0 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveElementClass',
                 expectedValue: 'some-class',
                 options: { beforeAssertion, afterAssertion, wait: 0 },
@@ -240,7 +241,7 @@ Received: "some-class another-class yet-another-class"` )
             const result = await thisContext.toHaveElementClass(elements, [expect.stringContaining('notsome-class'), expect.stringContaining('notanother-class')])
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have class
 
 - Expected  - 2
@@ -259,7 +260,7 @@ Expect ${selectorName} to have class
             const result = await thisNotContext.toHaveElementClass(elements, [expect.stringContaining('some-class'), expect.stringContaining('another-class')])
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have class
 
 Expected [not]: [StringContaining "some-class", StringContaining "another-class"]
@@ -283,7 +284,7 @@ Received      : ["some-class another-class yet-another-class", "some-class anoth
             const result = await thisContext.toHaveElementClass(elements, 'someclass', { wait: 0, message: 'Not found!' })
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Not found!
 Expect ${selectorName} to have class
 
@@ -362,7 +363,7 @@ Expect ${selectorName} to have class
 
             test('failure', () => {
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have class
 
 - Expected  - 2
@@ -386,7 +387,7 @@ Expect ${selectorName} to have class
 
             test('failure', () => {
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have class
 
 - Expected  - 2

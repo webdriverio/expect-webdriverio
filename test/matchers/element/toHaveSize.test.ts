@@ -3,6 +3,7 @@ import { $, $$ } from '@wdio/globals'
 
 import type { Size } from '../../../src/matchers/element/toHaveSize.js'
 import { toHaveSize } from '../../../src/matchers/element/toHaveSize.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -38,12 +39,12 @@ describe(toHaveSize, async () => {
 
             expect(result.pass).toBe(true)
             expect(el.getSize).toHaveBeenCalledTimes(1)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveSize',
                 expectedValue: expectedValue,
                 options: { beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveSize',
                 expectedValue: expectedValue,
                 options: { beforeAssertion, afterAssertion, wait: 500 },
@@ -72,7 +73,7 @@ describe(toHaveSize, async () => {
 
             expect(result.pass).toBe(false)
             expect(el.getSize).toHaveBeenCalledTimes(1)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have size
 
 - Expected  - 1
@@ -97,7 +98,7 @@ Expect $(\`sel\`) to have size
             const result = await thisNotContext.toHaveSize(el, expectedValue)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have size
 
 Expected [not]: {"height": 32, "width": 32}
@@ -111,7 +112,7 @@ Received      : {"height": 32, "width": 32}`
             const result = await thisContext.toHaveSize(el, expectedValue, { wait: 1, message: 'Custom error message' })
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Custom error message
 Expect $(\`sel\`) to have size
 
@@ -130,7 +131,7 @@ Expect $(\`sel\`) to have size
             const result = await thisContext.toHaveSize(el, [expectedValue])
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have size
 
 Expected: [{"height": 32, "width": 32}]
@@ -173,12 +174,12 @@ Received: "Expected value cannot be an array"`
                 awaitedEls.forEach((el) =>
                     expect(el.getSize).toHaveBeenCalledTimes(1)
                 )
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveSize',
                     expectedValue: expectedValue,
                     options: { beforeAssertion, afterAssertion }
                 })
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveSize',
                     expectedValue: expectedValue,
                     options: { beforeAssertion, afterAssertion },
@@ -206,7 +207,7 @@ Received: "Expected value cannot be an array"`
                 awaitedEls.forEach((el) =>
                     expect(el.getSize).toHaveBeenCalledTimes(1)
                 )
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have size
 
 - Expected  - 2
@@ -246,7 +247,7 @@ Expect ${selectorName} to have size
                 const result = await thisNotContext.toHaveSize(els, expectedValue)
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have size
 
 Expected [not]: [{"height": 32, "width": 32}, {"height": 32, "width": 32}]
@@ -269,12 +270,12 @@ Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 32}]`
                 awaitedEls.forEach((el) =>
                     expect(el.getSize).toHaveBeenCalledTimes(1)
                 )
-                expect(beforeAssertion).toBeCalledWith({
+                expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveSize',
                     expectedValue: expectedSizes,
                     options: { beforeAssertion, afterAssertion }
                 })
-                expect(afterAssertion).toBeCalledWith({
+                expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveSize',
                     expectedValue: expectedSizes,
                     options: { beforeAssertion, afterAssertion },
@@ -311,7 +312,7 @@ Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 32}]`
                 awaitedEls.forEach((el) =>
                     expect(el.getSize).toHaveBeenCalledTimes(1)
                 )
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have size
 
 - Expected  - 2
@@ -341,7 +342,7 @@ Expect ${selectorName} to have size
                 awaitedEls.forEach((el) =>
                     expect(el.getSize).toHaveBeenCalledTimes(1)
                 )
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have size
 
 - Expected  - 1
@@ -370,7 +371,7 @@ Expect ${selectorName} to have size
                 awaitedEls.forEach((el) =>
                     expect(el.getSize).toHaveBeenCalledTimes(1)
                 )
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have size
 
 - Expected  - 1
@@ -403,7 +404,7 @@ Expect ${selectorName} to have size
                 const result = await thisNotContext.toHaveSize(els, expectedSizes)
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have size
 
 Expected [not]: [{"height": 32, "width": 32}, {"height": 32, "width": 32}]
@@ -418,7 +419,7 @@ Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 32}]`
                 const result = await thisNotContext.toHaveSize(els, expectedSizes)
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have size
 
 Expected [not]: [{"height": 32, "width": 32}, {"height": 32, "width": 32}]
@@ -433,7 +434,7 @@ Received      : [{"height": 32, "width": 32}, {"height": 32, "width": 15}]`
                 const result = await thisNotContext.toHaveSize(els, expectedSizes)
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have size
 
 Expected [not]: [{"height": 32, "width": 32}, {"height": 32, "width": 32}]
@@ -445,7 +446,7 @@ Received      : [{"height": 32, "width": 15}, {"height": 32, "width": 32}]`
                 const result = await thisContext.toHaveSize(elements, [expectedValue, expectedValue, expectedValue])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have size
 
 - Expected  - 12
@@ -474,7 +475,7 @@ Expect ${selectorName} to have size
             const result = await thisContext.toHaveSize([], expectedValue)
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect [] to have size
 
 Expected: {"height": 32, "width": 32}

@@ -4,6 +4,7 @@ import { $, $$ } from '@wdio/globals'
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
 import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -60,11 +61,11 @@ describe(toBeDisplayed, async () => {
                 interval: 100,
             })
             expect(result.pass).toBe(true)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toBeDisplayed',
                 options: { beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toBeDisplayed',
                 options: { beforeAssertion, afterAssertion, wait: 500 },
                 result
@@ -136,7 +137,7 @@ describe(toBeDisplayed, async () => {
             const result = await thisNotContext.toBeDisplayed(element)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to be displayed
 
 Expected: "not displayed"
@@ -163,7 +164,7 @@ Received: "displayed"`)
             const result = await thisNotContext.toBeDisplayed(element)
 
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), true,  {
-                wait: 1,
+                wait: 2,
                 interval: 100,
             })
             expect(element.isDisplayed).toHaveBeenCalledWith(
@@ -183,7 +184,7 @@ Received: "displayed"`)
             const result = await thisContext.toBeDisplayed(element)
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to be displayed
 
 Expected: "displayed"
@@ -196,7 +197,7 @@ Received: "not displayed"`)
             const result = await thisContext.toBeDisplayed(element)
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect undefined to be displayed
 
 Expected: "displayed"
@@ -255,11 +256,11 @@ Received: "not displayed"`)
             })
 
             expect(result.pass).toBe(true)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toBeDisplayed',
                 options: { beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toBeDisplayed',
                 options: { beforeAssertion, afterAssertion, wait: 500 },
                 result
@@ -298,7 +299,7 @@ Received: "not displayed"`)
             const result = await thisContext.toBeDisplayed(noElementsFound)
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect [] to be displayed
 
 Expected: "at least one result"
@@ -349,7 +350,7 @@ Received: []`)
             const result = await thisNotContext.toBeDisplayed(elements)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be displayed
 
 - Expected  - 2
@@ -369,7 +370,7 @@ Expect ${selectorName} not to be displayed
             const result = await thisNotContext.toBeDisplayed(noElementsFound)
 
             expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect [] not to be displayed
 
 Expected: "at least one result"
@@ -383,7 +384,7 @@ Received: []`)
             const result = await thisNotContext.toBeDisplayed(elements)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be displayed
 
 - Expected  - 1
@@ -403,7 +404,7 @@ Expect ${selectorName} not to be displayed
             const result = await thisNotContext.toBeDisplayed(elements)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be displayed
 
 - Expected  - 1
@@ -463,7 +464,7 @@ Expect ${selectorName} not to be displayed
 
             const result = await thisContext.toBeDisplayed(elements)
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to be displayed
 
 - Expected  - 2
@@ -483,7 +484,7 @@ Expect ${selectorName} to be displayed
 
             const result = await thisContext.toBeDisplayed(elements)
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to be displayed
 
 - Expected  - 1
@@ -502,7 +503,7 @@ Expect ${selectorName} to be displayed
 
             const result = await thisContext.toBeDisplayed(elements)
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to be displayed
 
 - Expected  - 1
@@ -520,7 +521,7 @@ Expect ${selectorName} to be displayed
 
             const result = await thisContext.toBeDisplayed(noElementsFound)
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect [] to be displayed
 
 Expected: "at least one result"
@@ -544,7 +545,7 @@ Received: []`)
         const result = await thisContext.toBeDisplayed(els as any)
 
         expect(result.pass).toBe(false)
-        expect(result.message()).toEqual(`\
+        expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to be displayed
 
 Expected: "displayed"

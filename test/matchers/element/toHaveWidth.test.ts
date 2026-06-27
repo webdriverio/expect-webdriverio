@@ -2,6 +2,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import { toHaveWidth } from '../../../src/matchers/element/toHaveWidth.js'
 import type { Size } from '../../../src/matchers/element/toHaveSize.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -31,12 +32,12 @@ describe(toHaveWidth, () => {
 
             expect(result.pass).toBe(true)
             expect(el.getSize).toHaveBeenCalledTimes(1)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveWidth',
                 expectedValue: 50,
                 options: { beforeAssertion, afterAssertion }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveWidth',
                 expectedValue: 50,
                 options: { beforeAssertion, afterAssertion },
@@ -61,7 +62,7 @@ describe(toHaveWidth, () => {
         test('no wait - failure', async () => {
             const result = await thisContext.toHaveWidth(el, 10, { wait: 0 })
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have width
 
 Expected: 10
@@ -88,7 +89,7 @@ Received: 50`)
             const result = await thisNotContext.toHaveWidth(el, 50)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have width
 
 Expected [not]: 50
@@ -107,7 +108,7 @@ Received      : 50`
 
             const result = await thisContext.toHaveWidth(el, 50)
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have width
 
 Expected: 50
@@ -131,12 +132,12 @@ Received: 0`
 
             expect(result.pass).toBe(true)
             elements.forEach(el => expect(el.getSize).toHaveBeenCalledTimes(1))
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveWidth',
                 expectedValue: 50,
                 options: { beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveWidth',
                 expectedValue: 50,
                 options: { beforeAssertion, afterAssertion, wait: 500 },
@@ -165,7 +166,7 @@ Received: 0`
 
             const result = await thisContext.toHaveWidth(elements, 10, { wait: 0 })
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have width
 
 - Expected  - 2
@@ -206,7 +207,7 @@ Expect $$(\`sel\`) to have width
             const result = await thisNotContext.toHaveWidth(elements, 50)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have width
 
 Expected [not]: [50, 50]
@@ -220,7 +221,7 @@ Received      : [50, 50]`
             const result = await thisNotContext.toHaveWidth(elements, { lte: 51 })
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have width
 
 Expected [not]: ["<= 51", "<= 51"]
@@ -234,7 +235,7 @@ Received      : [50, 50]`
             const result = await thisNotContext.toHaveWidth(elements, [{ lte: 51 }, 51])
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have width
 
 Expected [not]: ["<= 51", 51]
@@ -248,7 +249,7 @@ Received      : [50, 50]`
             const result = await thisNotContext.toHaveWidth(elements, { gte: 49 })
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have width
 
 Expected [not]: [">= 49", ">= 49"]
@@ -267,7 +268,7 @@ Received      : [50, 50]`
 
             const result = await thisContext.toHaveWidth(elements, 50)
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have width
 
 - Expected  - 2

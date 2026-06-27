@@ -1,6 +1,7 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 import { toHaveHeight } from '../../../src/matchers/element/toHaveHeight.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -34,12 +35,12 @@ describe(toHaveHeight, () => {
 
             expect(result.pass).toBe(true)
             expect(el.getSize).toHaveBeenCalledTimes(2)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveHeight',
                 expectedValue: 32,
                 options: { beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveHeight',
                 expectedValue: 32,
                 options: { beforeAssertion, afterAssertion, wait: 500 },
@@ -64,7 +65,7 @@ describe(toHaveHeight, () => {
         test('no wait - failure', async () => {
             const result = await thisContext.toHaveHeight(el, 10, { wait: 0 })
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have height
 
 Expected: 10
@@ -92,7 +93,7 @@ Received: 32`
             const result = await thisNotContext.toHaveHeight(el, 32)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have height
 
 Expected [not]: 32
@@ -112,7 +113,7 @@ Received      : 32`
             const result = await thisContext.toHaveHeight(el, 50)
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have height
 
 Expected: 50

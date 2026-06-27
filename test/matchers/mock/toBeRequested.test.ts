@@ -3,6 +3,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 vi.mock('../../../src/constants.js', async () => ({
@@ -65,12 +66,12 @@ describe(toBeRequested, () => {
         const afterAssertion = vi.fn()
         const result2 = await toBeRequested(mock, { beforeAssertion, afterAssertion, wait: 500 })
         expect(result2.pass).toBe(true)
-        expect(beforeAssertion).toBeCalledWith({
+        expect(beforeAssertion).toHaveBeenCalledWith({
             matcherName: 'toBeRequestedTimes',
             expectedValue: { gte: 1 },
             options: { beforeAssertion, afterAssertion, wait: 500 }
         })
-        expect(afterAssertion).toBeCalledWith({
+        expect(afterAssertion).toHaveBeenCalledWith({
             matcherName: 'toBeRequestedTimes',
             expectedValue: { gte: 1 },
             options: { beforeAssertion, afterAssertion, wait: 500 },
@@ -97,7 +98,7 @@ describe(toBeRequested, () => {
 
         const result = await toBeRequested(mock)
         expect(result.pass).toBe(false)
-        expect(result.message()).toEqual(`\
+        expect(stripAnsi(result.message())).toEqual(`\
 Expect mock to be called
 
 Expected: ">= 1"

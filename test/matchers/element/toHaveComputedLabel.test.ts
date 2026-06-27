@@ -1,6 +1,7 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 import { toHaveComputedLabel } from '../../../src/matchers/element/toHaveComputedLabel.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -31,12 +32,12 @@ describe(toHaveComputedLabel, () => {
 
             expect(result.pass).toBe(true)
             expect(el.getComputedLabel).toHaveBeenCalledTimes(3)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveComputedLabel',
                 expectedValue: 'WebdriverIO',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveComputedLabel',
                 expectedValue: 'WebdriverIO',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 },
@@ -76,7 +77,7 @@ describe(toHaveComputedLabel, () => {
             const result = await thisNotContext.toHaveComputedLabel(el, 'WebdriverIO', { wait: 0 })
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have computed label
 
 Expected [not]: "WebdriverIO"
@@ -145,7 +146,7 @@ Received      : "WebdriverIO"`
             const result = await thisContext.toHaveComputedLabel(el, 'WebdriverIO')
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have computed label
 
 Expected: "WebdriverIO"
@@ -249,7 +250,7 @@ Received: ""`)
                 const result = await thisContext.toHaveComputedLabel(el, /Webdriver/i)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have computed label
 
 Expected: /Webdriver/i
@@ -261,7 +262,7 @@ Received: "This is example computed label"`
                 const result = await thisContext.toHaveComputedLabel(el, ['div', /Webdriver/i])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have computed label
 
 Expected: ["div", /Webdriver/i]

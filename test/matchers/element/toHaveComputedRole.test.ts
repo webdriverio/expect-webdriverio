@@ -1,6 +1,7 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 import { toHaveComputedRole } from '../../../src/matchers/element/toHaveComputedRole.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -30,12 +31,12 @@ describe(toHaveComputedRole, () => {
 
             expect(result.pass).toBe(true)
             expect(el.getComputedRole).toHaveBeenCalledTimes(2)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveComputedRole',
                 expectedValue: 'WebdriverIO',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveComputedRole',
                 expectedValue: 'WebdriverIO',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 },
@@ -89,7 +90,7 @@ describe(toHaveComputedRole, () => {
             const result = await thisNotContext.toHaveComputedRole(el, 'WebdriverIO')
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have computed role
 
 Expected [not]: "WebdriverIO"
@@ -167,7 +168,7 @@ Received      : "WebdriverIO"`
             const result = await thisContext.toHaveComputedRole(el, 'WebdriverIO')
 
             expect(result.pass).toBe(false)
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have computed role
 
 Expected: "WebdriverIO"
@@ -284,7 +285,7 @@ Received: ""`)
             test('failure if no match', async () => {
                 const result = await thisContext.toHaveComputedRole(el, /Webdriver/i)
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have computed role
 
 Expected: /Webdriver/i
@@ -296,7 +297,7 @@ Received: "This is example computed role"`
                 const result = await thisContext.toHaveComputedRole(el, ['div', /Webdriver/i])
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have computed role
 
 Expected: ["div", /Webdriver/i]

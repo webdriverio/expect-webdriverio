@@ -2,6 +2,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle.js'
 import type { ParsedCSSValue } from 'webdriverio'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -43,12 +44,12 @@ describe(toHaveStyle, () => {
 
             expect(result.pass).toBe(true)
             expect(el.getCSSProperty).toHaveBeenCalledTimes(6)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveStyle',
                 expectedValue: mockStyle,
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveStyle',
                 expectedValue: mockStyle,
                 options: { ignoreCase: true, beforeAssertion, afterAssertion, wait: 500 },
@@ -90,7 +91,7 @@ describe(toHaveStyle, () => {
             const result = await thisNotContext.toHaveStyle(el, mockStyle)
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have style
 
 Expected [not]: {"color": "#000", "font-family": "Faktum", "font-size": "26px"}
@@ -115,7 +116,7 @@ Received      : {"color": "#000", "font-family": "Faktum", "font-size": "26px"}`
 
             const result = await thisContext.toHaveStyle(el, 'WebdriverIO' as any)
 
-            expect(result.message()).toEqual(`\
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have style
 
 Expected: "WebdriverIO"

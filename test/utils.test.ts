@@ -5,6 +5,7 @@ import { enhanceErrorBe } from '../src/util/formatMessage'
 import type { CommandOptions } from 'expect-webdriverio'
 import { executeCommand } from '../src/util/executeCommand'
 import { $, $$ } from '@wdio/globals'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -250,7 +251,7 @@ describe('utils', () => {
                 const result = await executeCommandBe.call(context, undefined as any, command, options)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect undefined to be displayed
 
 Expected: "displayed"
@@ -262,7 +263,7 @@ Received: "not displayed"`)
                 const result = await executeCommandBe.call(context, [], command, options)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect [] to be displayed
 
 Expected: "at least one result"
@@ -299,7 +300,7 @@ Received: []`)
                 const result = await executeCommandBe.call(context, received, command, options)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`element1\`) to be displayed
 
 Expected: "displayed"
@@ -347,7 +348,7 @@ Received: "not displayed"`)
                     const result = await executeCommandBe.call(negatedContext, received, command, options)
 
                     expect(result.pass).toBe(true)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`element1\`) not to be displayed
 
 Expected: "not displayed"
@@ -406,7 +407,7 @@ Received: "displayed"`)
                 const result = await executeCommandBe.call(context, elements, command, options)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to be displayed
 
 - Expected  - 1
@@ -425,7 +426,7 @@ Expect ${selectorName} to be displayed
                 const result = await executeCommandBe.call(context, elements, command, options)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to be displayed
 
 - Expected  - 1
@@ -444,7 +445,7 @@ Expect ${selectorName} to be displayed
                 const result = await executeCommandBe.call(context, elements, command, options)
 
                 expect(result.pass).toBe(false)
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to be displayed
 
 - Expected  - 2
@@ -486,7 +487,7 @@ Expect ${selectorName} to be displayed
                     const result = await executeCommandBe.call(negatedContext, elements, command, options)
 
                     expect(result.pass).toBe(true)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be displayed
 
 - Expected  - 1
@@ -505,7 +506,7 @@ Expect ${selectorName} not to be displayed
                     const result = await executeCommandBe.call(negatedContext, elements, command, options)
 
                     expect(result.pass).toBe(true)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be displayed
 
 - Expected  - 1
@@ -524,7 +525,7 @@ Expect ${selectorName} not to be displayed
                     const result = await executeCommandBe.call(negatedContext, elements, command, options)
 
                     expect(result.pass).toBe(true)
-                    expect(result.message()).toEqual(`\
+                    expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be displayed
 
 - Expected  - 2
