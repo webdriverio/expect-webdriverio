@@ -3,6 +3,7 @@ import { $, $$ } from '@wdio/globals'
 
 import { toHaveAttribute } from '../../../src/matchers/element/toHaveAttribute.js'
 import stripAnsi from 'strip-ansi'
+import { waitUntil } from '../../../src/util/waitUntil.js'
 
 vi.mock('@wdio/globals')
 
@@ -28,18 +29,19 @@ describe(toHaveAttribute, () => {
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
 
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined, { beforeAssertion, afterAssertion })
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined, { beforeAssertion, afterAssertion, wait: 3, interval: 3 })
 
+                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 3, interval: 3 })
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
                     expectedValue: ['attribute_name', undefined],
-                    options: { beforeAssertion, afterAssertion }
+                    options: { beforeAssertion, afterAssertion, wait: 3, interval: 3 }
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
                     expectedValue: ['attribute_name', undefined],
-                    options: { beforeAssertion, afterAssertion },
+                    options: { beforeAssertion, afterAssertion, wait: 3, interval: 3 },
                     result
                 })
             })

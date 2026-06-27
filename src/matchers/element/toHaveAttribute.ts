@@ -104,7 +104,7 @@ export async function toHaveAttribute(
         // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
         ? await toHaveAttributeAndValue.call(this, received, attribute, value, options)
         // Only name is passed in e.g. el.toHaveAttribute('attr')
-        : await toHaveAttributeFn.call(this, received, attribute)
+        : await toHaveAttributeFn.call(this, received, attribute, options)
 
     await options.afterAssertion?.({
         matcherName,
