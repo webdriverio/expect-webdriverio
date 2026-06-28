@@ -127,7 +127,7 @@ Expected in `tsconfig.json`:
   "compilerOptions": {
     "types": [
         "@types/jest",
-        "expect-webdriverio/jest" // Must be last for overloaded matchers `toMatchSnapshot` and 
+        "expect-webdriverio/jest" // Must be last for overloaded matchers `toMatchSnapshot` and `toMatchInlineSnapshot`
       ]
   }
 }
