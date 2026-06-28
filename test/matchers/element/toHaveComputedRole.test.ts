@@ -85,7 +85,7 @@ describe(toHaveComputedRole, () => {
 
         test('not - failure - pass should be true', async () => {
             const el = await $('sel')
-            vi.mocked(el.getComputedRole).mockResolvedValueOnce('WebdriverIO')
+            vi.mocked(el.getComputedRole).mockResolvedValue('WebdriverIO')
 
             const result = await thisNotContext.toHaveComputedRole(el, 'WebdriverIO')
 
@@ -100,7 +100,7 @@ Received      : "WebdriverIO"`
 
         test('not - success - pass should be false', async () => {
             const el = await $('sel')
-            vi.mocked(el.getComputedRole).mockResolvedValueOnce('WebdriverIO')
+            vi.mocked(el.getComputedRole).mockResolvedValue('WebdriverIO')
 
             const result = await thisNotContext.toHaveComputedRole(el, 'foobar')
 
@@ -163,7 +163,7 @@ Received      : "WebdriverIO"`
 
         test('message', async () => {
             const el = await $('sel')
-            vi.mocked(el.getComputedRole).mockResolvedValueOnce('')
+            vi.mocked(el.getComputedRole).mockResolvedValue('')
 
             const result = await thisContext.toHaveComputedRole(el, 'WebdriverIO')
 
@@ -241,7 +241,7 @@ Received: ""`)
 
             const result = await thisContext.toHaveComputedRole(el, ['div', 'foo'])
             expect(result.pass).toBe(false)
-            expect(el.getComputedRole).toHaveBeenCalledTimes(1)
+            expect(el.getComputedRole).toHaveBeenCalledTimes(20)
         })
 
         describe('with RegExp', () => {

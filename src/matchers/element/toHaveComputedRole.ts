@@ -48,7 +48,7 @@ export async function toHaveComputedRole(
             return result.success
         },
         isNot,
-        options
+        { wait: options.wait, interval: options.interval }
     )
 
     const message = enhanceError(
