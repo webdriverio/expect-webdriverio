@@ -3,6 +3,7 @@ import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
 import { isElementArrayOrChainable, isElementOrNotEmptyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
+import { isDefined } from './objectUtils.js'
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
@@ -105,8 +106,6 @@ export const enhanceErrorBe = (
 
     return enhanceError(subject, expected, actual, { ...context, useNotInLabel: false }, verb, expectation, '', options)
 }
-
-const isDefined = (value: unknown): boolean =>  value !== undefined && value !== null
 
 export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): string | number => {
     if (typeof options.eq === 'number') {

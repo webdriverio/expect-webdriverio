@@ -1,4 +1,5 @@
 import type { WdioElements } from '../types'
+import { isDefined } from './objectUtils'
 
 /**
  * if el is an array of elements and actual value is an array
@@ -20,9 +21,9 @@ export const wrapExpectedWithArray = (el: WebdriverIO.Element | WebdriverIO.Elem
 export const isElementArrayOrChainable = (obj: unknown): obj is WebdriverIO.ElementArray | ChainablePromiseArray => {
     return (
         Array.isArray(obj)
-        && 'selector' in obj
-        && 'parent' in obj
-        && 'foundWith' in obj // Element does not have foundWith property
+        && 'selector' in obj && isDefined(obj.selector)
+        && 'parent' in obj && isDefined(obj.parent)
+        && 'foundWith' in obj && isDefined(obj.foundWith) // Element does not have foundWith property
         // Cannot check getElements since this is only on successful awaited ElementArray
     )
 }
@@ -33,7 +34,7 @@ export const isElementArrayOrChainable = (obj: unknown): obj is WebdriverIO.Elem
 export const isStrictlyAwaitedElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
     return (
         isElementArrayOrChainable(obj)
-        && 'getElements' in obj // specific to successful awaited ElementArray
+        && 'getElements' in obj && isDefined(obj.getElements) // specific to successful awaited ElementArray
     )
 }
 
@@ -42,9 +43,9 @@ export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
     return (
         !!obj && typeof obj === 'object'
         && !Array.isArray(obj)
-        && 'selector' in obj
-        && 'parent' in obj
-        && 'getElement' in obj // specific to successful awaited Element
+        && 'selector' in obj && isDefined(obj.selector)
+        && 'parent' in obj && isDefined(obj.parent)
+        && 'getElement' in obj && isDefined(obj.getElement) // specific to successful awaited Element
     )
 }
 
