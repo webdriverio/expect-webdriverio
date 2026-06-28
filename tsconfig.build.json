@@ -1,7 +1,11 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": [
-    // Warning: not excluding test folder change the release folder root structure
-    "./test/**/*.ts"
+  "compilerOptions": {
+    "outDir": "./lib/",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./lib/tsconfig.build.tsbuildinfo",
+  },
+  "include": [
+    "./src/**/*.ts"
   ]
 }
