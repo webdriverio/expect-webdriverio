@@ -1,8 +1,10 @@
 {
   /**
   * Let's aligned with the WebdriverIO tsconfig.json.
-  * This configuration is for test and src files, for the build, see the tsconfig.build.json.
   * @see https://github.com/webdriverio/webdriverio/blob/main/tsconfig.json#L5
+  *
+  * This configuration is for test and src files, for the build, see the tsconfig.build.json.
+  *
   */
   "compilerOptions": {
     "module": "esnext",
