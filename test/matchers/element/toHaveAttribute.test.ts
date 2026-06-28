@@ -58,12 +58,6 @@ describe(toHaveAttribute, () => {
                 expect(result.pass).toBe(true)
             })
 
-            test('not - failure when present for %s - pass should be true', async () => {
-                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name')
-
-                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            })
-
             describe('message shows correctly', () => {
                 test('expect message', async () => {
                     vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
@@ -117,17 +111,6 @@ Received: false`
                 expect(result.pass).toBe(false)
             })
 
-            test.for([
-                undefined,
-                null
-            ])('not - failure when present for %s - pass should be false', async ( attributeValue) => {
-                vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
-
-                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name')
-
-                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-            })
-
             describe('message shows correctly', () => {
                 test('expect message', async () => {
                     vi.mocked(el.getAttribute).mockResolvedValue('Wrong')
@@ -161,14 +144,31 @@ Received: "Wrong"`
             })
         })
 
-        describe('attribute does not exist or does not have a value', () => {
+        describe('given attribute existence', () => {
             test.for([
                 undefined,
                 null
-            ])('failure when not present for %s', async ( attributeValue) => {
+            ])('failure when not present (not expected value) for %s', async ( attributeValue) => {
                 vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
 
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name')
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have attribute attribute_name
+
+Expected: true
+Received: false`
+                )
+            })
+
+            test.for([
+                undefined,
+                null
+            ])('failure when not present (not expected value but with options) for %s', async ( attributeValue) => {
+                vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
+
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', { wait: 1, interval: 1 })
 
                 expect(result.pass).toBe(false)
             })
@@ -176,7 +176,7 @@ Received: "Wrong"`
             test.for([
                 undefined,
                 null
-            ])('failure when not present for %s', async ( attributeValue) => {
+            ])('failure when not present with undefined expected value for %s - deprecated', async ( attributeValue) => {
                 vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
 
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined)
@@ -198,12 +198,25 @@ Received: "Wrong"`
             test.for([
                 undefined,
                 null
-            ])('not - success when not present for %s - pass should be false', async ( attributeValue) => {
+            ])('not - success when not present with undefined expected value for %s - pass should be false -- deprecated', async ( attributeValue) => {
                 vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
 
                 const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name', undefined)
 
                 expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+            })
+
+            test('not - failure when present for %s - pass should be true', async () => {
+                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name')
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                // TODO: The error message is misleading to fix one day?
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) not to have attribute attribute_name
+
+Expected [not]: false
+Received      : true`
+                )
             })
         })
     })
