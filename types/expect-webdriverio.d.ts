@@ -233,7 +233,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Assert both property name AND a specific expected value */
         (
             property: string,
-            value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null,
+            value: string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }>

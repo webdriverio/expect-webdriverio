@@ -1,5 +1,7 @@
+import type { AsyncAssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
+import { isStringOptions } from '../../util/commandOptionsUtils.js'
 import {
     compareText,
     enhanceError,
@@ -11,42 +13,82 @@ import {
 async function condition(
     el: WebdriverIO.Element,
     property: string,
-    value: unknown,
+    expectedValue: unknown,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { asString = false } = options
 
-    let prop = await el.getProperty(property)
+    let propertyValue = await el.getProperty(property)
 
     // As specified in the w3c spec, cases where property does not exist
-    if (prop === null || prop === undefined) {
-        return { result: false, value: prop }
+    if (propertyValue === null || propertyValue === undefined) {
+        return { result: false, value: propertyValue }
     }
 
     // As specified in the w3c spec, cases where property simply exists, missing undefined here?
-    if (value === null) {
-        return { result: true, value: prop }
+    if (expectedValue === null || expectedValue === undefined) {
+        return { result: true, value: propertyValue }
     }
 
-    if (!(value instanceof RegExp) && typeof prop !== 'string' && !asString) {
-        return { result: prop === value, value: prop }
+    if (!(expectedValue instanceof RegExp) && typeof propertyValue !== 'string' && !asString) {
+        return { result: propertyValue === expectedValue, value: propertyValue }
     }
 
-    prop = prop.toString()
-    return compareText(prop as string, value as string | RegExp | AsymmetricMatcher<string>, options)
+    propertyValue = propertyValue.toString()
+    return compareText(propertyValue as string, expectedValue as string | RegExp | AsymmetricMatcher<string>, options)
 }
+
+/**
+ * @deprecated since 5.6.10 Passing explicit `undefined` as a value is deprecated. Omit the third argument entirely or use `toHaveElementProperty(el, property, options)`.
+ */
+export async function toHaveElementProperty(
+    received: WdioElementMaybePromise,
+    property: string,
+    value: undefined,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AsyncAssertionResult>
+
+/**
+ * When called with only the property name (and optional configuration options).
+ */
+export async function toHaveElementProperty(
+    received: WdioElementMaybePromise,
+    property: string,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AsyncAssertionResult>
+
+/**
+ * When called with an expected property name and value.
+ */
+export async function toHaveElementProperty(
+    received: WdioElementMaybePromise,
+    property: string,
+    value: string | number | RegExp | AsymmetricMatcher<string> | null,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AsyncAssertionResult>
 
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
-    value?: string | RegExp | AsymmetricMatcher<string> | null,
+    valueOrOptions?: string | number | RegExp | AsymmetricMatcher<string> | null | ExpectWebdriverIO.StringOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
+): Promise<AsyncAssertionResult> {
+    let value: string | number | RegExp | AsymmetricMatcher<string> | null | undefined
+
+    // Determine if the third argument is actually options or the expected value
+    if (isStringOptions(valueOrOptions)) {
+        options = valueOrOptions
+        value = undefined
+    } else {
+        value = valueOrOptions as string | number | RegExp | AsymmetricMatcher<string> | null
+    }
+
+    const matcherName = 'toHaveElementProperty'
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveElementProperty',
+        matcherName,
         expectedValue: [property, value],
         options,
     })
@@ -79,7 +121,7 @@ export async function toHaveElementProperty(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveElementProperty',
+        matcherName,
         expectedValue: [property, value],
         options,
         result
