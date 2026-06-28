@@ -39,12 +39,12 @@ describe(toHaveText, async () => {
 
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(3)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveText',
                 expectedValue: 'WebdriverIO',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveText',
                 expectedValue: 'WebdriverIO',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion },

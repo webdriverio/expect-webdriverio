@@ -6,16 +6,17 @@ export async function toBeSelected(
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'selected'
+    const matcherName = this.matcherName || 'toBeSelected'
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeSelected',
+        matcherName,
         options,
     })
 
     const result = await executeCommandBe.call(this, received, el => el?.isSelected(), options)
 
     await options.afterAssertion?.({
-        matcherName: 'toBeSelected',
+        matcherName,
         options,
         result
     })
@@ -23,21 +24,12 @@ export async function toBeSelected(
     return result
 }
 
-export async function toBeChecked (el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
+export async function toBeChecked (
+    received: WebdriverIO.Element,
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+) {
     this.expectation = 'checked'
+    this.matcherName = 'toBeChecked'
 
-    await options.beforeAssertion?.({
-        matcherName: 'toBeChecked',
-        options,
-    })
-
-    const result = await toBeSelected.call(this, el, options)
-
-    await options.afterAssertion?.({
-        matcherName: 'toBeChecked',
-        options,
-        result
-    })
-
-    return result
+    return await toBeSelected.call(this, received, options)
 }

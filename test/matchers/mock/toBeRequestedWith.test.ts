@@ -437,7 +437,7 @@ Received      : {}`
 
             const result = await toBeRequestedWith.call({}, mock, { method: 1234 } as any)
             expect(result.pass).toBe(false)
-            expect(global.console.error).toBeCalledWith(
+            expect(global.console.error).toHaveBeenCalledWith(
                 'expect.toBeRequestedWith: unsupported value passed to method 1234'
             )
         })

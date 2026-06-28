@@ -7,16 +7,19 @@ vi.mock('@wdio/globals')
 const beforeAssertion = vi.fn()
 const afterAssertion = vi.fn()
 
-describe('toHaveLocalStorageItem', () => {
+describe(toHaveLocalStorageItem, () => {
+    let thisContext: { toHaveLocalStorageItem: typeof toHaveLocalStorageItem }
+    let thisNotContext: { isNot: true,  toHaveLocalStorageItem: typeof toHaveLocalStorageItem }
+
     beforeEach(() => {
-        vi.clearAllMocks()
+        thisContext = { toHaveLocalStorageItem }
+        thisNotContext = { isNot: true, toHaveLocalStorageItem }
+
+        browser.execute = vi.fn().mockResolvedValue('someLocalStorageValue')
     })
 
     it('passes when localStorage item exists with correct value', async () => {
-        browser.execute = vi.fn().mockResolvedValue('someLocalStorageValue')
-
-        const result = await toHaveLocalStorageItem.call(
-            {}, // this context
+        const result = await thisContext.toHaveLocalStorageItem(
             browser,
             'someLocalStorageKey',
             'someLocalStorageValue',
@@ -48,8 +51,7 @@ describe('toHaveLocalStorageItem', () => {
     it('fails when localStorage item has different value', async () => {
         browser.execute = vi.fn().mockResolvedValue('actualValue')
 
-        const result = await toHaveLocalStorageItem.call(
-            {},
+        const result = await thisContext.toHaveLocalStorageItem(
             browser,
             'someKey',
             'expectedValue'
@@ -58,12 +60,32 @@ describe('toHaveLocalStorageItem', () => {
         expect(result.pass).toBe(false)
     })
 
+    it('not - passes when localStorage item exists and does not have value', async () => {
+        const result = await thisNotContext.toHaveLocalStorageItem(
+            browser,
+            'someLocalStorageKey',
+            'incorrectLocalStorageValue',
+            { ignoreCase: true, beforeAssertion, afterAssertion }
+        )
+
+        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+    })
+
+    it('not - fails when localStorage item has same value', async () => {
+        const result = await thisNotContext.toHaveLocalStorageItem(
+            browser,
+            'someKey',
+            'someLocalStorageValue'
+        )
+
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+    })
+
     it('fails when localStorage item does not exist', async () => {
         // Mock browser.execute to return null (item doesn't exist)
         browser.execute = vi.fn().mockResolvedValue(null)
 
-        const result = await toHaveLocalStorageItem.call(
-            {},
+        const result = await thisContext.toHaveLocalStorageItem(
             browser,
             'nonExistentKey',
             'someValue'
@@ -80,8 +102,7 @@ describe('toHaveLocalStorageItem', () => {
         // Mock browser.execute to return any non-null value
         browser.execute = vi.fn().mockResolvedValue('anyValue')
 
-        const result = await toHaveLocalStorageItem.call(
-            {},
+        const result = await thisContext.toHaveLocalStorageItem(
             browser,
             'existingKey'
             // no expectedValue parameter
@@ -93,8 +114,7 @@ describe('toHaveLocalStorageItem', () => {
     it('ignores case when ignoreCase is true', async () => {
         browser.execute = vi.fn().mockResolvedValue('UPPERCASE')
 
-        const result = await toHaveLocalStorageItem.call(
-            {},
+        const result = await thisContext.toHaveLocalStorageItem(
             browser,
             'key',
             'uppercase',
@@ -107,8 +127,7 @@ describe('toHaveLocalStorageItem', () => {
     it('trims whitespace when trim is true', async () => {
         browser.execute = vi.fn().mockResolvedValue('  value  ')
 
-        const result = await toHaveLocalStorageItem.call(
-            {},
+        const result = await thisContext.toHaveLocalStorageItem(
             browser,
             'key',
             'value',
@@ -121,8 +140,7 @@ describe('toHaveLocalStorageItem', () => {
     it('checks containing when containing is true', async () => {
         browser.execute = vi.fn().mockResolvedValue('this is a long value')
 
-        const result = await toHaveLocalStorageItem.call(
-            {},
+        const result = await thisContext.toHaveLocalStorageItem(
             browser,
             'key',
             'long',
@@ -135,8 +153,7 @@ describe('toHaveLocalStorageItem', () => {
     it('passes when localStorage value matches regex', async () => {
         browser.execute = vi.fn().mockResolvedValue('user_123')
 
-        const result = await toHaveLocalStorageItem.call(
-            {},
+        const result = await thisContext.toHaveLocalStorageItem(
             browser,
             'userId',
             /^user_\d+$/

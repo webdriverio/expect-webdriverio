@@ -28,9 +28,10 @@ export async function toHaveComputedRole(
 ) {
     const isNot = this.isNot
     const { expectation = 'computed role', verb = 'have' } = this
+    const matcherName = 'toHaveComputedRole'
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveComputedRole',
+        matcherName,
         expectedValue,
         options,
     })
@@ -67,7 +68,7 @@ export async function toHaveComputedRole(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveComputedRole',
+        matcherName,
         expectedValue,
         options,
         result

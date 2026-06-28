@@ -44,9 +44,10 @@ export async function toHaveText(
 ) {
     const isNot = this.isNot
     const { expectation = 'text', verb = 'have' } = this
+    const matcherName = 'toHaveText'
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveText',
+        matcherName,
         expectedValue,
         options,
     })
@@ -73,7 +74,7 @@ export async function toHaveText(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveText',
+        matcherName,
         expectedValue,
         options,
         result

@@ -7,8 +7,11 @@ export async function toHaveHref(
     expectedValue: string,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
+    const matcherName = 'toHaveHref'
+    this.matcherName = matcherName
+
     await options.beforeAssertion?.({
-        matcherName: 'toHaveHref',
+        matcherName,
         expectedValue,
         options,
     })
@@ -16,7 +19,7 @@ export async function toHaveHref(
     const result = await toHaveAttributeAndValue.call(this, el, 'href', expectedValue, options)
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveHref',
+        matcherName,
         expectedValue,
         options,
         result

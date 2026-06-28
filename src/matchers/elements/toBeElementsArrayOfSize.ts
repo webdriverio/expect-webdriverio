@@ -2,6 +2,7 @@ import { waitUntil, enhanceError, compareNumbers, numberError } from '../../util
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElements, WdioElementsMaybePromise } from '../../types.js'
+import { validateNumberOptions } from '../../util/numberOptionsUtil.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -10,21 +11,15 @@ export async function toBeElementsArrayOfSize(
 ) {
     const isNot = this.isNot
     const { expectation = 'elements array of size', verb = 'be' } = this
+    const matcherName = 'toBeElementsArrayOfSize'
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeElementsArrayOfSize',
+        matcherName,
         expectedValue,
         options,
     })
 
-    let numberOptions: ExpectWebdriverIO.NumberOptions
-    if (typeof expectedValue === 'number') {
-        numberOptions = { eq: expectedValue } satisfies ExpectWebdriverIO.NumberOptions
-    } else if (!expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')) {
-        throw new Error('Invalid params passed to toBeElementsArrayOfSize.')
-    } else {
-        numberOptions = expectedValue
-    }
+    const  { numberMatcher: numberOptions, numberCommandOptions } = validateNumberOptions(expectedValue)
 
     let elements = await received as WdioElements
     const originalLength = elements.length
@@ -36,7 +31,7 @@ export async function toBeElementsArrayOfSize(
         if (isPassing) {
             return isPassing
         }
-        elements = await refetchElements(elements, numberOptions.wait, true)
+        elements = await refetchElements(elements, numberCommandOptions?.wait ?? options.wait, true)
         return false
     }, isNot, { ...numberOptions, ...options })
 
@@ -55,7 +50,7 @@ export async function toBeElementsArrayOfSize(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toBeElementsArrayOfSize',
+        matcherName,
         expectedValue,
         options,
         result

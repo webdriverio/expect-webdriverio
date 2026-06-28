@@ -6,17 +6,18 @@ export async function toBeDisplayedInViewport(
     received: WdioElementMaybePromise,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    this.expectation = this.expectation || 'displayed in viewport'
+    this.expectation = 'displayed in viewport'
+    const matcherName = 'toBeDisplayedInViewport'
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeDisplayedInViewport',
+        matcherName,
         options,
     })
 
     const result = await executeCommandBe.call(this, received, el => el?.isDisplayed({ withinViewport: true }), options)
 
     await options.afterAssertion?.({
-        matcherName: 'toBeDisplayedInViewport',
+        matcherName,
         options,
         result
     })

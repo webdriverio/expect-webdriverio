@@ -24,9 +24,10 @@ export async function toHaveWidth(
 ) {
     const isNot = this.isNot
     const { expectation = 'width', verb = 'have' } = this
+    const matcherName = 'toHaveWidth'
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveWidth',
+        matcherName,
         expectedValue,
         options,
     })
@@ -75,7 +76,7 @@ export async function toHaveWidth(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveWidth',
+        matcherName,
         expectedValue,
         options,
         result

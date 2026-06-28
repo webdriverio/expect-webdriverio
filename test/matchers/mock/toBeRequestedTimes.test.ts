@@ -48,12 +48,12 @@ describe('toBeRequestedTimes', () => {
         const afterAssertion = vi.fn()
         const result = await toBeRequestedTimes.call({}, mock, 1, { beforeAssertion, afterAssertion })
         expect(result.pass).toBe(true)
-        expect(beforeAssertion).toBeCalledWith({
+        expect(beforeAssertion).toHaveBeenCalledWith({
             matcherName: 'toBeRequestedTimes',
             expectedValue: 1,
             options: { beforeAssertion, afterAssertion }
         })
-        expect(afterAssertion).toBeCalledWith({
+        expect(afterAssertion).toHaveBeenCalledWith({
             matcherName: 'toBeRequestedTimes',
             expectedValue: 1,
             options: { beforeAssertion, afterAssertion },

@@ -30,13 +30,6 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
     }
 }
 
-/**
- * @deprecated
- */
-export function toHaveClass(...args: unknown[]) {
-    return toHaveElementClass.call(this || {}, ...args)
-}
-
 export async function toHaveElementClass(
     received: WdioElementMaybePromise,
     expectedValue: string | RegExp | Array<string | RegExp> | AsymmetricMatcher<string>,
@@ -44,9 +37,10 @@ export async function toHaveElementClass(
 ) {
     const isNot = this.isNot
     const { expectation = 'class', verb = 'have' } = this
+    const matcherName = 'toHaveElementClass'
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveElementClass',
+        matcherName,
         expectedValue,
         options,
     })
@@ -71,13 +65,20 @@ export async function toHaveElementClass(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveElementClass',
+        matcherName,
         expectedValue,
         options,
         result
     })
 
     return result
+}
+
+/**
+ * @deprecated
+ */
+export function toHaveClass(...args: unknown[]) {
+    return toHaveElementClass.call(this || {}, ...args)
 }
 
 /**

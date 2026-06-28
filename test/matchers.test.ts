@@ -27,8 +27,8 @@ const ALL_MATCHERS = [
     'toHaveAttribute',
     'toHaveAttr',
     'toHaveChildren',
-    'toHaveClass',
     'toHaveElementClass',
+    'toHaveClass',
     'toHaveClassContaining',
     'toHaveComputedLabel',
     'toHaveComputedRole',
@@ -101,7 +101,10 @@ describe('Custom Wdio Matchers Integration Tests', async () => {
             await expectLib(el).toHaveHeight(50)
             await expectLib(el).toHaveWidth(100)
             await expectLib(el).toHaveAttribute('someAttribute', 'some attribute')
+            await expectLib(el).toHaveAttribute('someAttribute', 'some attribute',  { wait: 1 })
             await expectLib(el).toHaveAttribute('someAttribute')
+            await expectLib(el).toHaveAttribute('someAttribute',  { wait: 1 })
+            await expectLib(el).toHaveAttribute('someAttribute', undefined, { wait: 1 })
             await expectLib(el).toHaveAttr('someAttribute', 'some attribute')
             await expectLib(el).toHaveElementProperty('someProperty', '1')
         })
