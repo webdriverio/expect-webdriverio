@@ -8,7 +8,7 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import { isStringOptions } from '../../util/commandOptionsUtils'
+import { isStringOptions } from '../../util/commandOptionsUtils.js'
 
 async function conditionAttributeIsPresent(el: WebdriverIO.Element, attribute: string) {
     const attributeValue = await el.getAttribute(attribute)
