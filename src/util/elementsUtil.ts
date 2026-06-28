@@ -52,13 +52,13 @@ export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
  * Check if possibly an array of elements like, empty array counts as a valid ElementArray
  */
 export const isElementArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] => {
-    return (!!obj && isElementArrayOrChainable(obj)) || (Array.isArray(obj) && obj.every(isElement))
+    return !!obj && (isElementArrayOrChainable(obj) || (Array.isArray(obj) && obj.every(isElement)))
 }
 
 export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Element => {
-    return !!obj && isElement(obj) || isElementArrayLike(obj)
+    return !!obj && (isElement(obj) || isElementArrayLike(obj))
 }
 
 export const isElementOrNotEmptyElementArray = (obj: unknown): obj is WebdriverIO.Element | WdioElements => {
-    return !!obj && isElement(obj) || (isElementArrayLike(obj) && obj.length > 0)
+    return !!obj && (isElement(obj) || (isElementArrayLike(obj) && obj.length > 0))
 }
