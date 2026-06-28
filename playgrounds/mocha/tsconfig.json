@@ -7,8 +7,8 @@
       "node",
       "expect-webdriverio/expect-global", // Pull the development version from this project
       "expect-webdriverio", // Pull the development version from this project
-      "@wdio/mocha-framework", // Need below the so development version from this project have priority
-      "@wdio/globals/types", // Need below the so development version from this project have priority
+      "@wdio/mocha-framework", // Must be listed after development versions so they take priority
+      "@wdio/globals/types", // Must be listed after development versions so they take priority
       "@wdio/visual-service"
     ],
     "esModuleInterop": true,
