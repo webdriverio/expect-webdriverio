@@ -9,6 +9,7 @@ import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
+// TODO dprevost add a test case of `await received` failure
 describe(toBeElementsArrayOfSize, async () => {
     let thisContext: { toBeElementsArrayOfSize: typeof toBeElementsArrayOfSize }
     let thisNotContext: { toBeElementsArrayOfSize: typeof toBeElementsArrayOfSize, isNot: boolean }

@@ -1,7 +1,7 @@
 import { vi, test, describe, expect } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 
-import { isElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
+import { isElement, isElementArrayLike, isElementOrArrayLike, isStrictlyAwaitedElementArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
 import { chainableElementArrayFactory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
@@ -21,14 +21,14 @@ describe('elementsUtil', () => {
         })
     })
 
-    describe(isStrictlyElementArray, async () => {
+    describe(isStrictlyAwaitedElementArray, async () => {
         test.for([
             await $$('elements').getElements(),
             await $$('elements'),
             elementArrayFactory('elements'),
             await chainableElementArrayFactory('elements', 3),
         ])('should return true for ElementArray: %s', async (elements) => {
-            const isElementArrayResult = isStrictlyElementArray(elements)
+            const isElementArrayResult = isStrictlyAwaitedElementArray(elements)
 
             expect(elements).toBeDefined()
             expect(typeof elements).toBe('object')
@@ -50,7 +50,7 @@ describe('elementsUtil', () => {
             Promise.resolve(true),
             []
         ])('should return false for non-ElementArray: %s', async (elements) => {
-            const isElementArrayResult = isStrictlyElementArray(elements)
+            const isElementArrayResult = isStrictlyAwaitedElementArray(elements)
 
             expect(isElementArrayResult).toBe(false)
         })
