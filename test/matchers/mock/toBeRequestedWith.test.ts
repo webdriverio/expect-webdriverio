@@ -173,7 +173,7 @@ describe('toBeRequestedWith', () => {
 
         const result = await toBeRequestedWith.call({ isNot: true }, mock, {})
         expect(result.pass).toBe(true) // failure, boolean inverted later because of .not
-        expect(result.message()).toEqual(`\
+        expect(stripAnsi(result.message())).toEqual(`\
 Expect mock not to be called with
 
 Expected [not]: {}

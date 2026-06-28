@@ -3,6 +3,7 @@ import { vi, test, describe, expect } from 'vitest'
 import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTimes.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -102,7 +103,7 @@ describe('toBeRequestedTimes', () => {
         // expect(mock).not.toBeRequestedTimes(0) should fail
         const result = await toBeRequestedTimes.call({ isNot: true }, mock, 0)
         expect(result.pass).toBe(true) // failure, boolean inverted later because of .not
-        expect(result.message()).toEqual(`\
+        expect(stripAnsi(result.message())).toEqual(`\
 Expect mock not to be called 0 times
 
 Expected [not]: 0
@@ -134,7 +135,7 @@ Received      : 1`
         const mock: Mock = new TestMock()
 
         const result = await toBeRequestedTimes.call({}, mock, 0, { wait: 1 })
-        expect(result.message()).toContain('Expect mock to be called 0 times')
+        expect(stripAnsi(result.message())).toContain('Expect mock to be called 0 times')
 
         const result2 = await toBeRequestedTimes.call({}, mock, 1, { wait: 1 })
         expect(result2.message()).toContain('Expect mock to be called 1 time')
