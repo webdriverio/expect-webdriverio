@@ -1,9 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "module": "nodenext", // Required to trap missing extension on import
     "outDir": "./lib/",
     "rootDir": "./src",
     "tsBuildInfoFile": "./lib/tsconfig.build.tsbuildinfo",
+    "moduleResolution": "nodenext" // Required to trap missing extension on import
   },
   "include": [
     "./src/**/*.ts"

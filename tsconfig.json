@@ -16,7 +16,7 @@
     "skipLibCheck": true,
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "bundler", // Can use bundler and omit file extension in test code.
     "allowSyntheticDefaultImports": true,
     "types": [
       "node",
