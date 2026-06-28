@@ -10,7 +10,7 @@ Pair it with your preferred framework using the appropriate adapter:
 - **[Mocha](https://mochajs.org/):** Use [`@wdio/mocha-framework`](https://www.npmjs.com/package/@wdio/mocha-framework)
 - **[Cucumber](https://www.npmjs.com/package/@cucumber/cucumber):** Use [`@wdio/cucumber-framework`](https://www.npmjs.com/package/@wdio/cucumber-framework)
 - **[Jasmine](https://jasmine.github.io/):** Use [`@wdio/jasmine-framework`](https://www.npmjs.com/package/@wdio/jasmine-framework) 
-- **[Jest](https://jestjs.io/):** Works (no framework exists; requires manual configuration—see note below)z
+- **[Jest](https://jestjs.io/):** Works (no framework exists; requires manual configuration—see note below)
 
 > **Note:** When using **Jest**, or when running **outside of the WDIO Testrunner without a compatible framework adapter**, additional manual configuration can be required, such as adding types to your [`tsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) and configuring WDIO matchers, soft assertions, and the snapshot service.
     
