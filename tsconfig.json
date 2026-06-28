@@ -23,7 +23,6 @@
       "@wdio/globals/types"
     ]
   },
-  // TODO dprevost add bacl tsc on test files
   "include": [
     "./src/**/*.ts",
     "__mocks__/**/*.ts",

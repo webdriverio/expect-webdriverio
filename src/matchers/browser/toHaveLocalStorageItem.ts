@@ -10,7 +10,7 @@ export async function toHaveLocalStorageItem(
     const { expectation = 'localStorage item', verb = 'have', matcherName = 'toHaveLocalStorageItem', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: matcherName,
+        matcherName,
         expectedValue: expectedValue ? [key, expectedValue] : key,
         options,
     })
@@ -50,7 +50,7 @@ export async function toHaveLocalStorageItem(
         message: () => message
     }
     await options.afterAssertion?.({
-        matcherName: matcherName,
+        matcherName,
         expectedValue: expectedValue ? [key, expectedValue] : key,
         options,
         result

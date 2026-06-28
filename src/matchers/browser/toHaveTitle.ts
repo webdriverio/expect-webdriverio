@@ -9,7 +9,7 @@ export async function toHaveTitle(
     const { expectation = 'title', verb = 'have', matcherName = 'toHaveTitle', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: matcherName,
+        matcherName,
         expectedValue,
         options,
     })
@@ -32,7 +32,7 @@ export async function toHaveTitle(
     }
 
     await options.afterAssertion?.({
-        matcherName: matcherName,
+        matcherName,
         expectedValue,
         options,
         result

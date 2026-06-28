@@ -57,7 +57,6 @@ export const enhanceError = (
     const { isNot = false, useNotInLabel = true } = context
 
     subject = isElementOrNotEmptyElementArray(subject) ? getSelectors(subject) : toJsonString(subject)
-    subject = typeof subject === 'string' ? subject : getSelectors(subject)
 
     let contain = ''
     if (containing) {

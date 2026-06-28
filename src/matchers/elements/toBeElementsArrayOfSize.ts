@@ -20,6 +20,7 @@ export async function toBeElementsArrayOfSize(
     })
 
     const  { numberMatcher: numberOptions, numberCommandOptions } = validateNumberOptions(expectedValue)
+    const commandOptions = { ...options, ...numberCommandOptions }
 
     let elements = await received as WdioElements
     const originalLength = elements.length
@@ -31,9 +32,11 @@ export async function toBeElementsArrayOfSize(
         if (isPassing) {
             return isPassing
         }
-        elements = await refetchElements(elements, numberCommandOptions?.wait ?? options.wait, true)
+        elements = await refetchElements(elements, commandOptions?.wait, true)
         return false
-    }, isNot, { ...numberOptions, ...options })
+    },
+    isNot,
+    { wait : commandOptions?.wait, interval: commandOptions?.interval })
 
     if (Array.isArray(received) && pass) {
         for (let index = originalLength; index < elements.length; index++) {
@@ -42,7 +45,7 @@ export async function toBeElementsArrayOfSize(
     }
 
     const error = numberError(numberOptions)
-    const message = enhanceError(elements, error, originalLength, this, verb, expectation, '', numberOptions)
+    const message = enhanceError(elements, error, originalLength, this, verb, expectation, '', commandOptions)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

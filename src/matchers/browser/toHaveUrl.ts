@@ -9,7 +9,7 @@ export async function toHaveUrl(
     const { expectation = 'url', verb = 'have', matcherName = 'toHaveUrl', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: matcherName,
+        matcherName,
         expectedValue,
         options,
     })
@@ -32,7 +32,7 @@ export async function toHaveUrl(
     }
 
     await options.afterAssertion?.({
-        matcherName: matcherName,
+        matcherName,
         expectedValue,
         options,
         result
