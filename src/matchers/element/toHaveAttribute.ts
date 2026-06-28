@@ -1,3 +1,4 @@
+import type { AsyncAssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
 import {
@@ -7,62 +8,69 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import { isStringOptions } from '../../util/commandOptionsUtils'
 
-async function conditionAttr(el: WebdriverIO.Element, attribute: string) {
-    const attr = await el.getAttribute(attribute)
-    if (typeof attr !== 'string') {
-        return { result: false, value: attr }
+async function conditionAttributeIsPresent(el: WebdriverIO.Element, attribute: string) {
+    const attributeValue = await el.getAttribute(attribute)
+    if (typeof attributeValue !== 'string') {
+        return { result: false, value: attributeValue }
     }
-    return { result: true, value: attr }
+    return { result: true, value: attributeValue }
 
 }
 
-async function conditionAttrAndValue(el: WebdriverIO.Element, attribute: string, value: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
-    const attr = await el.getAttribute(attribute)
-    if (typeof attr !== 'string') {
-        return { result: false, value: attr }
+async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
+    const attributeValue = await el.getAttribute(attribute)
+    if (typeof attributeValue !== 'string') {
+        return { result: false, value: attributeValue }
     }
 
-    return compareText(attr, value, options)
+    return compareText(attributeValue, expectedValue, options)
 }
 
-export async function toHaveAttributeAndValue(received: WdioElementMaybePromise, attribute: string, value: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
-    const isNot = this.isNot
-    const { expectation = 'attribute', verb = 'have' } = this
+export async function toHaveAttributeAndValue(received: WdioElementMaybePromise, attribute: string, expectedValue: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
+    const { expectation = 'attribute', verb = 'have', isNot } = this
 
     let el = await received?.getElement()
     let attr
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, conditionAttrAndValue, options, [attribute, value, options])
-        el = result.el as WebdriverIO.Element
-        attr = result.values
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand.call(this, el, conditionAttributeValueMatchWithExpected, options, [attribute, expectedValue, options])
+            el = result.el as WebdriverIO.Element
+            attr = result.values
 
-        return result.success
-    }, isNot, options)
+            return result.success
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
-    const expected = wrapExpectedWithArray(el, attr, value)
+    const expected = wrapExpectedWithArray(el, attr, expectedValue)
     const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
 
     return {
         pass,
         message: (): string => message
-    } as ExpectWebdriverIO.AssertionResult
+    }
 }
 
-async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: string) {
-    const isNot = this.isNot
-    const { expectation = 'attribute', verb = 'have' } = this
+async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: string, options: ExpectWebdriverIO.CommandOptions) {
+    const { expectation = 'attribute', verb = 'have', isNot } = this
 
     let el = await received?.getElement()
 
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, conditionAttr, {}, [attribute])
-        el = result.el as WebdriverIO.Element
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand.call(this, el, conditionAttributeIsPresent, options, [attribute])
+            el = result.el as WebdriverIO.Element
 
-        return result.success
-    }, isNot, {})
+            return result.success
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
-    const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, {})
+    const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, options)
 
     return {
         pass,
@@ -70,14 +78,53 @@ async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: s
     }
 }
 
+/**
+ * @deprecated since 5.6.10 Passing explicit `undefined` as a value is deprecated. Omit the third argument entirely or use `toHaveAttribute(el, attribute, options)`.
+ */
 export async function toHaveAttribute(
     received: WdioElementMaybePromise,
     attribute: string,
-    value?: string | RegExp | AsymmetricMatcher<string>,
+    value: undefined,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AsyncAssertionResult>
+
+/**
+ * When called with only the attribute name (and optional configuration options).
+ */
+export async function toHaveAttribute(
+    received: WdioElementMaybePromise,
+    attribute: string,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AsyncAssertionResult>
+
+/**
+ * When called with an expected attribute name and value.
+ */
+export async function toHaveAttribute(
+    received: WdioElementMaybePromise,
+    attribute: string,
+    value: string | RegExp | AsymmetricMatcher<string>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AsyncAssertionResult>
+
+export async function toHaveAttribute(
+    received: WdioElementMaybePromise,
+    attribute: string,
+    valueOrOptions?: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.StringOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
+): Promise<AsyncAssertionResult> {
+    const matcherName = 'toHaveAttribute'
+
+    let value: string | RegExp | AsymmetricMatcher<string> | undefined
+    if (isStringOptions(valueOrOptions)) {
+        options = valueOrOptions
+        value = undefined
+    } else {
+        value = valueOrOptions as string | RegExp | AsymmetricMatcher<string>
+    }
+
     await options.beforeAssertion?.({
-        matcherName: 'toHaveAttribute',
+        matcherName,
         expectedValue: [attribute, value],
         options,
     })
@@ -86,10 +133,10 @@ export async function toHaveAttribute(
         // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
         ? await toHaveAttributeAndValue.call(this, received, attribute, value, options)
         // Only name is passed in e.g. el.toHaveAttribute('attr')
-        : await toHaveAttributeFn.call(this, received, attribute)
+        : await toHaveAttributeFn.call(this, received, attribute, options)
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveAttribute',
+        matcherName,
         expectedValue: [attribute, value],
         options,
         result
@@ -98,4 +145,7 @@ export async function toHaveAttribute(
     return result
 }
 
+/**
+ * @deprecated Use `toHaveAttribute` with or without value instead and not with undefined.
+ */
 export const toHaveAttr = toHaveAttribute

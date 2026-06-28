@@ -451,6 +451,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveAttribute('class', 'val')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveAttribute('class', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
 
+                // Deprecated matchers with undefined value
+                expectTypeOf(expect(element).toHaveAttribute('class', undefined)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveAttribute('class', undefined,  { wait: 1 })).toEqualTypeOf<Promise<void>>()
+
+                // Deprecated matchers
                 expectTypeOf(expect(element).toHaveAttr('class')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveAttr('class', 'val')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveAttr('class', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
