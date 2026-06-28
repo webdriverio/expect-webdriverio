@@ -8,7 +8,6 @@
   */
   "compilerOptions": {
     "module": "esnext",
-    "rootDir": ".",
     "target": "es2022",
     "lib": ["ES2022", "DOM"],
     "strictBindCallApply": true,
