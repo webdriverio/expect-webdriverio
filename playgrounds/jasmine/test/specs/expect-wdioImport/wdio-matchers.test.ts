@@ -85,9 +85,29 @@ describe('WebdriverIO Custom Matchers', () => {
     })
 
     describe('Element attribute matchers', () => {
+        it('should verify element exists', async () => {
+            const docsLink = await $('a[href="/docs/gettingstarted"]')
+            await expect(docsLink).toHaveAttribute('href')
+        })
+
+        it('should verify element exists immediately', async () => {
+            const docsLink = await $('a[href="/docs/gettingstarted"]')
+            await expect(docsLink).toHaveAttribute('href', { wait: 0 })
+        })
+
         it('should verify element has attribute', async () => {
             const docsLink = await $('a[href="/docs/gettingstarted"]')
             await expect(docsLink).toHaveAttribute('href', '/docs/gettingstarted')
+        })
+
+        it('should verify element does not exist', async () => {
+            const docsLink = await $('a[href="/docs/gettingstarted"]')
+            await expect(docsLink).not.toHaveAttribute('non-existent-attribute')
+        })
+
+        it('should verify element does not exist immediately', async () => {
+            const docsLink = await $('a[href="/docs/gettingstarted"]')
+            await expect(docsLink).not.toHaveAttribute('non-existent-attribute', { wait: 0 })
         })
 
         it('should verify attribute contains value', async () => {

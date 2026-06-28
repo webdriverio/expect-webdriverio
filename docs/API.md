@@ -349,6 +349,26 @@ await expect(myInput).toHaveAttribute('class', 'form-control')
 await expect(myInput).toHaveAttribute('class', expect.stringContaining('control'))
 ```
 
+Checks if an element has a specific attribute with a value.
+
+##### Usage
+
+```js
+const myInput = await $('input')
+await expect(myInput).toHaveAttribute('class')
+await expect(myInput).toHaveAttribute('class', { wait: 1000 })
+```
+
+Checks if an element does not have the specified attribute.
+
+##### Usage
+
+```js
+const myInput = await $('input')
+await expect(myInput).not.toHaveAttribute('class')
+await expect(myInput).not.toHaveAttribute('class', { wait: 1000 })
+```
+
 ### toHaveElementClass
 
 Checks if an element has a single class name. Can also be called with an array as a parameter when the element can have multiple class names.
