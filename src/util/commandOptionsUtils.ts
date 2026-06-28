@@ -4,7 +4,8 @@ export function isStringOptions(obj: unknown): obj is ExpectWebdriverIO.StringOp
         typeof obj !== 'object' ||
         obj instanceof RegExp ||
         Array.isArray(obj) ||
-        'asymmetricMatch' in obj
+        'asymmetricMatch' in obj ||
+        Object.prototype.toString.call(obj) !== '[object Object]' // This instantly filters out null, primitives, Arrays, Dates, RegExps, Maps, Sets, etc.
     ) {
         return false
     }

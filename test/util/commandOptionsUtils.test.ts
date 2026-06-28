@@ -44,7 +44,7 @@ describe('isStringOptions Type Guard', () => {
         })
     })
 
-    // 4. Testing Requirement: Non-Option Objects (Exclusions)
+    // 4. Testing Requirement: Invalid Configurations & False Positives
     describe('Invalid Configurations & False Positives', () => {
         it('should return false for primitive types and null', () => {
             expect(isStringOptions('some-string-value')).toBe(false)
@@ -60,7 +60,6 @@ describe('isStringOptions Type Guard', () => {
         })
 
         it('should return false for Asymmetric Matchers', () => {
-            // Mocking an asymmetric matcher object shape like expect.stringContaining()
             const mockAsymmetricMatcher = {
                 asymmetricMatch: vi.fn(),
                 toString: vi.fn()
@@ -68,9 +67,14 @@ describe('isStringOptions Type Guard', () => {
             expect(isStringOptions(mockAsymmetricMatcher)).toBe(false)
         })
 
-        it('should return false for plain objects with unrelated custom properties', () => {
+        it('should return false for plain objects with all unrelated custom properties', () => {
             expect(isStringOptions({ customKey: 'not-an-option' })).toBe(false)
             expect(isStringOptions({ id: 'element-id', class: 'btn' })).toBe(false)
+        })
+
+        it('should return false for arrays and other object-type built-ins', () => {
+            expect(isStringOptions(['trim', 'ignoreCase'])).toBe(false)
+            expect(isStringOptions(new Date())).toBe(false)
         })
     })
 })
