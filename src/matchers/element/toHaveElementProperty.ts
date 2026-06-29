@@ -25,7 +25,7 @@ async function condition(
         return { result: false, value: propertyValue }
     }
 
-    // As specified in the w3c spec, cases where property simply exists, missing undefined here?
+    // As specified in the w3c spec, cases where property simply exists
     if (expectedValue === null || expectedValue === undefined) {
         return { result: true, value: propertyValue }
     }

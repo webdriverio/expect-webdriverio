@@ -146,6 +146,6 @@ export async function toHaveAttribute(
 }
 
 /**
- * @deprecated Use `toHaveAttribute` with or without value instead and not with undefined.
+ * @deprecated since 5.7.0 Use `toHaveAttribute`
  */
 export const toHaveAttr = toHaveAttribute
