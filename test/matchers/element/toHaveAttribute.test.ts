@@ -58,6 +58,13 @@ describe(toHaveAttribute, () => {
                 expect(result.pass).toBe(true)
             })
 
+            test('success when present by passing undefined value with options - deprecated', async () => {
+                // Casting since we use vitest asymmetrics matcher instead of wdio one and TypeScript show a deprecation
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', expect.stringContaining('Correct') as AsymmetricMatcher<string>)
+
+                expect(result.pass).toBe(true)
+            })
+
             describe('message shows correctly', () => {
                 test('expect message', async () => {
                     vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)

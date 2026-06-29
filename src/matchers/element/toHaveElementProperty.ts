@@ -43,7 +43,7 @@ async function condition(
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
-    value: undefined,
+    value: undefined | null,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AsyncAssertionResult>
 
@@ -62,7 +62,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
-    value: string | number | RegExp | AsymmetricMatcher<string> | null,
+    value: string | number | RegExp | AsymmetricMatcher<string>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AsyncAssertionResult>
 
