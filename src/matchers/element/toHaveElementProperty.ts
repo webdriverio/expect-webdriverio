@@ -18,7 +18,7 @@ async function condition(
 ) {
     const { asString = false } = options
 
-    let propertyValue = await el.getProperty(property)
+    const propertyValue = await el.getProperty(property)
 
     // As specified in the w3c spec, cases where property does not exist
     if (propertyValue === null || propertyValue === undefined) {
@@ -34,8 +34,7 @@ async function condition(
         return { result: propertyValue === expectedValue, value: propertyValue }
     }
 
-    propertyValue = propertyValue.toString()
-    return compareText(propertyValue as string, expectedValue as string | RegExp | AsymmetricMatcher<string>, options)
+    return compareText(propertyValue.toString(), expectedValue as string | RegExp | AsymmetricMatcher<string>, options)
 }
 
 /**
