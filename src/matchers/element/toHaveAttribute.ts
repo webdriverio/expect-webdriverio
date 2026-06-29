@@ -79,7 +79,7 @@ async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: s
 }
 
 /**
- * @deprecated since 5.6.10 Passing explicit `undefined` as a value is deprecated. Omit the third argument entirely or use `toHaveAttribute(el, attribute, options)`.
+ * @deprecated since 5.7.1 Passing explicit `undefined` as a value is deprecated. Omit the third argument entirely or use `toHaveAttribute(el, attribute, options)`.
  */
 export async function toHaveAttribute(
     received: WdioElementMaybePromise,

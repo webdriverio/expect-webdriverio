@@ -152,7 +152,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
 
     toHaveAttribute: FnWhenElementOrArrayLike<ActualT, {
         /**
-         * @deprecated since 5.6.10 Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
+         * @deprecated since 5.7.1 Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
          */
         (
             attribute: string,
@@ -216,7 +216,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
 
     toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, {
         /**
-         * @deprecated since 5.6.10 Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveElementProperty(property, options)`.
+         * @deprecated since 5.7.1 Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveElementProperty(property, options)`.
          */
         (
             property: string,
