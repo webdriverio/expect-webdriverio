@@ -1,10 +1,10 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
 
 export async function toHaveHref(
-    el: WdioElementMaybePromise,
-    expectedValue: string,
+    el: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     await options.beforeAssertion?.({

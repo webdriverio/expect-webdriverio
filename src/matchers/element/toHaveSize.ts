@@ -1,47 +1,52 @@
+import type { RectReturn } from '@wdio/protocols'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import { executeCommand, defaultMultipleElementsIterationStrategy } from '../../util/executeCommand.js'
 import {
     compareObject,
     enhanceError,
-    executeCommand,
     waitUntil,
     wrapExpectedWithArray,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, size: { height: number; width: number }) {
+export type Size = Pick<RectReturn, 'width' | 'height'>
+
+async function condition(el: WebdriverIO.Element, size: Size): Promise<{ result: boolean, value: Size }> {
     const actualSize = await el.getSize()
 
     return compareObject(actualSize, size)
 }
 
 export async function toHaveSize(
-    received: WdioElementMaybePromise,
-    expectedValue: { height: number; width: number },
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<Size>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'size', verb = 'have' } = this
+    const { expectation = 'size', verb = 'have', isNot, matcherName = 'toHaveSize' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveSize',
+        matcherName,
         expectedValue,
         options,
     })
 
-    let el = await received?.getElement()
+    let el
     let actualSize
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
+            const result = await executeCommand(received,
+                undefined,
+                async (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, condition)
+            )
 
-            el = result.el as WebdriverIO.Element
-            actualSize = result.values
+            el = result.elementOrArray
+            actualSize = result.valueOrArray
 
-            return result.success
+            return result
         },
         isNot,
-        options
+        { wait: options.wait, interval: options.interval }
     )
 
     const message = enhanceError(
@@ -61,7 +66,7 @@ export async function toHaveSize(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveSize',
+        matcherName,
         expectedValue,
         options,
         result

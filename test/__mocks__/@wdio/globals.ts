@@ -4,9 +4,45 @@
  */
 import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
+import type { Size } from '../../../src/matchers/element/toHaveSize'
 
-import type { RectReturn } from '@wdio/protocols'
-export type Size = Pick<RectReturn, 'width' | 'height'>
+vi.mock('@wdio/globals')
+vi.mock('../../../src/constants.js', async () => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await vi.importActual<typeof import('../../../src/constants.js')>('../../../src/constants.js')
+    const DEFAULT_OPTIONS= {
+        ...actual.DEFAULT_OPTIONS,
+        // speed up tests by lowering default wait timeout
+        wait : 1
+    }
+    const DEFAULT_OPTIONS_TO_BE_DISPLAYED= {
+        ...actual.DEFAULT_OPTIONS_TO_BE_DISPLAYED,
+        // speed up tests by lowering default wait timeout
+        wait : 2
+    }
+    return {
+        ...actual,
+        DEFAULT_OPTIONS,
+        DEFAULT_OPTIONS_TO_BE_DISPLAYED,
+    }
+})
+
+vi.mock('../../../src/util/waitUntil.js', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await importOriginal<typeof import('../../../src/util/waitUntil.js')>()
+    return {
+        ...actual,
+        waitUntil: vi.spyOn(actual, 'waitUntil')
+    }
+})
+vi.mock('../../../src/utils.js', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    const actual = await importOriginal<typeof import('../../../src/utils.js')>()
+    return {
+        ...actual,
+        executeCommandBe: vi.spyOn(actual, 'executeCommandBe'),
+    }
+})
 
 const getElementMethods = () => ({
     isDisplayed: vi.spyOn({ isDisplayed: async () => true }, 'isDisplayed'),
@@ -23,13 +59,12 @@ const getElementMethods = () => ({
     getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
     getCSSProperty: vi.spyOn({ getCSSProperty: async (_prop: string, _pseudo?: string) =>
         ({ value: 'colorValue', parsed: {} } satisfies ParsedCSSValue) }, 'getCSSProperty'),
-    getSize: vi.spyOn({ getSize: async (prop?: 'width' | 'height') => {
-        if (prop === 'width') { return 100 }
-        if (prop === 'height') { return 50 }
-        return { width: 100, height: 50 } satisfies Size
-    } },
-    // Force wrong size & number typing, fixed by https://github.com/webdriverio/webdriverio/pull/15003
-    'getSize') as unknown as WebdriverIO.Element['getSize'],
+    // We cannot type-safely mock overloaded functions, so we force the below implementation
+    getSize: vi.fn().mockImplementation(async function(this: WebdriverIO.Element, prop?: 'width' | 'height'): Promise<number | Size> {
+        if (prop === 'width') { return Promise.resolve(100) }
+        if (prop === 'height') { return Promise.resolve(50) }
+        return Promise.resolve({ width: 100, height: 50 })
+    }),
     $,
     $$,
 } satisfies Partial<WebdriverIO.Element>)
@@ -167,12 +202,16 @@ export function chainableElementArrayFactory(selector: string, length: number) {
     return runtimeChainablePromiseArray
 }
 
-export const browser = {
-    $,
-    $$,
-    execute: vi.fn(),
-    setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
-    getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
-    getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
-    call(fn: Function) { return fn() },
-} satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+export const browserFactory = (): WebdriverIO.Browser => {
+    return  {
+        $,
+        $$,
+        execute: vi.fn(),
+        setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
+        getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
+        getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
+        call(fn: Function) { return fn() },
+    } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+}
+
+export const browser = browserFactory()
