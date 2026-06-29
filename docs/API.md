@@ -394,7 +394,7 @@ await expect(elem).toHaveElementProperty('height', 23)
 await expect(elem).not.toHaveElementProperty('height', 0)
 ```
 
-Checks if an element has a certain property with any value
+Checks if an element has a certain property.
 
 ##### Usage
 
