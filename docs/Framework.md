@@ -65,7 +65,7 @@ When not depending on `@wdio/mocha-framework`
 See also this [documentation](https://webdriver.io/docs/assertion/#migrating-from-chai).
 
 ### Jest
-You can use `expect-webdriverio` with [Jest](https://jestjs.io/) by leveraging either [`@types/jest`](https://www.npmjs.com/package/@types/jest) (which provides global ambient support) or [`@jest/globals`](https://www.npmjs.com/package/@jest/globals).
+You can use `expect-webdriverio` with [Jest](https://jestjs.io/) by leveraging either [`@types/jest`](https://www.npmjs.com/package/@types/jest) (which provides global ambient support) or [`@jest/globals`](https://www.npmjs.com/package/@jest/globals) alone.
   - Note: Jest maintainers do not officially support [`@types/jest`](https://www.npmjs.com/package/@types/jest). Should this package become outdated or experience issues, support may be dropped.
   - Note: With Jest, the matchers `toMatchSnapshot` and `toMatchInlineSnapshot` are overloaded. To resolve the types correctly, `expect-webdriverio/jest` must be listed last.
   - Note: WebdriverIO does not provide a compatible framework adapter for Jest; manual configuration is required.
