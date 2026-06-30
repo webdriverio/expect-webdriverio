@@ -349,16 +349,24 @@ await expect(myInput).toHaveAttribute('class', 'form-control')
 await expect(myInput).toHaveAttribute('class', expect.stringContaining('control'))
 ```
 
-### toHaveAttr
-
-Same as `toHaveAttribute`.
+Checks if an element has a specific attribute.
 
 ##### Usage
 
 ```js
 const myInput = await $('input')
-await expect(myInput).toHaveAttr('class', 'form-control')
-await expect(myInput).toHaveAttr('class', expect.stringContaining('control'))
+await expect(myInput).toHaveAttribute('class')
+await expect(myInput).toHaveAttribute('class', { wait: 1000 })
+```
+
+Checks if an element does not have the specified attribute.
+
+##### Usage
+
+```js
+const myInput = await $('input')
+await expect(myInput).not.toHaveAttribute('class')
+await expect(myInput).not.toHaveAttribute('class', { wait: 1000 })
 ```
 
 ### toHaveElementClass
@@ -376,7 +384,7 @@ await expect(myInput).toHaveElementClass(expect.stringContaining('form'), { mess
 
 ### toHaveElementProperty
 
-Checks if an element has a certain property.
+Checks if an element has a certain property and value
 
 ##### Usage
 
@@ -384,6 +392,17 @@ Checks if an element has a certain property.
 const elem = await $('#elem')
 await expect(elem).toHaveElementProperty('height', 23)
 await expect(elem).not.toHaveElementProperty('height', 0)
+```
+
+Checks if an element has a certain property.
+
+##### Usage
+
+```js
+const elem = await $('#elem')
+await expect(elem).toHaveElementProperty('height')
+// Does not have height property
+await expect(elem).not.toHaveElementProperty('height')
 ```
 
 ### toHaveValue

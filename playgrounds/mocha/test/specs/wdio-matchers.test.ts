@@ -84,9 +84,29 @@ describe('WebdriverIO Custom Matchers', () => {
     })
 
     describe('Element attribute matchers', () => {
+        it('should verify element exists', async () => {
+            const docsLink = await $('a[href="/docs/gettingstarted"]')
+            await expect(docsLink).toHaveAttribute('href')
+        })
+
+        it('should verify element exists immediately', async () => {
+            const docsLink = await $('a[href="/docs/gettingstarted"]')
+            await expect(docsLink).toHaveAttribute('href', { wait: 0 })
+        })
+
         it('should verify element has attribute', async () => {
             const docsLink = await $('a[href="/docs/gettingstarted"]')
             await expect(docsLink).toHaveAttribute('href', '/docs/gettingstarted')
+        })
+
+        it('should verify element does not exist', async () => {
+            const docsLink = await $('a[href="/docs/gettingstarted"]')
+            await expect(docsLink).not.toHaveAttribute('non-existent-attribute')
+        })
+
+        it('should verify element does not exist immediately', async () => {
+            const docsLink = await $('a[href="/docs/gettingstarted"]')
+            await expect(docsLink).not.toHaveAttribute('non-existent-attribute', { wait: 0 })
         })
 
         it('should verify attribute contains value', async () => {
@@ -106,9 +126,34 @@ describe('WebdriverIO Custom Matchers', () => {
     })
 
     describe('Element property matchers', () => {
-        it('should verify element property', async () => {
+        it('should verify element property value', async () => {
             const searchButton = await $('.DocSearch-Button')
             await expect(searchButton).toHaveElementProperty('type', 'button')
+        })
+
+        it('should verify element property value with asymmetric matcher', async () => {
+            const searchButton = await $('.DocSearch-Button')
+            await expect(searchButton).toHaveElementProperty('type', expect.stringContaining('button'))
+        })
+
+        it('should verify that element property exists', async () => {
+            const searchButton = await $('.DocSearch-Button')
+            await expect(searchButton).toHaveElementProperty('type')
+        })
+
+        it('should verify that element property exists immediately', async () => {
+            const searchButton = await $('.DocSearch-Button')
+            await expect(searchButton).toHaveElementProperty('type', { wait: 0 })
+        })
+
+        it('should verify that element property does not exist', async () => {
+            const searchButton = await $('.DocSearch-Button')
+            await expect(searchButton).not.toHaveElementProperty('doesNNotExist')
+        })
+
+        it('should verify that element property does not exist immediately', async () => {
+            const searchButton = await $('.DocSearch-Button')
+            await expect(searchButton).not.toHaveElementProperty('doesNNotExist', { wait: 0 })
         })
     })
 

@@ -35,7 +35,7 @@ describe('suite', () => {
         const myInput = await $('input')
 
         await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
-        await expect(myInput).toHaveAttribute('class', 'form-control') // alias toHaveAttr
+        await expect(myInput).toHaveAttribute('class', 'form-control')
 
         await expect(myInput).toHaveValue('value', 'user', { containing: true, ignoreCase: true })
 

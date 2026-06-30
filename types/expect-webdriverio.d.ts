@@ -150,19 +150,37 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      */
     toBeExisting: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
-    /**
-     * `WebdriverIO.Element` -> `getAttribute`
-     */
-    toHaveAttribute: FnWhenElementOrArrayLike<ActualT, (
-        attribute: string, value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-        options?: ExpectWebdriverIO.StringOptions)
-    => Promise<void>>
+    toHaveAttribute: FnWhenElementOrArrayLike<ActualT, {
+        /**
+         * @deprecated since 5.7.1 Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
+         */
+        (
+            attribute: string,
+            value: undefined,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+
+        /** Check ONLY for the presence of the attribute (and optional configuration options) */
+        (
+            attribute: string,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+
+        /** Assert both attribute name AND a specific expected value */
+        (
+            attribute: string,
+            value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+    }>
 
     /**
+     * @deprecated since v5.7.1 Use `toHaveAttribute` instead.
      * `WebdriverIO.Element` -> `getAttribute`
      */
     toHaveAttr: FnWhenElementOrArrayLike<ActualT, (
-        attribute: string, value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+        attribute: string,
+        value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -196,17 +214,29 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
-    /**
-     * `WebdriverIO.Element` -> `getProperty`
-     */
-    toHaveElementProperty: FnWhenElementOrArrayLike<
-        ActualT,
+    toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, {
+        /**
+         * @deprecated since 5.7.1 Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveElementProperty(property, options)`.
+         */
         (
             property: string,
-            value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null,
-            options?: ExpectWebdriverIO.StringOptions,
-        ) => Promise<void>
-    >
+            value: undefined | null,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+
+        /** Check ONLY for the presence of the property (and optional configuration options) */
+        (
+            property: string,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+
+        /** Assert both property name AND a specific expected value */
+        (
+            property: string,
+            value: string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+    }>
 
     /**
      * `WebdriverIO.Element` -> `getProperty` value
@@ -634,7 +664,7 @@ declare namespace ExpectWebdriverIO {
     const wdioCustomMatchers: MatchersObject
 
     /**
-     * @deprecated use `wdioCustomMatchers` instead
+     * @deprecated since 5.6.9 use `wdioCustomMatchers` instead
      */
     const matchers: Map<string, RawMatcherFn>
 

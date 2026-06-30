@@ -90,9 +90,14 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(docsLink).toHaveAttribute('href', '/docs/gettingstarted')
         })
 
-        it('should verify attribute contains value', async () => {
+        it('should verify attribute contains value with wdio asymmetric matcher', async () => {
             const docsLink = await $('a[href="/docs/gettingstarted"]')
             await expect(docsLink).toHaveAttribute('href', expect.stringContaining('docs'))
+        })
+
+        it('should verify attribute contains value with jasmine matcher', async () => {
+            const docsLink = await $('a[href="/docs/gettingstarted"]')
+            await expect(docsLink).toHaveAttribute('href', jasmine.stringContaining('docs'))
         })
 
         it('should verify element has class', async () => {
@@ -149,7 +154,6 @@ describe('WebdriverIO Custom Matchers', () => {
             await searchButton.click()
 
             // The search modal input should be focused after clicking
-
             await browser.pause(500) // Wait for modal to open
             const searchInput = await $('.DocSearch-Input')
             if (await searchInput.isExisting()) {

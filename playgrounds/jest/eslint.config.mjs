@@ -27,5 +27,6 @@ export default {
     ...tsEslintPlugin.configs['recommended'].rules,
     '@typescript-eslint/no-floating-promises': 'error',
     'jest/no-focused-tests': 'error',
+    'jest/no-identical-title': 'error',
   },
 };
