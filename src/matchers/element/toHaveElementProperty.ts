@@ -103,7 +103,7 @@ export async function toHaveElementProperty(
             return result.success
         },
         isNot,
-        options
+        { wait: options.wait, interval: options.interval }
     )
 
     let message: string
