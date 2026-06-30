@@ -39,5 +39,5 @@ export function isStringOptions(obj: unknown): obj is ExpectWebdriverIO.StringOp
     ])
 
     // Condition B: At least one key in the object exists in our whitelist
-    return objKeys.some(key => allowedKeys.has(key))
+    return objKeys.every(key => allowedKeys.has(key))
 }

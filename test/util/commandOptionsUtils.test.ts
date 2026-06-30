@@ -12,7 +12,7 @@ describe('isStringOptions Type Guard', () => {
 
     // 2. Testing Requirement: StringOptions Properties
     describe('StringOptions Properties', () => {
-        it('should return true for objects containing StringOptions properties', () => {
+        it('should return true for objects containing valid StringOptions properties', () => {
             expect(isStringOptions({ ignoreCase: true })).toBe(true)
             expect(isStringOptions({ trim: false })).toBe(true)
             expect(isStringOptions({ containing: true })).toBe(true)
@@ -30,11 +30,11 @@ describe('isStringOptions Type Guard', () => {
             expect(isStringOptions({ message: 'Custom Error Message' })).toBe(true)
             expect(isStringOptions({ wait: 5000 })).toBe(true)
             expect(isStringOptions({ interval: 200 })).toBe(true)
-            expect(isStringOptions({ beforeAssertion: async () => {} })).toBe(true)
-            expect(isStringOptions({ afterAssertion: async () => {} })).toBe(true)
+            expect(isStringOptions({ beforeAssertion: async () => { } })).toBe(true)
+            expect(isStringOptions({ afterAssertion: async () => { } })).toBe(true)
         })
 
-        it('should return true for a mixed configuration object', () => {
+        it('should return true for a fully valid mixed configuration object', () => {
             const mixedOptions = {
                 trim: true,
                 wait: 1000,
@@ -75,6 +75,12 @@ describe('isStringOptions Type Guard', () => {
         it('should return false for arrays and other object-type built-ins', () => {
             expect(isStringOptions(['trim', 'ignoreCase'])).toBe(false)
             expect(isStringOptions(new Date())).toBe(false)
+        })
+
+        it('should return false for objects containing valid options mixed with invalid/unrecognized keys', () => {
+            expect(isStringOptions({ trim: true, invalidProperty: 'malicious-or-typo' })).toBe(false)
+            expect(isStringOptions({ wait: 2000, href: '/path/to/element' })).toBe(false)
+            expect(isStringOptions({ waitt: 1000 })).toBe(false) // Misspelled option key
         })
     })
 })
