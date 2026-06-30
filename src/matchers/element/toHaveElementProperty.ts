@@ -69,27 +69,26 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
-    valueOrOptions?: string | number | RegExp | AsymmetricMatcher<string> | null | ExpectWebdriverIO.StringOptions,
+    expectValueOrOptions?: string | number | RegExp | AsymmetricMatcher<string> | null | ExpectWebdriverIO.StringOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AsyncAssertionResult> {
-    let value: string | number | RegExp | AsymmetricMatcher<string> | null | undefined
+    let expectedValue: string | number | RegExp | AsymmetricMatcher<string> | null | undefined
 
     // Determine if the third argument is actually options or the expected value
-    if (isStringOptions(valueOrOptions)) {
-        options = valueOrOptions
-        value = undefined
+    if (isStringOptions(expectValueOrOptions)) {
+        options = expectValueOrOptions
+        expectedValue = undefined
     } else {
-        value = valueOrOptions as string | number | RegExp | AsymmetricMatcher<string> | null
+        expectedValue = expectValueOrOptions as string | number | RegExp | AsymmetricMatcher<string> | null
     }
 
     const matcherName = 'toHaveElementProperty'
     const isNot = this.isNot
     const { expectation = 'property', verb = 'have' } = this
-    const matcherName = 'toHaveElementProperty'
 
     await options.beforeAssertion?.({
         matcherName,
-        expectedValue: [property, value],
+        expectedValue: [property, expectedValue],
         options,
     })
 
@@ -97,7 +96,7 @@ export async function toHaveElementProperty(
     let prop: unknown
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [property, expected])
+            const result = await executeCommand.call(this, el, condition, options, [property, expectedValue])
             el = result.el as WebdriverIO.Element
             prop = result.values
 
@@ -108,10 +107,10 @@ export async function toHaveElementProperty(
     )
 
     let message: string
-    if (expected === undefined) {
+    if (expectedValue === undefined) {
         message = enhanceError(el, !isNot, pass, this, verb, expectation, property, options)
     } else {
-        const wrappedExpected = wrapExpectedWithArray(el, prop, expected)
+        const wrappedExpected = wrapExpectedWithArray(el, prop, expectedValue)
         message = enhanceError(el, wrappedExpected, prop, this, verb, expectation, property, options)
     }
 
@@ -122,7 +121,7 @@ export async function toHaveElementProperty(
 
     await options.afterAssertion?.({
         matcherName,
-        expectedValue: [property, value],
+        expectedValue: [property, expectedValue],
         options,
         result
     })

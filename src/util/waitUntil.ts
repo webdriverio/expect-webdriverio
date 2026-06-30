@@ -1,4 +1,4 @@
-import { DEFAULT_OPTIONS } from '../constants'
+import { DEFAULT_OPTIONS } from '../constants.js'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 

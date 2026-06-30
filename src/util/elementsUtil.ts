@@ -1,5 +1,5 @@
-import type { WdioElements } from '../types'
-import { isDefined } from './objectUtils'
+import type { WdioElements } from '../types.js'
+import { isDefined } from './objectUtils.js'
 
 /**
  * if el is an array of elements and actual value is an array
