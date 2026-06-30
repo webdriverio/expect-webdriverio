@@ -175,7 +175,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }>
 
     /**
-     * @deprecated since v5.6.9 Use `toHaveAttribute` instead.
+     * @deprecated since v5.7.1 Use `toHaveAttribute` instead.
      * `WebdriverIO.Element` -> `getAttribute`
      */
     toHaveAttr: FnWhenElementOrArrayLike<ActualT, (
