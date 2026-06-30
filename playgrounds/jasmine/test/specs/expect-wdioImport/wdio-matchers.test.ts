@@ -90,12 +90,12 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(docsLink).toHaveAttribute('href', '/docs/gettingstarted')
         })
 
-        it('should verify attribute contains value', async () => {
+        it('should verify attribute contains value with wdio asymmetric matcher', async () => {
             const docsLink = await $('a[href="/docs/gettingstarted"]')
             await expect(docsLink).toHaveAttribute('href', expect.stringContaining('docs'))
         })
 
-        it('should verify attribute contains value', async () => {
+        it('should verify attribute contains value with jasmine matcher', async () => {
             const docsLink = await $('a[href="/docs/gettingstarted"]')
             await expect(docsLink).toHaveAttribute('href', jasmine.stringContaining('docs'))
         })

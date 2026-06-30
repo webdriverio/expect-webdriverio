@@ -131,7 +131,7 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(searchButton).toHaveElementProperty('type', 'button')
         })
 
-        it('should verify element property value', async () => {
+        it('should verify element property value with asymmetric matcher', async () => {
             const searchButton = await $('.DocSearch-Button')
             await expect(searchButton).toHaveElementProperty('type', expect.stringContaining('button'))
         })

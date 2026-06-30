@@ -163,7 +163,7 @@ describe('Basic Expect Matchers available when pulling expect from expect-webdri
             expect({ num: 1.1 }).toEqual({ num: expect.closeTo(1.101, 2) })
         })
 
-        it('should have toBe not work with stringContaining', async () => {
+        it('should have toBe not work with stringContaining with wdio asymmetric matcher', async () => {
             expect(() => {
                 expect('title').toBe(expect.stringContaining('title'))
             }).toThrow()

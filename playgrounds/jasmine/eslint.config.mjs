@@ -27,5 +27,6 @@ export default {
     ...tsEslintPlugin.configs['recommended'].rules,
     '@typescript-eslint/no-floating-promises': 'error',
     'jasmine/no-focused-tests': 'error',
+    'jasmine/no-spec-dupes': 'error',
   },
 };
