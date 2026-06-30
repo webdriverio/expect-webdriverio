@@ -40,10 +40,32 @@ describe(toHaveElementProperty, () => {
             })
         })
 
-        test('success with when property value is number', async () => {
+        test('success with when property value is number and expected is the same number', async () => {
             vi.mocked(el.getProperty).mockResolvedValue(5)
 
             const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', 5)
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('fail with when property value is number and expected is a string without asString option', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue(5)
+
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', '5')
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have property myPropertyName
+
+Expected: "5"
+Received: 5`
+            )
+        })
+
+        test('success with when property value is number and expected is a string with asString option', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue(5)
+
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', '5', { asString: true })
 
             expect(result.pass).toBe(true)
         })
