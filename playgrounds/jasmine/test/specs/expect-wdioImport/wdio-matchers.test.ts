@@ -95,6 +95,11 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(docsLink).toHaveAttribute('href', expect.stringContaining('docs'))
         })
 
+        it('should verify attribute contains value', async () => {
+            const docsLink = await $('a[href="/docs/gettingstarted"]')
+            await expect(docsLink).toHaveAttribute('href', jasmine.stringContaining('docs'))
+        })
+
         it('should verify element has class', async () => {
             const searchButton = await $('.DocSearch-Button')
             await expect(searchButton).toHaveElementClass('DocSearch-Button')
