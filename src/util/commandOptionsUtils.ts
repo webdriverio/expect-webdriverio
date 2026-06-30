@@ -1,3 +1,22 @@
+const STRING_OPTIONS_ALLOWED_KEY_LIST = new Set([
+    // StringOptions
+    'ignoreCase',
+    'trim',
+    'containing',
+    'atStart',
+    'atEnd',
+    'atIndex',
+    'replace',
+    'asString',
+    // CommandOptions
+    'message',
+    // DefaultOptions
+    'wait',
+    'interval',
+    'beforeAssertion',
+    'afterAssertion'
+])
+
 export function isStringOptions(obj: unknown): obj is ExpectWebdriverIO.StringOptions {
     if (obj === null ||
         obj === undefined ||
@@ -17,25 +36,5 @@ export function isStringOptions(obj: unknown): obj is ExpectWebdriverIO.StringOp
         return true
     }
 
-    // 4. Combined whitelist of all optional properties from the interfaces
-    const allowedKeys = new Set([
-        // StringOptions
-        'ignoreCase',
-        'trim',
-        'containing',
-        'atStart',
-        'atEnd',
-        'atIndex',
-        'replace',
-        'asString',
-        // CommandOptions
-        'message',
-        // DefaultOptions
-        'wait',
-        'interval',
-        'beforeAssertion',
-        'afterAssertion'
-    ])
-
-    return objKeys.every(key => allowedKeys.has(key))
+    return objKeys.every(key => STRING_OPTIONS_ALLOWED_KEY_LIST.has(key))
 }

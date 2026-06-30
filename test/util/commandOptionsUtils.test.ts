@@ -83,4 +83,38 @@ describe('isStringOptions Type Guard', () => {
             expect(isStringOptions({ waitt: 1000 })).toBe(false) // Misspelled option key
         })
     })
+
+    describe('Interface Exhaustiveness Guard', () => {
+        it('should compile successfully only if all interface keys are covered', () => {
+        // This object maps EVERY allowed key from your Set.
+        // We cast it strictly to require all optional keys from the combined types.
+            const typeCompletenessCheck: Required<
+            ExpectWebdriverIO.StringOptions &
+            ExpectWebdriverIO.CommandOptions &
+            ExpectWebdriverIO.DefaultOptions
+            > = {
+            // StringOptions
+                ignoreCase: true,
+                trim: true,
+                containing: true,
+                atStart: true,
+                atEnd: true,
+                atIndex: 1,
+                replace: ['searchPattern', 'replacementValue'],
+                asString: true,
+
+                // CommandOptions
+                message: '',
+
+                // DefaultOptions
+                wait: 0,
+                interval: 0,
+                beforeAssertion: async () => {},
+                afterAssertion: async () => {}
+            }
+
+            // Run the runtime check against the fully-populated type asset
+            expect(isStringOptions(typeCompletenessCheck)).toBe(true)
+        })
+    })
 })
