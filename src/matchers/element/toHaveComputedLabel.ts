@@ -28,9 +28,10 @@ export async function toHaveComputedLabel(
 ) {
     const isNot = this.isNot
     const { expectation = 'computed label', verb = 'have' } = this
+    const matcherName = 'toHaveComputedLabel'
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveComputedLabel',
+        matcherName,
         expectedValue,
         options,
     })
@@ -67,7 +68,7 @@ export async function toHaveComputedLabel(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveComputedLabel',
+        matcherName,
         expectedValue,
         options,
         result

@@ -38,8 +38,6 @@ describe('refetchElements', () => {
 
         beforeEach(async () => {
             elements = (await $$('parent')) as unknown as WebdriverIO.ElementArray
-            // @ts-ignore
-            elements.parent._length = 5
         })
 
         test('default', async () => {

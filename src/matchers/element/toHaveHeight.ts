@@ -24,9 +24,10 @@ export async function toHaveHeight(
 ) {
     const isNot = this.isNot
     const { expectation = 'height', verb = 'have' } = this
+    const matcherName = 'toHaveHeight'
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveHeight',
+        matcherName,
         expectedValue,
         options,
     })
@@ -75,7 +76,7 @@ export async function toHaveHeight(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveHeight',
+        matcherName,
         expectedValue,
         options,
         result

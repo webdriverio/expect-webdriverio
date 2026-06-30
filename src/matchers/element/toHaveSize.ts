@@ -7,6 +7,9 @@ import {
     waitUntil,
     wrapExpectedWithArray,
 } from '../../utils.js'
+import type { RectReturn } from '@wdio/protocols'
+
+export type Size = Pick<RectReturn, 'width' | 'height'>
 
 async function condition(el: WebdriverIO.Element, size: { height: number; width: number }) {
     const actualSize = await el.getSize()
@@ -21,9 +24,10 @@ export async function toHaveSize(
 ) {
     const isNot = this.isNot
     const { expectation = 'size', verb = 'have' } = this
+    const matcherName = 'toHaveSize'
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveSize',
+        matcherName,
         expectedValue,
         options,
     })
@@ -61,7 +65,7 @@ export async function toHaveSize(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveSize',
+        matcherName,
         expectedValue,
         options,
         result

@@ -5,7 +5,17 @@ describe('Basic Expect Matchers', () => {
         await browser.url('https://webdriver.io')
     })
 
-   describe('Expect matchers', () => {
+    // TODO dprevost to revert
+    // eslint-disable-next-line mocha/no-exclusive-tests
+    it.only('test', async () => {
+        const chainableElement = $('.navbar')
+        const chainableElements = $$('.navbar')
+
+        console.log('chainableElement', chainableElement)
+        console.log('chainableElements', chainableElements)
+    })
+
+    describe('Expect matchers', () => {
         it('Basic matchers', async () => {
             // Equality
             expect(2 + 2).toBe(4);

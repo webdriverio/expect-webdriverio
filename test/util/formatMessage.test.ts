@@ -2,6 +2,7 @@ import { test, describe, beforeEach, expect } from 'vitest'
 import { printDiffOrStringify } from 'jest-matcher-utils'
 
 import { enhanceError, enhanceErrorBe, numberError } from '../../src/util/formatMessage.js'
+import stripAnsi from 'strip-ansi'
 
 describe('formatMessage', () => {
     describe(enhanceError, () => {
@@ -22,7 +23,7 @@ describe('formatMessage', () => {
             })
 
             test('message', () => {
-                expect(actualFailureMessage).toEqual(`\
+                expect(stripAnsi(actualFailureMessage)).toEqual(`\
 Expect window to have title
 
 Expected: "Test Expected Value"
@@ -31,7 +32,7 @@ Received: "Test Actual Value"`)
 
             test('diff string', () => {
                 const diffString = printDiffOrStringify('Test Expected Value', 'Test Actual Value', 'Expected', 'Received', true)
-                expect(diffString).toEqual(`\
+                expect(stripAnsi(diffString)).toEqual(`\
 Expected: "Test Expected Value"
 Received: "Test Actual Value"`)
                 expect(actualFailureMessage).toMatch(diffString)
@@ -58,7 +59,7 @@ Received: "Test Actual Value"`)
                 })
 
                 test('message', () => {
-                    expect(actualFailureMessage).toEqual(`\
+                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
 Expect window not to have title
 
 Expected [not]: "Test Same"
@@ -69,7 +70,7 @@ Received      : "Test Same"`)
                     const diffString = `\
 Expected [not]: "Test Same"
 Received      : "Test Same"`
-                    expect(actualFailureMessage).toMatch(diffString)
+                    expect(stripAnsi(actualFailureMessage)).toMatch(stripAnsi(diffString))
                 })
             })
         })
@@ -96,7 +97,7 @@ Received      : "Test Same"`
                 })
 
                 test('message', () => {
-                    expect(actualFailureMessage).toEqual(`\
+                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
 Expect window to have title containing
 
 Expected: "Test Expected Value"
@@ -123,7 +124,7 @@ Received: "Test Actual Value"`)
                 })
 
                 test('message', () => {
-                    expect(actualFailureMessage).toEqual(`\
+                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
 Expect window not to have title containing
 
 Expected [not]: "same value"
@@ -150,7 +151,7 @@ Received      : "same value"`)
             })
 
             test('message', () => {
-                expect(actualFailureMessage).toEqual(`\
+                expect(stripAnsi(actualFailureMessage)).toEqual(`\
 Test Message
 Expect window to have title
 
@@ -181,7 +182,7 @@ Received: "Test Actual Value"`)
                 })
 
                 test('message', () => {
-                    expect(actualFailureMessage).toEqual(`\
+                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
 Expect window to have property myPropertyName
 
 Expected: "Expected Property Value"
@@ -207,7 +208,7 @@ Received: "Actual Property Value"`)
                 })
 
                 test('message', () => {
-                    expect(actualFailureMessage).toEqual(`\
+                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
 Expect window not to have property myPropertyName
 
 Expected [not]: "Expected Property Value"
@@ -222,7 +223,7 @@ Received      : "Actual Property Value"`)
             expect(numberError()).toBe('no params')
             expect(numberError({ eq: 0 })).toBe(0)
             expect(numberError({ gte: 1 })).toBe('>= 1')
-            expect(numberError({ lte: 1 })).toBe(' <= 1')
+            expect(numberError({ lte: 1 })).toBe('<= 1')
             expect(numberError({ gte: 2, lte: 1 })).toBe('>= 2 && <= 1')
         })
     })
@@ -236,7 +237,7 @@ Received      : "Actual Property Value"`)
         const isNot = false
         test('when isNot is false', () => {
             const message = enhanceErrorBe(subject, { isNot, verb, expectation }, options )
-            expect(message).toEqual(`\
+            expect(stripAnsi(message)).toEqual(`\
 Expect element to be displayed
 
 Expected: "displayed"
@@ -246,7 +247,7 @@ Received: "not displayed"`)
         test('with custom message', () => {
             const customMessage = 'Custom Error Message'
             const message = enhanceErrorBe(subject, { isNot, verb, expectation }, { ...options, message: customMessage })
-            expect(message).toEqual(`\
+            expect(stripAnsi(message)).toEqual(`\
 Custom Error Message
 Expect element to be displayed
 
@@ -257,7 +258,7 @@ Received: "not displayed"`)
         test('when isNot is true', () => {
             const isNot = true
             const message = enhanceErrorBe(subject, { isNot, verb, expectation }, options)
-            expect(message).toEqual(`\
+            expect(stripAnsi(message)).toEqual(`\
 Expect element not to be displayed
 
 Expected: "not displayed"

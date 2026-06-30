@@ -6,17 +6,18 @@ export async function toBeDisabled(
     received: WdioElementMaybePromise,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    this.expectation = this.expectation || 'disabled'
+    this.expectation = 'disabled'
+    const matcherName = 'toBeDisabled'
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeDisabled',
+        matcherName,
         options,
     })
 
     const result = await executeCommandBe.call(this, received, async el => !await el.isEnabled(), options)
 
     await options.afterAssertion?.({
-        matcherName: 'toBeDisabled',
+        matcherName,
         options,
         result
     })

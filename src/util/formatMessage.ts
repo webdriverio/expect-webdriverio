@@ -1,7 +1,9 @@
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
-import { isElementArray } from './elementsUtil.js'
+import { isElementArrayOrChainable, isElementOrNotEmptyElementArray } from './elementsUtil.js'
+import { toJsonString } from './stringUtil.js'
+import { isDefined } from './objectUtils.js'
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
@@ -12,15 +14,21 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) 
     return result
 }
 
-export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
+export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => {
     const selectors = []
     let parent: WebdriverIO.ElementArray['parent'] | undefined
 
-    if (isElementArray(el)) {
+    if (isElementArrayOrChainable(el)) {
         selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)
         parent = el.parent
     } else if (!Array.isArray(el)) {
         parent = el
+    } else if (Array.isArray(el)) {
+        for (const element of el) {
+            selectors.push(getSelectors(element))
+        }
+        // When not having more context about the common parent, return joined selectors
+        return selectors.join(', ')
     }
 
     while (parent && 'selector' in parent) {
@@ -49,7 +57,7 @@ export const enhanceError = (
     } = {}): string => {
     const { isNot = false, useNotInLabel = true } = context
 
-    subject = typeof subject === 'string' ? subject : getSelectors(subject)
+    subject = isElementOrNotEmptyElementArray(subject) ? getSelectors(subject) : toJsonString(subject)
 
     let contain = ''
     if (containing) {
@@ -104,16 +112,16 @@ export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): stri
         return options.eq
     }
 
-    if (options.gte && options.lte) {
+    if (isDefined(options.gte) && isDefined(options.lte)) {
         return `>= ${options.gte} && <= ${options.lte}`
     }
 
-    if (options.gte) {
+    if (isDefined(options.gte)) {
         return `>= ${options.gte}`
     }
 
-    if (options.lte) {
-        return ` <= ${options.lte}`
+    if (isDefined(options.lte)) {
+        return `<= ${options.lte}`
     }
 
     return 'no params'

@@ -19,9 +19,10 @@ export async function toHaveStyle(
 ) {
     const isNot = this.isNot
     const { expectation = 'style', verb = 'have' } = this
+    const matcherName = 'toHaveStyle'
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveStyle',
+        matcherName,
         expectedValue,
         options,
     })
@@ -45,7 +46,7 @@ export async function toHaveStyle(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveStyle',
+        matcherName,
         expectedValue,
         options,
         result

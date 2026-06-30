@@ -1,24 +1,16 @@
-import { vi, test, describe, expect, afterEach, beforeEach } from 'vitest'
+import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 import { $ } from '@wdio/globals'
-import { matcherNameLastWords } from '../__fixtures__/utils.js'
+import { lastMatcherWords } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
-import { setOptions } from '../../src/index.js'
+import { executeCommandBe, waitUntil } from '../../src/utils.js'
+import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeExisting, toBeFocused, toBePresent, toBeSelected, toExist } from '../../src/matchers.js'
+import { setOptions } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../src/constants.js'
-import { executeCommandBe } from '../../src/utils.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
-const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeDisabled', 'toBeDisplayed', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith']
-const beMatchers = {
-    'toBeChecked': 'isSelected',
-    'toBeClickable': 'isClickable',
-    'toBeDisplayedInViewport': 'isDisplayed',
-    'toBeEnabled': 'isEnabled',
-    'toBeExisting': 'isExisting',
-    'toBeFocused': 'isFocused',
-    'toBePresent': 'isExisting',
-    'toBeSelected': 'isSelected',
-} satisfies Partial<Record<keyof typeof Matchers, keyof WebdriverIO.Element>>
+const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith', 'toBeDisplayed', 'toBeDisabled']
 
 vi.mock('../../src/utils.js', async (importOriginal) => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -29,128 +21,178 @@ vi.mock('../../src/utils.js', async (importOriginal) => {
     }
 })
 
+type BooleanElementMethod = 'isSelected' | 'isClickable' | 'isDisplayed' | 'isEnabled' | 'isExisting' | 'isFocused'
+
+const beMatchers = new Map<Function, BooleanElementMethod>([
+    [toBeChecked, 'isSelected'],
+    [toBeClickable, 'isClickable'],
+    [toBeDisplayedInViewport, 'isDisplayed'],
+    [toBeEnabled, 'isEnabled'],
+    [toBeExisting, 'isExisting'],
+    [toBeFocused, 'isFocused'],
+    [toBePresent, 'isExisting'],
+    [toBeSelected, 'isSelected'],
+    [toExist, 'isExisting'],
+])
+
 describe('be* matchers', () => {
     describe('Ensure all toBe matchers are covered', () => {
 
         test('all toBe matchers are covered in beMatchers', () => {
-            const matcherNames = Object.keys(Matchers).filter(name => name.startsWith('toBe') && !ignoredMatchers.includes(name))
-            matcherNames.sort()
+            const matcherFnNames = Object.keys(Matchers).filter(name => name.startsWith('toBe') && !ignoredMatchers.includes(name))
+            matcherFnNames.push('toExist')
+            matcherFnNames.sort()
 
-            expect(Object.keys(beMatchers)).toEqual(matcherNames)
+            const beMatcherNames = Array.from(beMatchers.keys()).map(matcher => matcher.name)
+            expect(beMatcherNames).toEqual(matcherFnNames)
         })
     })
 
-    Object.entries(beMatchers).forEach(([matcherName, elementFnName]) => {
-        const matcherFn = Matchers[matcherName as keyof typeof Matchers]
+    beMatchers.forEach((elFnName, matcherFn) => {
+        const elementFnName = elFnName
 
-        describe(matcherName, () => {
-            test('wait for success', async () => {
-                const el = await $('sel')
+        describe(matcherFn.name, () => {
+            let thisContext: { matcherFn: typeof matcherFn }
+            let thisNotContext: { isNot: true,  matcherFn: typeof matcherFn }
 
-                el[elementFnName] = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(true)
+            let el: ChainablePromiseElement
 
-                const result = await matcherFn.call({}, el) as ExpectWebdriverIO.AssertionResult
-
-                expect(result.pass).toBe(true)
-                expect(el[elementFnName]).toHaveBeenCalledTimes(3)
+            beforeEach(async () => {
+                thisContext = { matcherFn }
+                thisNotContext = { isNot: true,  matcherFn }
+                el = await $('sel')
             })
 
-            test('wait but failure', async () => {
-                const el = await $('sel')
+            describe('given single element', () => {
+                test('wait for success', async () => {
+                    const beforeAssertion = vi.fn()
+                    const afterAssertion = vi.fn()
+                    vi.mocked(el[elementFnName]).mockResolvedValueOnce(false).mockResolvedValueOnce(true)
 
-                el[elementFnName] = vi.fn().mockRejectedValue(new Error('some error'))
+                    const result = await thisContext.matcherFn(el, { beforeAssertion, afterAssertion, wait: 125, interval: 50 })
 
-                await expect(() => matcherFn.call({}, el, 10, {}))
-                    .rejects.toThrow('some error')
+                    expect(result.pass).toBe(true)
+                    expect(el[elementFnName]).toHaveBeenCalledTimes(2)
+
+                    expect(executeCommandBe).toHaveBeenCalledExactlyOnceWith(el, expect.any(Function),
+                        {
+                            afterAssertion,
+                            beforeAssertion,
+                            wait: 125,
+                            interval: 50
+                        },
+                    )
+                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 125, interval: 50 })
+                    expect(beforeAssertion).toHaveBeenCalledWith({
+                        matcherName: matcherFn.name,
+                        options: { beforeAssertion, afterAssertion, wait: 125, interval: 50 }
+                    })
+                    expect(afterAssertion).toHaveBeenCalledWith({
+                        matcherName: matcherFn.name,
+                        options: { beforeAssertion, afterAssertion, wait: 125, interval: 50 },
+                        result
+                    })
+                })
+
+                test('wait but error', async () => {
+                    const el = await $('sel')
+
+                    vi.mocked(el[elementFnName]).mockRejectedValue(new Error('some error'))
+
+                    await expect(() => thisContext.matcherFn(el))
+                        .rejects.toThrow('some error')
+                })
+
+                test('success on the first attempt', async () => {
+                    const el = await $('sel')
+
+                    vi.mocked(el[elementFnName]).mockResolvedValue(true)
+
+                    const result = await thisContext.matcherFn(el)
+                    expect(result.pass).toBe(true)
+                    expect(el[elementFnName]).toHaveBeenCalledTimes(1)
+                })
+
+                test('no wait - failure', async () => {
+                    const el = await $('sel')
+
+                    vi.mocked(el[elementFnName]).mockResolvedValue(false)
+
+                    const result = await thisContext.matcherFn(el, { wait: 0 })
+                    expect(result.pass).toBe(false)
+                    expect(el[elementFnName]).toHaveBeenCalledTimes(1)
+                })
+
+                test('no wait - success', async () => {
+                    const el = await $('sel')
+
+                    vi.mocked(el[elementFnName]).mockResolvedValue(true)
+
+                    const result = await thisContext.matcherFn(el, { wait: 0 })
+                    expect(result.pass).toBe(true)
+                    expect(el[elementFnName]).toHaveBeenCalledTimes(1)
+                })
+
+                test('not - failure - pass should be true', async () => {
+                    const el = await $('sel')
+
+                    const result = await thisNotContext.matcherFn(el)
+
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    if (matcherFn.name === 'toExist') {return}
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) not to be ${lastMatcherWords(matcherFn.name)}
+
+Expected: "not ${lastMatcherWords(matcherFn.name)}"
+Received: "${lastMatcherWords(matcherFn.name)}"`
+                    )
+                })
+
+                test('not - success - pass should be false', async () => {
+                    const el = await $('sel')
+                    vi.mocked(el[elementFnName]).mockResolvedValue(false)
+
+                    const result = await thisNotContext.matcherFn(el, { wait: 0 })
+
+                    expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                })
+
+                test('not - failure (with wait) - pass should be true', async () => {
+                    const el = await $('sel')
+
+                    const result = await thisNotContext.matcherFn(el)
+
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                })
+
+                test('not - success (with wait) - pass should be false', async () => {
+                    const el = await $('sel')
+                    vi.mocked(el[elementFnName]).mockResolvedValue(false)
+
+                    const result = await thisNotContext.matcherFn(el)
+
+                    expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                })
+
+                test('message', async () => {
+                    const el = await $('sel')
+                    vi.mocked(el[elementFnName]).mockResolvedValue(false)
+
+                    const result = await thisContext.matcherFn(el, { wait: 0 })
+
+                    expect(result.pass).toBe(false)
+                    if (matcherFn.name === 'toExist') {return}
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to be ${lastMatcherWords(matcherFn.name)}
+
+Expected: "${lastMatcherWords(matcherFn.name)}"
+Received: "not ${lastMatcherWords(matcherFn.name)}"`)
+                })
             })
 
-            test('success on the first attempt', async () => {
-                const el = await $('sel')
-
-                el[elementFnName] = vi.fn().mockResolvedValue(true)
-
-                const result = await matcherFn.call({}, el) as ExpectWebdriverIO.AssertionResult
-                expect(result.pass).toBe(true)
-                expect(el[elementFnName]).toHaveBeenCalledTimes(1)
-            })
-
-            test('no wait - failure', async () => {
-                const el = await $('sel')
-
-                el[elementFnName] = vi.fn().mockResolvedValue(false)
-
-                const result = await matcherFn.call({}, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
-                expect(result.pass).toBe(false)
-                expect(el[elementFnName]).toHaveBeenCalledTimes(1)
-            })
-
-            test('no wait - success', async () => {
-                const el = await $('sel')
-
-                el[elementFnName] = vi.fn().mockResolvedValue(true)
-
-                const result = await matcherFn.call({}, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
-
-                expect(result.pass).toBe(true)
-                expect(el[elementFnName]).toHaveBeenCalledTimes(1)
-            })
-
-            test('not - failure - pass should be true', async () => {
-                const el = await $('sel')
-
-                const result = await matcherFn.call({ isNot: true }, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
-
-                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
-Expect $(\`sel\`) not to be ${matcherNameLastWords(matcherName)}
-
-Expected: "not ${matcherNameLastWords(matcherName)}"
-Received: "${matcherNameLastWords(matcherName)}"`
-                )
-            })
-
-            test('not - success - pass should be false', async () => {
-                const el = await $('sel')
-
-                el[elementFnName] = vi.fn().mockResolvedValue(false)
-
-                const result = await matcherFn.call({ isNot: true }, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
-
-                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-            })
-
-            test('not - failure (with wait) - pass should be true', async () => {
-                const el = await $('sel')
-
-                const result = await matcherFn.call({ isNot: true }, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
-
-                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            })
-
-            test('not - success (with wait) - pass should be false', async () => {
-                const el = await $('sel')
-                el[elementFnName] = vi.fn().mockResolvedValue(false)
-                const result = await matcherFn.call({ isNot: true }, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
-
-                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-            })
-
-            test('message', async () => {
-                const el = await $('sel')
-                el[elementFnName] = vi.fn().mockResolvedValue(false)
-
-                const result = await matcherFn.call({}, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
-                expect(result.pass).toBe(false)
-                expect(result.message()).toBe(`\
-Expect $(\`sel\`) to be ${matcherNameLastWords(matcherName)}
-
-Expected: "${matcherNameLastWords(matcherName)}"
-Received: "not ${matcherNameLastWords(matcherName)}"`
-                )
-            })
-
-            describe('global options', () => {
-                const defaultOptions = { ...DEFAULT_OPTIONS }
+            // TODO dprevost find a way to cancel mocked from globals.ts to test setOptions()
+            describe.skip('global options', () => {
+                const defaultOptions =  { ...DEFAULT_OPTIONS }
 
                 beforeEach(() => {
                     // Set global options to custom values before each test

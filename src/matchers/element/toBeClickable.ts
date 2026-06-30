@@ -6,17 +6,18 @@ export async function toBeClickable(
     received: WdioElementMaybePromise,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    this.expectation = this.expectation || 'clickable'
+    this.expectation = 'clickable'
+    const matcherName = 'toBeClickable'
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeClickable',
+        matcherName,
         options,
     })
 
     const result = await executeCommandBe.call(this, received, el => el?.isClickable(), options)
 
     await options.afterAssertion?.({
-        matcherName: 'toBeClickable',
+        matcherName,
         options,
         result
     })

@@ -37,9 +37,10 @@ export async function toHaveChildren(
 ) {
     const isNot = this.isNot
     const { expectation = 'children', verb = 'have' } = this
+    const matcherName = 'toHaveChildren'
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveChildren',
+        matcherName,
         expectedValue,
         options,
     })
@@ -50,13 +51,16 @@ export async function toHaveChildren(
 
     let el = await received?.getElement()
     let children
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, condition, numberOptions, [numberOptions])
-        el = result.el as WebdriverIO.Element
-        children = result.values
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand.call(this, el, condition, numberOptions, [numberOptions])
+            el = result.el as WebdriverIO.Element
+            children = result.values
 
-        return result.success
-    }, isNot, { ...numberOptions, ...options })
+            return result.success
+        },
+        isNot,
+        { wait: numberOptions.wait ?? options.wait, interval: numberOptions.interval ?? options.interval })
 
     const error = numberError(numberOptions)
     const expectedArray = wrapExpectedWithArray(el, children, error)
@@ -67,7 +71,7 @@ export async function toHaveChildren(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveChildren',
+        matcherName,
         expectedValue,
         options,
         result

@@ -6,10 +6,11 @@ export async function toBeDisplayed(
     received: WdioElementMaybePromise,
     options: ExpectWebdriverIO.ToBeDisplayedOptions = DEFAULT_OPTIONS_TO_BE_DISPLAYED,
 ) {
-    this.expectation = this.expectation || 'displayed'
+    this.expectation = 'displayed'
+    const matcherName = 'toBeDisplayed'
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeDisplayed',
+        matcherName,
         options,
     })
 
@@ -29,7 +30,7 @@ export async function toBeDisplayed(
     }), commandOptions)
 
     await options.afterAssertion?.({
-        matcherName: 'toBeDisplayed',
+        matcherName,
         options,
         result
     })
