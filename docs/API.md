@@ -349,7 +349,7 @@ await expect(myInput).toHaveAttribute('class', 'form-control')
 await expect(myInput).toHaveAttribute('class', expect.stringContaining('control'))
 ```
 
-Checks if an element has a specific attribute with a value.
+Checks if an element has a specific attribute.
 
 ##### Usage
 

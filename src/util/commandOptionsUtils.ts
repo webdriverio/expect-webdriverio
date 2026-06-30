@@ -10,7 +10,6 @@ export function isStringOptions(obj: unknown): obj is ExpectWebdriverIO.StringOp
         return false
     }
 
-    // 3. Extract object keys
     const objKeys = Object.keys(obj)
 
     // Condition A: It is a completely empty object -> {}
@@ -38,6 +37,5 @@ export function isStringOptions(obj: unknown): obj is ExpectWebdriverIO.StringOp
         'afterAssertion'
     ])
 
-    // Condition B: At least one key in the object exists in our whitelist
     return objKeys.every(key => allowedKeys.has(key))
 }
