@@ -58,7 +58,7 @@ describe(toHaveAttribute, () => {
                 expect(result.pass).toBe(true)
             })
 
-            test('success when present by passing undefined value with options - deprecated', async () => {
+            test('success when checking with asymmetric matcher', async () => {
                 // Casting since we use vitest asymmetrics matcher instead of wdio one and TypeScript show a deprecation
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name', expect.stringContaining('Correct') as AsymmetricMatcher<string>)
 

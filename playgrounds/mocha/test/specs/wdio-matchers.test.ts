@@ -131,6 +131,11 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(searchButton).toHaveElementProperty('type', 'button')
         })
 
+        it('should verify element property value', async () => {
+            const searchButton = await $('.DocSearch-Button')
+            await expect(searchButton).toHaveElementProperty('type', expect.stringContaining('button'))
+        })
+
         it('should verify that element property exists', async () => {
             const searchButton = await $('.DocSearch-Button')
             await expect(searchButton).toHaveElementProperty('type')

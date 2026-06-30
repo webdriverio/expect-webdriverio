@@ -4,7 +4,6 @@ import { $ } from '@wdio/globals'
 import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty.js'
 import stripAnsi from 'strip-ansi'
 import { jasmine } from '../../__mocks__/jasmine.js'
-// import { expect as wdioExpect } from '@wdio/globals'
 
 vi.mock('@wdio/globals')
 
@@ -75,12 +74,6 @@ Received: {"foo": "bar"}`
             const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', jasmine.stringContaining('phone'))
             expect(result.pass).toBe(true)
         })
-
-        // TODO dprevost to debug
-        // test('assymeric match with wdio matcher', async () => {
-        //     const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', wdioExpect.stringContaining('phone'))
-        //     expect(result.pass).toBe(true)
-        // })
 
         test('not - success - should return pass=false if values dont match', async () => {
             const result = await thisIsNotContext.toHaveElementProperty(el, 'myPropertyName', 'foobar')
