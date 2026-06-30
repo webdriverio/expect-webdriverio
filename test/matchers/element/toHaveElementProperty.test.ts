@@ -130,6 +130,12 @@ Received      : "iphone"`)
             expect(result.pass).toBe(true)
         })
 
+        test('should return true when property does exist by passing an not defined expected value with options', async () => {
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
         test.for([
             { expectedValue: null },
             { expectedValue: undefined }
