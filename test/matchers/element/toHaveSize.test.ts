@@ -14,7 +14,7 @@ describe(toHaveSize, async () => {
     const expectedValue: Size = { width: 32, height: 32 }
     const wrongValue: Size = { width: 15, height: 32 }
 
-    beforeEach(async () => {
+    beforeEach(() => {
         thisContext =  { toHaveSize }
         thisNotContext = { isNot: true, ...thisContext }
     })
@@ -55,7 +55,7 @@ describe(toHaveSize, async () => {
         test('wait but error', async () => {
             vi.mocked(el.getSize).mockRejectedValue(new Error('some error'))
 
-            await expect(() => thisContext.toHaveSize(el, expectedValue))
+            await expect(() => thisContext.toHaveSize(el, expectedValue, { wait: 500 }))
                 .rejects.toThrow('some error')
         })
 
