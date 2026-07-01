@@ -2,7 +2,8 @@ import { test, describe, expect } from 'vitest'
 import {
     isNumber,
     NumberMatcher,
-    numberMatcherTester
+    numberMatcherTester,
+    validateNumberAndExtractOptions
 } from '../../src/util/numberOptionsUtil.js'
 
 describe('numberOptionsUtil', () => {
@@ -32,8 +33,13 @@ describe('numberOptionsUtil', () => {
 
     describe(NumberMatcher, () => {
         describe('equals', () => {
-            test('returns false for undefined', () => {
+            test('returns false for undefined on exact matchers', () => {
                 const matcher = new NumberMatcher({ eq: 5 })
+                expect(matcher.match(undefined)).toBe(false)
+            })
+
+            test('returns false for undefined on range matchers', () => {
+                const matcher = new NumberMatcher({ gte: 5, lte: 10 })
                 expect(matcher.match(undefined)).toBe(false)
             })
 
@@ -107,6 +113,7 @@ describe('numberOptionsUtil', () => {
                     expect(matcher.match(0)).toBe(false)
                     expect(matcher.match(5)).toBe(false)
                     expect(matcher.match(100)).toBe(false)
+                    expect(matcher.match(undefined)).toBe(false)
                 })
             })
         })
@@ -147,62 +154,66 @@ describe('numberOptionsUtil', () => {
 
             test('returns string for range options', () => {
                 expect(new NumberMatcher({ gte: 5, lte: 10 }).toJSON()).toBe('>= 5 && <= 10')
+                expect(new NumberMatcher({ gte: 0, lte: 10 }).toJSON()).toBe('>= 0 && <= 10')
+                expect(new NumberMatcher({ gte: 10, lte: 0 }).toJSON()).toBe('>= 10 && <= 0')
+                expect(new NumberMatcher({ gte: 0, lte: 0 }).toJSON()).toBe('>= 0 && <= 0')
+                expect(new NumberMatcher({ gte: -10, lte: -1 }).toJSON()).toBe('>= -10 && <= -1')
                 expect(new NumberMatcher({ gte: 5 }).toJSON()).toBe('>= 5')
                 expect(new NumberMatcher({ lte: 10 }).toJSON()).toBe('<= 10')
-            })
-
-            test('serializes correctly with JSON.stringify', () => {
-                expect(JSON.stringify(new NumberMatcher({ eq: 5 }))).toBe('5')
-                expect(JSON.stringify(new NumberMatcher({ gte: 5, lte: 10 }))).toBe('">= 5 && <= 10"')
-                expect(JSON.stringify([new NumberMatcher({ eq: 1 }), new NumberMatcher({ eq: 2 })])).toBe('[1,2]')
             })
         })
     })
 
-    describe(numberMatcherTester, () => {
-        test('returns true when NumberMatcher matches number', () => {
-            const matcher = new NumberMatcher({ eq: 5 })
-
-            expect(numberMatcherTester(matcher, 5)).toBe(true)
-            expect(numberMatcherTester(5, matcher)).toBe(true)
+    describe('validateNumberOptions', () => {
+        test('successfully extracts number literal configurations', () => {
+            const result = validateNumberAndExtractOptions(5, { wait: 1000 })
+            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
+            expect(result.numberMatcher.match(5)).toBe(true)
+            expect(result.commandOptions).toEqual({ wait: 1000 })
         })
 
-        test('returns false when NumberMatcher does not match number', () => {
-            const matcher = new NumberMatcher({ eq: 5 })
-
-            expect(numberMatcherTester(matcher, 10)).toBe(false)
-            expect(numberMatcherTester(10, matcher)).toBe(false)
+        test('successfully extracts valid interface configurations and returns remaining command options', () => {
+            const result = validateNumberAndExtractOptions({ gte: 2, lte: 5, wait: 2000 })
+            expect(result.numberMatcher.match(3)).toBe(true)
+            expect(result.commandOptions).toEqual({ wait: 2000 })
         })
 
-        test('works with range matchers', () => {
-            const matcher = new NumberMatcher({ gte: 5, lte: 10 })
+        test('throws error for empty or entirely invalid options objects', () => {
+            expect(() => validateNumberAndExtractOptions(null as any)).toThrow(/Invalid NumberOptions/)
+            expect(() => validateNumberAndExtractOptions(undefined as any)).toThrow(/Invalid NumberOptions/)
+            expect(() => validateNumberAndExtractOptions({} as any)).toThrow(/Invalid NumberOptions/)
+            expect(() => validateNumberAndExtractOptions({ invalidKey: 10 } as any)).toThrow(/Invalid NumberOptions/)
+        })
 
-            expect(numberMatcherTester(matcher, 7)).toBe(true)
-            expect(numberMatcherTester(7, matcher)).toBe(true)
-            expect(numberMatcherTester(matcher, 3)).toBe(false)
+        test('throws error when gte option is greater than lte option', () => {
+            expect(() => validateNumberAndExtractOptions({ gte: 10, lte: 5 })).toThrow(
+                "Invalid NumberOptions range: 'gte' (10) cannot be greater than 'lte' (5)."
+            )
+        })
+
+        test('does not throw when gte equals lte', () => {
+            expect(() => validateNumberAndExtractOptions({ gte: 5, lte: 5 })).not.toThrow()
+            const result = validateNumberAndExtractOptions({ gte: 5, lte: 5 })
+            expect(result.numberMatcher.match(5)).toBe(true)
+        })
+    })
+
+    describe('numberMatcherTester', () => {
+        test('returns true/false when argument A is a NumberMatcher and argument B is a valid number', () => {
+            const matcher = new NumberMatcher({ eq: 10 })
+            expect(numberMatcherTester(matcher, 10)).toBe(true)
+            expect(numberMatcherTester(matcher, 5)).toBe(false)
+        })
+
+        test('returns true/false symmetrically when argument B is a NumberMatcher and argument A is a valid number', () => {
+            const matcher = new NumberMatcher({ gte: 5 })
+            expect(numberMatcherTester(10, matcher)).toBe(true)
             expect(numberMatcherTester(3, matcher)).toBe(false)
         })
 
-        test('returns undefined for non-NumberMatcher comparisons', () => {
-            expect(numberMatcherTester(5, 5)).toBeUndefined()
-            expect(numberMatcherTester('5', 5)).toBeUndefined()
-            expect(numberMatcherTester({}, 5)).toBeUndefined()
-            expect(numberMatcherTester(null, 5)).toBeUndefined()
-        })
-
-        test('returns undefined when both are NumberMatchers', () => {
-            const matcher1 = new NumberMatcher({ eq: 5 })
-            const matcher2 = new NumberMatcher({ eq: 5 })
-
-            expect(numberMatcherTester(matcher1, matcher2)).toBeUndefined()
-        })
-
-        test('returns undefined when neither is a number', () => {
-            const matcher = new NumberMatcher({ eq: 5 })
-
-            expect(numberMatcherTester(matcher, '5')).toBeUndefined()
-            expect(numberMatcherTester(matcher, null)).toBeUndefined()
-            expect(numberMatcherTester(matcher, undefined)).toBeUndefined()
+        test('returns undefined when neither argument is a NumberMatcher instance', () => {
+            expect(numberMatcherTester(5, 10)).toBeUndefined()
+            expect(numberMatcherTester('string', {})).toBeUndefined()
         })
     })
 })

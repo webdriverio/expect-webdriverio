@@ -2,7 +2,7 @@ import { waitUntil, enhanceError } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElements, WdioElementsMaybePromise } from '../../types.js'
-import { validateNumberOptions as extractNumberAndOptions } from '../../util/numberOptionsUtil.js'
+import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -33,7 +33,7 @@ export async function toBeElementsArrayOfSize(
         options,
     })
 
-    const  { numberMatcher, commandOptions } = extractNumberAndOptions(expectedValue, options)
+    const  { numberMatcher, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
 
     let elements = await received as WdioElements
     const originalLength = elements.length
