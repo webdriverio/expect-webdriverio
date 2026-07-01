@@ -424,7 +424,7 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
          * @deprecated since 5.7.0. Use `toBeElementsArrayOfSize` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
          */
         (
-            size: ExpectWebdriverIO.CommandOptions,
+            size: ExpectWebdriverIO.NumberOptions,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void> & Promise<WebdriverIO.ElementArray>,
     }>
