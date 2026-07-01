@@ -1,3 +1,4 @@
+import { isDefinedObject } from './commandOptionsUtils.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number'
 
@@ -6,7 +7,7 @@ export function validateNumberAndExtractOptions(
     commandOptions: ExpectWebdriverIO.CommandOptions = {},
     supportUndefinedAsGteThen1: boolean = false
 ): { numberMatcher: NumberMatcher; commandOptions: ExpectWebdriverIO.CommandOptions } {
-    if (supportUndefinedAsGteThen1 && expectedValue === undefined) {
+    if (supportUndefinedAsGteThen1 && (expectedValue === undefined || (isDefinedObject(expectedValue) && Object.keys(expectedValue).length === 0)) /** supporting {} for backward reason to remove later */) {
         return { numberMatcher: new NumberMatcher({ gte: 1 }), commandOptions }
     } else if (isNumber(expectedValue)) {
         return { numberMatcher: new NumberMatcher({ eq: expectedValue }), commandOptions }

@@ -196,6 +196,20 @@ describe('numberOptionsUtil', () => {
             const result = validateNumberAndExtractOptions({ gte: 5, lte: 5 })
             expect(result.numberMatcher.match(5)).toBe(true)
         })
+
+        test('return default gte 1 when undefined is passed and supportUndefinedAsGteThen1 is true', () => {
+            const result = validateNumberAndExtractOptions(undefined, {}, true)
+            expect(result.numberMatcher.match(1)).toBe(true)
+            expect(result.numberMatcher.match(2)).toBe(true)
+            expect(result.numberMatcher.match(0)).toBe(false)
+        })
+
+        test('return default gte 1 when {} is passed and supportUndefinedAsGteThen1 is true', () => {
+            const result = validateNumberAndExtractOptions({}, {}, true)
+            expect(result.numberMatcher.match(1)).toBe(true)
+            expect(result.numberMatcher.match(2)).toBe(true)
+            expect(result.numberMatcher.match(0)).toBe(false)
+        })
     })
 
     describe('numberMatcherTester', () => {
