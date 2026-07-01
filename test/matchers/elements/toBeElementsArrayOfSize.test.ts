@@ -192,7 +192,7 @@ Received      : 2`
         })
 
         test('refresh once the elements array using parent $$ and update actual element with newly fetched elements', async () => {
-            vi.fn(browser.$$).mockResolvedValueOnce(elementArrayOf2).mockResolvedValueOnce(elementArrayOf5)
+            vi.mocked(browser.$$).mockResolvedValueOnce(elementArrayOf2).mockResolvedValueOnce(elementArrayOf5)
             const elements = await $$('elements')
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, 5, { wait: 95, interval: 50 })
@@ -209,19 +209,19 @@ Received      : 2`
             vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
             const elements = await $$('elements')
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 100, interval: 19 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 200, interval: 20 })
 
             expect(result.pass).toBe(false)
             expect(elements.length).toBe(2)
             expect(elements).toBe(elementArrayOf2)
-            expect(browser.$$).toHaveBeenCalledTimes(7)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 100, true)
-            expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf5, 100, true)
+            expect(browser.$$).toHaveBeenCalledTimes(11)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 200, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf5, 200, true)
         })
 
         // TODO: By awaiting the promise we could update the actual elements array, so should we support that?
         test('refresh once but does not update actual elements since they are not of type ElementArray or Element[]', async () => {
-            vi.fn(browser.$$).mockResolvedValueOnce(elementArrayOf2).mockResolvedValueOnce(elementArrayOf5)
+            vi.mocked(browser.$$).mockResolvedValueOnce(elementArrayOf2).mockResolvedValueOnce(elementArrayOf5)
             const nonAwaitedElements = $$('elements')
 
             const result = await thisContext.toBeElementsArrayOfSize(nonAwaitedElements, 5, { wait: 500 })

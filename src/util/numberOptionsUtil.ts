@@ -36,7 +36,7 @@ export class NumberMatcher {
 
     equals(other: unknown): boolean {
         if (isNumber(other)) {
-            this.match(other)
+            return this.match(other)
         }
         return false
     }
