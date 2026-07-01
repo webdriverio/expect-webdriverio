@@ -9,6 +9,7 @@ export async function toBeElementsArrayOfSize(
     expectedValue: number | ExpectWebdriverIO.NumberMatcher,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
+
 /**
  * @deprecated since version 5.7.0. Use `toBeElementsArrayOfSize` with NumberMatcher instead. This matcher will be removed in version 6.0.0.
  */
@@ -17,6 +18,7 @@ export async function toBeElementsArrayOfSize(
     expectedValue: ExpectWebdriverIO.NumberOptions,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
+
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
     expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,

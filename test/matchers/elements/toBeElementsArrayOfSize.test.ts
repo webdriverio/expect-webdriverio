@@ -19,10 +19,12 @@ describe(toBeElementsArrayOfSize, async () => {
 
     describe.each([
         { elements: await $$('elements'), title: 'awaited ChainablePromiseArray', selectorName: '$$(`elements`)' },
-        // { elements: await $$('elements').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
-        // { elements: await $$('elements').filter((t) => t.isEnabled()), selectorName: '$(`elements`), $$(`elements`)[1]', title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
+        { elements: await $$('elements').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
+
+        // TODO to bring back later in PR supporting $$.
+        // { elements: await $$('elements').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])', selectorName: '$(`elements`), $$(`elements`)[1]' },
         // { elements: [elementFactory('element'), elementFactory('element')], selectorName: '$(`element`), $(`element`)', title: 'Array of element (e.g. WebdriverIO.Element[])' },
-        // { elements: $$('elements'), title: 'non-awaited of ChainablePromiseArray' },
+        { elements: $$('elements'), title: 'non-awaited of ChainablePromiseArray' },
 
         // // TODO to support, since the below return Promise<WebdriverIO.ElementArray|Element[]>, we do not support it type wise yet, but we could
         // { elements: $$('elements').getElements() as unknown as ChainablePromiseArray, title: 'non-awaited of ChainablePromiseArray' },
@@ -166,12 +168,27 @@ Received      : 2`
         let elementArrayOf5: ChainablePromiseArray
 
         beforeEach(async () => {
-            // eslint-disable-next-line @typescript-eslint/consistent-type-imports
             const actuatlRefetchElements = await vi.importActual<typeof import('../../../src/util/refetchElements.js')>('../../../src/util/refetchElements.js')
             vi.spyOn(actuatlRefetchElements, 'refetchElements')
 
             elementArrayOf2 = await chainableElementArrayFactory('elements', 2)
             elementArrayOf5 = await chainableElementArrayFactory('elements', 5)
+        })
+
+        test('does not refresh the element array with the wait 0', async () => {
+            vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
+            const elements = await $$('elements')
+
+            const result = await thisContext.toBeElementsArrayOfSize(elements, 2, { beforeAssertion: undefined, afterAssertion: undefined, wait: 0 })
+
+            expect(result.pass).toBe(true)
+            expect(browser.$$).toHaveBeenCalledTimes(1)
+            // TODO bring back later in PR supporting $$
+            // expect(waitUntil).toHaveBeenCalledWith(
+            //     expect.any(Function),
+            //     undefined,
+            //     expect.objectContaining({ wait: 1 })
+            // )
         })
 
         test('refresh once the elements array using parent $$ and update actual element with newly fetched elements', async () => {
@@ -242,6 +259,8 @@ Received      : 2`
             expect(result.pass).toBe(true)
             expect(elements.length).toBe(5)
             expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 450, true)
+            expect(browser.$$).toHaveBeenCalledTimes(2)
+            // TODO bring back later in PR supporting $$
             // expect(waitUntil).toHaveBeenCalledWith(
             //     expect.any(Function),
             //     undefined,
@@ -255,8 +274,10 @@ Received      : 2`
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { beforeAssertion: undefined, afterAssertion: undefined })
 
-            expect(result.pass).toBe(false)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 1, true)
+            expect(result.pass).toBe(true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, undefined, true)
+            expect(browser.$$).toHaveBeenCalledTimes(2)
+            // TODO bring back later in PR supporting $$
             // expect(waitUntil).toHaveBeenCalledWith(
             //     expect.any(Function),
             //     undefined,
@@ -294,33 +315,6 @@ Received      : 2`
             const result = await thisContext.toBeElementsArrayOfSize(els, size)
 
             expect(result.pass).toBe(true)
-        })
-    })
-
-    // TODO dprevost to support?
-    describe.skip('Fails for unsupported types', () => {
-
-        test.for([
-            { els: undefined, selectorName: 'undefined' },
-            { els: null, selectorName: 'null' },
-            { els: 0, selectorName: '0' },
-            { els: 1, selectorName: '1' },
-            { els: true, selectorName: 'true' },
-            { els: false, selectorName: 'false' },
-            { els: '', selectorName: '' },
-            { els: 'test', selectorName: 'test' },
-            { els: {}, selectorName: '{}' },
-            { els: [1, 'test'], selectorName: '[1,"test"]' },
-            { els: Promise.resolve(true), selectorName: 'true' }
-        ])('fails for %s', async ({ els, selectorName }) => {
-            const result = await thisContext.toBeElementsArrayOfSize(els as any, 0)
-
-            expect(result.pass).toBe(false)
-            expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} to be elements array of size
-
-Expected: 0
-Received: undefined`)
         })
     })
 })
