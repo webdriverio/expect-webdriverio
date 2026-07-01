@@ -125,7 +125,7 @@ Received      : 2`
 
         describe('error catching', () => {
             test('throws error with incorrect size param', async () => {
-                await expect(thisContext.toBeElementsArrayOfSize(els, '5' as any)).rejects.toThrow('Invalid NumberOptions. Received: "5"')
+                await expect(thisContext.toBeElementsArrayOfSize(els, '5' as any)).rejects.toThrow('Invalid NumberMatcher. Received: "5"')
             })
 
             test('works if size contains options', async () => {
@@ -209,7 +209,7 @@ Received      : 2`
             vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
             const elements = await $$('elements')
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 100, interval: 20 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 100, interval: 19 })
 
             expect(result.pass).toBe(false)
             expect(elements.length).toBe(2)

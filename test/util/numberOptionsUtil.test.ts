@@ -187,7 +187,7 @@ describe('numberOptionsUtil', () => {
 
         test('throws error when gte option is greater than lte option', () => {
             expect(() => validateNumberAndExtractOptions({ gte: 10, lte: 5 })).toThrow(
-                "Invalid NumberOptions range: 'gte' (10) cannot be greater than 'lte' (5)."
+                "Invalid NumberMatcher range: 'gte' (10) cannot be greater than 'lte' (5)."
             )
         })
 
