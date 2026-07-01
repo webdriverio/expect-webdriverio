@@ -16,6 +16,7 @@ describe(toHaveChildren, () => {
 
         beforeEach(async () => {
             el = await $('sel')
+            vi.mocked(el.$$).mockRestore()
         })
 
         describe('given no value', () => {
@@ -76,7 +77,7 @@ describe(toHaveChildren, () => {
             })
         })
 
-        test('use numberOption wait and internal - deprecated', async () => {
+        test('use numberOption wait and internal and command options - deprecated', async () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
@@ -95,6 +96,12 @@ describe(toHaveChildren, () => {
                 result,
                 expectedValue: { eq: 2, wait: 0, interval: 5 }
             })
+        })
+
+        test('use numberOption wait and internal wait but no command options - deprecated', async () => {
+            const result = await thisContext.toHaveChildren(el, { eq: 2, wait: 0, interval: 5 } )
+
+            expect(result.pass).toBe(true)
         })
 
         test('use numberMatcher and wait and internal', async () => {
@@ -124,9 +131,8 @@ describe(toHaveChildren, () => {
             expect(result.pass).toBe(true)
         })
 
-        // TODO dprevost to fix
-        test.skip('fails - If no options passed in + children do not exist', async () => {
-            vi.mocked(el.$$).mockReturnValueOnce(chainableElementArrayFactory('./child', 0))
+        test('fails - If no options passed in + children do not exist', async () => {
+            vi.mocked(el.$$).mockReturnValue(chainableElementArrayFactory('./child', 0))
 
             const result = await thisContext.toHaveChildren(el)
 

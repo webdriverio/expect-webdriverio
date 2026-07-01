@@ -34,25 +34,25 @@ export function validateNumberAndExtractOptions(
 export class NumberMatcher {
     constructor(private options: ExpectWebdriverIO.NumberOptions = {}) {}
 
-    match(actual: number | undefined): boolean {
-        if ( actual === undefined ) {
+    match(expected: number | undefined): boolean {
+        if ( expected === undefined ) {
             return false
         }
 
         if (isNumber(this.options.eq)) {
-            return actual === this.options.eq
+            return expected === this.options.eq
         }
 
         if (isNumber(this.options.gte) && isNumber(this.options.lte)) {
-            return actual >= this.options.gte && actual <= this.options.lte
+            return expected >= this.options.gte && expected <= this.options.lte
         }
 
         if (isNumber(this.options.gte)) {
-            return actual >= this.options.gte
+            return expected >= this.options.gte
         }
 
         if (isNumber(this.options.lte)) {
-            return actual <= this.options.lte
+            return expected <= this.options.lte
         }
 
         return false
