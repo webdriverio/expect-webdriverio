@@ -78,13 +78,8 @@ export async function toHaveChildren(
         options,
     })
 
-    let expectedValue: NumberMatcher
-    let commandOptions: ExpectWebdriverIO.CommandOptions = options
-    if (isStriclyCommandOptions(expectedValueOrOptions)) {
-        ({ numberMatcher: expectedValue, commandOptions } = validateNumberAndExtractOptions(undefined, expectedValueOrOptions, true))
-    } else {
-        ({ numberMatcher: expectedValue, commandOptions } = validateNumberAndExtractOptions(expectedValueOrOptions, options, true))
-    }
+    // After the beforeAssertion hook, so backward compatibility is kept when expectedValueOrOptions is undefined instead of default value. To change on next major?
+    const { numberMatcher: expectedValue, commandOptions } = validateNumberAndExtractOptions(expectedValueOrOptions, options, true)
 
     let el = await received?.getElement()
     let children
