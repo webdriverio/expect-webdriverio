@@ -214,7 +214,7 @@ Received      : 2`
             expect(result.pass).toBe(false)
             expect(elements.length).toBe(2)
             expect(elements).toBe(elementArrayOf2)
-            expect(browser.$$).toHaveBeenCalledTimes(6)
+            expect(browser.$$).toHaveBeenCalledTimes(7)
             expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 100, true)
             expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf5, 100, true)
         })
