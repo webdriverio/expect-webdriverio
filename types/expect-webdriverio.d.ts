@@ -787,6 +787,7 @@ declare namespace ExpectWebdriverIO {
         asString?: boolean
     }
 
+    // TODO dprevost to deprecated
     interface NumberOptions extends CommandOptions {
         /**
          * equals
@@ -828,6 +829,22 @@ declare namespace ExpectWebdriverIO {
          */
 
         visibilityProperty?: boolean
+    }
+
+    interface NumberMatcher {
+        /**
+         * equals
+         */
+        eq?: number
+        /**
+         * less than or equals
+         */
+        lte?: number
+
+        /**
+         * greater than or equals
+         */
+        gte?: number
     }
 
     type RequestedWith = {
