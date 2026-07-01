@@ -1,3 +1,13 @@
+const COMMAND_OPTIONS_ALLOWED_KEY_LIST = new Set([
+    // CommandOptions
+    'message',
+    // DefaultOptions
+    'wait',
+    'interval',
+    'beforeAssertion',
+    'afterAssertion'
+])
+
 const STRING_OPTIONS_ALLOWED_KEY_LIST = new Set([
     // StringOptions
     'ignoreCase',
@@ -8,13 +18,7 @@ const STRING_OPTIONS_ALLOWED_KEY_LIST = new Set([
     'atIndex',
     'replace',
     'asString',
-    // CommandOptions
-    'message',
-    // DefaultOptions
-    'wait',
-    'interval',
-    'beforeAssertion',
-    'afterAssertion'
+    ...COMMAND_OPTIONS_ALLOWED_KEY_LIST
 ])
 
 export function isStringOptions(obj: unknown): obj is ExpectWebdriverIO.StringOptions {
@@ -37,4 +41,28 @@ export function isStringOptions(obj: unknown): obj is ExpectWebdriverIO.StringOp
     }
 
     return objKeys.every(key => STRING_OPTIONS_ALLOWED_KEY_LIST.has(key))
+}
+
+export const isStriclyCommandOptions = (obj: unknown): obj is ExpectWebdriverIO.CommandOptions => {
+    if (obj === null ||
+        obj === undefined ||
+        typeof obj !== 'object' ||
+        obj instanceof RegExp ||
+        Array.isArray(obj) ||
+        'asymmetricMatch' in obj ||
+        Object.prototype.toString.call(obj) !== '[object Object]' // This instantly filters out null, primitives, Arrays, Dates, RegExps, Maps, Sets, etc.
+    ) {
+        return false
+    }
+
+    const objKeys = Object.keys(obj)
+
+    return objKeys.every(key => COMMAND_OPTIONS_ALLOWED_KEY_LIST.has(key))
+}
+
+export const isDefinedObject = (obj: unknown): obj is object => {
+    if (typeof obj === 'object' && obj !== null) {
+        return true
+    }
+    return false
 }

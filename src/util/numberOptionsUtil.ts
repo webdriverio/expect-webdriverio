@@ -2,10 +2,13 @@
 export const isNumber = (value: unknown): value is number => typeof value === 'number'
 
 export function validateNumberAndExtractOptions(
-    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
-    commandOptions: ExpectWebdriverIO.CommandOptions = {}
+    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher | undefined,
+    commandOptions: ExpectWebdriverIO.CommandOptions = {},
+    supportUndefinedAsGteThen1: boolean = false
 ): { numberMatcher: NumberMatcher; commandOptions: ExpectWebdriverIO.CommandOptions } {
-    if (isNumber(expectedValue)) {
+    if (supportUndefinedAsGteThen1 && expectedValue === undefined) {
+        return { numberMatcher: new NumberMatcher({ gte: 1 }), commandOptions }
+    } else if (isNumber(expectedValue)) {
         return { numberMatcher: new NumberMatcher({ eq: expectedValue }), commandOptions }
     } else if (
         !expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')
