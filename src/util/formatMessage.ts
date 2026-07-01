@@ -101,23 +101,3 @@ export const enhanceErrorBe = (
 
     return enhanceError(subject, expected, actual, { ...context, useNotInLabel: false }, verb, expectation, '', options)
 }
-
-export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): string | number => {
-    if (typeof options.eq === 'number') {
-        return options.eq
-    }
-
-    if (options.gte && options.lte) {
-        return `>= ${options.gte} && <= ${options.lte}`
-    }
-
-    if (options.gte) {
-        return `>= ${options.gte}`
-    }
-
-    if (options.lte) {
-        return ` <= ${options.lte}`
-    }
-
-    return 'no params'
-}

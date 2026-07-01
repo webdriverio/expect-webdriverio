@@ -7,7 +7,7 @@ import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
-import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
+import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -419,7 +419,7 @@ function aliasFn(
 
 export {
     aliasFn, compareNumbers, enhanceError, executeCommand,
-    executeCommandBe, numberError, waitUntil, wrapExpectedWithArray
+    executeCommandBe, waitUntil, wrapExpectedWithArray
 }
 
 function replaceActual(

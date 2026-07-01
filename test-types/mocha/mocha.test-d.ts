@@ -403,6 +403,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expectTypeOf(expect(promiseNetworkMock).toBeRequested()).toEqualTypeOf<Promise<void>>()
             expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes(2)).toEqualTypeOf<Promise<void>>()
             expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseNetworkMock).toBeRequested({ wait: 0 })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes(2, { wait: 0 })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }, { wait: 0 })).toEqualTypeOf<Promise<void>>()
 
             expectTypeOf(expect(promiseNetworkMock).not.toBeRequested()).toEqualTypeOf<Promise<void>>()
             expectTypeOf(expect(promiseNetworkMock).not.toBeRequestedTimes(2)).toEqualTypeOf<Promise<void>>()
@@ -436,6 +439,10 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
                 response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
             })).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should be deprecated', async () => {
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10, wait: 0 })).toEqualTypeOf<Promise<void>>()
         })
     })
 

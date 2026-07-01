@@ -112,10 +112,25 @@ interface WdioNetworkMatchers<_R, ActualT> {
      * Check that `WebdriverIO.Mock` was called
      */
     toBeRequested: FnWhenMock<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
     /**
      * Check that `WebdriverIO.Mock` was called N times
      */
-    toBeRequestedTimes: FnWhenMock<ActualT, (times: number | ExpectWebdriverIO.NumberOptions, options?: ExpectWebdriverIO.NumberOptions) => Promise<void>>
+    toBeRequestedTimes: FnWhenMock<ActualT, {
+        (
+            times: number | ExpectWebdriverIO.NumberMatcher,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+
+        /**
+        * @deprecated since 5.7.1, Use `NumberMatcher` & `CommandOptions` separately `toBeRequestedTimes(NumberMatcher, options)`.
+        */
+        (
+            times: ExpectWebdriverIO.NumberOptions,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>;
+
+    }>
 
     /**
      * Check that `WebdriverIO.Mock` was called with the specific parameters
@@ -815,7 +830,11 @@ declare namespace ExpectWebdriverIO {
         asString?: boolean
     }
 
-    // TODO dprevost to deprecated
+    /**
+     * @deprecated since 5.7.1, will remove in 6.0.0. Use `NumberMatcher` & `CommandOptions` as seperate parameters instead.
+     * @see NumberMatcher
+     * @see CommandOptions
+     */
     interface NumberOptions extends CommandOptions {
         /**
          * equals
