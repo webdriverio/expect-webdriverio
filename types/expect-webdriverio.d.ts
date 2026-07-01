@@ -285,10 +285,38 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * `WebdriverIO.Element` -> `$$('./*').length`
      * supports less / greater then or equals to be passed in options
      */
-    toHaveChildren: FnWhenElementOrArrayLike<ActualT, (
-        size?: number | ExpectWebdriverIO.NumberOptions,
-        options?: ExpectWebdriverIO.NumberOptions
-    ) => Promise<void>>
+    toHaveChildren: FnWhenElementOrArrayLike<ActualT, {
+        /**
+         * @deprecated Passing explicit `undefined` or `{}` as a value is deprecated. Omit the second argument entirely or use `toHaveChildren(options)`.
+         */
+        (
+            expectedValue: undefined, // {} also deprecated but we cannot use it as a type because it would match any object
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>;
+
+        /**
+         * When called with only configuration options (omitting the expected count) where default is gte 1.
+         */
+        (
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>;
+
+        /**
+         * When called with an expected child count or number options.
+         */
+        (
+            expectedValue: number | ExpectWebdriverIO.NumberMatcher,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>;
+
+        /**
+         * @deprecated since 5.7.1, NumberOptions is no longer supported. Use `toHaveChildren(numberMatcher, options)` instead.
+         */
+        (
+            expectedValue: ExpectWebdriverIO.NumberOptions,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>;
+    }>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` href
@@ -414,10 +442,20 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
      * `WebdriverIO.ElementArray` -> `$$('...').length`
      * supports less / greater then or equals to be passed in options
      */
-    toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, (
-        size: number | ExpectWebdriverIO.NumberOptions,
-        options?: ExpectWebdriverIO.NumberOptions
-    ) => Promise<void> & Promise<WebdriverIO.ElementArray>>
+    toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, {
+        (
+            size: number | ExpectWebdriverIO.NumberMatcher,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void> & Promise<WebdriverIO.ElementArray>,
+
+        /**
+         * @deprecated since 5.7.0. Use `toBeElementsArrayOfSize` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
+         */
+        (
+            size: ExpectWebdriverIO.NumberOptions,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void> & Promise<WebdriverIO.ElementArray>,
+    }>
 }
 
 /**
@@ -777,6 +815,7 @@ declare namespace ExpectWebdriverIO {
         asString?: boolean
     }
 
+    // TODO dprevost to deprecated
     interface NumberOptions extends CommandOptions {
         /**
          * equals
@@ -818,6 +857,22 @@ declare namespace ExpectWebdriverIO {
          */
 
         visibilityProperty?: boolean
+    }
+
+    interface NumberMatcher {
+        /**
+         * equals
+         */
+        eq?: number
+        /**
+         * less than or equals
+         */
+        lte?: number
+
+        /**
+         * greater than or equals
+         */
+        gte?: number
     }
 
     type RequestedWith = {

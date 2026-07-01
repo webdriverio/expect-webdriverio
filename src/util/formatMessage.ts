@@ -2,6 +2,9 @@ import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
 import { isElementArray } from './elementsUtil.js'
+import { numberMatcherTester } from './numberOptionsUtil.js'
+
+const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
@@ -66,7 +69,7 @@ export const enhanceError = (
     }
 
     // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
-    const diffString = equals(actual, expected) ?`\
+    const diffString = equals(actual, expected, CUSTOM_EQUALITY_TESTER) ?`\
 ${label.expected}: ${printExpected(expected)}
 ${label.received}: ${printReceived(actual)}`
         : printDiffOrStringify(expected, actual, label.expected, label.received, true)

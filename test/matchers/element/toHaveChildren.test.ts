@@ -1,90 +1,221 @@
-import { vi, test, describe, expect } from 'vitest'
+import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
-import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren.js'
+import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren'
+import { chainableElementArrayFactory } from '../../__mocks__/@wdio/globals'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
-describe('toHaveChildren', () => {
-    test('no value', async () => {
-        const beforeAssertion = vi.fn()
-        const afterAssertion = vi.fn()
-        const el = await $('sel')
+describe(toHaveChildren, () => {
+    const thisContext = { toHaveChildren }
+    const thisNotContext = { isNot: true, toHaveChildren }
 
-        const result = await toHaveChildren.call({}, el, undefined, { wait: 0, beforeAssertion, afterAssertion })
-        expect(result.pass).toBe(true)
-        expect(beforeAssertion).toBeCalledWith({
-            matcherName: 'toHaveChildren',
-            options: { wait: 0, beforeAssertion, afterAssertion }
+    describe('given a single element', () => {
+        let el: ChainablePromiseElement
+
+        beforeEach(async () => {
+            el = await $('sel')
+            vi.mocked(el.$$).mockRestore()
         })
-        expect(afterAssertion).toBeCalledWith({
-            matcherName: 'toHaveChildren',
-            options: { wait: 0, beforeAssertion, afterAssertion },
-            result
+
+        describe('given no value', () => {
+
+            test('no value - success - default to gte 1', async () => {
+                const result = await thisContext.toHaveChildren(el)
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('no value - success - default to gte 1 with options', async () => {
+                const beforeAssertion = vi.fn()
+                const afterAssertion = vi.fn()
+
+                const result = await thisContext.toHaveChildren(el, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
+
+                expect(result.pass).toBe(true)
+                expect(beforeAssertion).toHaveBeenCalledWith({
+                    matcherName: 'toHaveChildren',
+                    expectedValue: undefined,
+                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
+                })
+                expect(afterAssertion).toHaveBeenCalledWith({
+                    matcherName: 'toHaveChildren',
+                    expectedValue: undefined,
+                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
+                    result
+                })
+            })
+
+            test('no value - success - default to gte 1 (with undefined) and with command options - deprecated', async () => {
+                const beforeAssertion = vi.fn()
+                const afterAssertion = vi.fn()
+
+                const result = await thisContext.toHaveChildren(el, undefined, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
+
+                // TODO bring back later
+                // expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
+
+                expect(result.pass).toBe(true)
+                expect(beforeAssertion).toHaveBeenCalledWith({
+                    matcherName: 'toHaveChildren',
+                    expectedValue: undefined,
+                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
+                })
+                expect(afterAssertion).toHaveBeenCalledWith({
+                    matcherName: 'toHaveChildren',
+                    expectedValue: undefined,
+                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
+                    result
+                })
+            })
+
+            test('no value - success - default to gte 1 (with empty object) -- deprecated officially even if not striked', async () => {
+                const result = await thisContext.toHaveChildren(el, {})
+
+                expect(result.pass).toBe(true)
+            })
         })
-    })
 
-    test('If no options passed in + children exists', async () => {
-        const el = await $('sel')
+        test('use numberOption wait and internal and command options - deprecated', async () => {
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
 
-        const result = await toHaveChildren.call({}, el, {})
-        expect(result.pass).toBe(true)
-    })
+            const result = await thisContext.toHaveChildren(el, { eq: 2, wait: 0, interval: 5 }, { beforeAssertion, afterAssertion } )
 
-    test('exact number value', async () => {
-        const el = await $('sel')
+            expect(result.pass).toBe(true)
+            expect(beforeAssertion).toHaveBeenCalledWith({
+                matcherName: 'toHaveChildren',
+                options: { beforeAssertion, afterAssertion },
+                expectedValue: { eq: 2, wait: 0, interval: 5 }
 
-        const result = await toHaveChildren.call({}, el, 2, { wait: 1 })
-        expect(result.pass).toBe(true)
-    })
+            })
+            expect(afterAssertion).toHaveBeenCalledWith({
+                matcherName: 'toHaveChildren',
+                options: { beforeAssertion, afterAssertion },
+                result,
+                expectedValue: { eq: 2, wait: 0, interval: 5 }
+            })
+        })
 
-    test('exact value', async () => {
-        const el = await $('sel')
+        test('use numberOption wait and internal wait but no command options - deprecated', async () => {
+            const result = await thisContext.toHaveChildren(el, { eq: 2, wait: 0, interval: 5 } )
 
-        const result = await toHaveChildren.call({}, el, { eq: 2, wait: 1 })
-        expect(result.pass).toBe(true)
-    })
+            expect(result.pass).toBe(true)
+        })
 
-    test('gte value', async () => {
-        const el = await $('sel')
+        test('use numberMatcher and wait and internal', async () => {
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
 
-        const result = await toHaveChildren.call({}, el, { gte: 2, wait: 1 })
-        expect(result.pass).toBe(true)
-    })
+            const result = await thisContext.toHaveChildren(el, { eq: 2 }, { beforeAssertion, afterAssertion, wait: 0, interval: 5 } )
 
-    test('exact value - failure', async () => {
-        const el = await $('sel')
+            expect(result.pass).toBe(true)
+            expect(beforeAssertion).toHaveBeenCalledWith({
+                matcherName: 'toHaveChildren',
+                options: { beforeAssertion, afterAssertion, wait: 0, interval: 5 },
+                expectedValue: { eq: 2 }
 
-        const result = await toHaveChildren.call({}, el, { eq: 3, wait: 1 })
-        expect(result.pass).toBe(false)
-    })
+            })
+            expect(afterAssertion).toHaveBeenCalledWith({
+                matcherName: 'toHaveChildren',
+                options: { beforeAssertion, afterAssertion, wait: 0, interval: 5 },
+                result,
+                expectedValue: { eq: 2 }
+            })
+        })
 
-    test('lte value - failure', async () => {
-        const el = await $('sel')
+        test('success - If no options passed in + children exists', async () => {
+            const result = await thisContext.toHaveChildren(el)
 
-        const result = await toHaveChildren.call({}, el, { lte: 1, wait: 0 })
-        expect(result.pass).toBe(false)
-    })
+            expect(result.pass).toBe(true)
+        })
 
-    test('.not exact value - failure - pass should be true', async () => {
-        const el = await $('sel')
+        test('fails - If no options passed in + children do not exist', async () => {
+            vi.mocked(el.$$).mockReturnValue(chainableElementArrayFactory('./child', 0))
 
-        const result = await toHaveChildren.bind({ isNot: true })(el, { eq: 2, wait: 0 })
+            const result = await thisContext.toHaveChildren(el)
 
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result.message()).toEqual(`\
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have children
+
+Expected: ">= 1"
+Received: 0`
+            )
+        })
+
+        test('exact number value', async () => {
+            const result = await thisContext.toHaveChildren(el, 2)
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('exact value', async () => {
+            const result = await thisContext.toHaveChildren(el, { eq: 2 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('gte value', async () => {
+            const result = await thisContext.toHaveChildren(el, { gte: 2 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('exact value - failure', async () => {
+            const result = await thisContext.toHaveChildren(el, { eq: 3 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have children
+
+Expected: 3
+Received: 2`
+            )
+        })
+
+        test('lte value - failure', async () => {
+            const result = await thisContext.toHaveChildren(el, { lte: 1 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have children
+
+Expected: "<= 1"
+Received: 2`
+            )
+        })
+
+        test('.not, exact value - failure - pass should be true', async () => {
+            const result = await thisNotContext.toHaveChildren(el, { eq: 2 })
+
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have children
 
 Expected [not]: 2
-Received      : 2`)
+Received      : 2`
+            )
+        })
 
-    })
+        // This is not outputting the right colors in the test output console, to enhance!
+        test('.not, lte value - failure - pass should be true', async () => {
+            const result = await thisNotContext.toHaveChildren(el, { lte: 2 })
 
-    test('.not exact value - success - pass should be false', async () => {
-        const el = await $('sel')
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) not to have children
 
-        const result = await toHaveChildren.bind({ isNot: true })(el, { eq: 3, wait: 1 })
+Expected [not]: "<= 2"
+Received      : 2`
+            )
+        })
 
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        test('.not, exact value - success - pass should be false', async () => {
+            const result = await thisNotContext.toHaveChildren(el, { eq: 3 })
+
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        })
     })
 })
