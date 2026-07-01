@@ -414,10 +414,20 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
      * `WebdriverIO.ElementArray` -> `$$('...').length`
      * supports less / greater then or equals to be passed in options
      */
-    toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, (
-        size: number | ExpectWebdriverIO.NumberOptions,
-        options?: ExpectWebdriverIO.NumberOptions
-    ) => Promise<void> & Promise<WebdriverIO.ElementArray>>
+    toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, {
+        (
+            size: number | ExpectWebdriverIO.NumberMatcher,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void> & Promise<WebdriverIO.ElementArray>,
+
+        /**
+         * @deprecated since 5.7.0. Use `toBeElementsArrayOfSize` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
+         */
+        (
+            size: ExpectWebdriverIO.CommandOptions,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void> & Promise<WebdriverIO.ElementArray>,
+    }>
 }
 
 /**

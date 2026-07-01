@@ -1,44 +1,54 @@
-import { waitUntil, enhanceError, compareNumbers, numberError } from '../../utils.js'
+import { waitUntil, enhanceError } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElements, WdioElementsMaybePromise } from '../../types.js'
+import { validateNumberOptions as extractNumberAndOptions } from '../../util/numberOptionsUtil.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+/**
+ * @deprecated since version 5.7.0. Use `toBeElementsArrayOfSize` with NumberMatcher instead. This matcher will be removed in version 6.0.0.
+ */
+export async function toBeElementsArrayOfSize(
+    received: WdioElementsMaybePromise,
+    expectedValue: ExpectWebdriverIO.NumberOptions,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+export async function toBeElementsArrayOfSize(
+    received: WdioElementsMaybePromise,
+    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'elements array of size', verb = 'be' } = this
+    const matcherName = 'toBeElementsArrayOfSize'
+    const { expectation = 'elements array of size', verb = 'be', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeElementsArrayOfSize',
+        matcherName,
         expectedValue,
         options,
     })
 
-    let numberOptions: ExpectWebdriverIO.NumberOptions
-    if (typeof expectedValue === 'number') {
-        numberOptions = { eq: expectedValue } satisfies ExpectWebdriverIO.NumberOptions
-    } else if (!expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')) {
-        throw new Error('Invalid params passed to toBeElementsArrayOfSize.')
-    } else {
-        numberOptions = expectedValue
-    }
+    const  { numberMatcher, commandOptions } = extractNumberAndOptions(expectedValue, options)
 
     let elements = await received as WdioElements
     const originalLength = elements.length
-    const pass = await waitUntil(async () => {
-        /**
-         * check numbers first before refetching elements
-         */
-        const isPassing = compareNumbers(elements.length, numberOptions)
-        if (isPassing) {
-            return isPassing
-        }
-        elements = await refetchElements(elements, numberOptions.wait, true)
-        return false
-    }, isNot, { ...numberOptions, ...options })
+    const pass = await waitUntil(
+        async () => {
+            /**
+             * check numbers first before refetching elements
+             */
+            const isPassing = numberMatcher.match(elements.length)
+            if (isPassing) {
+                return isPassing
+            }
+            elements = await refetchElements(elements, commandOptions.wait, true)
+            return false
+        },
+        isNot,
+        { wait: commandOptions.wait, interval: commandOptions.interval })
 
     if (Array.isArray(received) && pass) {
         for (let index = originalLength; index < elements.length; index++) {
@@ -46,8 +56,7 @@ export async function toBeElementsArrayOfSize(
         }
     }
 
-    const error = numberError(numberOptions)
-    const message = enhanceError(elements, error, originalLength, this, verb, expectation, '', numberOptions)
+    const message = enhanceError(elements, numberMatcher, originalLength, this, verb, expectation, '', commandOptions)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
@@ -55,7 +64,7 @@ export async function toBeElementsArrayOfSize(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toBeElementsArrayOfSize',
+        matcherName,
         expectedValue,
         options,
         result
