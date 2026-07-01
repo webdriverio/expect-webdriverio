@@ -179,10 +179,10 @@ describe('numberOptionsUtil', () => {
         })
 
         test('throws error for empty or entirely invalid options objects', () => {
-            expect(() => validateNumberAndExtractOptions(null as any)).toThrow(/Invalid NumberOptions/)
-            expect(() => validateNumberAndExtractOptions(undefined as any)).toThrow(/Invalid NumberOptions/)
-            expect(() => validateNumberAndExtractOptions({} as any)).toThrow(/Invalid NumberOptions/)
-            expect(() => validateNumberAndExtractOptions({ invalidKey: 10 } as any)).toThrow(/Invalid NumberOptions/)
+            expect(() => validateNumberAndExtractOptions(null as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions(undefined as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions({} as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions({ invalidKey: 10 } as any)).toThrow(/Invalid NumberMatcher/)
         })
 
         test('throws error when gte option is greater than lte option', () => {

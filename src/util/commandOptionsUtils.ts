@@ -43,7 +43,7 @@ export function isStringOptions(obj: unknown): obj is ExpectWebdriverIO.StringOp
     return objKeys.every(key => STRING_OPTIONS_ALLOWED_KEY_LIST.has(key))
 }
 
-export const isStriclyCommandOptions = (obj: unknown): obj is ExpectWebdriverIO.CommandOptions => {
+export const isStrictlyCommandOptions = (obj: unknown): obj is ExpectWebdriverIO.CommandOptions => {
     if (obj === null ||
         obj === undefined ||
         typeof obj !== 'object' ||

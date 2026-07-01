@@ -13,12 +13,12 @@ export function validateNumberAndExtractOptions(
     } else if (
         !expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')
     ) {
-        throw new Error(`Invalid NumberOptions. Received: ${JSON.stringify(expectedValue)}`)
+        throw new Error(`Invalid NumberMatcher. Received: ${JSON.stringify(expectedValue)}`)
     } else {
         const { eq, gte, lte, ...restCommandOptions } = expectedValue
 
         if (isNumber(gte) && isNumber(lte) && gte > lte) {
-            throw new Error(`Invalid NumberOptions range: 'gte' (${gte}) cannot be greater than 'lte' (${lte}).`)
+            throw new Error(`Invalid NumberMatcher range: 'gte' (${gte}) cannot be greater than 'lte' (${lte}).`)
         }
 
         return {
@@ -33,6 +33,13 @@ export function validateNumberAndExtractOptions(
  */
 export class NumberMatcher {
     constructor(private options: ExpectWebdriverIO.NumberOptions = {}) {}
+
+    equals(other: unknown): boolean {
+        if (isNumber(other)) {
+            this.match(other)
+        }
+        return false
+    }
 
     match(expected: number | undefined): boolean {
         if ( expected === undefined ) {
@@ -91,16 +98,8 @@ export class NumberMatcher {
  * Custom tester for number matchers to be used by the equal of expect during failure message generation
  */
 export const numberMatcherTester = (a: unknown, b: unknown): boolean | undefined => {
-    const isNumberMatcherA = a instanceof NumberMatcher
-    const isNumberMatcherB = b instanceof NumberMatcher
-
-    if (isNumberMatcherA && isNumber(b)) {
-        return a.match(b)
-    }
-
-    if (isNumberMatcherB && isNumber(a)) {
-        return b.match(a)
-    }
+    if (a instanceof NumberMatcher && isNumber(b)) {return a.match(b)}
+    if (b instanceof NumberMatcher && isNumber(a)) {return b.match(a)}
 
     // Return undefined to let other testers handle it
     return undefined

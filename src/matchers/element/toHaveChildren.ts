@@ -1,6 +1,6 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
-import { isDefinedObject, isStriclyCommandOptions } from '../../util/commandOptionsUtils.js'
+import { isDefinedObject, isStrictlyCommandOptions } from '../../util/commandOptionsUtils.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import {
@@ -62,12 +62,12 @@ export async function toHaveChildren(
     const matcherName = 'toHaveChildren'
     const { expectation = 'children', verb = 'have', isNot } = this
 
-    // Extract beforeAssertion and afterAssertion from either expectedValueOrOptions or options, done before isStriclyCommandOptions check to ensurewe stay backward compatible with deprecated NumberOptions usage. To remove in next major version.
+    // Extract beforeAssertion and afterAssertion from either expectedValueOrOptions or options, done before isStrictlyCommandOptions check to ensure we stay backward compatible with deprecated NumberOptions usage. To remove in next major version.
     const beforeAssertion = ( isDefinedObject(expectedValueOrOptions) && 'beforeAssertion' in expectedValueOrOptions ? expectedValueOrOptions.beforeAssertion ?? options.beforeAssertion : options.beforeAssertion)
     const afterAssertion = ( isDefinedObject(expectedValueOrOptions) && 'afterAssertion' in expectedValueOrOptions ? expectedValueOrOptions.afterAssertion ?? options.afterAssertion : options.afterAssertion )
 
     // New case where second argument is strictly the options object, and no expected value is provided.
-    if (isStriclyCommandOptions(expectedValueOrOptions)) {
+    if (isStrictlyCommandOptions(expectedValueOrOptions)) {
         options =  expectedValueOrOptions
         expectedValueOrOptions = undefined // Let's fake an omitted expected to undefined for now.
     }
