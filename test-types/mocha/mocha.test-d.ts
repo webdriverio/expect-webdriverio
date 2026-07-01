@@ -228,6 +228,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             it('should return Promise<void> when actual is chainableArray', async () => {
                 expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize(5)).toExtend<Promise<void>>()
                 expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })).toExtend<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 }, { wait: 1000 })).toExtend<Promise<void>>()
             })
 
             it('should return Promise<void> when actual is element array', async () => {
@@ -243,6 +244,10 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             it('should not work when actual is not chainableArray', async () => {
                 expectTypeOf(expect(chainableElement).toBeElementsArrayOfSize).toBeNever()
                 expectTypeOf(expect(true).toBeElementsArrayOfSize).toBeNever()
+            })
+
+            it('should be deprecated with NumberOptions', async () => {
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10, wait: 1000 })).toExtend<Promise<void>>()
             })
         })
     })
