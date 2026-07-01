@@ -7,8 +7,11 @@ import {
     waitUntil,
     wrapExpectedWithArray,
 } from '../../utils.js'
+import type { RectReturn } from '@wdio/protocols'
 
-async function condition(el: WebdriverIO.Element, size: { height: number; width: number }) {
+export type Size = Pick<RectReturn, 'width' | 'height'>
+
+async function condition(el: WebdriverIO.Element, size: Partial<Size>) {
     const actualSize = await el.getSize()
 
     return compareObject(actualSize, size)
@@ -16,32 +19,32 @@ async function condition(el: WebdriverIO.Element, size: { height: number; width:
 
 export async function toHaveSize(
     received: WdioElementMaybePromise,
-    expectedValue: { height: number; width: number },
+    expectedValue: Partial<Size>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'size', verb = 'have' } = this
+    const matcherName = 'toHaveSize'
+    const { expectation = 'size', verb = 'have', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveSize',
+        matcherName,
         expectedValue,
         options,
     })
 
     let el = await received?.getElement()
-    let actualSize
+    let actualSize: Size | undefined
 
     const pass = await waitUntil(
         async () => {
             const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
 
             el = result.el as WebdriverIO.Element
-            actualSize = result.values
+            actualSize = result.values as Size
 
             return result.success
         },
         isNot,
-        options
+        { wait: options.wait, interval: options.interval }
     )
 
     const message = enhanceError(
@@ -61,7 +64,7 @@ export async function toHaveSize(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveSize',
+        matcherName,
         expectedValue,
         options,
         result
