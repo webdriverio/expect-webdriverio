@@ -63,7 +63,7 @@ export async function toHaveChildren(
     const { expectation = 'children', verb = 'have', isNot } = this
 
     // Extract beforeAssertion and afterAssertion from either expectedValueOrOptions or options, done before isStriclyCommandOptions check to ensurewe stay backward compatible with deprecated NumberOptions usage. To remove in next major version.
-    const beforeAssertion = ( isDefinedObject(expectedValueOrOptions) && 'beforeAssertion' in expectedValueOrOptions ? expectedValueOrOptions.beforeAssertion ?? options.afterAssertion : options.beforeAssertion)
+    const beforeAssertion = ( isDefinedObject(expectedValueOrOptions) && 'beforeAssertion' in expectedValueOrOptions ? expectedValueOrOptions.beforeAssertion ?? options.beforeAssertion : options.beforeAssertion)
     const afterAssertion = ( isDefinedObject(expectedValueOrOptions) && 'afterAssertion' in expectedValueOrOptions ? expectedValueOrOptions.afterAssertion ?? options.afterAssertion : options.afterAssertion )
 
     // New case where second argument is strictly the options object, and no expected value is provided.
