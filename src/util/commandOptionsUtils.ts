@@ -57,6 +57,10 @@ export const isStrictlyCommandOptions = (obj: unknown): obj is ExpectWebdriverIO
 
     const objKeys = Object.keys(obj)
 
+    if (objKeys.length === 0) {
+        return false
+    }
+
     return objKeys.every(key => COMMAND_OPTIONS_ALLOWED_KEY_LIST.has(key))
 }
 

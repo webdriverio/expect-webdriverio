@@ -126,8 +126,8 @@ describe('Command Options Utility Functions', () => {
 
         // 1. Testing Requirement: Empty Objects
         describe('Empty Objects', () => {
-            it('should return true for a completely empty object literal', () => {
-                expect(isStrictlyCommandOptions({})).toBe(true)
+            it('should return false for a completely empty object literal - we do not need any backward compatibility for command options', () => {
+                expect(isStrictlyCommandOptions({})).toBe(false)
             })
         })
 
