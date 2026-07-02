@@ -18,7 +18,7 @@ export async function toBeRequestedTimes(
 ):Promise<ExpectWebdriverIO.AssertionResult>
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher = {}, // TODO empty default object?
+    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<ExpectWebdriverIO.AssertionResult> {
     const { expectation = `called${typeof expectedValue === 'number' ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`, verb = 'be', isNot = false } = this
