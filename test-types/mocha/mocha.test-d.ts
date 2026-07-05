@@ -169,11 +169,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveHeight(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveHeight(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHeight({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHeight({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveHeight({ gte: 100 })).toEqualTypeOf<Promise<void>>()
 
-                expectTypeOf(expect(element).toHaveHeight({ width: 100, height: 200 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).not.toHaveHeight({ width: 100, height: 200 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).not.toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(browser).toHaveHeight).toBeNever()
             })
@@ -182,6 +182,51 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect('text').toHaveHeight).toBeNever()
                 expectTypeOf(expect(Promise.resolve('text')).toHaveHeight).toBeNever()
                 expectTypeOf(expect(Promise.resolve('text')).toHaveHeight).toBeNever()
+            })
+        })
+
+        describe('toHaveWidth', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(element).toHaveWidth(100)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveWidth(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveWidth(100)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveWidth(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveWidth({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveWidth({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveWidth({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableElement).toHaveWidth(100)).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(browser).toHaveWidth).toBeNever()
+            })
+
+            it('should have ts errors when actual is string or Promise<string>', async () => {
+                expectTypeOf(expect('text').toHaveWidth).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveWidth).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveWidth).toBeNever()
+            })
+        })
+
+        describe('toHaveSize', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(element).toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveSize({ height: 100, width: 100 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveSize({ height: 100, width: 100 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                // TODO one day
+                // expectTypeOf(expect(element).toHaveSize({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+                // expectTypeOf(expect(element).toHaveSize({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
+                // expectTypeOf(expect(element).not.toHaveSize({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableElement).toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(browser).toHaveWidth).toBeNever()
+            })
+
+            it('should have ts errors when actual is string or Promise<string>', async () => {
+                expectTypeOf(expect('text').toHaveSize).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveSize).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveSize).toBeNever()
             })
         })
 

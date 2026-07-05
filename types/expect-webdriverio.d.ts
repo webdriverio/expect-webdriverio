@@ -358,14 +358,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     ) => Promise<void>>
 
     /**
-     * `WebdriverIO.Element` -> `getSize` value
-     */
-    toHaveSize: FnWhenElementOrArrayLike<ActualT, (
-        size: { height: number; width: number },
-        options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<void>>
-
-    /**
      * `WebdriverIO.Element` -> `getText`
      * Element's text equals the text provided
      *
@@ -420,24 +412,37 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * `WebdriverIO.Element` -> `getSize('width')`
      * Element's width equals the width provided
      */
-    toHaveWidth: FnWhenElementOrArrayLike<ActualT, (width: number, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+    toHaveWidth: FnWhenElementOrArrayLike<ActualT, (
+        width: number | ExpectWebdriverIO.NumberMatcher,
+        options?: ExpectWebdriverIO.CommandOptions
+    ) => Promise<void>
+    >
 
     /**
-     * `WebdriverIO.Element` -> `getSize('height')` or `getSize()`
-     * Checks if the element's height equals the given number, or its size equals the given object.
+     * `WebdriverIO.Element` -> `getSize('height')`
+     * Checks if the element's height equals the given number.
      *
-     * @param heightOrSize - Either a number (height) or an object with height and width.
+     * @param height - The expected height of the element.
      * @param options - Optional command options.
      *
      * **Usage Example:**
      * ```js
      * await expect(element).toHaveHeight(42)
-     * await expect(element).toHaveHeight({ height: 42, width: 42 })
      * ```
      */
     toHaveHeight: FnWhenElementOrArrayLike<ActualT, (
-        heightOrSize: number | { height: number; width: number },
+        height: number | ExpectWebdriverIO.NumberMatcher,
         options?: ExpectWebdriverIO.CommandOptions
+    ) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `getSize` value
+     * Element's size equals the size provided
+     * // TODO: add support for NumberMatcher on width and height
+     */
+    toHaveSize: FnWhenElementOrArrayLike<ActualT, (
+        size: { height: number; width: number },
+        options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
     /**
