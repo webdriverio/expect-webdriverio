@@ -16,6 +16,7 @@ export async function toBeRequestedTimes(
     expectedValue: ExpectWebdriverIO.NumberOptions,
     options?: ExpectWebdriverIO.CommandOptions
 ):Promise<ExpectWebdriverIO.AssertionResult>
+
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock,
     expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
