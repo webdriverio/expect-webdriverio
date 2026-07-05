@@ -35,7 +35,7 @@ export async function toBeRequestedTimes(
     const pass = await waitUntil(async () => {
         actual = received.calls.length
         return expectedNumberMatcher.match(actual)
-    }, isNot, { ...commandOptions, ...options })
+    }, isNot, { ...options, ...commandOptions })
 
     const message = enhanceError('mock', expectedNumberMatcher, actual, this, verb, expectation, '', commandOptions)
 

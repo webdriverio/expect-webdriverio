@@ -5,6 +5,7 @@ import {
     numberMatcherTester,
     validateNumberAndExtractOptions
 } from '../../src/util/numberOptionsUtil.js'
+import { DEFAULT_OPTIONS } from '../../src/constants.js'
 
 describe('numberOptionsUtil', () => {
     describe(isNumber, () => {
@@ -248,6 +249,14 @@ describe('numberOptionsUtil', () => {
             expect(result.numberMatcher.match(1)).toBe(true)
             expect(result.numberMatcher.match(2)).toBe(true)
             expect(result.numberMatcher.match(0)).toBe(false)
+        })
+
+        test('merge with DEFAULT_OPTIONS and  prioritizes number options over command options', () => {
+            const result = validateNumberAndExtractOptions( { gte: 5, wait: 0 },  DEFAULT_OPTIONS)
+
+            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
+            expect(result.numberMatcher.match(5)).toBe(true)
+            expect(result.commandOptions).toEqual({ wait: 0, interval: 100, afterAssertion : DEFAULT_OPTIONS.afterAssertion, beforeAssertion: DEFAULT_OPTIONS.beforeAssertion })
         })
     })
 

@@ -81,6 +81,21 @@ describe('toBeRequestedTimes', () => {
         })
     })
 
+    test('use wait from number options - deprecated', async () => {
+        const mock: Mock = new TestMock()
+
+        setTimeout(() => {
+            mock.calls.push(mockMatch)
+        }, 10)
+
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+
+        const result = await thisContext.toBeRequestedTimes(mock, { gte: 1, wait: 0 }, { beforeAssertion, afterAssertion, wait: 1000 })
+
+        expect(result.pass).toBe(false)
+    })
+
     test('wait for success using number options', async () => {
         const mock: Mock = new TestMock()
 
