@@ -37,7 +37,7 @@ export async function toHaveChildren(
 ): Promise<ExpectWebdriverIO.AsyncAssertionResult>
 
 /**
- * When called with an expected child count or number options.
+ * When called with an expected child count or number matcher.
  */
 export async function toHaveChildren(
     received: WdioElementMaybePromise,

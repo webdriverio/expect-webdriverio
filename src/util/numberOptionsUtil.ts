@@ -1,6 +1,6 @@
 import { isDefinedObject } from './commandOptionsUtils.js'
 
-export const isNumber = (value: unknown): value is number => typeof value === 'number'
+export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
 export const isDefinedNotNumber = (value: unknown) => typeof value !== 'number' && value !== undefined
 export const isDefinedNumberOrObject = (value: unknown): value is NonNullable<number | object> => typeof value === 'number' || (typeof value === 'object' && value !== null && !Array.isArray(value))
 /**
@@ -47,7 +47,7 @@ export function validateNumberAndExtractOptions(
  * Using a class to univerally handle number matching and stringification the same way everywhere and with Global Apis like equal() toString() and toJSON()
  */
 export class NumberMatcher {
-    constructor(private options: ExpectWebdriverIO.NumberOptions = {}) {}
+    constructor(private options: ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.NumberOptions) {}
 
     equals(other: unknown): boolean {
         if (isNumber(other)) {

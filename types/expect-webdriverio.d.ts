@@ -317,7 +317,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>;
 
         /**
-         * When called with an expected child count or number options.
+         * When called with an expected child count or number matcher.
          */
         (
             expectedValue: number | ExpectWebdriverIO.NumberMatcher,

@@ -18,7 +18,7 @@ describe('numberOptionsUtil', () => {
             expect(isNumber(Number.MIN_VALUE)).toBe(true)
             expect(isNumber(Infinity)).toBe(true)
             expect(isNumber(-Infinity)).toBe(true)
-            expect(isNumber(NaN)).toBe(true)
+            expect(isNumber(NaN)).toBe(false)
         })
 
         test('returns false for non-numbers', () => {

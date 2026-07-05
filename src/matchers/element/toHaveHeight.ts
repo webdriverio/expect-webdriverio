@@ -19,7 +19,7 @@ async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher)
 
 export async function toHaveHeight(
     received: WdioElementMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions,
+    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const matcherName = 'toHaveHeight'
