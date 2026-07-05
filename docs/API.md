@@ -716,9 +716,14 @@ Checks amount of fetched elements using [`$$`](https://webdriver.io/docs/api/ele
 const listItems = await $$('ul>li')
 await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in the list
 
+// Greater/Less then
 await expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
 // same as
 assert.ok(listItems.length <= 10)
+
+await expect(listItems).toBeElementsArrayOfSize({ gte: 5 })
+// In between
+await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
 ```
 
 ## Network Matchers
@@ -742,9 +747,12 @@ Checks that mock was called for the expected amount of times
 
 ```js
 const mock = browser.mock('**/api/todo*')
-await expect(mock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
+await expect(mock).toBeRequestedTimes(2)
+// same as
+await expect(mock).toBeRequestedTimes({ eq: 2 })
 
-await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+// request called at least 5 times but less than 11
+await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) 
 ```
 
 ### toBeRequestedWith

@@ -486,7 +486,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })).toEqualTypeOf<Promise<void>>()
         })
 
-        it('should be deprecated', async () => {
+        it('should be deprecated with NumberOptions', async () => {
             expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10, wait: 0 })).toEqualTypeOf<Promise<void>>()
         })
     })

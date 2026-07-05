@@ -175,11 +175,6 @@ describe('Jasmine type agumentations', () => {
                     expectTypeOf(expectAsync(element).not.toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(element).not.toHaveHeight(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
 
-                    expectTypeOf(expectAsync(element).toHaveHeight({ width: 100, height: 200 })).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expectAsync(element).toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expectAsync(element).not.toHaveHeight({ width: 100, height: 200 })).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expectAsync(element).not.toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
-
                     expectTypeOf(expectAsync(browser).toHaveHeight).toBeNever()
                 })
 

@@ -169,11 +169,6 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
                 expectTypeOf(expect(element).not.toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveHeight(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
 
-                expectTypeOf(expect(element).toHaveHeight({ width: 100, height: 200 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).not.toHaveHeight({ width: 100, height: 200 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).not.toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
-
                 expectTypeOf(expect(browser).toHaveHeight).toBeNever()
             })
 

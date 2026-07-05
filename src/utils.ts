@@ -149,6 +149,11 @@ async function executeCommandBe(
     }
 }
 
+/**
+ * @deprecated not longer used in 5.7.1, replaced by `NumberMatcher.match()`. To remove in 6.0.0
+ * @see src/util/numberOptionsUtil.ts#NumberMatcher.match
+ */
+/* v8 ignore next */
 const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
     // Equals case
     if (typeof options.eq === 'number') {
