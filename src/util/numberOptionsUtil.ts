@@ -1,7 +1,7 @@
 import { isDefinedObject } from './commandOptionsUtils.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
-export const isDefinedNotNumber = (value: unknown) => typeof value !== 'number' && value !== undefined
+export const isDefinedNotNumber = (value: unknown) => value !== undefined && !isNumber(value)
 export const isDefinedNumberOrNonEmptyObject = (value: unknown): value is NonNullable<number | object> => typeof value === 'number' || (typeof value === 'object' && value !== null && !Array.isArray(value) && Object.keys(value).length > 0)
 /**
  * Utility to parse legacy `NumberOptions` and modern `NumberMatcher` into standard matcher

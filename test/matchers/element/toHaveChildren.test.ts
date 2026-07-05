@@ -75,6 +75,18 @@ describe(toHaveChildren, () => {
 
                 expect(result.pass).toBe(true)
             })
+
+            test('no value - success - default to gte 1 (with empty object and separate wait options) -- deprecated officially even if not striked-- TODO add runtime check on next major version', async () => {
+                const result = await thisContext.toHaveChildren(el, {}, { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('no value - success - default to gte 1 (with empty object and double wait options) -- deprecated', async () => {
+                const result = await thisContext.toHaveChildren(el, { wait: 0 }, { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
         })
 
         test('use numberOption wait and internal and command options - deprecated', async () => {
