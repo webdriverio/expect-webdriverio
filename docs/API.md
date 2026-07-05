@@ -694,7 +694,7 @@ await expect(logo).toHaveHeight({ gte: 32, lte: 34 })
 ### toHaveSize
 
 Checks if element has a specific size.
-**Note:** gte and lte or not supported yet.
+**Note:** gte and lte are not supported yet.
 
 ##### Usage
 
