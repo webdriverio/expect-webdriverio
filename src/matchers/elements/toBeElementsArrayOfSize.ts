@@ -33,7 +33,7 @@ export async function toBeElementsArrayOfSize(
         options,
     })
 
-    const  { numberMatcher, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
+    const  { numberMatcher: expectNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
 
     let elements = await received as WdioElements
     const originalLength = elements.length
@@ -42,7 +42,7 @@ export async function toBeElementsArrayOfSize(
             /**
              * check numbers first before refetching elements
              */
-            const isPassing = numberMatcher.match(elements.length)
+            const isPassing = expectNumber.match(elements.length)
             if (isPassing) {
                 return isPassing
             }
@@ -58,7 +58,7 @@ export async function toBeElementsArrayOfSize(
         }
     }
 
-    const message = enhanceError(elements, numberMatcher, originalLength, this, verb, expectation, '', commandOptions)
+    const message = enhanceError(elements, expectNumber, originalLength, this, verb, expectation, '', commandOptions)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

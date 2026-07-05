@@ -29,17 +29,17 @@ export async function toBeRequestedTimes(
         options,
     })
 
-    const { numberMatcher: expectedNumberMatcher, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
+    const { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
 
     let actual
     const pass = await waitUntil(async () => {
         actual = received.calls.length
-        return expectedNumberMatcher.match(actual)
+        return expectedNumber.match(actual)
     },
     isNot,
     { wait: commandOptions.wait, interval: commandOptions.interval })
 
-    const message = enhanceError('mock', expectedNumberMatcher, actual, this, verb, expectation, '', commandOptions)
+    const message = enhanceError('mock', expectedNumber, actual, this, verb, expectation, '', commandOptions)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

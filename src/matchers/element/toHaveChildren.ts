@@ -1,6 +1,6 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
-import { isDefinedObject, isStrictlyCommandOptions } from '../../util/commandOptionsUtils.js'
+import { isStrictlyCommandOptions } from '../../util/commandOptionsUtils.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import {
@@ -56,35 +56,30 @@ export async function toHaveChildren(
 
 export async function toHaveChildren(
     received: WdioElementMaybePromise,
-    expectedValueOrOptions: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions | undefined,
+    expectedValueOrOptions?: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ): Promise<ExpectWebdriverIO.AsyncAssertionResult> {
     const matcherName = 'toHaveChildren'
     const { expectation = 'children', verb = 'have', isNot } = this
 
-    // Extract beforeAssertion and afterAssertion from either expectedValueOrOptions or options, done before isStrictlyCommandOptions check to ensure we stay backward compatible with deprecated NumberOptions usage. To remove in next major version.
-    const beforeAssertion = ( isDefinedObject(expectedValueOrOptions) && 'beforeAssertion' in expectedValueOrOptions ? expectedValueOrOptions.beforeAssertion ?? options.beforeAssertion : options.beforeAssertion)
-    const afterAssertion = ( isDefinedObject(expectedValueOrOptions) && 'afterAssertion' in expectedValueOrOptions ? expectedValueOrOptions.afterAssertion ?? options.afterAssertion : options.afterAssertion )
-
-    // New case where second argument is strictly the options object, and no expected value is provided.
+    // Properly support new case where the second argument is the commandOptions and not a number or NumberMatcher for a clear API.
     if (isStrictlyCommandOptions(expectedValueOrOptions)) {
-        options =  expectedValueOrOptions
-        expectedValueOrOptions = undefined // Let's fake an omitted expected to undefined for now.
+        options = expectedValueOrOptions ?? DEFAULT_OPTIONS
+        expectedValueOrOptions = undefined
     }
 
-    await beforeAssertion?.({
+    const { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValueOrOptions, options, { supportDefaultAsGteThen1: true })
+
+    await commandOptions.beforeAssertion?.({
         matcherName,
-        expectedValue: expectedValueOrOptions,
+        expectedValue: expectedValueOrOptions, // Send unaltered value to the hook for backward compatibility
         options,
     })
-
-    // After the beforeAssertion hook, so backward compatibility is kept when expectedValueOrOptions is undefined instead of default value. To change on next major?
-    const { numberMatcher: expectedValue, commandOptions } = validateNumberAndExtractOptions(expectedValueOrOptions, options, true)
 
     let el = await received?.getElement()
     let children
     const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, condition, commandOptions, [expectedValue])
+        const result = await executeCommand.call(this, el, condition, commandOptions, [expectedNumber])
         el = result.el as WebdriverIO.Element
         children = result.values
 
@@ -93,14 +88,14 @@ export async function toHaveChildren(
     isNot,
     { wait: commandOptions.wait, interval: commandOptions.interval })
 
-    const expectedArray = wrapExpectedWithArray(el, children, expectedValue)
+    const expectedArray = wrapExpectedWithArray(el, children, expectedNumber)
     const message = enhanceError(el, expectedArray, children, this, verb, expectation, '', commandOptions)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message
     }
 
-    await afterAssertion?.({
+    await commandOptions.afterAssertion?.({
         matcherName,
         expectedValue: expectedValueOrOptions,
         options,

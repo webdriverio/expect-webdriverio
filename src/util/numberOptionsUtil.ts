@@ -16,28 +16,30 @@ export const isDefinedNumberOrObject = (value: unknown): value is NonNullable<nu
  */
 export function validateNumberAndExtractOptions(
     expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher | undefined,
-    commandOptions: ExpectWebdriverIO.CommandOptions = {},
-    supportDefaultAsGteThen1: boolean = false
+    commandOptions: ExpectWebdriverIO.CommandOptions,
+    { supportDefaultAsGteThen1 }: { supportDefaultAsGteThen1?: boolean } = {}
 ): { numberMatcher: NumberMatcher; commandOptions: ExpectWebdriverIO.CommandOptions } {
-    if (supportDefaultAsGteThen1 && (expectedValue === undefined || (isDefinedObject(expectedValue) && Object.keys(expectedValue).length === 0)) /** supporting {} for backward reason to remove later */) {
-        return { numberMatcher: new NumberMatcher({ gte: 1 }), commandOptions }
+    let defaultExpectedValue: NumberMatcher | undefined = undefined
+    if (supportDefaultAsGteThen1 && (expectedValue === undefined || (isDefinedObject(expectedValue) && expectedValue.eq === undefined && expectedValue.gte === undefined && expectedValue.lte === undefined))) {
+        defaultExpectedValue = new NumberMatcher({ gte: 1 })
     } else if (isNumber(expectedValue)) {
         return { numberMatcher: new NumberMatcher({ eq: expectedValue }), commandOptions }
     } else if (
         !isDefinedNumberOrObject(expectedValue) || isDefinedNotNumber(expectedValue.eq) ||  isDefinedNotNumber(expectedValue.gte) || isDefinedNotNumber(expectedValue.lte)
     ) {
         throw new Error(`Invalid NumberMatcher. Received: ${JSON.stringify(expectedValue)}`)
-    } else {
-        const { eq, gte, lte, ...restCommandOptions } = expectedValue
+    }
 
-        if (isNumber(gte) && isNumber(lte) && gte > lte) {
-            throw new Error(`Invalid NumberMatcher range: 'gte' (${gte}) cannot be greater than 'lte' (${lte}).`)
-        }
+    const { eq, gte, lte, ...restCommandOptions } = expectedValue ?? {}
 
-        return {
-            numberMatcher: new NumberMatcher({ eq, gte, lte }),
-            commandOptions: { ...commandOptions, ...restCommandOptions }
-        }
+    if (isNumber(gte) && isNumber(lte) && gte > lte) {
+        throw new Error(`Invalid NumberMatcher range: 'gte' (${gte}) cannot be greater than 'lte' (${lte}).`)
+    }
+
+    return {
+        numberMatcher: defaultExpectedValue ?? new NumberMatcher({ eq, gte, lte }),
+        // Ensure DEFAULT_OPTIONS are applied first, then any command options from the legacy number options.
+        commandOptions: { ...commandOptions, ...restCommandOptions }
     }
 }
 
