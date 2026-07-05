@@ -164,12 +164,33 @@ describe('numberOptionsUtil', () => {
         })
     })
 
-    describe('validateNumberOptions', () => {
+    describe(validateNumberAndExtractOptions, () => {
         test('successfully extracts number literal configurations', () => {
             const result = validateNumberAndExtractOptions(5, { wait: 1000 })
             expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
             expect(result.numberMatcher.match(5)).toBe(true)
             expect(result.commandOptions).toEqual({ wait: 1000 })
+        })
+
+        test('successfully extracts number literal 0', () => {
+            const result = validateNumberAndExtractOptions(0)
+            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
+            expect(result.numberMatcher.match(0)).toBe(true)
+            expect(result.commandOptions).toEqual({})
+        })
+
+        test('successfully extracts number literal as gte', () => {
+            const result = validateNumberAndExtractOptions({ gte: 0 })
+            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
+            expect(result.numberMatcher.match(0)).toBe(true)
+            expect(result.commandOptions).toEqual({})
+        })
+
+        test('successfully extracts number literal as lte', () => {
+            const result = validateNumberAndExtractOptions({ lte: 0 })
+            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
+            expect(result.numberMatcher.match(0)).toBe(true)
+            expect(result.commandOptions).toEqual({})
         })
 
         test('successfully extracts valid interface configurations and returns remaining command options', () => {
@@ -178,11 +199,29 @@ describe('numberOptionsUtil', () => {
             expect(result.commandOptions).toEqual({ wait: 2000 })
         })
 
+        test('support deprecated cases from NumberOptions', () => {
+            // TODO dprevost to review
+            expect(validateNumberAndExtractOptions({})).toEqual({
+                numberMatcher: new NumberMatcher({}),
+                commandOptions: {}
+            })
+            expect(validateNumberAndExtractOptions({ invalidKey: 10 } as any)).toEqual({
+                numberMatcher: new NumberMatcher({}),
+                commandOptions: { invalidKey: 10 }
+            })
+            expect(validateNumberAndExtractOptions({ wait: 10 })).toEqual({
+                numberMatcher: new NumberMatcher({}),
+                commandOptions: { wait: 10 }
+            })
+        })
+
         test('throws error for empty or entirely invalid options objects', () => {
             expect(() => validateNumberAndExtractOptions(null as any)).toThrow(/Invalid NumberMatcher/)
             expect(() => validateNumberAndExtractOptions(undefined as any)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberAndExtractOptions({} as any)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberAndExtractOptions({ invalidKey: 10 } as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions({ gte: '5' } as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions({ lte: '5' } as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions({ eq: '5' } as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions({ gte: '5', lte: 10 } as any)).toThrow(/Invalid NumberMatcher/)
         })
 
         test('throws error when gte option is greater than lte option', () => {

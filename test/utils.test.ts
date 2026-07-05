@@ -114,7 +114,7 @@ describe('utils', () => {
             expect(compareTextWithArray('foo', [jasmine.stringContaining('oobb'), jasmine.stringContaining('oo')], {}).result).toBe(true)
         })
 
-        test('should support asymmetric matchers and using ignoreCase', () => {
+        test('should support jasmine asymmetric matchers and using ignoreCase', () => {
             expect(compareTextWithArray(' FOO ', [jasmine.stringContaining('foo'), jasmine.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
             expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), jasmine.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
             expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).result).toBe(true)

@@ -1,18 +1,30 @@
 import { isDefinedObject } from './commandOptionsUtils.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number'
-
+export const isDefinedNotNumber = (value: unknown) => typeof value !== 'number' && value !== undefined
+export const isDefinedNumberOrObject = (value: unknown): value is NonNullable<number | object> => typeof value === 'number' || (typeof value === 'object' && value !== null && !Array.isArray(value))
+/**
+ * Utility to parse legacy `NumberOptions` and modern `NumberMatcher` into standard matcher
+ * criteria and command options for expect-webdriverio matchers.
+ *
+ * If `supportDefaultAsGteThen1` is true, `undefined` is treated as `{ gte: 1 }`.
+ * An empty object `{}` is also temporarily treated as `{ gte: 1 }` for backward compatibility,
+ * but this behavior will be removed in a future release.
+ *
+ * Legacy properties extracted from `NumberOptions` take priority and are merged into
+ * the final `commandOptions` object so they are not overridden by `DEFAULT_OPTIONS`.
+ */
 export function validateNumberAndExtractOptions(
     expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher | undefined,
     commandOptions: ExpectWebdriverIO.CommandOptions = {},
-    supportUndefinedAsGteThen1: boolean = false
+    supportDefaultAsGteThen1: boolean = false
 ): { numberMatcher: NumberMatcher; commandOptions: ExpectWebdriverIO.CommandOptions } {
-    if (supportUndefinedAsGteThen1 && (expectedValue === undefined || (isDefinedObject(expectedValue) && Object.keys(expectedValue).length === 0)) /** supporting {} for backward reason to remove later */) {
+    if (supportDefaultAsGteThen1 && (expectedValue === undefined || (isDefinedObject(expectedValue) && Object.keys(expectedValue).length === 0)) /** supporting {} for backward reason to remove later */) {
         return { numberMatcher: new NumberMatcher({ gte: 1 }), commandOptions }
     } else if (isNumber(expectedValue)) {
         return { numberMatcher: new NumberMatcher({ eq: expectedValue }), commandOptions }
     } else if (
-        !expectedValue || (typeof expectedValue.eq !== 'number' && typeof expectedValue.gte !== 'number' && typeof expectedValue.lte !== 'number')
+        !isDefinedNumberOrObject(expectedValue) || isDefinedNotNumber(expectedValue.eq) ||  isDefinedNotNumber(expectedValue.gte) || isDefinedNotNumber(expectedValue.lte)
     ) {
         throw new Error(`Invalid NumberMatcher. Received: ${JSON.stringify(expectedValue)}`)
     } else {
