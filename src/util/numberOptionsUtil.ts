@@ -2,7 +2,7 @@ import { isDefinedObject } from './commandOptionsUtils.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
 export const isDefinedNotNumber = (value: unknown) => typeof value !== 'number' && value !== undefined
-export const isDefinedNumberOrObject = (value: unknown): value is NonNullable<number | object> => typeof value === 'number' || (typeof value === 'object' && value !== null && !Array.isArray(value))
+export const isDefinedNumberOrNonEmptyObject = (value: unknown): value is NonNullable<number | object> => typeof value === 'number' || (typeof value === 'object' && value !== null && !Array.isArray(value) && Object.keys(value).length > 0)
 /**
  * Utility to parse legacy `NumberOptions` and modern `NumberMatcher` into standard matcher
  * criteria and command options for expect-webdriverio matchers.
@@ -25,7 +25,8 @@ export function validateNumberAndExtractOptions(
     } else if (isNumber(expectedValue)) {
         return { numberMatcher: new NumberMatcher({ eq: expectedValue }), commandOptions }
     } else if (
-        !isDefinedNumberOrObject(expectedValue) || isDefinedNotNumber(expectedValue.eq) ||  isDefinedNotNumber(expectedValue.gte) || isDefinedNotNumber(expectedValue.lte)
+        !isDefinedNumberOrNonEmptyObject(expectedValue) || isDefinedNotNumber(expectedValue.eq) ||  isDefinedNotNumber(expectedValue.gte) || isDefinedNotNumber(expectedValue.lte)
+            || (expectedValue.eq === undefined && expectedValue.gte === undefined && expectedValue.lte === undefined)
     ) {
         throw new Error(`Invalid NumberMatcher. Received: ${JSON.stringify(expectedValue)}`)
     }

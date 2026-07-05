@@ -200,25 +200,14 @@ describe('numberOptionsUtil', () => {
             expect(result.commandOptions).toEqual({ wait: 2000, interval: 100, afterAssertion : DEFAULT_OPTIONS.afterAssertion, beforeAssertion: DEFAULT_OPTIONS.beforeAssertion })
         })
 
-        test('support deprecated cases from NumberOptions', () => {
-            // TODO dprevost to review
-            expect(validateNumberAndExtractOptions({}, DEFAULT_OPTIONS)).toEqual({
-                numberMatcher: new NumberMatcher({}),
-                commandOptions: DEFAULT_OPTIONS
-            })
-            expect(validateNumberAndExtractOptions({ invalidKey: 10 } as any, DEFAULT_OPTIONS)).toEqual({
-                numberMatcher: new NumberMatcher({}),
-                commandOptions: { ...DEFAULT_OPTIONS, invalidKey: 10 }
-            })
-            expect(validateNumberAndExtractOptions({ wait: 10 }, DEFAULT_OPTIONS)).toEqual({
-                numberMatcher: new NumberMatcher({}),
-                commandOptions: { ...DEFAULT_OPTIONS, wait: 10 }
-            })
-        })
-
         test('throws error for empty or entirely invalid options objects', () => {
             expect(() => validateNumberAndExtractOptions(null as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberAndExtractOptions(undefined as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions({}, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions(undefined, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions( { invalidkey:'test' } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberAndExtractOptions( { wait: 0 } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
+
+            // Wrong types for eq, gte, lte
             expect(() => validateNumberAndExtractOptions({ gte: '5' } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
             expect(() => validateNumberAndExtractOptions({ lte: '5' } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
             expect(() => validateNumberAndExtractOptions({ eq: '5' } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)

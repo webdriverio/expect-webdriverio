@@ -317,4 +317,11 @@ Received      : 2`
             expect(result.pass).toBe(true)
         })
     })
+
+    test('fails for empty expected value', async () => {
+        const els = await $$('elements')
+
+        await expect(thisContext.toBeElementsArrayOfSize(els, {})).rejects.toThrow('Invalid NumberMatcher. Received: {}')
+        await expect(thisContext.toBeElementsArrayOfSize(els, {},  { wait: 0 })).rejects.toThrow('Invalid NumberMatcher. Received: {}')
+    })
 })
