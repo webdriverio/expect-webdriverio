@@ -20,7 +20,7 @@ async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher) 
 }
 
 /**
- * @deprecated Passing explicit `undefined` or `{}` as a value is deprecated. Omit the second argument entirely or use `toHaveChildren(el, options)`.
+ * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` or `{}` as a value is deprecated. Omit the second argument entirely or use `toHaveChildren(el, options)`.
  */
 export async function toHaveChildren(
     received: WdioElementMaybePromise,
@@ -46,7 +46,7 @@ export async function toHaveChildren(
 ): Promise<ExpectWebdriverIO.AsyncAssertionResult>
 
 /**
- * @deprecated since 5.7.1, NumberOptions is no longer supported. Use `toHaveChildren(el, numberMatcher, options)` instead.
+ * deprecated since 5.7.1, remove in v6.0.0. NumberOptions is no longer supported. Use `toHaveChildren(el, numberMatcher, options)` instead.
  */
 export async function toHaveChildren(
     received: WdioElementMaybePromise,

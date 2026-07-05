@@ -24,7 +24,7 @@ export async function toHaveWidth(
 ):Promise<ExpectWebdriverIO.AssertionResult>
 
 /**
- * @deprecated since 5.7.1, remove in 6.0.0. Use `toHaveWidth(received, NumberMatcher, options)` instead.
+ * deprecated since 5.7.1, remove in 6.0.0. Use `toHaveWidth(received, NumberMatcher, options)` instead.
  */
 export async function toHaveWidth(
     received: WdioElementMaybePromise,

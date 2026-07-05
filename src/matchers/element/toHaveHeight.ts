@@ -24,7 +24,7 @@ export async function toHaveHeight(
 ):Promise<ExpectWebdriverIO.AssertionResult>
 
 /**
- * @deprecated since 5.7.1, remove in 6.0.0. Use `toHaveHeight(received, NumberMatcher, options)` instead.
+ * deprecated since 5.7.1, remove in 6.0.0. Use `toHaveHeight(received, NumberMatcher, options)` instead.
  */
 export async function toHaveHeight(
     received: WdioElementMaybePromise,

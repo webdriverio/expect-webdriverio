@@ -38,7 +38,7 @@ async function condition(
 }
 
 /**
- * @deprecated since 5.7.1 Passing explicit `undefined` as a value is deprecated. Omit the third argument entirely or use `toHaveElementProperty(el, property, options)`.
+ * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` as a value is deprecated. Omit the third argument entirely or use `toHaveElementProperty(el, property, options)`.
  */
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,

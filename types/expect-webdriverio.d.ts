@@ -123,7 +123,7 @@ interface WdioNetworkMatchers<_R, ActualT> {
         ): Promise<void>
 
         /**
-        * @deprecated since 5.7.1, Use `NumberMatcher` & `CommandOptions` separately `toBeRequestedTimes(NumberMatcher, options)`.
+        * deprecated since 5.7.1, remove in v6.0.0. Use `NumberMatcher` & `CommandOptions` separately `toBeRequestedTimes(NumberMatcher, options)`.
         */
         (
             times: ExpectWebdriverIO.NumberOptions,
@@ -167,7 +167,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
 
     toHaveAttribute: FnWhenElementOrArrayLike<ActualT, {
         /**
-         * @deprecated since 5.7.1 Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
+         * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
          */
         (
             attribute: string,
@@ -190,7 +190,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }>
 
     /**
-     * @deprecated since v5.7.1 Use `toHaveAttribute` instead.
+     * deprecated since v5.7.1 Use `toHaveAttribute` instead.
      * `WebdriverIO.Element` -> `getAttribute`
      */
     toHaveAttr: FnWhenElementOrArrayLike<ActualT, (
@@ -231,7 +231,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
 
     toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, {
         /**
-         * @deprecated since 5.7.1 Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveElementProperty(property, options)`.
+         * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveElementProperty(property, options)`.
          */
         (
             property: string,
@@ -302,7 +302,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      */
     toHaveChildren: FnWhenElementOrArrayLike<ActualT, {
         /**
-         * @deprecated Passing explicit `undefined` or `{}` as a value is deprecated. Omit the second argument entirely or use `toHaveChildren(options)`.
+         * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` or `{}` as a value is deprecated. Omit the second argument entirely or use `toHaveChildren(options)`.
          */
         (
             expectedValue: undefined, // {} also deprecated but we cannot use it as a type because it would match any object
@@ -325,7 +325,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>;
 
         /**
-         * @deprecated since 5.7.1, NumberOptions is no longer supported. Use `toHaveChildren(numberMatcher, options)` instead.
+         * deprecated since 5.7.1, remove in v6.0.0. NumberOptions is no longer supported. Use `toHaveChildren(numberMatcher, options)` instead.
          */
         (
             expectedValue: ExpectWebdriverIO.NumberOptions,
@@ -469,7 +469,7 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
         ): Promise<void> & Promise<WebdriverIO.ElementArray>,
 
         /**
-         * @deprecated since 5.7.0. Use `toBeElementsArrayOfSize` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
+         * deprecated since 5.7.1, remove in v6.0.0. Use `toBeElementsArrayOfSize` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
          */
         (
             size: ExpectWebdriverIO.NumberOptions,
@@ -836,7 +836,7 @@ declare namespace ExpectWebdriverIO {
     }
 
     /**
-     * @deprecated since 5.7.1, will remove in 6.0.0. Use `NumberMatcher` & `CommandOptions` as seperate parameters instead.
+     * deprecated since 5.7.1, remove in v6.0.0. Use `NumberMatcher` & `CommandOptions` as seperate parameters instead.
      * @see NumberMatcher
      * @see CommandOptions
      */

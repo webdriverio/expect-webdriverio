@@ -31,7 +31,7 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
 }
 
 /**
- * @deprecated
+ * @deprecated to remove in v6.0.0
  */
 export function toHaveClass(...args: unknown[]) {
     return toHaveElementClass.call(this || {}, ...args)
@@ -81,7 +81,7 @@ export async function toHaveElementClass(
 }
 
 /**
- * @deprecated
+ * @deprecated to remove in v6.0.0
  */
 export function toHaveClassContaining(el: WebdriverIO.Element, className: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     return toHaveAttributeAndValue.call(this, el, 'class', className, {

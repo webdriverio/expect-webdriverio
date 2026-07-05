@@ -9,7 +9,7 @@ export async function toBeRequestedTimes(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 /**
- * @deprecated since 5.7.1, will remove in 6.0.0. Use `NumberMatcher` & `CommandOptions` as seperate parameters instead.
+ * deprecated since 5.7.1, will remove in 6.0.0. Use `NumberMatcher` & `CommandOptions` as seperate parameters instead.
  */
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock,
