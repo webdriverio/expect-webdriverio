@@ -19,9 +19,24 @@ async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher)
 
 export async function toHaveWidth(
     received: WdioElementMaybePromise,
+    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
+    options?: ExpectWebdriverIO.CommandOptions
+):Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * @deprecated since 5.7.1, remove in 6.0.0. Use `toHaveWidth(received, NumberMatcher, options)` instead.
+ */
+export async function toHaveWidth(
+    received: WdioElementMaybePromise,
+    expectedValue: ExpectWebdriverIO.NumberOptions,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveWidth(
+    received: WdioElementMaybePromise,
     expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
-) {
+):Promise<ExpectWebdriverIO.AssertionResult> {
     const matcherName = 'toHaveWidth'
     const { expectation = 'width', verb = 'have', isNot } = this
 
