@@ -663,6 +663,13 @@ Checks if element has a specific width.
 await browser.url('http://github.com')
 const logo = await $('.octicon-mark-github')
 await expect(logo).toHaveWidth(32)
+// Same as
+await expect(logo).toHaveWidth({ eq: 32 })
+
+// Greater/Less than equals or in between
+await expect(logo).toHaveWidth({ gte: 32 })
+await expect(logo).toHaveWidth({ lte: 34 })
+await expect(logo).toHaveWidth({ gte: 32, lte: 34 })
 ```
 
 ### toHaveHeight
@@ -675,11 +682,19 @@ Checks if element has a specific height.
 await browser.url('http://github.com')
 const logo = await $('.octicon-mark-github')
 await expect(logo).toHaveHeight(32)
+// Same as
+await expect(logo).toHaveHeight({ eq: 32 })
+
+// Greater/Less than equals or in between
+await expect(logo).toHaveHeight({ gte: 32 })
+await expect(logo).toHaveHeight({ lte: 34 })
+await expect(logo).toHaveHeight({ gte: 32, lte: 34 })
 ```
 
 ### toHaveSize
 
 Checks if element has a specific size.
+**Note:** gte and lte or not supported yet.
 
 ##### Usage
 
