@@ -48,6 +48,20 @@ describe(toHaveElementProperty, () => {
             expect(result.pass).toBe(true)
         })
 
+        test('fail with when property value is number and expected is the not same number', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue(5)
+
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', 10)
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have property myPropertyName
+
+Expected: 10
+Received: 5`
+            )
+        })
+
         test('fail with when property value is number and expected is a string without asString option', async () => {
             vi.mocked(el.getProperty).mockResolvedValue(5)
 
@@ -162,12 +176,11 @@ Received      : "iphone"`)
             const result = await thisContext.toHaveElementProperty(el, 'myPropertyName')
 
             expect(result.pass).toBe(false)
-            // TODO error message is ambiguous, should be "Expected: true" instead of "Expected: false"
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property myPropertyName
 
-Expected: true
-Received: false`
+Expected: "to have a defined value"
+Received: "value ${propertyValue}"`
             )
         })
 
@@ -178,8 +191,8 @@ Received: false`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have property myPropertyName
 
-Expected [not]: false
-Received      : true`)
+Expected [not]: "to have a defined value"
+Received      : "value iphone"`)
         })
 
         test.for([
@@ -192,13 +205,6 @@ Received      : true`)
             const result = await thisIsNotContext.toHaveElementProperty(el, 'myPropertyName')
 
             expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-            // TODO error message is ambiguous, should be "Expected [not]: true" instead of "Expected [not]: false"
-            expect(stripAnsi(result.message())).toEqual(`\
-Expect $(\`sel\`) not to have property myPropertyName
-
-Expected [not]: false
-Received      : false`
-            )
         })
 
         test('should return false for undefined input', async () => {

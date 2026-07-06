@@ -93,12 +93,12 @@ export async function toHaveElementProperty(
     })
 
     let el = await received?.getElement()
-    let prop: unknown
+    let actualProppertyValue: unknown
     const pass = await waitUntil(
         async () => {
             const result = await executeCommand.call(this, el, condition, options, [property, value])
             el = result.el as WebdriverIO.Element
-            prop = result.values
+            actualProppertyValue = result.values
 
             return result.success
         },
@@ -108,10 +108,12 @@ export async function toHaveElementProperty(
 
     let message: string
     if (value === undefined) {
-        message = enhanceError(el, !isNot, pass, this, verb, expectation, property, options)
+        const expected = 'to have a defined value'
+        const actual = `value ${actualProppertyValue}`
+        message = enhanceError(el, expected, actual, this, verb, expectation, property, options)
     } else {
-        const expected = wrapExpectedWithArray(el, prop, value)
-        message = enhanceError(el, expected, prop, this, verb, expectation, property, options)
+        const expected = wrapExpectedWithArray(el, actualProppertyValue, value)
+        message = enhanceError(el, expected, actualProppertyValue, this, verb, expectation, property, options)
     }
 
     const result: ExpectWebdriverIO.AssertionResult = {
