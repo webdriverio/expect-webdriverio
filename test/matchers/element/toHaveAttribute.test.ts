@@ -75,8 +75,8 @@ describe(toHaveAttribute, () => {
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute attribute_name
 
-Expected: true
-Received: false`
+Expected: "to have a defined value"
+Received: "value null"`
                     )
                 })
             })
@@ -164,8 +164,8 @@ Received: "Wrong"`
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute attribute_name
 
-Expected: true
-Received: false`
+Expected: "to have a defined value"
+Received: "value ${attributeValue}"`
                 )
             })
 
@@ -217,12 +217,11 @@ Received: false`
                 const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name')
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                // TODO: The error message is misleading to fix one day?
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have attribute attribute_name
 
-Expected [not]: false
-Received      : true`
+Expected [not]: "to have a defined value"
+Received      : "value Correct Value"`
                 )
             })
         })

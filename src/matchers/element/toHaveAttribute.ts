@@ -58,11 +58,13 @@ async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: s
     const { expectation = 'attribute', verb = 'have', isNot } = this
 
     let el = await received?.getElement()
+    let actualAttributeValue
 
     const pass = await waitUntil(
         async () => {
             const result = await executeCommand.call(this, el, conditionAttributeIsPresent, options, [attribute])
             el = result.el as WebdriverIO.Element
+            actualAttributeValue = result.values
 
             return result.success
         },
@@ -70,7 +72,9 @@ async function toHaveAttributeFn(received: WdioElementMaybePromise, attribute: s
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, !isNot, pass, this, verb, expectation, attribute, options)
+    const expected = 'to have a defined value'
+    const actual = `value ${actualAttributeValue}`
+    const message = enhanceError(el, expected, actual, this, verb, expectation, attribute, options)
 
     return {
         pass,
