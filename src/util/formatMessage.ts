@@ -4,6 +4,7 @@ import type { WdioElements } from '../types.js'
 import { isElementArray } from './elementsUtil.js'
 import { numberMatcherTester } from './numberOptionsUtil.js'
 
+// TODO one day use a real asymmetric matcher for number options instead of this custom equality tester
 const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {

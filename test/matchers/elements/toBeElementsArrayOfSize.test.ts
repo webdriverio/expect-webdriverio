@@ -69,6 +69,12 @@ describe(toBeElementsArrayOfSize, async () => {
                 const result = await thisNotContext.toBeElementsArrayOfSize(els, expectedNotToBeSizeOf)
 
                 expect(result.pass).toBe(false) // success, boolean is inverted later in .not cases
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} not to be elements array of size
+
+Expected [not]: ${expectedNotToBeSizeOf}
+Received      : 2`)
+
             })
         })
 
@@ -81,6 +87,18 @@ describe(toBeElementsArrayOfSize, async () => {
 Expect ${selectorName} to be elements array of size
 
 Expected: 5
+Received: 2`
+                )
+            })
+
+            test('fails - in between - with proper error message', async () => {
+                const result = await thisContext.toBeElementsArrayOfSize(els, { gte: 3, lte: 5 })
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} to be elements array of size
+
+Expected: ">= 3 && <= 5"
 Received: 2`
                 )
             })
