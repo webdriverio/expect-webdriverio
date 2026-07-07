@@ -57,14 +57,17 @@ export async function toHaveChildren(
 export async function toHaveChildren(
     received: WdioElementMaybePromise,
     expectedValueOrOptions?: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
-    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+    options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AsyncAssertionResult> {
     const matcherName = 'toHaveChildren'
     const { expectation = 'children', verb = 'have', isNot } = this
 
-    // Properly support new case where the second argument is the commandOptions and not a number or NumberMatcher for a clear API.
-    if (isStrictlyCommandOptions(expectedValueOrOptions)) {
-        options = expectedValueOrOptions ?? DEFAULT_OPTIONS
+    const hasOnlyTwoArgs = options === undefined
+    options = options ?? DEFAULT_OPTIONS
+
+    // Properly support new case `toHaveChildren(commandOptions)` where the second argument is the commandOptions and not a number or NumberMatcher for a clearer API instead of `toHaveChildren(undefined, commandOptions)`.
+    if (hasOnlyTwoArgs && isStrictlyCommandOptions(expectedValueOrOptions)) {
+        options = expectedValueOrOptions
         expectedValueOrOptions = undefined
     }
 
