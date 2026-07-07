@@ -47,7 +47,7 @@ describe(toBeElementsArrayOfSize, async () => {
                 expect(waitUntil).toHaveBeenCalledWith(
                     expect.any(Function),
                     undefined,
-                    expect.objectContaining({ wait: 0 })
+                    { wait: 0, interval: undefined }
                 )
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
@@ -280,7 +280,7 @@ Received      : 2`
             expect(waitUntil).toHaveBeenCalledWith(
                 expect.any(Function),
                 undefined,
-                expect.objectContaining({ wait: 450 })
+                { wait: 450, interval: 100 }
             )
         })
 
@@ -296,7 +296,7 @@ Received      : 2`
             expect(waitUntil).toHaveBeenCalledWith(
                 expect.any(Function),
                 undefined,
-                expect.objectContaining({ wait: undefined })
+                { wait: undefined, interval: undefined }
             )
         })
     })

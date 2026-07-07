@@ -4,6 +4,7 @@ import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTimes.js'
 import stripAnsi from 'strip-ansi'
+import { waitUntil } from '../../../src/util/waitUntil.js'
 
 vi.mock('@wdio/globals')
 vi.mock('../../../src/constants.js', async () => ({
@@ -15,6 +16,14 @@ vi.mock('../../../src/constants.js', async () => ({
         interval: 10
     }
 }))
+vi.mock('../../../src/util/waitUntil.js', async (importOriginal) => {
+
+    const actual = await importOriginal<typeof import('../../../src/util/waitUntil.js')>()
+    return {
+        ...actual,
+        waitUntil: vi.spyOn(actual, 'waitUntil')
+    }
+})
 
 class TestMock implements Mock {
     _calls: Matches[]
@@ -67,6 +76,7 @@ describe('toBeRequestedTimes', () => {
 
         const result = await thisContext.toBeRequestedTimes(mock, 1, { beforeAssertion, afterAssertion, wait: 500 })
 
+        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, { wait: 500, interval: undefined })
         expect(result.pass).toBe(true)
         expect(beforeAssertion).toHaveBeenCalledWith({
             matcherName: 'toBeRequestedTimes',
@@ -105,8 +115,10 @@ describe('toBeRequestedTimes', () => {
 
         const result = await thisContext.toBeRequestedTimes(mock, { gte: 1, wait: 500 })
         expect(result.pass).toBe(true)
+
         const result2 = await thisContext.toBeRequestedTimes(mock, { eq: 1, wait: 500 })
         expect(result2.pass).toBe(true)
+        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, { wait: 500, interval: 10 })
     })
 
     test('wait but failure', async () => {
