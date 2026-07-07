@@ -8,6 +8,15 @@ import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } f
 import type { RectReturn } from '@wdio/protocols'
 export type Size = Pick<RectReturn, 'width' | 'height'>
 
+vi.mock('../../../src/util/waitUntil.js', async (importOriginal) => {
+
+    const actual = await importOriginal<typeof import('../../../src/util/waitUntil.js')>()
+    return {
+        ...actual,
+        waitUntil: vi.spyOn(actual, 'waitUntil')
+    }
+})
+
 const getElementMethods = () => ({
     isDisplayed: vi.spyOn({ isDisplayed: async () => true }, 'isDisplayed'),
     isExisting: vi.spyOn({ isExisting: async () => true }, 'isExisting'),
