@@ -21,7 +21,6 @@ const beMatchers = {
 } satisfies Partial<Record<keyof typeof Matchers, keyof WebdriverIO.Element>>
 
 vi.mock('../../src/utils.js', async (importOriginal) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await importOriginal<typeof import('../../src/utils.js')>()
     return {
         ...actual,

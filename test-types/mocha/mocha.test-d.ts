@@ -169,11 +169,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveHeight(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveHeight(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHeight({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHeight({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveHeight({ gte: 100 })).toEqualTypeOf<Promise<void>>()
 
-                expectTypeOf(expect(element).toHaveHeight({ width: 100, height: 200 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).not.toHaveHeight({ width: 100, height: 200 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).not.toHaveHeight({ width: 100, height: 200 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(browser).toHaveHeight).toBeNever()
             })
@@ -182,6 +182,51 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect('text').toHaveHeight).toBeNever()
                 expectTypeOf(expect(Promise.resolve('text')).toHaveHeight).toBeNever()
                 expectTypeOf(expect(Promise.resolve('text')).toHaveHeight).toBeNever()
+            })
+        })
+
+        describe('toHaveWidth', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(element).toHaveWidth(100)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveWidth(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveWidth(100)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveWidth(100, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveWidth({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveWidth({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveWidth({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableElement).toHaveWidth(100)).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(browser).toHaveWidth).toBeNever()
+            })
+
+            it('should have ts errors when actual is string or Promise<string>', async () => {
+                expectTypeOf(expect('text').toHaveWidth).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveWidth).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveWidth).toBeNever()
+            })
+        })
+
+        describe('toHaveSize', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(element).toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveSize({ height: 100, width: 100 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveSize({ height: 100, width: 100 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+                // TODO one day
+                // expectTypeOf(expect(element).toHaveSize({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+                // expectTypeOf(expect(element).toHaveSize({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
+                // expectTypeOf(expect(element).not.toHaveSize({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableElement).toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(browser).toHaveWidth).toBeNever()
+            })
+
+            it('should have ts errors when actual is string or Promise<string>', async () => {
+                expectTypeOf(expect('text').toHaveSize).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveSize).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveSize).toBeNever()
             })
         })
 
@@ -228,6 +273,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             it('should return Promise<void> when actual is chainableArray', async () => {
                 expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize(5)).toExtend<Promise<void>>()
                 expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })).toExtend<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 }, { wait: 1000 })).toExtend<Promise<void>>()
             })
 
             it('should return Promise<void> when actual is element array', async () => {
@@ -243,6 +289,10 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             it('should not work when actual is not chainableArray', async () => {
                 expectTypeOf(expect(chainableElement).toBeElementsArrayOfSize).toBeNever()
                 expectTypeOf(expect(true).toBeElementsArrayOfSize).toBeNever()
+            })
+
+            it('should be deprecated with NumberOptions', async () => {
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10, wait: 1000 })).toExtend<Promise<void>>()
             })
         })
     })
@@ -398,6 +448,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expectTypeOf(expect(promiseNetworkMock).toBeRequested()).toEqualTypeOf<Promise<void>>()
             expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes(2)).toEqualTypeOf<Promise<void>>()
             expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseNetworkMock).toBeRequested({ wait: 0 })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes(2, { wait: 0 })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10 }, { wait: 0 })).toEqualTypeOf<Promise<void>>()
 
             expectTypeOf(expect(promiseNetworkMock).not.toBeRequested()).toEqualTypeOf<Promise<void>>()
             expectTypeOf(expect(promiseNetworkMock).not.toBeRequestedTimes(2)).toEqualTypeOf<Promise<void>>()
@@ -431,6 +484,10 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
                 response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
             })).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should be deprecated with NumberOptions', async () => {
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10, wait: 0 })).toEqualTypeOf<Promise<void>>()
         })
     })
 
@@ -535,6 +592,25 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveSize({ width: 10, height: 10 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveWidth(10)).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveStyle({ color: 'red' })).toEqualTypeOf<Promise<void>>()
+            })
+        })
+
+        describe('toHaveChildren', () => {
+            it('should support various signatures', async () => {
+                // Preferred Signatures
+                expectTypeOf(expect(element).toHaveChildren()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveChildren({ wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveChildren(5)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveChildren(5, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveChildren({ eq: 5 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveChildren({ eq: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+
+                // Deprecated Signatures
+                expectTypeOf(expect(element).toHaveChildren(undefined)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveChildren(undefined, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveChildren({ eq: 5, wait: 1000 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                // Deprecating this is just too hard but let's not support this!
+                expectTypeOf(expect(element).toHaveChildren({})).toEqualTypeOf<Promise<void>>()
             })
         })
     })

@@ -2,6 +2,10 @@ import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
 import { isElementArray } from './elementsUtil.js'
+import { numberMatcherTester } from './numberOptionsUtil.js'
+
+// TODO one day use a real asymmetric matcher for number options instead of this custom equality tester
+const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
@@ -66,7 +70,7 @@ export const enhanceError = (
     }
 
     // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
-    const diffString = equals(actual, expected) ?`\
+    const diffString = equals(actual, expected, CUSTOM_EQUALITY_TESTER) ?`\
 ${label.expected}: ${printExpected(expected)}
 ${label.received}: ${printReceived(actual)}`
         : printDiffOrStringify(expected, actual, label.expected, label.received, true)
@@ -97,24 +101,4 @@ export const enhanceErrorBe = (
     const actual = `${not(!isNot)}${expectation}`
 
     return enhanceError(subject, expected, actual, { ...context, useNotInLabel: false }, verb, expectation, '', options)
-}
-
-export const numberError = (options: ExpectWebdriverIO.NumberOptions = {}): string | number => {
-    if (typeof options.eq === 'number') {
-        return options.eq
-    }
-
-    if (options.gte && options.lte) {
-        return `>= ${options.gte} && <= ${options.lte}`
-    }
-
-    if (options.gte) {
-        return `>= ${options.gte}`
-    }
-
-    if (options.lte) {
-        return ` <= ${options.lte}`
-    }
-
-    return 'no params'
 }

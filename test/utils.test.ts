@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest'
-import { compareNumbers, compareObject, compareText, compareTextWithArray, getAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
+import { compareObject, compareText, compareTextWithArray, getAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
 import { jasmine } from './__mocks__/jasmine'
 
 describe('utils', () => {
@@ -114,52 +114,11 @@ describe('utils', () => {
             expect(compareTextWithArray('foo', [jasmine.stringContaining('oobb'), jasmine.stringContaining('oo')], {}).result).toBe(true)
         })
 
-        test('should support asymmetric matchers and using ignoreCase', () => {
+        test('should support jasmine asymmetric matchers and using ignoreCase', () => {
             expect(compareTextWithArray(' FOO ', [jasmine.stringContaining('foo'), jasmine.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
             expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), jasmine.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
             expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).result).toBe(true)
             expect(compareTextWithArray('foo', [jasmine.stringContaining('FOOO'), 'FOO'], { ignoreCase: true }).result).toBe(true)
-        })
-    })
-
-    describe('compareNumbers', () => {
-        test('should work when equal', () => {
-            const actual = 10
-            const eq = 10
-            expect(compareNumbers(actual, { eq })).toBe(true)
-        })
-
-        test('should pass when using gte and number is greater', () => {
-            const actual = 10
-            const gte = 5
-            expect(compareNumbers(actual, { gte })).toBe(true)
-        })
-
-        test('should pass when using lte and number is lower', () => {
-            const actual = 10
-            const lte = 20
-            expect(compareNumbers(actual, { lte })).toBe(true)
-        })
-
-        test('should pass when using lte and gte and number is in between', () => {
-            const actual = 10
-            const lte = 20
-            const gte = 1
-            expect(compareNumbers(actual, { lte, gte })).toBe(true)
-        })
-
-        test('should fail when using lte and gte and is lte but not gte', () => {
-            const actual = 10
-            const lte = 20
-            const gte = 15
-            expect(compareNumbers(actual, { lte, gte })).toBe(false)
-        })
-
-        test('should fail when using lte and gte and is gte but not lte', () => {
-            const actual = 10
-            const lte = 9
-            const gte = 1
-            expect(compareNumbers(actual, { lte, gte })).toBe(false)
         })
     })
 

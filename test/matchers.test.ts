@@ -218,8 +218,8 @@ Received      : "some attribute"`
             await expect(() => expectLib(el).not.toHaveAttribute('someAttribute')).rejects.toThrow(`\
 Expect $(\`selector\`) not to have attribute someAttribute
 
-Expected [not]: false
-Received      : true`
+Expected [not]: "to have a defined value"
+Received      : "value some attribute"`
             )
 
             await expect(() => expectLib(el).not.toHaveAttr('someAttribute', 'some attribute')).rejects.toThrow(`\
@@ -335,8 +335,8 @@ Received: "some attribute"`)
             await expect(() => expectLib(el).toHaveAttribute('notExistingAttribute')).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute notExistingAttribute
 
-Expected: true
-Received: false`)
+Expected: "to have a defined value"
+Received: "value null"`)
             await expect(() => expectLib(el).toHaveAttr('someAttribute', 'some other attribute', { wait: 1 })).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute someAttribute
 

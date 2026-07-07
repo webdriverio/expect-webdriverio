@@ -7,7 +7,7 @@ import { DEFAULT_OPTIONS } from './constants.js'
 import type { WdioElementMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
-import { enhanceError, enhanceErrorBe, numberError } from './util/formatMessage.js'
+import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -149,6 +149,11 @@ async function executeCommandBe(
     }
 }
 
+/**
+ * @deprecated not longer used in 5.7.1, replaced by `NumberMatcher.match()`. To remove in 6.0.0
+ * @see src/util/numberOptionsUtil.ts#NumberMatcher.match
+ */
+/* v8 ignore next */
 const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
     // Equals case
     if (typeof options.eq === 'number') {
@@ -419,7 +424,7 @@ function aliasFn(
 
 export {
     aliasFn, compareNumbers, enhanceError, executeCommand,
-    executeCommandBe, numberError, waitUntil, wrapExpectedWithArray
+    executeCommandBe, waitUntil, wrapExpectedWithArray
 }
 
 function replaceActual(
