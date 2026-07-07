@@ -11,7 +11,7 @@ import type { RectReturn } from '@wdio/protocols'
 
 export type Size = Pick<RectReturn, 'width' | 'height'>
 
-async function condition(el: WebdriverIO.Element, size: Partial<Size>) {
+async function condition(el: WebdriverIO.Element, size: Size) {
     const actualSize = await el.getSize()
 
     return compareObject(actualSize, size)
@@ -19,7 +19,7 @@ async function condition(el: WebdriverIO.Element, size: Partial<Size>) {
 
 export async function toHaveSize(
     received: WdioElementMaybePromise,
-    expectedValue: Partial<Size>,
+    expectedValue: Size,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const matcherName = 'toHaveSize'
