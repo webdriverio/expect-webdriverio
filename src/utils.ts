@@ -83,7 +83,7 @@ async function executeCommandBe(
             return result.success
         },
         isNot,
-        { wait : options.wait, interval: options.interval }
+        { wait: options.wait, interval: options.interval }
     )
 
     const message = enhanceErrorBe(el, { ...this, verb }, options)

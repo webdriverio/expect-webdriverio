@@ -21,7 +21,7 @@ vi.mock('../../../src/util/waitUntil.js', async (importOriginal) => {
     const actual = await importOriginal<typeof import('../../../src/util/waitUntil.js')>()
     return {
         ...actual,
-        waitUntil: vi.spyOn(actual, 'waitUntil')
+        waitUntil: vi.fn().mockImplementation(actual.waitUntil)
     }
 })
 
@@ -173,7 +173,7 @@ Received      : 0`
         // expect(mock).not.toBeRequestedTimes(1) should fail
         const result4 = await thisNotContext.toBeRequestedTimes(mock, 1)
         expect(result4.pass).toBe(true) // failure, boolean inverted later because of .not
-        expect(result4.message()).toEqual(`\
+        expect(stripAnsi(result4.message())).toEqual(`\
 Expect mock not to be called 1 time
 
 Expected [not]: 1
@@ -195,7 +195,7 @@ Received      : 1`
 
         const result4 = await thisContext.toBeRequestedTimes(mock, { gte: 3 })
         expect(result4.pass).toBe(false)
-        expect(result4.message()).toEqual(`\
+        expect(stripAnsi(result4.message())).toEqual(`\
 Expect mock to be called times
 
 Expected: ">= 3"
