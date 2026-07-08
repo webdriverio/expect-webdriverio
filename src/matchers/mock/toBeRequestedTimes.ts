@@ -1,5 +1,4 @@
-import { enhanceError } from '../../utils.js'
-import { waitUntil } from '../../util/waitUntil.js'
+import { waitUntil, enhanceError } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
 
