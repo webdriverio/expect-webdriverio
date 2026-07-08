@@ -4,6 +4,7 @@ import { $ } from '@wdio/globals'
 import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty.js'
 import stripAnsi from 'strip-ansi'
 import { jasmine } from '../../__mocks__/jasmine.js'
+import { waitUntil } from '../../../src/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -25,6 +26,7 @@ describe(toHaveElementProperty, () => {
 
             const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', 'iPhone', { wait: 0, ignoreCase: true, beforeAssertion, afterAssertion })
 
+            expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0, interval: undefined })
             expect(result.pass).toBe(true)
             expect(el.getProperty).toHaveBeenCalledTimes(1)
             expect(beforeAssertion).toHaveBeenCalledWith({
@@ -147,6 +149,7 @@ Received      : "iphone"`)
         test('should return true when property does exist by passing an not defined expected value with options', async () => {
             const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', { wait: 0 })
 
+            expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0, interval: undefined })
             expect(result.pass).toBe(true)
         })
 

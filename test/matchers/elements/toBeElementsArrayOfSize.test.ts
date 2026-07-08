@@ -5,6 +5,7 @@ import { toBeElementsArrayOfSize } from '../../../src/matchers/elements/toBeElem
 import { chainableElementArrayFactory, elementArrayFactory, elementFactory } from '../../__mocks__/@wdio/globals.js'
 import { refetchElements } from '../../../src/util/refetchElements.js'
 import stripAnsi from 'strip-ansi'
+import { waitUntil } from '../../../src/util/waitUntil.js'
 
 vi.mock('@wdio/globals')
 
@@ -43,12 +44,11 @@ describe(toBeElementsArrayOfSize, async () => {
 
                 const result = await thisContext.toBeElementsArrayOfSize(els, 2, { beforeAssertion, afterAssertion, wait: 0 })
 
-                // TODO bring back later in PR supporting $$
-                // expect(waitUntil).toHaveBeenCalledWith(
-                //     expect.any(Function),
-                //     undefined,
-                //     expect.objectContaining({ wait: 0 })
-                // )
+                expect(waitUntil).toHaveBeenCalledWith(
+                    expect.any(Function),
+                    undefined,
+                    { wait: 0, interval: undefined }
+                )
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toBeElementsArrayOfSize',
@@ -201,12 +201,11 @@ Received      : 2`
 
             expect(result.pass).toBe(true)
             expect(browser.$$).toHaveBeenCalledTimes(1)
-            // TODO bring back later in PR supporting $$
-            // expect(waitUntil).toHaveBeenCalledWith(
-            //     expect.any(Function),
-            //     undefined,
-            //     expect.objectContaining({ wait: 1 })
-            // )
+            expect(waitUntil).toHaveBeenCalledWith(
+                expect.any(Function),
+                undefined,
+                expect.objectContaining({ wait: 0 })
+            )
         })
 
         test('refresh once the elements array using parent $$ and update actual element with newly fetched elements', async () => {
@@ -278,12 +277,11 @@ Received      : 2`
             expect(elements.length).toBe(5)
             expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 450, true)
             expect(browser.$$).toHaveBeenCalledTimes(2)
-            // TODO bring back later in PR supporting $$
-            // expect(waitUntil).toHaveBeenCalledWith(
-            //     expect.any(Function),
-            //     undefined,
-            //     expect.objectContaining({ wait: 450 })
-            // )
+            expect(waitUntil).toHaveBeenCalledWith(
+                expect.any(Function),
+                undefined,
+                { wait: 450, interval: 100 }
+            )
         })
 
         test('refresh once the element array with the DEFAULT_OPTIONS wait value', async () => {
@@ -295,12 +293,11 @@ Received      : 2`
             expect(result.pass).toBe(true)
             expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, undefined, true)
             expect(browser.$$).toHaveBeenCalledTimes(2)
-            // TODO bring back later in PR supporting $$
-            // expect(waitUntil).toHaveBeenCalledWith(
-            //     expect.any(Function),
-            //     undefined,
-            //     expect.objectContaining({ wait: 1 })
-            // )
+            expect(waitUntil).toHaveBeenCalledWith(
+                expect.any(Function),
+                undefined,
+                { wait: undefined, interval: undefined }
+            )
         })
     })
 

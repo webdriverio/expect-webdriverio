@@ -4,6 +4,7 @@ import { $ } from '@wdio/globals'
 import type { Size } from '../../../src/matchers/element/toHaveSize.js'
 import { toHaveSize } from '../../../src/matchers/element/toHaveSize.js'
 import stripAnsi from 'strip-ansi'
+import { waitUntil } from '../../../src/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -37,6 +38,7 @@ describe(toHaveSize, async () => {
 
             const result = await thisContext.toHaveSize(el, expectedValue, { beforeAssertion, afterAssertion, wait: 500 })
 
+            expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 500, interval: undefined })
             expect(result.pass).toBe(true)
             expect(el.getSize).toHaveBeenCalledTimes(1)
             expect(beforeAssertion).toHaveBeenCalledWith({

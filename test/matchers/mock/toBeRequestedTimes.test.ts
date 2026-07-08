@@ -4,8 +4,8 @@ import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTimes.js'
 import stripAnsi from 'strip-ansi'
+import { waitUntil } from '../../../src/util/waitUntil.js'
 
-vi.mock('@wdio/globals')
 vi.mock('../../../src/constants.js', async () => ({
     DEFAULT_OPTIONS: {
 
@@ -45,7 +45,6 @@ const mockMatch: Matches = {
     initialPriority: 'Low',
     referrerPolicy: 'origin'
 }
-
 describe('toBeRequestedTimes', () => {
     let thisNotContext: { isNot: true; toBeRequestedTimes: typeof toBeRequestedTimes }
     let thisContext: { toBeRequestedTimes: typeof toBeRequestedTimes }
@@ -67,6 +66,7 @@ describe('toBeRequestedTimes', () => {
 
         const result = await thisContext.toBeRequestedTimes(mock, 1, { beforeAssertion, afterAssertion, wait: 500 })
 
+        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, { wait: 500, interval: undefined })
         expect(result.pass).toBe(true)
         expect(beforeAssertion).toHaveBeenCalledWith({
             matcherName: 'toBeRequestedTimes',
@@ -105,8 +105,10 @@ describe('toBeRequestedTimes', () => {
 
         const result = await thisContext.toBeRequestedTimes(mock, { gte: 1, wait: 500 })
         expect(result.pass).toBe(true)
+
         const result2 = await thisContext.toBeRequestedTimes(mock, { eq: 1, wait: 500 })
         expect(result2.pass).toBe(true)
+        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, { wait: 500, interval: 10 })
     })
 
     test('wait but failure', async () => {
@@ -161,7 +163,7 @@ Received      : 0`
         // expect(mock).not.toBeRequestedTimes(1) should fail
         const result4 = await thisNotContext.toBeRequestedTimes(mock, 1)
         expect(result4.pass).toBe(true) // failure, boolean inverted later because of .not
-        expect(result4.message()).toEqual(`\
+        expect(stripAnsi(result4.message())).toEqual(`\
 Expect mock not to be called 1 time
 
 Expected [not]: 1
@@ -183,7 +185,7 @@ Received      : 1`
 
         const result4 = await thisContext.toBeRequestedTimes(mock, { gte: 3 })
         expect(result4.pass).toBe(false)
-        expect(result4.message()).toEqual(`\
+        expect(stripAnsi(result4.message())).toEqual(`\
 Expect mock to be called times
 
 Expected: ">= 3"

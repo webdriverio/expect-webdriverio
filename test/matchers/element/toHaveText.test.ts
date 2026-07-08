@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray } from 'webdriverio'
 import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { waitUntil } from '../../../src/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -39,12 +40,12 @@ describe(toHaveText, async () => {
 
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(3)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveText',
                 expectedValue: 'WebdriverIO',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveText',
                 expectedValue: 'WebdriverIO',
                 options: { ignoreCase: true, beforeAssertion, afterAssertion },
@@ -64,6 +65,7 @@ describe(toHaveText, async () => {
 
             const result = await thisContext.toHaveText(el, 'WebdriverIO', { wait: 0 })
 
+            expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0, interval: undefined })
             expect(result.pass).toBe(true)
         })
 

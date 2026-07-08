@@ -33,12 +33,14 @@ export async function toBeRequestedTimes(
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
 
     let actual
-    const pass = await waitUntil(async () => {
-        actual = received.calls.length
-        return expectedNumber.match(actual)
-    },
-    isNot,
-    { wait: commandOptions.wait, interval: commandOptions.interval })
+    const pass = await waitUntil(
+        async () => {
+            actual = received.calls.length
+            return expectedNumber.match(actual)
+        },
+        isNot,
+        { wait: commandOptions.wait, interval: commandOptions.interval }
+    )
 
     const message = enhanceError('mock', expectedNumber, actual, this, verb, expectation, '', commandOptions)
 

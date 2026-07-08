@@ -3,6 +3,7 @@ import { $ } from '@wdio/globals'
 
 import { toHaveAttribute } from '../../../src/matchers/element/toHaveAttribute'
 import stripAnsi from 'strip-ansi'
+import { waitUntil } from '../../../src/util/waitUntil.js'
 
 vi.mock('@wdio/globals')
 
@@ -30,8 +31,7 @@ describe(toHaveAttribute, () => {
 
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name', { beforeAssertion, afterAssertion, wait: 3, interval: 3 })
 
-                // TODO: to bring back later with a subsequent PR
-                //expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 3, interval: 3 })
+                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 3, interval: 3 })
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
@@ -49,12 +49,14 @@ describe(toHaveAttribute, () => {
             test('success when present by passing undefined value - deprecated', async () => {
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined)
 
+                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 2000, interval: 100 })
                 expect(result.pass).toBe(true)
             })
 
             test('success when present by passing undefined value with options - deprecated', async () => {
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined,  { wait: 1, interval: 1 })
 
+                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 1, interval: 1 })
                 expect(result.pass).toBe(true)
             })
 

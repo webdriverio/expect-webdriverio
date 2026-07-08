@@ -4,6 +4,7 @@ import { $ } from '@wdio/globals'
 import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren'
 import { chainableElementArrayFactory } from '../../__mocks__/@wdio/globals'
 import stripAnsi from 'strip-ansi'
+import { waitUntil } from '../../../src/util/waitUntil.js'
 
 vi.mock('@wdio/globals')
 
@@ -53,8 +54,7 @@ describe(toHaveChildren, () => {
 
                 const result = await thisContext.toHaveChildren(el, undefined, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
 
-                // TODO bring back later
-                // expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
+                expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
 
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({

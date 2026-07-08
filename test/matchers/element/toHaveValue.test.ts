@@ -4,6 +4,7 @@ import { $ } from '@wdio/globals'
 import { getExpectMessage, getReceived, getExpected } from '../../__fixtures__/utils.js'
 import { toHaveValue } from '../../../src/matchers/element/toHaveValue.js'
 import type { AssertionResult } from 'expect-webdriverio'
+import { waitUntil } from '../../../src/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -20,18 +21,19 @@ describe('toHaveValue', () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await toHaveValue.call({}, el, 'This is an example value', { beforeAssertion, afterAssertion })
+            const result = await toHaveValue.call({}, el, 'This is an example value', { beforeAssertion, afterAssertion, wait: 500 })
 
+            expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 500, interval: undefined })
             expect(result.pass).toBe(true)
-            expect(beforeAssertion).toBeCalledWith({
+            expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveElementProperty',
                 expectedValue: ['value', 'This is an example value'],
-                options: { beforeAssertion, afterAssertion }
+                options: { beforeAssertion, afterAssertion, wait: 500 }
             })
-            expect(afterAssertion).toBeCalledWith({
+            expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveElementProperty',
                 expectedValue: ['value', 'This is an example value'],
-                options: { beforeAssertion, afterAssertion },
+                options: { beforeAssertion, afterAssertion, wait: 500 },
                 result
             })
         })
