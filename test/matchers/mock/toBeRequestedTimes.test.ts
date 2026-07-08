@@ -6,7 +6,6 @@ import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTime
 import stripAnsi from 'strip-ansi'
 import { waitUntil } from '../../../src/util/waitUntil.js'
 
-vi.mock('@wdio/globals')
 vi.mock('../../../src/constants.js', async () => ({
     DEFAULT_OPTIONS: {
 
@@ -16,14 +15,6 @@ vi.mock('../../../src/constants.js', async () => ({
         interval: 10
     }
 }))
-vi.mock('../../../src/util/waitUntil.js', async (importOriginal) => {
-
-    const actual = await importOriginal<typeof import('../../../src/util/waitUntil.js')>()
-    return {
-        ...actual,
-        waitUntil: vi.fn().mockImplementation(actual.waitUntil)
-    }
-})
 
 class TestMock implements Mock {
     _calls: Matches[]
@@ -54,7 +45,6 @@ const mockMatch: Matches = {
     initialPriority: 'Low',
     referrerPolicy: 'origin'
 }
-
 describe('toBeRequestedTimes', () => {
     let thisNotContext: { isNot: true; toBeRequestedTimes: typeof toBeRequestedTimes }
     let thisContext: { toBeRequestedTimes: typeof toBeRequestedTimes }

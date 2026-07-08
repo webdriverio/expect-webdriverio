@@ -4,18 +4,7 @@
  */
 import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
-
-import type { RectReturn } from '@wdio/protocols'
-export type Size = Pick<RectReturn, 'width' | 'height'>
-
-vi.mock('../../../src/util/waitUntil.js', async (importOriginal) => {
-
-    const actual = await importOriginal<typeof import('../../../src/util/waitUntil.js')>()
-    return {
-        ...actual,
-        waitUntil: vi.fn().mockImplementation(actual.waitUntil)
-    }
-})
+import { Size } from '../../../src/matchers/element/toHaveSize'
 
 const getElementMethods = () => ({
     isDisplayed: vi.spyOn({ isDisplayed: async () => true }, 'isDisplayed'),

@@ -10,6 +10,9 @@ export default defineConfig({
         typecheck: {
             enabled: false, // Not enable by default since in test-types, we need to use vitest by command line to target different tsc config for each augmentations.
         },
+        setupFiles: [
+            './test/vitest.setup.ts'
+        ],
         testTimeout: 15 * 1000,
         clearMocks: true, // clears all mock call histories before each test
         restoreMocks: true, // restores the original implementation of spies
