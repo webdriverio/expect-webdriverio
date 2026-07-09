@@ -1,9 +1,11 @@
-import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
+import { DEFAULT_OPTIONS } from '../../../src/constants.js'
+import { setDefaultOptions } from '../../../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -201,6 +203,52 @@ Expect  to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
+        })
+    })
+
+    describe('global options', () => {
+        const defaultOptions = { ...DEFAULT_OPTIONS }
+
+        let el: ChainablePromiseElement
+
+        beforeEach(async () => {
+            setDefaultOptions({ wait: 99, interval: 101 })
+            el = await $('sel')
+            el.isDisplayed = vi.fn().mockResolvedValue(true)
+
+        })
+
+        afterEach(() => {
+            setDefaultOptions(defaultOptions)
+        })
+
+        test('should use globally set default options with executeCommandBe', async () => {
+            await toBeDisplayed.call({}, el)
+
+            expect(executeCommandBe).toHaveBeenCalledWith(
+                el,
+                expect.anything(),
+                expect.objectContaining({ wait: 99, interval: 101 })
+            )
+        })
+
+        test('should use globally set default options with isDisplayed', async () => {
+
+            await toBeDisplayed.call({}, el)
+
+            expect(executeCommandBe).toHaveBeenCalledWith(
+                el,
+                expect.anything(),
+                expect.objectContaining({ wait: 99, interval: 101 })
+            )
+            expect(el.isDisplayed).toHaveBeenCalledWith(
+                {
+                    withinViewport: false,
+                    contentVisibilityAuto: true,
+                    opacityProperty: true,
+                    visibilityProperty: true
+                }
+            )
         })
     })
 })
