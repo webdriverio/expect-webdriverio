@@ -26,11 +26,11 @@ export async function toHaveComputedLabel(
     expectedValue: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'computed label', verb = 'have' } = this
+    const matcherName = 'toHaveComputedLabel'
+    const { expectation = 'computed label', verb = 'have', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveComputedLabel',
+        matcherName,
         expectedValue,
         options,
     })
@@ -47,7 +47,7 @@ export async function toHaveComputedLabel(
             return result.success
         },
         isNot,
-        options
+        { wait: options.wait, interval: options.interval }
     )
 
     const message = enhanceError(
@@ -67,7 +67,7 @@ export async function toHaveComputedLabel(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveComputedLabel',
+        matcherName,
         expectedValue,
         options,
         result

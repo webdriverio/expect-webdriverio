@@ -42,11 +42,11 @@ export async function toHaveText(
     expectedValue: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'text', verb = 'have' } = this
+    const matcherName = 'toHaveText'
+    const { expectation = 'text', verb = 'have', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveText',
+        matcherName,
         expectedValue,
         options,
     })
@@ -58,13 +58,17 @@ export async function toHaveText(
             : received
     let actualText
 
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
-        el = result.el
-        actualText = result.values
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
+            el = result.el
+            actualText = result.values
 
-        return result.success
-    }, isNot, options)
+            return result.success
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
     const message = enhanceError(el, wrapExpectedWithArray(el, actualText, expectedValue), actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
@@ -73,7 +77,7 @@ export async function toHaveText(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveText',
+        matcherName,
         expectedValue,
         options,
         result
