@@ -165,8 +165,8 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
         })
 
-        test('sucess if style matches with containing', async () => {
-            const result = await thisNotContext.toHaveStyle(
+        test('success if style matches with containing', async () => {
+            const result = await thisContext.toHaveStyle(
                 el,
                 {
                     'font-family': 'Faktum',
@@ -179,7 +179,7 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
         })
 
-        test('sucess if style matches with atStart', async () => {
+        test('success if style matches with atStart', async () => {
             const actualStyle: { [key: string]: string } = {
                 'font-family': 'Faktum Lorem ipsum dolor sit amet',
                 'text-rendering': 'optimizeLegibility',
@@ -200,7 +200,7 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
         })
 
-        test('sucess if style matches with atEnd', async () => {
+        test('success if style matches with atEnd', async () => {
             const actualStyle: { [key: string]: string } = {
                 'font-family': 'Faktum Lorem ipsum dolor sit amet',
                 'text-rendering': 'optimizeLegibility',
@@ -221,7 +221,7 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
         })
 
-        test('sucess if style matches with atIndex', async () => {
+        test('success if style matches with atIndex', async () => {
             const actualStyle: { [key: string]: string } = {
                 'font-family': 'Faktum Lorem ipsum dolor sit amet',
                 'text-rendering': 'optimizeLegibility',
