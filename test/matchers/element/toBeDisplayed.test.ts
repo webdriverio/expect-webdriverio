@@ -156,7 +156,7 @@ Received: "displayed"`)
         test('not - failure (with wait) - pass should be true', async () => {
             const result = await thisNotContext.toBeDisplayed(element)
 
-            expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
         })
 
         test('not - success (with wait) - pass should be false', async () => {
