@@ -20,13 +20,7 @@ describe(toHaveHref, () => {
 
         beforeEach(async () => {
             el = await $('sel')
-            vi.mocked(el.getAttribute)
-                .mockImplementation(async (attribute: string) => {
-                    if (attribute === 'href') {
-                        return 'https://www.example.com'
-                    }
-                    return null
-                })
+            vi.mocked(el.getAttribute).mockResolvedValue('https://www.example.com')
         })
 
         test('success when contains', async () => {
