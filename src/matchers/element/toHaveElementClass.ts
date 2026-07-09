@@ -42,11 +42,11 @@ export async function toHaveElementClass(
     expectedValue: string | RegExp | Array<string | RegExp> | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'class', verb = 'have' } = this
+    const matcherName = 'toHaveElementClass'
+    const { expectation = 'class', verb = 'have', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveElementClass',
+        matcherName,
         expectedValue,
         options,
     })
@@ -56,13 +56,16 @@ export async function toHaveElementClass(
     let el = await received?.getElement()
     let attr
 
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, condition, options, [attribute, expectedValue, options])
-        el = result.el as WebdriverIO.Element
-        attr = result.values
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand.call(this, el, condition, options, [attribute, expectedValue, options])
+            el = result.el as WebdriverIO.Element
+            attr = result.values
 
-        return result.success
-    }, isNot, options)
+            return result.success
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval })
 
     const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
@@ -71,7 +74,7 @@ export async function toHaveElementClass(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveElementClass',
+        matcherName,
         expectedValue,
         options,
         result
