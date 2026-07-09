@@ -1,2 +1,3 @@
 // Global spies of src folders
-import './__mocks__/src/matchers/util/waitUntil.js'
+import './__mocks__/src/matchers/util/waitUntil.ts'
+import './__mocks__/src/matchers/util.ts'

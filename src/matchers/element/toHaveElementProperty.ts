@@ -83,8 +83,7 @@ export async function toHaveElementProperty(
     }
 
     const matcherName = 'toHaveElementProperty'
-    const isNot = this.isNot
-    const { expectation = 'property', verb = 'have' } = this
+    const { expectation = 'property', verb = 'have', isNot } = this
 
     await options.beforeAssertion?.({
         matcherName,

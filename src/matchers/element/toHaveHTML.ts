@@ -22,11 +22,11 @@ export async function toHaveHTML(
     expectedValue: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ) {
-    const isNot = this.isNot
-    const { expectation = 'HTML', verb = 'have' } = this
+    const matcherName = 'toHaveHTML'
+    const { expectation = 'HTML', verb = 'have', isNot } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveHTML',
+        matcherName,
         expectedValue,
         options,
     })
@@ -38,13 +38,17 @@ export async function toHaveHTML(
             : received
     let actualHTML
 
-    const pass = await waitUntil(async () => {
-        const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
-        el = result.el as WebdriverIO.Element
-        actualHTML = result.values
+    const pass = await waitUntil(
+        async () => {
+            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
+            el = result.el as WebdriverIO.Element
+            actualHTML = result.values
 
-        return result.success
-    }, isNot, options)
+            return result.success
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
     const message = enhanceError(el, wrapExpectedWithArray(el, actualHTML, expectedValue), actualHTML, this, verb, expectation, '', options)
 
@@ -54,7 +58,7 @@ export async function toHaveHTML(
     }
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveHTML',
+        matcherName,
         expectedValue,
         options,
         result
