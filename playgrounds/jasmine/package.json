@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@types/jasmine": "^5.1.15",
-    "@wdio/jasmine-framework": "^9.27.2",
+    "@wdio/jasmine-framework": "^9.29.1",
     "eslint-plugin-jasmine": "^4.2.2",
     "expect-webdriverio": "file:../.."
   },
