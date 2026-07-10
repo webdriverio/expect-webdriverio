@@ -206,7 +206,7 @@ Received: ""`)
         })
 
         test('failure if array does not match with computed label', async () => {
-            const result = await thisContext.toHaveComputedLabel(el, ['div', 'foo'], { wait: 1 })
+            const result = await thisContext.toHaveComputedLabel(el, ['div', 'foo'], { wait: 0 })
 
             expect(result.pass).toBe(false)
             expect(el.getComputedLabel).toHaveBeenCalledTimes(1)

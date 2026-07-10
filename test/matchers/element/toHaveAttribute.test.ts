@@ -49,14 +49,14 @@ describe(toHaveAttribute, () => {
             test('success when present by passing undefined value - deprecated', async () => {
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined)
 
-                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 2000, interval: 100 })
+                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 20, interval: 1 })
                 expect(result.pass).toBe(true)
             })
 
             test('success when present by passing undefined value with options - deprecated', async () => {
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined,  { wait: 1, interval: 1 })
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined,  { wait: 0, })
 
-                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 1, interval: 1 })
+                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0 })
                 expect(result.pass).toBe(true)
             })
 
