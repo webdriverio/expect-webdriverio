@@ -352,6 +352,7 @@ export const compareStyle = async (
 }
 
 /** @deprecated unused, to remove in v6.0.0 */
+/* v8 ignore next */
 function aliasFn(
     fn: (...args: unknown[]) => void,
     {
