@@ -383,16 +383,24 @@ await expect(myInput).toHaveAttribute('class', 'form-control')
 await expect(myInput).toHaveAttribute('class', expect.stringContaining('control'))
 ```
 
-### toHaveAttr
-
-Same as `toHaveAttribute`.
+Checks if an element has a specific attribute.
 
 ##### Usage
 
 ```js
 const myInput = await $('input')
-await expect(myInput).toHaveAttr('class', 'form-control')
-await expect(myInput).toHaveAttr('class', expect.stringContaining('control'))
+await expect(myInput).toHaveAttribute('class')
+await expect(myInput).toHaveAttribute('class', { wait: 1000 })
+```
+
+Checks if an element does not have the specified attribute.
+
+##### Usage
+
+```js
+const myInput = await $('input')
+await expect(myInput).not.toHaveAttribute('class')
+await expect(myInput).not.toHaveAttribute('class', { wait: 1000 })
 ```
 
 ### toHaveElementClass
@@ -410,7 +418,7 @@ await expect(myInput).toHaveElementClass(expect.stringContaining('form'), { mess
 
 ### toHaveElementProperty
 
-Checks if an element has a certain property.
+Checks if an element has a certain property and value
 
 ##### Usage
 
@@ -418,6 +426,17 @@ Checks if an element has a certain property.
 const elem = await $('#elem')
 await expect(elem).toHaveElementProperty('height', 23)
 await expect(elem).not.toHaveElementProperty('height', 0)
+```
+
+Checks if an element has a certain property.
+
+##### Usage
+
+```js
+const elem = await $('#elem')
+await expect(elem).toHaveElementProperty('height')
+// Does not have height property
+await expect(elem).not.toHaveElementProperty('height')
 ```
 
 ### toHaveValue
@@ -673,6 +692,13 @@ Checks if element has a specific width.
 await browser.url('http://github.com')
 const logo = await $('.octicon-mark-github')
 await expect(logo).toHaveWidth(32)
+// Same as
+await expect(logo).toHaveWidth({ eq: 32 })
+
+// Greater/Less than equals or in between
+await expect(logo).toHaveWidth({ gte: 32 })
+await expect(logo).toHaveWidth({ lte: 34 })
+await expect(logo).toHaveWidth({ gte: 32, lte: 34 })
 ```
 
 ### toHaveHeight
@@ -685,11 +711,19 @@ Checks if element has a specific height.
 await browser.url('http://github.com')
 const logo = await $('.octicon-mark-github')
 await expect(logo).toHaveHeight(32)
+// Same as
+await expect(logo).toHaveHeight({ eq: 32 })
+
+// Greater/Less than equals or in between
+await expect(logo).toHaveHeight({ gte: 32 })
+await expect(logo).toHaveHeight({ lte: 34 })
+await expect(logo).toHaveHeight({ gte: 32, lte: 34 })
 ```
 
 ### toHaveSize
 
 Checks if element has a specific size.
+**Note:** gte and lte are not supported yet.
 
 ##### Usage
 
@@ -711,9 +745,14 @@ Checks amount of fetched elements using [`$$`](https://webdriver.io/docs/api/ele
 const listItems = await $$('ul>li')
 await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in the list
 
+// Greater/Less then
 await expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
 // same as
 assert.ok(listItems.length <= 10)
+
+await expect(listItems).toBeElementsArrayOfSize({ gte: 5 })
+// In between
+await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
 ```
 
 ## Network Matchers
@@ -737,9 +776,12 @@ Checks that mock was called for the expected amount of times
 
 ```js
 const mock = browser.mock('**/api/todo*')
-await expect(mock).toBeRequestedTimes(2) // await expect(mock).toBeRequestedTimes({ eq: 2 })
+await expect(mock).toBeRequestedTimes(2)
+// same as
+await expect(mock).toBeRequestedTimes({ eq: 2 })
 
-await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) // request called at least 5 times but less than 11
+// request called at least 5 times but less than 11
+await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 }) 
 ```
 
 ### toBeRequestedWith

@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $, $$ } from '@wdio/globals'
+import { $ } from '@wdio/globals'
 import { toHaveWidth } from '../../../src/matchers/element/toHaveWidth.js'
 import type { Size } from '../../../src/matchers/element/toHaveSize.js'
 import stripAnsi from 'strip-ansi'

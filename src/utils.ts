@@ -7,7 +7,6 @@ import type { WdioElementOrArrayMaybePromise, WdioElements } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import { executeCommand } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
-import { DEFAULT_OPTIONS } from './constants.js'
 import { waitUntil } from './util/waitUntil.js'
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
@@ -69,7 +68,6 @@ async function executeCommandBe(
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): ExpectWebdriverIO.AsyncAssertionResult {
-    const { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = options
     const  { isNot, verb = 'be' } = this
 
     let awaitedElements: WdioElements | WebdriverIO.Element | undefined
@@ -87,7 +85,7 @@ async function executeCommandBe(
             return { success, results }
         },
         isNot,
-        { wait, interval }
+        { wait: options.wait, interval: options.interval }
     )
 
     const message = enhanceErrorBe(awaitedElements, allResults, { ...this, verb }, options)
@@ -98,6 +96,11 @@ async function executeCommandBe(
     }
 }
 
+/**
+ * @deprecated not longer used in 5.7.1, replaced by `NumberMatcher.match()`. To remove in 6.0.0
+ * @see src/util/numberOptionsUtil.ts#NumberMatcher.match
+ */
+/* v8 ignore next */
 const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
     // Equals case
     if (typeof options.eq === 'number') {

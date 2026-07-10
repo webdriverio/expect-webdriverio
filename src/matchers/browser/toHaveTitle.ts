@@ -22,7 +22,7 @@ export async function toHaveTitle(
             return compareText(actual, expectedValue, options).result
         },
         isNot,
-        options
+        { wait: options.wait, interval: options.interval }
     )
 
     const message = enhanceError('window', expectedValue, actual, this, verb, expectation, '', options)

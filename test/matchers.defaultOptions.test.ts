@@ -7,17 +7,7 @@ import { waitUntil } from '../src/utils.js'
 vi.mock('@wdio/globals')
 
 vi.mock('../../../src/constants.js', async () => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     return await vi.importActual<typeof import('../src/constants.js')>('../src/constants.js')
-})
-
-vi.mock('../src/util/waitUntil.js', async (importOriginal) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    const actual = await importOriginal<typeof import('../src/util/waitUntil.js')>()
-    return {
-        ...actual,
-        waitUntil: vi.spyOn(actual, 'waitUntil')
-    }
 })
 
 describe('DEFAULT_OPTIONS', () => {

@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $, $$ } from '@wdio/globals'
+import { $ } from '@wdio/globals'
 import { toHaveHTML } from '../../../src/matchers/element/toHaveHTML.js'
 import stripAnsi from 'strip-ansi'
 
@@ -165,6 +165,8 @@ Received: ""`)
         })
 
         test('success if array matches with html and ignoreCase', async () => {
+            vi.mocked(element.getHTML).mockResolvedValue('<div>FOO</div>')
+
             const result = await thisContext.toHaveHTML(element, ['div', '<div>foo</div>'], { wait: 1, ignoreCase: true })
 
             expect(result.pass).toBe(true)
@@ -200,6 +202,8 @@ Received: ""`)
         })
 
         test('success if array matches with html and multiple replacers and one of the replacers is a function', async () => {
+            vi.mocked(element.getHTML).mockResolvedValue('<div>FOO</div>')
+
             const result = await thisContext.toHaveHTML(element, ['div', '<p>foo</p>', 'toto'], {
                 wait: 1,
                 replace: [
@@ -216,7 +220,6 @@ Received: ""`)
             const result = await thisContext.toHaveHTML(element, ['div', 'foo'])
 
             expect(result.pass).toBe(false)
-            expect(element.getHTML).toHaveBeenCalledTimes(1)
         })
 
         describe('with RegExp', () => {

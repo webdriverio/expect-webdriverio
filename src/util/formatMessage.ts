@@ -1,10 +1,11 @@
 import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXPECTED_COLOR, INVERTED_COLOR, stringify } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
+import { toJsonString } from './stringUtil.js'
 import { isElementArrayLike, isElementOrNotEmptyElementArray, isStrictlyElementArray } from './elementsUtil.js'
 import { numberMatcherTester } from './numberOptionsUtil.js'
-import { toJsonString } from './stringUtil.js'
 
+// TODO one day use a real asymmetric matcher for number options instead of this custom equality tester
 const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
 
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {

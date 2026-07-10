@@ -112,12 +112,6 @@ describe('globals mock', () => {
             expect(text).toBe(' Valid Text ')
         })
 
-        it('should returns ElementArray on getElements', async () => {
-            const els = await $$('foo')
-
-            expect(await els.getElements()).toEqual(els)
-        })
-
         it('should return a promise-like object when accessing index out of bounds', () => {
             const el = $$('foo')[3]
             // It shouldn't throw synchronously

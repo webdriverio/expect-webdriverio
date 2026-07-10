@@ -2,16 +2,6 @@ import { describe, test, expect, vi, beforeEach } from 'vitest'
 import type { ConditionResult } from '../../src/util/waitUntil'
 import { waitUntil } from '../../src/util/waitUntil'
 
-vi.mock('../../src/constants.js', async () => ({
-    DEFAULT_OPTIONS: {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-        ...(await vi.importActual<typeof import('../../src/constants.js')>('../../src/constants.js')).DEFAULT_OPTIONS,
-        // speed up tests by lowering default wait timeout
-        wait : 50,
-        interval: 10
-    }
-}))
-
 describe(waitUntil, () => {
 
     describe('when condition returns single boolean', () => {

@@ -10,7 +10,6 @@ import {
 } from '../../utils.js'
 
 export type Size = Pick<RectReturn, 'width' | 'height'>
-
 async function condition(el: WebdriverIO.Element, size: Size): Promise<{ result: boolean, value: Size }> {
     const actualSize = await el.getSize()
 

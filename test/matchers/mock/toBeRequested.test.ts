@@ -6,15 +6,6 @@ import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
 import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
-vi.mock('../../../src/constants.js', async () => ({
-    DEFAULT_OPTIONS: {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-        ...(await vi.importActual<typeof import('../../../src/constants.js')>('../../../src/constants.js')).DEFAULT_OPTIONS,
-        // speed up tests by lowering default wait timeout
-        wait : 15,
-        interval: 5
-    }
-}))
 class TestMock implements Mock {
     _calls: any[]
 
@@ -108,7 +99,7 @@ Received: 0`
         mock.calls.push(mockMatch)
         const result2 = await thisNotContext.toBeRequested(mock)
         expect(result2.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-        expect(result2.message()).toEqual(`\
+        expect(stripAnsi(result2.message())).toEqual(`\
 Expect mock not to be called
 
 Expected [not]: ">= 1"

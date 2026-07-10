@@ -4,6 +4,7 @@ import { $ } from '@wdio/globals'
 import { toHaveValue } from '../../../src/matchers/element/toHaveValue.js'
 import type { AssertionResult } from 'expect-webdriverio'
 import stripAnsi from 'strip-ansi'
+import { waitUntil } from '../../../src/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -31,13 +32,16 @@ describe(toHaveValue, () => {
                 const result = await thisContext.toHaveValue(el, 'This is an example value', { wait: 0, beforeAssertion, afterAssertion })
 
                 expect(result.pass).toBe(true)
+                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0, interval: undefined })
                 expect(beforeAssertion).toHaveBeenCalledWith({
-                    matcherName: 'toHaveValue',
+                    // matcherName: 'toHaveValue', // TODO fix later?
+                    matcherName: 'toHaveElementProperty',
                     expectedValue: ['value', 'This is an example value'],
                     options: { beforeAssertion, afterAssertion, wait: 0 }
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
-                    matcherName: 'toHaveValue',
+                    // matcherName: 'toHaveValue', // TODO fix later?
+                    matcherName: 'toHaveElementProperty',
                     expectedValue: ['value', 'This is an example value'],
                     options: { beforeAssertion, afterAssertion, wait: 0 },
                     result

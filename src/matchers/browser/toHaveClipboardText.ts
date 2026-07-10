@@ -30,7 +30,8 @@ export async function toHaveClipboardText(
             return compareText(actual, expectedValue, options).result
         },
         isNot,
-        options)
+        { wait: options.wait, interval: options.interval }
+    )
 
     const message = enhanceError('browser', expectedValue, actual, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {

@@ -4,45 +4,7 @@
  */
 import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
-import type { Size } from '../../../src/matchers/element/toHaveSize'
-
-vi.mock('@wdio/globals')
-vi.mock('../../../src/constants.js', async () => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    const actual = await vi.importActual<typeof import('../../../src/constants.js')>('../../../src/constants.js')
-    const DEFAULT_OPTIONS= {
-        ...actual.DEFAULT_OPTIONS,
-        // speed up tests by lowering default wait timeout
-        wait : 1
-    }
-    const DEFAULT_OPTIONS_TO_BE_DISPLAYED= {
-        ...actual.DEFAULT_OPTIONS_TO_BE_DISPLAYED,
-        // speed up tests by lowering default wait timeout
-        wait : 2
-    }
-    return {
-        ...actual,
-        DEFAULT_OPTIONS,
-        DEFAULT_OPTIONS_TO_BE_DISPLAYED,
-    }
-})
-
-vi.mock('../../../src/util/waitUntil.js', async (importOriginal) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    const actual = await importOriginal<typeof import('../../../src/util/waitUntil.js')>()
-    return {
-        ...actual,
-        waitUntil: vi.spyOn(actual, 'waitUntil')
-    }
-})
-vi.mock('../../../src/utils.js', async (importOriginal) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    const actual = await importOriginal<typeof import('../../../src/utils.js')>()
-    return {
-        ...actual,
-        executeCommandBe: vi.spyOn(actual, 'executeCommandBe'),
-    }
-})
+import { Size } from '../../../src/matchers/element/toHaveSize'
 
 const getElementMethods = () => ({
     isDisplayed: vi.spyOn({ isDisplayed: async () => true }, 'isDisplayed'),

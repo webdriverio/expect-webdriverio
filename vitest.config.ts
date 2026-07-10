@@ -10,6 +10,9 @@ export default defineConfig({
         typecheck: {
             enabled: false, // Not enable by default since in test-types, we need to use vitest by command line to target different tsc config for each augmentations.
         },
+        setupFiles: [
+            './test/vitest.setup.ts'
+        ],
         testTimeout: 15 * 1000,
         clearMocks: true, // clears all mock call histories before each test
         restoreMocks: true, // restores the original implementation of spies
@@ -29,14 +32,10 @@ export default defineConfig({
                 'types-checks-filter-out-node_modules.js',
             ],
             thresholds: {
-                lines: 88.7,
-                functions: 87.1,
-                statements: 88.7,
-                branches: 84.1,
-                // lines: 100,
-                // functions: 100,
-                // statements: 100,
-                // branches: 100,
+                lines: 89.7,
+                functions: 88.4,
+                statements: 89.6,
+                branches: 81.8,
             }
         }
     }

@@ -2,13 +2,28 @@ import { waitUntil, enhanceError, } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementsMaybePromise } from '../../types.js'
-import { validateNumberOptions } from '../../util/numberOptionsUtil.js'
+import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import { awaitElementArray } from '../../util/elementsUtil.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * deprecated since version 5.7.1. Use `toBeElementsArrayOfSize` with NumberMatcher instead. This matcher will be removed in version 6.0.0.
+ */
+export async function toBeElementsArrayOfSize(
+    received: WdioElementsMaybePromise,
+    expectedValue: ExpectWebdriverIO.NumberOptions,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toBeElementsArrayOfSize(
+    received: WdioElementsMaybePromise,
+    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'elements array of size', verb = 'be', matcherName = 'toBeElementsArrayOfSize', isNot } = this
 
@@ -18,12 +33,10 @@ export async function toBeElementsArrayOfSize(
         options,
     })
 
-    const { numberMatcher, numberCommandOptions } = validateNumberOptions(expectedValue)
+    const  { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
 
     // eslint-disable-next-line prefer-const
     let { elements, other } = await awaitElementArray(received)
-
-    const wait = numberCommandOptions?.wait ?? options.wait ?? DEFAULT_OPTIONS.wait
     const originalLength =  elements ? elements.length : undefined
 
     const pass = await waitUntil(
@@ -33,17 +46,17 @@ export async function toBeElementsArrayOfSize(
             }
 
             // Verify is size match first before refetching elements
-            const isPassing = numberMatcher.equals(elements.length)
+            const isPassing = expectedNumber.equals(elements.length)
             if (isPassing) {
                 return isPassing
             }
 
             // TODO should we do this on other matchers??
-            elements = await refetchElements(elements, wait, true)
+            elements = await refetchElements(elements, commandOptions.wait, true)
             return false
         },
         isNot,
-        { wait, interval: numberCommandOptions?.interval ?? options.interval }
+        { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
     // TODO By using `(await received).push(elements[index])` we could update Promises of arrays, should we support that?
@@ -54,7 +67,7 @@ export async function toBeElementsArrayOfSize(
     }
 
     const actual = originalLength
-    const message = enhanceError(elements ?? other, numberMatcher, actual, this, verb, expectation, '', { ...numberCommandOptions, ...options })
+    const message = enhanceError(elements ?? other, expectedNumber, actual, this, verb, expectation, '', commandOptions)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

@@ -64,7 +64,7 @@ describe(toHaveElementClass, () => {
         })
 
         test('failure with multiple asymmetric matcher', async () => {
-            const result = await thisContext.toHaveElementClass(el, [expect.stringContaining('notsome-class'), expect.stringContaining('notanother-class')])
+            const result = await thisContext.toHaveElementClass(el, [expect.stringContaining('notsome-class'), expect.stringContaining('notanother-class')], { wait: 0 })
 
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
@@ -112,7 +112,7 @@ Received: "some-class another-class yet-another-class"`)
         })
 
         test('not - failure - pass should be true', async () => {
-            const result = await thisNotContext.toHaveElementClass(el, ['some-class', 'not-another-class'])
+            const result = await thisNotContext.toHaveElementClass(el, ['some-class', 'not-another-class'], { wait: 0 })
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later
         })

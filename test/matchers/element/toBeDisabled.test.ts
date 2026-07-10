@@ -1,8 +1,8 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $, $$ } from '@wdio/globals'
+import { $, } from '@wdio/globals'
 import { toBeDisabled } from '../../../src/matchers/element/toBeDisabled.js'
-import { executeCommandBe, waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
+import { executeCommandBe, waitUntil } from '../../../src/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -37,6 +37,7 @@ describe(toBeDisabled, () => {
 
             const result = await thisContext.toBeDisabled(el, { beforeAssertion, afterAssertion, wait: 500 })
 
+            expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 500, interval: undefined })
             expect(result.pass).toBe(true)
             expect(el.isEnabled).toHaveBeenCalledTimes(2)
             expect(beforeAssertion).toHaveBeenCalledWith({

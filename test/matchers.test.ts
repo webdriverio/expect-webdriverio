@@ -4,29 +4,6 @@ import { $, $$ } from '@wdio/globals'
 
 vi.mock('@wdio/globals')
 
-vi.mock('../src/constants.js', async () => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    const actual = await vi.importActual<typeof import('../src/constants.js')>('../src/constants.js')
-    const DEFAULT_OPTIONS = {
-        ...actual.DEFAULT_OPTIONS,
-        // speed up tests by lowering default wait timeout
-        wait : 15,
-        interval: 5
-    }
-    const DEFAULT_OPTIONS_TO_BE_DISPLAYED = {
-
-        ...actual.DEFAULT_OPTIONS_TO_BE_DISPLAYED,
-        // speed up tests by lowering default wait timeout
-        wait : 20,
-        interval: 5
-    }
-    return {
-        DEFAULT_OPTIONS,
-        DEFAULT_OPTIONS_TO_BE_DISPLAYED,
-        defaultOptionsList: [DEFAULT_OPTIONS, DEFAULT_OPTIONS_TO_BE_DISPLAYED]
-    }
-})
-
 const ALL_MATCHERS = [
     // browser
     'toHaveClipboardText',
@@ -250,8 +227,8 @@ Received      : "some attribute"`
             await expect(() => expectLib(el).not.toHaveAttribute('someAttribute')).rejects.toThrow(`\
 Expect $(\`selector\`) not to have attribute someAttribute
 
-Expected [not]: false
-Received      : true`
+Expected [not]: "to have a defined value"
+Received      : "value some attribute"`
             )
 
             await expect(() => expectLib(el).not.toHaveAttr('someAttribute', 'some attribute')).rejects.toThrow(`\
@@ -367,9 +344,9 @@ Received: "some attribute"`)
             await expect(() => expectLib(el).toHaveAttribute('notExistingAttribute')).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute notExistingAttribute
 
-Expected: true
-Received: false`)
-            await expect(() => expectLib(el).toHaveAttr('someAttribute', 'some other attribute')).rejects.toThrow(`\
+Expected: "to have a defined value"
+Received: "value null"`)
+            await expect(() => expectLib(el).toHaveAttr('someAttribute', 'some other attribute', { wait: 1 })).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute someAttribute
 
 Expected: "some other attribute"

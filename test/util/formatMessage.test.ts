@@ -6,7 +6,6 @@ import { elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.
 import stripAnsi from 'strip-ansi'
 
 vi.mock('jest-matcher-utils', async (importActual) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await importActual<typeof import('jest-matcher-utils')>()
     return {
         ...actual,
@@ -454,17 +453,6 @@ Expect $(\`element\`) to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
-            })
-
-            test('when isNot is true and failure with result having pass=true (inverted later by Jest)', () => {
-                const isNot = true
-                const message = stripAnsi(enhanceErrorBe(subject, [true], { isNot, verb, expectation }, options))
-                expect(message).toEqual(`\
-Expect $(\`element\`) not to be displayed
-
-Expected: "not displayed"
-Received: "displayed"`)
-
             })
 
             test('when isNot is true and failure with result having pass=true (inverted later by Jest)', () => {

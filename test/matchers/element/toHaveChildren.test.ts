@@ -1,11 +1,10 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $, $$ } from '@wdio/globals'
+import { $ } from '@wdio/globals'
 
 import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren'
-import { waitUntil } from '../../../src/util/waitUntil'
 import { chainableElementArrayFactory } from '../../__mocks__/@wdio/globals'
-import type { ChainablePromiseArray } from 'webdriverio'
 import stripAnsi from 'strip-ansi'
+import { waitUntil } from '../../../src/util/waitUntil.js'
 
 vi.mock('@wdio/globals')
 
@@ -18,35 +17,84 @@ describe(toHaveChildren, () => {
 
         beforeEach(async () => {
             el = await $('sel')
+            vi.mocked(el.$$).mockRestore()
         })
 
-        test('no value - success - default to gte 1 and with command options', async () => {
-            const beforeAssertion = vi.fn()
-            const afterAssertion = vi.fn()
+        describe('given no value', () => {
 
-            const result = await thisContext.toHaveChildren(el, undefined, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
+            test('no value - success - default to gte 1', async () => {
+                const result = await thisContext.toHaveChildren(el)
 
-            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
-
-            expect(result.pass).toBe(true)
-            expect(beforeAssertion).toHaveBeenCalledWith({
-                matcherName: 'toHaveChildren',
-                options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
+                expect(result.pass).toBe(true)
             })
-            expect(afterAssertion).toHaveBeenCalledWith({
-                matcherName: 'toHaveChildren',
-                options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
-                result
+
+            test('no value - success - default to gte 1 with options', async () => {
+                const beforeAssertion = vi.fn()
+                const afterAssertion = vi.fn()
+
+                const result = await thisContext.toHaveChildren(el, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
+
+                expect(result.pass).toBe(true)
+                expect(beforeAssertion).toHaveBeenCalledWith({
+                    matcherName: 'toHaveChildren',
+                    expectedValue: undefined,
+                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
+                })
+                expect(afterAssertion).toHaveBeenCalledWith({
+                    matcherName: 'toHaveChildren',
+                    expectedValue: undefined,
+                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
+                    result
+                })
+            })
+
+            test('no value - success - default to gte 1 (with undefined) and with command options - deprecated', async () => {
+                const beforeAssertion = vi.fn()
+                const afterAssertion = vi.fn()
+
+                const result = await thisContext.toHaveChildren(el, undefined, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
+
+                expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
+
+                expect(result.pass).toBe(true)
+                expect(beforeAssertion).toHaveBeenCalledWith({
+                    matcherName: 'toHaveChildren',
+                    expectedValue: undefined,
+                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
+                })
+                expect(afterAssertion).toHaveBeenCalledWith({
+                    matcherName: 'toHaveChildren',
+                    expectedValue: undefined,
+                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
+                    result
+                })
+            })
+
+            test('no value - success - default to gte 1 (with empty object) -- deprecated officially even if not striked', async () => {
+                const result = await thisContext.toHaveChildren(el, {})
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('no value - success - default to gte 1 (with empty object and separate wait options) -- deprecated officially even if not striked-- TODO add runtime check on next major version', async () => {
+                const result = await thisContext.toHaveChildren(el, {}, { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('no value - success - default to gte 1 (with empty object and double wait options) -- deprecated', async () => {
+                const result = await thisContext.toHaveChildren(el, { wait: 0 }, { wait: 0 })
+
+                expect(result.pass).toBe(true)
             })
         })
 
-        test('use numberOption wait and internal', async () => {
+        test('use numberOption wait and internal and command options - deprecated', async () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
             const result = await thisContext.toHaveChildren(el, { eq: 2, wait: 0, interval: 5 }, { beforeAssertion, afterAssertion } )
 
-            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
             expect(result.pass).toBe(true)
             expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toHaveChildren',
@@ -62,6 +110,33 @@ describe(toHaveChildren, () => {
             })
         })
 
+        test('use numberOption wait and internal wait but no command options - deprecated', async () => {
+            const result = await thisContext.toHaveChildren(el, { eq: 2, wait: 0, interval: 5 } )
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('use numberMatcher and wait and internal', async () => {
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+
+            const result = await thisContext.toHaveChildren(el, { eq: 2 }, { beforeAssertion, afterAssertion, wait: 0, interval: 5 } )
+
+            expect(result.pass).toBe(true)
+            expect(beforeAssertion).toHaveBeenCalledWith({
+                matcherName: 'toHaveChildren',
+                options: { beforeAssertion, afterAssertion, wait: 0, interval: 5 },
+                expectedValue: { eq: 2 }
+
+            })
+            expect(afterAssertion).toHaveBeenCalledWith({
+                matcherName: 'toHaveChildren',
+                options: { beforeAssertion, afterAssertion, wait: 0, interval: 5 },
+                result,
+                expectedValue: { eq: 2 }
+            })
+        })
+
         test('success - If no options passed in + children exists', async () => {
             const result = await thisContext.toHaveChildren(el)
 
@@ -69,9 +144,9 @@ describe(toHaveChildren, () => {
         })
 
         test('fails - If no options passed in + children do not exist', async () => {
-            vi.mocked(el.$$).mockReturnValueOnce(chainableElementArrayFactory('./child', 0))
+            vi.mocked(el.$$).mockReturnValue(chainableElementArrayFactory('./child', 0))
 
-            const result = await thisContext.toHaveChildren(el, undefined)
+            const result = await thisContext.toHaveChildren(el)
 
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
@@ -89,7 +164,7 @@ Received: 0`
         })
 
         test('exact value', async () => {
-            const result = await thisContext.toHaveChildren(el, { eq: 2, wait: 1 })
+            const result = await thisContext.toHaveChildren(el, { eq: 2 })
 
             expect(result.pass).toBe(true)
         })
@@ -168,7 +243,7 @@ Received      : 2`
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
 
-                const result = await thisContext.toHaveChildren(elements, undefined, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
+                const result = await thisContext.toHaveChildren(elements, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
 
                 expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
 
@@ -188,7 +263,7 @@ Received      : 2`
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
 
-                const result = await thisContext.toHaveChildren(elements, { eq: 2, wait: 0, interval: 5 }, { beforeAssertion, afterAssertion } )
+                const result = await thisContext.toHaveChildren(elements, { eq: 2 }, { beforeAssertion, afterAssertion, wait: 0, interval: 5 } )
 
                 expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
                 expect(result.pass).toBe(true)
@@ -240,7 +315,7 @@ Expect $$(\`sel\`) to have children
             })
 
             test('exact value', async () => {
-                const result = await thisContext.toHaveChildren(elements, { eq: 2, wait: 1 })
+                const result = await thisContext.toHaveChildren(elements, { eq: 2 }, { wait: 1 })
 
                 expect(result.pass).toBe(true)
             })

@@ -2,9 +2,11 @@
   /**
   * Let's aligned with the WebdriverIO tsconfig.json.
   * @see https://github.com/webdriverio/webdriverio/blob/main/tsconfig.json#L5
+  *
+  * This configuration is for test and src files, for the build, see the tsconfig.build.json.
+  *
   */
   "compilerOptions": {
-    "outDir": "./lib/",
     "module": "esnext",
     "target": "es2022",
     "lib": ["ES2022", "DOM"],
@@ -14,7 +16,7 @@
     "skipLibCheck": true,
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "bundler", // Can use bundler and omit file extension in test code.
     "allowSyntheticDefaultImports": true,
     "types": [
       "node",
@@ -22,7 +24,8 @@
     ]
   },
   "include": [
+    "./src/**/*.ts",
+    "__mocks__/**/*.ts",
     "./test/**/*.ts",
-    "./src/**/*.ts"
   ]
 }

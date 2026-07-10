@@ -1,28 +1,42 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
-import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { validateNumberOptionsArray } from '../../util/numberOptionsUtil.js'
+import { validateNumberArrayAndExtractOptions, type NumberMatcher } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expected: NumberMatcher) {
+async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher) {
     const actualWidth = await el.getSize('width')
 
     return {
-        result: expected.equals(actualWidth),
+        result: expectedNumber.match(actualWidth),
         value: actualWidth
     }
 }
 
 export async function toHaveWidth(
     received: WdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberOptions>,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
+    options?: ExpectWebdriverIO.CommandOptions
+):Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * deprecated since 5.7.1, remove in 6.0.0. Use `toHaveWidth(received, NumberMatcher, options)` instead.
+ */
+export async function toHaveWidth(
+    received: WdioElementMaybePromise,
+    expectedValue: ExpectWebdriverIO.NumberOptions,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveWidth(
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
-) {
+):Promise<ExpectWebdriverIO.AssertionResult> {
     const { expectation = 'width', verb = 'have', matcherName = 'toHaveWidth', isNot } = this
 
     await options.beforeAssertion?.({
@@ -31,7 +45,7 @@ export async function toHaveWidth(
         options,
     })
 
-    const { numberMatcher, numberCommandOptions } = validateNumberOptionsArray(expectedValue)
+    const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
     let elements: WebdriverIO.Element | WdioElements | undefined
     let actualWidth: string | number | (string | number | undefined)[] | undefined
@@ -40,7 +54,7 @@ export async function toHaveWidth(
         async () => {
             const result = await executeCommand(received,
                 undefined,
-                (elements) => defaultMultipleElementsIterationStrategy(elements, numberMatcher, condition))
+                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedNumber, condition))
 
             elements = result.elementOrArray
             actualWidth = result.valueOrArray
@@ -48,10 +62,10 @@ export async function toHaveWidth(
             return result
         },
         isNot,
-        { wait: numberCommandOptions?.wait ?? options.wait, interval: numberCommandOptions?.interval ?? options.interval }
+        { wait: commandOptions?.wait, interval: commandOptions?.interval }
     )
 
-    const expectedValues = wrapExpectedWithArray(elements, actualWidth, numberMatcher)
+    const expectedValues = wrapExpectedWithArray(elements, actualWidth, expectedNumber)
     const message = enhanceError(
         elements,
         expectedValues,
@@ -60,7 +74,7 @@ export async function toHaveWidth(
         verb,
         expectation,
         '',
-        options
+        commandOptions,
     )
 
     const result: ExpectWebdriverIO.AssertionResult = {

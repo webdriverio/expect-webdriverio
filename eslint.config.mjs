@@ -1,4 +1,5 @@
 import wdioEslint from '@wdio/eslint'
+import vitest from '@vitest/eslint-plugin'
 
 export default wdioEslint.config([
     {
@@ -24,9 +25,14 @@ export default wdioEslint.config([
                 beforeEach: true
             }
         },
+        plugins: {
+            vitest
+        },
         rules: {
             '@typescript-eslint/no-require-imports': 'off',
-            '@typescript-eslint/no-explicit-any': 'off'
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/consistent-type-imports': 'off',
+            'vitest/no-identical-title': 'error',
         }
     },
     {
@@ -86,7 +92,7 @@ export default wdioEslint.config([
             }
         },
         rules: {
-            'local/enforce-options-list': 'error'
+            'local/enforce-options-list': 'error',
         }
     }
 ])

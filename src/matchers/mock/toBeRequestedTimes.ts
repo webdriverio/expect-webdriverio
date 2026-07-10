@@ -1,16 +1,29 @@
 import { waitUntil, enhanceError } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import { isNumber, validateNumberOptions } from '../../util/numberOptionsUtil.js'
+import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
 
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions = {},
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
-    const {
-        expectation = `called${isNumber(expectedValue) ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`, verb = 'be',
-        isNot, matcherName = 'toBeRequestedTimes'
-    } = this
+    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * deprecated since 5.7.1, will remove in 6.0.0. Use `NumberMatcher` & `CommandOptions` as seperate parameters instead.
+ */
+export async function toBeRequestedTimes(
+    received: WebdriverIO.Mock,
+    expectedValue: ExpectWebdriverIO.NumberOptions,
+    options?: ExpectWebdriverIO.CommandOptions
+):Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toBeRequestedTimes(
+    received: WebdriverIO.Mock,
+    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+): Promise<ExpectWebdriverIO.AssertionResult> {
+    const matcherName = 'toBeRequestedTimes'
+    const { expectation = `called${typeof expectedValue === 'number' ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`, verb = 'be', isNot = false } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -18,19 +31,19 @@ export async function toBeRequestedTimes(
         options,
     })
 
-    const  { numberMatcher, numberCommandOptions } = validateNumberOptions(expectedValue)
+    const { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
 
     let actual
     const pass = await waitUntil(
         async () => {
             actual = received.calls.length
-            return numberMatcher.equals(actual)
+            return expectedNumber.match(actual)
         },
         isNot,
-        { wait: numberCommandOptions?.wait ?? options.wait, interval: numberCommandOptions?.interval ?? options.interval }
+        { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
-    const message = enhanceError('mock', numberMatcher, actual, this, verb, expectation, '', { ...numberCommandOptions, ...options })
+    const message = enhanceError('mock', expectedNumber, actual, this, verb, expectation, '', commandOptions)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

@@ -85,7 +85,7 @@ describe('Basic Matchers', () => {
     // Simply showing not available matchers in Jasmine
     xdescribe('Excluded tests showing unavailable matchers in Jasmine', () => {
         describe('Object matchers', () => {
-            it('should match object properties', async () => {
+            it('should match object properties with unavailable matchers', async () => {
                 const capabilities = await browser.capabilities
 
                 // @ts-expect-error -- toMatchObject is not available in Jasmine even at runtime

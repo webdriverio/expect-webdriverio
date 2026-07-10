@@ -23,6 +23,7 @@ export const config: WebdriverIO.Config = {
         //'./test/specs/**/soft-expect.test.ts',
         //'./test/specs/**/snapshot.test.ts'
         //'./test/specs/**/wdio-matchers.test.ts'
+        //'./test/specs/**/network-matchers.test.ts'
     ],
 
     //

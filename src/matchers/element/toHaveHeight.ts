@@ -1,26 +1,41 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { validateNumberOptionsArray } from '../../util/numberOptionsUtil.js'
+import { validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expected: NumberMatcher) {
+async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher) {
     const actualHeight = await el.getSize('height')
 
     return {
-        result: expected.equals(actualHeight),
+        result: expectedNumber.match(actualHeight),
         value: actualHeight
     }
 }
 
 export async function toHaveHeight(
     received: WdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberOptions>,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
+    options?: ExpectWebdriverIO.CommandOptions
+):Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * deprecated since 5.7.1, remove in 6.0.0. Use `toHaveHeight(received, NumberMatcher, options)` instead.
+ */
+export async function toHaveHeight(
+    received: WdioElementMaybePromise,
+    expectedValue: ExpectWebdriverIO.NumberOptions,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveHeight(
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'height', verb = 'have', matcherName = 'toHaveHeight', isNot } = this
@@ -31,7 +46,7 @@ export async function toHaveHeight(
         options,
     })
 
-    const {  numberMatcher, numberCommandOptions } = validateNumberOptionsArray(expectedValue)
+    const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
     let elements: WebdriverIO.Element | WdioElements | undefined
     let actualHeight: string | number | (string | number | undefined)[] | undefined
@@ -40,7 +55,7 @@ export async function toHaveHeight(
         async () => {
             const result = await executeCommand(received,
                 undefined,
-                (elements) => defaultMultipleElementsIterationStrategy(elements, numberMatcher, condition))
+                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedNumber, condition))
 
             elements = result.elementOrArray
             actualHeight = result.valueOrArray
@@ -48,10 +63,10 @@ export async function toHaveHeight(
             return result
         },
         isNot,
-        { wait: numberCommandOptions?.wait ?? options.wait, interval: numberCommandOptions?.interval ?? options.interval }
+        { wait: commandOptions?.wait, interval: commandOptions?.interval }
     )
 
-    const expectedValues = wrapExpectedWithArray(elements, actualHeight, numberMatcher)
+    const expectedValues = wrapExpectedWithArray(elements, actualHeight, expectedNumber)
     const message = enhanceError(
         elements,
         expectedValues,
@@ -60,7 +75,7 @@ export async function toHaveHeight(
         verb,
         expectation,
         '',
-        options
+        commandOptions,
     )
 
     const result: ExpectWebdriverIO.AssertionResult = {

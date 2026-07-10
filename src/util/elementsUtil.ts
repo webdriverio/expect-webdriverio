@@ -1,4 +1,4 @@
-import type { WdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise } from '../types'
+import type { WdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise } from '../types.js'
 
 /**
  * if el is an array of elements and actual value is an array

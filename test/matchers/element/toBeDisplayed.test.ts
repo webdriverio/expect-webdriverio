@@ -1,10 +1,10 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $, $$ } from '@wdio/globals'
+import { $ } from '@wdio/globals'
 
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
-import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import stripAnsi from 'strip-ansi'
+import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -52,13 +52,13 @@ describe(toBeDisplayed, async () => {
                 {
                     beforeAssertion: beforeAssertion,
                     afterAssertion: afterAssertion,
-                    interval: 100,
+                    interval: 1,
                     wait: 500,
                 },
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
                 wait: 500,
-                interval: 100,
+                interval: 1,
             })
             expect(result.pass).toBe(true)
             expect(beforeAssertion).toHaveBeenCalledWith({
@@ -85,7 +85,7 @@ describe(toBeDisplayed, async () => {
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {
                 wait: 1,
-                interval: 100,
+                interval: 1,
             })
             expect(result.pass).toBe(true)
         })
@@ -126,7 +126,7 @@ describe(toBeDisplayed, async () => {
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {
                 wait: 0,
-                interval: 100,
+                interval: 1,
             })
 
             expect(result.pass).toBe(true)
@@ -155,7 +155,7 @@ Received: "displayed"`)
         test('not - failure (with wait) - pass should be true', async () => {
             const result = await thisNotContext.toBeDisplayed(element)
 
-            expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
         })
 
         test('not - success (with wait) - pass should be false', async () => {
@@ -164,8 +164,8 @@ Received: "displayed"`)
             const result = await thisNotContext.toBeDisplayed(element)
 
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), true,  {
-                wait: 2,
-                interval: 100,
+                wait: 20,
+                interval: 1,
             })
             expect(element.isDisplayed).toHaveBeenCalledWith(
                 {
@@ -198,7 +198,7 @@ Received: "not displayed"`)
 
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
-Expect undefined to be displayed
+Expect  to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)

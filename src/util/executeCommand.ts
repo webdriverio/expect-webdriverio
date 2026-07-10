@@ -1,5 +1,5 @@
-import type { WdioElementOrArrayMaybePromise, WdioElements } from '../types'
-import { awaitElementOrArray, isElementArrayLike, map } from './elementsUtil'
+import type { WdioElementOrArrayMaybePromise, WdioElements } from '../types.js'
+import { awaitElementOrArray, isElementArrayLike, map } from './elementsUtil.js'
 
 /**
  * Ensures a condition passes for one or more elements.
@@ -66,7 +66,7 @@ export async function executeCommand<T>(
         elementOrArray: elementOrArray,
         success: results.length > 0 && results.every((res) => res.result === true),
         results: results.map(({ result }) => (result)),
-        valueOrArray: element && results.length === 1 ? results[0].value : results.map(({ value }) => value),
+        valueOrArray: element && results.length === 1 ? results[0].value : results.map(({  value }) => value),
     }
 }
 

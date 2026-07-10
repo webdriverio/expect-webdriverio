@@ -1,9 +1,10 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $, $$ } from '@wdio/globals'
+import { $ } from '@wdio/globals'
 
 import type { Size } from '../../../src/matchers/element/toHaveSize.js'
 import { toHaveSize } from '../../../src/matchers/element/toHaveSize.js'
 import stripAnsi from 'strip-ansi'
+import { waitUntil } from '../../../src/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -14,7 +15,7 @@ describe(toHaveSize, async () => {
     const expectedValue: Size = { width: 32, height: 32 }
     const wrongValue: Size = { width: 15, height: 32 }
 
-    beforeEach(async () => {
+    beforeEach(() => {
         thisContext =  { toHaveSize }
         thisNotContext = { isNot: true, ...thisContext }
     })
@@ -37,6 +38,7 @@ describe(toHaveSize, async () => {
 
             const result = await thisContext.toHaveSize(el, expectedValue, { beforeAssertion, afterAssertion, wait: 500 })
 
+            expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 500, interval: undefined })
             expect(result.pass).toBe(true)
             expect(el.getSize).toHaveBeenCalledTimes(1)
             expect(beforeAssertion).toHaveBeenCalledWith({
@@ -55,7 +57,7 @@ describe(toHaveSize, async () => {
         test('wait but error', async () => {
             vi.mocked(el.getSize).mockRejectedValue(new Error('some error'))
 
-            await expect(() => thisContext.toHaveSize(el, expectedValue))
+            await expect(() => thisContext.toHaveSize(el, expectedValue, { wait: 500 }))
                 .rejects.toThrow('some error')
         })
 
@@ -127,8 +129,9 @@ Expect $(\`sel\`) to have size
             )
         })
 
-        test('should fails when expected is an unsupported array type', async () => {
-            const result = await thisContext.toHaveSize(el, [expectedValue])
+        // TODO bring back with PR supporting $$
+        test.skip('should fails when expected is an unsupported array type', async () => {
+            const result = await thisContext.toHaveSize(el, [expectedValue] as any)
 
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\

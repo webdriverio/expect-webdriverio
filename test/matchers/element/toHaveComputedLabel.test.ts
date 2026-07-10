@@ -13,6 +13,7 @@ describe(toHaveComputedLabel, () => {
         thisContext = { toHaveComputedLabel }
         thisNotContext = { isNot: true, toHaveComputedLabel }
     })
+
     describe('given a single element', () => {
         let el: ChainablePromiseElement
 
@@ -205,7 +206,7 @@ Received: ""`)
         })
 
         test('failure if array does not match with computed label', async () => {
-            const result = await thisContext.toHaveComputedLabel(el, ['div', 'foo'])
+            const result = await thisContext.toHaveComputedLabel(el, ['div', 'foo'], { wait: 0 })
 
             expect(result.pass).toBe(false)
             expect(el.getComputedLabel).toHaveBeenCalledTimes(1)
