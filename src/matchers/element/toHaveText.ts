@@ -1,4 +1,3 @@
-import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
     compareText, compareTextWithArray,
@@ -7,8 +6,9 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import type { MaybeArray, WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
 
-async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, text: string | RegExp | Array<string | RegExp> | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
+async function condition(el: WebdriverIO.Element | WdioElements, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualTextArray: string[] = []
     const resultArray: boolean[] = []
     let checkAllValuesMatchCondition: boolean
@@ -38,12 +38,11 @@ async function condition(el: WebdriverIO.Element | WebdriverIO.ElementArray, tex
 }
 
 export async function toHaveText(
-    received: ChainablePromiseElement | ChainablePromiseArray | WebdriverIO.Element | WebdriverIO.ElementArray,
-    expectedValue: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveText'
-    const { expectation = 'text', verb = 'have', isNot } = this
+    const { expectation = 'text', verb = 'have', isNot, matcherName = 'toHaveText' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -51,7 +50,7 @@ export async function toHaveText(
         options,
     })
 
-    let el = 'getElement' in received
+    let elements = 'getElement' in received
         ? await received?.getElement()
         : 'getElements' in received
             ? await received?.getElements()
@@ -60,8 +59,8 @@ export async function toHaveText(
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
-            el = result.el
+            const result = await executeCommand.call(this, elements, condition, options, [expectedValue, options])
+            elements = result.el
             actualText = result.values
 
             return result.success
@@ -70,7 +69,7 @@ export async function toHaveText(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, wrapExpectedWithArray(el, actualText, expectedValue), actualText, this, verb, expectation, '', options)
+    const message = enhanceError(elements, wrapExpectedWithArray(elements, actualText, expectedValue), actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

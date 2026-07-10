@@ -59,8 +59,7 @@ export async function toHaveChildren(
     expectedValueOrOptions?: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AsyncAssertionResult> {
-    const matcherName = 'toHaveChildren'
-    const { expectation = 'children', verb = 'have', isNot } = this
+    const { expectation = 'children', verb = 'have', isNot, matcherName = 'toHaveChildren' } = this
 
     const hasOnlyTwoArgs = options === undefined
     options = options ?? DEFAULT_OPTIONS

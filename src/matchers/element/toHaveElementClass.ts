@@ -42,8 +42,7 @@ export async function toHaveElementClass(
     expectedValue: string | RegExp | Array<string | RegExp> | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveElementClass'
-    const { expectation = 'class', verb = 'have', isNot } = this
+    const { expectation = 'class', verb = 'have', isNot, matcherName = 'toHaveElementClass' } = this
 
     await options.beforeAssertion?.({
         matcherName,

@@ -1,5 +1,3 @@
-import type { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio'
-
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
     compareText, compareTextWithArray,
@@ -8,9 +6,10 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 
-async function condition(el: WebdriverIO.Element, html: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions) {
-    const actualHTML = await el.getHTML(options)
+async function condition(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.HTMLOptions) {
+    const actualHTML = await el.getHTML(options) // TODO: Support for array of elements is coming!
     if (Array.isArray(html)) {
         return compareTextWithArray(actualHTML, html, options)
     }
@@ -18,12 +17,11 @@ async function condition(el: WebdriverIO.Element, html: string | RegExp | Asymme
 }
 
 export async function toHaveHTML(
-    received: ChainablePromiseArray | ChainablePromiseElement,
-    expectedValue: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
+    received: WdioElementOrArrayMaybePromise, // TODO: aligning with the signature in expect-webdriverio.d.ts, but array support not yet implemented in the condition function above
+    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveHTML'
-    const { expectation = 'HTML', verb = 'have', isNot } = this
+    const { expectation = 'HTML', verb = 'have', isNot, matcherName = 'toHaveHTML' } = this
 
     await options.beforeAssertion?.({
         matcherName,

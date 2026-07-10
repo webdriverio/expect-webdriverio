@@ -17,8 +17,7 @@ export async function toHaveStyle(
     expectedValue: { [key: string]: string; },
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveStyle'
-    const { expectation = 'style', verb = 'have', isNot } = this
+    const { expectation = 'style', verb = 'have', isNot, matcherName = 'toHaveStyle' } = this
 
     await options.beforeAssertion?.({
         matcherName,

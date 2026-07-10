@@ -6,8 +6,7 @@ export async function toHaveTitle(
     expectedValue: string | RegExp | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveTitle'
-    const { expectation = 'title', verb = 'have', isNot } = this
+    const { expectation = 'title', verb = 'have', isNot, matcherName = 'toHaveTitle' } = this
 
     await options.beforeAssertion?.({
         matcherName,
