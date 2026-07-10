@@ -6,9 +6,9 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeArray, WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
 
-async function condition(el: WdioElementOrArrayMaybePromise, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
+async function condition(el: WebdriverIO.Element | WdioElements, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualTextArray: string[] = []
     const resultArray: boolean[] = []
     let checkAllValuesMatchCondition: boolean
