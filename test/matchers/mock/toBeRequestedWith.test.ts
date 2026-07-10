@@ -6,14 +6,6 @@ import { jasmine } from '../../__mocks__/jasmine.js'
 import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
-vi.mock('../../../src/constants.js', async () => ({
-    DEFAULT_OPTIONS: {
-
-        ...(await vi.importActual<typeof import('../../../src/constants.js')>('../../../src/constants.js')).DEFAULT_OPTIONS,
-        // speed up tests by lowering default wait timeout
-        wait : 0
-    }
-}))
 
 interface Scenario {
     name: string
