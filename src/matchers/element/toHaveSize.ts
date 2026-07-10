@@ -22,8 +22,7 @@ export async function toHaveSize(
     expectedValue: Size,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveSize'
-    const { expectation = 'size', verb = 'have', isNot } = this
+    const { expectation = 'size', verb = 'have', isNot, matcherName = 'toHaveSize' } = this
 
     await options.beforeAssertion?.({
         matcherName,

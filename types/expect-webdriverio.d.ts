@@ -165,6 +165,41 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      */
     toBeExisting: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
+    /**
+     * `WebdriverIO.Element` -> `isClickable`
+     */
+    toBeClickable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `!isEnabled`
+     */
+    toBeDisabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isDisplayedInViewport`
+     */
+    toBeDisplayedInViewport: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isEnabled`
+     */
+    toBeEnabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isFocused`
+     */
+    toBeFocused: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isSelected`
+     */
+    toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isSelected`
+     */
+    toBeChecked: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
     toHaveAttribute: FnWhenElementOrArrayLike<ActualT, {
         /**
          * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
@@ -260,41 +295,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `isClickable`
-     */
-    toBeClickable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `!isEnabled`
-     */
-    toBeDisabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `isDisplayedInViewport`
-     */
-    toBeDisplayedInViewport: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `isEnabled`
-     */
-    toBeEnabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `isFocused`
-     */
-    toBeFocused: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `isSelected`
-     */
-    toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `isSelected`
-     */
-    toBeChecked: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `$$('./*').length`

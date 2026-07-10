@@ -42,8 +42,7 @@ export async function toHaveText(
     expectedValue: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveText'
-    const { expectation = 'text', verb = 'have', isNot } = this
+    const { expectation = 'text', verb = 'have', isNot, matcherName = 'toHaveText' } = this
 
     await options.beforeAssertion?.({
         matcherName,

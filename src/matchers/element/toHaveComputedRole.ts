@@ -26,8 +26,7 @@ export async function toHaveComputedRole(
     expectedValue: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveComputedRole'
-    const { expectation = 'computed role', verb = 'have', isNot } = this
+    const { expectation = 'computed role', verb = 'have', isNot, matcherName = 'toHaveComputedRole' } = this
 
     await options.beforeAssertion?.({
         matcherName,

@@ -82,8 +82,7 @@ export async function toHaveElementProperty(
         value = valueOrOptions as string | number | RegExp | AsymmetricMatcher<string> | null
     }
 
-    const matcherName = 'toHaveElementProperty'
-    const { expectation = 'property', verb = 'have', isNot } = this
+    const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
 
     await options.beforeAssertion?.({
         matcherName,

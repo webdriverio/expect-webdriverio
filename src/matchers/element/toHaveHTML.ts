@@ -22,8 +22,7 @@ export async function toHaveHTML(
     expectedValue: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveHTML'
-    const { expectation = 'HTML', verb = 'have', isNot } = this
+    const { expectation = 'HTML', verb = 'have', isNot, matcherName = 'toHaveHTML' } = this
 
     await options.beforeAssertion?.({
         matcherName,

@@ -10,8 +10,7 @@ export async function toHaveClipboardText(
     expectedValue: string | RegExp | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveClipboardText'
-    const { expectation = 'clipboard text', verb = 'have', isNot } = this
+    const { expectation = 'clipboard text', verb = 'have', isNot, matcherName = 'toHaveClipboardText' } = this
 
     await options.beforeAssertion?.({
         matcherName,

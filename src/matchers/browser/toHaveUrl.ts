@@ -6,8 +6,7 @@ export async function toHaveUrl(
     expectedValue: string | RegExp | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveUrl'
-    const { expectation = 'url', verb = 'have', isNot } = this
+    const { expectation = 'url', verb = 'have', isNot, matcherName = 'toHaveUrl' } = this
 
     await options.beforeAssertion?.({
         matcherName,

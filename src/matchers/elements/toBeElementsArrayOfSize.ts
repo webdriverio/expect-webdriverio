@@ -24,8 +24,7 @@ export async function toBeElementsArrayOfSize(
     expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toBeElementsArrayOfSize'
-    const { expectation = 'elements array of size', verb = 'be', isNot } = this
+    const { expectation = 'elements array of size', verb = 'be', isNot, matcherName = 'toBeElementsArrayOfSize' } = this
 
     await options.beforeAssertion?.({
         matcherName,

@@ -7,8 +7,7 @@ export async function toHaveLocalStorageItem(
     expectedValue?: string | RegExp | AsymmetricMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const matcherName = 'toHaveLocalStorageItem'
-    const { expectation = 'localStorage item', verb = 'have', isNot } = this
+    const { expectation = 'localStorage item', verb = 'have', isNot, matcherName = 'toHaveLocalStorageItem' } = this
 
     await options.beforeAssertion?.({
         matcherName,
