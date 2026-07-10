@@ -63,7 +63,7 @@ export async function toHaveHeight(
             return result
         },
         isNot,
-        { wait: commandOptions?.wait, interval: commandOptions?.interval }
+        { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
     const expectedValues = wrapExpectedWithArray(elements, actualHeight, expectedNumber)

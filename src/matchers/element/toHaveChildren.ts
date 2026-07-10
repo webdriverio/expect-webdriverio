@@ -73,7 +73,7 @@ export async function toHaveChildren(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValueOrOptions, options, { supportDefaultAsGteThen1: true })
 
-    await commandOptions?.beforeAssertion?.({
+    await commandOptions.beforeAssertion?.({
         matcherName,
         expectedValue: expectedValueOrOptions, // Send unaltered value to the hook for backward compatibility
         options,
@@ -94,7 +94,7 @@ export async function toHaveChildren(
             return result
         },
         isNot,
-        { wait: commandOptions?.wait, interval: commandOptions?.interval }
+        { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
     const expectedArray = wrapExpectedWithArray(el, children, expectedNumber)
@@ -104,7 +104,7 @@ export async function toHaveChildren(
         message: (): string => message
     }
 
-    await commandOptions?.afterAssertion?.({
+    await commandOptions.afterAssertion?.({
         matcherName,
         expectedValue: expectedValueOrOptions,
         options,

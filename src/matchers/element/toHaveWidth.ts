@@ -48,7 +48,7 @@ export async function toHaveWidth(
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
     let elements: WebdriverIO.Element | WdioElements | undefined
-    let actualWidth: string | number | (string | number | undefined)[] | undefined
+    let actualWidth: MaybeArray<string | number | undefined> | undefined
 
     const pass = await waitUntil(
         async () => {
@@ -62,7 +62,7 @@ export async function toHaveWidth(
             return result
         },
         isNot,
-        { wait: commandOptions?.wait, interval: commandOptions?.interval }
+        { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
     const expectedValues = wrapExpectedWithArray(elements, actualWidth, expectedNumber)
