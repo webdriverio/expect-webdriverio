@@ -6,7 +6,7 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 
 async function condition(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.HTMLOptions) {
     const actualHTML = await el.getHTML(options)
