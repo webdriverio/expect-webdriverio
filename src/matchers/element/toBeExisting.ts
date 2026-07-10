@@ -10,7 +10,7 @@ export async function toExist(
     this.verb = this.verb || ''
 
     await options.beforeAssertion?.({
-        matcherName: 'toExist',
+        matcherName: 'toExist', // TODO use this.matcher =  this.matcher || toExist in v6.0.0 to fix matcherName issue with toBeExisting and toBePresent
         options,
     })
 
