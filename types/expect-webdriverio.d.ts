@@ -28,6 +28,8 @@ type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherCont
     (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult;
 }
 
+type MaybeArray<T> = T | T[]
+
 /**
  * Real Promise and wdio chainable promise types.
  */
@@ -377,7 +379,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * ```
      */
     toHaveText: FnWhenElementOrArrayLike<ActualT, (
-        text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+        text: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.StringOptions
     ) => Promise<void>>
 
@@ -386,7 +388,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * Element's html equals the html provided
      */
     toHaveHTML: FnWhenElementOrArrayLike<ActualT, (
-        html: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | Array<string | RegExp>,
+        html: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
         options?: ExpectWebdriverIO.HTMLOptions
     ) => Promise<void>>
 

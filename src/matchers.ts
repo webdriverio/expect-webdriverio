@@ -1,7 +1,10 @@
+// Browser matchers
 export * from './matchers/browser/toHaveClipboardText.js'
 export * from './matchers/browser/toHaveLocalStorageItem.js'
 export * from './matchers/browser/toHaveTitle.js'
 export * from './matchers/browser/toHaveUrl.js'
+
+// Element matchers
 export * from './matchers/element/toBeClickable.js'
 export * from './matchers/element/toBeDisabled.js'
 export * from './matchers/element/toBeDisplayed.js'
@@ -26,7 +29,11 @@ export * from './matchers/element/toHaveText.js'
 export * from './matchers/element/toHaveValue.js'
 export * from './matchers/element/toHaveWidth.js'
 export * from './matchers/elements/toBeElementsArrayOfSize.js'
+
+// Mock matchers
 export * from './matchers/mock/toBeRequested.js'
 export * from './matchers/mock/toBeRequestedTimes.js'
 export * from './matchers/mock/toBeRequestedWith.js'
+
+// Snapshot matchers
 export * from './matchers/snapshot.js'

@@ -1,5 +1,3 @@
-import type { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio'
-
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
     compareText, compareTextWithArray,
@@ -8,8 +6,9 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
 
-async function condition(el: WebdriverIO.Element, html: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>, options: ExpectWebdriverIO.HTMLOptions) {
+async function condition(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.HTMLOptions) {
     const actualHTML = await el.getHTML(options)
     if (Array.isArray(html)) {
         return compareTextWithArray(actualHTML, html, options)
@@ -18,8 +17,8 @@ async function condition(el: WebdriverIO.Element, html: string | RegExp | Asymme
 }
 
 export async function toHaveHTML(
-    received: ChainablePromiseArray | ChainablePromiseElement,
-    expectedValue: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'HTML', verb = 'have', isNot, matcherName = 'toHaveHTML' } = this
