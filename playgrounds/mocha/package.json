@@ -12,7 +12,7 @@
     "snapshots:update": "npm run test -- --spec snapshot.test.ts --updateSnapshots && npm run test -- --spec visual-snapshot.test.ts --update-visual-baseline"
   },
   "devDependencies": {
-    "@wdio/mocha-framework": "^9.27.2",
+    "@wdio/mocha-framework": "^9.29.1",
     "eslint-plugin-mocha": "^11.3.0",
     "expect-webdriverio": "file:../.."
   },

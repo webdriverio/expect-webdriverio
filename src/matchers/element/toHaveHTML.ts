@@ -1,4 +1,3 @@
-
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
     compareText,
@@ -8,7 +7,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
-import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.HTMLOptions) {
     const actualHTML = await el.getHTML(options)
