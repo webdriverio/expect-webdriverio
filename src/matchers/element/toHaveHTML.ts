@@ -9,7 +9,7 @@ import {
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 
 async function condition(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.HTMLOptions) {
-    const actualHTML = await el.getHTML(options)
+    const actualHTML = await el.getHTML(options) // TODO: Support for array of elements is coming!
     if (Array.isArray(html)) {
         return compareTextWithArray(actualHTML, html, options)
     }
@@ -17,7 +17,7 @@ async function condition(el: WebdriverIO.Element, html: MaybeArray<string | RegE
 }
 
 export async function toHaveHTML(
-    received: WdioElementOrArrayMaybePromise,
+    received: WdioElementOrArrayMaybePromise, // TODO: aligning with the signature in expect-webdriverio.d.ts, but array support not yet implemented in the condition function above
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ) {
