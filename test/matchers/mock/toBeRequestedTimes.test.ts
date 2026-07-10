@@ -6,16 +6,6 @@ import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTime
 import stripAnsi from 'strip-ansi'
 import { waitUntil } from '../../../src/util/waitUntil.js'
 
-vi.mock('../../../src/constants.js', async () => ({
-    DEFAULT_OPTIONS: {
-
-        ...(await vi.importActual<typeof import('../../../src/constants.js')>('../../../src/constants.js')).DEFAULT_OPTIONS,
-        // speed up tests by lowering default wait timeout
-        wait : 30,
-        interval: 10
-    }
-}))
-
 class TestMock implements Mock {
     _calls: Matches[]
 
@@ -108,7 +98,7 @@ describe('toBeRequestedTimes', () => {
 
         const result2 = await thisContext.toBeRequestedTimes(mock, { eq: 1, wait: 500 })
         expect(result2.pass).toBe(true)
-        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, { wait: 500, interval: 10 })
+        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, { wait: 500, interval: 1 })
     })
 
     test('wait but failure', async () => {

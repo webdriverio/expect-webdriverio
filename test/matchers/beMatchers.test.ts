@@ -5,6 +5,7 @@ import * as Matchers from '../../src/matchers.js'
 import { setOptions } from '../../src/index.js'
 import { DEFAULT_OPTIONS } from '../../src/constants.js'
 import { executeCommandBe } from '../../src/utils.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -19,14 +20,6 @@ const beMatchers = {
     'toBePresent': 'isExisting',
     'toBeSelected': 'isSelected',
 } satisfies Partial<Record<keyof typeof Matchers, keyof WebdriverIO.Element>>
-
-vi.mock('../../src/utils.js', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('../../src/utils.js')>()
-    return {
-        ...actual,
-        executeCommandBe: vi.fn(actual.executeCommandBe)
-    }
-})
 
 describe('be* matchers', () => {
     describe('Ensure all toBe matchers are covered', () => {
@@ -100,7 +93,7 @@ describe('be* matchers', () => {
                 const result = await matcherFn.call({ isNot: true }, el, { wait: 0 }) as ExpectWebdriverIO.AssertionResult
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(result.message()).toEqual(`\
+                expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to be ${matcherNameLastWords(matcherName)}
 
 Expected: "not ${matcherNameLastWords(matcherName)}"
@@ -140,7 +133,7 @@ Received: "${matcherNameLastWords(matcherName)}"`
 
                 const result = await matcherFn.call({}, el, { wait: 1 }) as ExpectWebdriverIO.AssertionResult
                 expect(result.pass).toBe(false)
-                expect(result.message()).toBe(`\
+                expect(stripAnsi(result.message())).toBe(`\
 Expect $(\`sel\`) to be ${matcherNameLastWords(matcherName)}
 
 Expected: "${matcherNameLastWords(matcherName)}"

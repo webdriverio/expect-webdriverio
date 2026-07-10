@@ -53,13 +53,13 @@ describe(toBeDisplayed, async () => {
                 {
                     beforeAssertion: beforeAssertion,
                     afterAssertion: afterAssertion,
-                    interval: 100,
+                    interval: 1,
                     wait: 500,
                 },
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
                 wait: 500,
-                interval: 100,
+                interval: 1,
             })
             expect(result.pass).toBe(true)
             expect(beforeAssertion).toHaveBeenCalledWith({
@@ -86,7 +86,7 @@ describe(toBeDisplayed, async () => {
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {
                 wait: 1,
-                interval: 100,
+                interval: 1,
             })
             expect(result.pass).toBe(true)
         })
@@ -127,7 +127,7 @@ describe(toBeDisplayed, async () => {
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {
                 wait: 0,
-                interval: 100,
+                interval: 1,
             })
 
             expect(result.pass).toBe(true)
@@ -165,8 +165,8 @@ Received: "displayed"`)
             const result = await thisNotContext.toBeDisplayed(element)
 
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), true,  {
-                wait: 2000,
-                interval: 100,
+                wait: 20,
+                interval: 1,
             })
             expect(element.isDisplayed).toHaveBeenCalledWith(
                 {

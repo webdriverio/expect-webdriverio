@@ -271,7 +271,7 @@ Received      : 2`
             vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
             const elements = await $$('elements')
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5, wait: 450 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5, wait: 450, interval: 100 })
 
             expect(result.pass).toBe(true)
             expect(elements.length).toBe(5)

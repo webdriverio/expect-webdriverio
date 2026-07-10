@@ -7,6 +7,13 @@ import {
 } from '../../src/util/numberOptionsUtil.js'
 import { DEFAULT_OPTIONS } from '../../src/constants.js'
 
+/**
+ * Restore real values for those tests.
+ */
+vi.mock('../../src/constants.js', async (importOriginal) => (
+    await importOriginal<typeof import('../../src/constants.js')>()
+))
+
 describe('numberOptionsUtil', () => {
     describe(isNumber, () => {
         test('returns true for numbers', () => {
@@ -195,9 +202,9 @@ describe('numberOptionsUtil', () => {
         })
 
         test('successfully extracts valid interface configurations and returns remaining command options', () => {
-            const result = validateNumberAndExtractOptions({ gte: 2, lte: 5, wait: 2000 }, DEFAULT_OPTIONS)
+            const result = validateNumberAndExtractOptions({ gte: 2, lte: 5, wait: 200 }, DEFAULT_OPTIONS)
             expect(result.numberMatcher.match(3)).toBe(true)
-            expect(result.commandOptions).toEqual({ wait: 2000, interval: 100, afterAssertion : DEFAULT_OPTIONS.afterAssertion, beforeAssertion: DEFAULT_OPTIONS.beforeAssertion })
+            expect(result.commandOptions).toEqual({ wait: 200, interval: 100, afterAssertion : DEFAULT_OPTIONS.afterAssertion, beforeAssertion: DEFAULT_OPTIONS.beforeAssertion })
         })
 
         test('throws error for empty or entirely invalid options objects', () => {

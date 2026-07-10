@@ -6,15 +6,7 @@ import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
 import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
-vi.mock('../../../src/constants.js', async () => ({
-    DEFAULT_OPTIONS: {
 
-        ...(await vi.importActual<typeof import('../../../src/constants.js')>('../../../src/constants.js')).DEFAULT_OPTIONS,
-        // speed up tests by lowering default wait timeout
-        wait : 15,
-        interval: 5
-    }
-}))
 class TestMock implements Mock {
     _calls: any[]
 
