@@ -69,7 +69,7 @@ describe(toHaveLocalStorageItem, () => {
     it('not - fails (pass is true) when localStorage item has same value', async () => {
         const result = await thisNotContext.toHaveLocalStorageItem(browser, 'someKey', 'someLocalStorageValue')
 
-        expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
         expect(stripAnsi(result.message())).toContain(`\
 Expect browser not to have localStorage item someKey
 
