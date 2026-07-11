@@ -68,7 +68,7 @@ export async function toHaveElementProperty(
 ): Promise<AsyncAssertionResult>
 
 export async function toHaveElementProperty(
-    received: WdioElementMaybePromise,
+    received: WdioElementOrArrayMaybePromise,
     property: string,
     valueOrOptions?: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null> | ExpectWebdriverIO.StringOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS

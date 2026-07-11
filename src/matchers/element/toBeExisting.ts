@@ -1,6 +1,6 @@
 import { executeCommandBe } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
 
 export async function toExist(
     received: WdioElementOrArrayMaybePromise,
@@ -26,15 +26,17 @@ export async function toExist(
     return result
 }
 
-export function toBeExisting(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
+export function toBeExisting(el: WdioElementOrArrayMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
     this.verb = 'be'
     this.expectation = 'existing'
     this.matcherName = 'toBeExisting'
+
     return toExist.call(this, el, options)
 }
-export function toBePresent(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
+export function toBePresent(el: WdioElementOrArrayMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
     this.verb = 'be'
     this.expectation = 'present'
     this.matcherName = 'toBePresent'
+
     return toExist.call(this, el, options)
 }

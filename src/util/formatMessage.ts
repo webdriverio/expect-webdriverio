@@ -58,7 +58,7 @@ export const enhanceError = (
         message = '',
         containing = false
     } = {}): string => {
-    const { isNot = false, useNotInLabel = true } = context
+    const { isNot, useNotInLabel = true } = context
 
     const isElementsSubject = isElementArrayLike(subject)
 
