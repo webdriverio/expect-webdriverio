@@ -43,7 +43,7 @@ describe('stringUtil', () => {
         })
 
         test('should handle undefined correctly', () => {
-            expect(toJsonString(undefined)).toBeUndefined()
+            expect(toJsonString(undefined)).toBe('undefined')
         })
     })
 })

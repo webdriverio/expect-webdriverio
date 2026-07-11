@@ -18,6 +18,10 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) 
 }
 
 export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => {
+    if (!el || typeof el !== 'object') {
+        return ''
+    }
+
     const selectors = []
     let parent: WebdriverIO.ElementArray['parent'] | undefined
 
@@ -34,7 +38,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
         return selectors.join(', ')
     }
 
-    while (parent && 'selector' in parent) {
+    while (!!parent && typeof parent === 'object' && 'selector' in parent) {
         const selector = getSelector(parent as WebdriverIO.Element)
         const index = parent.index ? `[${parent.index}]` : ''
         selectors.push(`${parent.index ? '$' : ''}$(\`${selector}\`)${index}`)
@@ -63,6 +67,8 @@ export const enhanceError = (
     const isElementsSubject = isElementArrayLike(subject)
 
     subject = isElementOrNotEmptyElementArray(subject) ? getSelectors(subject) : toJsonString(subject)
+    // TODO dprevost to review?
+    //subject = subject?.slice(0, 100)
 
     let contain = ''
     if (containing) {

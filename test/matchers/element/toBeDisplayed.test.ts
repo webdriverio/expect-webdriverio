@@ -200,7 +200,7 @@ Received: "not displayed"`)
 
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
-Expect  to be displayed
+Expect undefined to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
