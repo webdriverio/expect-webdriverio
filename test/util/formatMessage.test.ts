@@ -3,6 +3,7 @@ import { printDiffOrStringify } from 'jest-matcher-utils'
 
 import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
 import stripAnsi from 'strip-ansi'
+import { elementFactory } from '../__mocks__/@wdio/globals.js'
 
 describe('formatMessage', () => {
     describe(enhanceError, () => {
@@ -216,44 +217,119 @@ Received      : "Actual Property Value"`)
                 })
             })
         })
+
+        test.for([
+            { actual: undefined, selectorName: 'undefined' },
+            { actual: null, selectorName: 'null' },
+            { actual: true, selectorName: 'true' },
+            { actual: 5, selectorName: '5' },
+            { actual: 'test', selectorName: 'test' },
+            { actual: {}, selectorName: '{}' },
+            { actual: ['1', '2'], selectorName: '["1","2"]' },
+        ])('should return failure message for unsupported type $actual when isNot is false', async ({ actual, selectorName }) => {
+            const result = await enhanceError(actual as any, 'webdriverio', undefined, { isNot: false }, 'have', 'text')
+
+            expect(stripAnsi(result)).toEqual(`\
+Expect ${selectorName} to have text
+
+Expected: "webdriverio"
+Received: undefined`)
+        })
+
+        test.for([
+            { actual: undefined, selectorName: 'undefined' },
+            { actual: null, selectorName: 'null' },
+            { actual: true, selectorName: 'true' },
+            { actual: 5, selectorName: '5' },
+            { actual: 'test', selectorName: 'test' },
+            { actual: {}, selectorName: '{}' },
+            { actual: ['1', '2'], selectorName: '["1","2"]' },
+        ])('should return failure message for unsupported type $actual when isNot is true', async ({ actual, selectorName }) => {
+            const result = await enhanceError(actual as any, 'webdriverio', undefined, { isNot: true }, 'have', 'text')
+
+            expect(stripAnsi(result)).toEqual(`\
+Expect ${selectorName} not to have text
+
+Expected [not]: "webdriverio"
+Received      : undefined`)
+        })
     })
 
     describe(enhanceErrorBe, () => {
-        const subject = 'element'
         const verb = 'be'
         const expectation = 'displayed'
         const options = {}
 
-        const isNot = false
-        test('when isNot is false', () => {
-            const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, options ))
-            expect(message).toEqual(`\
-Expect element to be displayed
+        describe('given a single element', () => {
+            const subject = elementFactory('element')
+
+            const isNot = false
+            test('when isNot is false and failure with result having pass=false', () => {
+                const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, options ))
+                expect(message).toEqual(`\
+Expect $(\`element\`) to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
-        })
+            })
 
-        test('with custom message', () => {
-            const customMessage = 'Custom Error Message'
-            const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, { ...options, message: customMessage }))
-            expect(message).toEqual(`\
+            test('with custom message', () => {
+                const customMessage = 'Custom Error Message'
+                const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, { ...options, message: customMessage }))
+                expect(message).toEqual(`\
 Custom Error Message
-Expect element to be displayed
+Expect $(\`element\`) to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
-        })
+            })
 
-        test('when isNot is true', () => {
-            const isNot = true
-            const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, options))
-            expect(message).toEqual(`\
-Expect element not to be displayed
+            test('when isNot is true and failure with result having pass=true (inverted later by Jest)', () => {
+                const isNot = true
+                const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, options))
+                expect(message).toEqual(`\
+Expect $(\`element\`) not to be displayed
 
 Expected: "not displayed"
 Received: "displayed"`)
 
+            })
+
+            test.for([
+                { actual: undefined, selectorName: 'undefined' },
+                { actual: null, selectorName: 'null' },
+                { actual: true, selectorName: 'true' },
+                { actual: 5, selectorName: '5' },
+                { actual: 'test', selectorName: 'test' },
+                { actual: {}, selectorName: '{}' },
+                { actual: ['1', '2'], selectorName: '["1","2"]' },
+            ])('should return failure message for unsupported type $actual when isNot is false and not result from element function call', async ({ actual: subject, selectorName }) => {
+                const result = await enhanceErrorBe(subject as any, { isNot, verb, expectation }, options)
+
+                expect(stripAnsi(result)).toEqual(`\
+Expect ${selectorName} to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
+            })
+
+            test.for([
+                { actual: undefined, selectorName: 'undefined' },
+                { actual: null, selectorName: 'null' },
+                { actual: true, selectorName: 'true' },
+                { actual: 5, selectorName: '5' },
+                { actual: 'test', selectorName: 'test' },
+                { actual: {}, selectorName: '{}' },
+                { actual: ['1', '2'], selectorName: '["1","2"]' },
+            ])('should return failure message for unsupported type $actual when isNot is true and not result from element function call', async ({ actual: subject, selectorName }) => {
+                const result = await enhanceErrorBe(subject as any, { isNot: true, verb, expectation }, options)
+
+                expect(stripAnsi(result)).toEqual(`\
+Expect ${selectorName} not to be displayed
+
+Expected: "not displayed"
+Received: "displayed"`)
+            })
         })
     })
 })
