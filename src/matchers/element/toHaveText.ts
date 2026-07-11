@@ -7,6 +7,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
+import { awaitElementOrArray } from '../../util/elementsUtil.js'
 
 async function condition(el: WebdriverIO.Element | WdioElements, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualTextArray: string[] = []
@@ -50,26 +51,29 @@ export async function toHaveText(
         options,
     })
 
-    let elements = 'getElement' in received
-        ? await received?.getElement()
-        : 'getElements' in received
-            ? await received?.getElements()
-            : received
+    const { selector, other } = await awaitElementOrArray(received)
     let actualText
+    let pass = false
+    let elements = selector
+    if (elements) {
+        pass = await waitUntil(
+            async () => {
+                if (!elements) {throw new Error('Element(s) not found')} // to satisfy typescript that elements is defined, but should never happen since waitUntil will throw if elements is undefined
 
-    const pass = await waitUntil(
-        async () => {
-            const result = await executeCommand.call(this, elements, condition, options, [expectedValue, options])
-            elements = result.el
-            actualText = result.values
+                const result = await executeCommand.call(this, elements, condition, options, [expectedValue, options])
+                elements = result.el
+                actualText = result.values
 
-            return result.success
-        },
-        isNot,
-        { wait: options.wait, interval: options.interval }
-    )
+                return result.success
+            },
+            isNot,
+            { wait: options.wait, interval: options.interval }
+        )
+    }
 
-    const message = enhanceError(elements, wrapExpectedWithArray(elements, actualText, expectedValue), actualText, this, verb, expectation, '', options)
+    const actualSubject = elements ?? other
+
+    const message = enhanceError(actualSubject, wrapExpectedWithArray(actualSubject, actualText, expectedValue), actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

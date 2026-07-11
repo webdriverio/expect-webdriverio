@@ -17,7 +17,7 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) 
     return result
 }
 
-export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
+export const getSelectors = (el: WebdriverIO.Element | WdioElements ) => {
     if (!el || typeof el !== 'object') {
         return ''
     }
@@ -46,7 +46,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
 const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
 
 export const enhanceError = (
-    subject: string | WebdriverIO.Element | WdioElements,
+    subject: string | WebdriverIO.Element | WdioElements | unknown,
     expected: unknown,
     actual: unknown,
     context: { isNot: boolean, useNotInLabel?: boolean },
@@ -58,7 +58,7 @@ export const enhanceError = (
     } = {}): string => {
     const { isNot, useNotInLabel = true } = context
 
-    let subjectStr = isString(subject) ? subject : getSelectors(subject)
+    let subjectStr = isString(subject) ? subject : getSelectors(subject as WebdriverIO.Element | WdioElements)
     if (!subjectStr) {
         subjectStr = toJsonString(subject)
     }

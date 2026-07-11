@@ -21,11 +21,10 @@ describe(toHaveText, async () => {
         { element: await $('sel'), title: 'awaited ChainablePromiseElement' },
         { element: await $('sel').getElement(), title: 'awaited getElement of ChainablePromiseElement (e.g. WebdriverIO.Element)' },
         { element: $('sel'), title: 'non-awaited of ChainablePromiseElement' }
-    ])('given a single element when $title', ({ element, title }) => {
+    ])('given a single element when $title', ({ element }) => {
         let el: ChainablePromiseElement | WebdriverIO.Element
 
-        let selectorName = '$(`sel`)'
-        if (title.includes('non-awaited')) {selectorName = '{}'} // Bug to fix
+        const selectorName = '$(`sel`)'
 
         beforeEach(async () => {
             el = element
@@ -323,18 +322,15 @@ Received: "This is example text"`
         { elements: await $$('sel'), title: 'awaited ChainablePromiseArray' },
         { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
         { elements: await $$('sel').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
-
-        // Bug that will be fixed later with $$ support. Throws `Error: Can't call "getText" on element with selector "label", it is not a function`
-        // { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' }
-        // { elements: $$('sel').filter((t) => t.isEnabled()), title: 'non-awaited filtered ChainablePromiseArray' },
-
+        { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' },
+        { elements: $$('sel').filter((t) => t.isEnabled()), title: 'non-awaited filtered ChainablePromiseArray (e.g. Promise<WebdriverIO.Element[]>)' },
     ])('given a multiple elements when $title', ({ elements, title }) => {
-        let els: ChainablePromiseArray | WebdriverIO.ElementArray //| WebdriverIO.Element[] // Bug that will be fixed later with $$ support
+        let els: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] // | Promise<WebdriverIO.Element[]> TODO fix types to include Promise<WebdriverIO.Element[]> ??
 
         const selectorName = title.includes('WebdriverIO.Element[]') ? '[{"selector":"sel","parent":{},"elementId":"sel"},{"selector":"dev","parent":{},"elementId":"dev"}]': '$$(`sel`)' // Bug to fix where with Element[] selector name is empty
 
         beforeEach(async () => {
-            els = elements as ChainablePromiseArray | WebdriverIO.ElementArray // casting, bug that will be fixed later with $$ support
+            els = elements as ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] // | Promise<WebdriverIO.Element[]> TODO fix types to include Promise<WebdriverIO.Element[]> ??
 
             const awaitedEls = await els
             awaitedEls[0] = await $('sel')
@@ -492,6 +488,7 @@ Expect ${selectorName} to have text
     })
 
     describe('Edge cases', () => {
+
         // TODO is this a bug? to fix?
         test('given exact text but with space in it should work by default', async () => {
             const element = $('sel')
@@ -500,6 +497,16 @@ Expect ${selectorName} to have text
 
             expect(result.pass).toBe(false) // should be true?
         })
+
+        test('should have pass false with proper error message when actual is an empty array of elements', async () => {
+            const result = await thisContext.toHaveText([], 'webdriverio')
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect [] to have text
+
+Expected: "webdriverio"
+Received: undefined`
+            )
 
         // TODO Fix incoming
         test.skip.each([
