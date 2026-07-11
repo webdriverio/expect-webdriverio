@@ -1,6 +1,6 @@
 import { test, expect, vi, describe } from 'vitest'
 import { matchers, expect as expectLib, wdioCustomMatchers } from '../src/index.js'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 
 vi.mock('@wdio/globals')
 
@@ -104,6 +104,19 @@ describe('Custom Wdio Matchers Integration Tests', async () => {
             await expectLib(el).toHaveAttribute('someAttribute')
             await expectLib(el).toHaveAttr('someAttribute', 'some attribute')
             await expectLib(el).toHaveElementProperty('someProperty', '1')
+        })
+
+        test('toHave works with stringContaining asymmetric matcher', async () => {
+            await expectLib(el).toHaveText([expectLib.stringContaining('Valid'), expectLib.stringContaining('Valid')])
+        })
+
+        // TODO to support one day?
+        test.skip('toHave works with arrayContaining asymmetric matcher', async () => {
+            await expectLib(el).toHaveText(
+                expectLib.arrayContaining([
+                    expectLib.stringContaining('Valid'),
+                    expectLib.stringContaining('Valid')
+                ]))
         })
     })
 
@@ -482,6 +495,38 @@ Received: "not displayed"`)
 
             // We should be able to assert that the element is no longer displayed by default without additional code or configuration
             await expectLib(el).not.toBeDisplayed()
+        })
+    })
+
+    describe('Matchers pass with success when using valid element array', async () => {
+        const elements = await $$('selector')
+
+        test('toHave matchers', async () => {
+            await expectLib(elements).toHaveText('Valid Text')
+
+            // TODO should have beeen support but throws el.getHTML is not a function error
+            // await expectLib(elements).toHaveHTML('<Html/>')
+
+            await expectLib(elements).toBeElementsArrayOfSize(2)
+        })
+
+        test('toBe matchers and toHve matchers work with .not', async () => {
+            await expectLib(elements).not.toHaveText('Some other text')
+            await expectLib(elements).not.toBeElementsArrayOfSize(3)
+        })
+
+        test('toHave works with stringContaining asymmetric matcher', async () => {
+            await expectLib(elements).toHaveText([expectLib.stringContaining('Valid'), expectLib.stringContaining('Valid')])
+            await expectLib(elements).not.toHaveText([expectLib.stringContaining('Test'), expectLib.stringContaining('Test')])
+        })
+
+        // TODO to support one day?
+        test.skip('toHave works with arrayContaining asymmetric matcher', async () => {
+            await expectLib(elements).toHaveText(
+                expectLib.arrayContaining([
+                    expectLib.stringContaining('Valid'),
+                    expectLib.stringContaining('Valid')
+                ]))
         })
     })
 })
