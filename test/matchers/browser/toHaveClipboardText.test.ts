@@ -39,7 +39,7 @@ describe(toHaveClipboardText, () => {
     test('failure check with message', async () => {
         vi.mocked(browser.execute).mockResolvedValue('actual text')
 
-        const result = await thisContext.toHaveClipboardText(browser, 'expected text', { wait: 1 })
+        const result = await thisContext.toHaveClipboardText(browser, 'expected text')
 
         expect(result.pass).toBe(false)
         expect(stripAnsi(result.message())).toEqual(`\
@@ -80,7 +80,7 @@ Received: "actual text"`
     test('failure check with message with isNot true', async () => {
         vi.mocked(browser.execute).mockResolvedValue('actual text')
 
-        const result = await thisNotContext.toHaveClipboardText(browser, 'actual text', { wait: 1 })
+        const result = await thisNotContext.toHaveClipboardText(browser, 'actual text')
 
         expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
         expect(stripAnsi(result.message())).toEqual(`\
