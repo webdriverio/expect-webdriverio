@@ -105,11 +105,11 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
                 })
 
-                // TODO fix: When element array is 0 is does match anything and should fail, but it does not
-                it.skip('should fails if there is no elements', async () => {
+                it('should fails if there is no elements', async () => {
                     const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('test'))
+
                     expect(heading.length).toBe(0)
-                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                    await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
                 })
 
                 it('should verify text with options with awaited getElements ChainablePromiseArray', async () => {
@@ -117,8 +117,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(heading).toHaveText(['','Open Source and Open Governed'], { ignoreCase: true, containing: true })
                 })
 
-                // TODO fix `el.getText is not a function`
-                it.skip('should verify text with options with filetered awaited getElements ChainablePromiseArray', async () => {
+                it('should verify text with options with filetered awaited getElements ChainablePromiseArray', async () => {
                     const heading = (await $$('h1').getElements()).filter(async (el) => (await el.getText()).includes('Open Source'))
 
                     // @ts-expect-error TODO support Element[] in toHaveText signature??
@@ -128,27 +127,24 @@ describe('WebdriverIO Custom Matchers', () => {
 
             describe('Non-awaited', () => {
 
-                // TODO fix `Can't call "getText" on element with selector "h1", it is not a function`
-                it.skip('should verify text with options with non-awaited ChainablePromiseArray', async () => {
+                it('should verify text with options with non-awaited ChainablePromiseArray', async () => {
                     const heading = $$('h1')
-                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+
+                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
                 })
 
-                // TODO fix `Can't call "getText" on element with selector "h1", it is not a function`
-                it.skip('should verify text with options with non-awaited filtered ChainablePromiseArray', async () => {
+                it('should verify text with options with non-awaited filtered ChainablePromiseArray', async () => {
                     const heading = $$('h1').filter(async (el) => (await el.getText()).includes('Open Source'))
 
-                    console.log('heading', heading)
                     // @ts-expect-error TODO support Element[] in toHaveText signature??
                     await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
                 })
 
-                // TODO fix `el.getText is not a function`
-                it.skip('should verify text with options with non-awaited getElements ChainablePromiseArray', async () => {
+                it('should verify text with options with non-awaited getElements ChainablePromiseArray', async () => {
                     const heading = $$('h1').getElements()
 
                     // @ts-expect-error TODO support Element[] in toHaveText signature??
-                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
                 })
             })
         })
