@@ -212,33 +212,33 @@ Received: []`)
         })
 
         describe('given single element', () => {
-            let received: ChainablePromiseElement
-            let el: WebdriverIO.Element
+            let chainable: ChainablePromiseElement
+            let element: WebdriverIO.Element
 
             beforeEach(async () => {
-                received = $('element1')
-                el = await received.getElement()
+                chainable = $('element1')
+                element = await chainable.getElement()
             })
 
             test('should pass given ChainableElement', async () => {
-                const result = await executeCommandBe.call(context, received, command, options)
+                const result = await executeCommandBe.call(context, chainable, command, options)
 
                 expect(result.pass).toBe(true)
-                expect(executeCommand).toHaveBeenCalledWith(el, expect.any(Function), options)
+                expect(executeCommand).toHaveBeenCalledWith(element, expect.any(Function), options)
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, options)
             })
 
             test('should pass given WebdriverIO.Element', async () => {
-                const result = await executeCommandBe.call(context, received, command, options)
+                const result = await executeCommandBe.call(context, element, command, options)
 
                 expect(result.pass).toBe(true)
-                expect(executeCommand).toHaveBeenCalledWith(el, expect.any(Function), options)
+                expect(executeCommand).toHaveBeenCalledWith(element, expect.any(Function), options)
             })
 
             test('should fail if command returns false', async () => {
                 vi.mocked(command).mockResolvedValue(false)
 
-                const result = await executeCommandBe.call(context, received, command, options)
+                const result = await executeCommandBe.call(context, chainable, command, options)
 
                 expect(result.pass).toBe(false)
                 expect(stripAnsi(result.message())).toEqual(`\
@@ -247,7 +247,7 @@ Expect $(\`element1\`) to be displayed
 Expected: "displayed"
 Received: "not displayed"`)
                 expect(enhanceErrorBe).toHaveBeenCalledWith(
-                    el,
+                    element,
                     expect.objectContaining({ isNot: false }),
                     options
                 )
@@ -267,11 +267,11 @@ Received: "not displayed"`)
                 })
 
                 test('should succeed so pass=false since it is inverted later', async () => {
-                    const result = await executeCommandBe.call(negatedContext, received, command, options)
+                    const result = await executeCommandBe.call(negatedContext, chainable, command, options)
 
                     expect(result.pass).toBe(false)
                     expect(enhanceErrorBe).toHaveBeenCalledWith(
-                        await received,
+                        await chainable,
                         {
                             expectation: 'displayed',
                             isNot: true,
@@ -284,7 +284,7 @@ Received: "not displayed"`)
 
                 test('should failed so pass=true since it is inverted later', async () => {
                     vi.mocked(command).mockResolvedValue(true)
-                    const result = await executeCommandBe.call(negatedContext, received, command, options)
+                    const result = await executeCommandBe.call(negatedContext, chainable, command, options)
 
                     expect(result.pass).toBe(true)
                     expect(stripAnsi(result.message())).toEqual(`\
@@ -293,7 +293,7 @@ Expect $(\`element1\`) not to be displayed
 Expected: "not displayed"
 Received: "displayed"`)
                     expect(enhanceErrorBe).toHaveBeenCalledWith(
-                        await received,
+                        await chainable,
                         {
                             expectation: 'displayed',
                             isNot: true,
