@@ -5,7 +5,7 @@ import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
 import { DEFAULT_OPTIONS } from '../../../src/constants.js'
-import { setDefaultOptions } from '../../../src/index.js'
+import { setDefaultOptions, setOptions } from '../../../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -206,49 +206,53 @@ Received: "not displayed"`)
         })
     })
 
-    describe('global options', () => {
-        const defaultOptions = { ...DEFAULT_OPTIONS }
+    describe.each(
+        [{ fn: setOptions, name: 'setOptions' }, { fn: setDefaultOptions, name: 'setDefaultOptions' }]
+    )('Global default options with $name', ({ fn: setDefaultOptionsFn }) => {
+        describe('global options', () => {
+            const defaultOptions = { ...DEFAULT_OPTIONS }
 
-        let el: ChainablePromiseElement
+            let el: ChainablePromiseElement
 
-        beforeEach(async () => {
-            setDefaultOptions({ wait: 99, interval: 101 })
-            el = await $('sel')
-            el.isDisplayed = vi.fn().mockResolvedValue(true)
+            beforeEach(async () => {
+                setDefaultOptionsFn({ wait: 99, interval: 101 })
+                el = await $('sel')
+                el.isDisplayed = vi.fn().mockResolvedValue(true)
 
-        })
+            })
 
-        afterEach(() => {
-            setDefaultOptions(defaultOptions)
-        })
+            afterEach(() => {
+                setDefaultOptionsFn(defaultOptions)
+            })
 
-        test('should use globally set default options with executeCommandBe', async () => {
-            await toBeDisplayed.call({}, el)
+            test('should use globally set default options with executeCommandBe', async () => {
+                await thisContext.toBeDisplayed(el)
 
-            expect(executeCommandBe).toHaveBeenCalledWith(
-                el,
-                expect.anything(),
-                expect.objectContaining({ wait: 99, interval: 101 })
-            )
-        })
+                expect(executeCommandBe).toHaveBeenCalledWith(
+                    el,
+                    expect.anything(),
+                    expect.objectContaining({ wait: 99, interval: 101 })
+                )
+            })
 
-        test('should use globally set default options with isDisplayed', async () => {
+            test('should use globally set default options with isDisplayed', async () => {
 
-            await toBeDisplayed.call({}, el)
+                await thisContext.toBeDisplayed(el)
 
-            expect(executeCommandBe).toHaveBeenCalledWith(
-                el,
-                expect.anything(),
-                expect.objectContaining({ wait: 99, interval: 101 })
-            )
-            expect(el.isDisplayed).toHaveBeenCalledWith(
-                {
-                    withinViewport: false,
-                    contentVisibilityAuto: true,
-                    opacityProperty: true,
-                    visibilityProperty: true
-                }
-            )
+                expect(executeCommandBe).toHaveBeenCalledWith(
+                    el,
+                    expect.anything(),
+                    expect.objectContaining({ wait: 99, interval: 101 })
+                )
+                expect(el.isDisplayed).toHaveBeenCalledWith(
+                    {
+                        withinViewport: false,
+                        contentVisibilityAuto: true,
+                        opacityProperty: true,
+                        visibilityProperty: true
+                    }
+                )
+            })
         })
     })
 })

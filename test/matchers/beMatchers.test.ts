@@ -3,10 +3,10 @@ import { $ } from '@wdio/globals'
 import { lastMatcherWords } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 import { executeCommandBe, waitUntil } from '../../src/utils.js'
-import { setOptions } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../src/constants.js'
 import stripAnsi from 'strip-ansi'
 import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeExisting, toBeFocused, toBePresent, toBeSelected, toExist } from '../../src/matchers.js'
+import { setDefaultOptions, setOptions } from '../../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -174,18 +174,19 @@ Received: "not ${lastMatcherWords(matcherFn.name)}"`)
                 })
             })
 
-            // TODO dprevost find a way to cancel mocked from globals.ts to test setOptions()
-            describe.skip('global options', () => {
+            describe.each(
+                [{ fn: setOptions, name: 'setOptions' }, { fn: setDefaultOptions, name: 'setDefaultOptions' }]
+            )('Global default options with $name', ({ fn: setDefaultOptionsFn }) => {
                 const defaultOptions =  { ...DEFAULT_OPTIONS }
 
                 beforeEach(() => {
                     // Set global options to custom values before each test
-                    setOptions({ wait: 99, interval: 101 })
+                    setDefaultOptionsFn({ wait: 99, interval: 101 })
                 })
 
                 afterEach(() => {
                     // Reset options after each test to avoid side effects
-                    setOptions(defaultOptions)
+                    setDefaultOptionsFn(defaultOptions)
                     expect(DEFAULT_OPTIONS.wait).not.toBe(99)
                 })
 
