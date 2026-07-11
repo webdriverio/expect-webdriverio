@@ -1,8 +1,9 @@
 import { executeCommandBe } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { WdioElementMaybePromise } from '../../types.js'
 
 export async function toBeSelected(
-    received: ChainablePromiseElement | WebdriverIO.Element,
+    received: WdioElementMaybePromise,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'selected'
@@ -23,7 +24,7 @@ export async function toBeSelected(
     return result
 }
 
-export async function toBeChecked (el: WebdriverIO.Element, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
+export async function toBeChecked (el: WdioElementMaybePromise, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
     this.expectation = 'checked'
 
     await options.beforeAssertion?.({

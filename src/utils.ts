@@ -278,7 +278,7 @@ export const compareTextWithArray = (
     }
 }
 
-export const compareObject = (actual: object | number, expected: string | number | object) => {
+export const compareObject = <T>(actual: T, expected: unknown) => {
     if (typeof actual !== 'object' || Array.isArray(actual)) {
         return {
             value: actual,
@@ -351,6 +351,8 @@ export const compareStyle = async (
     }
 }
 
+/** @deprecated unused, to remove in v6.0.0 */
+/* v8 ignore next */
 function aliasFn(
     fn: (...args: unknown[]) => void,
     {

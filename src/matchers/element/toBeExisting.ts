@@ -1,4 +1,4 @@
-import { executeCommandBe, aliasFn } from '../../utils.js'
+import { executeCommandBe } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise } from '../../types.js'
 
@@ -10,7 +10,7 @@ export async function toExist(
     this.verb = this.verb || ''
 
     await options.beforeAssertion?.({
-        matcherName: 'toExist',
+        matcherName: 'toExist', // TODO use this.matcher =  this.matcher || toExist in v6.0.0 to fix matcherName issue with toBeExisting and toBePresent
         options,
     })
 
@@ -26,8 +26,14 @@ export async function toExist(
 }
 
 export function toBeExisting(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
-    return aliasFn.call(this, toExist, { verb: 'be', expectation: 'existing' }, el, options)
+    this.expectation = 'existing'
+    this.verb = 'be'
+
+    return toExist.call(this, el, options)
 }
 export function toBePresent(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
-    return aliasFn.call(this, toExist, { verb: 'be', expectation: 'present' }, el, options)
+    this.expectation = 'present'
+    this.verb = 'be'
+
+    return toExist.call(this, el, options)
 }
