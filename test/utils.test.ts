@@ -190,10 +190,6 @@ describe('utils', () => {
             options = { wait: 0, interval: 1 }
         })
 
-        afterEach(() => {
-            vi.clearAllMocks()
-        })
-
         describe('given no elements', () => {
             test('should fail given undefined', async () => {
                 const result = await executeCommandBe.call(context, undefined as any, command, options)

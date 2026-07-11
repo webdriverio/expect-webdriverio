@@ -120,42 +120,42 @@ describe('Custom Wdio Matchers Integration Tests', async () => {
         const el = await $('selector')
 
         test('toBe matchers', async () => {
-            await expect(() => expectLib(el).not.toBeDisplayed({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toBeDisplayed()).rejects.toThrow(`\
 Expect $(\`selector\`) not to be displayed
 
 Expected: "not displayed"
 Received: "displayed"`
             )
 
-            await expect(() => expectLib(el).not.toBeExisting({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toBeExisting()).rejects.toThrow(`\
 Expect $(\`selector\`) not to be existing
 
 Expected: "not existing"
 Received: "existing"`
             )
 
-            await expect(() => expectLib(el).not.toBeEnabled({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toBeEnabled()).rejects.toThrow(`\
 Expect $(\`selector\`) not to be enabled
 
 Expected: "not enabled"
 Received: "enabled"`
             )
 
-            await expect(() => expectLib(el).not.toBeClickable({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toBeClickable()).rejects.toThrow(`\
 Expect $(\`selector\`) not to be clickable
 
 Expected: "not clickable"
 Received: "clickable"`
             )
 
-            await expect(() => expectLib(el).not.toBeFocused({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toBeFocused()).rejects.toThrow(`\
 Expect $(\`selector\`) not to be focused
 
 Expected: "not focused"
 Received: "focused"`
             )
 
-            await expect(() => expectLib(el).not.toBeSelected({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toBeSelected()).rejects.toThrow(`\
 Expect $(\`selector\`) not to be selected
 
 Expected: "not selected"
@@ -256,43 +256,43 @@ Received      : "1"`
         vi.mocked(el.isSelected).mockResolvedValue(false)
 
         test('Ensure toBe matchers throws and show proper failing message', async () => {
-            await expect(() => expectLib(el).toBeDisplayed({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toBeDisplayed()).rejects.toThrow(`\
 Expect $(\`selector\`) to be displayed
 
 Expected: "displayed"
 Received: "not displayed"`)
 
-            await expect(() => expectLib(el).toBeExisting({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toBeExisting()).rejects.toThrow(`\
 Expect $(\`selector\`) to be existing
 
 Expected: "existing"
 Received: "not existing"`)
 
-            await expect(() => expectLib(el).toExist({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toExist()).rejects.toThrow(`\
 Expect $(\`selector\`) to exist
 
 Expected: "exist"
 Received: "not exist"`)
 
-            await expect(() => expectLib(el).toBeEnabled({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toBeEnabled()).rejects.toThrow(`\
 Expect $(\`selector\`) to be enabled
 
 Expected: "enabled"
 Received: "not enabled"`)
 
-            await expect(() => expectLib(el).toBeClickable({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toBeClickable()).rejects.toThrow(`\
 Expect $(\`selector\`) to be clickable
 
 Expected: "clickable"
 Received: "not clickable"`)
 
-            await expect(() => expectLib(el).toBeFocused({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toBeFocused()).rejects.toThrow(`\
 Expect $(\`selector\`) to be focused
 
 Expected: "focused"
 Received: "not focused"`)
 
-            await expect(() => expectLib(el).toBeSelected({ wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toBeSelected()).rejects.toThrow(`\
 Expect $(\`selector\`) to be selected
 
 Expected: "selected"
@@ -346,7 +346,7 @@ Expect $(\`selector\`) to have attribute notExistingAttribute
 
 Expected: "to have a defined value"
 Received: "value null"`)
-            await expect(() => expectLib(el).toHaveAttr('someAttribute', 'some other attribute', { wait: 1 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).toHaveAttr('someAttribute', 'some other attribute')).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute someAttribute
 
 Expected: "some other attribute"
@@ -391,12 +391,12 @@ Received: 100`)
         vi.mocked(el.isSelected).mockResolvedValue(false)
 
         test('toBe matchers', async () => {
-            await expectLib(el).not.toBeDisplayed({ wait: 1 })
-            await expectLib(el).not.toBeExisting({ wait: 1 })
-            await expectLib(el).not.toBeEnabled({ wait: 1 })
-            await expectLib(el).not.toBeClickable({ wait: 1 })
-            await expectLib(el).not.toBeFocused({ wait: 1 })
-            await expectLib(el).not.toBeSelected({ wait: 1 })
+            await expectLib(el).not.toBeDisplayed()
+            await expectLib(el).not.toBeExisting()
+            await expectLib(el).not.toBeEnabled()
+            await expectLib(el).not.toBeClickable()
+            await expectLib(el).not.toBeFocused()
+            await expectLib(el).not.toBeSelected()
         })
 
         test('toHave matchers', async () => {
