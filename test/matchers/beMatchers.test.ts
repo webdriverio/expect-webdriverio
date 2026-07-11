@@ -10,12 +10,11 @@ import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeE
 
 vi.mock('@wdio/globals')
 
-const ignoredMatchers = ['toBeElementsArrayOfSize', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith', 'toBeDisplayed', 'toBeDisabled']
+const ignoredMatchers = [
+    'toBeElementsArrayOfSize', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith', 'toBeDisplayed', 'toBeDisabled'
+]
 
-type ElementKeyFnTypes =  WebdriverIO.Element['isSelected'] | WebdriverIO.Element['isClickable'] | WebdriverIO.Element['isDisplayed'] | WebdriverIO.Element['isEnabled'] | WebdriverIO.Element['isExisting'] | WebdriverIO.Element['isFocused'] | WebdriverIO.Element['isExisting']
-type MatcherfnTypes = typeof toBeChecked | typeof toBeClickable | typeof toBeDisplayedInViewport | typeof toBeEnabled | typeof toBeExisting | typeof toBeFocused | typeof toBePresent | typeof toBeSelected | typeof toExist
-
-const beMatchers = new Map<MatcherfnTypes, keyof WebdriverIO.Element>([
+const matcherPairs = [
     [toBeChecked, 'isSelected'],
     [toBeClickable, 'isClickable'],
     [toBeDisplayedInViewport, 'isDisplayed'],
@@ -25,7 +24,13 @@ const beMatchers = new Map<MatcherfnTypes, keyof WebdriverIO.Element>([
     [toBePresent, 'isExisting'],
     [toBeSelected, 'isSelected'],
     [toExist, 'isExisting']
-])
+] as const
+
+type MatcherfnTypes = typeof matcherPairs[number][0]
+type ElementKeyNames = typeof matcherPairs[number][1]
+type ElementKeyFnTypes = WebdriverIO.Element[ElementKeyNames]
+
+const beMatchers = new Map<MatcherfnTypes, ElementKeyNames>(matcherPairs)
 
 describe('be* matchers', () => {
     describe('Ensure all toBe matchers are covered', () => {
@@ -40,8 +45,7 @@ describe('be* matchers', () => {
         })
     })
 
-    Array.from(beMatchers.entries()).forEach(([matcherFn, elFnName]) => {
-        const elementFnName = elFnName
+    Array.from(beMatchers.entries()).forEach(([matcherFn, elementFnName]) => {
 
         describe(matcherFn, () => {
             let thisContext: { matcherFn: typeof matcherFn }
@@ -53,8 +57,9 @@ describe('be* matchers', () => {
             beforeEach(async () => {
                 thisContext = { matcherFn }
                 thisNotContext = { isNot: true,  matcherFn }
+
                 el = await $('sel')
-                elementFn = (await el.getElement())[elementFnName] as ElementKeyFnTypes
+                elementFn = el[elementFnName]
                 vi.mocked(elementFn).mockResolvedValue(true)
             })
 
