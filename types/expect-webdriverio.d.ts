@@ -443,7 +443,8 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      */
     toHaveStyle: FnWhenElementOrArrayLike<ActualT, (
         style: MaybeArray<{ [key: string]: string }>,
-        options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<void>>
 }
 
 /**

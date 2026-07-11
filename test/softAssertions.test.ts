@@ -104,7 +104,7 @@ Received: "Actual Text"`
             softService.setCurrentTest('test-2', 'test name', 'test file')
 
             // This should not throw even though it fails
-            await expectWdio.soft(el).not.toHaveText('Actual Text', { wait: 0 })
+            await expectWdio.soft(el).not.toHaveText('Actual Text')
 
             // Verify the failure was recorded
             const failures = expectWdio.getSoftFailures()
@@ -237,7 +237,7 @@ Received: "Actual Text"`
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('multiple-elements-test-1', 'test name', 'test file')
 
-            await expectWdio.soft(await elements).toHaveText('Expected Text', { wait: 0 })
+            await expectWdio.soft(await elements).toHaveText('Expected Text')
 
             // Verify the failure was recorded
             const failures = expectWdio.getSoftFailures()
@@ -307,8 +307,8 @@ Expect $$(\`sel\`) to have text
             softService.setCurrentTest('boolean-test', 'boolean test', 'test file')
 
             // Test boolean matcher
-            await expectWdio.soft(el).toBeDisplayed({ wait: 0 })
-            await expectWdio.soft(el).toBeClickable({ wait: 0 })
+            await expectWdio.soft(el).toBeDisplayed()
+            await expectWdio.soft(el).toBeClickable()
 
             const failures = expectWdio.getSoftFailures()
             expect(failures.length).toBe(2)
@@ -389,8 +389,8 @@ Expect $$(\`sel\`) to have text
             // Fire multiple assertions rapidly
             const promises = [
                 expectWdio.soft(el).toHaveText('Expected 1'),
-                expectWdio.soft(el).toBeDisplayed({ wait: 0 }),
-                expectWdio.soft(el).toBeClickable({ wait: 0 })
+                expectWdio.soft(el).toBeDisplayed(),
+                expectWdio.soft(el).toBeClickable()
             ]
 
             await Promise.all(promises)
@@ -442,7 +442,7 @@ Expect $$(\`sel\`) to have text
 
             // Test with null/undefined values
             await expectWdio.soft(el).toHaveText(null as any)
-            await expectWdio.soft(el).toHaveAttribute('class', undefined)
+            await expectWdio.soft(el).toHaveAttribute('class')
 
             const failures = expectWdio.getSoftFailures()
             expect(failures.length).toBe(2)

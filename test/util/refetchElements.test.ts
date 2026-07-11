@@ -47,7 +47,7 @@ describe(refetchElements, () => {
             expect(elements.parent.$$).toHaveBeenCalledWith('elements', 'prop1', 'prop2')
         })
 
-        test('should call $$ with the proper parent this context', async () => {
+        test('should call $$ with the proper parent "this" context', async () => {
             const parentFoundWith = vi.mocked(elements.parent.$$)
 
             await refetchElements(elements, 5, true)
