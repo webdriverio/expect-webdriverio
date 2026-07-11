@@ -25,7 +25,7 @@ describe(toHaveText, async () => {
         let el: ChainablePromiseElement | WebdriverIO.Element
 
         let selectorName = '$(`sel`)'
-        if (title.includes('non-awaited')) {selectorName = ''} // Bug to fix
+        if (title.includes('non-awaited')) {selectorName = '{}'} // Bug to fix
 
         beforeEach(async () => {
             el = element
@@ -329,7 +329,7 @@ Received: "This is example text"`
     ])('given a multiple elements when $title', ({ elements, title }) => {
         let els: ChainablePromiseArray | WebdriverIO.ElementArray //| WebdriverIO.Element[] // Bug that will be fixed later with $$ support
 
-        const selectorName = title.includes('WebdriverIO.Element[]') ? '': '$$(`sel`)' // Bug to fix where with Element[] selector name is empty
+        const selectorName = title.includes('WebdriverIO.Element[]') ? '[{"selector":"sel","parent":{},"elementId":"sel"},{"selector":"dev","parent":{},"elementId":"dev"}]': '$$(`sel`)' // Bug to fix where with Element[] selector name is empty
 
         beforeEach(async () => {
             els = elements as ChainablePromiseArray | WebdriverIO.ElementArray // casting, bug that will be fixed later with $$ support
