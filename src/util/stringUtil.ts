@@ -4,9 +4,13 @@ export const toJsonString = (value: unknown): string => {
     if (isString(value)) {
         return value
     }
+
+    let stringifiedValue: string | undefined = undefined
     try {
-        return JSON.stringify(value)
+        stringifiedValue = JSON.stringify(value)
     } catch {
-        return String(value)
+        stringifiedValue = undefined
     }
+
+    return isString(stringifiedValue) ? stringifiedValue : String(value)
 }
