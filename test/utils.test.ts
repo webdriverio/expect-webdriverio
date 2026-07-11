@@ -1,6 +1,27 @@
-import { describe, test, expect } from 'vitest'
-import { compareObject, compareText, compareTextWithArray, getAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike } from '../src/utils'
+import { describe, test, expect, beforeEach, vi } from 'vitest'
+import { $ } from '@wdio/globals'
+import { compareObject, compareText, compareTextWithArray, executeCommand, executeCommandBe, getAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
 import { jasmine } from './__mocks__/jasmine'
+import { CommandOptions } from 'expect-webdriverio'
+import stripAnsi from 'strip-ansi'
+import { enhanceErrorBe } from '../src/util/formatMessage'
+
+vi.mock('@wdio/globals')
+
+vi.mock('../src/util/executeCommand', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('../src/util/executeCommand')>()
+    return {
+        ...actual,
+        executeCommand: vi.spyOn(actual, 'executeCommand'),
+    }
+})
+vi.mock('../src/util/formatMessage', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('../src/util/formatMessage')>()
+    return {
+        ...actual,
+        enhanceErrorBe: vi.spyOn(actual, 'enhanceErrorBe'),
+    }
+})
 
 describe('utils', () => {
     describe(compareText, () => {
@@ -142,6 +163,147 @@ describe('utils', () => {
         test('should fail if the actual value is a number or array', () => {
             expect(compareObject(10, { 'foo': 'bar' }).result).toBe(false)
             expect(compareObject([{ 'foo': 'bar' }], { 'foo': 'bar' }).result).toBe(false)
+        })
+    })
+
+    describe(executeCommandBe, () => {
+        let context: { isNot: boolean; expectation: string; verb: string }
+        let command: (el: WebdriverIO.Element) => Promise<boolean>
+        let options: CommandOptions
+
+        beforeEach(() => {
+            context = {
+                isNot: false,
+                expectation: 'displayed',
+                verb: 'be'
+            }
+            command = vi.fn().mockResolvedValue(true)
+            options = { wait: 0, interval: 1 }
+        })
+
+        describe('given no elements', () => {
+            test('should fail given undefined', async () => {
+                command = vi.fn().mockResolvedValue(false)
+
+                const result = await executeCommandBe.call(context, undefined as any, command, options)
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect  to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
+                expect(waitUntil).toHaveBeenCalled()
+            })
+
+            // TODO Bring back with $$ support
+            test.skip('should fail given empty array', async () => {
+                // @ts-expect-error bring back with $$ support
+                const result = await executeCommandBe.call(context, [], command, options)
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect [] to be displayed
+
+Expected: "at least one result"
+Received: []`)
+                expect(waitUntil).toHaveBeenCalled()
+            })
+        })
+
+        describe('given single element', () => {
+            let chainable: ChainablePromiseElement
+            let element: WebdriverIO.Element
+
+            beforeEach(async () => {
+                chainable = $('element1')
+                element = await chainable.getElement()
+            })
+
+            test('should pass given ChainableElement', async () => {
+                const result = await executeCommandBe.call(context, chainable, command, options)
+
+                expect(result.pass).toBe(true)
+                expect(executeCommand).toHaveBeenCalledWith(element, expect.any(Function), options)
+                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, options)
+            })
+
+            test('should pass given WebdriverIO.Element', async () => {
+                const result = await executeCommandBe.call(context, element, command, options)
+
+                expect(result.pass).toBe(true)
+                expect(executeCommand).toHaveBeenCalledWith(element, expect.any(Function), options)
+            })
+
+            test('should fail if command returns false', async () => {
+                vi.mocked(command).mockResolvedValue(false)
+
+                const result = await executeCommandBe.call(context, chainable, command, options)
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`element1\`) to be displayed
+
+Expected: "displayed"
+Received: "not displayed"`)
+                expect(enhanceErrorBe).toHaveBeenCalledWith(
+                    element,
+                    expect.objectContaining({ isNot: false }),
+                    options
+                )
+            })
+
+            describe('given isNot is true', () => {
+                let negatedContext: { isNot: boolean; expectation: string; verb: string }
+
+                beforeEach(() => {
+                    // Success for `.not`
+                    vi.mocked(command).mockResolvedValue(false)
+                    negatedContext = {
+                        expectation: 'displayed',
+                        verb: 'be',
+                        isNot: true
+                    }
+                })
+
+                test('should succeed so pass=false since it is inverted later', async () => {
+                    const result = await executeCommandBe.call(negatedContext, chainable, command, options)
+
+                    expect(result.pass).toBe(false)
+                    expect(enhanceErrorBe).toHaveBeenCalledWith(
+                        await chainable,
+                        {
+                            expectation: 'displayed',
+                            isNot: true,
+                            verb: 'be',
+                        },
+                        options
+                    )
+                    expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), true, options)
+                })
+
+                test('should failed so pass=true since it is inverted later', async () => {
+                    vi.mocked(command).mockResolvedValue(true)
+                    const result = await executeCommandBe.call(negatedContext, chainable, command, options)
+
+                    expect(result.pass).toBe(true)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`element1\`) not to be displayed
+
+Expected: "not displayed"
+Received: "displayed"`)
+                    expect(enhanceErrorBe).toHaveBeenCalledWith(
+                        await chainable,
+                        {
+                            expectation: 'displayed',
+                            isNot: true,
+                            verb: 'be',
+                        },
+                        options
+                    )
+                    expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), true, options)
+                })
+            })
         })
     })
 

@@ -450,7 +450,10 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     /**
      * `WebdriverIO.Element` -> `getAttribute("style")`
      */
-    toHaveStyle: FnWhenElementOrArrayLike<ActualT, (style: { [key: string]: string }, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
+    toHaveStyle: FnWhenElementOrArrayLike<ActualT, (
+        style: { [key: string]: string },
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<void>>
 }
 
 /**

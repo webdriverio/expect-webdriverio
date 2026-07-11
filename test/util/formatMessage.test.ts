@@ -2,6 +2,7 @@ import { test, describe, beforeEach, expect } from 'vitest'
 import { printDiffOrStringify } from 'jest-matcher-utils'
 
 import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
+import stripAnsi from 'strip-ansi'
 
 describe('formatMessage', () => {
     describe(enhanceError, () => {
@@ -11,14 +12,14 @@ describe('formatMessage', () => {
             const actual = 'Test Actual Value'
 
             beforeEach(() => {
-                actualFailureMessage = enhanceError(
+                actualFailureMessage = stripAnsi(enhanceError(
                     'window',
                     expected,
                     actual,
                     { isNot: false },
                     'have',
                     'title',
-                )
+                ))
             })
 
             test('message', () => {
@@ -30,7 +31,7 @@ Received: "Test Actual Value"`)
             })
 
             test('diff string', () => {
-                const diffString = printDiffOrStringify('Test Expected Value', 'Test Actual Value', 'Expected', 'Received', true)
+                const diffString = stripAnsi(printDiffOrStringify('Test Expected Value', 'Test Actual Value', 'Expected', 'Received', true))
                 expect(diffString).toEqual(`\
 Expected: "Test Expected Value"
 Received: "Test Actual Value"`)
@@ -47,14 +48,14 @@ Received: "Test Actual Value"`)
                 const actual = expected
 
                 beforeEach(() => {
-                    actualFailureMessage = enhanceError(
+                    actualFailureMessage = stripAnsi(enhanceError(
                         'window',
                         expected,
                         actual,
                         { isNot },
                         'have',
                         'title'
-                    )
+                    ))
                 })
 
                 test('message', () => {
@@ -83,7 +84,7 @@ Received      : "Test Same"`
                 const isNot = false
 
                 beforeEach(() => {
-                    actualFailureMessage = enhanceError(
+                    actualFailureMessage = stripAnsi(enhanceError(
                         'window',
                         expected,
                         actual,
@@ -92,7 +93,7 @@ Received      : "Test Same"`
                         'title',
                         '',
                         { message: '', containing: true }
-                    )
+                    ))
                 })
 
                 test('message', () => {
@@ -110,7 +111,7 @@ Received: "Test Actual Value"`)
                 const isNot = true
 
                 beforeEach(() => {
-                    actualFailureMessage = enhanceError(
+                    actualFailureMessage = stripAnsi(enhanceError(
                         'window',
                         expected,
                         actual,
@@ -119,7 +120,7 @@ Received: "Test Actual Value"`)
                         'title',
                         '',
                         { message: '', containing: true }
-                    )
+                    ))
                 })
 
                 test('message', () => {
@@ -137,7 +138,7 @@ Received      : "same value"`)
             const customPrefixMessage = 'Test Message'
 
             beforeEach(() => {
-                actualFailureMessage = enhanceError(
+                actualFailureMessage = stripAnsi(enhanceError(
                     'window',
                     'Test Expected Value',
                     'Test Actual Value',
@@ -146,7 +147,7 @@ Received      : "same value"`)
                     'title',
                     '',
                     { message: customPrefixMessage, containing: false }
-                )
+                ))
             })
 
             test('message', () => {
@@ -169,7 +170,7 @@ Received: "Test Actual Value"`)
                 const isNot = false
 
                 beforeEach(() => {
-                    actualFailureMessage = enhanceError(
+                    actualFailureMessage = stripAnsi(enhanceError(
                         'window',
                         expected,
                         actual,
@@ -177,7 +178,7 @@ Received: "Test Actual Value"`)
                         'have',
                         'property',
                         expectedArg2,
-                    )
+                    ))
                 })
 
                 test('message', () => {
@@ -195,7 +196,7 @@ Received: "Actual Property Value"`)
                 const isNot = true
 
                 beforeEach(() => {
-                    actualFailureMessage = enhanceError(
+                    actualFailureMessage = stripAnsi(enhanceError(
                         'window',
                         expected,
                         actual,
@@ -203,7 +204,7 @@ Received: "Actual Property Value"`)
                         'have',
                         'property',
                         expectedArg2,
-                    )
+                    ))
                 })
 
                 test('message', () => {
@@ -225,7 +226,7 @@ Received      : "Actual Property Value"`)
 
         const isNot = false
         test('when isNot is false', () => {
-            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, options )
+            const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, options ))
             expect(message).toEqual(`\
 Expect element to be displayed
 
@@ -235,7 +236,7 @@ Received: "not displayed"`)
 
         test('with custom message', () => {
             const customMessage = 'Custom Error Message'
-            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, { ...options, message: customMessage })
+            const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, { ...options, message: customMessage }))
             expect(message).toEqual(`\
 Custom Error Message
 Expect element to be displayed
@@ -246,7 +247,7 @@ Received: "not displayed"`)
 
         test('when isNot is true', () => {
             const isNot = true
-            const message = enhanceErrorBe(subject, { isNot, verb, expectation }, options)
+            const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, options))
             expect(message).toEqual(`\
 Expect element not to be displayed
 
