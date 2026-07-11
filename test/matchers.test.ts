@@ -504,7 +504,7 @@ Received: "not displayed"`)
         test('toHave matchers', async () => {
             await expectLib(elements).toHaveText('Valid Text')
 
-            // TODO should have beeen support but throws el.getHTML is not a function error
+            // TODO should have been support but throws el.getHTML is not a function error
             // await expectLib(elements).toHaveHTML('<Html/>')
 
             await expectLib(elements).toBeElementsArrayOfSize(2)
