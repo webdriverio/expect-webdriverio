@@ -43,7 +43,7 @@ export const isElementArrayLike = (obj: unknown): obj is WebdriverIO.ElementArra
 }
 
 export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Element => {
-    return !!obj && isElement(obj) || isElementArrayLike(obj)
+    return !!obj && (isElement(obj) || isElementArrayLike(obj))
 }
 
 /**
