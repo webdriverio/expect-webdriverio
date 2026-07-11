@@ -120,7 +120,6 @@ describe('WebdriverIO Custom Matchers', () => {
                 it('should verify text with options with filetered awaited getElements ChainablePromiseArray', async () => {
                     const heading = (await $$('h1').getElements()).filter(async (el) => (await el.getText()).includes('Open Source'))
 
-                    // @ts-expect-error TODO support Element[] in toHaveText signature??
                     await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
                 })
             })
@@ -136,14 +135,12 @@ describe('WebdriverIO Custom Matchers', () => {
                 it('should verify text with options with non-awaited filtered ChainablePromiseArray', async () => {
                     const heading = $$('h1').filter(async (el) => (await el.getText()).includes('Open Source'))
 
-                    // @ts-expect-error TODO support Element[] in toHaveText signature??
                     await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with options with non-awaited getElements ChainablePromiseArray', async () => {
                     const heading = $$('h1').getElements()
 
-                    // @ts-expect-error TODO support Element[] in toHaveText signature??
                     await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
                 })
             })
