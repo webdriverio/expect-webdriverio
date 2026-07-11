@@ -67,7 +67,7 @@ export const awaitElementOrArray = async(
     let awaitedElements = received
 
     // For non-awaited `$()` or `$$()`, so ChainablePromiseElement | ChainablePromiseArray.
-    // At some extend it also process non-awaited `$().getElement()`, `$$().getElements()` or `$$().filter()`, but typings does not allow it
+    // Extend also to other valid non-awaited case like `$().getElement()`, `$$().getElements()` or `$$().filter()`.
     if (awaitedElements instanceof Promise) {
         awaitedElements = await awaitedElements
     }
