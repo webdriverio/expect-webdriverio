@@ -56,7 +56,7 @@ describe('toBeRequestedTimes', () => {
 
         const result = await thisContext.toBeRequestedTimes(mock, 1, { beforeAssertion, afterAssertion, wait: 500 })
 
-        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, { wait: 500, interval: undefined })
+        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 500, interval: undefined })
         expect(result.pass).toBe(true)
         expect(beforeAssertion).toHaveBeenCalledWith({
             matcherName: 'toBeRequestedTimes',
@@ -98,7 +98,7 @@ describe('toBeRequestedTimes', () => {
 
         const result2 = await thisContext.toBeRequestedTimes(mock, { eq: 1, wait: 500 })
         expect(result2.pass).toBe(true)
-        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, { wait: 500, interval: 1 })
+        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 500, interval: 1 })
     })
 
     test('wait but failure', async () => {
