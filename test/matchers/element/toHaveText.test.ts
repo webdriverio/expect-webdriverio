@@ -326,6 +326,8 @@ Received: "This is example text"`
 
         // Bug that will be fixed later with $$ support. Throws `Error: Can't call "getText" on element with selector "label", it is not a function`
         // { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' }
+        // { elements: $$('sel').filter((t) => t.isEnabled()), title: 'non-awaited filtered ChainablePromiseArray' },
+
     ])('given a multiple elements when $title', ({ elements, title }) => {
         let els: ChainablePromiseArray | WebdriverIO.ElementArray //| WebdriverIO.Element[] // Bug that will be fixed later with $$ support
 
