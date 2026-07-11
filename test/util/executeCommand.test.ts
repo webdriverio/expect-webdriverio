@@ -1,28 +1,30 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 import { executeCommand } from '../../src/util/executeCommand'
+import { WdioElements } from '../../src/types'
 
 vi.mock('@wdio/globals')
 
 describe(executeCommand, () => {
-    const conditionPass = vi.fn(async (_element: WebdriverIO.Element) => {
-        return ({ result: true, value: 'myValue' })
-    })
-
-    const conditionFail = vi.fn(async (_element: WebdriverIO.Element) => {
-        return ({ result: false })
-    })
 
     describe('given single element', () => {
         const selector = 'single-selector'
         let element : WebdriverIO.Element
+
+        const conditionSingleElementPass = vi.fn(async (_element: WebdriverIO.Element) => {
+            return ({ result: true, value: 'myValue' })
+        })
+
+        const conditionSingleElementFail = vi.fn(async (_element: WebdriverIO.Element) => {
+            return ({ result: false })
+        })
 
         beforeEach(async () => {
             element = await $(selector).getElement()
         })
 
         test('Element', async () => {
-            const result = await executeCommand(element, conditionPass)
+            const result = await executeCommand(element, conditionSingleElementPass)
 
             expect(result).toEqual({
                 el: element,
@@ -60,7 +62,7 @@ describe(executeCommand, () => {
         })
 
         test('when condition is not met', async () => {
-            const result = await executeCommand(element, conditionFail)
+            const result = await executeCommand(element, conditionSingleElementFail)
 
             expect(result).toEqual({
                 el: element,
@@ -68,13 +70,70 @@ describe(executeCommand, () => {
                 values: undefined,
             })
         })
+
+        test('pass options to condition', async () => {
+            const options = { wait: 1000, interval: 100 }
+
+            await executeCommand(element, conditionSingleElementPass, options)
+
+            expect(conditionSingleElementPass).toHaveBeenCalledWith(element, options)
+        })
+    })
+
+    describe('given multiple elements', () => {
+        const selector = 'multi-selector'
+
+        const conditionMultipleElementPass = vi.fn(async (_element: WdioElements) => {
+            return ({ result: true, value: ['myValue1', 'myValue2'] })
+        })
+
+        test('ElementArray', async () => {
+            const elementArray = await $$(selector).getElements()
+
+            const result = await executeCommand(elementArray, conditionMultipleElementPass)
+
+            expect(result).toEqual({
+                el: elementArray,
+                success: true,
+                values: ['myValue1', 'myValue2'],
+            })
+        })
+
+        test('Element[]', async () => {
+            const elementArray = await $$(selector)
+            const elements = Array.from(elementArray)
+
+            expect(Array.isArray(elements)).toBe(true)
+
+            const result = await executeCommand(elements, conditionMultipleElementPass)
+
+            expect(result).toEqual({
+                el: elements,
+                success: true,
+                values: ['myValue1', 'myValue2'],
+            })
+        })
+
+        test('pass options to condition', async () => {
+            const options = { wait: 1000, interval: 100 }
+            const elements = await $$(selector).getElements()
+
+            await executeCommand(elements, conditionMultipleElementPass, options)
+
+            expect(conditionMultipleElementPass).toHaveBeenCalledWith(elements, options)
+        })
     })
 
     describe('given not elements', () => {
+        const conditionFail = vi.fn(async (_element: unknown) => {
+            return ({ result: false })
+        })
+
         test('undefined', async () => {
 
             const result = await executeCommand(undefined as any, conditionFail)
 
+            expect(conditionFail).toHaveBeenCalledWith(undefined, {})
             expect(result).toEqual({
                 el: undefined,
                 success: false,
@@ -116,4 +175,5 @@ describe(executeCommand, () => {
             })
         })
     })
+
 })
