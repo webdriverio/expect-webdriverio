@@ -47,7 +47,7 @@ describe('be* matchers', () => {
 
     Array.from(beMatchers.entries()).forEach(([matcherFn, elementFnName]) => {
 
-        describe(matcherFn, () => {
+        describe(matcherFn.name, () => {
             let thisContext: { matcherFn: typeof matcherFn }
             let thisNotContext: { isNot: true,  matcherFn: typeof matcherFn }
 
