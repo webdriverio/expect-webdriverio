@@ -23,7 +23,7 @@ export async function toBeRequestedTimes(
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ): Promise<ExpectWebdriverIO.AssertionResult> {
     const {
-        verb = 'be', isNot = false, matcherName = 'toBeRequestedTimes',
+        verb = 'be', isNot, matcherName = 'toBeRequestedTimes',
         expectation = `called${typeof expectedValue === 'number' ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`,
     } = this
 
