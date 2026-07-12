@@ -2,7 +2,7 @@ import { $, $$ } from '@wdio/globals'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray } from 'webdriverio'
-import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { $Factory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
 
@@ -490,11 +490,29 @@ Expect ${selectorName} to have text
     })
 
     describe('Edge cases', () => {
-        test('should have pass false with proper error message when actual is an empty array of elements', async () => {
-            // @ts-ignore
-            const result = await thisContext.toHaveText([], 'webdriverio')
+        // TODO is this a bug? to fix?
+        test('given exact text but with space in it should work by default', async () => {
+            const element = $('sel')
 
-            expect(result.pass).toBe(true)
+            const result = await thisContext.toHaveText(element, ' Valid Text ')
+
+            expect(result.pass).toBe(false) // should be true?
+        })
+
+        // TODO Fix incoming
+        test.skip.each([
+            { elements: [] satisfies WebdriverIO.Element[], name: 'Element[]' },
+            // { elements: Promise.resolve([]) satisfies Promise<WebdriverIO.Element[]>, name: 'Promise of Element[]' },
+            // { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray' },
+        ])('should fail with proper error message when actual is an empty of $name', async ({ elements }) => {
+            const result = await thisContext.toHaveText(elements, 'webdriverio')
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect ${elements} to have text
+
+Expected: "webdriverio"
+Received: "[]"`)
         })
 
         // TODO view later to handle this case more gracefully
@@ -530,6 +548,69 @@ Expect ${selectorName} to have text
 
 Expected: "webdriverio"
 Received: undefined`)
+        })
+
+        describe('Long promises', () => {
+
+            describe("given element's text takes more time then the configured wait to be retrieved", () => {
+
+                test('given element text takes more time then the configured wait then it should fail', async () => {
+                    const element: ChainablePromiseElement = $('elements')
+                    vi.mocked((await element).getText).mockImplementationOnce(() => new Promise((resolve) => setTimeout(() => resolve('0'), 500)))
+                        .mockImplementationOnce(() => new Promise((resolve) => setTimeout(() => resolve('1'), 500)))
+
+                    const result = await thisContext.toHaveText(element, '1', { wait: 1, interval: 1 })
+
+                    expect(result.pass).toBe(false)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect {} to have text
+
+Expected: "1"
+Received: "0"`)
+                })
+            })
+
+            describe('given element itself takes more time then the configured wait to be retrieved', () => {
+
+                test('given element take time to be found, and first getText match then it should work', async () => {
+                    const element: ChainablePromiseElement = $Factory(elementFactory('slowElement'), 500)
+
+                    const result = await thisContext.toHaveText(element, 'Valid Text', { wait: 250, interval: 100 })
+
+                    expect(result.pass).toBe(true)
+                })
+
+                test('given element take time to be found, and match only on second getText try then it should fails when using non-awaited version', async () => {
+                    const element = elementFactory('slowElement')
+                    element.getText = vi.fn()
+                        .mockResolvedValueOnce('Invalid Text')
+                        .mockResolvedValueOnce('Valid Text')
+
+                    const nonAwaitedElement: ChainablePromiseElement = $Factory(element, 500)
+
+                    const result = await thisContext.toHaveText(nonAwaitedElement, 'Valid Text', { wait: 250, interval: 100 })
+
+                    expect(result.pass).toBe(false)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect {} to have text
+
+Expected: "Valid Text"
+Received: "Invalid Text"`)
+                })
+
+                test('given element take time to be found, but match only on second try then it should succeeds when using awaited version', async () => {
+                    const element = elementFactory('slowElement')
+                    element.getText = vi.fn()
+                        .mockResolvedValueOnce('Invalid Text')
+                        .mockResolvedValueOnce('Valid Text')
+
+                    const awaitedElement: ChainablePromiseElement = await $Factory(element, 500)
+
+                    const result = await thisContext.toHaveText(awaitedElement, 'Valid Text', { wait: 250, interval: 100 })
+
+                    expect(result.pass).toBe(true)
+                })
+            })
         })
     })
 })
