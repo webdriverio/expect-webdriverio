@@ -1,9 +1,9 @@
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
-import { isElementArray } from './elementsUtil.js'
+import { isArrayOfElement, isElementArray, isElementOrArrayLike } from './elementsUtil.js'
 import { numberMatcherTester } from './numberOptionsUtil.js'
-import { isString, toJsonString } from './stringUtil.js'
+import { toJsonString } from './stringUtil.js'
 
 // TODO one day use a real asymmetric matcher for number options instead of this custom equality tester
 const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
@@ -17,7 +17,7 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) 
     return result
 }
 
-export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
+export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => {
     if (!el || typeof el !== 'object') {
         return ''
     }
@@ -26,9 +26,14 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
     let parent: WebdriverIO.ElementArray['parent'] | undefined
 
     if (isElementArray(el)) {
+        // Type ElementArray
         selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)
         parent = el.parent
-    } else if (!Array.isArray(el)) {
+    } else if (isArrayOfElement(el)) {
+        // Type Element[]
+        return `[${el.map(getSelectors).join(',')}]`
+    } else {
+        // Type Element
         parent = el
     }
 
@@ -46,7 +51,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements) => {
 const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
 
 export const enhanceError = (
-    subject: string | WebdriverIO.Element | WdioElements,
+    subject: string | WebdriverIO.Element | WdioElements | unknown,
     expected: unknown,
     actual: unknown,
     context: { isNot: boolean, useNotInLabel?: boolean },
@@ -58,11 +63,10 @@ export const enhanceError = (
     } = {}): string => {
     const { isNot, useNotInLabel = true } = context
 
-    let subjectStr = isString(subject) ? subject : getSelectors(subject)
-    if (!subjectStr) {
-        subjectStr = toJsonString(subject)
+    let subjectStr = (isElementOrArrayLike(subject) ? getSelectors(subject) : toJsonString(subject))
+    if (subjectStr.length > 100) {
+        subjectStr = `${subjectStr.substring(0, 100)}...`
     }
-    subjectStr = subjectStr?.slice(0, 100)
 
     let contain = ''
     if (containing) {

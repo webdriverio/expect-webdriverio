@@ -2,7 +2,7 @@ import { $, $$ } from '@wdio/globals'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray } from 'webdriverio'
-import { $Factory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { $Factory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
 
@@ -21,11 +21,10 @@ describe(toHaveText, async () => {
         { element: await $('sel'), title: 'awaited ChainablePromiseElement' },
         { element: await $('sel').getElement(), title: 'awaited getElement of ChainablePromiseElement (e.g. WebdriverIO.Element)' },
         { element: $('sel'), title: 'non-awaited of ChainablePromiseElement' }
-    ])('given a single element when $title', ({ element, title }) => {
+    ])('given a single element when $title', ({ element }) => {
         let el: ChainablePromiseElement | WebdriverIO.Element
 
-        let selectorName = '$(`sel`)'
-        if (title.includes('non-awaited')) {selectorName = '{}'} // Bug to fix
+        const selectorName = '$(`sel`)'
 
         beforeEach(async () => {
             el = element
@@ -323,16 +322,16 @@ Received: "This is example text"`
         { elements: await $$('sel'), title: 'awaited ChainablePromiseArray' },
         { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
         { elements: await $$('sel').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
-
-        // Bug that will be fixed later with $$ support. Throws `Error: Can't call "getText" on element with selector "label", it is not a function`
-        // { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' }
+        { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' },
+        { elements: $$('sel').getElements(), title: 'non-awaited getElements of ChainablePromiseArray' },
+        { elements: $$('sel').filter((t) => t.isEnabled()), title: 'non-awaited filtered ChainablePromiseArray (e.g. Promise<WebdriverIO.Element[]>)' },
     ])('given a multiple elements when $title', ({ elements, title }) => {
-        let els: ChainablePromiseArray | WebdriverIO.ElementArray //| WebdriverIO.Element[] // Bug that will be fixed later with $$ support
+        let els: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] | Promise<WebdriverIO.Element[]> | Promise<WebdriverIO.ElementArray>
 
-        const selectorName = title.includes('WebdriverIO.Element[]') ? '[{"selector":"sel","parent":{},"elementId":"sel"},{"selector":"dev","parent":{},"elementId":"dev"}]': '$$(`sel`)' // Bug to fix where with Element[] selector name is empty
+        const selectorName = title.includes('WebdriverIO.Element[]') ? '[$(`sel`),$(`dev`)]': '$$(`sel`)'
 
         beforeEach(async () => {
-            els = elements as ChainablePromiseArray | WebdriverIO.ElementArray // casting, bug that will be fixed later with $$ support
+            els = elements as ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] | Promise<WebdriverIO.Element[]> | Promise<WebdriverIO.ElementArray>
 
             const awaitedEls = await els
             awaitedEls[0] = await $('sel')
@@ -490,6 +489,7 @@ Expect ${selectorName} to have text
     })
 
     describe('Edge cases', () => {
+
         // TODO is this a bug? to fix?
         test('given exact text but with space in it should work by default', async () => {
             const element = $('sel')
@@ -499,20 +499,19 @@ Expect ${selectorName} to have text
             expect(result.pass).toBe(false) // should be true?
         })
 
-        // TODO Fix incoming
-        test.skip.each([
-            { elements: [] satisfies WebdriverIO.Element[], name: 'Element[]' },
-            // { elements: Promise.resolve([]) satisfies Promise<WebdriverIO.Element[]>, name: 'Promise of Element[]' },
-            // { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray' },
-        ])('should fail with proper error message when actual is an empty of $name', async ({ elements }) => {
+        test.each([
+            { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
+            { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
+            { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
+        ])('should fail with proper error message when actual is an empty of $name', async ({ elements, selectorName }) => {
             const result = await thisContext.toHaveText(elements, 'webdriverio')
 
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
-Expect ${elements} to have text
+Expect ${selectorName} to have text
 
 Expected: "webdriverio"
-Received: "[]"`)
+Received: undefined`)
         })
 
         // TODO view later to handle this case more gracefully
@@ -530,7 +529,7 @@ Received: "[]"`)
         })
 
         // Throws with wierd and differrent error message!
-        test.skip.for([
+        test.each([
             { actual: undefined, selectorName: 'undefined' },
             { actual: null, selectorName: 'null' },
             { actual: true, selectorName: 'true' },
@@ -563,7 +562,7 @@ Received: undefined`)
 
                     expect(result.pass).toBe(false)
                     expect(stripAnsi(result.message())).toEqual(`\
-Expect {} to have text
+Expect $(\`elements\`) to have text
 
 Expected: "1"
 Received: "0"`)
@@ -592,7 +591,7 @@ Received: "0"`)
 
                     expect(result.pass).toBe(false)
                     expect(stripAnsi(result.message())).toEqual(`\
-Expect {} to have text
+Expect $(\`slowElement\`) to have text
 
 Expected: "Valid Text"
 Received: "Invalid Text"`)

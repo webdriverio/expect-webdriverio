@@ -7,6 +7,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
+import { awaitElementOrArray } from '../../util/elementsUtil.js'
 
 async function condition(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.HTMLOptions) {
     const actualHTML = await el.getHTML(options) // TODO: Support for array of elements is coming!
@@ -29,17 +30,16 @@ export async function toHaveHTML(
         options,
     })
 
-    let el = 'getElement' in received
-        ? await received?.getElement()
-        : 'getElements' in received
-            ? await received?.getElements()
-            : received
     let actualHTML
-
+    let actualSubject: unknown = received
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
-            el = result.el as WebdriverIO.Element
+            const { selector, other, isEmptyElements } = await awaitElementOrArray(received)
+            actualSubject = selector ?? other
+            if (!selector || isEmptyElements) { return false }
+
+            const result = await executeCommand.call(this, selector, condition, options, [expectedValue, options])
+            actualSubject = result.el
             actualHTML = result.values
 
             return result.success
@@ -48,7 +48,7 @@ export async function toHaveHTML(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, wrapExpectedWithArray(el, actualHTML, expectedValue), actualHTML, this, verb, expectation, '', options)
+    const message = enhanceError(actualSubject, wrapExpectedWithArray(actualSubject, actualHTML, expectedValue), actualHTML, this, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

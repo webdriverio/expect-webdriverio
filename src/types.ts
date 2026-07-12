@@ -9,7 +9,7 @@ export type WdioElements = WebdriverIO.ElementArray | WebdriverIO.Element[]
 
 export type WdioElementsMaybePromise =
     WdioElements |
-    ChainablePromiseArray
+    ChainablePromiseArray | Promise<WebdriverIO.Element[]> | Promise<WebdriverIO.ElementArray>
 
 export type WdioElementOrArrayMaybePromise =
     WdioElementMaybePromise |

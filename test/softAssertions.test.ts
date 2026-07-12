@@ -90,7 +90,7 @@ describe('Soft Assertions', () => {
             expect(failures.length).toBe(1)
             expect(failures[0].matcherName).toBe('toHaveText')
             expect(failures[0].error.message).toEqual(`\
-Expect {} to have text
+Expect $(\`sel\`) to have text
 
 Expected: "Expected Text"
 Received: "Actual Text"`
