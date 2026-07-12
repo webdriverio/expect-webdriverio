@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { $, $$ } from '@wdio/globals'
-import { notFoundElementFactory } from './__mocks__/@wdio/globals.js'
+import { $Factory, elementFactory, notFoundElementFactory } from './__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -156,6 +156,40 @@ describe('globals mock', () => {
         it('should throw error when awaiting a method call (sync throw)', async () => {
             const el = notFoundElementFactory('not-found')
             expect(() => el.getText()).toThrow("Can't call getText on element with selector not-found because element wasn't found")
+        })
+    })
+
+    describe('$Factory', () => {
+        it('should takes time to await the element', async () => {
+            const el = $Factory(elementFactory('foo'), 1000)
+
+            expect(el).toBeInstanceOf(Promise)
+            expect('getElement' in el).toBe(false)
+            expect('getText' in el).toBe(false)
+
+            const start = performance.now()
+            const awaitedEl = await el
+            const end = performance.now()
+            expect(end - start).toBeGreaterThanOrEqual(1000)
+            expect('getElement' in awaitedEl).toBe(true)
+            expect('getText' in awaitedEl).toBe(true)
+
+            expect(await awaitedEl.getText()).toBe(' Valid Text ')
+        })
+
+        it("should takes time to await the element's text", async () => {
+            const el = $Factory(elementFactory('foo'), 1000)
+
+            expect(el).toBeInstanceOf(Promise)
+            expect('getElement' in el).toBe(false)
+            expect('getText' in el).toBe(false)
+
+            const start = performance.now()
+            const text = await el.getText()
+            const end = performance.now()
+            expect(end - start).toBeGreaterThanOrEqual(1000)
+
+            expect(text).toBe(' Valid Text ')
         })
     })
 })
