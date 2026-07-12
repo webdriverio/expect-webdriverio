@@ -507,6 +507,7 @@ Expect [] to have text
 Expected: "webdriverio"
 Received: undefined`
             )
+        })
 
         // TODO Fix incoming
         test.skip.each([
