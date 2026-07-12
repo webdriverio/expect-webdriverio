@@ -499,11 +499,26 @@ Expect ${selectorName} to have text
             expect(result.pass).toBe(false) // should be true?
         })
 
-        test('should have pass false with proper error message when actual is an empty array of elements', async () => {
+        test('should fails with proper error message when actual is an empty Element[]', async () => {
             const result = await thisContext.toHaveText([], 'webdriverio')
+
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
 Expect [] to have text
+
+Expected: "webdriverio"
+Received: undefined`
+            )
+        })
+
+        test('should fails with proper error message when actual is an empty ElementArray', async () => {
+            const elements = elementArrayFactory('EmptyElementArray', 0)
+
+            const result = await thisContext.toHaveText(elements, 'webdriverio')
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`EmptyElementArray\`) to have text
 
 Expected: "webdriverio"
 Received: undefined`

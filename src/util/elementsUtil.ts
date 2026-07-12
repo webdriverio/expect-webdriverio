@@ -14,6 +14,13 @@ export const wrapExpectedWithArray = <T>(el: WebdriverIO.Element | WdioElements 
     return expected
 }
 
+/**
+ * Utility since Array.isArray() does not regonize WebdriverIO.ElementArray as a a typed array, but it is an array-like object.
+ */
+export const isArray = (obj: unknown): obj is unknown[] | WebdriverIO.ElementArray => {
+    return Array.isArray(obj)
+}
+
 export const isElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
     return obj !== null && typeof obj === 'object' && 'selector' in obj && 'foundWith' in obj && 'parent' in obj
 }

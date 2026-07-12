@@ -1,7 +1,7 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 
-import { awaitElementOrArray, isElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
+import { awaitElementOrArray, isArray, isElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
 import { elementFactory, elementArrayFactory, chainableElementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
@@ -18,6 +18,17 @@ describe('elementsUtil', () => {
             const els = (await $$('sel')) as unknown as WebdriverIO.ElementArray
             const actual = wrapExpectedWithArray(els, ['Test Actual', 'Test Actual'], 'Test Expected')
             expect(actual).toEqual(['Test Expected'])
+        })
+    })
+
+    describe(isArray, async () => {
+        test.each([
+            { array: [elementFactory('element')], title: 'array of WebdriverIO.Element' },
+            { array: await elementArrayFactory('elements', 0), title: 'array of WebdriverIO.ElementArray' }
+        ])('should return true for $title', (input) => {
+            const result = isArray(input.array)
+
+            expect(result).toBe(true)
         })
     })
 

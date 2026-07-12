@@ -7,14 +7,14 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
-import { awaitElementOrArray } from '../../util/elementsUtil.js'
+import { awaitElementOrArray, isArray } from '../../util/elementsUtil.js'
 
 async function condition(el: WebdriverIO.Element | WdioElements, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualTextArray: string[] = []
     const resultArray: boolean[] = []
     let checkAllValuesMatchCondition: boolean
 
-    if (Array.isArray(el)){
+    if (isArray(el)){
         for (const element of el){
             const actualText = await element.getText()
             actualTextArray.push(actualText)
@@ -25,7 +25,7 @@ async function condition(el: WebdriverIO.Element | WdioElements, text: MaybeArra
         }
         checkAllValuesMatchCondition = resultArray.every(Boolean)
     } else {
-        const actualText = await (el as WebdriverIO.Element).getText()
+        const actualText = await el.getText()
         actualTextArray.push(actualText)
         checkAllValuesMatchCondition = Array.isArray(text)
             ? compareTextWithArray(actualText, text, options).result
@@ -55,9 +55,12 @@ export async function toHaveText(
     let actualSubject: unknown = received
     const pass = await waitUntil(
         async () => {
-            const { selector, other } = await awaitElementOrArray(received)
+            const { selector, elements, other } = await awaitElementOrArray(received)
             if (!selector) {
                 actualSubject = other
+                return false
+            } else if (!!elements && elements.length === 0) {
+                actualSubject = selector
                 return false
             }
 

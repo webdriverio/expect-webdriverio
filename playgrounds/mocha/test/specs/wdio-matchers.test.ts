@@ -105,13 +105,6 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
                 })
 
-                it('should fails if there is no elements', async () => {
-                    const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('test'))
-
-                    expect(heading.length).toBe(0)
-                    await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
-                })
-
                 it('should verify text with options with awaited getElements ChainablePromiseArray', async () => {
                     const heading = await $$('h1').getElements()
                     await expect(heading).toHaveText(['','Open Source and Open Governed'], { ignoreCase: true, containing: true })
@@ -121,6 +114,23 @@ describe('WebdriverIO Custom Matchers', () => {
                     const heading = (await $$('h1').getElements()).filter(async (el) => (await el.getText()).includes('Open Source'))
 
                     await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                })
+
+
+                describe('Empty elemetns', () => {
+                    it('should fails if there is no elements with Element[]', async () => {
+                        const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('test'))
+
+                        expect(heading.length).toBe(0)
+                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                    })
+
+                    it('should fails if there is no elements with ElementArray', async () => {
+                        const heading = await $$('h10')
+
+                        expect(heading.length).toBe(0)
+                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                    })
                 })
             })
 
@@ -142,6 +152,20 @@ describe('WebdriverIO Custom Matchers', () => {
                     const heading = $$('h1').getElements()
 
                     await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                })
+
+                describe('Empty elements', () => {
+                    it('should fails if there is no elements with Element[]', async () => {
+                        const heading = $$('h1').filter(async (el) => (await el.getText()).includes('test'))
+
+                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                    })
+
+                    it('should fails if there is no elements with ElementArray', async () => {
+                        const heading = $$('h10')
+
+                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                    })
                 })
             })
         })
