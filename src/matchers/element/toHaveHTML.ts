@@ -39,7 +39,7 @@ export async function toHaveHTML(
             if (!selector || isEmptyElements) { return false }
 
             const result = await executeCommand.call(this, selector, condition, options, [expectedValue, options])
-            actualSubject = result.el as WebdriverIO.Element
+            actualSubject = result.el
             actualHTML = result.values
 
             return result.success
