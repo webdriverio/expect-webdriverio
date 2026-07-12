@@ -17,8 +17,6 @@ export const waitUntil = async (
     isNot = false,
     { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
 ): Promise<boolean> => {
-    isNot = isNot ?? false
-
     const start = Date.now()
     let error: unknown
     let result: boolean | ConditionResult = false
@@ -62,6 +60,6 @@ export const waitUntil = async (
 }
 const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean'
 
-const isAllTrue = (results: boolean[]): boolean => results.every((res) => res === true)
-const isAllFalse = (results: boolean[]): boolean => results.every((res) => res === false)
+const isAllTrue = (results: boolean[]): boolean => results.every((res) => res === true) && results.length > 0
+const isAllFalse = (results: boolean[]): boolean => results.every((res) => res === false) && results.length > 0
 const canWait = (start: number, wait: number): boolean => (Date.now() - start) < wait
