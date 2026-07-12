@@ -7,7 +7,7 @@ import { elementFactory, elementArrayFactory, chainableElementArrayFactory, notF
 vi.mock('@wdio/globals')
 
 describe('elementsUtil', () => {
-    describe('wrapExpectedWithArray', () => {
+    describe(wrapExpectedWithArray, () => {
         test('is not array ', async () => {
             const el = (await $('sel')) as unknown as WebdriverIO.Element
             const actual = wrapExpectedWithArray(el, 'Test Actual', 'Test Expected')
@@ -226,6 +226,15 @@ describe('elementsUtil', () => {
 
         })
 
+        test('should return empty array as empty array of Element[]', async () => {
+            const { other, element, elements, isEmptyElements, selector } = await awaitElementOrArray([])
+
+            expect(elements).toEqual([])
+            expect(element).toBeUndefined()
+            expect(other).toBeUndefined()
+            expect(isEmptyElements).toBe(true)
+            expect(selector).toEqual([])
+        })
     })
 
     describe(isStrictlyElementArray, async () => {
@@ -298,7 +307,8 @@ describe('elementsUtil', () => {
             await $$('elements'),
             elementArrayFactory('elements'),
             await chainableElementArrayFactory('elements', 3),
-            [elementFactory('element1'), elementFactory('element2')]
+            [elementFactory('element1'), elementFactory('element2')],
+            []
         ])('should return true for ElementArray or Element[] %s', async (elements) => {
             const isElementArrayResult = isElementArrayLike(elements)
 
@@ -319,7 +329,6 @@ describe('elementsUtil', () => {
             [$('elements')],
             [$$('elements')],
             [await $$('elements')],
-            []
         ])('should return false for non-ElementArray or non-Element[]: %s', async (elements) => {
             const isElementArrayResult = isElementArrayLike(elements)
 
@@ -337,6 +346,7 @@ describe('elementsUtil', () => {
             elementArrayFactory('elements'),
             await chainableElementArrayFactory('elements', 3),
             [elementFactory('element1'), elementFactory('element2')],
+            []
         ])('should return true for Element or ElementArray or Element[]: %s', async (element) => {
             const result = isElementOrArrayLike(element)
 
@@ -357,7 +367,6 @@ describe('elementsUtil', () => {
             [$('elements')],
             [$$('elements')],
             [await $$('elements')],
-            []
         ])('should return false for non-Element and non-ElementArray and non-Element[]: %s', async (element) => {
             const result = isElementOrArrayLike(element)
 

@@ -49,23 +49,24 @@ export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
 
 /**
  * ElementArray or Element[]
- * Warning: Element[] must be non-empty!
+ * Warning: empty array is considered as Element[] and will return true.
+ *
  */
 export const isElementArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] => {
-    return !!obj && (isStrictlyElementArray(obj) || (Array.isArray(obj) && obj.length > 0 && obj.every(isElement)))
+    return !!obj && (isStrictlyElementArray(obj) || (Array.isArray(obj) && obj.every(isElement)))
 }
 
 /**
  * Element[]
- * Warning: Element[] must be non-empty!
+ * Warning: empty array is considered as Element[] and will return true.
  */
 export const isArrayOfElement = (obj: unknown): obj is WebdriverIO.Element[] => {
-    return Array.isArray(obj) && obj.length > 0 && obj.every(isElement)
+    return Array.isArray(obj) && obj.every(isElement)
 }
 
 /**
  * Element, ElementArray or Element[]
- * Warning: Element[] must be non-empty!
+ * Warning: empty array is considered as Element[] and will return true.
  */
 export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Element => {
     return !!obj && (isElement(obj) || isElementArrayLike(obj))
