@@ -161,6 +161,14 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(Promise.resolve('text')).toHaveText).toBeNever()
                 expectTypeOf(expect(Promise.resolve('text')).toHaveText).toBeNever()
             })
+
+            it('support edge types case like Promises of ElementArray & Element[]', async () => {
+                const elementArrayPromise: Promise<WebdriverIO.ElementArray> = Promise.resolve([] as unknown as WebdriverIO.ElementArray)
+                const elementsPromise: Promise<WebdriverIO.Element[]> = Promise.resolve([] as unknown as WebdriverIO.Element[])
+
+                expectTypeOf(expect(elementArrayPromise).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementsPromise).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+            })
         })
 
         describe('toHaveHeight', () => {

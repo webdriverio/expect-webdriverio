@@ -37,19 +37,10 @@ type WdioPromiseLike<T = unknown> = PromiseLike<T> | ChainablePromiseElement | C
 type WdioElementOrPromiseLike<T = unknown> = WdioPromiseLike<T> | WebdriverIO.Element
 type ElementPromise = Promise<WebdriverIO.Element>
 type ElementArrayPromise = Promise<WebdriverIO.ElementArray>
+type ArrayOfElementsPromise = Promise<WebdriverIO.Element[]>
 
 /**
- * Only Wdio real promise
- */
-type WdioOnlyPromiseLike = ElementPromise | ElementArrayPromise | ChainablePromiseElement | ChainablePromiseArray
-
-/**
- * Only wdio real promise or potential promise usage on element or element array or browser
- */
-type WdioOnlyMaybePromiseLike = ElementPromise | ElementArrayPromise | ChainablePromiseElement | ChainablePromiseArray | WebdriverIO.Browser | WebdriverIO.Element | WebdriverIO.ElementArray
-
-/**
- * Note we are defining Matchers outside of the namespace as done in jest library until we can make every typing work correctly.
+ * Note we are defining types outside of the namespace as done in jest library until we can make every typing work correctly.
  * Once we have all types working, we could check to bring those back into the `ExpectWebdriverIO` namespace.
  */
 
@@ -58,7 +49,7 @@ type WdioOnlyMaybePromiseLike = ElementPromise | ElementArrayPromise | Chainable
  */
 type ElementOrArrayLike = ElementLike | ElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
-type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[]
+type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise
 type MockPromise = Promise<WebdriverIO.Mock>
 
 /**

@@ -1,9 +1,9 @@
 import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXPECTED_COLOR, INVERTED_COLOR, stringify } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
-import { toJsonString } from './stringUtil.js'
-import { isElementArrayLike, isElementOrNotEmptyElementArray, isStrictlyElementArray } from './elementsUtil.js'
+import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray } from './elementsUtil.js'
 import { numberMatcherTester } from './numberOptionsUtil.js'
+import { toJsonString } from './stringUtil.js'
 
 // TODO one day use a real asymmetric matcher for number options instead of this custom equality tester
 const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
@@ -26,16 +26,15 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
     let parent: WebdriverIO.ElementArray['parent'] | undefined
 
     if (isStrictlyElementArray(el)) {
+        // Type ElementArray
         selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)
         parent = el.parent
-    } else if (!Array.isArray(el)) {
+    } else if (isArrayOfElement(el)) {
+        // Type Element[]
+        return `[${el.map(getSelectors).join(',')}]`
+    } else {
+        // Type Element
         parent = el
-    } else if (Array.isArray(el)) {
-        for (const element of el) {
-            selectors.push(getSelectors(element))
-        }
-        // When not having more context about the common parent, return joined selectors
-        return selectors.join(', ')
     }
 
     while (!!parent && typeof parent === 'object' && 'selector' in parent) {
@@ -64,11 +63,10 @@ export const enhanceError = (
     } = {}): string => {
     const { isNot, useNotInLabel = true } = context
 
-    const isElementsSubject = isElementArrayLike(subject)
-
-    subject = isElementOrNotEmptyElementArray(subject) ? getSelectors(subject) : toJsonString(subject)
-    // TODO dprevost to review?
-    //subject = subject?.slice(0, 100)
+    let subjectStr = (isElementOrArrayLike(subject) ? getSelectors(subject) : toJsonString(subject))
+    if (subjectStr.length > 100) {
+        subjectStr = `${subjectStr.substring(0, 100)}...`
+    }
 
     let contain = ''
     if (containing) {
@@ -88,7 +86,7 @@ export const enhanceError = (
     let diffString = ''
 
     // Special formatting for .not with arrays to highlight what matched
-    if (isNotInLabel && isElementsSubject && Array.isArray(expected) && Array.isArray(actual) && expected.length === actual.length) {
+    if (isNotInLabel && isElementOrArrayLike(subject) && Array.isArray(expected) && Array.isArray(actual) && expected.length === actual.length) {
         // With multiple elements + `.not`, since `printDiffOrStringify` shows only diff and we need to highlight what matched, we do custom formatting
         // Using FORCE_COLOR=1 npx vitest + console.log() can show colors in the test output console
         const { expectedFormatted, receivedFormatted } = printArrayWithMatchingItemInRed(expected, actual)

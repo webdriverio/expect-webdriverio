@@ -87,23 +87,44 @@ export const notFoundElementFactory = (_selector: string, index?: number, parent
     return notFoundElement
 }
 
-const $ = vi.fn((_selector: string) => {
-    const element = elementFactory(_selector)
-
+export const $Factory = (element: WebdriverIO.Element, findDelay = 0): ChainablePromiseElement => {
     // Wdio framework does return a Promise-wrapped element, so we need to mimic this behavior
-    const chainablePromiseElement = Promise.resolve(element) as unknown as ChainablePromiseElement
+    let chainablePromiseElement = Promise.resolve(element)
 
-    // Ensure `'getElement' in chainableElement` is false while allowing to use `await chainableElement.getElement()`
+    // Fake finding time of an element
+    if (findDelay > 0) {
+        // Wdio framework does return a Promise-wrapped element, so we need to mimic this behavior
+        chainablePromiseElement = new Promise<WebdriverIO.Element>((resolve) => {
+            setTimeout(() => resolve(element), findDelay)
+        })
+    }
+
+    // Ensure `'getElement' in chainableElement` at runtime does not exist while allowing to use `await chainableElement.getElement()`
     const runtimeChainableElement = new Proxy(chainablePromiseElement, {
         get(target, prop) {
             if (prop in element) {
-                return element[prop as keyof WebdriverIO.Element]
+                const originalValue = element[prop as keyof WebdriverIO.Element]
+
+                // 2. Wrap element methods to await the delayed Promise first
+                if (findDelay > 0 && typeof originalValue === 'function') {
+                    return async (...args: any[]) => {
+                        await target // Wait for the delay to finish
+                        return (originalValue as Function).apply(element, args)
+                    }
+                }
+                return originalValue
             }
             const value = Reflect.get(target, prop)
             return typeof value === 'function' ? value.bind(target) : value
         }
     })
-    return runtimeChainableElement
+    return runtimeChainableElement as unknown as ChainablePromiseElement
+}
+
+const $ = vi.fn((_selector: string) => {
+    const element = elementFactory(_selector)
+
+    return $Factory(element)
 })
 
 const $$ = vi.fn((selector: string) => {

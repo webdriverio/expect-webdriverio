@@ -1,9 +1,8 @@
 import { test, describe, beforeEach, expect, vi } from 'vitest'
 import { INVERTED_COLOR, printDiffOrStringify } from 'jest-matcher-utils'
-
 import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
-import { elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
 import stripAnsi from 'strip-ansi'
+import { elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('jest-matcher-utils', async (importActual) => {
     const actual = await importActual<typeof import('jest-matcher-utils')>()

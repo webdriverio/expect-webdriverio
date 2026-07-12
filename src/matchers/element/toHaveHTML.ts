@@ -37,7 +37,6 @@ export async function toHaveHTML(
 
     let elements
     let actualHTML
-
     const pass = await waitUntil(
         async () => {
             const result = await executeCommand(received,

@@ -1,8 +1,8 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $, $$, } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 
-import { awaitElementOrArray, awaitElementArray, wrapExpectedWithArray, map, isStrictlyElementArray, isElement, isElementArrayLike, isElementOrArrayLike } from '../../src/util/elementsUtil.js'
-import { chainableElementArrayFactory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
+import { awaitElementOrArray, isArray, isElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
+import { elementFactory, elementArrayFactory, chainableElementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -52,6 +52,17 @@ describe('elementsUtil', () => {
         })
     })
 
+    describe(isArray, async () => {
+        test.each([
+            { array: [elementFactory('element')], title: 'array of WebdriverIO.Element' },
+            { array: await elementArrayFactory('elements', 0), title: 'array of WebdriverIO.ElementArray' }
+        ])('should return true for $title', (input) => {
+            const result = isArray(input.array)
+
+            expect(result).toBe(true)
+        })
+    })
+
     describe(awaitElementOrArray, () => {
 
         describe('given single element', () => {
@@ -68,7 +79,11 @@ describe('elementsUtil', () => {
                 const awaitedElements = await awaitElementOrArray(undefined)
 
                 expect(awaitedElements).toEqual({
-                    other: undefined
+                    element: undefined,
+                    elements: undefined,
+                    selector: undefined,
+                    other: undefined,
+                    isEmptyElements: undefined
                 })
             })
 
@@ -76,71 +91,71 @@ describe('elementsUtil', () => {
                 const awaitedElements = await awaitElementOrArray(Promise.resolve(undefined) as any)
 
                 expect(awaitedElements).toEqual({
-                    other: undefined
+                    element: undefined,
+                    elements: undefined,
+                    selector: undefined,
+                    other: undefined,
+                    isEmptyElements: undefined
                 })
             })
 
             test('should return single element when received is a non-awaited ChainableElement', async () => {
                 const awaitedElements = await awaitElementOrArray(chainableElement)
 
-                expect(awaitedElements).toEqual({
-                    element: expect.objectContaining({ selector: element.selector })
-                })
                 expect(awaitedElements.elements).toBeUndefined()
+                expect(awaitedElements.element).toBeDefined()
+                expect(awaitedElements.element).not.toBeInstanceOf(Promise)
+                expect(awaitedElements.element?.elementId).toEqual('element1')
+                expect(awaitedElements.isEmptyElements).toBe(undefined)
+                expect(awaitedElements.selector).toBeDefined()
             })
 
             test('should return single element when received is an awaited ChainableElement', async () => {
                 const awaitedElements = await awaitElementOrArray(await chainableElement)
 
-                expect(awaitedElements).toEqual({
-                    element: expect.objectContaining({ selector: element.selector })
-                })
                 expect(awaitedElements.elements).toBeUndefined()
+                expect(awaitedElements.element).toBeDefined()
+                expect(awaitedElements.element).not.toBeInstanceOf(Promise)
+                expect(awaitedElements.element?.elementId).toEqual('element1')
+                expect(awaitedElements.isEmptyElements).toBe(undefined)
+                expect(awaitedElements.selector).toBeDefined()
             })
 
             test('should return single element when received is getElement of non awaited ChainableElement (typing not supported)', async () => {
-                const awaitedElements = await awaitElementOrArray(chainableElement.getElement() as any)
+                const awaitedElements = await awaitElementOrArray(chainableElement.getElement())
 
-                expect(awaitedElements).toEqual({
-                    element: expect.objectContaining({ selector: element.selector })
-                })
                 expect(awaitedElements.elements).toBeUndefined()
+                expect(awaitedElements.element).toBeDefined()
+                expect(awaitedElements.element).not.toBeInstanceOf(Promise)
+                expect(awaitedElements.element?.elementId).toEqual('element1')
+                expect(awaitedElements.isEmptyElements).toBe(undefined)
+                expect(awaitedElements.selector).toBeDefined()
+
             })
 
             test('should return single element when received is getElement of an awaited ChainableElement', async () => {
                 const awaitedElements = await awaitElementOrArray(await chainableElement.getElement())
 
-                expect(awaitedElements).toEqual({
-                    element: expect.objectContaining({ selector: element.selector })
-                })
                 expect(awaitedElements.elements).toBeUndefined()
+                expect(awaitedElements.element).toBeDefined()
+                expect(awaitedElements.element).not.toBeInstanceOf(Promise)
+                expect(awaitedElements.element?.elementId).toEqual('element1')
+                expect(awaitedElements.isEmptyElements).toBe(undefined)
+                expect(awaitedElements.selector).toBeDefined()
             })
 
             test('should return single element when received is WebdriverIO.Element', async () => {
                 const awaitedElements = await awaitElementOrArray(element)
 
-                expect(awaitedElements).toEqual({
-                    element: expect.objectContaining({ selector: element.selector })
-                })
+                expect(awaitedElements.element).toBeDefined()
+                expect(awaitedElements.element).not.toBeInstanceOf(Promise)
+                expect(awaitedElements.element?.elementId).toEqual('element1')
                 expect(awaitedElements.elements).toBeUndefined()
+                expect(awaitedElements.isEmptyElements).toBe(undefined)
+                expect(awaitedElements.selector).toBeDefined()
+
             })
 
-            test('should return multiple elements when received is WebdriverIO.Element[]', async () => {
-                const elementArray = [elementFactory('element1'), elementFactory('element2')]
-
-                const awaitedElements = await awaitElementOrArray(elementArray)
-
-                expect(awaitedElements.elements).toHaveLength(2)
-                expect(awaitedElements).toEqual({
-                    elements: expect.arrayContaining([
-                        expect.objectContaining({ selector: elementArray[0].selector }), expect.objectContaining({ selector: elementArray[1].selector })
-                    ])
-                })
-                expect(awaitedElements.elements).toHaveLength(2)
-                expect(awaitedElements.elements?.[0].selector).toEqual(elementArray[0].selector)
-                expect(awaitedElements.elements?.[1].selector).toEqual(elementArray[1].selector)
-                expect(awaitedElements.element).toBeUndefined()
-            })
         })
 
         describe('given multiple elements', () => {
@@ -158,7 +173,7 @@ describe('elementsUtil', () => {
             })
 
             test('should return multiple elements when received is a non-awaited ChainableElementArray', async () => {
-                const { elements, element } = await awaitElementOrArray(chainableElementArray)
+                const { elements, element, other, isEmptyElements, selector } = await awaitElementOrArray(chainableElementArray)
 
                 expect(elements).toHaveLength(2)
                 expect(elements).toEqual(expect.objectContaining([
@@ -166,10 +181,14 @@ describe('elementsUtil', () => {
                     expect.objectContaining({ selector: element1.selector })
                 ]))
                 expect(element).toBeUndefined()
+                expect(elements).not.toBeInstanceOf(Promise)
+                expect(isEmptyElements).toBe(false)
+                expect(selector).toBeDefined()
+                expect(other).toBeUndefined()
             })
 
             test('should return multiple elements when received is an awaited ChainableElementArray', async () => {
-                const { elements, element } = await awaitElementOrArray(await chainableElementArray)
+                const { elements, element, other, isEmptyElements, selector } = await awaitElementOrArray(await chainableElementArray)
 
                 expect(elements).toHaveLength(2)
                 expect(elements).toEqual(expect.objectContaining([
@@ -177,10 +196,13 @@ describe('elementsUtil', () => {
                     expect.objectContaining({ selector: element1.selector })
                 ]))
                 expect(element).toBeUndefined()
+                expect(isEmptyElements).toBe(false)
+                expect(selector).toBeDefined()
+                expect(other).toBeUndefined()
             })
 
             test('should return multiple elements when received is getElements of non awaited ChainableElement (typing not supported)', async () => {
-                const { elements, element } = await awaitElementOrArray(chainableElementArray.getElements() as any)
+                const { elements, element, other, isEmptyElements, selector } = await awaitElementOrArray(chainableElementArray.getElements() as any)
 
                 expect(elements).toHaveLength(2)
                 expect(elements).toEqual(expect.objectContaining([
@@ -188,158 +210,61 @@ describe('elementsUtil', () => {
                     expect.objectContaining({ selector: element1.selector })
                 ]))
                 expect(element).toBeUndefined()
+                expect(isEmptyElements).toBe(false)
+                expect(selector).toBeDefined()
+                expect(other).toBeUndefined()
             })
 
             test('should return multiple elements when received is getElements of an awaited ChainableElementArray', async () => {
-                const { elements, element } = await awaitElementOrArray(await chainableElementArray.getElements())
+                const { elements, element, other, isEmptyElements, selector } = await awaitElementOrArray(await chainableElementArray.getElements())
+
                 expect(elements).toHaveLength(2)
                 expect(elements).toEqual(expect.objectContaining([
                     expect.objectContaining({ selector: element1.selector }),
                     expect.objectContaining({ selector: element1.selector })
                 ]))
                 expect(element).toBeUndefined()
+                expect(isEmptyElements).toBe(false)
+                expect(selector).toBeDefined()
+                expect(other).toBeUndefined()
+
             })
 
             test('should return multiple elements when received is WebdriverIO.Element[]', async () => {
-                const { elements, element } = await awaitElementOrArray(elementArray)
+                const { elements, element, other, isEmptyElements, selector } = await awaitElementOrArray(elementArray)
                 expect(elements).toHaveLength(2)
                 expect(elements).toEqual(expect.objectContaining([
                     expect.objectContaining({ selector: element1.selector }),
                     expect.objectContaining({ selector: element2.selector })
                 ]))
                 expect(element).toBeUndefined()
+                expect(isEmptyElements).toBe(false)
+                expect(selector).toBeDefined()
+                expect(other).toBeUndefined()
             })
         })
 
         test('should return the same object when not any type related to Elements', async () => {
             const anyOjbect = { foo: 'bar' }
 
-            const { other } = await awaitElementOrArray(anyOjbect as any)
+            const { other, element, elements, isEmptyElements, selector } = await awaitElementOrArray(anyOjbect as any)
 
             expect(other).toBe(anyOjbect)
+            expect(element).toBeUndefined()
+            expect(elements).toBeUndefined()
+            expect(isEmptyElements).toBe(undefined)
+            expect(selector).toBeUndefined()
+
         })
 
-    })
+        test('should return empty array as empty array of Element[]', async () => {
+            const { other, element, elements, isEmptyElements, selector } = await awaitElementOrArray([])
 
-    describe(awaitElementArray, () => {
-
-        let element1: WebdriverIO.Element
-        let element2: WebdriverIO.Element
-        let elementArray: WebdriverIO.Element[]
-        let chainableElementArray: ChainablePromiseArray
-
-        beforeEach(() => {
-            element1 = elementFactory('element1')
-            element2 = elementFactory('element2')
-            elementArray = [element1, element2]
-            chainableElementArray = $$('element1')
-        })
-
-        test('should return undefined when received is undefined', async () => {
-            const result = await awaitElementArray(undefined)
-
-            expect(result).toEqual({
-                other: undefined
-            })
-        })
-
-        test('should return undefined when received is Promise of undefined (typing not supported)', async () => {
-            const result = await awaitElementArray(Promise.resolve(undefined) as any)
-
-            expect(result).toEqual({
-                other: undefined
-            })
-        })
-
-        test('should return multiple elements when received is a non-awaited ChainableElementArray', async () => {
-            const { elements } = await awaitElementArray(chainableElementArray)
-
-            expect(elements).toHaveLength(2)
-            expect(elements).toEqual(expect.objectContaining([
-                expect.objectContaining({ selector: element1.selector }),
-                expect.objectContaining({ selector: element1.selector })
-            ]))
-        })
-
-        test('should return multiple elements when received is an awaited ChainableElementArray', async () => {
-            const { elements } = await awaitElementArray(await chainableElementArray)
-
-            expect(elements).toHaveLength(2)
-            expect(elements).toEqual(expect.objectContaining([
-                expect.objectContaining({ selector: element1.selector }),
-                expect.objectContaining({ selector: element1.selector })
-            ]))
-        })
-
-        test('should return multiple elements when received is getElements of non awaited ChainableElement (typing not supported)', async () => {
-            const { elements } = await awaitElementArray(chainableElementArray.getElements() as any)
-
-            expect(elements).toHaveLength(2)
-            expect(elements).toEqual(expect.objectContaining([
-                expect.objectContaining({ selector: element1.selector }),
-                expect.objectContaining({ selector: element1.selector })
-            ]))
-        })
-
-        test('should return multiple elements when received is getElements of an awaited ChainableElementArray', async () => {
-            const { elements } = await awaitElementArray(await chainableElementArray.getElements())
-
-            expect(elements).toHaveLength(2)
-            expect(elements).toEqual(expect.objectContaining([
-                expect.objectContaining({ selector: element1.selector }),
-                expect.objectContaining({ selector: element1.selector })
-            ]))
-        })
-
-        test('should return multiple elements when received is WebdriverIO.Element[]', async () => {
-            const { elements } = await awaitElementArray(elementArray)
-
-            expect(elements).toHaveLength(2)
-            expect(elements).toEqual(expect.objectContaining([
-                expect.objectContaining({ selector: element1.selector }),
-                expect.objectContaining({ selector: element2.selector })
-            ]))
-        })
-
-        test('should return empty array when received is empty Element[]', async () => {
-            const { elements } = await awaitElementArray([])
-
-            expect(elements).toHaveLength(0)
             expect(elements).toEqual([])
-        })
-
-        test('should return the same object when not any type related to Elements', async () => {
-            const anyObject = { foo: 'bar' }
-
-            const { other } = await awaitElementArray(anyObject as any)
-
-            expect(other).toBe(anyObject)
-        })
-
-    })
-
-    describe(map, () => {
-        test('should map elements of type Element[]', async () => {
-            const elements: WebdriverIO.Element[] = [elementFactory('el1'), elementFactory('el2')]
-            const command = vi.fn().mockResolvedValue('mapped')
-
-            const result = await map(elements, command)
-
-            expect(result).toEqual(['mapped', 'mapped'])
-            expect(command).toHaveBeenCalledTimes(2)
-            expect(command).toHaveBeenCalledWith(elements[0], 0)
-            expect(command).toHaveBeenCalledWith(elements[1], 1)
-        })
-        test('should map elements of type ElementArray', async () => {
-            const elements: WebdriverIO.ElementArray = await $$('elements').getElements()
-            const command = vi.fn().mockResolvedValue('mapped')
-
-            const result = await map(elements, command)
-
-            expect(result).toEqual(['mapped', 'mapped'])
-            expect(command).toHaveBeenCalledTimes(2)
-            expect(command).toHaveBeenCalledWith(elements[0], 0)
-            expect(command).toHaveBeenCalledWith(elements[1], 1)
+            expect(element).toBeUndefined()
+            expect(other).toBeUndefined()
+            expect(isEmptyElements).toBe(true)
+            expect(selector).toEqual([])
         })
     })
 
@@ -434,7 +359,7 @@ describe('elementsUtil', () => {
             Promise.resolve(true),
             [$('elements')],
             [$$('elements')],
-            [await $$('elements')]
+            [await $$('elements')],
         ])('should return false for non-ElementArray or non-Element[]: %s', async (elements) => {
             const isElementArrayResult = isElementArrayLike(elements)
 
@@ -472,7 +397,7 @@ describe('elementsUtil', () => {
             Promise.resolve(true),
             [$('elements')],
             [$$('elements')],
-            [await $$('elements')]
+            [await $$('elements')],
         ])('should return false for non-Element and non-ElementArray and non-Element[]: %s', async (element) => {
             const result = isElementOrArrayLike(element)
 

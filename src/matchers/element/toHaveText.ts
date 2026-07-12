@@ -50,7 +50,6 @@ export async function toHaveText(
 
     let elementOrArray
     let actualText
-
     const pass = await waitUntil(
         async () => {
             const commandResult = await executeCommand(received,
