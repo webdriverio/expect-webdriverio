@@ -499,45 +499,19 @@ Expect ${selectorName} to have text
             expect(result.pass).toBe(false) // should be true?
         })
 
-        test('should fails with proper error message when actual is an empty Element[]', async () => {
-            const result = await thisContext.toHaveText([], 'webdriverio')
-
-            expect(result.pass).toBe(false)
-            expect(stripAnsi(result.message())).toEqual(`\
-Expect [] to have text
-
-Expected: "webdriverio"
-Received: undefined`
-            )
-        })
-
-        test('should fails with proper error message when actual is an empty ElementArray', async () => {
-            const elements = elementArrayFactory('EmptyElementArray', 0)
-
+        test.each([
+            { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
+            { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
+            { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
+        ])('should fail with proper error message when actual is an empty of $name', async ({ elements, selectorName }) => {
             const result = await thisContext.toHaveText(elements, 'webdriverio')
 
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
-Expect $$(\`EmptyElementArray\`) to have text
+Expect ${selectorName} to have text
 
 Expected: "webdriverio"
-Received: undefined`
-            )
-        })
-
-        test.skip.each([
-            { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]' },
-            { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]' },
-            { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray' },
-        ])('should fail with proper error message when actual is an empty of $name', async ({ elements }) => {
-            const result = await thisContext.toHaveText(elements, 'webdriverio')
-
-            expect(result.pass).toBe(false)
-            expect(stripAnsi(result.message())).toEqual(`\
-Expect ${elements} to have text
-
-Expected: "webdriverio"
-Received: "[]"`)
+Received: undefined`)
         })
 
         // TODO view later to handle this case more gracefully
@@ -555,7 +529,7 @@ Received: "[]"`)
         })
 
         // Throws with wierd and differrent error message!
-        test.skip.for([
+        test.each([
             { actual: undefined, selectorName: 'undefined' },
             { actual: null, selectorName: 'null' },
             { actual: true, selectorName: 'true' },
