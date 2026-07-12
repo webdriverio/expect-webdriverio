@@ -1,21 +1,22 @@
 import type { WdioElementOrArrayMaybePromise, WdioElements } from '../types.js'
 
 /**
- * if el is an array of elements and actual value is an array
- * wrap expected value with array
- * @param el element
- * @param actual actual result or results array
- * @param expected expected result
+ * Wraps the expected value in an array if both the target element (`el`) and the `actual` value are arrays.
+ *
+ * @param element - The WebdriverIO element, element array, or unknown target being evaluated.
+ * @param actual - The actual result or results array.
+ * @param expected - The expected result to potentially wrap.
+ * @returns An array containing the expected result if conditions are met, otherwise returns the expected result as-is.
  */
-export const wrapExpectedWithArray = <T>(el: WebdriverIO.Element | WdioElements | unknown, actual: unknown, expected: T): T | T[] => {
-    if (Array.isArray(el) && el.length > 1 && Array.isArray(actual)) {
+export const wrapExpectedWithArray = <T>(element: WebdriverIO.Element | WdioElements | unknown, actual: unknown, expected: T): T | T[] => {
+    if (Array.isArray(element) && element.length > 1 && Array.isArray(actual)) {
         return [expected]
     }
     return expected
 }
 
 /**
- * Utility since Array.isArray() does not regonize WebdriverIO.ElementArray as a a typed array, but it is an array-like object.
+ * Utility since Array.isArray() does not recognize WebdriverIO.ElementArray as a typed array, but it is an array-like object.
  */
 export const isArray = (obj: unknown): obj is unknown[] | WebdriverIO.ElementArray => {
     return Array.isArray(obj)
@@ -54,15 +55,25 @@ export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementAr
 }
 
 /**
- * Universaly await element(s) since depending on the type received, it can become complex.
+ * Universally awaits and resolves WebdriverIO element(s) into a standardized object.
  *
- * Using `$()` or `$$()` return a promise as `ChainablePromiseElement/Array` that needs to be awaited and even if chainable.getElement()/getElements() can be done statically, at runtime `'getElement/getElements` in chainable` is false.
- * Using `await $()` still return a `ChainablePromiseElement` but underneath it's a `WebdriverIO.Element/ElementArray` and thus `'getElement/getElements' in element` is true and can be checked and done.
- * With `$$().filter()`, it returns a `Promise<WebdriverIO.Element[]>` that also needs to be awaited.
- * When passing directly a `WebdriverIO.Element` or `WebdriverIO.ElementArray`, no need to await anything and getElement or getElements can be used on it and runtime also works too.
+ * Element resolution can be complex depending on the type received:
+ * - Using `$()` or `$$()` returns a `ChainablePromiseElement` or `ChainablePromiseArray`. These need to be awaited.
+ *   - Even though methods like `.getElement()` can be called statically, at runtime `'getElement'` / `'getElements'` does not exist on the chainable promise itself.
+ * - Using `await $()` resolves to a `WebdriverIO.Element` or `WebdriverIO.ElementArray`, meaning `'getElement'` or `'getElements'` can be safely checked and evaluated at runtime.
+ * - Native promises are also fully supported and properly awaited, including those returned by methods like:
+ *   - `$().getElement()` which evaluates to `Promise<WebdriverIO.Element>`
+ *   - `$$().getElements()` which evaluates to `Promise<WebdriverIO.ElementArray>`
+ *   - `$$().filter()` which evaluates to `Promise<WebdriverIO.Element[]>`
+ * - Directly passing a `WebdriverIO.Element` or `WebdriverIO.ElementArray` requires no awaiting, and runtime methods work immediately.
  *
- * @param received
- * @returns
+ * @param received - The target to resolve. Can be a single WebdriverIO element, an array of elements, a promise evaluating to elements, or an undefined/primitive value.
+ * @returns A promise resolving to an object detailing the state of the element(s):
+ *  - `selector`: The resolved WebdriverIO element or array of elements.
+ *  - `element`: The resolved single `WebdriverIO.Element` (if a single element was passed).
+ *  - `elements`: The resolved array of elements (if an array or ElementArray was passed).
+ *  - `isEmptyElements`: `true` if the resolved array of elements has a length of 0.
+ *  - `other`: Contains the original value if it was a primitive, `undefined`, or not a recognized element/array.
  */
 export const awaitElementOrArray = async(
     received: WdioElementOrArrayMaybePromise | PromiseLike<WebdriverIO.Element> | undefined
