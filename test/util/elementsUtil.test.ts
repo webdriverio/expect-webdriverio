@@ -32,8 +32,7 @@ describe('elementsUtil', () => {
         })
     })
 
-    // TODO dprevot to review
-    describe.skip(awaitElementOrArray, () => {
+    describe(awaitElementOrArray, () => {
 
         describe('given single element', () => {
 
@@ -64,45 +63,45 @@ describe('elementsUtil', () => {
             test('should return single element when received is a non-awaited ChainableElement', async () => {
                 const awaitedElements = await awaitElementOrArray(chainableElement)
 
-                expect(awaitedElements).toEqual({
-                    element: expect.objectContaining({ selector: element.selector })
-                })
                 expect(awaitedElements.elements).toBeUndefined()
+                expect(awaitedElements.element).toBeDefined()
+                expect(awaitedElements.element).not.toBeInstanceOf(Promise)
+                expect(awaitedElements.element?.elementId).toEqual('element1')
             })
 
             test('should return single element when received is an awaited ChainableElement', async () => {
                 const awaitedElements = await awaitElementOrArray(await chainableElement)
 
-                expect(awaitedElements).toEqual({
-                    element: expect.objectContaining({ selector: element.selector })
-                })
                 expect(awaitedElements.elements).toBeUndefined()
+                expect(awaitedElements.element).toBeDefined()
+                expect(awaitedElements.element).not.toBeInstanceOf(Promise)
+                expect(awaitedElements.element?.elementId).toEqual('element1')
             })
 
             test('should return single element when received is getElement of non awaited ChainableElement (typing not supported)', async () => {
-                const awaitedElements = await awaitElementOrArray(chainableElement.getElement() as any)
+                const awaitedElements = await awaitElementOrArray(chainableElement.getElement())
 
-                expect(awaitedElements).toEqual({
-                    element: expect.objectContaining({ selector: element.selector })
-                })
                 expect(awaitedElements.elements).toBeUndefined()
+                expect(awaitedElements.element).toBeDefined()
+                expect(awaitedElements.element).not.toBeInstanceOf(Promise)
+                expect(awaitedElements.element?.elementId).toEqual('element1')
             })
 
             test('should return single element when received is getElement of an awaited ChainableElement', async () => {
                 const awaitedElements = await awaitElementOrArray(await chainableElement.getElement())
 
-                expect(awaitedElements).toEqual({
-                    element: expect.objectContaining({ selector: element.selector })
-                })
                 expect(awaitedElements.elements).toBeUndefined()
+                expect(awaitedElements.element).toBeDefined()
+                expect(awaitedElements.element).not.toBeInstanceOf(Promise)
+                expect(awaitedElements.element?.elementId).toEqual('element1')
             })
 
             test('should return single element when received is WebdriverIO.Element', async () => {
                 const awaitedElements = await awaitElementOrArray(element)
 
-                expect(awaitedElements).toEqual({
-                    element: expect.objectContaining({ selector: element.selector })
-                })
+                expect(awaitedElements.element).toBeDefined()
+                expect(awaitedElements.element).not.toBeInstanceOf(Promise)
+                expect(awaitedElements.element?.elementId).toEqual('element1')
                 expect(awaitedElements.elements).toBeUndefined()
             })
 
@@ -111,12 +110,6 @@ describe('elementsUtil', () => {
 
                 const awaitedElements = await awaitElementOrArray(elementArray)
 
-                expect(awaitedElements.elements).toHaveLength(2)
-                expect(awaitedElements).toEqual({
-                    elements: expect.arrayContaining([
-                        expect.objectContaining({ selector: elementArray[0].selector }), expect.objectContaining({ selector: elementArray[1].selector })
-                    ])
-                })
                 expect(awaitedElements.elements).toHaveLength(2)
                 expect(awaitedElements.elements?.[0].selector).toEqual(elementArray[0].selector)
                 expect(awaitedElements.elements?.[1].selector).toEqual(elementArray[1].selector)

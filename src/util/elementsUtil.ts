@@ -65,7 +65,7 @@ export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementAr
  * @returns
  */
 export const awaitElementOrArray = async(
-    received: WdioElementOrArrayMaybePromise | undefined
+    received: WdioElementOrArrayMaybePromise | PromiseLike<WebdriverIO.Element> | undefined
 ): Promise<{ selector?: WdioElements | WebdriverIO.Element, elements?: WdioElements, element?: WebdriverIO.Element, other?: unknown }> => {
     if (!received || typeof received !== 'object') {
         return { other: received }
