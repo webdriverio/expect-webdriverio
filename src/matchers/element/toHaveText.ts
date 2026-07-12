@@ -55,14 +55,9 @@ export async function toHaveText(
     let actualSubject: unknown = received
     const pass = await waitUntil(
         async () => {
-            const { selector, elements, other } = await awaitElementOrArray(received)
-            if (!selector) {
-                actualSubject = other
-                return false
-            } else if (!!elements && elements.length === 0) {
-                actualSubject = selector
-                return false
-            }
+            const { selector, other, isEmptyElements } = await awaitElementOrArray(received)
+            actualSubject = selector ?? other
+            if (!selector || isEmptyElements) { return false }
 
             const result = await executeCommand.call(this, selector, condition, options, [expectedValue, options])
             actualSubject = result.el

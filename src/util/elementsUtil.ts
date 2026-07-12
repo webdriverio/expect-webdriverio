@@ -66,7 +66,7 @@ export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementAr
  */
 export const awaitElementOrArray = async(
     received: WdioElementOrArrayMaybePromise | PromiseLike<WebdriverIO.Element> | undefined
-): Promise<{ selector?: WdioElements | WebdriverIO.Element, elements?: WdioElements, element?: WebdriverIO.Element, other?: unknown }> => {
+): Promise<{ selector?: WdioElements | WebdriverIO.Element, elements?: WdioElements, element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean }> => {
     if (!received || typeof received !== 'object') {
         return { other: received }
     }
@@ -91,9 +91,9 @@ export const awaitElementOrArray = async(
     // for `await $$()` or `WebdriverIO.ElementArray` but not `WebdriverIO.Element[]`
     if ('getElements' in awaitedElements) {
         const elements = await awaitedElements.getElements()
-        return { selector: elements, elements }
+        return { selector: elements, elements, isEmptyElements: elements.length === 0 }
     }
 
     // for `WebdriverIO.Element[]`
-    return { selector: awaitedElements, elements: awaitedElements }
+    return { selector: awaitedElements, elements: awaitedElements, isEmptyElements: awaitedElements.length === 0 }
 }
