@@ -47,10 +47,23 @@ export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
     && 'getElement' in obj // specific to Element
 }
 
+/**
+ * ElementArray or Element[]
+ */
 export const isElementArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] => {
     return !!obj && (isStrictlyElementArray(obj) || (Array.isArray(obj) && obj.length > 0 && obj.every(isElement)))
 }
 
+/**
+ * Element[]
+ */
+export const isArrayOfElement = (obj: unknown): obj is WebdriverIO.Element[] => {
+    return Array.isArray(obj) && obj.length > 0 && obj.every(isElement)
+}
+
+/**
+ * Element, ElementArray or Element[]
+ */
 export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Element => {
     return !!obj && (isElement(obj) || isElementArrayLike(obj))
 }

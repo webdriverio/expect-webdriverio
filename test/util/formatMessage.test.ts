@@ -498,5 +498,227 @@ Expected: "not displayed"
 Received: "displayed"`)
             })
         })
+
+        describe('given multiple elements', () => {
+            const elements = elementArrayFactory('elements', 2)
+            const elementName = '$$(`elements`)'
+
+            describe('elements when isNot is false', () => {
+                const isNot = false
+                test('all elements failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Actual Value 1', 'Test Actual Value 2']
+
+                    const actualFailureMessage = stripAnsi(enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    ))
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} to have text
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "Test Expected Value 1",
+-   "Test Expected Value 2",
++   "Test Actual Value 1",
++   "Test Actual Value 2",
+  ]`)
+                })
+
+                test('First elements failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Actual Value 1', 'Test Expected Value 2']
+
+                    const actualFailureMessage = stripAnsi(enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    ))
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "Test Expected Value 1",
++   "Test Actual Value 1",
+    "Test Expected Value 2",
+  ]`)
+                })
+
+                test('Seconds elements failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Expected Value 1', 'Test Actual Value 2']
+
+                    const actualFailureMessage = stripAnsi(enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    ))
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "Test Expected Value 1",
+-   "Test Expected Value 2",
++   "Test Actual Value 2",
+  ]`)
+                })
+            })
+
+            describe('elements when isNot is true', () => {
+                const isNot = true
+                test('all elements failure then all values are highlighted as failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Expected Value 1', 'Test Expected Value 2']
+
+                    const actualFailureMessage = stripAnsi(enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    ))
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} not to have text
+
+Expected [not]: ["Test Expected Value 1", "Test Expected Value 2"]
+Received      : ["Test Expected Value 1", "Test Expected Value 2"]`
+                    )
+                })
+
+                test('First elements failure then only first values are highlighted as failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Expected Value 1', 'Test Actual Value 2']
+
+                    const actualFailureMessage = stripAnsi(enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    ))
+
+                    expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} not to have text
+
+- Expected [not]  - 1
++ Received        + 1
+
+  Array [
+    "Test Expected Value 1",
+-   "Test Expected Value 2",
++   "Test Actual Value 2",
+  ]`
+                    )
+                })
+
+                test('Second elements failure then only second values are highlighted as failure', () => {
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Actual Value 1', 'Test Expected Value 2']
+
+                    const actualFailureMessage = enhanceError(
+                        elements,
+                        expected,
+                        actual,
+                        { isNot },
+                        'have',
+                        'text',
+                    )
+
+                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
+Expect ${elementName} not to have text
+
+- Expected [not]  - 1
++ Received        + 1
+
+  Array [
+-   "Test Expected Value 1",
++   "Test Actual Value 1",
+    "Test Expected Value 2",
+  ]`
+                    )
+
+                })
+            })
+
+            describe('given subject is Element[]', () => {
+                test('should return element selector name inside the array', async () => {
+                    const arrayOfElements = [elementFactory('element1'), elementFactory('element2')]
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Actual Value 1', 'Test Expected Value 2']
+
+                    const actualFailureMessage = enhanceError(
+                        arrayOfElements,
+                        expected,
+                        actual,
+                        { isNot: false },
+                        'have',
+                        'text',
+                    )
+                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
+Expect [$(\`element1\`),$(\`element2\`)] to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "Test Expected Value 1",
++   "Test Actual Value 1",
+    "Test Expected Value 2",
+  ]`
+                    )
+                })
+
+                test('should return element selector name truncated when array of elements is too long', async () => {
+                    const arrayOfElements = Array(100).fill(null).map((_, index) => elementFactory(`element${index + 1}`))
+                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                    const actual = ['Test Actual Value 1', 'Test Expected Value 2']
+
+                    const actualFailureMessage = enhanceError(
+                        arrayOfElements,
+                        expected,
+                        actual,
+                        { isNot: false },
+                        'have',
+                        'text',
+                    )
+                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
+Expect [$(\`element1\`),$(\`element2\`),$(\`element3\`),$(\`element4\`),$(\`element5\`),$(\`element6\`),$(\`element7\`),$... to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "Test Expected Value 1",
++   "Test Actual Value 1",
+    "Test Expected Value 2",
+  ]`
+                    )
+                })
+            })
+        })
     })
 })

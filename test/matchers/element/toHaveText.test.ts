@@ -328,7 +328,7 @@ Received: "This is example text"`
     ])('given a multiple elements when $title', ({ elements, title }) => {
         let els: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] | Promise<WebdriverIO.Element[]> | Promise<WebdriverIO.ElementArray>
 
-        const selectorName = title.includes('WebdriverIO.Element[]') ? '[{"selector":"sel","parent":{},"elementId":"sel"},{"selector":"dev","parent":{},"elementId":"dev"}]': '$$(`sel`)' // Bug to fix where with Element[] selector name is empty
+        const selectorName = title.includes('WebdriverIO.Element[]') ? '[$(`sel`),$(`dev`)]': '$$(`sel`)'
 
         beforeEach(async () => {
             els = elements as ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] | Promise<WebdriverIO.Element[]> | Promise<WebdriverIO.ElementArray>
