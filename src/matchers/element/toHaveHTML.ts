@@ -34,9 +34,12 @@ export async function toHaveHTML(
     let actualSubject: unknown = received
     const pass = await waitUntil(
         async () => {
-            const { selector, other } = await awaitElementOrArray(received)
+            const { selector, elements, other } = await awaitElementOrArray(received)
             if (!selector) {
                 actualSubject = other
+                return false
+            } else if (!!elements && elements.length === 0) {
+                actualSubject = selector
                 return false
             }
 
