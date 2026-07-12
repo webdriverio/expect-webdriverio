@@ -2,7 +2,7 @@ import { $, $$ } from '@wdio/globals'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray } from 'webdriverio'
-import { $Factory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { $Factory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
 
@@ -323,14 +323,15 @@ Received: "This is example text"`
         { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
         { elements: await $$('sel').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
         { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' },
+        { elements: $$('sel').getElements(), title: 'non-awaited getElements of ChainablePromiseArray' },
         { elements: $$('sel').filter((t) => t.isEnabled()), title: 'non-awaited filtered ChainablePromiseArray (e.g. Promise<WebdriverIO.Element[]>)' },
     ])('given a multiple elements when $title', ({ elements, title }) => {
-        let els: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] // | Promise<WebdriverIO.Element[]> TODO fix types to include Promise<WebdriverIO.Element[]> ??
+        let els: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] | Promise<WebdriverIO.Element[]> | Promise<WebdriverIO.ElementArray>
 
         const selectorName = title.includes('WebdriverIO.Element[]') ? '[{"selector":"sel","parent":{},"elementId":"sel"},{"selector":"dev","parent":{},"elementId":"dev"}]': '$$(`sel`)' // Bug to fix where with Element[] selector name is empty
 
         beforeEach(async () => {
-            els = elements as ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] // | Promise<WebdriverIO.Element[]> TODO fix types to include Promise<WebdriverIO.Element[]> ??
+            els = elements as ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] | Promise<WebdriverIO.Element[]> | Promise<WebdriverIO.ElementArray>
 
             const awaitedEls = await els
             awaitedEls[0] = await $('sel')
@@ -509,11 +510,10 @@ Received: undefined`
             )
         })
 
-        // TODO Fix incoming
         test.skip.each([
-            { elements: [] satisfies WebdriverIO.Element[], name: 'Element[]' },
-            // { elements: Promise.resolve([]) satisfies Promise<WebdriverIO.Element[]>, name: 'Promise of Element[]' },
-            // { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray' },
+            { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]' },
+            { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]' },
+            { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray' },
         ])('should fail with proper error message when actual is an empty of $name', async ({ elements }) => {
             const result = await thisContext.toHaveText(elements, 'webdriverio')
 
@@ -573,7 +573,7 @@ Received: undefined`)
 
                     expect(result.pass).toBe(false)
                     expect(stripAnsi(result.message())).toEqual(`\
-Expect {} to have text
+Expect $(\`elements\`) to have text
 
 Expected: "1"
 Received: "0"`)
@@ -602,7 +602,7 @@ Received: "0"`)
 
                     expect(result.pass).toBe(false)
                     expect(stripAnsi(result.message())).toEqual(`\
-Expect {} to have text
+Expect $(\`slowElement\`) to have text
 
 Expected: "Valid Text"
 Received: "Invalid Text"`)

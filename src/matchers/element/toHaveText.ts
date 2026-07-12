@@ -51,27 +51,25 @@ export async function toHaveText(
         options,
     })
 
-    const { selector, other } = await awaitElementOrArray(received)
     let actualText
-    let pass = false
-    let elements = selector
-    if (elements) {
-        pass = await waitUntil(
-            async () => {
-                if (!elements) {throw new Error('Element(s) not found')} // to satisfy typescript that elements is defined, but should never happen since waitUntil will throw if elements is undefined
+    let actualSubject: unknown = received
+    const pass = await waitUntil(
+        async () => {
+            const { selector, other } = await awaitElementOrArray(received)
+            if (!selector) {
+                actualSubject = other
+                return false
+            }
 
-                const result = await executeCommand.call(this, elements, condition, options, [expectedValue, options])
-                elements = result.el
-                actualText = result.values
+            const result = await executeCommand.call(this, selector, condition, options, [expectedValue, options])
+            actualSubject = result.el
+            actualText = result.values
 
-                return result.success
-            },
-            isNot,
-            { wait: options.wait, interval: options.interval }
-        )
-    }
-
-    const actualSubject = elements ?? other
+            return result.success
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
 
     const message = enhanceError(actualSubject, wrapExpectedWithArray(actualSubject, actualText, expectedValue), actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
