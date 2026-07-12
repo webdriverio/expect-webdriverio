@@ -93,10 +93,8 @@ export const $Factory = (element: WebdriverIO.Element, findDelay = 0): Chainable
 
     // Fake finding time of an element
     if (findDelay > 0) {
-        console.log(`Simulating finding time of ${findDelay}ms for element with selector ${element.selector}`)
         // Wdio framework does return a Promise-wrapped element, so we need to mimic this behavior
         chainablePromiseElement = new Promise<WebdriverIO.Element>((resolve) => {
-            console.log(`Finding element with selector ${element.selector}...`)
             setTimeout(() => resolve(element), findDelay)
         })
     }
