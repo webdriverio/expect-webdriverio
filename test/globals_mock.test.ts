@@ -177,7 +177,7 @@ describe('globals mock', () => {
             expect(await awaitedEl.getText()).toBe(' Valid Text ')
         })
 
-        it("should takes time to await the element's text", async () => {
+        it("should take time to await the element's text", async () => {
             const el = $Factory(elementFactory('foo'), 1000)
 
             expect(el).toBeInstanceOf(Promise)
