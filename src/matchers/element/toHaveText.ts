@@ -55,6 +55,8 @@ export async function toHaveText(
     let actualSubject: unknown = received
     const pass = await waitUntil(
         async () => {
+            // Calling `awaitElementOrArray` inside the waitUntil so that in non-awaited cases, it couns in the wait time like before!
+            // However, now we do await inside the loop on each iteration even in awaited cases, so should we optimize this?
             const { selector, other, isEmptyElements } = await awaitElementOrArray(received)
             actualSubject = selector ?? other
             if (!selector || isEmptyElements) { return false }
