@@ -160,7 +160,7 @@ describe('globals mock', () => {
     })
 
     describe('$Factory', () => {
-        it('should takes time to await the element', async () => {
+        it('should take time to await the element', async () => {
             const el = $Factory(elementFactory('foo'), 1000)
 
             expect(el).toBeInstanceOf(Promise)
