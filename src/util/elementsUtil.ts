@@ -22,32 +22,33 @@ export const isArray = (obj: unknown): obj is unknown[] | WebdriverIO.ElementArr
     return Array.isArray(obj)
 }
 
-export const isElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
-    return obj !== null && typeof obj === 'object' && 'selector' in obj && 'foundWith' in obj && 'parent' in obj
-}
-
 export const isSelector = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element => {
-    return !!obj && typeof obj === 'object'
+    return !!obj
+    && typeof obj === 'object'
     && 'selector' in obj
     && 'parent' in obj // commun with Element
 }
 
-export const isStrictlyElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
+export const isElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
     return isSelector(obj)
+    && 'foundWith' in obj
+}
+
+export const isStrictlyElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
+    return isElementArray(obj)
     && Array.isArray(obj)
-    && 'foundWith' in obj // Element does not have foundWith property
     && 'getElements' in obj // specific to ElementArray
 }
 
 export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
-    // Note elementId is only for found element
+    // Note: elementId is only for found element
     return isSelector(obj)
     && !Array.isArray(obj)
     && 'getElement' in obj // specific to Element
 }
 
 export const isElementArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] => {
-    return (!!obj && isStrictlyElementArray(obj)) || (Array.isArray(obj) && obj.length > 0 && obj.every(isElement))
+    return !!obj && (isStrictlyElementArray(obj) || (Array.isArray(obj) && obj.length > 0 && obj.every(isElement)))
 }
 
 export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Element => {
