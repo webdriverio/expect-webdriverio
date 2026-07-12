@@ -16,7 +16,7 @@ export const wrapExpectedWithArray = <T>(element: WebdriverIO.Element | WdioElem
 }
 
 /**
- * Utility since Array.isArray() does not recognize WebdriverIO.ElementArray as a typed array, but it is an array-like object.
+ * Make isArray typing recognize WebdriverIO.ElementArray since it already works fine at runtime.
  */
 export const isArray = (obj: unknown): obj is unknown[] | WebdriverIO.ElementArray => {
     return Array.isArray(obj)
@@ -49,6 +49,7 @@ export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
 
 /**
  * ElementArray or Element[]
+ * Warning: Element[] must be non-empty!
  */
 export const isElementArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] => {
     return !!obj && (isStrictlyElementArray(obj) || (Array.isArray(obj) && obj.length > 0 && obj.every(isElement)))
@@ -56,6 +57,7 @@ export const isElementArrayLike = (obj: unknown): obj is WebdriverIO.ElementArra
 
 /**
  * Element[]
+ * Warning: Element[] must be non-empty!
  */
 export const isArrayOfElement = (obj: unknown): obj is WebdriverIO.Element[] => {
     return Array.isArray(obj) && obj.length > 0 && obj.every(isElement)
@@ -63,6 +65,7 @@ export const isArrayOfElement = (obj: unknown): obj is WebdriverIO.Element[] => 
 
 /**
  * Element, ElementArray or Element[]
+ * Warning: Element[] must be non-empty!
  */
 export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Element => {
     return !!obj && (isElement(obj) || isElementArrayLike(obj))
