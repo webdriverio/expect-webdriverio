@@ -94,7 +94,7 @@ export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementAr
  *  - `other`: Contains the original value if it was a primitive, `undefined`, or not a recognized element/array.
  */
 export const awaitElementOrArray = async(
-    received: WdioElementOrArrayMaybePromise | PromiseLike<WebdriverIO.Element> | undefined
+    received: WdioElementOrArrayMaybePromise | PromiseLike<WebdriverIO.Element> | unknown
 ): Promise<{ selector?: WdioElements | WebdriverIO.Element, elements?: WdioElements, element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean }> => {
     if (!received || typeof received !== 'object') {
         return { other: received }
@@ -125,4 +125,15 @@ export const awaitElementOrArray = async(
 
     // for `WebdriverIO.Element[]`
     return { selector: awaitedElements, elements: awaitedElements, isEmptyElements: awaitedElements.length === 0 }
+}
+
+export const map = <T>(
+    elements: WebdriverIO.ElementArray | WebdriverIO.Element[],
+    command: (element: WebdriverIO.Element, index: number)  => Promise<T>
+): Promise<T[]> => {
+    const results: Promise<T>[] = []
+    elements.forEach((element, index) => {
+        results.push(command(element, index))
+    })
+    return Promise.all(results)
 }
