@@ -69,7 +69,7 @@ export async function executeCommandWithStrategy<T>( {
 
     return {
         subject,
-        success: results.length > 0 && isNot ? !results.every((res) => res.result === false) : results.every((res) => res.result === true),
+        success: results.length > 0 && results.every((res) => res.result === true),
         actual: results.map(({ value }) => value),
     }
 }
