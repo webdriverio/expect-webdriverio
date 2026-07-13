@@ -747,7 +747,7 @@ Expected: "webdriverio"
 Received: undefined`)
         })
 
-        test('given the first element getText fails to retreive', async () => {
+        test('given the first element getText fails to retrieve', async () => {
             const elements = $$('elements')
 
             vi.mocked((elements)[0].getText).mockRejectedValue(new Error('Unable to retrieve text for first element'))
@@ -756,7 +756,7 @@ Received: undefined`)
             await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for first element')
         })
 
-        test('given the second element getText fails to retreive', async () => {
+        test('given the second element getText fails to retrieve', async () => {
             const elements = $$('elements')
 
             vi.mocked((elements)[0].getText).mockResolvedValue('webdriverio')
@@ -765,7 +765,7 @@ Received: undefined`)
             await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for second element')
         })
 
-        test('given the all element getText fails to retreive', async () => {
+        test('given all elements getText fails to retrieve', async () => {
             const elements = $$('elements')
 
             vi.mocked((elements)[0].getText).mockRejectedValue(new Error('Unable to retrieve text for first element'))
