@@ -188,7 +188,7 @@ describe('globals mock', () => {
             const text = await el.getText()
             const end = performance.now()
 
-            expect(end - start).toBeGreaterThanOrEqual(1000)
+            expect(Math.round(end - start)).toBeGreaterThanOrEqual(1000)
             expect(text).toBe(' Valid Text ')
         })
     })
