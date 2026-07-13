@@ -747,6 +747,33 @@ Expected: "webdriverio"
 Received: undefined`)
         })
 
+        test('given the first element getText fails to retrieve', async () => {
+            const elements = $$('elements')
+
+            vi.mocked((elements)[0].getText).mockRejectedValue(new Error('Unable to retrieve text for first element'))
+            vi.mocked((elements)[1].getText).mockResolvedValue('webdriverio')
+
+            await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for first element')
+        })
+
+        test('given the second element getText fails to retrieve', async () => {
+            const elements = $$('elements')
+
+            vi.mocked((elements)[0].getText).mockResolvedValue('webdriverio')
+            vi.mocked((elements)[1].getText).mockRejectedValue(new Error('Unable to retrieve text for second element'))
+
+            await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for second element')
+        })
+
+        test('given all elements getText fails to retrieve', async () => {
+            const elements = $$('elements')
+
+            vi.mocked((elements)[0].getText).mockRejectedValue(new Error('Unable to retrieve text for first element'))
+            vi.mocked((elements)[1].getText).mockRejectedValue(new Error('Unable to retrieve text for second element'))
+
+            await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for first element')
+        })
+
         describe('Long promises', () => {
 
             describe("given element's text takes more time then the configured wait to be retrieved", () => {
