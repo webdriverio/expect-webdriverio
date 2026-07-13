@@ -126,14 +126,3 @@ export const awaitElementOrArray = async(
     // for `WebdriverIO.Element[]`
     return { selector: awaitedElements, elements: awaitedElements, isEmptyElements: awaitedElements.length === 0 }
 }
-
-export const map = <T>(
-    elements: WebdriverIO.ElementArray | WebdriverIO.Element[],
-    command: (element: WebdriverIO.Element, index: number)  => Promise<T>
-): Promise<T[]> => {
-    const results: Promise<T>[] = []
-    elements.forEach((element, index) => {
-        results.push(command(element, index))
-    })
-    return Promise.all(results)
-}
