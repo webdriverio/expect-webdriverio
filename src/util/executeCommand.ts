@@ -33,7 +33,7 @@ export type StrategyResult<T> = { result: boolean; value: T }
  *
  *
  * @param unresolvedElements awaited or non-awaited element(s) to be resolved and compared
- * @param singleElementCompareStrategy Strategy to compare a single elemrnt with expected value(s)
+ * @param singleElementCompareStrategy Strategy to compare a single element with expected value(s)
  * @returns An object containing the subject, success status, actual values, and results of the comparison
  */
 export async function executeCommandWithStrategy<T>( {
