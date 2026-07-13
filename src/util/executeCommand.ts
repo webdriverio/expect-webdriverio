@@ -1,4 +1,4 @@
-import type { WdioElementOrArrayMaybePromise, WdioElements } from '../types.js'
+import type { WdioElementOrArrayMaybePromise, WdioElements, MaybeArray } from '../types.js'
 import { awaitElementOrArray, isElement } from './elementsUtil.js'
 
 /**
