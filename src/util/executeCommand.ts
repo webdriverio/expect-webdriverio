@@ -46,7 +46,6 @@ export async function executeCommandWithStrategy<T>( {
 ): Promise<{ subject: WebdriverIO.Element| WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown;
     success: boolean;
     actual: MaybeArray<T> | undefined;
-    results: boolean[]
 }> {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
@@ -55,7 +54,6 @@ export async function executeCommandWithStrategy<T>( {
             subject: subject,
             success: false,
             actual: undefined,
-            results: []
         }
     }
 
@@ -65,15 +63,13 @@ export async function executeCommandWithStrategy<T>( {
             subject,
             success: strategyResult.result,
             actual: strategyResult.value,
-            results: [strategyResult.result]
         }
     }
     const results = await map(selector, (el: WebdriverIO.Element, index: number) => singleElementCompareStrategy(el, index))
 
     return {
         subject,
-        success: results.length > 0 && results.every((res) => res.result === true),
-        results: results.map(({ result }) => (result)),
+        success: results.length > 0 && isNot ? !results.every((res) => res.result === false) : results.every((res) => res.result === true),
         actual: results.map(({ value }) => value),
     }
 }
