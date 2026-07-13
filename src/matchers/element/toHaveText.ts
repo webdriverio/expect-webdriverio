@@ -42,7 +42,7 @@ export async function toHaveText(
                 singleElementCompare: (element, _index) => compareElement(element, expectedValue, options),
             })
             subject = commandResult.subject
-            actualText = commandResult.actual as string | string[] | undefined
+            actualText = commandResult.actual
 
             return commandResult.success
         },
