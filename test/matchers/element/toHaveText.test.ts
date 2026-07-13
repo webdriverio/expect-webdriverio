@@ -401,7 +401,7 @@ Expect ${selectorName} to have text
             })
 
             describe('when using .not', () => {
-                test('should success (pass=false) if none of the received element array does not match the expected text', async () => {
+                test('should succeed (pass=false) if none of the received elements match the expected text', async () => {
                     const result = await thisNotContext.toHaveText(els, 'NotHaveThisText')
 
                     expect(result.pass).toBe(false)
