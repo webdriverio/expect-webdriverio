@@ -128,8 +128,7 @@ const $ = vi.fn((_selector: string) => {
 })
 
 const $$ = vi.fn((selector: string) => {
-    const length = (this as any)?._length || 2
-    return chainableElementArrayFactory(selector, length)
+    return chainableElementArrayFactory(selector, 2)
 })
 
 export function elementArrayFactory(selector: string, length?: number): WebdriverIO.ElementArray {
