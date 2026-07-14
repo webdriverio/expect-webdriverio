@@ -209,14 +209,14 @@ Received: "not displayed"`)
 
     describe.each([
         { elements: await $$('sel'), title: 'awaited ChainablePromiseArray' },
-        // { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
-        // { elements: await $$('sel').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
-        // { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' }
+        { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
+        { elements: await $$('sel').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
+        { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' }
     ])('given multiple elements when $title', ({ elements : els, title }) => {
         let elements: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[]
         let awaitedElements: typeof elements
 
-        const selectorName = title.includes('filtered') ?  '$(`sel`), $$(`sel`)[1]': '$$(`sel`)'
+        const selectorName = title.includes('filtered') ?  '[$(`sel`),$$(`sel`)[1]]': '$$(`sel`)' // TODO selectorName is wierd
 
         beforeEach(async () => {
             elements = els
