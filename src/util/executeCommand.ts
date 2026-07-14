@@ -51,11 +51,13 @@ export type StrategyResult<T> = {
 export async function executeCommandWithStrategy<T>( {
     unresolvedElements,
     singleElementCompare,
-    resultsStrategy
+    resultsStrategy,
+    isNot
 } :{
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>
-    resultsStrategy: (subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown, results: CompareResult<T>[]) => StrategyResult<T>
+    resultsStrategy: (subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown, results: CompareResult<T>[], isNot?: boolean) => StrategyResult<T>
+    isNot: boolean
 }
 ): Promise<StrategyResult<T>> {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
@@ -63,7 +65,7 @@ export async function executeCommandWithStrategy<T>( {
     if (!selector || isEmptyElements) {
         return {
             subject: subject,
-            success: false,
+            success: isNot ? true : false,
             actual: undefined,
         }
     }
@@ -87,7 +89,7 @@ export async function executeCommandWithStrategy<T>( {
     }
     const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<T>>).value)
 
-    return resultsStrategy(subject, results)
+    return resultsStrategy(subject, results, isNot)
 }
 
 export const legacyMultipleElementResultsStrategy = <T>(
@@ -106,9 +108,13 @@ export const toBeMultipleElementResultsStrategy = <T>(
     results: CompareResult<T>[],
     isNot: boolean
 ): StrategyResult<T> => {
+    const isNotEmpty = results.length > 0
     return {
         subject,
-        success: results.length > 0 && isNot ? !results.every((res) => res.result === false) : results.every((res) => res.result === true),
+        success: isNot ? !(isNotEmpty && isAllFalse(results)) : (isNotEmpty && isAllTrue(results)),
         actual: results.map(({ value }) => value)
     }
 }
+
+const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.result === true)
+const isAllFalse = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.result === false)

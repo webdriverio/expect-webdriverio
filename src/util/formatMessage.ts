@@ -1,7 +1,7 @@
 import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
-import { isArrayOfElement, isElementArray, isElementOrArrayLike } from './elementsUtil.js'
+import { isArrayOfElement, isElementArray, isElementArrayLike, isElementOrArrayLike } from './elementsUtil.js'
 import { numberMatcherTester } from './numberOptionsUtil.js'
 import { toJsonString } from './stringUtil.js'
 
@@ -104,14 +104,32 @@ ${diffString}`
     return msg
 }
 
+const toArray = <T>(value: T | T[] | undefined): T[] => value === undefined ? [] : Array.isArray(value) ? value : [value]
+
 export const enhanceErrorBe = (
-    subject: string | WebdriverIO.Element | WebdriverIO.ElementArray | WdioElements | unknown,
+    subject: WebdriverIO.Element | WdioElements | unknown,
+    results: boolean[] | boolean | undefined,
     context: { isNot: boolean, verb: string, expectation: string },
     options: ExpectWebdriverIO.CommandOptions
 ) => {
     const { isNot, verb, expectation } = context
-    const expected = `${not(isNot)}${expectation}`
-    const actual = `${not(!isNot)}${expectation}`
+    let expected
+    let actual
+
+    const expectedValue = `${not(isNot)}${expectation}`
+    const actualValue = `${not(!isNot)}${expectation}`
+
+    if (isElementArrayLike(subject)) {
+        expected = subject.length === 0? 'at least one result' : subject.map(() => expectedValue)
+        actual = toArray(results).map(result => isSuccess(isNot, result) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
+    } else {
+        expected = expectedValue
+        actual = actualValue
+    }
 
     return enhanceError(subject, expected, actual, { ...context, useNotInLabel: false }, verb, expectation, '', options)
+}
+
+const isSuccess = (isNot: boolean, result: boolean): boolean => {
+    return isNot ? !result : result
 }

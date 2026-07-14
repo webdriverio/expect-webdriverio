@@ -40,7 +40,8 @@ export async function toHaveText(
             const commandResult = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 singleElementCompare: (element, _index) => compareElement(element, expectedValue, options),
-                resultsStrategy: legacyMultipleElementResultsStrategy
+                resultsStrategy: legacyMultipleElementResultsStrategy,
+                isNot
             })
             subject = commandResult.subject
             actualText = commandResult.actual

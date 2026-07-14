@@ -71,6 +71,7 @@ async function executeCommandBe(
     const { isNot, verb = 'be' } = this
 
     let subject: WdioElementMaybePromise | unknown = received
+    let actual: boolean[] | boolean | undefined
     const pass = await waitUntil(
         async () => {
             const result = await executeCommandWithStrategy({
@@ -79,16 +80,18 @@ async function executeCommandBe(
                     const result = await command(element)
                     return { result, value: result }
                 },
-                resultsStrategy: (subject, results) => toBeMultipleElementResultsStrategy(subject, results, isNot)
+                resultsStrategy: toBeMultipleElementResultsStrategy,
+                isNot
             })
             subject = result.subject
+            actual = result.actual
             return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceErrorBe(subject, { ...this, verb }, options)
+    const message = enhanceErrorBe(subject, actual, { ...this, verb }, options)
 
     return {
         pass,
