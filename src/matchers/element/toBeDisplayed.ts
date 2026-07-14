@@ -1,9 +1,9 @@
 import { executeCommandBe } from '../../utils.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
 import { DEFAULT_OPTIONS_TO_BE_DISPLAYED } from '../../constants.js'
 
 export async function toBeDisplayed(
-    received: WdioElementMaybePromise,
+    received: WdioElementOrArrayMaybePromise,
     options: ExpectWebdriverIO.ToBeDisplayedOptions = DEFAULT_OPTIONS_TO_BE_DISPLAYED,
 ) {
     this.expectation = this.expectation || 'displayed'

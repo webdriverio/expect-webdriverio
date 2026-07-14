@@ -196,9 +196,7 @@ Received: "not displayed"`)
                 expect(waitUntil).toHaveBeenCalled()
             })
 
-            // TODO Bring back with $$ support
-            test.skip('should fail given empty array', async () => {
-                // @ts-expect-error bring back with $$ support
+            test('should fail given empty array', async () => {
                 const result = await executeCommandBe.call(context, [], command, options)
 
                 expect(result.pass).toBe(false)

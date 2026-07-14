@@ -105,7 +105,7 @@ ${diffString}`
 }
 
 export const enhanceErrorBe = (
-    subject: string | WebdriverIO.Element | WebdriverIO.ElementArray,
+    subject: string | WebdriverIO.Element | WebdriverIO.ElementArray | WdioElements | unknown,
     context: { isNot: boolean, verb: string, expectation: string },
     options: ExpectWebdriverIO.CommandOptions
 ) => {

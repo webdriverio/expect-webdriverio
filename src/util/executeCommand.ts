@@ -25,8 +25,13 @@ export async function executeCommand(
     }
 }
 
-export type StrategyResult<T> = { result: boolean; value: T }
+export type CompareResult<T> = { result: boolean; value: T }
 
+export type StrategyResult<T> = {
+    subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown;
+    success: boolean;
+    actual: MaybeArray<T> | undefined;
+}
 /**
  * Fetch element(s) and execute the compare strategy for each element, returning the results.
  * if there is no element or empty element array, it will return a failure result.
@@ -45,15 +50,14 @@ export type StrategyResult<T> = { result: boolean; value: T }
  */
 export async function executeCommandWithStrategy<T>( {
     unresolvedElements,
-    singleElementCompare: singleElementCompare,
+    singleElementCompare,
+    resultsStrategy
 } :{
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown
-    singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<StrategyResult<T>>
+    singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>
+    resultsStrategy: (subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown, results: CompareResult<T>[]) => StrategyResult<T>
 }
-): Promise<{ subject: WebdriverIO.Element| WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown;
-    success: boolean;
-    actual: MaybeArray<T> | undefined;
-}> {
+): Promise<StrategyResult<T>> {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
     if (!selector || isEmptyElements) {
@@ -65,11 +69,11 @@ export async function executeCommandWithStrategy<T>( {
     }
 
     if (isElement(selector)) {
-        const strategyResult = await singleElementCompare(selector)
+        const compareResult = await singleElementCompare(selector)
         return {
             subject,
-            success: strategyResult.result,
-            actual: strategyResult.value,
+            success: compareResult.result,
+            actual: compareResult.value,
         }
     }
 
@@ -81,8 +85,15 @@ export async function executeCommandWithStrategy<T>( {
     if (firstRejection) {
         throw firstRejection.reason
     }
-    const results = settled.map((r) => (r as PromiseFulfilledResult<StrategyResult<T>>).value)
+    const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<T>>).value)
 
+    return resultsStrategy(subject, results)
+}
+
+export const legacyMultipleElementResultsStrategy = <T>(
+    subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown,
+    results: CompareResult<T>[]
+): StrategyResult<T> => {
     return {
         subject,
         success: results.length > 0 && results.every((res) => res.result === true),
@@ -90,3 +101,14 @@ export async function executeCommandWithStrategy<T>( {
     }
 }
 
+export const toBeMultipleElementResultsStrategy = <T>(
+    subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown,
+    results: CompareResult<T>[],
+    isNot: boolean
+): StrategyResult<T> => {
+    return {
+        subject,
+        success: results.length > 0 && isNot ? !results.every((res) => res.result === false) : results.every((res) => res.result === true),
+        actual: results.map(({ value }) => value)
+    }
+}
