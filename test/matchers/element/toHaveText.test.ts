@@ -2,7 +2,7 @@ import { $, $$ } from '@wdio/globals'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray } from 'webdriverio'
-import { $Factory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { $Factory, chainableElementArrayFactory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
 
@@ -745,6 +745,21 @@ Expect ${selectorName} to have text
 
 Expected: "webdriverio"
 Received: undefined`)
+        })
+
+        test('given only one element in array when failures', async () => {
+            const elements = chainableElementArrayFactory('elements', 1)
+            vi.mocked((elements)[0].getText).mockResolvedValue('webdriverio')
+
+            const results = await thisContext.toHaveText(elements, 'NotMatchingText')
+
+            expect(results.pass).toBe(false)
+            expect(stripAnsi(results.message())).toEqual(`\
+Expect $$(\`elements\`) to have text
+
+Expected: "NotMatchingText"
+Received: "webdriverio"`
+            )
         })
 
         test('given the first element getText fails to retrieve', async () => {
