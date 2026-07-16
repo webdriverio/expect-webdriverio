@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 import { lastMatcherWords } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 import { executeCommandBe, waitUntil } from '../../src/utils.js'
@@ -84,7 +84,7 @@ describe('be* matchers', () => {
                     )
                     expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 125, interval: 50 })
                     expect(beforeAssertion).toHaveBeenCalledWith({
-                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name,
+                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name, // TODO fix in major version the wrong selector name for matcher aliases
                         options: { beforeAssertion, afterAssertion, wait: 125, interval: 50 }
                     })
                     expect(afterAssertion).toHaveBeenCalledWith({
@@ -128,9 +128,9 @@ describe('be* matchers', () => {
                     const result = await thisNotContext.matcherFn(el)
 
                     expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                    if (matcherFn.name === 'toExist') {return}
+                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
                     expect(stripAnsi(result.message())).toEqual(`\
-Expect $(\`sel\`) not to be ${lastMatcherWords(matcherFn.name)}
+Expect $(\`sel\`) not ${verb} ${lastMatcherWords(matcherFn.name)}
 
 Expected: "not ${lastMatcherWords(matcherFn.name)}"
 Received: "${lastMatcherWords(matcherFn.name)}"`
@@ -165,12 +165,303 @@ Received: "${lastMatcherWords(matcherFn.name)}"`
                     const result = await thisContext.matcherFn(el, { wait: 0 })
 
                     expect(result.pass).toBe(false)
-                    if (matcherFn.name === 'toExist') {return}
+                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
                     expect(stripAnsi(result.message())).toEqual(`\
-Expect $(\`sel\`) to be ${lastMatcherWords(matcherFn.name)}
+Expect $(\`sel\`) ${verb} ${lastMatcherWords(matcherFn.name)}
 
 Expected: "${lastMatcherWords(matcherFn.name)}"
 Received: "not ${lastMatcherWords(matcherFn.name)}"`)
+                })
+            })
+
+            describe('given multiple elements', () => {
+                let elements: ChainablePromiseArray
+                const selectorName = '$$(`sel`)'
+
+                beforeEach(async () => {
+                    elements = await $$('sel')
+                    elements.forEach(element => {
+                        vi.mocked(element[elementFnName]).mockResolvedValue(true)
+                    })
+                })
+
+                test('wait for success', async () => {
+                    const beforeAssertion = vi.fn()
+                    const afterAssertion = vi.fn()
+
+                    const result = await thisContext.matcherFn(elements, { beforeAssertion, afterAssertion, wait: 500 })
+
+                    for (const element of elements) {
+                        expect(element[elementFnName]).toHaveBeenCalled()
+                    }
+
+                    expect(executeCommandBe).toHaveBeenCalledExactlyOnceWith(elements, expect.any(Function),
+                        {
+                            afterAssertion,
+                            beforeAssertion,
+                            wait: 500
+                        },
+                    )
+                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 500, interval: undefined })
+                    expect(result.pass).toEqual(true)
+                    expect(beforeAssertion).toHaveBeenCalledWith({
+                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name, // TODO fix in major version the wrong selector name for matcher aliases
+                        options: { beforeAssertion, afterAssertion, wait: 500 }
+                    })
+                    expect(afterAssertion).toHaveBeenCalledWith({
+                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name, // TODO fix in major version the wrong selector name for matcher aliases
+                        options: { beforeAssertion, afterAssertion, wait: 500 },
+                        result
+                    })
+                })
+
+                test('success with matcherFn and custom command options', async () => {
+                    const result = await thisContext.matcherFn(elements, { wait: 4, interval: 99 })
+
+                    for (const element of elements) {
+                        expect(element[elementFnName]).toHaveBeenCalledOnce()
+                    }
+                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 4, interval: 99 })
+                    expect(result.pass).toBe(true)
+                })
+
+                test('success with matcherFn and custom command options - only interval', async () => {
+                    const result = await thisContext.matcherFn(elements, { interval: 99 })
+
+                    for (const element of elements) {
+                        expect(element[elementFnName]).toHaveBeenCalledOnce()
+                    }
+                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: undefined, interval: 99 })
+                    expect(result.pass).toBe(true)
+                })
+
+                test('success with matcherFn and default command options', async () => {
+                    const result = await thisContext.matcherFn(elements)
+
+                    for (const element of elements) {
+                        expect(element[elementFnName]).toHaveBeenCalledOnce()
+                    }
+                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 20, interval: 1 })
+                    expect(result.pass).toBe(true)
+                })
+
+                test('wait but failure', async () => {
+                    vi.mocked(elements[0][elementFnName]).mockRejectedValue(new Error('some error'))
+
+                    await expect(() => thisContext.matcherFn(elements))
+                        .rejects.toThrow('some error')
+                })
+
+                test('success on the first attempt', async () => {
+                    const result = await thisContext.matcherFn(elements)
+
+                    expect(result.pass).toBe(true)
+                    for (const element of elements) {
+                        expect(element[elementFnName]).toHaveBeenCalledTimes(1)
+                    }
+                })
+
+                test('no wait - failure', async () => {
+                    vi.mocked(elements[0][elementFnName]).mockResolvedValue(false)
+
+                    const result = await thisContext.matcherFn(elements, { wait: 0 })
+
+                    expect(result.pass).toBe(false)
+                    expect(elements[0][elementFnName]).toHaveBeenCalledTimes(1)
+                    expect(elements[1][elementFnName]).toHaveBeenCalledTimes(1)
+                })
+
+                test('no wait - success', async () => {
+                    const result = await thisContext.matcherFn(elements)
+
+                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {
+                        wait: 20,
+                        interval: 1,
+                    })
+                    for (const element of elements) {
+                        expect(element[elementFnName]).toHaveBeenCalled()
+                    }
+                    expect(result.pass).toBe(true)
+                })
+
+                test('not - failure - pass should be true', async () => {
+                    const result = await thisNotContext.matcherFn(elements)
+
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} not ${verb} ${lastMatcherWords(matcherFn.name)}
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "not ${lastMatcherWords(matcherFn.name)}",
+-   "not ${lastMatcherWords(matcherFn.name)}",
++   "${lastMatcherWords(matcherFn.name)}",
++   "${lastMatcherWords(matcherFn.name)}",
+  ]`
+                    )
+                })
+
+                test('not - success - pass should be false', async () => {
+                    for (const element of elements) {
+                        vi.mocked(element[elementFnName]).mockResolvedValue(false)
+                    }
+
+                    const result = await thisNotContext.matcherFn(elements)
+
+                    expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                })
+
+                test('not - failure (with wait) - pass should be true', async () => {
+                    const result = await thisNotContext.matcherFn(elements)
+
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                })
+
+                test('not - success (with wait) - pass should be false', async () => {
+                    for (const element of elements) {
+                        vi.mocked(element[elementFnName]).mockResolvedValue(false)
+                    }
+
+                    const result = await thisNotContext.matcherFn(elements)
+
+                    expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), true, {
+                        wait: 20,
+                        interval: 1,
+                    })
+                    for (const element of elements) {
+                        expect(element[elementFnName]).toHaveBeenCalled()
+                    }
+                    expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                })
+
+                test('message when both elements fail', async () => {
+                    const elements = await $$('sel')
+
+                    for (const element of elements) {
+                        vi.mocked(element[elementFnName]).mockResolvedValue(false)
+                    }
+
+                    const result = await thisContext.matcherFn(elements)
+                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "${lastMatcherWords(matcherFn.name)}",
+-   "${lastMatcherWords(matcherFn.name)}",
++   "not ${lastMatcherWords(matcherFn.name)}",
++   "not ${lastMatcherWords(matcherFn.name)}",
+  ]`)
+                })
+
+                test('message when a single element fails', async () => {
+                    vi.mocked(elements[0][elementFnName]).mockResolvedValue(false)
+
+                    const result = await thisContext.matcherFn(elements)
+                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "${lastMatcherWords(matcherFn.name)}",
++   "not ${lastMatcherWords(matcherFn.name)}",
+    "${lastMatcherWords(matcherFn.name)}",
+  ]`)
+                })
+
+                describe('fails with ElementArray', () => {
+                    let elementsArray: WebdriverIO.ElementArray
+
+                    beforeEach(async () => {
+                        elementsArray = await $$('sel').getElements()
+                        for (const element of elementsArray) {
+                            vi.mocked(element[elementFnName]).mockResolvedValue(true)
+                        }
+                        expect(elementsArray).toHaveLength(2)
+                    })
+
+                    test('success with ElementArray', async () => {
+                        const result = await thisContext.matcherFn(elementsArray)
+
+                        for (const element of elementsArray) {
+                            expect(element[elementFnName]).toHaveBeenCalled()
+                        }
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('fails with ElementArray', async () => {
+                        vi.mocked(elementsArray[1][elementFnName]).mockResolvedValue(false)
+
+                        const result = await thisContext.matcherFn(elementsArray, { wait: 0 })
+
+                        for (const element of elementsArray) {
+                            expect(element[elementFnName]).toHaveBeenCalled()
+                        }
+
+                        expect(result.pass).toBe(false)
+                        const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "${lastMatcherWords(matcherFn.name)}",
+-   "${lastMatcherWords(matcherFn.name)}",
++   "not ${lastMatcherWords(matcherFn.name)}",
+  ]`)
+                    })
+
+                    describe('given filtered elememts (Element[])', () => {
+                        let filteredElements: WebdriverIO.Element[]
+                        test('success with Element[]', async () => {
+                            filteredElements = await elementsArray.filter((element) => element.isExisting())
+
+                            const result = await thisContext.matcherFn(filteredElements)
+
+                            for (const element of filteredElements) {
+                                expect(element[elementFnName]).toHaveBeenCalled()
+                            }
+                            expect(result.pass).toBe(true)
+                        })
+
+                        test('fails with Element[]', async () => {
+                            filteredElements = await elementsArray.filter((element) => element.isExisting())
+
+                            vi.mocked(filteredElements[1][elementFnName]).mockResolvedValue(false)
+
+                            const result = await thisContext.matcherFn(filteredElements)
+
+                            for (const element of filteredElements) {
+                                expect(element[elementFnName]).toHaveBeenCalled()
+                            }
+
+                            expect(result.pass).toBe(false)
+                            const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
+                            expect(stripAnsi(result.message())).toEqual(`\
+Expect [$(\`sel\`),$$(\`sel\`)[1]] ${verb} ${lastMatcherWords(matcherFn.name)}
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "${lastMatcherWords(matcherFn.name)}",
+-   "${lastMatcherWords(matcherFn.name)}",
++   "not ${lastMatcherWords(matcherFn.name)}",
+  ]`)
+                        })
+                    })
                 })
             })
 
