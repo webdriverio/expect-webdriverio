@@ -712,6 +712,16 @@ Expected: "webdriverio"
 Received: undefined`)
         })
 
+        test.each([
+            { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
+            { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
+            { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
+        ])('not - should succeed with proper error message when actual is an empty of $name', async ({ elements }) => {
+            const result = await thisNotContext.toHaveText(elements, 'webdriverio')
+
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        })
+
         // TODO view later to handle this case more gracefully
         test('given element is not found then it throws error when an element does not exists', async () => {
             const element: WebdriverIO.Element = notFoundElementFactory('sel')
