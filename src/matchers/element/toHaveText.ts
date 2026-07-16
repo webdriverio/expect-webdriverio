@@ -6,7 +6,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
-import { executeCommandWithStrategy, legacyMultipleElementResultsStrategy } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 
 async function compareElement(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
@@ -40,8 +40,8 @@ export async function toHaveText(
             const commandResult = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 singleElementCompare: (element, _index) => compareElement(element, expectedValue, options),
-                resultsStrategy: legacyMultipleElementResultsStrategy,
-                isNot
+                isNot,
+                strategy: 'LegacyMultipleElements',
             })
             subject = commandResult.subject
             actualText = commandResult.actual

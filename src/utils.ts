@@ -5,7 +5,7 @@ import { expect } from 'expect'
 
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
-import { executeCommand, executeCommandWithStrategy, toBeMultipleElementResultsStrategy } from './util/executeCommand.js'
+import { executeCommand, executeCommandWithStrategy } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
 
@@ -80,7 +80,6 @@ async function executeCommandBe(
                     const result = await command(element)
                     return { result, value: result }
                 },
-                resultsStrategy: toBeMultipleElementResultsStrategy,
                 isNot
             })
             subject = result.subject

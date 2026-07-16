@@ -5,7 +5,7 @@ import { jasmine } from './__mocks__/jasmine'
 import { CommandOptions } from 'expect-webdriverio'
 import stripAnsi from 'strip-ansi'
 import { enhanceErrorBe } from '../src/util/formatMessage'
-import { executeCommandWithStrategy, toBeMultipleElementResultsStrategy } from '../src/util/executeCommand'
+import { executeCommandWithStrategy } from '../src/util/executeCommand'
 
 vi.mock('@wdio/globals')
 
@@ -223,7 +223,6 @@ Received: []`)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: received,
                     singleElementCompare: expect.any(Function),
-                    resultsStrategy: toBeMultipleElementResultsStrategy,
                     isNot: false
                 })
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, options)
@@ -236,7 +235,6 @@ Received: []`)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: received,
                     singleElementCompare: expect.any(Function),
-                    resultsStrategy: toBeMultipleElementResultsStrategy,
                     isNot: false
                 })
             })
@@ -326,7 +324,6 @@ Received: "displayed"`)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elements,
                     singleElementCompare: expect.any(Function),
-                    resultsStrategy: toBeMultipleElementResultsStrategy,
                     isNot: false
                 })
                 expect(command).toHaveBeenCalledTimes(2)
@@ -342,7 +339,6 @@ Received: "displayed"`)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elementArray,
                     singleElementCompare: expect.any(Function),
-                    resultsStrategy: toBeMultipleElementResultsStrategy,
                     isNot: false
                 })
                 expect(command).toHaveBeenCalledTimes(2)
@@ -357,7 +353,6 @@ Received: "displayed"`)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elementArray,
                     singleElementCompare: expect.any(Function),
-                    resultsStrategy: toBeMultipleElementResultsStrategy,
                     isNot: false
                 })
                 expect(command).toHaveBeenCalledTimes(2)
@@ -441,7 +436,6 @@ Expect ${selectorName} to be displayed
                     expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                         unresolvedElements: elements,
                         singleElementCompare: expect.any(Function),
-                        resultsStrategy: toBeMultipleElementResultsStrategy,
                         isNot: true
                     })
                     expect(command).toHaveBeenCalledTimes(2)

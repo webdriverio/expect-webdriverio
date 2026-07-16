@@ -25,8 +25,8 @@ export async function executeCommand(
     }
 }
 
+export type StrategyType = 'LegacyMultipleElements' | 'NewMultipleElements'
 export type CompareResult<T> = { result: boolean; value: T }
-
 export type StrategyResult<T> = {
     subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown;
     success: boolean;
@@ -51,21 +51,34 @@ export type StrategyResult<T> = {
 export async function executeCommandWithStrategy<T>( {
     unresolvedElements,
     singleElementCompare,
-    resultsStrategy,
-    isNot
+    isNot,
+    strategy = 'NewMultipleElements',
 } :{
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>
-    resultsStrategy: (subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown, results: CompareResult<T>[], isNot?: boolean) => StrategyResult<T>
     isNot: boolean
+    strategy?: StrategyType
 }
 ): Promise<StrategyResult<T>> {
+    if (strategy === 'LegacyMultipleElements') {
+        return legacyMultipleElementResultsStrategy(unresolvedElements, singleElementCompare, isNot)
+    }
+
+    // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
+    return multipleElementResultsStrategy(unresolvedElements, singleElementCompare, isNot)
+}
+
+export const legacyMultipleElementResultsStrategy = async <T>(
+    unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
+    singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>,
+    _isNot?: boolean
+): Promise<StrategyResult<T>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
     if (!selector || isEmptyElements) {
         return {
             subject: subject,
-            success: isNot ? true : false,
+            success: false,
             actual: undefined,
         }
     }
@@ -89,13 +102,6 @@ export async function executeCommandWithStrategy<T>( {
     }
     const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<T>>).value)
 
-    return resultsStrategy(subject, results, isNot)
-}
-
-export const legacyMultipleElementResultsStrategy = <T>(
-    subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown,
-    results: CompareResult<T>[]
-): StrategyResult<T> => {
     return {
         subject,
         success: results.length > 0 && results.every((res) => res.result === true),
@@ -103,12 +109,45 @@ export const legacyMultipleElementResultsStrategy = <T>(
     }
 }
 
-export const toBeMultipleElementResultsStrategy = <T>(
-    subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown,
-    results: CompareResult<T>[],
+export const multipleElementResultsStrategy = async <T>(
+    unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
+    singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>,
     isNot: boolean
-): StrategyResult<T> => {
+): Promise<StrategyResult<T>> => {
+    const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
+    const subject = selector ?? other
+    if (!selector || isEmptyElements) {
+        return {
+            subject: subject,
+            success: isNot ? true : false, // with `.not`, since it is inverted it is considered a failure with true
+            actual: undefined,
+        }
+    }
+
+    if (isElement(selector)) {
+        const compareResult = await singleElementCompare(selector)
+        return {
+            subject,
+            success: compareResult.result,
+            actual: compareResult.value,
+        }
+    }
+
+    const settled = await Promise.allSettled(
+        Array.from(selector).map((el: WebdriverIO.Element, index: number) => singleElementCompare(el, index))
+    )
+
+    // Re-throw the first rejection so waitUntil surfaces the real error message
+    const firstRejection = settled.find((r): r is PromiseRejectedResult => r.status === 'rejected')
+    if (firstRejection) {
+        throw firstRejection.reason
+    }
+    const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<T>>).value)
+
     const isNotEmpty = results.length > 0
+
+    // Success if all elements pass the compare strategy, or when using `.not`, if all elements fail the compare strategy.
+    // If there are no elements, it is considered a failure in both case with and without `.not`, as there are no elements to compare against.
     return {
         subject,
         success: isNot ? !(isNotEmpty && isAllFalse(results)) : (isNotEmpty && isAllTrue(results)),
