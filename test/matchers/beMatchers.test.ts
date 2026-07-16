@@ -450,7 +450,7 @@ Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
                             expect(result.pass).toBe(false)
                             const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
                             expect(stripAnsi(result.message())).toEqual(`\
-Expect [$(\`sel\`),$$(\`sel\`)[1]] ${verb} ${lastMatcherWords(matcherFn.name)}
+Expect [$$(\`sel\`)[0],$$(\`sel\`)[1]] ${verb} ${lastMatcherWords(matcherFn.name)}
 
 - Expected  - 1
 + Received  + 1

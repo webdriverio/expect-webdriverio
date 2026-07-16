@@ -8,6 +8,8 @@ import { toJsonString } from './stringUtil.js'
 // TODO one day use a real asymmetric matcher for number options instead of this custom equality tester
 const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
 
+export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
+
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
     if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
@@ -38,11 +40,11 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
     }
 
     while (!!parent && typeof parent === 'object' && 'selector' in parent) {
-        const selector = getSelector(parent as WebdriverIO.Element)
-        const index = parent.index ? `[${parent.index}]` : ''
-        selectors.push(`${parent.index ? '$' : ''}$(\`${selector}\`)${index}`)
+        const selector = getSelector(parent)
+        const index = isDefined(parent.index) ? `[${parent.index}]` : ''
+        selectors.push(`${isDefined(parent.index) ? '$' : ''}$(\`${selector}\`)${index}`)
 
-        parent = (parent as WebdriverIO.Element).parent
+        parent = parent.parent
     }
 
     return selectors.reverse().join('.')
