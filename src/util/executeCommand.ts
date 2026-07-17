@@ -32,20 +32,16 @@ export type StrategyResult<T> = {
     success: boolean;
     actual: MaybeArray<T> | undefined;
 }
+
 /**
- * Fetch element(s) and execute the compare strategy for each element, returning the results.
- * if there is no element or empty element array, it will return a failure result.
- * if there is a single element, it will return the result of the compare strategy for that element.
- * if there is an array of elements, it will return the result of the compare strategy for each element.
- *
- * For a successful result, all elements must pass the compare strategy.
- * For a failure result, at least one element must fail the compare strategy.
- *
- * For `.not` assertions, since success need to be inverted for successful result, so if at least one element fails the compare strategy, it will return a successful result.
- * The above can be is confusing, yeilding ambigious results, so behavior in this case need to be reviewed and improved in the future.
+ * Fetch element(s) and route them to the appropriate comparison strategy.
+ * Acts as a router to dispatch the elements to either the legacy or new comparison strategy.
  *
  * @param unresolvedElements awaited or non-awaited element(s) to be resolved and compared
  * @param singleElementCompare compare a single element with expected value(s)
+ * @param isNot indicates if the assertion is inverted (e.g., using `.not`)
+ * @param strategy the strategy type to use (defaults to 'NewMultipleElements')
+ * @param configuration configuration options for the strategy
  * @returns An object containing the subject, success status, actual values, and results of the comparison
  */
 export async function executeCommandWithStrategy<T>( {
@@ -70,6 +66,17 @@ export async function executeCommandWithStrategy<T>( {
     return multipleElementResultsStrategy(unresolvedElements, singleElementCompare, isNot, configuration)
 }
 
+/**
+ * Legacy multiple element comparison strategy.
+ *
+ * Previous multi-element compare mechanism that started with `toHaveText` matcher.
+ * Flaws:
+ * - If there is no element or an empty array, it returns success with `.not` even though there are no elements' value to compare against.
+ * - When asserting with `.not` to not have a given text, if at least one element does not have the text, it returns success even though other elements may have the text.
+ *
+ * @deprecated The above behavior can be confusing, yielding ambiguous results.
+ * Kept for backward compatibility, to not be breaking but still be able to rollout the below new strategy.
+ */
 export const legacyMultipleElementResultsStrategy = async <T>(
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>,
@@ -112,6 +119,17 @@ export const legacyMultipleElementResultsStrategy = async <T>(
     }
 }
 
+/**
+ * Modern multiple element comparison strategy.
+ *
+ * Handles element arrays consistently:
+ * - By default, if there is no element or an empty array, it returns a failure result.
+ * - For a standard successful result, all elements must pass the compare strategy.
+ * - For `.not` assertions, it ensures that all elements fail the compare strategy to pass.
+ *
+ * In rare cases (e.g., matchers using `isExisting`), the strategy can be configured via
+ * `allowEmptyElements` to let an empty element set pass the assertion instead of failing.
+ */
 export const multipleElementResultsStrategy = async <T>(
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>,
