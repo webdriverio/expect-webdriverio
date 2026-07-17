@@ -734,7 +734,7 @@ Matchers starting with `toBe` support arrays of elements returned from `$$()`:
 - **Standard Behavior:** Every element must pass. One failure fails the assertion.
 - **Using `.not`:** Every element must *not* meet the matcher condition. One match fails the assertion.
 - **Empty Arrays:** Empty element arrays will fail the assertion. 
-  - *Note:* Only the `toExists`, `toBeExisting`, and `toBePresent` matchers succeed when using `.not` on an empty element array.
+  - *Note:* Only the `toExist`, `toBeExisting`, and `toBePresent` matchers succeed when using `.not` on an empty element array.
 
 #### Usage
 
