@@ -7,7 +7,7 @@ import { DEFAULT_OPTIONS } from '../../src/constants.js'
 import stripAnsi from 'strip-ansi'
 import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeExisting, toBeFocused, toBePresent, toBeSelected, toExist } from '../../src/matchers.js'
 import { setDefaultOptions, setOptions } from '../../src/index.js'
-import { chainableElementArrayFactory, elementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
+import { elementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
