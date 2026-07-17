@@ -53,11 +53,13 @@ export async function executeCommandWithStrategy<T>( {
     singleElementCompare,
     isNot,
     strategy = 'NewMultipleElements',
+    configuration = { allowEmptyElements: false }
 } :{
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>
     isNot: boolean
-    strategy?: StrategyType
+    strategy?: StrategyType,
+    configuration?: { allowEmptyElements?: boolean }
 }
 ): Promise<StrategyResult<T>> {
     if (strategy === 'LegacyMultipleElements') {
@@ -65,13 +67,14 @@ export async function executeCommandWithStrategy<T>( {
     }
 
     // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
-    return multipleElementResultsStrategy(unresolvedElements, singleElementCompare, isNot)
+    return multipleElementResultsStrategy(unresolvedElements, singleElementCompare, isNot, configuration)
 }
 
 export const legacyMultipleElementResultsStrategy = async <T>(
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>,
     _isNot?: boolean
+
 ): Promise<StrategyResult<T>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
@@ -112,14 +115,15 @@ export const legacyMultipleElementResultsStrategy = async <T>(
 export const multipleElementResultsStrategy = async <T>(
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>,
-    isNot: boolean
+    isNot: boolean,
+    { allowEmptyElements = false } = {}
 ): Promise<StrategyResult<T>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
     if (!selector || isEmptyElements) {
         return {
             subject: subject,
-            success: isNot ? true : false, // with `.not`, since it is inverted it is considered a failure with true
+            success: isNot ? !allowEmptyElements : false,
             actual: undefined,
         }
     }

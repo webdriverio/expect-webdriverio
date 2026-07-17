@@ -25,26 +25,60 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('Element existence matchers', () => {
         it('should verify element exists', async () => {
-            const searchButton = await $('.DocSearch-Button')
+            const searchButton = $('.DocSearch-Button')
+
             await expect(searchButton).toExist()
-            await expect(searchButton).toBeExisting()
+            await expect(await searchButton).toExist()
+            await expect(await searchButton).toBeExisting()
+        })
+
+        it('should verify all elements are existing', async () => {
+            const searchButton = $$('.DocSearch-Button')
+
+            await expect(searchButton).toExist()
+            await expect(await searchButton).toExist()
+            await expect(await searchButton).toBeExisting()
         })
 
         it('should verify element does not exist', async () => {
             const nonExistent = await $('.non-existent-element')
+            const awaitedNonExistent = await $('.non-existent-element')
+            console.log('awaitedNonExistent', awaitedNonExistent)
+
             await expect(nonExistent).not.toExist()
         })
+
+        it('should verify elements do not exist', async () => {
+            const nonExistent = $$('.non-existent-elements')
+            const awaitedNonExistent = await $$('.non-existent-elements')
+            console.log('awaitedNonExistent', awaitedNonExistent)
+
+            await expect(nonExistent).not.toExist()
+            await expect(await nonExistent).not.toExist()
+        })
+
     })
 
     describe('Element visibility matchers', () => {
         it('should verify element is displayed', async () => {
-            const nav = await $('nav')
+            const nav = $('nav')
+
             await expect(nav).toBeDisplayed()
+            await expect(await nav).toBeDisplayed()
         })
 
         it('should verify element is displayed in viewport', async () => {
             const searchButton = await $('.DocSearch-Button')
+
             await expect(searchButton).toBeDisplayedInViewport()
+        })
+
+        it('should verify elements are displayed', async () => {
+            const nav = $$('nav')
+
+            await expect(nav).toBeDisplayed()
+            await expect(await nav).toBeDisplayed()
+            await expect(await nav.filter(n => n.isExisting())).toBeDisplayedInViewport()
         })
     })
 

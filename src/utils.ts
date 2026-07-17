@@ -68,7 +68,7 @@ async function executeCommandBe(
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): ExpectWebdriverIO.AsyncAssertionResult {
-    const { isNot, verb = 'be' } = this
+    const { isNot, verb = 'be', allowEmptyElements = false } = this
 
     let subject: WdioElementMaybePromise | unknown = received
     let actual: boolean[] | boolean | undefined
@@ -80,7 +80,9 @@ async function executeCommandBe(
                     const result = await command(element)
                     return { result, value: result }
                 },
-                isNot
+                isNot,
+                configuration: { allowEmptyElements }
+
             })
             subject = result.subject
             actual = result.actual

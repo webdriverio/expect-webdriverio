@@ -7,6 +7,7 @@ import { DEFAULT_OPTIONS } from '../../src/constants.js'
 import stripAnsi from 'strip-ansi'
 import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeExisting, toBeFocused, toBePresent, toBeSelected, toExist } from '../../src/matchers.js'
 import { setDefaultOptions, setOptions } from '../../src/index.js'
+import { chainableElementArrayFactory, elementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -50,6 +51,8 @@ describe('be* matchers', () => {
         describe(matcherFn.name, () => {
             let thisContext: { matcherFn: typeof matcherFn }
             let thisNotContext: { isNot: true,  matcherFn: typeof matcherFn }
+
+            const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
 
             let el: ChainablePromiseElement
             let elementFn: ElementKeyFnTypes
@@ -128,7 +131,6 @@ describe('be* matchers', () => {
                     const result = await thisNotContext.matcherFn(el)
 
                     expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not ${verb} ${lastMatcherWords(matcherFn.name)}
 
@@ -165,7 +167,6 @@ Received: "${lastMatcherWords(matcherFn.name)}"`
                     const result = await thisContext.matcherFn(el, { wait: 0 })
 
                     expect(result.pass).toBe(false)
-                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) ${verb} ${lastMatcherWords(matcherFn.name)}
 
@@ -288,7 +289,6 @@ Received: "not ${lastMatcherWords(matcherFn.name)}"`)
                     const result = await thisNotContext.matcherFn(elements)
 
                     expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not ${verb} ${lastMatcherWords(matcherFn.name)}
 
@@ -345,7 +345,6 @@ Expect ${selectorName} not ${verb} ${lastMatcherWords(matcherFn.name)}
                     }
 
                     const result = await thisContext.matcherFn(elements)
-                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
 
@@ -364,7 +363,6 @@ Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
                     vi.mocked(elements[0][elementFnName]).mockResolvedValue(false)
 
                     const result = await thisContext.matcherFn(elements)
-                    const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
 
@@ -409,7 +407,7 @@ Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
                         }
 
                         expect(result.pass).toBe(false)
-                        const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
+
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
 
@@ -448,7 +446,6 @@ Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
                             }
 
                             expect(result.pass).toBe(false)
-                            const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
                             expect(stripAnsi(result.message())).toEqual(`\
 Expect [$$(\`sel\`)[0],$$(\`sel\`)[1]] ${verb} ${lastMatcherWords(matcherFn.name)}
 
@@ -463,6 +460,175 @@ Expect [$$(\`sel\`)[0],$$(\`sel\`)[1]] ${verb} ${lastMatcherWords(matcherFn.name
                         })
                     })
                 })
+            })
+
+            describe('Edge cases', () => {
+
+                test.each([
+                    { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
+                    { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
+                    { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
+                ])('should fail with proper error message when actual is an empty of $name', async ({ elements, selectorName }) => {
+                    const result = await thisContext.matcherFn(elements)
+
+                    expect(result.pass).toBe(false)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} ${verb} ${lastMatcherWords(matcherFn.name)}
+
+Expected: "at least one result"
+Received: []`)
+                })
+
+                test.skipIf(['toExist', 'toBeExisting', 'toBePresent'].includes(matcherFn.name)).each([
+                    { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
+                    { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
+                    { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
+                ])('not - should fails (pass=true) with proper error message when actual is an empty of $name', async ({ elements, selectorName }) => {
+                    const result = await thisNotContext.matcherFn(elements)
+
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} not ${verb} ${lastMatcherWords(matcherFn.name)}
+
+Expected: "at least one result"
+Received: []`)
+                })
+
+                test.runIf(['toExist', 'toBeExisting', 'toBePresent'].includes(matcherFn.name)).each([
+                    { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
+                    { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
+                    { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
+                ])('not - should succeed (pass=false) when matcher uses isExisting and when actual is an empty of $name', async ({ elements }) => {
+                    const result = await thisNotContext.matcherFn(elements)
+
+                    expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                })
+
+                // TODO view later to handle this case more gracefully
+                test.skipIf(['toExist', 'toBeExisting', 'toBePresent'].includes(matcherFn.name))('given element is not found then it throws error when an element does not exists', async () => {
+                    const element: WebdriverIO.Element = notFoundElementFactory('sel')
+
+                    await expect(thisContext.matcherFn(element)).rejects.toThrow()
+                })
+
+                test.runIf(['toExist', 'toBeExisting', 'toBePresent'].includes(matcherFn.name))('given element is not found then it should not throw error with matcher using isExisting when an element does not exists', async () => {
+                    const element: WebdriverIO.Element = notFoundElementFactory('sel')
+
+                    const result = await thisContext.matcherFn(element)
+
+                    expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                })
+
+                test('given element from out of bound ChainableArray, then it throws error when an element does not exists', async () => {
+                    const element: ChainablePromiseElement = $$('elements')[3]
+
+                    await expect(thisContext.matcherFn(element)).rejects.toThrow('Index out of bounds! $$(elements) returned only 2 elements.')
+                })
+
+                //                 test('given only one element in array when failures', async () => {
+                //                     const elements = chainableElementArrayFactory('elements', 1)
+                //                     vi.mocked((elements)[0]).mockResolvedValue('webdriverio')
+
+                //                     const results = await thisContext.matcherFn(elements)
+
+                //                     expect(results.pass).toBe(false)
+                //                     expect(stripAnsi(results.message())).toEqual(`\
+                // Expect $$(\`elements\`) to have text
+
+                // Expected: "NotMatchingText"
+                // Received: "webdriverio"`
+                //                     )
+                //                 })
+
+                //                 test('given the first element getText fails to retrieve', async () => {
+                //                     const elements = $$('elements')
+
+                //                     vi.mocked((elements)[0].getText).mockRejectedValue(new Error('Unable to retrieve text for first element'))
+                //                     vi.mocked((elements)[1].getText).mockResolvedValue('webdriverio')
+
+                //                     await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for first element')
+                //                 })
+
+                //                 test('given the second element getText fails to retrieve', async () => {
+                //                     const elements = $$('elements')
+
+                //                     vi.mocked((elements)[0].getText).mockResolvedValue('webdriverio')
+                //                     vi.mocked((elements)[1].getText).mockRejectedValue(new Error('Unable to retrieve text for second element'))
+
+                //                     await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for second element')
+                //                 })
+
+                //                 test('given all elements getText fails to retrieve', async () => {
+                //                     const elements = $$('elements')
+
+                //                     vi.mocked((elements)[0].getText).mockRejectedValue(new Error('Unable to retrieve text for first element'))
+                //                     vi.mocked((elements)[1].getText).mockRejectedValue(new Error('Unable to retrieve text for second element'))
+
+                //                     await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for first element')
+                //                 })
+
+                //                 describe('Long promises', () => {
+
+                //                     describe("given element's text takes more time then the configured wait to be retrieved", () => {
+
+                //                         test('given element text takes more time then the configured wait then it should fail', async () => {
+                //                             const element: ChainablePromiseElement = $('elements')
+                //                             vi.mocked((await element).getText).mockImplementationOnce(() => new Promise((resolve) => setTimeout(() => resolve('0'), 500)))
+                //                                 .mockImplementationOnce(() => new Promise((resolve) => setTimeout(() => resolve('1'), 500)))
+
+                //                             const result = await thisContext.toHaveText(element, '1', { wait: 1, interval: 1 })
+
+                //                             expect(result.pass).toBe(false)
+                //                             expect(stripAnsi(result.message())).toEqual(`\
+                // Expect $(\`elements\`) to have text
+
+                // Expected: "1"
+                // Received: "0"`)
+                //                         })
+                //                     })
+
+                //                     describe('given element itself takes more time then the configured wait to be retrieved', () => {
+
+                //                         test('given element take time to be found, and first getText match then it should work', async () => {
+                //                             const element: ChainablePromiseElement = $Factory(elementFactory('slowElement'), 500)
+
+                //                             const result = await thisContext.toHaveText(element, 'Valid Text', { wait: 250, interval: 100 })
+
+                //                             expect(result.pass).toBe(true)
+                //                         })
+
+                //                         test('given element take time to be found, and match only on second getText try then it should fails when using non-awaited version', async () => {
+                //                             const element = elementFactory('slowElement')
+                //                             element.getText = vi.fn()
+                //                                 .mockResolvedValueOnce('Invalid Text')
+                //                                 .mockResolvedValueOnce('Valid Text')
+
+                //                             const nonAwaitedElement: ChainablePromiseElement = $Factory(element, 500)
+
+                //                             const result = await thisContext.toHaveText(nonAwaitedElement, 'Valid Text', { wait: 250, interval: 100 })
+
+                //                             expect(result.pass).toBe(false)
+                //                             expect(stripAnsi(result.message())).toEqual(`\
+                // Expect $(\`slowElement\`) to have text
+
+                // Expected: "Valid Text"
+                // Received: "Invalid Text"`)
+                //                         })
+
+                //                         test('given element take time to be found, but match only on second try then it should succeeds when using awaited version', async () => {
+                //                             const element = elementFactory('slowElement')
+                //                             element.getText = vi.fn()
+                //                                 .mockResolvedValueOnce('Invalid Text')
+                //                                 .mockResolvedValueOnce('Valid Text')
+
+                //                             const awaitedElement: ChainablePromiseElement = await $Factory(element, 500)
+
+                //                             const result = await thisContext.toHaveText(awaitedElement, 'Valid Text', { wait: 250, interval: 100 })
+
+                //                             expect(result.pass).toBe(true)
+                //                         })
+                //                     })
+                //                 })
             })
 
             describe.each(

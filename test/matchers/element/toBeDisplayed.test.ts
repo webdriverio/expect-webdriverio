@@ -216,7 +216,7 @@ Received: "not displayed"`)
         let elements: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[]
         let awaitedElements: typeof elements
 
-        const selectorName = title.includes('filtered') ?  '[$$(`sel`)[0],$$(`sel`)[1]]': '$$(`sel`)' // TODO selectorName is wierd
+        const selectorName = title.includes('filtered') ?  '[$$(`sel`)[0],$$(`sel`)[1]]': '$$(`sel`)'
 
         beforeEach(async () => {
             elements = els

@@ -223,7 +223,8 @@ Received: []`)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: received,
                     singleElementCompare: expect.any(Function),
-                    isNot: false
+                    isNot: false,
+                    configuration: { allowEmptyElements: false }
                 })
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, options)
             })
@@ -235,7 +236,8 @@ Received: []`)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: received,
                     singleElementCompare: expect.any(Function),
-                    isNot: false
+                    isNot: false,
+                    configuration: { allowEmptyElements: false }
                 })
             })
 
@@ -324,7 +326,8 @@ Received: "displayed"`)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elements,
                     singleElementCompare: expect.any(Function),
-                    isNot: false
+                    isNot: false,
+                    configuration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, options)
@@ -339,7 +342,8 @@ Received: "displayed"`)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elementArray,
                     singleElementCompare: expect.any(Function),
-                    isNot: false
+                    isNot: false,
+                    configuration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
             })
@@ -353,7 +357,8 @@ Received: "displayed"`)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elementArray,
                     singleElementCompare: expect.any(Function),
-                    isNot: false
+                    isNot: false,
+                    configuration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
             })
@@ -436,7 +441,8 @@ Expect ${selectorName} to be displayed
                     expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                         unresolvedElements: elements,
                         singleElementCompare: expect.any(Function),
-                        isNot: true
+                        isNot: true,
+                        configuration: { allowEmptyElements: false }
                     })
                     expect(command).toHaveBeenCalledTimes(2)
                     expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), true, options)
