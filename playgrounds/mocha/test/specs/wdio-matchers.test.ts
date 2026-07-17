@@ -42,16 +42,13 @@ describe('WebdriverIO Custom Matchers', () => {
 
         it('should verify element does not exist', async () => {
             const nonExistent = await $('.non-existent-element')
-            const awaitedNonExistent = await $('.non-existent-element')
-            console.log('awaitedNonExistent', awaitedNonExistent)
 
             await expect(nonExistent).not.toExist()
+            await expect(await nonExistent).not.toExist()
         })
 
         it('should verify elements do not exist', async () => {
             const nonExistent = $$('.non-existent-elements')
-            const awaitedNonExistent = await $$('.non-existent-elements')
-            console.log('awaitedNonExistent', awaitedNonExistent)
 
             await expect(nonExistent).not.toExist()
             await expect(await nonExistent).not.toExist()
