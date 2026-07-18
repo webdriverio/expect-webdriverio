@@ -44,7 +44,6 @@ export function validateNumberAndExtractOptions(
     }
 }
 
-// TODO dprevost to review
 export function validateNumberArrayAndExtractOptions(
     expectedValues: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | undefined | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
     commandOptions: ExpectWebdriverIO.CommandOptions,

@@ -28,7 +28,6 @@ vi.mock('../src/util/elementsUtil.js', async (importOriginal) => {
     return {
         ...actual,
         awaitElementOrArray: vi.spyOn(actual, 'awaitElementOrArray'),
-        map: vi.spyOn(actual, 'map'),
     }
 })
 

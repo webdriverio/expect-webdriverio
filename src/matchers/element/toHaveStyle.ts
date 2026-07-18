@@ -10,6 +10,7 @@ import {
 } from '../../utils.js'
 
 async function condition(el: WebdriverIO.Element, style: MaybeArray<{ [key: string]: string; }>, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<{ [key: string]: string | undefined; }>> {
+    // TODO add tests
     if (Array.isArray(style)) {
         const results = await Promise.all(style.map((s) => compareStyle(el, s, options)))
         const result = results.find((result) => result.result)
