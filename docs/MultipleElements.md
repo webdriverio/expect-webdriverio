@@ -40,3 +40,64 @@ Example in Mocha:
         });
     });
 ```    
+
+
+# DRAFT
+
+```ts
+const element = $('myElement')
+// === 1. SINGLE ELEMENT ===
+// Case A: Single element, single exact value
+await expect(element).toHaveText('myValue1'); 
+
+// Case B: Single element, multiple possible values (Using regex alternation)
+// Succeeds if the single element text matches either option.
+await expect(element).toHaveText(/optionA|optionB/);
+// Equivalent to:
+await expect(element).toHaveText(['optionA', 'optionB']);
+
+const elements = $$('myElements')
+// === 2. MULTIPLE ELEMENTS (GLOBAL CHECK) ===
+// Case C: Multiple elements, single value
+// Every element in the list must match this exact text.
+await expect(elements).toHaveText('myValue1');
+
+// Case D: Multiple elements, global pool (Using regex alternation)
+// Every element in the list must match either option.
+await expect(elements).toHaveText(/optionA|optionB/);
+// NOT Equivalent to:
+await expect(elements).toHaveText(['optionA', 'optionB']);
+
+// === 3. MULTIPLE ELEMENTS + INDEX-BASED ARRAYS ===
+// Case E: Exact positional match
+// Elements must match index-by-index: Element 0 must be 'valueForIndex0' AND Element 1 must be 'valueForIndex1'.
+await expect(elements).toHaveText(['valueForIndex0', 'valueForIndex1']);
+
+// Case F: Mixed positional constraints
+// Element 0 must match the regex pattern AND Element 1 must match the exact string.
+await expect(elements).toHaveText([
+  /index0OptionA|index0OptionB/, 
+  'index1OptionC'
+]);
+
+
+// === 4. NEGATION ===
+// Case G: Standard negation
+// Every element in the list must NOT match the regex pattern.
+await expect(elements).not.toHaveText(/forbiddenTextA|forbiddenTextB/);
+
+// === FUTURE ===
+// To allow passing if at least one element matches, we can introduce a `.some` modifier.
+await expect(elements).some.toHaveText('myValue1');
+await expect(elements).some.toBeDisplayed();
+
+// Use oneOf to ease passing multiple values
+await expect(elements).toHaveText(/optionA|optionB/);
+// Equivalent to:
+await expect(elements).toHaveText(oneOf('optionA', 'optionB'));
+// Element 0 must match the regex pattern AND Element 1 must match the exact string.
+await expect(elements).toHaveText([
+  oneOf('index0OptionA','index0OptionB'), 
+  'index1OptionC'
+]);
+```

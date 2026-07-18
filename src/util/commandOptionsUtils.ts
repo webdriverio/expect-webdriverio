@@ -5,7 +5,8 @@ const COMMAND_OPTIONS_ALLOWED_KEY_LIST = new Set([
     'wait',
     'interval',
     'beforeAssertion',
-    'afterAssertion'
+    'afterAssertion',
+    'featureFlags',
 ])
 
 const STRING_OPTIONS_ALLOWED_KEY_LIST = new Set([

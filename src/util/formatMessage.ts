@@ -114,7 +114,7 @@ ${label.received}: ${printReceived(actual)}`
     }
 
     const msg = `\
-${message}Expect ${subject} ${not(isNot)}to ${verb}${expectation}${expectedValueArgument2}${contain}
+${message}Expect ${subjectStr} ${not(isNot)}to ${verb}${expectation}${expectedValueArgument2}${contain}
 
 ${diffString}`
 
@@ -175,7 +175,7 @@ export const enhanceErrorBe = (
     const actualValue = `${not(!isNot)}${expectation}`
 
     if (isElementArrayLike(subject)) {
-        expected = subject.length === 0? 'at least one result' : Array(subject.length).fill(expectedValue)
+        expected = subject.length === 0 ? 'at least one result' : Array(subject.length).fill(expectedValue)
         actual = toArray(results).map(result => isSuccess(isNot, result) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
     } else {
         expected = expectedValue

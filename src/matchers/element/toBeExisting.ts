@@ -28,11 +28,13 @@ export async function toExist(
 
 export function toBeExisting(el: WdioElementOrArrayMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'existing'
+    this.verb = 'be'
 
     return toExist.call(this, el, options)
 }
 export function toBePresent(el: WdioElementOrArrayMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'present'
+    this.verb = 'be'
 
     return toExist.call(this, el, options)
 }

@@ -9,7 +9,7 @@ import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeE
 import { setDefaultOptions, setOptions } from '../../src/index.js'
 import { chainableElementArrayFactory, elementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
 
-// vi.mock('@wdio/globals')
+vi.mock('@wdio/globals')
 
 const ignoredMatchers = [
     'toBeElementsArrayOfSize', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith', 'toBeDisplayed', 'toBeDisabled'

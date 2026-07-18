@@ -35,16 +35,20 @@ export async function toHaveText(
 
     let actualText: string | string[] | undefined
     let subject: unknown = received
+    const isLegacyCompare = !options.featureFlags?.useToHaveTextNewMultiElementsCompareStrategy
     const pass = await waitUntil(
         async () => {
             const commandResult = await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                singleElementCompare: (element, _index) => compareElement(element, expectedValue, options),
+                expectedValues: expectedValue,
+                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>>) => {
+                    return compareElement(element, values, options)
+                },
                 isNot,
-                strategy: 'LegacyMultipleElements',
+                strategy: isLegacyCompare ? 'LegacyMultipleElements' : 'NewMultipleElements',
             })
             subject = commandResult.subject
-            actualText = commandResult.actual
+            actualText = commandResult.actual as string | string[] | undefined
 
             return commandResult.success
         },

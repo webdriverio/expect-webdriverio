@@ -76,6 +76,7 @@ async function executeCommandBe(
         async () => {
             const result = await executeCommandWithStrategy({
                 unresolvedElements: subject,
+                expectedValues: true,
                 singleElementCompare: async (element) => {
                     const result = await command(element)
                     return { result, value: result }

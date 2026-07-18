@@ -89,26 +89,28 @@ export type StrategyResult<T> = {
  * @param configuration configuration options for the strategy
  * @returns An object containing the subject, success status, actual values, and results of the comparison
  */
-export async function executeCommandWithStrategy<T>( {
+export async function executeCommandWithStrategy<Actual, Expected>( {
     unresolvedElements,
+    expectedValues,
     singleElementCompare,
     isNot,
     strategy = 'NewMultipleElements',
     configuration = { allowEmptyElements: false }
 } :{
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown
-    singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>
+    expectedValues: MaybeArray<Expected> | unknown
+    singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
     isNot: boolean
     strategy?: StrategyType,
     configuration?: { allowEmptyElements?: boolean }
 }
-): Promise<StrategyResult<T>> {
+): Promise<StrategyResult<Actual>> {
     if (strategy === 'LegacyMultipleElements') {
-        return legacyMultipleElementResultsStrategy(unresolvedElements, singleElementCompare, isNot)
+        return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot)
     }
 
     // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
-    return multipleElementResultsStrategy(unresolvedElements, singleElementCompare, isNot, configuration)
+    return multipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot, configuration)
 }
 
 /**
@@ -122,12 +124,13 @@ export async function executeCommandWithStrategy<T>( {
  * @deprecated The above behavior can be confusing, yielding ambiguous results.
  * Kept for backward compatibility, to not be breaking but still be able to rollout the below new strategy.
  */
-export const legacyMultipleElementResultsStrategy = async <T>(
+export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
-    singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>,
-    _isNot?: boolean
+    expectedValues: MaybeArray<Expected> | undefined,
+    singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
+    _isNot?: boolean,
 
-): Promise<StrategyResult<T>> => {
+): Promise<StrategyResult<Actual>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
     if (!selector || isEmptyElements) {
@@ -139,7 +142,7 @@ export const legacyMultipleElementResultsStrategy = async <T>(
     }
 
     if (isElement(selector)) {
-        const compareResult = await singleElementCompare(selector)
+        const compareResult = await singleElementCompare(selector, expectedValues)
         return {
             subject,
             success: compareResult.result,
@@ -148,14 +151,15 @@ export const legacyMultipleElementResultsStrategy = async <T>(
     }
 
     const settled = await Promise.allSettled(
-        Array.from(selector).map((el: WebdriverIO.Element, index: number) => singleElementCompare(el, index))
+        // Former `toHaveText` mechanism was to pass all the expected values (when an array) to each element and not an index-based expected value like the new strategy. This is kept for backward compatibility with the legacy strategy.
+        Array.from(selector).map((element: WebdriverIO.Element, index: number) => singleElementCompare(element, expectedValues, index))
     )
     // Re-throw the first rejection so waitUntil surfaces the real error message
     const firstRejection = settled.find((r): r is PromiseRejectedResult => r.status === 'rejected')
     if (firstRejection) {
         throw firstRejection.reason
     }
-    const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<T>>).value)
+    const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<Actual>>).value)
 
     return {
         subject,
@@ -175,24 +179,26 @@ export const legacyMultipleElementResultsStrategy = async <T>(
  * In rare cases (e.g., matchers using `isExisting`), the strategy can be configured via
  * `allowEmptyElements` to let an empty element set pass the assertion instead of failing.
  */
-export const multipleElementResultsStrategy = async <T>(
+export const multipleElementResultsStrategy = async <Actual, Expected>(
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
-    singleElementCompare: (awaitedElement: WebdriverIO.Element, index?: number) => Promise<CompareResult<T>>,
+    expectedValues: MaybeArray<Expected> | undefined,
+    singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     isNot: boolean,
     { allowEmptyElements = false } = {}
-): Promise<StrategyResult<T>> => {
+): Promise<StrategyResult<Actual>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
     if (!selector || isEmptyElements) {
         return {
             subject: subject,
+            // For the new strategy, beside toExist, empty elements even with `.not` is considered a failure since there are no elements to compare against.
             success: isNot ? !allowEmptyElements : false,
             actual: undefined,
         }
     }
 
     if (isElement(selector)) {
-        const compareResult = await singleElementCompare(selector)
+        const compareResult = await singleElementCompare(selector, expectedValues)
         return {
             subject,
             success: compareResult.result,
@@ -201,7 +207,11 @@ export const multipleElementResultsStrategy = async <T>(
     }
 
     const settled = await Promise.allSettled(
-        Array.from(selector).map((el: WebdriverIO.Element, index: number) => singleElementCompare(el, index))
+        Array.from(selector).map((element: WebdriverIO.Element, index: number) => {
+            // For the new strategy, each element is compared against its index-based corresponding expected value (if it's an array) or the single expected value.
+            const indexedExpectedValue = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
+            return singleElementCompare(element, indexedExpectedValue, index)
+        })
     )
 
     // Re-throw the first rejection so waitUntil surfaces the real error message
@@ -209,7 +219,7 @@ export const multipleElementResultsStrategy = async <T>(
     if (firstRejection) {
         throw firstRejection.reason
     }
-    const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<T>>).value)
+    const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<Actual>>).value)
 
     const isNotEmpty = results.length > 0
 
