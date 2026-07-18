@@ -15,9 +15,10 @@ export const wrapExpectedWithArray = (elements: WebdriverIO.Element | WdioElemen
     return expected
 }
 
-export const fillForElementArray = (subject: WebdriverIO.Element | WdioElements | unknown, value: unknown): unknown[] | unknown => {
+export const fillSingleExpectedForElementArray = (subject: WebdriverIO.Element | WdioElements | unknown, value: unknown): unknown[] | unknown => {
     if (isElementArrayLike(subject) && !Array.isArray(value)) {
-        return Array(subject.length).fill(value)
+        const fillerlength = subject.length > 0 ? subject.length : 1
+        return Array(fillerlength).fill(value)
     }
     return value
 }

@@ -9,7 +9,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { isStringOptions } from '../../util/commandOptionsUtils.js'
-import { fillForElementArray } from '../../util/elementsUtil.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 
 async function conditionAttributeIsPresent(el: WebdriverIO.Element, attribute: string) {
     const attributeValue = await el.getAttribute(attribute)
@@ -87,8 +87,8 @@ async function toHaveAttributeFn(received: WdioElementOrArrayMaybePromise, attri
         isNot,
         { wait: options.wait, interval: options.interval }
     )
-    const expected = fillForElementArray(subject, '`a defined value`')
-    const actual = fillForElementArray(subject, actualAttributeValue)
+    const expected = fillSingleExpectedForElementArray(subject, '`a defined value`')
+    const actual = actualAttributeValue
     const message = enhanceError(subject, expected, actual, this, verb, expectation, attribute, options)
 
     return {

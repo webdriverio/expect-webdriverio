@@ -3,10 +3,10 @@ import {
     compareText, compareTextWithArray,
     enhanceError,
     waitUntil,
-    wrapExpectedWithArray
 } from '../../utils.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 
 async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
@@ -56,7 +56,8 @@ export async function toHaveText(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(subject, wrapExpectedWithArray(subject, actualText, expectedValue), actualText, this, verb, expectation, '', options)
+    const expected = fillSingleExpectedForElementArray(subject, expectedValue)
+    const message = enhanceError(subject, expected, actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

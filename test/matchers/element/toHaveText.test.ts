@@ -705,13 +705,13 @@ Received      : ["WebdriverIO", "Get Started"]`
 
         describe('Edge cases', () => {
 
-            // TODO is this a bug? to fix?
+            // TODO Review in major version to trim by default for multiple elements as well, to be consistent with single element behavior
             test('given exact text but with space in it should work by default', async () => {
                 const element = $('sel')
 
                 const result = await thisContext.toHaveText(element, ' Valid Text ')
 
-                expect(result.pass).toBe(false) // should be true?
+                expect(result.pass).toBe(false) // to review in major version to be true
             })
 
             test.each([
@@ -722,10 +722,11 @@ Received      : ["WebdriverIO", "Get Started"]`
                 const result = await thisContext.toHaveText(elements, 'webdriverio')
 
                 expect(result.pass).toBe(false)
+                // TODO to review for a better error message when no elements
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
-Expected: "webdriverio"
+Expected: ["webdriverio"]
 Received: undefined`)
             })
 
@@ -784,7 +785,7 @@ Received: undefined`)
                 expect(stripAnsi(results.message())).toEqual(`\
 Expect $$(\`elements\`) to have text
 
-Expected: "NotMatchingText"
+Expected: ["NotMatchingText"]
 Received: "webdriverio"`
                 )
             })
@@ -936,6 +937,19 @@ Received: "Invalid Text"`)
                 const result = await thisContext.toHaveText(els, 'webdriverio', { wait: 0 })
 
                 expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} to have text
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "webdriverio",
+-   "webdriverio",
++   "WebdriverIO",
++   "WebdriverIO",
+  ]`
+                )
             })
 
             test('should return false and show custom failure message correctly', async () => {
@@ -960,7 +974,21 @@ Expect ${selectorName} to have text
             test('should return false and show a correct custom failure message', async () => {
                 const result = await thisContext.toHaveText( els, 'webdriverio', { message: 'Test', wait: 0 })
 
-                expect(stripAnsi(result.message())).toMatch(/Test\nExpect .* to have text/)
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Test
+Expect ${selectorName} to have text
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "webdriverio",
+-   "webdriverio",
++   "WebdriverIO",
++   "WebdriverIO",
+  ]`
+                )
             })
 
             describe('when using .not', () => {
