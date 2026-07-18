@@ -1,7 +1,7 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
-import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { validateNumberArrayAndExtractOptions, type NumberMatcher } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
@@ -47,19 +47,22 @@ export async function toHaveWidth(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
-    let elements: WebdriverIO.Element | WdioElements | undefined
+    let elements: WebdriverIO.Element | WdioElements | unknown
     let actualWidth: MaybeArray<string | number | undefined> | undefined
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand(received,
-                undefined,
-                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedNumber, condition))
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedNumber,
+                singleElementCompare: (element, expectedNumber: NumberMatcher) => condition(element, expectedNumber),
+                isNot
+            })
 
-            elements = result.elementOrArray
-            actualWidth = result.valueOrArray
+            elements = result.subject
+            actualWidth = result.actual
 
-            return result
+            return result.success
         },
         isNot,
         { wait: commandOptions.wait, interval: commandOptions.interval }

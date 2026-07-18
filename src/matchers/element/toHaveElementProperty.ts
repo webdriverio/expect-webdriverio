@@ -1,7 +1,7 @@
 import type { AsyncAssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeArray, WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from '../../types.js'
-import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import { defaultMultipleElementsIterationStrategy, executeCommand, executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { isStringOptions } from '../../util/commandOptionsUtils.js'
 import {
     compareText,
@@ -94,18 +94,16 @@ export async function toHaveElementProperty(
     let actualProppertyValue: unknown
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand(received, undefined,
-                (elements) => defaultMultipleElementsIterationStrategy(
-                    elements,
-                    value,
-                    (element, expected) => condition(element, property, expected, options),
-                    { supportArrayForSingleElement: true }
-                )
-            )
-            el = result.elementOrArray
-            actualProppertyValue = result.valueOrArray
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: value,
+                singleElementCompare: (element, expectedValue: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null>) => condition(element, property, expectedValue, options),
+                isNot
+            })
+            el = result.subject
+            actualProppertyValue = result.actual
 
-            return result
+            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }

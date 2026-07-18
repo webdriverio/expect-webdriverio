@@ -1,7 +1,7 @@
 import type { RectReturn } from '@wdio/protocols'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementOrArrayMaybePromise } from '../../types.js'
-import { executeCommand, defaultMultipleElementsIterationStrategy } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
     compareObject,
     enhanceError,
@@ -34,15 +34,17 @@ export async function toHaveSize(
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand(received,
-                undefined,
-                async (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, condition)
-            )
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                singleElementCompare: (element, expectedSize: Size) => condition(element, expectedSize),
+                isNot
+            })
 
-            el = result.elementOrArray
-            actualSize = result.valueOrArray
+            el = result.subject
+            actualSize = result.actual
 
-            return result
+            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
