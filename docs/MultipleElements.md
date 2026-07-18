@@ -5,12 +5,13 @@ Matchers support an element array returned from `$$()`:
 - **Strict Index-based Matching**: If an array of expected values is provided, it must match the elements' count; each value is checked at its index.
 - If a single value is provided, every element is compared to it.
 - Asymmetric matchers (e.g., `expect.stringContaining`) work within expected value arrays.
-- Assertion fails if no elements are found, except with `toBeElementsArrayOfSize` and existing mathers `toExist`, `toBeExisting` and `toBePresent`.
-- Options like `StringOptions` or `HTMLOptions` apply to the whole array; `NumberMetcher` behaves like any expected provided value.
+- Assertion fails if no elements are found, except with `toBeElementsArrayOfSize` and existing matchers `toExist`, `toBeExisting` and `toBePresent`.
+- Options like `StringOptions` or `HTMLOptions` apply to the whole array; `NumberMatcher` behaves like any expected provided value.
 - The assertion passes only if **all** elements match.
 - Using `.not` means all elements must **not** match.
 
-**Note:** To apply strict Index-based matching to the `toHaveText` matcher, `useToHaveTextStrictMultiElementsCompareStrategy` must be enabled.
+**Note:** To apply strict index-based matching to the `toHaveText` matcher, `useToHaveTextStrictMultiElementsCompareStrategy` must be enabled. Else legacy behavior applies.
+
 ```ts
 // On the matcher directly
 expect($$('elements')).toHaveText(['text1','text2'], { useToHaveTextStrictMultiElementsCompareStrategy : true })
@@ -33,7 +34,7 @@ before: function (_capabilities, _specs) {
 - Instead of `StringOptions` for a single expected value, use RegExp or asymmetric matchers.
   - For `ignoreCase` use RegEx (`/MyExample/i`) 
   - For `containing` use Asymmetric Matchers (`expect.stringContaining('Example')`)
-- Passing an array of "containing" values is legacy behavior and only used be default with `toHaveText` when `useToHaveTextStrictMultiElementsCompareStrategy` is disabled.
+- Passing an array of "containing" values is a legacy behavior and only used by default with `toHaveText` when `useToHaveTextStrictMultiElementsCompareStrategy` is disabled.
 
 ## Supported types
 
@@ -52,8 +53,8 @@ Example in Mocha:
             { expectedText: 'two', index: 2 },
             { expectedText: 'four', index: 4 },
         ].forEach(function ( { expectedText, index } ) {
-            it("Element at $index of `$$('label')` is $expectedText", function () {
-                expect($$('label')[index]).toHaveText(expectedText);
+            it(`Element at ${index} of `$$('label')` have text "${expectedText}"`, function () {
+                await expect($$('label')[index]).toHaveText(expectedText);
             });
         });
     });

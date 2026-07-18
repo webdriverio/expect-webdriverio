@@ -766,7 +766,7 @@ await expect(elements).toHaveAttribute('class', [expect.stringContaining('contro
 // Use RegEx `i` for case insensitive
 await expect(elements).toHaveAttribute('class', [/Control1/i, 'control2'])
 
-// Use RegEx with `|` to micmic contains
+// Use RegEx with `|` to mimic contains
 await expect(elements).toHaveAttribute('class', /Control1|Control2/)
 await expect(elements).toHaveAttribute('class', [/Control1|Control2/, 'control3'])
 
