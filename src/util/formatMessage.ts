@@ -122,7 +122,7 @@ export const enhanceErrorBe = (
     const actualValue = `${not(!isNot)}${expectation}`
 
     if (isElementArrayLike(subject)) {
-        expected = subject.length === 0? 'at least one result' : subject.map(() => expectedValue)
+        expected = subject.length === 0? 'at least one result' : Array(subject.length).fill(expectedValue)
         actual = toArray(results).map(result => isSuccess(isNot, result) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
     } else {
         expected = expectedValue
