@@ -592,6 +592,8 @@ declare namespace ExpectWebdriverIO {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getConfig(): any
 
+    // TODO dprevost add setFeatureFlags here?
+
     /**
      * The below block are overloaded types from the expect library.
      * They are required to show "everything" under the `ExpectWebdriverIO` namespace.
@@ -739,6 +741,16 @@ declare namespace ExpectWebdriverIO {
         result: AssertionResult
     }
 
+    interface FeatureFlags {
+        /**
+             * Feature flag to enable the new multi-elements comparison for `toHaveText` matcher, allowing to keep the current behavior without breaking changes.
+             * When enabled, the matcher will compare the text of multiple elements in an indexed exact match manner, rather than using the array as a possible match for any of the elements.
+             *
+             * Will be removed in v6.0.0, as the new behavior will become the default and only behavior for `toHaveText` matcher.
+             */
+        useToHaveTextNewMultiElementsCompareStrategy?: boolean
+    }
+
     interface DefaultOptions {
         /**
          * time in ms to wait for expectation to succeed. Default: 3000
@@ -760,15 +772,7 @@ declare namespace ExpectWebdriverIO {
          */
         afterAssertion?: (params: AfterAssertionHookParams) => Promise<void>
 
-        featureFlags?: {
-            /**
-             * Feature flag to enable the new multi-elements comparison for `toHaveText` matcher, allowing to keep the current behavior without breaking changes.
-             * When enabled, the matcher will compare the text of multiple elements in an indexed exact match manner, rather than using the array as a possible match for any of the elements.
-             *
-             * Will be removed in v6.0.0, as the new behavior will become the default and only behavior for `toHaveText` matcher.
-             */
-            useToHaveTextNewMultiElementsCompareStrategy?: boolean
-        }
+        featureFlags?: FeatureFlags
     }
 
     interface CommandOptions extends DefaultOptions {

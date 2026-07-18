@@ -230,7 +230,7 @@ export const compareTextWithArray = (
     expectedArray: Array<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>,
     {
         ignoreCase = false,
-        trim = true,
+        trim = false, // TODO for single element we trim by default, but for array we don't trim by default. To review in v6.0.0 and make it consistent for both single and array of elements
         containing = false,
         atStart = false,
         atEnd = false,

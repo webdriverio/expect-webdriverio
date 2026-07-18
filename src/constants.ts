@@ -1,4 +1,4 @@
-const featureFlags = {
+const FEATURE_FLAGS = {
     useToHaveTextNewMultiElementsCompareStrategy: false
 }
 
@@ -7,7 +7,7 @@ export const DEFAULT_OPTIONS: Required<ExpectWebdriverIO.DefaultOptions> = {
     interval: 100,
     beforeAssertion: async () => {},
     afterAssertion: async () => {},
-    featureFlags
+    featureFlags: FEATURE_FLAGS
 }
 
 export const DEFAULT_OPTIONS_TO_BE_DISPLAYED: Required<Omit<ExpectWebdriverIO.ToBeDisplayedOptions, 'message'>> = {

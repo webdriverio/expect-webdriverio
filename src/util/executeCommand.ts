@@ -55,9 +55,7 @@ export async function executeCommand<T>(
         results = [await singleElementCompareStrategy(element)]
     } else if (multipleElementsCompareStrategy) {
         results = await multipleElementsCompareStrategy(elementOrArray)
-    } /* else if (singleElementCompareStrategy && elements) {
-        results = await map(elements, (el: WebdriverIO.Element) => singleElementCompareStrategy(el))
-    }*/ else  {
+    } else  {
         /* v8 ignore next -- @preserve -- To please tsc but never reached due to checks above */
         throw new Error('Unable to process executeCommand with the provided parameters')
     }
