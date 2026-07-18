@@ -2,6 +2,8 @@
 
 When you're writing tests, you often need to check that values meet certain conditions. `expect` gives you access to a number of "matchers" that let you validate different things on the `browser`, an `element` or `mock` object.
 
+**Note**: Multi-remote is not yet supported. Any working scenario is coincidental and may break or change without notice until fully supported.
+
 ## Soft Assertions
 
 Soft assertions allow you to continue test execution even when an assertion fails. This is useful when you want to check multiple conditions in a test and collect all failures rather than stopping at the first failure. Failures are collected and reported at the end of the test.
@@ -724,6 +726,30 @@ assert.ok(listItems.length <= 10)
 await expect(listItems).toBeElementsArrayOfSize({ gte: 5 })
 // In between
 await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
+```
+
+### Multiple Elements Support
+
+Matchers starting with `toBe` support arrays of elements returned from `$$()`:
+- **Standard Behavior:** Every element must pass. One failure fails the assertion.
+- **Using `.not`:** Every element must *not* meet the matcher condition. One match fails the assertion.
+- **Empty Arrays:** Empty element arrays will fail the assertion. 
+  - *Note:* Only the `toExist`, `toBeExisting`, and `toBePresent` matchers succeed when using `.not` on an empty element array.
+
+#### Usage
+
+```ts
+// Awaited selector syntax
+await expect(await $$('#someElements')).toBeDisplayed()
+
+// Non-awaited
+await expect($$('#someElements')).toBeDisplayed()
+
+// Works with filtered arrays
+await expect($$('#someElements').filter((t) => t.isExisting())).toBeDisplayed()
+
+// Using the .not modifier (Asserts NO elements are displayed)
+await expect($$('#someElements')).not.toBeDisplayed()
 ```
 
 ## Network Matchers

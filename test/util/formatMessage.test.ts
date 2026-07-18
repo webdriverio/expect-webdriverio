@@ -432,7 +432,7 @@ Expect ${elementName} not to have text
 
             const isNot = false
             test('when isNot is false and failure with result having pass=false', () => {
-                const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, options ))
+                const message = stripAnsi(enhanceErrorBe(subject, [false], { isNot, verb, expectation }, options ))
                 expect(message).toEqual(`\
 Expect $(\`element\`) to be displayed
 
@@ -442,7 +442,7 @@ Received: "not displayed"`)
 
             test('with custom message', () => {
                 const customMessage = 'Custom Error Message'
-                const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, { ...options, message: customMessage }))
+                const message = stripAnsi(enhanceErrorBe(subject, [false], { isNot, verb, expectation }, { ...options, message: customMessage }))
                 expect(message).toEqual(`\
 Custom Error Message
 Expect $(\`element\`) to be displayed
@@ -453,7 +453,7 @@ Received: "not displayed"`)
 
             test('when isNot is true and failure with result having pass=true (inverted later by Jest)', () => {
                 const isNot = true
-                const message = stripAnsi(enhanceErrorBe(subject, { isNot, verb, expectation }, options))
+                const message = stripAnsi(enhanceErrorBe(subject, [true], { isNot, verb, expectation }, options))
                 expect(message).toEqual(`\
 Expect $(\`element\`) not to be displayed
 
@@ -471,7 +471,7 @@ Received: "displayed"`)
                 { actual: {}, selectorName: '{}' },
                 { actual: ['1', '2'], selectorName: '["1","2"]' },
             ])('should return failure message for unsupported type $actual when isNot is false and not result from element function call', async ({ actual: subject, selectorName }) => {
-                const result = await enhanceErrorBe(subject as any, { isNot, verb, expectation }, options)
+                const result = await enhanceErrorBe(subject as any,  [], { isNot, verb, expectation }, options)
 
                 expect(stripAnsi(result)).toEqual(`\
 Expect ${selectorName} to be displayed
@@ -489,7 +489,7 @@ Received: "not displayed"`)
                 { actual: {}, selectorName: '{}' },
                 { actual: ['1', '2'], selectorName: '["1","2"]' },
             ])('should return failure message for unsupported type $actual when isNot is true and not result from element function call', async ({ actual: subject, selectorName }) => {
-                const result = await enhanceErrorBe(subject as any, { isNot: true, verb, expectation }, options)
+                const result = await enhanceErrorBe(subject as any, [], { isNot: true, verb, expectation }, options)
 
                 expect(stripAnsi(result)).toEqual(`\
 Expect ${selectorName} not to be displayed
@@ -499,224 +499,124 @@ Received: "displayed"`)
             })
         })
 
-        describe('given multiple elements', () => {
-            const elements = elementArrayFactory('elements', 2)
-            const elementName = '$$(`elements`)'
+        describe('given multiples elements', () => {
+            const subject = elementArrayFactory('elements', 2)
 
-            describe('elements when isNot is false', () => {
+            describe('when isNot is false', () => {
                 const isNot = false
-                test('all elements failure', () => {
-                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
-                    const actual = ['Test Actual Value 1', 'Test Actual Value 2']
 
-                    const actualFailureMessage = stripAnsi(enhanceError(
-                        elements,
-                        expected,
-                        actual,
-                        { isNot },
-                        'have',
-                        'text',
-                    ))
-
-                    expect(actualFailureMessage).toEqual(`\
-Expect ${elementName} to have text
+                test('failure with all results having pass=false', () => {
+                    const message = stripAnsi(enhanceErrorBe(subject, [false, false], { isNot, verb, expectation }, options ))
+                    expect(message).toEqual(`\
+Expect $$(\`elements\`) to be displayed
 
 - Expected  - 2
 + Received  + 2
 
   Array [
--   "Test Expected Value 1",
--   "Test Expected Value 2",
-+   "Test Actual Value 1",
-+   "Test Actual Value 2",
+-   "displayed",
+-   "displayed",
++   "not displayed",
++   "not displayed",
   ]`)
                 })
 
-                test('First elements failure', () => {
-                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
-                    const actual = ['Test Actual Value 1', 'Test Expected Value 2']
-
-                    const actualFailureMessage = stripAnsi(enhanceError(
-                        elements,
-                        expected,
-                        actual,
-                        { isNot },
-                        'have',
-                        'text',
-                    ))
-
-                    expect(actualFailureMessage).toEqual(`\
-Expect ${elementName} to have text
+                test('failure with first results having pass=true', () => {
+                    const message = enhanceErrorBe(subject, [true, false], { isNot, verb, expectation }, options )
+                    expect(stripAnsi(message)).toEqual(`\
+Expect $$(\`elements\`) to be displayed
 
 - Expected  - 1
 + Received  + 1
 
   Array [
--   "Test Expected Value 1",
-+   "Test Actual Value 1",
-    "Test Expected Value 2",
+    "displayed",
+-   "displayed",
++   "not displayed",
   ]`)
                 })
 
-                test('Seconds elements failure', () => {
-                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
-                    const actual = ['Test Expected Value 1', 'Test Actual Value 2']
-
-                    const actualFailureMessage = stripAnsi(enhanceError(
-                        elements,
-                        expected,
-                        actual,
-                        { isNot },
-                        'have',
-                        'text',
-                    ))
-
-                    expect(actualFailureMessage).toEqual(`\
-Expect ${elementName} to have text
+                test('failure with second results having pass=true', () => {
+                    const message = enhanceErrorBe(subject, [false, true], { isNot, verb, expectation }, options )
+                    expect(stripAnsi(message)).toEqual(`\
+Expect $$(\`elements\`) to be displayed
 
 - Expected  - 1
 + Received  + 1
 
   Array [
-    "Test Expected Value 1",
--   "Test Expected Value 2",
-+   "Test Actual Value 2",
+-   "displayed",
++   "not displayed",
+    "displayed",
   ]`)
+                })
+
+                test('when no element', () => {
+                    const message = enhanceErrorBe([], [], { isNot, verb, expectation }, options )
+                    expect(stripAnsi(message)).toEqual(`\
+Expect [] to be displayed
+
+Expected: "at least one result"
+Received: []`)
                 })
             })
 
-            describe('elements when isNot is true', () => {
+            describe('when isNot is true where failure are pass=true since Jest inverts the result', () => {
                 const isNot = true
-                test('all elements failure then all values are highlighted as failure', () => {
-                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
-                    const actual = ['Test Expected Value 1', 'Test Expected Value 2']
 
-                    const actualFailureMessage = stripAnsi(enhanceError(
-                        elements,
-                        expected,
-                        actual,
-                        { isNot },
-                        'have',
-                        'text',
-                    ))
+                test('failure with all results having pass=true', () => {
+                    const message = enhanceErrorBe(subject, [true, true], { isNot, verb, expectation }, options )
+                    expect(stripAnsi(message)).toEqual(`\
+Expect $$(\`elements\`) not to be displayed
 
-                    expect(actualFailureMessage).toEqual(`\
-Expect ${elementName} not to have text
-
-Expected [not]: ["Test Expected Value 1", "Test Expected Value 2"]
-Received      : ["Test Expected Value 1", "Test Expected Value 2"]`
-                    )
-                })
-
-                test('First elements failure then only first values are highlighted as failure', () => {
-                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
-                    const actual = ['Test Expected Value 1', 'Test Actual Value 2']
-
-                    const actualFailureMessage = stripAnsi(enhanceError(
-                        elements,
-                        expected,
-                        actual,
-                        { isNot },
-                        'have',
-                        'text',
-                    ))
-
-                    expect(actualFailureMessage).toEqual(`\
-Expect ${elementName} not to have text
-
-- Expected [not]  - 1
-+ Received        + 1
+- Expected  - 2
++ Received  + 2
 
   Array [
-    "Test Expected Value 1",
--   "Test Expected Value 2",
-+   "Test Actual Value 2",
-  ]`
-                    )
+-   "not displayed",
+-   "not displayed",
++   "displayed",
++   "displayed",
+  ]`)
                 })
 
-                test('Second elements failure then only second values are highlighted as failure', () => {
-                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
-                    const actual = ['Test Actual Value 1', 'Test Expected Value 2']
-
-                    const actualFailureMessage = enhanceError(
-                        elements,
-                        expected,
-                        actual,
-                        { isNot },
-                        'have',
-                        'text',
-                    )
-
-                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
-Expect ${elementName} not to have text
-
-- Expected [not]  - 1
-+ Received        + 1
-
-  Array [
--   "Test Expected Value 1",
-+   "Test Actual Value 1",
-    "Test Expected Value 2",
-  ]`
-                    )
-
-                })
-            })
-
-            describe('given subject is Element[]', () => {
-                test('should return element selector name inside the array', async () => {
-                    const arrayOfElements = [elementFactory('element1'), elementFactory('element2')]
-                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
-                    const actual = ['Test Actual Value 1', 'Test Expected Value 2']
-
-                    const actualFailureMessage = enhanceError(
-                        arrayOfElements,
-                        expected,
-                        actual,
-                        { isNot: false },
-                        'have',
-                        'text',
-                    )
-                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
-Expect [$(\`element1\`),$(\`element2\`)] to have text
+                test('failure with first results having success pass=false (inverted later)', () => {
+                    const message = enhanceErrorBe(subject, [false, true], { isNot, verb, expectation }, options )
+                    expect(stripAnsi(message)).toEqual(`\
+Expect $$(\`elements\`) not to be displayed
 
 - Expected  - 1
 + Received  + 1
 
   Array [
--   "Test Expected Value 1",
-+   "Test Actual Value 1",
-    "Test Expected Value 2",
-  ]`
-                    )
+    "not displayed",
+-   "not displayed",
++   "displayed",
+  ]`)
                 })
 
-                test('should return element selector name truncated when array of elements is too long', async () => {
-                    const arrayOfElements = Array(100).fill(null).map((_, index) => elementFactory(`element${index + 1}`))
-                    const expected = ['Test Expected Value 1', 'Test Expected Value 2']
-                    const actual = ['Test Actual Value 1', 'Test Expected Value 2']
-
-                    const actualFailureMessage = enhanceError(
-                        arrayOfElements,
-                        expected,
-                        actual,
-                        { isNot: false },
-                        'have',
-                        'text',
-                    )
-                    expect(stripAnsi(actualFailureMessage)).toEqual(`\
-Expect [$(\`element1\`),$(\`element2\`),$(\`element3\`),$(\`element4\`),$(\`element5\`),$(\`element6\`),$(\`element7\`),$... to have text
+                test('failure with second results having success pass=false (inverted later)', () => {
+                    const message = enhanceErrorBe(subject, [true, false], { isNot, verb, expectation }, options )
+                    expect(stripAnsi(message)).toEqual(`\
+Expect $$(\`elements\`) not to be displayed
 
 - Expected  - 1
 + Received  + 1
 
   Array [
--   "Test Expected Value 1",
-+   "Test Actual Value 1",
-    "Test Expected Value 2",
-  ]`
-                    )
+-   "not displayed",
++   "displayed",
+    "not displayed",
+  ]`)
+                })
+
+                test('when no elements', () => {
+                    const message = enhanceErrorBe([], [], { isNot, verb, expectation }, options )
+                    expect(stripAnsi(message)).toEqual(`\
+Expect [] not to be displayed
+
+Expected: "at least one result"
+Received: []`)
                 })
             })
         })

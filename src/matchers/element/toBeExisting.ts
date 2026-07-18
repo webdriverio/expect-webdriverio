@@ -1,13 +1,14 @@
 import { executeCommandBe } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
 
 export async function toExist(
-    received: WdioElementMaybePromise,
+    received: WdioElementOrArrayMaybePromise,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'exist'
     this.verb = this.verb || ''
+    this.allowEmptyElements = true
 
     await options.beforeAssertion?.({
         matcherName: 'toExist', // TODO use this.matcher =  this.matcher || toExist in v6.0.0 to fix matcherName issue with toBeExisting and toBePresent
@@ -25,13 +26,13 @@ export async function toExist(
     return result
 }
 
-export function toBeExisting(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
+export function toBeExisting(el: WdioElementOrArrayMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'existing'
     this.verb = 'be'
 
     return toExist.call(this, el, options)
 }
-export function toBePresent(el: WdioElementMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
+export function toBePresent(el: WdioElementOrArrayMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'present'
     this.verb = 'be'
 
