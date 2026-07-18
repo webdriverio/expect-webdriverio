@@ -1,5 +1,5 @@
-import { vi, test, describe, expect, afterEach, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
+import { $, $$ } from '@wdio/globals'
 
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
@@ -216,7 +216,7 @@ Received: "not displayed"`)
         let elements: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[]
         let awaitedElements: typeof elements
 
-        const selectorName = title.includes('filtered') ?  '$(`sel`), $$(`sel`)[1]': '$$(`sel`)'
+        const selectorName = title.includes('filtered') ?  '[$$(`sel`)[0],$$(`sel`)[1]]': '$$(`sel`)'
 
         beforeEach(async () => {
             elements = els
@@ -248,13 +248,13 @@ Received: "not displayed"`)
                 {
                     beforeAssertion: beforeAssertion,
                     afterAssertion: afterAssertion,
-                    interval: 100,
+                    interval: 1,
                     wait: 500,
                 },
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {
                 wait: 500,
-                interval: 100,
+                interval: 1,
             })
 
             expect(result.pass).toBe(true)
@@ -284,7 +284,7 @@ Received: "not displayed"`)
             })
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {
                 wait:  1,
-                interval: 100,
+                interval: 1,
             })
             expect(result.pass).toBe(true)
         })
@@ -333,7 +333,7 @@ Received: []`)
 
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
                 wait: 0,
-                interval: 100,
+                interval: 1,
             })
             awaitedElements.forEach((element) => {
                 expect(element.isDisplayed).toHaveBeenNthCalledWith(1,
@@ -371,7 +371,7 @@ Expect ${selectorName} not to be displayed
 
             const result = await thisNotContext.toBeDisplayed(noElementsFound)
 
-            expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect [] not to be displayed
 
@@ -444,7 +444,7 @@ Expect ${selectorName} not to be displayed
 
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), true, {
                 wait: 300,
-                interval: 100,
+                interval: 1,
             })
             awaitedElements.forEach((element) => {
                 expect(element.isDisplayed).toHaveBeenCalledWith(

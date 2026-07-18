@@ -27,7 +27,6 @@ export async function toBeSelected(
 }
 
 export async function toBeChecked (received: WdioElementOrArrayMaybePromise, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
-    this.verb = 'be'
     this.expectation = 'checked'
     this.matcherName = 'toBeChecked'
 

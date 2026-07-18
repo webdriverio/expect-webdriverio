@@ -755,6 +755,30 @@ await expect(listItems).toBeElementsArrayOfSize({ gte: 5 })
 await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
 ```
 
+### Multiple Elements Support
+
+Matchers starting with `toBe` support arrays of elements returned from `$$()`:
+- **Standard Behavior:** Every element must pass. One failure fails the assertion.
+- **Using `.not`:** Every element must *not* meet the matcher condition. One match fails the assertion.
+- **Empty Arrays:** Empty element arrays will fail the assertion. 
+  - *Note:* Only the `toExist`, `toBeExisting`, and `toBePresent` matchers succeed when using `.not` on an empty element array.
+
+#### Usage
+
+```ts
+// Awaited selector syntax
+await expect(await $$('#someElements')).toBeDisplayed()
+
+// Non-awaited
+await expect($$('#someElements')).toBeDisplayed()
+
+// Works with filtered arrays
+await expect($$('#someElements').filter((t) => t.isExisting())).toBeDisplayed()
+
+// Using the .not modifier (Asserts NO elements are displayed)
+await expect($$('#someElements')).not.toBeDisplayed()
+```
+
 ## Network Matchers
 
 ### toBeRequested

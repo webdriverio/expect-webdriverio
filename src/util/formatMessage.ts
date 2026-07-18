@@ -8,6 +8,8 @@ import { toJsonString } from './stringUtil.js'
 // TODO one day use a real asymmetric matcher for number options instead of this custom equality tester
 const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
 
+export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
+
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
     if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
@@ -38,11 +40,11 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
     }
 
     while (!!parent && typeof parent === 'object' && 'selector' in parent) {
-        const selector = getSelector(parent as WebdriverIO.Element)
-        const index = parent.index ? `[${parent.index}]` : ''
-        selectors.push(`${parent.index ? '$' : ''}$(\`${selector}\`)${index}`)
+        const selector = getSelector(parent)
+        const index = isDefined(parent.index) ? `[${parent.index}]` : ''
+        selectors.push(`${isDefined(parent.index) ? '$' : ''}$(\`${selector}\`)${index}`)
 
-        parent = (parent as WebdriverIO.Element).parent
+        parent = parent.parent
     }
 
     return selectors.reverse().join('.')
@@ -119,6 +121,8 @@ ${diffString}`
     return msg
 }
 
+const toArray = <T>(value: T | T[] | undefined): T[] => value === undefined ? [] : Array.isArray(value) ? value : [value]
+
 // Inspired by Jest's printReceivedArrayContainExpectedItem
 // Highlights matching elements when using .not to show what shouldn't have matched
 const printArrayWithMatchingItemInRed = (
@@ -159,7 +163,7 @@ const printArrayWithMatchingItemInRed = (
 
 export const enhanceErrorBe = (
     subject: WebdriverIO.Element | WdioElements | unknown,
-    results: boolean[],
+    results: boolean[] | boolean | undefined,
     context: { isNot: boolean, verb: string, expectation: string },
     options: ExpectWebdriverIO.CommandOptions
 ) => {
@@ -171,8 +175,8 @@ export const enhanceErrorBe = (
     const actualValue = `${not(!isNot)}${expectation}`
 
     if (isElementArrayLike(subject)) {
-        expected = subject.length === 0? 'at least one result' : subject.map(() => expectedValue)
-        actual = results.map(result => isSuccess(isNot, result) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
+        expected = subject.length === 0? 'at least one result' : Array(subject.length).fill(expectedValue)
+        actual = toArray(results).map(result => isSuccess(isNot, result) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
     } else {
         expected = expectedValue
         actual = actualValue
@@ -184,4 +188,3 @@ export const enhanceErrorBe = (
 const isSuccess = (isNot: boolean, result: boolean): boolean => {
     return isNot ? !result : result
 }
-

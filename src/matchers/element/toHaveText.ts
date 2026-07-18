@@ -5,11 +5,10 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import { executeCommand } from '../../util/executeCommand.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
-import { isElementArrayLike, map } from '../../util/elementsUtil.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 
-async function singleElementCompare(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
+async function compareElement(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
     const result = Array.isArray(text) ?
         compareTextWithArray(actualText, text, options).result
@@ -18,20 +17,6 @@ async function singleElementCompare(el: WebdriverIO.Element, text: MaybeArray<st
     return {
         value: actualText,
         result
-    }
-}
-
-// Same as singleElementCompare (e.g `$()`) but with a deprecation notice for `compareTextWithArray` removal to have the same behavior across all matchers with `$$()`
-async function multipleElementsStrategyCompare(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
-    const actualText = await el.getText()
-    const checkAllValuesMatchCondition = Array.isArray(text) ?
-    // @deprecated: using compareTextWithArray for $$() is deprecated and will be removed in future versions since it does not do a strict comparison per element.
-        compareTextWithArray(actualText, text, options).result
-        : compareText(actualText, text, options).result
-
-    return {
-        value: actualText,
-        result: checkAllValuesMatchCondition
     }
 }
 
@@ -48,29 +33,26 @@ export async function toHaveText(
         options,
     })
 
-    let elementOrArray
-    let actualText
+    let actualText: string | string[] | undefined
+    let subject: unknown = received
     const pass = await waitUntil(
         async () => {
-            const commandResult = await executeCommand(received,
-                undefined,
-                async (elements) => {
-                    if (isElementArrayLike(elements)) {
-                        return map(elements, async (element) => multipleElementsStrategyCompare(element, expectedValue, options))
-                    }
-                    return [await singleElementCompare(elements, expectedValue, options)]
-                }
-            )
-            elementOrArray = commandResult.elementOrArray
-            actualText = commandResult.valueOrArray
+            const commandResult = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                singleElementCompare: (element, _index) => compareElement(element, expectedValue, options),
+                isNot,
+                strategy: 'LegacyMultipleElements',
+            })
+            subject = commandResult.subject
+            actualText = commandResult.actual
 
-            return commandResult
+            return commandResult.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(elementOrArray, wrapExpectedWithArray(elementOrArray, actualText, expectedValue), actualText, this, verb, expectation, '', options)
+    const message = enhanceError(subject, wrapExpectedWithArray(subject, actualText, expectedValue), actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

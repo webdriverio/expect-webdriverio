@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $, } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 import { toBeDisabled } from '../../../src/matchers/element/toBeDisabled.js'
 import stripAnsi from 'strip-ansi'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
@@ -141,7 +141,7 @@ Received: "disabled"`)
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await thisContext.toBeDisabled(elements, { beforeAssertion, afterAssertion, wait: 500 })
+            const result = await thisContext.toBeDisabled(elements, { beforeAssertion, afterAssertion, wait: 30 })
 
             for (const element of elements) {
                 expect(element.isEnabled).toHaveBeenCalledExactlyOnceWith()
@@ -151,19 +151,19 @@ Received: "disabled"`)
                 {
                     afterAssertion,
                     beforeAssertion,
-                    wait: 500,
+                    wait: 30,
                 },
             )
-            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 500, interval: 100 })
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 30, interval: undefined })
 
             expect(result.pass).toBe(true)
             expect(beforeAssertion).toHaveBeenCalledWith({
                 matcherName: 'toBeDisabled',
-                options: { beforeAssertion, afterAssertion, wait: 500 }
+                options: { beforeAssertion, afterAssertion, wait: 30 }
             })
             expect(afterAssertion).toHaveBeenCalledWith({
                 matcherName: 'toBeDisabled',
-                options: { beforeAssertion, afterAssertion, wait: 500 },
+                options: { beforeAssertion, afterAssertion, wait: 30 },
                 result
             })
         })
@@ -174,7 +174,7 @@ Received: "disabled"`)
             elements.forEach(element => {
                 expect(element.isEnabled).toHaveBeenCalledExactlyOnceWith()
             })
-            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 1, interval: 100 })
+            expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 20, interval: 1 })
             expect(result.pass).toBe(true)
         })
 
@@ -208,8 +208,8 @@ Received: "disabled"`)
             const result = await thisContext.toBeDisabled(elements)
 
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {
-                wait: 1,
-                interval: 100,
+                wait: 20,
+                interval: 1,
             })
             elements.forEach(element => {
                 expect(element.isEnabled).toHaveBeenCalledExactlyOnceWith()
@@ -263,7 +263,7 @@ Expect $$(\`sel\`) not to be disabled
 
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), true, {
                 wait: 500,
-                interval: 100,
+                interval: undefined,
             })
             expect(elements[0].isEnabled).toHaveBeenCalledTimes(3)
             expect(elements[1].isEnabled).toHaveBeenCalledTimes(3)

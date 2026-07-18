@@ -3,9 +3,9 @@ import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
 
-import type { WdioElementOrArrayMaybePromise, WdioElements } from './types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
-import { executeCommand } from './util/executeCommand.js'
+import { executeCommandWithStrategy } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
 
@@ -64,31 +64,35 @@ export function getAsymmetricMatcherValue<T>(
 }
 
 async function executeCommandBe(
-    nonAwaitedElements: WdioElementOrArrayMaybePromise | undefined,
+    received: WdioElementOrArrayMaybePromise,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): ExpectWebdriverIO.AsyncAssertionResult {
-    const  { isNot, verb = 'be' } = this
+    const { isNot, verb = 'be', allowEmptyElements = false } = this
 
-    let awaitedElements: WdioElements | WebdriverIO.Element | undefined
-    let allResults: boolean[] = []
+    let subject: WdioElementMaybePromise | unknown = received
+    let actual: boolean[] | boolean | undefined
     const pass = await waitUntil(
         async () => {
-            const  { elementOrArray, success, results } = await executeCommand(
-                nonAwaitedElements,
-                async (element) => ({ result: await command(element) })
-            )
+            const result = await executeCommandWithStrategy({
+                unresolvedElements: subject,
+                singleElementCompare: async (element) => {
+                    const result = await command(element)
+                    return { result, value: result }
+                },
+                isNot,
+                configuration: { allowEmptyElements }
 
-            awaitedElements = elementOrArray
-            allResults = results
-
-            return { success, results }
+            })
+            subject = result.subject
+            actual = result.actual
+            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceErrorBe(awaitedElements, allResults, { ...this, verb }, options)
+    const message = enhanceErrorBe(subject, actual, { ...this, verb }, options)
 
     return {
         pass,

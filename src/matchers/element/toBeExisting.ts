@@ -8,7 +8,7 @@ export async function toExist(
 ) {
     this.expectation = this.expectation || 'exist'
     this.verb = this.verb || ''
-    this.matcherName = this.matcherName || 'toExist'
+    this.allowEmptyElements = true
 
     await options.beforeAssertion?.({
         matcherName: this.matcherName,
