@@ -78,10 +78,8 @@ export const setFeatureFlags = (featureFlags: Partial<ExpectWebdriverIO.FeatureF
     Object.entries(featureFlags).forEach(([ffName, ffValue]) => {
         defaultOptionsList.forEach((option) => {
             const featureFlags = option.featureFlags
-            if (ffName in featureFlags) {
-                // @ts-ignore
-                featureFlags[ffName] = ffValue
-            }
+            // @ts-ignore
+            featureFlags[ffName] = ffValue
         })
     })
 }
