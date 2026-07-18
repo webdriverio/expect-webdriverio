@@ -895,7 +895,7 @@ Received: "Invalid Text"`)
         const selectorName = title.includes('WebdriverIO.Element[]') ? '[$(`sel`),$(`dev`)]': '$$(`sel`)'
 
         beforeEach(async () => {
-            setFeatureFlags({ useToHaveTextNewMultiElementsCompareStrategy: true })
+            setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy: true })
             els = elements as ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] | Promise<WebdriverIO.Element[]> | Promise<WebdriverIO.ElementArray>
 
             const awaitedEls = await els

@@ -35,7 +35,7 @@ export async function toHaveText(
 
     let actualText: string | string[] | undefined
     let subject: unknown = received
-    const isLegacyCompare = !options.featureFlags?.useToHaveTextNewMultiElementsCompareStrategy
+    const isLegacyCompare = !options.featureFlags?.useToHaveTextStrictMultiElementsCompareStrategy
     const pass = await waitUntil(
         async () => {
             const commandResult = await executeCommandWithStrategy( {
@@ -45,7 +45,7 @@ export async function toHaveText(
                     return compareElement(element, values, options)
                 },
                 isNot,
-                strategy: isLegacyCompare ? 'LegacyMultipleElements' : 'NewMultipleElements',
+                strategy: isLegacyCompare ? 'LegacyLooseMultipleElements' : 'NewStrictMultipleElements',
             })
             subject = commandResult.subject
             actualText = commandResult.actual as string | string[] | undefined

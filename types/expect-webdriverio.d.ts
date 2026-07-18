@@ -748,7 +748,7 @@ declare namespace ExpectWebdriverIO {
              *
              * Will be removed in v6.0.0, as the new behavior will become the default and only behavior for `toHaveText` matcher.
              */
-        useToHaveTextNewMultiElementsCompareStrategy?: boolean
+        useToHaveTextStrictMultiElementsCompareStrategy?: boolean
     }
 
     interface DefaultOptions {

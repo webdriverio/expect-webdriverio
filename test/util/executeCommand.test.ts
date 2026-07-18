@@ -8,7 +8,7 @@ describe.skip('executeCommand', () => {
 
     describe(executeCommandWithStrategy, () => {
 
-        it('should call the legacy strategy when strategy is LegacyMultipleElements', async () => {
+        it('should call the legacy strategy when strategy is LegacyLooseMultipleElements', async () => {
             const legacyMultipleElementResultsStrategySpy = vi.spyOn(
                 await import('../../src/util/executeCommand'),
                 'legacyMultipleElementResultsStrategy'
@@ -19,13 +19,13 @@ describe.skip('executeCommand', () => {
                 expectedValues: 'expected',
                 singleElementCompare: async () => ({ result: true, value: 'actual' }),
                 isNot: false,
-                strategy: 'LegacyMultipleElements'
+                strategy: 'LegacyLooseMultipleElements'
             })
 
             expect(legacyMultipleElementResultsStrategySpy).toHaveBeenCalled()
         })
 
-        it('should call the new strategy when strategy is not LegacyMultipleElements', async () => {
+        it('should call the new strategy when strategy is not LegacyLooseMultipleElements', async () => {
             const multipleElementResultsStrategySpy = vi.spyOn(
                 await import('../../src/util/executeCommand'),
                 'multipleElementResultsStrategy'
@@ -36,7 +36,7 @@ describe.skip('executeCommand', () => {
                 expectedValues: 'expected',
                 singleElementCompare: async () => ({ result: true, value: 'actual' }),
                 isNot: false,
-                strategy: 'NewMultipleElements'
+                strategy: 'NewStrictMultipleElements'
             })
 
             expect(multipleElementResultsStrategySpy).toHaveBeenCalled()

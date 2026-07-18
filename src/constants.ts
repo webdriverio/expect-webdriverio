@@ -1,5 +1,5 @@
 const FEATURE_FLAGS = {
-    useToHaveTextNewMultiElementsCompareStrategy: false
+    useToHaveTextStrictMultiElementsCompareStrategy: false
 }
 
 export const DEFAULT_OPTIONS: Required<ExpectWebdriverIO.DefaultOptions> = {

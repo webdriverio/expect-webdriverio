@@ -1,7 +1,7 @@
 import type { WdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
 import { awaitElementOrArray, isElement } from './elementsUtil.js'
 
-export type StrategyType = 'LegacyMultipleElements' | 'NewMultipleElements'
+export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
 export type CompareResult<T> = { result: boolean; value: T }
 export type StrategyResult<T> = {
     subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown;
@@ -16,7 +16,7 @@ export type StrategyResult<T> = {
  * @param unresolvedElements awaited or non-awaited element(s) to be resolved and compared
  * @param singleElementCompare compare a single element with expected value(s)
  * @param isNot indicates if the assertion is inverted (e.g., using `.not`)
- * @param strategy the strategy type to use (defaults to 'NewMultipleElements')
+ * @param strategy the strategy type to use (defaults to 'NewStrictMultipleElements')
  * @param configuration configuration options for the strategy
  * @returns An object containing the subject, success status, actual values, and results of the comparison
  */
@@ -25,7 +25,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     expectedValues,
     singleElementCompare,
     isNot,
-    strategy = 'NewMultipleElements',
+    strategy = 'NewStrictMultipleElements',
     configuration = { allowEmptyElements: false }
 } :{
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown
@@ -36,7 +36,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     configuration?: { allowEmptyElements?: boolean }
 }
 ): Promise<StrategyResult<Actual>> {
-    if (strategy === 'LegacyMultipleElements') {
+    if (strategy === 'LegacyLooseMultipleElements') {
         return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot)
     }
 

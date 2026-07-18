@@ -579,7 +579,7 @@ await expect(elem).toHaveText(['Next-gen browser and mobile automation test fram
 await expect(elem).toHaveText([expect.stringContaining('test framework for Node.js'), expect.stringContaining('Started')])
 ```
 
-In case there is a list of elements in the div below:
+If you have a list of elements like the HTML structure below:
 
 ```
 <ul>
@@ -589,13 +589,13 @@ In case there is a list of elements in the div below:
 </ul>
 ```
 
-You can assert them using an array:
+You can assert all of them at once using an array:
 
 ```js
 await expect($$('ul > li')).toHaveText(['Coffee', 'Tea', 'Milk'])
 ```
 
-**Note:** Assertion with multiple elements will pass if the element text's matches any of the text in the arrays. Strict array matching is not yet supported.
+**Note:** To enable strict assertion matching, configure the `useToHaveTextNewMultiElementsCompareStrategy` flag in your command options or globally via `setDefaultOptions`.
 
 ### toHaveHTML
 
@@ -720,14 +720,14 @@ await expect(listItems).toBeElementsArrayOfSize({ gte: 5 })
 await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
 ```
 
-### Multiples Elements Support
+### Multiple Elements Support
 
 All element matchers support arrays of elements returned from `$$()`:
 - **Standard Behavior:** Every element must pass. One failure fails the assertion.
 - **Using `.not`:** Every element must *not* meet the matcher condition. One match fails the assertion.
 - **Empty Arrays:** Empty element arrays will fail the assertion by default. 
   - *Note:* Only the `toExist`, `toBeExisting`, and `toBePresent` matchers succeed when using `.not` on an empty element array.
-- **Legacy Behavior:** `toHaveText` retains its legacy behavior unless the `useToHaveTextNewMultiElementsCompareStrategy` flag is enabled.
+- **Legacy Behavior:** `toHaveText` retains its legacy behavior unless the `useToHaveTextStrictMultiElementsCompareStrategy` flag is enabled.
 - See [MultipleElements.md](MultipleElements.md) for more details.
 
 #### Usage
@@ -735,14 +735,14 @@ All element matchers support arrays of elements returned from `$$()`:
 ##### `toBe` matchers
 
 ```ts
-// Element awaited selector syntax
-const element = await $$('#someElements')
-await expect(element).toBeDisplayed()
+// Elements awaited selector syntax
+const elements = await $$('#someElements')
+await expect(elements).toBeDisplayed()
 
-// Element non-awaited
+// Elements non-awaited
 await expect($$('#someElements')).toBeDisplayed()
 
-// Works with filtered eleemnts array
+// Works with filtered elemnts array
 await expect($$('#someElements').filter((t) => t.isExisting())).toBeDisplayed()
 
 // Using the .not modifier (Asserts NO elements are displayed)
