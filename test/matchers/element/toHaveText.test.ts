@@ -716,7 +716,7 @@ Received: undefined`)
             { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
             { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
             { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
-        ])('not - should succeed? when actual is an empty of $name', async ({ elements }) => {
+        ])('not - should succeed when actual is an empty of $name - legacy behavior to deprecate!', async ({ elements }) => {
             const result = await thisNotContext.toHaveText(elements, 'webdriverio')
 
             expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`

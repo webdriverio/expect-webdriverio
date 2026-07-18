@@ -371,7 +371,7 @@ Expect ${selectorName} not to be displayed
 
             const result = await thisNotContext.toBeDisplayed(noElementsFound)
 
-            expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect [] not to be displayed
 
