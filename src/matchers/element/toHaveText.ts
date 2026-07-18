@@ -8,11 +8,11 @@ import {
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 
-async function compareElement(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
+async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const actualText = await el.getText()
-    const result = Array.isArray(text) ?
-        compareTextWithArray(actualText, text, options).result
-        : compareText(actualText, text, options).result
+    const result = Array.isArray(expectedText) ?
+        compareTextWithArray(actualText, expectedText, options).result
+        : compareText(actualText, expectedText, options).result
 
     return {
         value: actualText,

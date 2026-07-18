@@ -77,8 +77,8 @@ describe(toHaveAttribute, () => {
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute attribute_name
 
-Expected: "to have a defined value"
-Received: "value null"`
+Expected: "\`a defined value\`"
+Received: null`
                     )
                 })
             })
@@ -157,7 +157,7 @@ Received: "Wrong"`
             test.for([
                 undefined,
                 null
-            ])('failure when not present (not expected value) for %s', async ( attributeValue) => {
+            ])('failure when not present (not expected value) for %s', async ( attributeValue ) => {
                 vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
 
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name')
@@ -166,8 +166,8 @@ Received: "Wrong"`
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute attribute_name
 
-Expected: "to have a defined value"
-Received: "value ${attributeValue}"`
+Expected: "\`a defined value\`"
+Received: ${attributeValue}`
                 )
             })
 
@@ -222,8 +222,8 @@ Received: "value ${attributeValue}"`
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have attribute attribute_name
 
-Expected [not]: "to have a defined value"
-Received      : "value Correct Value"`
+Expected [not]: "\`a defined value\`"
+Received      : "Correct Value"`
                 )
             })
         })
@@ -297,8 +297,15 @@ Received: undefined`)
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have attribute attribute_name
 
-Expected: true
-Received: false`
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "\`a defined value\`",
+-   "\`a defined value\`",
++   null,
++   null,
+  ]`
                     )
                 })
             })

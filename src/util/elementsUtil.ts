@@ -8,11 +8,18 @@ import type { WdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePro
  * @param expected - The expected result to potentially wrap.
  * @returns An array containing the expected result if conditions are met, otherwise returns the expected result as-is.
  */
-export const wrapExpectedWithArray = (el: WebdriverIO.Element | WdioElements | unknown, actual: unknown, expected: unknown) => {
-    if (Array.isArray(el) && Array.isArray(actual) && !Array.isArray(expected)) {
+export const wrapExpectedWithArray = (elements: WebdriverIO.Element | WdioElements | unknown, actual: unknown, expected: unknown) => {
+    if (Array.isArray(elements) && Array.isArray(actual) && !Array.isArray(expected)) {
         expected = Array(actual.length).fill(expected)
     }
     return expected
+}
+
+export const fillForElementArray = (subject: WebdriverIO.Element | WdioElements | unknown, value: unknown): unknown[] | unknown => {
+    if (isElementArrayLike(subject) && !Array.isArray(value)) {
+        return Array(subject.length).fill(value)
+    }
+    return value
 }
 
 /**

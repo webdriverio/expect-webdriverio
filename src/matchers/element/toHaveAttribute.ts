@@ -1,14 +1,15 @@
 import type { AsyncAssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from '../../types.js'
-import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
-    compareText,
+    compareTextOrArray,
     enhanceError,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
 import { isStringOptions } from '../../util/commandOptionsUtils.js'
+import { fillForElementArray } from '../../util/elementsUtil.js'
 
 async function conditionAttributeIsPresent(el: WebdriverIO.Element, attribute: string) {
     const attributeValue = await el.getAttribute(attribute)
@@ -19,13 +20,14 @@ async function conditionAttributeIsPresent(el: WebdriverIO.Element, attribute: s
 
 }
 
-async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
+async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
     const attributeValue = await el.getAttribute(attribute)
     if (typeof attributeValue !== 'string') {
         return { result: false, value: attributeValue }
     }
 
-    return compareText(attributeValue, expectedValue, options)
+    const result = compareTextOrArray(attributeValue, expectedValue, options)
+    return { result, value: attributeValue }
 }
 
 export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybePromise, attribute: string, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
@@ -35,15 +37,19 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
     let attr
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand(received,
-                undefined,
-                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (element, expected) => conditionAttributeValueMatchWithExpected(element, attribute, expected, options))
-            )
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>>) => {
+                    return conditionAttributeValueMatchWithExpected(element, attribute, values, options)
+                },
+                isNot
+            })
 
-            el = result.elementOrArray
-            attr = result.valueOrArray
+            el = result.subject
+            attr = result.actual
 
-            return result
+            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
@@ -61,27 +67,29 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
 async function toHaveAttributeFn(received: WdioElementOrArrayMaybePromise, attribute: string, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
     const { expectation = 'attribute', verb = 'have', isNot } = this
 
-    let el
+    let subject
     let actualAttributeValue
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand(
-                received,
-                undefined,
-                (elements) => defaultMultipleElementsIterationStrategy(elements, attribute, (el) => conditionAttributeIsPresent(el, attribute))
-            )
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: undefined,
+                singleElementCompare: (element) => conditionAttributeIsPresent(element, attribute),
+                isNot
+            })
 
-            el = result.elementOrArray
+            subject = result.subject
+            actualAttributeValue = result.actual
 
-            return result
+            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
-    const expected = 'to have a defined value'
-    const actual = `value ${actualAttributeValue}`
-    const message = enhanceError(el, expected, actual, this, verb, expectation, attribute, options)
+    const expected = fillForElementArray(subject, '`a defined value`')
+    const actual = fillForElementArray(subject, actualAttributeValue)
+    const message = enhanceError(subject, expected, actual, this, verb, expectation, attribute, options)
 
     return {
         pass,

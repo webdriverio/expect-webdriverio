@@ -130,6 +130,16 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
+export const compareTextOrArray = (
+    actualText: string,
+    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>,
+    options: ExpectWebdriverIO.StringOptions
+) => {
+    return Array.isArray(expectedTexts) ?
+        compareTextWithArray(actualText, expectedTexts, options).result
+        : compareText(actualText, expectedTexts, options).result
+}
+
 export const compareText = (
     actual: string,
     expected: string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>,
