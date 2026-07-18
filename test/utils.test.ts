@@ -13,7 +13,6 @@ vi.mock('../src/util/executeCommand', async (importOriginal) => {
     const actual = await importOriginal<typeof import('../src/util/executeCommand')>()
     return {
         ...actual,
-        executeCommand: vi.spyOn(actual, 'executeCommand'),
         executeCommandWithStrategy: vi.spyOn(actual, 'executeCommandWithStrategy'),
     }
 })
@@ -230,6 +229,7 @@ Received: []`)
                 expect(result.pass).toBe(true)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: received,
+                    expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
                     configuration: { allowEmptyElements: false }
@@ -243,6 +243,7 @@ Received: []`)
                 expect(result.pass).toBe(true)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: received,
+                    expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
                     configuration: { allowEmptyElements: false }
@@ -333,6 +334,7 @@ Received: "displayed"`)
                 expect(result.pass).toBe(true)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elements,
+                    expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
                     configuration: { allowEmptyElements: false }
@@ -349,6 +351,7 @@ Received: "displayed"`)
                 expect(result.pass).toBe(true)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elementArray,
+                    expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
                     configuration: { allowEmptyElements: false }
@@ -364,6 +367,7 @@ Received: "displayed"`)
                 expect(result.pass).toBe(true)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elementArray,
+                    expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
                     configuration: { allowEmptyElements: false }
@@ -448,6 +452,7 @@ Expect ${selectorName} to be displayed
                     expect(result.pass).toBe(false)
                     expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                         unresolvedElements: elements,
+                        expectedValues: true,
                         singleElementCompare: expect.any(Function),
                         isNot: true,
                         configuration: { allowEmptyElements: false }

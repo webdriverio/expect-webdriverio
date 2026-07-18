@@ -1,7 +1,7 @@
 import type { AsyncAssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeArray, WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from '../../types.js'
-import { defaultMultipleElementsIterationStrategy, executeCommand, executeCommandWithStrategy } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { isStringOptions } from '../../util/commandOptionsUtils.js'
 import {
     compareText,

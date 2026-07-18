@@ -7,6 +7,5 @@ export function toHaveValue(
     value: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    this.matcherName = 'toHaveValue'
     return toHaveElementProperty.call(this, el, 'value', value, options)
 }

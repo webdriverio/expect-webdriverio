@@ -1,25 +1,17 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
-    compareText,
-    compareTextWithArray,
+    compareTextOrArray,
     enhanceError,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import type { CompareResult } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 
-async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.HTMLOptions) {
+async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.HTMLOptions): Promise<CompareResult<string>> {
     const actualHTML = await el.getHTML(options)
-    if (Array.isArray(html)) {
-        return compareTextWithArray(actualHTML, html, options)
-    }
-    return compareText(actualHTML, html, options)
-}
-
-async function multipleElementsStrategyCompare(el: WebdriverIO.Element, html: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.HTMLOptions) {
-    const actualHTML = await el.getHTML(options)
-    return compareText(actualHTML, html, options)
+    return compareTextOrArray(actualHTML, html, options)
 }
 
 export async function toHaveHTML(
@@ -39,14 +31,16 @@ export async function toHaveHTML(
     let actualHTML
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand(received,
-                (element) => singleElementCompare(element, expectedValue, options),
-                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (el, html) => multipleElementsStrategyCompare(el, html, options))
-            )
-            elements = result.elementOrArray
-            actualHTML = result.valueOrArray
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>) => singleElementCompare(element, expectedValue, options),
+                isNot
+            })
+            elements = result.subject
+            actualHTML = result.actual
 
-            return result
+            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
