@@ -1,33 +1,25 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementOrArrayMaybePromise } from '../../types.js'
-import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
-    compareText,
-    compareTextWithArray,
+    compareTextOrArray,
     enhanceError,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
 
 async function singleElementCompare(
-    el: WebdriverIO.Element,
+    element: WebdriverIO.Element,
     label: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.HTMLOptions
 ) {
-    const actualLabel = await el.getComputedLabel()
-    if (Array.isArray(label)) {
-        return compareTextWithArray(actualLabel, label, options)
-    }
-    return compareText(actualLabel, label, options)
-}
+    const actualLabel = await element.getComputedLabel()
+    const pass = compareTextOrArray(actualLabel, label, options)
 
-async function multipleElementsStrategyCompare(
-    el: WebdriverIO.Element,
-    label: string | RegExp | AsymmetricMatcher<string>,
-    options: ExpectWebdriverIO.HTMLOptions
-) {
-    const actualLabel = await el.getComputedLabel()
-    return compareText(actualLabel, label, options)
+    return {
+        result: pass,
+        value: actualLabel
+    }
 }
 
 export async function toHaveComputedLabel(
@@ -48,14 +40,16 @@ export async function toHaveComputedLabel(
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand(received,
-                (element) => singleElementCompare(element, expectedValue, options),
-                (elements) => defaultMultipleElementsIterationStrategy(elements, expectedValue, (element, label) => multipleElementsStrategyCompare(element, label, options))
-            )
-            el = result.elementOrArray
-            actualLabel = result.valueOrArray
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>) => singleElementCompare(element, expectedValue, options),
+                isNot
+            })
+            el = result.subject
+            actualLabel = result.actual
 
-            return result
+            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }

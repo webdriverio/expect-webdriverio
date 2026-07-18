@@ -1,7 +1,7 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from '../../types.js'
 import { isStrictlyCommandOptions } from '../../util/commandOptionsUtils.js'
-import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import {
@@ -78,26 +78,28 @@ export async function toHaveChildren(
         options,
     })
 
-    let el
+    let subject
     let children
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand(received,
-                undefined,
-                async (elements) => defaultMultipleElementsIterationStrategy(elements, expectedNumber, condition)
-            )
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedNumber,
+                singleElementCompare: (element, expectedValue: NumberMatcher) => condition(element, expectedValue),
+                isNot
+            })
 
-            el = result.elementOrArray
-            children = result.valueOrArray
+            subject = result.subject
+            children = result.actual
 
-            return result
+            return result.success
         },
         isNot,
         { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
-    const expectedArray = wrapExpectedWithArray(el, children, expectedNumber)
-    const message = enhanceError(el, expectedArray, children, this, verb, expectation, '', commandOptions)
+    const expectedArray = wrapExpectedWithArray(subject, children, expectedNumber)
+    const message = enhanceError(subject, expectedArray, children, this, verb, expectation, '', commandOptions)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

@@ -186,6 +186,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 ): Promise<StrategyResult<Actual>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
+
     if (!selector || isEmptyElements) {
         return {
             subject: subject,

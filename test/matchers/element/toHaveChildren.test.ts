@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 
 import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren'
 import { chainableElementArrayFactory } from '../../__mocks__/@wdio/globals'
@@ -269,26 +269,27 @@ Received      : 2`
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
-                    options: { beforeAssertion, afterAssertion },
-                    expectedValue: { eq: 2, wait: 0, interval: 5 }
+                    options: { beforeAssertion, afterAssertion, wait: 0, interval: 5 },
+                    expectedValue: { eq: 2 }
 
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
-                    options: { beforeAssertion, afterAssertion },
+                    options: { beforeAssertion, afterAssertion, wait: 0, interval: 5 },
                     result,
-                    expectedValue: { eq: 2, wait: 0, interval: 5 }
+                    expectedValue: { eq: 2 }
                 })
             })
 
             test('success - If no options passed in + children exists', async () => {
                 const result = await thisContext.toHaveChildren(elements)
+
                 expect(result.pass).toBe(true)
             })
 
             // TODO failure message show 2 expected missing while only one should, to enhance later
             test('fails - If no options passed in + children do not exist', async () => {
-                vi.mocked(elements[0].$$).mockReturnValueOnce(chainableElementArrayFactory('./child', 0))
+                elements[0].$$ = vi.fn(() => chainableElementArrayFactory('./child', 0))
 
                 const result = await thisContext.toHaveChildren(elements, undefined)
 
