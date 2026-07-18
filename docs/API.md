@@ -284,41 +284,6 @@ await expect(browser).toHaveLocalStorageItem('userId', /^user_\d+$/)
 
 ## Element Matchers
 
-### Multiples Elements Support
-
-All element matchers support arrays (e.g., `$$()` results).
-
-- Each element must pass the matcher for the assertion to succeed; if any fail, the assertion fails.
-   - `toHaveText` differ and keep it's legacy behavior.
-- See [MultipleElements.md](MultipleElements.md) for details.
-
-#### Usage
-
-```ts
-await expect($$('#someElem')).toBeDisplayed()
-await expect(await $$('#someElem')).toBeDisplayed()
-```
-
-```ts
-const elements = await $$('#someElem')
-
-// Single value: checked against every element
-await expect(elements).toHaveAttribute('class', 'form-control')
-
-// Array: each value checked at corresponding element index (must match length)
-await expect(elements).toHaveAttribute('class', ['control1', 'control2'])
-
-// Use asymmetric matchers for flexible matching
-await expect(elements).toHaveAttribute('class', [expect.stringContaining('control1'), 'control2'])
-
-// Use RegEx `i` for case insensitive
-await expect(elements).toHaveAttribute('class', [/'Control1'/i, 'control2'])
-
-
-// Works with filtered arrays too
-await expect($$('#someElem').filter(el => el.isDisplayed())).toHaveAttribute('class', ['control1', 'control2'])
-```
-
 ### toBeDisplayed
 
 Calls [`isDisplayed`](https://webdriver.io/docs/api/element/isDisplayed/) on given element.
@@ -755,28 +720,61 @@ await expect(listItems).toBeElementsArrayOfSize({ gte: 5 })
 await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
 ```
 
-### Multiple Elements Support
+### Multiples Elements Support
 
-Matchers starting with `toBe` support arrays of elements returned from `$$()`:
+All element matchers support arrays of elements returned from `$$()`:
 - **Standard Behavior:** Every element must pass. One failure fails the assertion.
 - **Using `.not`:** Every element must *not* meet the matcher condition. One match fails the assertion.
-- **Empty Arrays:** Empty element arrays will fail the assertion. 
+- **Empty Arrays:** Empty element arrays will fail the assertion by default. 
   - *Note:* Only the `toExist`, `toBeExisting`, and `toBePresent` matchers succeed when using `.not` on an empty element array.
+- **Legacy Behavior:** `toHaveText` retains its legacy behavior unless the `useToHaveTextNewMultiElementsCompareStrategy` flag is enabled.
+- See [MultipleElements.md](MultipleElements.md) for more details.
 
 #### Usage
 
-```ts
-// Awaited selector syntax
-await expect(await $$('#someElements')).toBeDisplayed()
+##### `toBe` matchers
 
-// Non-awaited
+```ts
+// Element awaited selector syntax
+const element = await $$('#someElements')
+await expect(element).toBeDisplayed()
+
+// Element non-awaited
 await expect($$('#someElements')).toBeDisplayed()
 
-// Works with filtered arrays
+// Works with filtered eleemnts array
 await expect($$('#someElements').filter((t) => t.isExisting())).toBeDisplayed()
 
 // Using the .not modifier (Asserts NO elements are displayed)
 await expect($$('#someElements')).not.toBeDisplayed()
+```
+
+##### `toHave` matchers
+
+```ts
+const elements = await $$('#someElem')
+
+// Single value: checked against every element
+await expect(elements).toHaveAttribute('class', 'form-control')
+
+// Array: each value checked at corresponding element index (must match length)
+await expect(elements).toHaveAttribute('class', ['control1', 'control2'])
+
+// Use asymmetric matchers for flexible matching
+await expect(elements).toHaveAttribute('class', [expect.stringContaining('control1'), 'control2'])
+
+// Use RegEx `i` for case insensitive
+await expect(elements).toHaveAttribute('class', [/Control1/i, 'control2'])
+
+// Use RegEx with `|` to micmic contains
+await expect(elements).toHaveAttribute('class', /Control1|Control2/)
+await expect(elements).toHaveAttribute('class', [/Control1|Control2/, 'control3'])
+
+// Elements non-awaited
+await expect($$('#someElem')).toHaveAttribute('class', 'form-control')
+
+// Works with filtered elements array too
+await expect($$('#someElem').filter(el => el.isExisting())).toHaveAttribute('class', ['control1', 'control2'])
 ```
 
 ## Network Matchers
