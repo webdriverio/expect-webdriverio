@@ -517,7 +517,7 @@ Received: "not displayed"`)
             await expectLib(elements).toBeElementsArrayOfSize(2)
         })
 
-        test('toBe matchers and toHve matchers work with .not', async () => {
+        test('toBe matchers and toHave matchers work with .not', async () => {
             await expectLib(elements).not.toBeDisabled()
             await expectLib(elements).not.toHaveText('Some other text')
             await expectLib(elements).not.toHaveHTML('<SomeOtherHtml/>')

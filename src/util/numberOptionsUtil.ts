@@ -50,7 +50,6 @@ export function validateNumberArrayAndExtractOptions(
     { supportDefaultAsGteThen1 }: { supportDefaultAsGteThen1?: boolean } = {}
 ): { numberMatcher: MaybeArray<NumberMatcher>; commandOptions: ExpectWebdriverIO.CommandOptions } {
     if (Array.isArray(expectedValues)) {
-        // TODO: deprecated NumberOptions as options in favor of ExpectedType and realy only on commandOptions param + overloaded function
         const allNumbers = expectedValues.map((value) => validateNumberAndExtractOptions(value, commandOptions, { supportDefaultAsGteThen1 }))
         return { numberMatcher: allNumbers.map( ({ numberMatcher }) =>  numberMatcher), commandOptions }
     }
