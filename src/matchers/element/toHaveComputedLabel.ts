@@ -14,12 +14,8 @@ async function singleElementCompare(
     options: ExpectWebdriverIO.HTMLOptions
 ) {
     const actualLabel = await element.getComputedLabel()
-    const pass = compareTextOrArray(actualLabel, label, options)
+    return compareTextOrArray(actualLabel, label, options)
 
-    return {
-        result: pass,
-        value: actualLabel
-    }
 }
 
 export async function toHaveComputedLabel(

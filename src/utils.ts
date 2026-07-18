@@ -5,6 +5,7 @@ import { expect } from 'expect'
 
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
+import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
@@ -134,10 +135,10 @@ export const compareTextOrArray = (
     actualText: string,
     expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions
-) => {
+): CompareResult<string> => {
     return Array.isArray(expectedTexts) ?
-        compareTextWithArray(actualText, expectedTexts, options).result
-        : compareText(actualText, expectedTexts, options).result
+        compareTextWithArray(actualText, expectedTexts, options)
+        : compareText(actualText, expectedTexts, options)
 }
 
 export const compareText = (
@@ -152,7 +153,7 @@ export const compareText = (
         atIndex,
         replace,
     }: ExpectWebdriverIO.StringOptions
-) => {
+): CompareResult<string> => {
     if (typeof actual !== 'string') {
         return {
             value: actual,

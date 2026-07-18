@@ -26,8 +26,7 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
         return { result: false, value: attributeValue }
     }
 
-    const result = compareTextOrArray(attributeValue, expectedValue, options)
-    return { result, value: attributeValue }
+    return compareTextOrArray(attributeValue, expectedValue, options)
 }
 
 export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybePromise, attribute: string, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {

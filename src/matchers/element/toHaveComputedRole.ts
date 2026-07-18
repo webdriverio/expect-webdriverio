@@ -1,33 +1,20 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementOrArrayMaybePromise } from '../../types.js'
-import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
-    compareText,
-    compareTextWithArray,
+    compareTextOrArray,
     enhanceError,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
 
 async function singleElementCompare(
-    el: WebdriverIO.Element,
+    element: WebdriverIO.Element,
     role: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.HTMLOptions
 ) {
-    const actualRole = await el.getComputedRole()
-    if (Array.isArray(role)) {
-        return compareTextWithArray(actualRole, role, options)
-    }
-    return compareText(actualRole, role, options)
-}
-
-async function multipleElementsStrategyCompare(
-    el: WebdriverIO.Element,
-    role: string | RegExp | AsymmetricMatcher<string>,
-    options: ExpectWebdriverIO.HTMLOptions
-) {
-    const actualRole = await el.getComputedRole()
-    return compareText(actualRole, role, options)
+    const actualRole = await element.getComputedRole()
+    return compareTextOrArray(actualRole, role, options)
 }
 
 export async function toHaveComputedRole(
@@ -48,17 +35,16 @@ export async function toHaveComputedRole(
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand(received,
-                (element) => singleElementCompare(element, expectedValue, options),
-                async (elements) => defaultMultipleElementsIterationStrategy(elements,
-                    expectedValue,
-                    (element, expected) => multipleElementsStrategyCompare(element, expected, options)
-                )
-            )
-            el = result.elementOrArray
-            actualRole = result.valueOrArray
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>) => singleElementCompare(element, expectedValue, options),
+                isNot
+            })
+            el = result.subject
+            actualRole = result.actual
 
-            return result
+            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }

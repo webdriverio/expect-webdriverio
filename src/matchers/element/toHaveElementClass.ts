@@ -1,12 +1,13 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type {  WdioElementOrArrayMaybePromise } from '../../types.js'
-import { defaultMultipleElementsIterationStrategy, executeCommand } from '../../util/executeCommand.js'
-import { compareText, compareTextWithArray, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import type { CompareResult } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
+import { compareText, compareTextOrArray, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 
-async function singleElementStrategyCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
+async function singleElementCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const actualClass = await el.getAttribute(attribute)
     if (typeof actualClass !== 'string') {
-        return { result: false }
+        return { result: false, value: actualClass }
     }
 
     /**
@@ -18,38 +19,13 @@ async function singleElementStrategyCompare(el: WebdriverIO.Element, attribute: 
     }
 
     const classes = actualClass.split(' ')
-    const isValueInClasses = classes.some((t) => {
-        return Array.isArray(value)
-            ? compareTextWithArray(t, value, options).result
-            : compareText(t, value, options).result
+    const isValueInClasses = classes.some((clazz) => {
+        return compareTextOrArray(clazz, value, options).result
     })
 
     return {
         result: isValueInClasses,
         value: actualClass
-    }
-}
-
-async function multipleElementsStrategyCompare(el: WebdriverIO.Element, attribute: string, value: string | RegExp | WdioAsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
-    const actualClass = await el.getAttribute(attribute)
-    if (typeof actualClass !== 'string') {
-        return { result: false }
-    }
-
-    /**
-     * if value is an asymmetric matcher, no need to split class names
-     * into an array and compare each of them
-     */
-    if (isAsymmetricMatcher(value)) {
-        return compareText(actualClass, value, options)
-    }
-
-    const classes = actualClass.split(' ')
-    const isValueInClasses = classes.some((t) => compareText(t, value, options).result)
-
-    return {
-        result: isValueInClasses,
-        value: actualClass,
     }
 }
 
@@ -73,16 +49,16 @@ export async function toHaveElementClass(
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand(received, (element) =>
-                singleElementStrategyCompare(element, attribute, expectedValue, options),
-            (elements) => defaultMultipleElementsIterationStrategy(elements,
-                expectedValue,
-                (element, value) => multipleElementsStrategyCompare(element, attribute, value, options))
-            )
-            el = result.elementOrArray
-            attr = result.valueOrArray
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>) => singleElementCompare(element, attribute, expectedValue, options),
+                isNot
+            })
+            el = result.subject
+            attr = result.actual
 
-            return result
+            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
