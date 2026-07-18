@@ -6,7 +6,6 @@ export async function toBeSelected(
     received: WdioElementOrArrayMaybePromise,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    this.verb = this.verb || 'be'
     this.expectation = this.expectation || 'selected'
     this.matcherName = this.matcherName || 'toBeSelected'
 

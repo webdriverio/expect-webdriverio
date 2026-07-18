@@ -11,14 +11,14 @@ export async function toExist(
     this.allowEmptyElements = true
 
     await options.beforeAssertion?.({
-        matcherName: this.matcherName,
+        matcherName: 'toExist', // TODO use this.matcher =  this.matcher || toExist in v6.0.0 to fix matcherName issue with toBeExisting and toBePresent
         options,
     })
 
     const result = await executeCommandBe.call(this, received, el => el?.isExisting(), options)
 
     await options.afterAssertion?.({
-        matcherName: this.matcherName,
+        matcherName: 'toExist',
         options,
         result
     })
@@ -27,16 +27,12 @@ export async function toExist(
 }
 
 export function toBeExisting(el: WdioElementOrArrayMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
-    this.verb = 'be'
     this.expectation = 'existing'
-    this.matcherName = 'toBeExisting'
 
     return toExist.call(this, el, options)
 }
 export function toBePresent(el: WdioElementOrArrayMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
-    this.verb = 'be'
     this.expectation = 'present'
-    this.matcherName = 'toBePresent'
 
     return toExist.call(this, el, options)
 }

@@ -2,7 +2,7 @@
 
 When you're writing tests, you often need to check that values meet certain conditions. `expect` gives you access to a number of "matchers" that let you validate different things on the `browser`, an `element` or `mock` object.
 
-**Note:** Multi-remote is not yet supported; any working case is coincidental and could break or change until fully supported.
+**Note**: Multi-remote is not yet supported. Any working scenario is coincidental and may break or change without notice until fully supported.
 
 ## Soft Assertions
 
