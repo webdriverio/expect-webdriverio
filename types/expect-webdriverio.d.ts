@@ -588,9 +588,22 @@ declare namespace ExpectWebdriverIO {
     /**
      * Used by the webdriverio main project to configure the matchers in the runner.
      */
+    function setDefaultOptions(options: DefaultOptions): void
+    /** @deprecated use setDefaultOptions instead, will be removed in v6.0.0 */
     function setOptions(options: DefaultOptions): void
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function getConfig(): any
+
+    /**
+     * Allow to enable some new features in the expect-webdriverio library.
+     * @param flags
+     */
+    function setFeatureFlags(flags: FeatureFlags): void
+
+    /**
+     * Get the default options set by the user.
+     */
+    function getDefaultOptions(): DefaultOptions
+    /** @deprecated use getDefaultOptions instead, will be removed in v6.0.0 */
+    function getConfig(): DefaultOptions
 
     // TODO dprevost add setFeatureFlags here?
 

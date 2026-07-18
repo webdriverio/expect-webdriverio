@@ -595,7 +595,7 @@ You can assert all of them at once using an array:
 await expect($$('ul > li')).toHaveText(['Coffee', 'Tea', 'Milk'])
 ```
 
-**Note:** To enable strict assertion matching, configure the `useToHaveTextNewMultiElementsCompareStrategy` flag in your command options or globally via `setDefaultOptions`.
+**Note:** To enable strict assertion matching, configure the `useToHaveTextStrictMultiElementsCompareStrategy` flag in your command options or globally via `setDefaultOptions`.
 
 ### toHaveHTML
 

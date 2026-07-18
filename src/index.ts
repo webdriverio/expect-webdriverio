@@ -61,8 +61,8 @@ Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
 
 export const expect = expectWithSoft
 
-// TODO one day to rename to something more aligned with setDefaultOptions
-export const getConfig = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
+// Default options for the expect-webdriverio library
+export const getDefaultOptions = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
 export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOptions>): void => {
     Object.entries(options).forEach(([key, value]) => {
         defaultOptionsList.forEach((option) => {
@@ -86,10 +86,10 @@ export const setFeatureFlags = (featureFlags: Partial<ExpectWebdriverIO.FeatureF
     })
 }
 
-/**
- * @deprecated use setDefaultOptions instead
- */
+/** @deprecated use setDefaultOptions instead. Will be removed in v6.0.0 */
 export const setOptions = setDefaultOptions
+/** @deprecated use getConfig instead, will be removed in v6.0.0 */
+export const getConfig = getDefaultOptions
 
 /**
  * export snapshot utilities

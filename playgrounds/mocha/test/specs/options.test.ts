@@ -1,16 +1,19 @@
 import { $ } from '@wdio/globals'
-import { setOptions, getConfig } from 'expect-webdriverio'
+import { setOptions, getConfig, getDefaultOptions, setDefaultOptions } from 'expect-webdriverio'
 
 describe('Global Options', () => {
-    const defaultWait = getConfig().wait
+    const defaultWait = getDefaultOptions().wait
 
     before(() => {
         setOptions({ wait: 1 })
+        setDefaultOptions({ wait: 1 })
     })
 
     it('should set global wait option', () => {
         expect(getConfig().wait).toBe(1)
         expect(getConfig().wait).not.toBe(defaultWait)
+        expect(getDefaultOptions().wait).toBe(1)
+        expect(getDefaultOptions().wait).not.toBe(defaultWait)
         expect(defaultWait).toBe(10000)
     })
 
@@ -26,6 +29,6 @@ describe('Global Options', () => {
     })
 
     after(() => {
-        setOptions({ wait: defaultWait })
+        setDefaultOptions({ wait: defaultWait })
     })
 })
