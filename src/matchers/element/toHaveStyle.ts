@@ -9,8 +9,10 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, style: MaybeArray<{ [key: string]: string; }> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<{ [key: string]: string | undefined; }>> {
-    // TODO add tests
+async function condition(el: WebdriverIO.Element, style: MaybeArray<{ [key: string]: string; }> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<{ [key: string]: string | undefined; } | undefined>> {
+    if (style === undefined) {
+        return { result: false, value: undefined }
+    }
     if (Array.isArray(style)) {
         const results = await Promise.all(style.map((s) => compareStyle(el, s, options)))
         const result = results.find((result) => result.result)

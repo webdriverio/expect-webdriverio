@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle.js'
 import type { ParsedCSSValue } from 'webdriverio'
 import stripAnsi from 'strip-ansi'
@@ -240,5 +240,301 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             expect(result.pass).toBe(true)
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
         })
+    })
+
+    describe('given multiple elements', () => {
+        let elements: ChainablePromiseArray
+
+        const mockStyle: { [key: string]: string; } = {
+            'font-family': 'Faktum',
+            'font-size': '26px',
+            'color': '#000'
+        }
+
+        beforeEach(async () => {
+            elements = await $$('elements')
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockImplementation(async (property: string) =>
+                    ({ value: mockStyle[property], parsed: {} } satisfies ParsedCSSValue)
+                )
+            })
+        })
+
+        test('wait for success - single expected value', async () => {
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockResolvedValueOnce({ value: 'Wrong Value', parsed: {} })
+                    .mockImplementation(async (property: string) => {
+                        return { value: mockStyle[property], parsed: {} }
+                    })
+            })
+
+            const result = await thisContext.toHaveStyle(elements, mockStyle)
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('wait for success - multiple expected values', async () => {
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockResolvedValueOnce({ value: 'Wrong Value', parsed: {} })
+                    .mockImplementation(async (property: string) => {
+                        return { value: mockStyle[property], parsed: {} }
+                    })
+            })
+
+            const result = await thisContext.toHaveStyle(elements, [mockStyle, mockStyle])
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('fails - not enough expected values', async () => {
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockResolvedValueOnce({ value: 'Wrong Value', parsed: {} })
+                    .mockImplementation(async (property: string) => {
+                        return { value: mockStyle[property], parsed: {} }
+                    })
+            })
+
+            const result = await thisContext.toHaveStyle(elements, [mockStyle])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) to have style
+
+- Expected  - 0
++ Received  + 1
+
+  Array [
+    Object {
+      "color": "#000",
+      "font-family": "Faktum",
+      "font-size": "26px",
+    },
++   undefined,
+  ]`
+            )
+        })
+
+        test('fails - too many expected values', async () => {
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockResolvedValueOnce({ value: 'Wrong Value', parsed: {} })
+                    .mockImplementation(async (property: string) => {
+                        return { value: mockStyle[property], parsed: {} }
+                    })
+            })
+
+            const result = await thisContext.toHaveStyle(elements, [mockStyle, mockStyle, mockStyle])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) to have style
+
+- Expected  - 5
++ Received  + 1
+
+  Array [
+    Object {
+      "color": "#000",
+      "font-family": "Faktum",
+      "font-size": "26px",
+    },
+    Object {
+      "color": "#000",
+      "font-family": "Faktum",
+      "font-size": "26px",
+    },
+-   Object {
+-     "color": "#000",
+-     "font-family": "Faktum",
+-     "font-size": "26px",
+-   },
++   undefined,
+  ]`
+            )
+        })
+
+        //         test('wait but failure', async () => {
+
+        //             vi.mocked(elements.getCSSProperty).mockRejectedValue(new Error('some error'))
+
+        //             await expect(() => thisContext.toHaveStyle(elements, mockStyle, { ignoreCase: true, wait: 1 }))
+        //                 .rejects.toThrow('some error')
+        //         })
+
+        //         test('success on the first attempt', async () => {
+        //             const result = await thisContext.toHaveStyle(elements, mockStyle, { wait: 1, ignoreCase: true })
+
+        //             expect(result.pass).toBe(true)
+        //             expect(elements.getCSSProperty).toHaveBeenCalledTimes(3)
+        //         })
+
+        //         test('no wait - failure', async () => {
+        //             vi.mocked(elements.getCSSProperty).mockResolvedValue({ value: 'Wrong Value', parsed: {} })
+
+        //             const result = await thisContext.toHaveStyle(elements, mockStyle, { wait: 0 })
+
+        //             expect(result.pass).toBe(false)
+        //             expect(elements.getCSSProperty).toHaveBeenCalledTimes(3)
+        //         })
+
+        //         test('no wait - success', async () => {
+        //             const result = await thisContext.toHaveStyle(elements, mockStyle, { wait: 0 })
+
+        //             expect(result.pass).toBe(true)
+        //             expect(elements.getCSSProperty).toHaveBeenCalledTimes(3)
+        //         })
+
+        //         test('not - failure - pass should be true', async () => {
+        //             const result = await thisNotContext.toHaveStyle(elements, mockStyle)
+
+        //             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+        //             expect(stripAnsi(result.message())).toEqual(`\
+        // Expect $(\`sel\`) not to have style
+
+        // Expected [not]: {"color": "#000", "font-family": "Faktum", "font-size": "26px"}
+        // Received      : {"color": "#000", "font-family": "Faktum", "font-size": "26px"}`
+        //             )
+        //         })
+
+        //         test('not - success - pass should be false', async () => {
+        //             const wrongStyle: { [key: string]: string; } = {
+        //                 'font-family': 'Incorrect Font',
+        //                 'font-size': '100px',
+        //                 'color': '#fff'
+        //             }
+
+        //             const result = await thisNotContext.toHaveStyle(elements, wrongStyle)
+
+        //             expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        //         })
+
+        //         test('message shows correctly', async () => {
+        //             vi.mocked(elements.getCSSProperty).mockResolvedValue({ value: 'Wrong Value', parsed: {} })
+
+        //             const result = await thisContext.toHaveStyle(elements, 'WebdriverIO' as any)
+
+        //             expect(stripAnsi(result.message())).toEqual(`\
+        // Expect $(\`sel\`) to have style
+
+        // Expected: "WebdriverIO"
+        // Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wrong Value", "3": "Wrong Value", "4": "Wrong Value", "5": "Wrong Value", "6": "Wrong Value", "7": "Wrong Value", "8": "Wrong Value", "9": "Wrong Value"}`
+        //             )
+        //         })
+
+        //         test('success if style matches with ignoreCase', async () => {
+        //             const actualStyle: { [key: string]: string; } = {
+        //                 'font-family': 'Faktum',
+        //                 'font-size': '26px',
+        //                 'color': '#fff'
+        //             }
+
+        //             vi.mocked(elements.getCSSProperty).mockImplementation(async (property: string) =>({ value: actualStyle[property], parsed: {} }))
+
+        //             const alteredCaseStyle: { [key: string]: string; } = {
+        //                 'font-family': 'FaKtum',
+        //                 'font-size': '26px',
+        //                 'color': '#FFF'
+        //             }
+
+        //             const result = await thisContext.toHaveStyle(elements, alteredCaseStyle, { wait: 0, ignoreCase: true })
+
+        //             expect(result.pass).toBe(true)
+        //             expect(elements.getCSSProperty).toHaveBeenCalledTimes(3)
+        //         })
+
+        //         test('success if style matches with trim', async () => {
+        //             const actualStyle: { [key: string]: string; } = {
+        //                 'font-family': '   Faktum   ',
+        //                 'font-size': '   26px   ',
+        //                 'color': '    #fff     '
+        //             }
+
+        //             vi.mocked(elements.getCSSProperty).mockImplementation(async (property: string) => ({ value: actualStyle[property], parsed: {} }))
+
+        //             const alteredSpaceStyle: { [key: string]: string; } = {
+        //                 'font-family': 'Faktum',
+        //                 'font-size': '26px',
+        //                 'color': '#fff'
+        //             }
+
+        //             const result = await thisContext.toHaveStyle(elements, alteredSpaceStyle, { wait: 0, trim: true })
+        //             expect(result.pass).toBe(true)
+        //             expect(elements.getCSSProperty).toHaveBeenCalledTimes(3)
+        //         })
+
+        //         test('success if style matches with containing', async () => {
+        //             const result = await thisContext.toHaveStyle(
+        //                 elements,
+        //                 {
+        //                     'font-family': 'Faktum',
+        //                     'font-size': '26',
+        //                     color: '000',
+        //                 },
+        //                 { wait: 1, containing: true }
+        //             )
+        //             expect(result.pass).toBe(true)
+        //             expect(elements.getCSSProperty).toHaveBeenCalledTimes(3)
+        //         })
+
+        //         test('success if style matches with atStart', async () => {
+        //             const actualStyle: { [key: string]: string } = {
+        //                 'font-family': 'Faktum Lorem ipsum dolor sit amet',
+        //                 'text-rendering': 'optimizeLegibility',
+        //                 'overflow-wrap': 'break-word',
+        //             }
+        //             vi.mocked(elements.getCSSProperty).mockImplementation(async (property: string) => ({ value: actualStyle[property], parsed: {} }))
+
+        //             const result = await thisContext.toHaveStyle(
+        //                 elements,
+        //                 {
+        //                     'font-family': 'Faktum',
+        //                     'text-rendering': 'optimize',
+        //                     'overflow-wrap': 'break',
+        //                 },
+        //                 { atStart: true }
+        //             )
+        //             expect(result.pass).toBe(true)
+        //             expect(elements.getCSSProperty).toHaveBeenCalledTimes(3)
+        //         })
+
+        //         test('success if style matches with atEnd', async () => {
+        //             const actualStyle: { [key: string]: string } = {
+        //                 'font-family': 'Faktum Lorem ipsum dolor sit amet',
+        //                 'text-rendering': 'optimizeLegibility',
+        //                 'overflow-wrap': 'break-word',
+        //             }
+        //             vi.mocked(elements.getCSSProperty).mockImplementation(async (property: string) => ({ value: actualStyle[property], parsed: {} }))
+
+        //             const result = await thisContext.toHaveStyle(
+        //                 elements,
+        //                 {
+        //                     'font-family': 'sit amet',
+        //                     'text-rendering': 'Legibility',
+        //                     'overflow-wrap': '-word',
+        //                 },
+        //                 { atEnd: true }
+        //             )
+        //             expect(result.pass).toBe(true)
+        //             expect(elements.getCSSProperty).toHaveBeenCalledTimes(3)
+        //         })
+
+        //         test('success if style matches with atIndex', async () => {
+        //             const actualStyle: { [key: string]: string } = {
+        //                 'font-family': 'Faktum Lorem ipsum dolor sit amet',
+        //                 'text-rendering': 'optimizeLegibility',
+        //                 'overflow-wrap': 'break-word',
+        //             }
+        //             vi.mocked(elements.getCSSProperty).mockImplementation(async (property: string) => ({ value: actualStyle[property], parsed: {} }))
+
+        //             const result = await thisContext.toHaveStyle(elements,
+        //                 {
+        //                     'font-family': 'tum Lorem ipsum dolor sit amet',
+        //                     'text-rendering': 'imizeLegibility',
+        //                     'overflow-wrap': 'ak-word',
+        //                 },
+        //                 { atIndex: 3 })
+
+        //             expect(result.pass).toBe(true)
+        //             expect(elements.getCSSProperty).toHaveBeenCalledTimes(3)
+        //         })
     })
 })

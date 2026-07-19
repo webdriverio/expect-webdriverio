@@ -326,7 +326,7 @@ export const compareObject = <T>(actual: T, expected: unknown) => {
 
 export const compareStyle = async (
     actualEl: WebdriverIO.Element,
-    style: { [key: string]: string } | undefined,
+    style: { [key: string]: string },
     {
         ignoreCase = false,
         trim = true,
