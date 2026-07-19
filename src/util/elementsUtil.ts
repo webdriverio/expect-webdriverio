@@ -17,6 +17,7 @@ export const wrapExpectedWithArray = (elements: WebdriverIO.Element | WdioElemen
 
 export const fillSingleExpectedForElementArray = (subject: WebdriverIO.Element | WdioElements | unknown, value: unknown): unknown[] | unknown => {
     if (isElementArrayLike(subject) && !Array.isArray(value)) {
+        // When subject has no elements, we should at least represent one for proper failure message!
         const fillerlength = subject.length > 0 ? subject.length : 1
         return Array(fillerlength).fill(value)
     }
