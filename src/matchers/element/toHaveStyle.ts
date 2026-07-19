@@ -9,7 +9,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, style: MaybeArray<{ [key: string]: string; }>, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<{ [key: string]: string | undefined; }>> {
+async function condition(el: WebdriverIO.Element, style: MaybeArray<{ [key: string]: string; }> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<{ [key: string]: string | undefined; }>> {
     // TODO add tests
     if (Array.isArray(style)) {
         const results = await Promise.all(style.map((s) => compareStyle(el, s, options)))
@@ -41,7 +41,7 @@ export async function toHaveStyle(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, expectedValues: MaybeArray<{ [key: string]: string; }>) => condition(element, expectedValues, options),
+                singleElementCompare: (element, expectedValues: MaybeArray<{ [key: string]: string; }> | undefined) => condition(element, expectedValues, options),
                 isNot
             })
             el = result.subject

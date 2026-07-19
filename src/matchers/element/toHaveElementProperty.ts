@@ -97,7 +97,7 @@ export async function toHaveElementProperty(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: value,
-                singleElementCompare: (element, expectedValue: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null>) => condition(element, property, expectedValue, options),
+                singleElementCompare: (element, expectedValue: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null> | undefined) => condition(element, property, expectedValue, options),
                 isNot
             })
             el = result.subject

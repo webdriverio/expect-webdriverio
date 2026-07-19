@@ -10,7 +10,7 @@ import {
 
 async function singleElementCompare(
     element: WebdriverIO.Element,
-    role: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
+    role: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.HTMLOptions
 ) {
     const actualRole = await element.getComputedRole()
@@ -38,7 +38,7 @@ export async function toHaveComputedRole(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>) => singleElementCompare(element, expectedValue, options),
+                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
                 isNot
             })
             el = result.subject

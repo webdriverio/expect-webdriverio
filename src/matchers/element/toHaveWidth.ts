@@ -8,11 +8,11 @@ import {
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher) {
+async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined) {
     const actualWidth = await el.getSize('width')
 
     return {
-        result: expectedNumber.match(actualWidth),
+        result: expectedNumber?.match(actualWidth) ?? false,
         value: actualWidth
     }
 }
@@ -55,7 +55,7 @@ export async function toHaveWidth(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
-                singleElementCompare: (element, expectedNumber: NumberMatcher) => condition(element, expectedNumber),
+                singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
                 isNot
             })
 

@@ -10,7 +10,7 @@ import {
 
 async function singleElementCompare(
     element: WebdriverIO.Element,
-    label: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
+    label: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.HTMLOptions
 ) {
     const actualLabel = await element.getComputedLabel()
@@ -39,7 +39,7 @@ export async function toHaveComputedLabel(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>) => singleElementCompare(element, expectedValue, options),
+                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
                 isNot
             })
             el = result.subject

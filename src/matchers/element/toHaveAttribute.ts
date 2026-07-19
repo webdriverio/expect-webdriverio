@@ -13,6 +13,7 @@ import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 
 async function conditionAttributeIsPresent(el: WebdriverIO.Element, attribute: string) {
     const attributeValue = await el.getAttribute(attribute)
+
     if (typeof attributeValue !== 'string') {
         return { result: false, value: attributeValue }
     }
@@ -20,9 +21,10 @@ async function conditionAttributeIsPresent(el: WebdriverIO.Element, attribute: s
 
 }
 
-async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
+async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions) {
     const attributeValue = await el.getAttribute(attribute)
-    if (typeof attributeValue !== 'string') {
+
+    if (typeof attributeValue !== 'string' || expectedValue === undefined) {
         return { result: false, value: attributeValue }
     }
 
@@ -39,7 +41,7 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>>) => {
+                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => {
                     return conditionAttributeValueMatchWithExpected(element, attribute, values, options)
                 },
                 isNot

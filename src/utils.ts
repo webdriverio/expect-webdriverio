@@ -133,9 +133,14 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareTextOrArray = (
     actualText: string,
-    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>,
+    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): CompareResult<string> => {
+
+    if (expectedTexts === undefined) {
+        return { value: actualText, result: false }
+    }
+
     return Array.isArray(expectedTexts) ?
         compareTextWithArray(actualText, expectedTexts, options)
         : compareText(actualText, expectedTexts, options)
@@ -321,7 +326,7 @@ export const compareObject = <T>(actual: T, expected: unknown) => {
 
 export const compareStyle = async (
     actualEl: WebdriverIO.Element,
-    style: { [key: string]: string },
+    style: { [key: string]: string } | undefined,
     {
         ignoreCase = false,
         trim = true,

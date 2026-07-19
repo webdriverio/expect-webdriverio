@@ -129,8 +129,7 @@ Expect $(\`sel\`) to have size
             )
         })
 
-        // TODO bring back with PR supporting $$
-        test.skip('should fails when expected is an unsupported array type', async () => {
+        test('should fails when expected is an unsupported array type', async () => {
             const result = await thisContext.toHaveSize(el, [expectedValue] as any)
 
             expect(result.pass).toBe(false)
@@ -138,7 +137,7 @@ Expect $(\`sel\`) to have size
 Expect $(\`sel\`) to have size
 
 Expected: [{"height": 32, "width": 32}]
-Received: "Expected value cannot be an array"`
+Received: {"height": 32, "width": 32}`
             )
         })
 
@@ -445,31 +444,30 @@ Received      : [{"height": 32, "width": 15}, {"height": 32, "width": 32}]`
                 )
             })
 
-            // TODO dprevost to review if we fail here?
-            test.skip('should fails when expected is an array with a mismatched length', async () => {
+            test('should fails when expected is an array with a mismatched length', async () => {
                 const result = await thisContext.toHaveSize(elements, [expectedValue, expectedValue, expectedValue])
 
                 expect(result.pass).toBe(false)
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have size
 
-- Expected  - 12
-+ Received  +  1
+- Expected  - 4
++ Received  + 1
 
   Array [
+    Object {
+      "height": 32,
+      "width": 32,
+    },
+    Object {
+      "height": 32,
+      "width": 32,
+    },
 -   Object {
 -     "height": 32,
 -     "width": 32,
 -   },
--   Object {
--     "height": 32,
--     "width": 32,
--   },
--   Object {
--     "height": 32,
--     "width": 32,
--   },
-+   "Received array length 2, expected 3",
++   undefined,
   ]`
                 )
             })

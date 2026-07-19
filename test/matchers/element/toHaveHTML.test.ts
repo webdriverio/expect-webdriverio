@@ -478,7 +478,7 @@ Expect $$(\`sel\`) to have HTML
             )
         })
 
-        test.skip('fails if expect and actual array length do not match', async () => {
+        test('fails if expect and actual array length do not match', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('   <div>foo</div>   '))
 
             const result = await thisContext.toHaveHTML(elements, ['div', '<div>foo</div>', 'toto'], { trim: true, wait: 0 })
@@ -486,14 +486,15 @@ Expect $$(\`sel\`) to have HTML
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have HTML
 
-- Expected  - 3
-+ Received  + 1
+- Expected  - 2
++ Received  + 2
 
   Array [
 -   "div",
--   "<div>foo</div>",
+    "<div>foo</div>",
 -   "toto",
 +   "<div>foo</div>",
++   undefined,
   ]`
             )
         })

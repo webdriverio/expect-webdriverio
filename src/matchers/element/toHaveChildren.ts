@@ -10,8 +10,12 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher) {
+async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher | undefined) {
     const children = await el.$$('./*').getElements()
+
+    if (expectedValue === undefined) {
+        return { result: false, value: children?.length }
+    }
 
     return {
         result: expectedValue.match(children?.length),
@@ -85,7 +89,7 @@ export async function toHaveChildren(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
-                singleElementCompare: (element, expectedValue: NumberMatcher) => condition(element, expectedValue),
+                singleElementCompare: (element, expectedValue: NumberMatcher | undefined) => condition(element, expectedValue),
                 isNot
             })
 

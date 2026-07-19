@@ -9,11 +9,11 @@ import {
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher) {
+async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined) {
     const actualHeight = await el.getSize('height')
 
     return {
-        result: expectedNumber.match(actualHeight),
+        result: expectedNumber?.match(actualHeight) ?? false,
         value: actualHeight
     }
 }
@@ -56,7 +56,7 @@ export async function toHaveHeight(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
-                singleElementCompare: (element, expectedNumber: NumberMatcher) => condition(element, expectedNumber),
+                singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
                 isNot
             })
 

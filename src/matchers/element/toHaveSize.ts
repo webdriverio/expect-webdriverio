@@ -10,7 +10,7 @@ import {
 } from '../../utils.js'
 
 export type Size = Pick<RectReturn, 'width' | 'height'>
-async function condition(el: WebdriverIO.Element, size: Size): Promise<{ result: boolean, value: Size }> {
+async function condition(el: WebdriverIO.Element, size: Size | undefined): Promise<{ result: boolean, value: Size }> {
     const actualSize = await el.getSize()
 
     return compareObject(actualSize, size)
@@ -37,7 +37,7 @@ export async function toHaveSize(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, expectedSize: Size) => condition(element, expectedSize),
+                singleElementCompare: (element, expectedSize: Size | undefined) => condition(element, expectedSize),
                 isNot
             })
 
