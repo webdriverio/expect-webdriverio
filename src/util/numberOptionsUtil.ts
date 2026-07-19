@@ -138,6 +138,8 @@ export const matchNumber = (actual: number, expected: MaybeArray<NumberMatcher> 
     if (expected instanceof NumberMatcher) {
         return expected.match(actual)
     }
-    // TODO: Handle array of NumberMatcher if needed in the future
+    if (Array.isArray(expected)) {
+        return expected.some((matcher) => matcher.match(actual))
+    }
     return false
 }
