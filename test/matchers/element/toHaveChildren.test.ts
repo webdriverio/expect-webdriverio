@@ -231,7 +231,7 @@ Received      : 2`
         })
     })
 
-    describe('given a multiple elements', () => {
+    describe('given multiple elements', () => {
         let elements: ChainablePromiseArray
 
         beforeEach(async () => {

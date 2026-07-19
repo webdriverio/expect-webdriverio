@@ -182,8 +182,8 @@ Received      : "iphone"`)
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property myPropertyName
 
-Expected: "to have a defined value"
-Received: "value ${propertyValue}"`
+Expected: "\`a defined value\`"
+Received: ${propertyValue}`
             )
         })
 
@@ -194,8 +194,8 @@ Received: "value ${propertyValue}"`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have property myPropertyName
 
-Expected [not]: "to have a defined value"
-Received      : "value iphone"`)
+Expected [not]: "\`a defined value\`"
+Received      : "iphone"`)
         })
 
         test.for([
@@ -256,7 +256,7 @@ Received: "iphone"`)
         })
     })
 
-    describe('given a multiple element', () => {
+    describe('given multiple elements', () => {
         let els: ChainablePromiseArray
 
         beforeEach(async () => {
@@ -450,16 +450,73 @@ Expect $$(\`sel\`) to have property property
                 )
             })
 
-            // TODO: This should pass, sounds like a bug?
-            // test.skip('should return true if value is null and expected are null', async () => {
-            //     els.forEach(el =>
-            //         vi.mocked(el.getProperty).mockResolvedValue(null)
-            //     )
+            test('should return true if value is null and expected existance', async () => {
+                els.forEach(el =>
+                    vi.mocked(el.getProperty).mockResolvedValue(null)
+                )
 
-            //     const result = await thisContext.toHaveElementProperty(els, 'property', [null, null])
+                const result = await thisContext.toHaveElementProperty(els, 'property')
 
-            //     expect(result.pass).toBe(true)
-            // })
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toContain(`\
+Expect $$(\`sel\`) to have property property
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "\`a defined value\`",
+-   "\`a defined value\`",
++   null,
++   null,
+  ]`
+                )
+            })
+
+            test('not - should succeed (pass=false) if value is null and not expecting existance', async () => {
+                els.forEach(el =>
+                    vi.mocked(el.getProperty).mockResolvedValue(null)
+                )
+
+                const result = await thisIsNotContext.toHaveElementProperty(els, 'property')
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+            })
+
+            // TODO: This test raise the question of either supporting null (non-existence) for arrays or have an assymetric matcher for null!
+            test.skip('should succeed if we have both null and non-null values and expecting so', async () => {
+                vi.mocked(els[0].getProperty).mockResolvedValue(null)
+                vi.mocked(els[1].getProperty).mockResolvedValue('iphone')
+
+                // @ts-expect-error -- null is not supported for now, to support later
+                const result = await thisContext.toHaveElementProperty(els, 'property', [null, 'iphone'])
+
+                expect(result.pass).toBe(true)
+            })
+
+            // TODO: To fix one day, error message should clearly state the last item is epxected to be non-existing.
+            test.skip('should fails if we have null & non-null but asserting the reverse order', async () => {
+                vi.mocked(els[0].getProperty).mockResolvedValue(null)
+                vi.mocked(els[1].getProperty).mockResolvedValue('iphone')
+
+                // @ts-expect-error -- null is not supported for now, to support later
+                const result = await thisContext.toHaveElementProperty(els, 'property', ['iphone', null])
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toContain(`\
+Expect $$(\`sel\`) to have property property
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "iphone",
+-   null,
++   null,
++   "iphone",
+  ]`
+                )
+            })
 
             test('not - success - should return false if actual value is null and expected is not null', async () => {
                 els.forEach(el =>

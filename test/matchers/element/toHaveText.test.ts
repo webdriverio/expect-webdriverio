@@ -320,7 +320,7 @@ Received: "This is example text"`
     })
 
     describe('Legacy multiple elements compare behavior', async () => {
-        describe('given a multiple elements', () => {
+        describe('given multiple elements', () => {
             let els: ChainablePromiseArray
             const selectorName = '$$(`sel`)'
 
@@ -894,7 +894,7 @@ Received: "Invalid Text"`)
             { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' },
             { elements: $$('sel').getElements(), title: 'non-awaited getElements of ChainablePromiseArray' },
             { elements: $$('sel').filter((t) => t.isEnabled()), title: 'non-awaited filtered ChainablePromiseArray (e.g. Promise<WebdriverIO.Element[]>)' },
-        ])('given a multiple elements when $title', ({ elements, title }) => {
+        ])('given multiple elements when $title', ({ elements, title }) => {
             let els: ChainablePromiseArray | WebdriverIO.ElementArray | WebdriverIO.Element[] | Promise<WebdriverIO.Element[]> | Promise<WebdriverIO.ElementArray>
 
             const selectorName = title.includes('WebdriverIO.Element[]') ? '[$(`sel`),$(`dev`)]': '$$(`sel`)'

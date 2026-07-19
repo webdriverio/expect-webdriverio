@@ -9,6 +9,7 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -90,7 +91,7 @@ export async function toHaveElementProperty(
         options,
     })
 
-    let el
+    let elements
     let actualProppertyValue: unknown
     const pass = await waitUntil(
         async () => {
@@ -100,7 +101,7 @@ export async function toHaveElementProperty(
                 singleElementCompare: (element, expectedValue: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null> | undefined) => condition(element, property, expectedValue, options),
                 isNot
             })
-            el = result.subject
+            elements = result.subject
             actualProppertyValue = result.actual
 
             return result.success
@@ -111,12 +112,12 @@ export async function toHaveElementProperty(
 
     let message: string
     if (value === undefined) {
-        const expected = 'to have a defined value'
-        const actual = `value ${actualProppertyValue}`
-        message = enhanceError(el, expected, actual, this, verb, expectation, property, options)
+        const expected = fillSingleExpectedForElementArray(elements, '`a defined value`')
+        const actual = actualProppertyValue
+        message = enhanceError(elements, expected, actual, this, verb, expectation, property, options)
     } else {
-        const expected = wrapExpectedWithArray(el, actualProppertyValue, value)
-        message = enhanceError(el, expected, actualProppertyValue, this, verb, expectation, property, options)
+        const expected = wrapExpectedWithArray(elements, actualProppertyValue, value)
+        message = enhanceError(elements, expected, actualProppertyValue, this, verb, expectation, property, options)
     }
 
     const result: ExpectWebdriverIO.AssertionResult = {
