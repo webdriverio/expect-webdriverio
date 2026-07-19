@@ -14,7 +14,7 @@ Matchers support an element array returned from `$$()`:
 
 ```ts
 // On the matcher directly
-expect($$('elements')).toHaveText(['text1','text2'], { useToHaveTextStrictMultiElementsCompareStrategy : true })
+expect($$('elements')).toHaveText(['text1','text2'], { featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy : true } })
 
 // Before hook
 before(() => {
@@ -24,8 +24,6 @@ before(() => {
 // Globally in wdio.conf file
 before: function (_capabilities, _specs) {
     setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy : true })
-    // Or if setDefaultOptions is already used
-    setDefaultOptions({ wait: 250, useToHaveTextStrictMultiElementsCompareStrategy : true })
 }
 ```
 
