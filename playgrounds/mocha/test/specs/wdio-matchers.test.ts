@@ -259,7 +259,7 @@ describe('WebdriverIO Custom Matchers', () => {
                 })
 
 
-                describe('Empty elemetns', () => {
+                describe('Empty elements & Array length mismatch', () => {
                     it('should fails if there is no elements with Element[]', async () => {
                         const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('test'))
 
@@ -272,6 +272,23 @@ describe('WebdriverIO Custom Matchers', () => {
 
                         expect(heading.length).toBe(0)
                         await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                    })
+
+                    it('should fails if there is not enough expected values', async () => {
+                        const heading = await $$('h1')
+
+                        expect(heading.length).toBe(2)
+                        await expect(heading[0]).toHaveText([''])
+                        await expect(expect(heading).toHaveText([''])).rejects.toThrow()
+                    })
+
+                    it('should fails if there is too many expected values', async () => {
+                        const heading = await $$('h1')
+
+                        expect(heading.length).toBe(2)
+                        await expect(heading[0]).toHaveText([''])
+                        await expect(heading[1]).toHaveText(['Open Source and Open Governed'])
+                        await expect(expect(heading).toHaveText(['', 'Open Source and Open Governed', 'tooMuchValue!'])).rejects.toThrow()
                     })
                 })
             })
