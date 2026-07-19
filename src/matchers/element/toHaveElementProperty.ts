@@ -14,7 +14,7 @@ import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 async function condition(
     el: WebdriverIO.Element,
     property: string,
-    expectedValue: unknown,
+    expectedValue: unknown, // TODO: review if an array of expected values should be supported for this matcher similarly as other matchers
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { asString = false } = options
