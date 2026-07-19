@@ -16,7 +16,7 @@ async function condition(el: WebdriverIO.Element, style: MaybeArray<{ [key: stri
     if (Array.isArray(style)) {
         const results = await Promise.all(style.map((s) => compareStyle(el, s, options)))
         const result = results.find((result) => result.result)
-        return result ? result : { result: false, value: results[0].value }
+        return result ? result : { result: false, value: results?.[0]?.value }
     }
 
     return compareStyle(el, style, options)

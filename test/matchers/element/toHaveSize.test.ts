@@ -145,9 +145,9 @@ Received: {"height": 32, "width": 32}`
 
     describe.for([
         { elements: await $$('sel'), title: 'awaited ChainablePromiseArray' },
-        // { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
-        // { elements: await $$('sel').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
-        // { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' }
+        { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
+        { elements: await $$('sel').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
+        { elements: $$('sel'), title: 'non-awaited of ChainablePromiseArray' }
     ])('given multiple elements when $title', ({ elements, title }) => {
         let els: ChainablePromiseArray | WebdriverIO.Element[] | WebdriverIO.ElementArray
         let awaitedEls: typeof els
