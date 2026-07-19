@@ -9,6 +9,7 @@ import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
+import { DEFAULT_FEATURE_FLAGS } from './constants.js'
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
     return isAsymmetricMatcher(expected) && 'expected' in expected
@@ -413,4 +414,12 @@ function replaceActual(
     }
 
     return actual
+}
+
+export const getFeatureFlagValue = ({ featureFlags }: ExpectWebdriverIO.StringOptions, featureFlag: keyof ExpectWebdriverIO.FeatureFlags): boolean => {
+    const providedFeatureFlagValue = featureFlags?.[featureFlag]
+    if (providedFeatureFlagValue !== undefined) {
+        return providedFeatureFlagValue
+    }
+    return DEFAULT_FEATURE_FLAGS[featureFlag] ?? false
 }

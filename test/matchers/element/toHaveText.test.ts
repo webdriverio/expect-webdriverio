@@ -1133,7 +1133,17 @@ Received      : ["WebdriverIO1", "WebdriverIO2"]`
 
                     const result = await thisContext.toHaveText( els, ['WebdriverIO', 'Get Started'], { wait: 0 })
 
-                    // TODO: For single element we trim by default but not for multiple elements, sounds like a bug
+                    expect(result.pass).toBe(true)
+                })
+
+                test('should return true if actual texts contains space when expected is an array of string per element since we trim by default', async () => {
+                    const awaitedEls = await els
+                    vi.mocked(awaitedEls[0].getText).mockResolvedValue(' WebdriverIO ')
+                    vi.mocked(awaitedEls[1].getText).mockResolvedValue(' Get Started ')
+
+                    // @ts-expect-error -- array of array is not supported yet!
+                    const result = await thisContext.toHaveText( els, [['WebdriverIO'], ['Get Started']])
+
                     expect(result.pass).toBe(false)
                 })
 

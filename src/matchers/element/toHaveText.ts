@@ -2,6 +2,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
     compareTextOrArray,
     enhanceError,
+    getFeatureFlagValue,
     waitUntil,
 } from '../../utils.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
@@ -30,7 +31,7 @@ export async function toHaveText(
 
     let actualText: string | string[] | undefined
     let subject: unknown = received
-    const isLegacyCompare = !options.featureFlags?.useToHaveTextStrictMultiElementsCompareStrategy
+    const isNewStrictCompare = getFeatureFlagValue(options, 'useToHaveTextStrictMultiElementsCompareStrategy')
     const pass = await waitUntil(
         async () => {
             const commandResult = await executeCommandWithStrategy( {
@@ -40,7 +41,7 @@ export async function toHaveText(
                     return compareElement(element, values, options)
                 },
                 isNot,
-                strategy: isLegacyCompare ? 'LegacyLooseMultipleElements' : 'NewStrictMultipleElements',
+                strategy: isNewStrictCompare ? 'NewStrictMultipleElements' : 'LegacyLooseMultipleElements',
             })
             subject = commandResult.subject
             actualText = commandResult.actual as string | string[] | undefined
