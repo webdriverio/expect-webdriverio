@@ -153,7 +153,7 @@ Received: {"height": 32, "width": 32}`
         let awaitedEls: typeof els
 
         let selectorName = '$$(`sel`)'
-        if (title.includes('Element[]')) {selectorName = '$(`sel`), $$(`sel`)[1]'}
+        if (title.includes('Element[]')) {selectorName = '[$$(`sel`)[0],$$(`sel`)[1]]'}
 
         beforeEach(async () => {
             els = elements
