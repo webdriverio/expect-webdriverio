@@ -432,6 +432,16 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(navLinks).toBeElementsArrayOfSize({ gte: 40 })
             await expect(navLinks).toBeElementsArrayOfSize({ lte: 50 })
         })
+
+        it('should works with non-awaited elements', async () => {
+            await expect($$('nav a')).toBeElementsArrayOfSize({ gte: 40 })
+            await expect($$('nav a')).toBeElementsArrayOfSize({ lte: 50 })
+        })
+
+        it('should works with filtered elements', async () => {
+            await expect($$('nav a').filter(el => el.isDisplayed())).toBeElementsArrayOfSize({ gte: 1 })
+        })
+
     })
 
     describe('Focus matchers', () => {
