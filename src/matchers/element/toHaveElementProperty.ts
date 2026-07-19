@@ -111,6 +111,7 @@ export async function toHaveElementProperty(
     )
 
     let message: string
+    // TODO: review to handle null/undefined inside array of expected values, for now we will just handle the case where the expected value is undefined or null
     if (value === undefined) {
         const expected = fillSingleExpectedForElementArray(elements, '`a defined value`')
         const actual = actualProppertyValue

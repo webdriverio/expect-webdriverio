@@ -149,6 +149,7 @@ export async function toHaveAttribute(
         options,
     })
 
+    // TODO: review to handle null/undefined inside array of expected values, for now we will just handle the case where the expected value is undefined or null
     const result = value !== undefined
         // Name and value is passed in e.g. el.toHaveAttribute('attr', 'value', (opts))
         ? await toHaveAttributeAndValue.call(this, received, attribute, value, options)
