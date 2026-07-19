@@ -8,7 +8,7 @@ import {
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined) {
+async function condition(el: WebdriverIO.Element, expectedNumber: MaybeArray<NumberMatcher> | undefined) {
     const actualWidth = await el.getSize('width')
 
     return {
@@ -55,7 +55,7 @@ export async function toHaveWidth(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
-                singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
+                singleElementCompare: (element, expectedNumber: MaybeArray<NumberMatcher> | undefined) => condition(element, expectedNumber),
                 isNot
             })
 
