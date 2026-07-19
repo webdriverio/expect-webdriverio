@@ -6,6 +6,6 @@ test('index', () => {
     expect(expectExport).toBeDefined()
     expect(utils.compareText).toBeDefined()
 
-    expect(matchers.size).toEqual(40)
-    expect(Object.keys(wdioCustomMatchers).length).toEqual(40)
+    expect(matchers.size).toEqual(41)
+    expect(Object.keys(wdioCustomMatchers).length).toEqual(41)
 })

@@ -229,6 +229,15 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` class
+     * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
+     */
+    toHaveClass: FnWhenElementOrArrayLike<ActualT, (
+        className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+        options?: ExpectWebdriverIO.StringOptions
+    ) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `getAttribute` class
      *
      * Checks if an element has the specified class or matches any of the provided class patterns.
      * @param className - The class name(s) or pattern(s) to match against.

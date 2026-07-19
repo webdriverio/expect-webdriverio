@@ -34,6 +34,13 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
     }
 }
 
+/**
+ * @deprecated to remove in v6.0.0
+ */
+export function toHaveClass(...args: unknown[]) {
+    return toHaveElementClass.call(this || {}, ...args)
+}
+
 export async function toHaveElementClass(
     received: WdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,

@@ -29,6 +29,7 @@ const ALL_MATCHERS = [
     'toHaveChildren',
     'toHaveComputedLabel',
     'toHaveComputedRole',
+    'toHaveClass',
     'toHaveElementClass',
     'toHaveElementProperty',
     'toHaveHeight',
