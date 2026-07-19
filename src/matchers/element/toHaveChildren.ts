@@ -3,14 +3,14 @@ import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from '..
 import { isStrictlyCommandOptions } from '../../util/commandOptionsUtils.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { validateNumberArrayAndExtractOptions, matchNumber } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher | undefined) {
+async function condition(el: WebdriverIO.Element, expectedValue: MaybeArray<NumberMatcher> | undefined) {
     const children = await el.$$('./*').getElements()
 
     if (expectedValue === undefined) {
@@ -18,7 +18,7 @@ async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher |
     }
 
     return {
-        result: expectedValue.match(children?.length),
+        result: matchNumber(children?.length, expectedValue),
         value: children?.length
     }
 }
@@ -89,7 +89,7 @@ export async function toHaveChildren(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
-                singleElementCompare: (element, expectedValue: NumberMatcher | undefined) => condition(element, expectedValue),
+                singleElementCompare: (element, expectedValue: MaybeArray<NumberMatcher> | undefined) => condition(element, expectedValue),
                 isNot
             })
 

@@ -3,17 +3,17 @@ import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioEleme
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { validateNumberArrayAndExtractOptions, matchNumber } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined) {
+async function condition(el: WebdriverIO.Element, expectedNumber: MaybeArray<NumberMatcher> | undefined) {
     const actualHeight = await el.getSize('height')
 
     return {
-        result: expectedNumber?.match(actualHeight) ?? false,
+        result: matchNumber(actualHeight, expectedNumber),
         value: actualHeight
     }
 }
@@ -56,7 +56,7 @@ export async function toHaveHeight(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
-                singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
+                singleElementCompare: (element, expectedNumber: MaybeArray<NumberMatcher> | undefined) => condition(element, expectedNumber),
                 isNot
             })
 

@@ -32,7 +32,7 @@ describe(toHaveSize, async () => {
             vi.mocked(el.getSize).mockResolvedValue(expectedValue as unknown as Size & number) // vitest does not support overloads function well
         })
 
-        test('wait for success', async () => {
+        test('wait for success - single expected value', async () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
@@ -52,6 +52,16 @@ describe(toHaveSize, async () => {
                 options: { beforeAssertion, afterAssertion, wait: 500 },
                 result
             })
+        })
+
+        // TODO to support one day?
+        test('fail - array of expected values', async () => {
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+
+            const result = await thisContext.toHaveSize(el, [expectedValue, expectedValue], { beforeAssertion, afterAssertion, wait: 500 })
+
+            expect(result.pass).toBe(false)
         })
 
         test('wait but error', async () => {

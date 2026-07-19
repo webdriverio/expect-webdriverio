@@ -133,3 +133,10 @@ export const numberMatcherTester = (a: unknown, b: unknown): boolean | undefined
     // Return undefined to let other testers handle it
     return undefined
 }
+
+export const matchNumber = (actual: number, expected: MaybeArray<NumberMatcher> | undefined): boolean => {
+    if (expected instanceof NumberMatcher) {
+        return expected.match(actual)
+    }
+    return false
+}
