@@ -77,6 +77,18 @@ Expected: "webdriver"
 Received: "This is an example value"`
                 )
             })
+
+            test('should not pass with array of strings - TODO maybe better support later?', async () => {
+                const result = await thisContext.toHaveValue(el, ['This is an example value'])
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have property value
+
+Expected: ["This is an example value"]
+Received: "This is an example value"`
+                )
+            })
         })
 
         describe('failure with RegExp', () => {

@@ -254,6 +254,19 @@ Expected: /WDIO/
 Received: "iphone"`)
             })
         })
+
+        test('should return false if value is an array of strings - TODO maybe support better arrays later?', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue('Test Value')
+
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have property myPropertyName
+
+Expected: ["Test Value"]
+Received: "Test Value"`)
+        })
     })
 
     describe('given multiple elements', () => {

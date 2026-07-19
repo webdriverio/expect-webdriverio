@@ -13,7 +13,7 @@ export type Size = Pick<RectReturn, 'width' | 'height'>
 async function condition(el: WebdriverIO.Element, size: MaybeArray<Size> | undefined): Promise<{ result: boolean, value: Size }> {
     const actualSize = await el.getSize()
 
-    // TODO: Handle array of Size if needed in the future
+    // TODO: Handle array of Size for both single and multiple elements since for now it fails silently.
     return compareObject(actualSize, size)
 }
 
