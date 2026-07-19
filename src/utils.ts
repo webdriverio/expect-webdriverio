@@ -136,14 +136,18 @@ export const compareTextOrArray = (
     expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): CompareResult<string> => {
+    const unchangedActualText = actualText
 
     if (expectedTexts === undefined) {
         return { value: actualText, result: false }
     }
 
-    return Array.isArray(expectedTexts) ?
+    const compareResults =  Array.isArray(expectedTexts) ?
         compareTextWithArray(actualText, expectedTexts, options)
         : compareText(actualText, expectedTexts, options)
+
+    // The above compare texts alter the actual text so we need to clone it and return the original actual text to the caller for error message formatting. To fix in major version
+    return { result: compareResults.result, value: unchangedActualText }
 }
 
 export const compareText = (

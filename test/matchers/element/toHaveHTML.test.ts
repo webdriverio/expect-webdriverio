@@ -486,14 +486,15 @@ Expect $$(\`sel\`) to have HTML
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have HTML
 
-- Expected  - 2
-+ Received  + 2
+- Expected  - 3
++ Received  + 3
 
   Array [
 -   "div",
-    "<div>foo</div>",
+-   "<div>foo</div>",
 -   "toto",
-+   "<div>foo</div>",
++   "   <div>foo</div>   ",
++   "   <div>foo</div>   ",
 +   undefined,
   ]`
             )

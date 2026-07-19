@@ -1,5 +1,5 @@
 import { test, expect, vi, describe } from 'vitest'
-import { matchers, expect as expectLib } from '../src/index.js'
+import { matchers, expect as expectLib, wdioCustomMatchers } from '../src/index.js'
 import { $, $$ } from '@wdio/globals'
 
 vi.mock('@wdio/globals')
@@ -59,6 +59,7 @@ const ALL_MATCHERS = [
 
 test('matchers', () => {
     expect([...matchers.keys()]).toEqual(ALL_MATCHERS)
+    expect(Object.keys(wdioCustomMatchers)).toEqual(ALL_MATCHERS)
 })
 
 test('allows to add matcher', () => {
@@ -68,6 +69,7 @@ test('allows to add matcher', () => {
     // @ts-expect-error not in types
     expectLib('foo').toBeCustom('foo')
     expect(matchers.keys()).toContain('toBeCustom')
+    expect(Object.keys(wdioCustomMatchers)).toContain('toBeCustom')
 })
 
 test('Generic asymmetric matchers from Expect library should work', () => {
@@ -306,7 +308,7 @@ Received: "not selected"`)
 Expect $(\`selector\`) to have text
 
 Expected: "Some other text"
-Received: "Valid Text"`) // TODO compareText trim the argument's actual text generating wrong output result. To fix in major release!
+Received: " Valid Text "`)
 
             await expect(() => expectLib(el).toHaveHTML('<SomeOtherHtml/>')).rejects.toThrow(`\
 Expect $(\`selector\`) to have HTML
