@@ -153,7 +153,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
     const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<Actual>>).value)
 
-    // Fill with undefined result's value when having less elements than expected values.
+    // Fill with undefined element's actual value when having less elements than expected values.
     if (Array.isArray(expectedValues) && expectedValues.length > selector.length) {
         const missingValues = Array(expectedValues.length - selector.length).fill(undefined)
         results.push(...missingValues.map((value) => ({ result: false, value })))
