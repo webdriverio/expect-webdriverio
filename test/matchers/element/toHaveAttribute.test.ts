@@ -312,16 +312,24 @@ Expect $$(\`sel\`) to have attribute attribute_name
         })
 
         describe('attribute has value', () => {
-            test('success with correct value', async () => {
+            test('success with correct single value', async () => {
                 const result = await thisContext.toHaveAttribute(els, 'attribute_name', 'Correct Value', { ignoreCase: true, wait: 1 })
 
                 expect(result.pass).toBe(true)
             })
+
+            test('success with correct multiple value', async () => {
+                const result = await thisContext.toHaveAttribute(els, 'attribute_name', ['Correct Value', 'Correct Value'], { ignoreCase: true, wait: 1 })
+
+                expect(result.pass).toBe(true)
+            })
+
             test('success with RegExp and correct value', async () => {
                 const result = await thisContext.toHaveAttribute(els, 'attribute_name', /cOrReCt VaLuE/i)
 
                 expect(result.pass).toBe(true)
             })
+
             test('failure with wrong value', async () => {
                 els.forEach(el => {
                     vi.mocked(el.getAttribute).mockResolvedValue('Wrong Value')
@@ -467,6 +475,42 @@ Expect $$(\`sel\`) to have attribute attribute_name
 
                 expect(result.pass).toBe(false)
             })
+        })
+
+        test('given not enough expected value', async () => {
+            const result = await thisContext.toHaveAttribute(els, 'attribute_name', ['Correct Value'])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have attribute attribute_name
+
+- Expected  - 0
++ Received  + 1
+
+  Array [
+    "Correct Value",
++   "Correct Value",
+  ]`
+            )
+        })
+
+        test('given too many expected value', async () => {
+            const result = await thisContext.toHaveAttribute(els, 'attribute_name', ['Correct Value', 'Correct Value', 'Correct Value'])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have attribute attribute_name
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "Correct Value",
+    "Correct Value",
+-   "Correct Value",
++   undefined,
+  ]`
+            )
         })
 
         test('fails when no elements are provided', async () => {

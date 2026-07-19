@@ -1473,6 +1473,52 @@ Expect $$(\`elements\`) to have text
                 )
             })
 
+            // TODO dprevost - We should fails if we cannot assert!?
+            test.skip('not - given not enough expected value', async () => {
+                const elements = await $$('elements')
+
+                elements.forEach((el) => vi.mocked(el.getText).mockResolvedValue('webdriverio'))
+
+                const result = await thisNotContext.toHaveText(elements, ['notWebdriverio'])
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) not to have text
+
+- Expected [not]  - 0
++ Received        + 1
+
+  Array [
+    "webdriverio",
++   "webdriverio",
+  ]`
+                )
+            })
+
+            // TODO dprevost - We should fails if we cannot assert!?
+            test.skip('not - given too many expected value', async () => {
+                const elements = await $$('elements')
+
+                elements.forEach((el) => vi.mocked(el.getText).mockResolvedValue('webdriverio'))
+
+                const result = await thisNotContext.toHaveText(elements, ['NotWebdriverio', 'NotWebdriverio', 'NotWebdriverio'])
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "webdriverio",
+    "webdriverio",
+-   "webdriverio",
++   undefined,
+  ]`
+                )
+            })
+
             describe('Long promises', () => {
 
                 describe("given element's text takes more time then the configured wait to be retrieved", () => {

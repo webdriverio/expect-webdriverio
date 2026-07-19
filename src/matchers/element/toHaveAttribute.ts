@@ -123,7 +123,7 @@ export async function toHaveAttribute(
 export async function toHaveAttribute(
     received: WdioElementOrArrayMaybePromise,
     attribute: string,
-    value: string | RegExp | AsymmetricMatcher<string>,
+    value: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AsyncAssertionResult>
 
