@@ -20,8 +20,7 @@ describe('Soft Assertions', () => {
         const elementToHaveText = expectWdio($('element1')).toHaveText('Valid Text')
         expect(elementToHaveText).toBeInstanceOf(Promise)
 
-        // TODO remove await once $$() support is merged
-        const elementsToHaveText = expectWdio(await $$('elements2')).toHaveText('Valid Text')
+        const elementsToHaveText = expectWdio($$('elements2')).toHaveText('Valid Text')
         expect(elementsToHaveText).toBeInstanceOf(Promise)
 
         const elementsNotToHaveText = expectWdio(await $$('elements3')).not.toHaveText('Not Valid Text')

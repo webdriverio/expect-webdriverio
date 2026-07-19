@@ -21,15 +21,11 @@ describe(toBeElementsArrayOfSize, async () => {
     describe.each([
         { elements: await $$('elements'), title: 'awaited ChainablePromiseArray', selectorName: '$$(`elements`)' },
         { elements: await $$('elements').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
-
-        // TODO to bring back later in PR supporting $$.
-        // { elements: await $$('elements').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])', selectorName: '$(`elements`), $$(`elements`)[1]' },
-        // { elements: [elementFactory('element'), elementFactory('element')], selectorName: '$(`element`), $(`element`)', title: 'Array of element (e.g. WebdriverIO.Element[])' },
+        { elements: await $$('elements').filter((t) => t.isEnabled()), title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])', selectorName: '[$$(`elements`)[0],$$(`elements`)[1]]' },
+        { elements: [elementFactory('element'), elementFactory('element')], selectorName: '[$(`element`),$(`element`)]', title: 'Array of element (e.g. WebdriverIO.Element[])' },
         { elements: $$('elements'), title: 'non-awaited of ChainablePromiseArray' },
-
-        // // TODO to support, since the below return Promise<WebdriverIO.ElementArray|Element[]>, we do not support it type wise yet, but we could
-        // { elements: $$('elements').getElements() as unknown as ChainablePromiseArray, title: 'non-awaited of ChainablePromiseArray' },
-        // { elements: $$('elements').filter((t) => t.isEnabled()) as unknown as ChainablePromiseArray, selectorName:'$(`elements`), $$(`elements`)[1]', title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
+        { elements: $$('elements').getElements() as unknown as ChainablePromiseArray, title: 'non-awaited of ChainablePromiseArray' },
+        { elements: $$('elements').filter((t) => t.isEnabled()) as unknown as ChainablePromiseArray, selectorName:'[$$(`elements`)[0],$$(`elements`)[1]]', title: 'awaited filtered ChainablePromiseArray (e.g. WebdriverIO.Element[])' },
     ])('given multiple elements when $title', ({ elements, selectorName = '$$(`elements`)' }) => {
         let els: ChainablePromiseArray | WebdriverIO.Element[] | WebdriverIO.ElementArray
 

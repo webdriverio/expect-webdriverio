@@ -13,7 +13,7 @@ export const isDefined = <T>(value: T): value is NonNullable<T> => value !== nul
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
     if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
-        // todo handle custom$ selector
+        // TODO handle custom$ selector
         result += ', <props>'
     }
     return result

@@ -605,8 +605,6 @@ declare namespace ExpectWebdriverIO {
     /** @deprecated use getDefaultOptions instead, will be removed in v6.0.0 */
     function getConfig(): DefaultOptions
 
-    // TODO dprevost add setFeatureFlags here?
-
     /**
      * The below block are overloaded types from the expect library.
      * They are required to show "everything" under the `ExpectWebdriverIO` namespace.

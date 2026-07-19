@@ -181,7 +181,14 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveHeight({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveHeight({ gte: 100 })).toEqualTypeOf<Promise<void>>()
 
+                // Not really supported to fix one day
+                expectTypeOf(expect(element).toHaveHeight([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
+
+                // Multiple elements
                 expectTypeOf(expect(chainableElement).toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHeight([100])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHeight({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHeight([{ gte: 100 }])).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(browser).toHaveHeight).toBeNever()
             })
@@ -203,7 +210,14 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveWidth({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveWidth({ gte: 100 })).toEqualTypeOf<Promise<void>>()
 
+                // Not really supported to fix one day
+                expectTypeOf(expect(element).toHaveWidth([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
+
+                // Multiple elements
                 expectTypeOf(expect(chainableElement).toHaveWidth(100)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveWidth([100])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveWidth({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveWidth([{ gte: 100 }])).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(browser).toHaveWidth).toBeNever()
             })
@@ -221,12 +235,17 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveSize({ height: 100, width: 100 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveSize({ height: 100, width: 100 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
+
+                // Not really supported to fix one day
+                expectTypeOf(expect(element).not.toHaveSize([{ height: 100, width: 100 }])).toEqualTypeOf<Promise<void>>()
+
                 // TODO one day
                 // expectTypeOf(expect(element).toHaveSize({ gte: 100 })).toEqualTypeOf<Promise<void>>()
                 // expectTypeOf(expect(element).toHaveSize({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
                 // expectTypeOf(expect(element).not.toHaveSize({ gte: 100 })).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(chainableElement).toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveSize([{ height: 100, width: 100 }])).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(browser).toHaveWidth).toBeNever()
             })
@@ -245,9 +264,15 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
 
+                // Multiple elements
                 expectTypeOf(expect(chainableElement).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).not.toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should not support array as snapshot', async () => {
+                // @ts-expect-error -- array of elements is not supported for snapshot testing
+                expectTypeOf(expect(chainableElement).toMatchSnapshot(['test label'])).toEqualTypeOf<Promise<void>>()
             })
         })
 
@@ -273,6 +298,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot('test snapshot', 'test label')).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(element).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should not support array as snapshot', async () => {
+                // @ts-expect-error -- array of elements is not supported for snapshot testing
+                expectTypeOf(expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot(['test snapshot'])).toEqualTypeOf<Promise<void>>()
             })
         })
 
@@ -301,6 +331,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
             it('should be deprecated with NumberOptions', async () => {
                 expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10, wait: 1000 })).toExtend<Promise<void>>()
+            })
+
+            it('should not support array as expected', async () => {
+                // @ts-expect-error
+                expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize([1, 2])).toExtend<Promise<void>>()
             })
         })
     })
@@ -496,6 +531,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
         it('should be deprecated with NumberOptions', async () => {
             expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10, wait: 0 })).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should not support array as expected', async () => {
+            // @ts-expect-error
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes([])).toEqualTypeOf<Promise<void>>()
         })
     })
 
