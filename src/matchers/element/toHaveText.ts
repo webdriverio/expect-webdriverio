@@ -21,7 +21,7 @@ export async function toHaveText(
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'text', verb = 'have', isNot, matcherName = 'toHaveText' } = this
+    const { expectation = 'text', verb = 'have', isNot, isSome, matcherName = 'toHaveText' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -40,7 +40,7 @@ export async function toHaveText(
                 singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => {
                     return compareElement(element, values, options)
                 },
-                isNot,
+                modifiers: { isNot, isSome },
                 strategy: isNewStrictCompare ? 'NewStrictMultipleElements' : 'LegacyLooseMultipleElements',
             })
             subject = commandResult.subject

@@ -12,11 +12,13 @@ vi.mock('@wdio/globals')
 
 describe(toBeDisplayed, async () => {
     let thisContext: { toBeDisplayed: typeof toBeDisplayed }
+    let thisSomeContext: { toBeDisplayed: typeof toBeDisplayed, isSome: true }
     let thisNotContext: { isNot: true; toBeDisplayed: typeof toBeDisplayed }
 
     beforeEach(async () => {
         thisContext = { toBeDisplayed }
         thisNotContext = { isNot: true, toBeDisplayed }
+        thisSomeContext = { toBeDisplayed, isSome: true }
 
     })
 
@@ -530,6 +532,15 @@ Expect [] to be displayed
 
 Expected: "at least one result"
 Received: []`)
+        })
+
+        test('some - succeed when have at least one element displayed', async () => {
+            vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
+            vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(true)
+
+            const result = await thisSomeContext.toBeDisplayed(elements)
+
+            expect(result.pass).toBe(true)
         })
     })
 

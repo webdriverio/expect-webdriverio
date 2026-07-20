@@ -27,7 +27,7 @@ export async function toHaveStyle(
     expectedValue: MaybeArray<{ [key: string]: string; }>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'style', verb = 'have', isNot, matcherName = 'toHaveStyle' } = this
+    const { expectation = 'style', verb = 'have', isNot, isSome, matcherName = 'toHaveStyle' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -44,7 +44,7 @@ export async function toHaveStyle(
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValues: MaybeArray<{ [key: string]: string; }> | undefined) => condition(element, expectedValues, options),
-                isNot
+                modifiers: { isNot, isSome },
             })
             el = result.subject
             actualStyle = result.actual

@@ -63,7 +63,7 @@ export async function toHaveChildren(
     expectedValueOrOptions?: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AsyncAssertionResult> {
-    const { expectation = 'children', verb = 'have', isNot, matcherName = 'toHaveChildren' } = this
+    const { expectation = 'children', verb = 'have', isNot, isSome, matcherName = 'toHaveChildren' } = this
 
     const hasOnlyTwoArgs = options === undefined
     options = options ?? DEFAULT_OPTIONS
@@ -90,7 +90,7 @@ export async function toHaveChildren(
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedValue: MaybeArray<NumberMatcher> | undefined) => condition(element, expectedValue),
-                isNot
+                modifiers: { isNot, isSome },
             })
 
             subject = result.subject

@@ -703,15 +703,15 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 })
 
                 it('should return Promise<void> if actual is promise type', async () => {
-                    expectTypeOf(expect.soft(actualPromiseString)).toExtend<ExpectWebdriverIO.MatchersAndInverse<Promise<void>, Promise<string>>>()
+                    expectTypeOf(expect.soft(actualPromiseString)).toExtend<ExpectWebdriverIO.MatchersAndModifiers<Promise<void>, Promise<string>>>()
                     expectTypeOf(expect.soft(actualPromiseString).toBe('Test Page')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect.soft(actualPromiseString).not.toBe('Test Page')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect.soft(actualPromiseString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<Promise<void>>()
                 })
 
                 it('should support chainable element', async () => {
-                    expectTypeOf(expect.soft(element)).toEqualTypeOf<ExpectWebdriverIO.MatchersAndInverse<void, WebdriverIO.Element>>()
-                    expectTypeOf(expect.soft(chainableElement)).toEqualTypeOf<ExpectWebdriverIO.MatchersAndInverse<void, typeof chainableElement>>()
+                    expectTypeOf(expect.soft(element)).toEqualTypeOf<ExpectWebdriverIO.MatchersAndModifiers<void, WebdriverIO.Element>>()
+                    expectTypeOf(expect.soft(chainableElement)).toEqualTypeOf<ExpectWebdriverIO.MatchersAndModifiers<void, typeof chainableElement>>()
                 })
 
                 it('should return Promise<void> with WDIO matchers', async () => {
@@ -783,6 +783,14 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expect(number).toEqual(expect.closeTo(1.0001, 0.0001))
             // New from jest 30, should work!
             expect(['apple', 'banana', 'cherry']).toEqual(expect.arrayOf(expect.any(String)))
+        })
+    })
+
+    describe('Some modifiers', () => {
+        it('should support `some` modifier', async () => {
+            expectTypeOf(expect(element).some.toBeDisplayed()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(chainableElement).some.toBeDisplayed()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(chainableArray).some.toBeDisplayed()).toEqualTypeOf<Promise<void>>()
         })
     })
 })

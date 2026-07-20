@@ -24,24 +24,24 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     unresolvedElements,
     expectedValues,
     singleElementCompare,
-    isNot,
+    modifiers,
     strategy = 'NewStrictMultipleElements',
     configuration = { allowEmptyElements: false }
 } :{
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown
     expectedValues: MaybeArray<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
-    isNot: boolean
+    modifiers: { isNot: boolean, isSome: boolean }
     strategy?: StrategyType,
     configuration?: { allowEmptyElements?: boolean }
 }
 ): Promise<StrategyResult<Actual>> {
     if (strategy === 'LegacyLooseMultipleElements') {
-        return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot)
+        return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, modifiers.isNot)
     }
 
     // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
-    return multipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot, configuration)
+    return multipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, modifiers, configuration)
 }
 
 /**
@@ -114,7 +114,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
     expectedValues: MaybeArray<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
-    isNot: boolean,
+    { isNot, isSome }: { isNot: boolean, isSome: boolean },
     { allowEmptyElements = false } = {}
 ): Promise<StrategyResult<Actual>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
@@ -161,14 +161,20 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     const isNotEmpty = results.length > 0
 
+    const success = isSome
+        ? isNot ? !(isNotEmpty && isOneFalse(results)) : (isNotEmpty && isOneTrue(results))
+        : isNot ? !(isNotEmpty && isAllFalse(results)) : (isNotEmpty && isAllTrue(results))
+
     // Success if all elements pass the compare strategy, or when using `.not`, if all elements fail the compare strategy.
     // If there are no elements, it is considered a failure in both case with and without `.not`, as there are no elements to compare against.
     return {
         subject,
-        success: isNot ? !(isNotEmpty && isAllFalse(results)) : (isNotEmpty && isAllTrue(results)),
+        success,
         actual: results.map(({ value }) => value)
     }
 }
 
 const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.result === true)
 const isAllFalse = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.result === false)
+const isOneTrue = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.result === true)
+const isOneFalse = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.result === false)

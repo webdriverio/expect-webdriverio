@@ -37,7 +37,7 @@ export async function toHaveWidth(
     expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ):Promise<ExpectWebdriverIO.AssertionResult> {
-    const { expectation = 'width', verb = 'have', isNot, matcherName = 'toHaveWidth' } = this
+    const { expectation = 'width', verb = 'have', isNot, isSome, matcherName = 'toHaveWidth' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -56,7 +56,7 @@ export async function toHaveWidth(
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedNumber: MaybeArray<NumberMatcher> | undefined) => condition(element, expectedNumber),
-                isNot
+                modifiers: { isNot, isSome },
             })
 
             elements = result.subject

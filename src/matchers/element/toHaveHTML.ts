@@ -19,7 +19,7 @@ export async function toHaveHTML(
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'HTML', verb = 'have', isNot, matcherName = 'toHaveHTML' } = this
+    const { expectation = 'HTML', verb = 'have', isNot, isSome, matcherName = 'toHaveHTML' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -35,7 +35,7 @@ export async function toHaveHTML(
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
-                isNot
+                modifiers: { isNot, isSome },
             })
             elements = result.subject
             actualHTML = result.actual

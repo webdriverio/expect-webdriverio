@@ -23,7 +23,7 @@ export async function toHaveComputedLabel(
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'computed label', verb = 'have', isNot, matcherName = 'toHaveComputedLabel' } = this
+    const { expectation = 'computed label', verb = 'have', isNot, isSome, matcherName = 'toHaveComputedLabel' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -40,7 +40,7 @@ export async function toHaveComputedLabel(
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
-                isNot
+                modifiers: { isNot, isSome },
             })
             el = result.subject
             actualLabel = result.actual

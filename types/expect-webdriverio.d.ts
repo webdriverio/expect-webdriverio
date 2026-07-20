@@ -22,6 +22,21 @@ type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
 type MatchersObject = Parameters<typeof import('expect').expect.extend>[0]
 
+/**
+   * Some matcher. Allows to assert that at least one element in an array matches the given matcher.
+   * @example
+   * expect([1, 2, 3]).some.toBeGreaterThan(2) // passes because 3 is greater than 2
+   * expect([1, 2, 3]).some.toBeLessThan(0) // fails because no element is less than 0
+   */
+type Some<Matchers> = {
+    some: Matchers;
+}
+
+/**
+ * All modifiers that can be used with the expect-webdriverio matchers.
+ */
+type Modifiers<Matchers> = ExpectLibInverse<Matchers> & Some<Matchers>
+
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -516,7 +531,7 @@ interface WdioCustomExpect {
      * All failures are collected and reported at the end of the test
      * Note: Until fixed, soft only support wdio custom matchers, and not the `expect` library matchers. Moreover, it always returns a Promise.
      */
-    soft<T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<Promise<void>, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
+    soft<T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndModifiers<Promise<void>, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndModifiers<void, T>;
 
     /**
      * Get all current soft assertion failures
@@ -586,7 +601,6 @@ type JasmineStringMatchingAsymmetricMatcher<R extends string | RegExp> = Jasmine
 type JasmineStringAsymmetricMatcher<R extends string | RegExp> = JasmineStringContainingAsymmetricMatcher<R> | JasmineStringMatchingAsymmetricMatcher<R>
 
 type AsymmetricMatcher<R> = WdioAsymmetricMatcher<R> | JasmineStringContainingAsymmetricMatcher<R> | (R extends string | RegExp ? JasmineStringMatchingAsymmetricMatcher<R> : never) | JasmineAsymmetricMatcher<R>
-
 declare namespace ExpectWebdriverIO {
     /**
      * When importing expect from 'expect-webdriverio', instead of using globals this is the one used.
@@ -626,7 +640,7 @@ declare namespace ExpectWebdriverIO {
      * `AsymmetricMatchers` and `Inverse<AsymmetricMatchers>` needs to be defined and be before the `expect` library Expect (aka `WdioExpect`).
      * The above allows to have custom asymmetric matchers under the `ExpectWebdriverIO` namespace.
      */
-    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, ExpectLibInverse<ExpectWebdriverIO.InverseAsymmetricMatchers>, WdioExpect {
+    interface Expect extends ExpectWebdriverIO.AsymmetricMatchers, Modifiers<ExpectWebdriverIO.InverseAsymmetricMatchers>, WdioExpect {
         /**
          * The `expect` function is used every time you want to test a value.
          * You will rarely call `expect` by itself.
@@ -639,7 +653,7 @@ declare namespace ExpectWebdriverIO {
          *
          * @param actual The value to apply matchers against.
          */
-        <T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<void, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
+        <T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndModifiers<void, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndModifiers<void, T>;
     }
 
     /**
@@ -658,7 +672,7 @@ declare namespace ExpectWebdriverIO {
      * End of block overloading types from the expect library.
      */
 
-    type MatchersAndInverse<R extends void | Promise<void>, ActualT> = (ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibMatchers<R, ActualT>) & ExpectLibInverse<ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibMatchers<R, ActualT>>
+    type MatchersAndModifiers<R extends void | Promise<void>, ActualT> = (ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibMatchers<R, ActualT>) & Modifiers<ExpectWebdriverIO.Matchers<R, ActualT> & ExpectLibMatchers<R, ActualT>>
 
     /**
      * Take from expect library
@@ -668,12 +682,12 @@ declare namespace ExpectWebdriverIO {
          * Unwraps the reason of a rejected promise so any other matcher can be chained.
          * If the promise is fulfilled the assertion fails.
          */
-        rejects: MatchersAndInverse<Promise<void>, T>;
+        rejects: MatchersAndModifiers<Promise<void>, T>;
         /**
          * Unwraps the value of a fulfilled promise so any other matcher can be chained.
          * If the promise is rejected the assertion fails.
          */
-        resolves: MatchersAndInverse<Promise<void>, T>;
+        resolves: MatchersAndModifiers<Promise<void>, T>;
     }
     interface SnapshotServiceArgs {
         updateState?: SnapshotUpdateState

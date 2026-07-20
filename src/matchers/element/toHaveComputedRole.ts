@@ -22,7 +22,7 @@ export async function toHaveComputedRole(
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'computed role', verb = 'have', isNot, matcherName = 'toHaveComputedRole' } = this
+    const { expectation = 'computed role', verb = 'have', isNot, isSome, matcherName = 'toHaveComputedRole' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -39,7 +39,7 @@ export async function toHaveComputedRole(
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
-                isNot
+                modifiers: { isNot, isSome },
             })
             el = result.subject
             actualRole = result.actual

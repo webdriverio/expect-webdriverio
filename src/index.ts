@@ -26,22 +26,63 @@ Object.keys(wdioMatchers).forEach(matcher => {
     }
 })
 
-expectLib.extend = (m) => {
-    if (!m || typeof m !== 'object') {
+expectLib.extend = function (this: ExpectWebdriverIO.Expect, allMatchers) {
+    if (!allMatchers || typeof allMatchers !== 'object') {
         return
     }
 
-    Object.entries(m).forEach(([name, matcher]) => {
+    Object.entries(allMatchers).forEach(([name, matcher]) => {
         wdioCustomMatchers[name] = matcher
         matchers.set(name, matcher)
     })
-    return extend(m)
+    extend(allMatchers)
 }
 
 expectLib.extend(filteredMatchers)
 
+/**
+ * Override expect(element) to add some modifiers
+ */
+const wdioExpect = ((actual: unknown, ...args: Array<unknown>) => {
+    // @ts-expect-error
+    const expectation = expectLib(actual, ...args)
+
+    Object.defineProperty(expectation, 'some', {
+        value: {},
+        writable: true,
+        enumerable: true,
+        configurable: true
+    })
+
+    Object.keys(wdioCustomMatchers).forEach((name) => {
+        // @ts-expect-error
+        const originalMatcher = expectation[name]
+
+        // @ts-expect-error -- Wrap the matcher so we can inject context
+        expectation.some[name] = (...matcherArgs: unknown[]) => {
+
+            // @ts-expect-error
+            expectLib.setState({ isSome: true })
+
+            try {
+                // 2. Call original matcher
+                return originalMatcher.apply(expectation, matcherArgs)
+            } finally {
+                // @ts-expect-error
+                // 3. Cleanup: Always remove the flag to prevent pollution
+                expectLib.setState({ isSome: false })
+            }
+
+        }
+    })
+
+    return expectation
+}) as unknown as ExpectWebdriverIO.Expect
+// Re-attach properties/methods of the original expect function to the new wdioExpect function
+Object.assign(wdioExpect, expectLib)
+
 // Extend the expect object with soft assertions
-const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect
+const expectWithSoft = wdioExpect as unknown as ExpectWebdriverIO.Expect
 Object.defineProperty(expectWithSoft, 'soft', {
     value: <T = unknown>(actual: T) => createSoftExpect(actual)
 })
@@ -59,7 +100,7 @@ Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
     value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId)
 })
 
-export const expect = expectWithSoft
+export const expect = wdioExpect
 
 // Default options for the expect-webdriverio library
 export const getDefaultOptions = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS

@@ -22,7 +22,7 @@ export async function toHaveSize(
     expectedValue: MaybeArray<Size>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'size', verb = 'have', isNot, matcherName = 'toHaveSize' } = this
+    const { expectation = 'size', verb = 'have', isNot, isSome, matcherName = 'toHaveSize' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -39,7 +39,7 @@ export async function toHaveSize(
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedSize: MaybeArray<Size> | undefined) => condition(element, expectedSize),
-                isNot
+                modifiers: { isNot, isSome },
             })
 
             el = result.subject

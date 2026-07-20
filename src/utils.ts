@@ -70,7 +70,7 @@ async function executeCommandBe(
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions
 ): ExpectWebdriverIO.AsyncAssertionResult {
-    const { isNot, verb = 'be', allowEmptyElements = false } = this
+    const { isNot, isSome, verb = 'be', allowEmptyElements = false } = this
 
     let subject: WdioElementMaybePromise | unknown = received
     let actual: boolean[] | boolean | undefined
@@ -83,7 +83,7 @@ async function executeCommandBe(
                     const result = await command(element)
                     return { result, value: result }
                 },
-                isNot,
+                modifiers: { isNot, isSome },
                 configuration: { allowEmptyElements }
 
             })
@@ -101,35 +101,6 @@ async function executeCommandBe(
         pass,
         message: () => message,
     }
-}
-
-/**
- * @deprecated not longer used in 5.7.1, replaced by `NumberMatcher.match()`. To remove in 6.0.0
- * @see src/util/numberOptionsUtil.ts#NumberMatcher.match
- */
-/* v8 ignore next */
-const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
-    // Equals case
-    if (typeof options.eq === 'number') {
-        return actual === options.eq
-    }
-
-    // Greater than or equal AND less than or equal case
-    if (typeof options.gte === 'number' && typeof options.lte === 'number') {
-        return actual >= options.gte && actual <= options.lte
-    }
-
-    // Greater than or equal case
-    if (typeof options.gte === 'number') {
-        return actual >= options.gte
-    }
-
-    // Less than or equal case
-    if (typeof options.lte === 'number') {
-        return actual <= options.lte
-    }
-
-    return false
 }
 
 export const compareTextOrArray = (
@@ -389,8 +360,7 @@ export const compareStyle = async (
 }
 
 export {
-    compareNumbers, enhanceError,
-    executeCommandBe, waitUntil, wrapExpectedWithArray
+    enhanceError, executeCommandBe, waitUntil, wrapExpectedWithArray
 }
 
 function replaceActual(

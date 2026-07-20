@@ -548,5 +548,13 @@ Received: "not displayed"`)
                     expectLib.stringContaining('Valid')
                 ]))
         })
+
+        test('Matchers works with .some modifier', async () => {
+            const elements = await $$('selector')
+            vi.mocked(elements[0].isDisplayed).mockResolvedValue(false)
+            vi.mocked(elements[1].isDisplayed).mockResolvedValue(true)
+
+            await expectLib(elements).some.toBeDisplayed()
+        })
     })
 })

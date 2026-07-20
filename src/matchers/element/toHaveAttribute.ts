@@ -32,7 +32,7 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
 }
 
 export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybePromise, attribute: string, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
-    const { expectation = 'attribute', verb = 'have', isNot } = this
+    const { expectation = 'attribute', verb = 'have', isNot, isSome } = this
 
     let el
     let attr
@@ -44,7 +44,7 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
                 singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => {
                     return conditionAttributeValueMatchWithExpected(element, attribute, values, options)
                 },
-                isNot
+                modifiers: { isNot, isSome },
             })
 
             el = result.subject
@@ -66,7 +66,7 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
 }
 
 async function toHaveAttributeFn(received: WdioElementOrArrayMaybePromise, attribute: string, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
-    const { expectation = 'attribute', verb = 'have', isNot } = this
+    const { expectation = 'attribute', verb = 'have', isNot, isSome } = this
 
     let subject
     let actualAttributeValue
@@ -77,7 +77,7 @@ async function toHaveAttributeFn(received: WdioElementOrArrayMaybePromise, attri
                 unresolvedElements: received,
                 expectedValues: undefined,
                 singleElementCompare: (element) => conditionAttributeIsPresent(element, attribute),
-                isNot
+                modifiers: { isNot, isSome },
             })
 
             subject = result.subject

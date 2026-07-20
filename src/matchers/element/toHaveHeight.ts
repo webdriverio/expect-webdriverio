@@ -38,7 +38,7 @@ export async function toHaveHeight(
     expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'height', verb = 'have', isNot, matcherName = 'toHaveHeight' } = this
+    const { expectation = 'height', verb = 'have', isNot, isSome, matcherName = 'toHaveHeight' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -57,7 +57,7 @@ export async function toHaveHeight(
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedNumber: MaybeArray<NumberMatcher> | undefined) => condition(element, expectedNumber),
-                isNot
+                modifiers: { isNot, isSome },
             })
 
             elements = result.subject

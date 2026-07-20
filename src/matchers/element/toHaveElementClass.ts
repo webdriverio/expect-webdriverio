@@ -46,7 +46,7 @@ export async function toHaveElementClass(
     expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
-    const { expectation = 'class', verb = 'have', isNot, matcherName = 'toHaveElementClass' } = this
+    const { expectation = 'class', verb = 'have', isNot, isSome, matcherName = 'toHaveElementClass' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -65,7 +65,7 @@ export async function toHaveElementClass(
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, attribute, expectedValue, options),
-                isNot
+                modifiers: { isNot, isSome },
             })
             el = result.subject
             attr = result.actual
