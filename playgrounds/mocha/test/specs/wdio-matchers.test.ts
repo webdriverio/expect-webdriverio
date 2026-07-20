@@ -78,6 +78,13 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(await nav).toBeDisplayed()
             await expect(await nav.filter(n => n.isExisting())).toBeDisplayedInViewport()
         })
+
+        it('should verify some elements are displayed', async () => {
+            const nav = await $('nav').getElement()
+            const nonExistent = await $('.non-existent-element').getElement()
+
+            await expect([nav, nonExistent]).some.toBeDisplayed()
+        })
     })
 
     describe('Element state matchers', () => {
