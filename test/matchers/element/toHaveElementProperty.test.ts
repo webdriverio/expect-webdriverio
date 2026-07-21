@@ -87,7 +87,7 @@ Received: 5`
         })
 
         // TODO Need deep equality to support array and object properly
-        test('success with when property value an object, bug?', async () => {
+        test('success with when property value is a plain bject, bug?', async () => {
             vi.mocked(el.getProperty).mockResolvedValue( { foo: 'bar' } )
 
             // @ts-expect-error -- object not working for now, to support later
@@ -100,6 +100,13 @@ Expect $(\`sel\`) to have property myPropertyName
 Expected: {"foo": "bar"}
 Received: {"foo": "bar"}`
             )
+        })
+
+        test('failure and unsupported type when property value is an array', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue( { foo: 'bar' } )
+
+            // @ts-expect-error -- object not working for now, to support later
+            await expect(thisContext.toHaveElementProperty(el, 'myPropertyName', [{ foo: 'bar' }])).rejects.toThrow('Passing an array of expected values is not supported for the matcher toHaveElementProperty. Please provide a single expected value.')
         })
 
         test('assymeric match with vitest asymmetrics matcher', async () => {
@@ -255,17 +262,10 @@ Received: "iphone"`)
             })
         })
 
-        test('should return false if value is an array of strings - TODO maybe support better arrays later?', async () => {
+        test('should return false if value is an array of strings', async () => {
             vi.mocked(el.getProperty).mockResolvedValue('Test Value')
 
-            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'])
-
-            expect(result.pass).toBe(false)
-            expect(stripAnsi(result.message())).toEqual(`\
-Expect $(\`sel\`) to have property myPropertyName
-
-Expected: ["Test Value"]
-Received: "Test Value"`)
+            await expect(thisContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'])).rejects.toThrow('Passing an array of expected values is not supported for the matcher toHaveElementProperty. Please provide a single expected value.')
         })
     })
 

@@ -65,7 +65,9 @@ export async function toHaveElementClass(
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, attribute, expectedValue, options),
-                isNot
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowArrayWithSingleElement: true }
             })
             el = result.subject
             attr = result.actual

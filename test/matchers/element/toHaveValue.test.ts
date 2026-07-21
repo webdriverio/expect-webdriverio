@@ -78,16 +78,9 @@ Received: "This is an example value"`
                 )
             })
 
-            test('should not pass with array of strings - TODO maybe better support later?', async () => {
-                const result = await thisContext.toHaveValue(el, ['This is an example value'])
-
-                expect(result.pass).toBe(false)
-                expect(stripAnsi(result.message())).toEqual(`\
-Expect $(\`sel\`) to have property value
-
-Expected: ["This is an example value"]
-Received: "This is an example value"`
-                )
+            test('should not pass with array of strings', async () => {
+                // @ts-expect-error testing invalid input
+                await expect(thisContext.toHaveValue(el, ['Passing an array of expected values is not supported for the matcher ${matcherName}. Please provide a single expected value.'])).rejects.toThrow()
             })
         })
 

@@ -54,11 +54,11 @@ describe(toHaveSize, async () => {
             })
         })
 
-        // TODO to support one day?
         test('fail - array of expected values', async () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
+            // @ts-expect-error testing invalid input
             const result = await thisContext.toHaveSize(el, [expectedValue, expectedValue], { beforeAssertion, afterAssertion, wait: 500 })
 
             expect(result.pass).toBe(false)

@@ -35,7 +35,9 @@ export async function toHaveHTML(
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
-                isNot
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowArrayWithSingleElement: true }
             })
             elements = result.subject
             actualHTML = result.actual

@@ -50,7 +50,8 @@ export async function toHaveElementProperty(
 ): Promise<AsyncAssertionResult>
 
 /**
- * When called with only the property name (and optional configuration options).
+ * Element or Elements
+ * When called with only the property name (and optional configuration options) on a single element or collection.
  */
 export async function toHaveElementProperty(
     received: WdioElementOrArrayMaybePromise,
@@ -59,7 +60,9 @@ export async function toHaveElementProperty(
 ): Promise<AsyncAssertionResult>
 
 /**
- * When called with an expected property name and value.
+ * Elements $$() only (even if `WdioElementOrArrayMaybePromise` is used)
+ * Element is restricted below anyway - required to make typing pass with `toHaveValue` and `toHaveElementProperty` being used together
+ * When called with an expected property name and value on a collection of elements.
  */
 export async function toHaveElementProperty(
     received: WdioElementOrArrayMaybePromise,
@@ -68,6 +71,18 @@ export async function toHaveElementProperty(
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AsyncAssertionResult>
 
+/**
+ * Element (remove the support of array of expected values for single element, as it is not supported by the matcher)
+ * When called with an expected property name and value on a single element.
+ */
+export async function toHaveElementProperty(
+    received: WdioElementMaybePromise,
+    property: string,
+    value: string | number | RegExp | AsymmetricMatcher<string>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AsyncAssertionResult>
+
+// Implementation signature broadened to accept union types safely
 export async function toHaveElementProperty(
     received: WdioElementOrArrayMaybePromise,
     property: string,
@@ -93,13 +108,22 @@ export async function toHaveElementProperty(
 
     let elements
     let actualProppertyValue: unknown
+
     const pass = await waitUntil(
         async () => {
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: value,
-                singleElementCompare: (element, expectedValue: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null> | undefined) => condition(element, property, expectedValue, options),
-                isNot
+                singleElementCompare: (element, expectedValue: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null> | undefined) => {
+                    // Need to throw an error since the default behavior when not supporting array is to set undefined by this matcher do support undefined!
+                    if (Array.isArray(expectedValue)) {
+                        throw new Error(`Passing an array of expected values is not supported for the matcher ${matcherName}. Please provide a single expected value.`)
+                    }
+                    return condition(element, property, expectedValue, options)
+                },
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowEmptyElements: false, allowArrayWithSingleElement: true }
             })
             elements = result.subject
             actualProppertyValue = result.actual

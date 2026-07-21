@@ -231,7 +231,7 @@ Received: []`)
                     expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
-                    configuration: { allowEmptyElements: false }
+                    strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, options)
             })
@@ -245,7 +245,7 @@ Received: []`)
                     expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
-                    configuration: { allowEmptyElements: false }
+                    strictConfiguration: { allowEmptyElements: false }
                 })
             })
 
@@ -336,7 +336,7 @@ Received: "displayed"`)
                     expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
-                    configuration: { allowEmptyElements: false }
+                    strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, options)
@@ -353,7 +353,7 @@ Received: "displayed"`)
                     expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
-                    configuration: { allowEmptyElements: false }
+                    strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
             })
@@ -369,7 +369,7 @@ Received: "displayed"`)
                     expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
-                    configuration: { allowEmptyElements: false }
+                    strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
             })
@@ -454,7 +454,7 @@ Expect ${selectorName} to be displayed
                         expectedValues: true,
                         singleElementCompare: expect.any(Function),
                         isNot: true,
-                        configuration: { allowEmptyElements: false }
+                        strictConfiguration: { allowEmptyElements: false }
                     })
                     expect(command).toHaveBeenCalledTimes(2)
                     expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), true, options)
