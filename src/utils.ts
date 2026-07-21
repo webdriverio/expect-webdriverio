@@ -84,7 +84,7 @@ async function executeCommandBe(
                     return { result, value: result }
                 },
                 isNot,
-                configuration: { allowEmptyElements }
+                strictConfiguration: { allowEmptyElements }
 
             })
             subject = result.subject

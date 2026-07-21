@@ -68,7 +68,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         })
     })
 
-    describe('element', () => {
+    describe('element or elements', () => {
 
         describe('toBeDisabled', () => {
             it('should return Promise<void>', async () => {
@@ -171,6 +171,82 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
         })
 
+        describe('toHaveAttribute', () => {
+            it('should have ts errors when using array with element', async () => {
+                // @ts-expect-error
+                expectTypeOf(expect(element).toHaveAttribute(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(element).toHaveAttribute('attributeName', 'text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveAttribute('attributeName', expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveAttribute('attributeName', /text/)).toEqualTypeOf<Promise<void>>()
+
+                await expect(element).toHaveAttribute(
+                    'My-Ex-Am-Ple',
+                    {
+                        replace: [[/-/g, ' '], [/[A-Z]+/g, (match: string) => match.toLowerCase()]]
+                    }
+                )
+
+                expectTypeOf(expect(element).not.toHaveAttribute('attributeName', 'text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(element).toHaveAttribute).parameter(1).extract<number>().toBeNever()
+
+                expectTypeOf(expect(chainableElement).toHaveAttribute('attributeName', 'text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveAttribute('attributeName', expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveAttribute('attributeName', /text/)).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableElement).not.toHaveAttribute('attributeName', 'text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableElement).toHaveAttribute).parameter(1).extract<number>().toBeNever()
+
+                expectTypeOf(expect(elementArray).toHaveAttribute('attributeName', 'text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveAttribute('attributeName', /text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveAttribute('attributeName', ['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveAttribute('attributeName', [expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveAttribute('attributeName', [/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveAttribute('attributeName', ['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(elementArray).not.toHaveAttribute('attributeName', 'text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(elementArray).toHaveAttribute).parameter(1).extract<number>().toBeNever()
+
+                expectTypeOf(expect(chainableArray).toHaveAttribute('attributeName', 'text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveAttribute('attributeName', /text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveAttribute('attributeName', ['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveAttribute('attributeName', [expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveAttribute('attributeName', [/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveAttribute('attributeName', ['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableArray).not.toHaveAttribute('text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableArray).toHaveAttribute).parameter(0).extract<number>().toBeNever()
+
+                expectTypeOf(expect(browser).toHaveText).toBeNever()
+            })
+
+            it('should have ts errors when actual is not an element', async () => {
+                expectTypeOf(expect(browser).toHaveText).toBeNever()
+                expectTypeOf(expect(true).toHaveText).toBeNever()
+            })
+
+            it('should have ts errors when actual is string or Promise<string>', async () => {
+                expectTypeOf(expect('text').toHaveText).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveText).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveText).toBeNever()
+            })
+
+            it('support edge types case like Promises of ElementArray & Element[]', async () => {
+                const elementArrayPromise: Promise<WebdriverIO.ElementArray> = Promise.resolve([] as unknown as WebdriverIO.ElementArray)
+                const elementsPromise: Promise<WebdriverIO.Element[]> = Promise.resolve([] as unknown as WebdriverIO.Element[])
+
+                expectTypeOf(expect(elementArrayPromise).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementsPromise).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+            })
+
+        })
+
         describe('toHaveHeight', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(element).toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
@@ -181,16 +257,22 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveHeight({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveHeight({ gte: 100 })).toEqualTypeOf<Promise<void>>()
 
-                // Not really supported to fix one day
-                expectTypeOf(expect(element).toHaveHeight([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
-
-                // Multiple elements
                 expectTypeOf(expect(chainableElement).toHaveHeight(100)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveHeight([100])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toHaveHeight({ gte: 100 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveHeight([{ gte: 100 }])).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(browser).toHaveHeight).toBeNever()
+            })
+
+            it('Element should not support array as expected', async () => {
+                // @ts-expect-error
+                expectTypeOf(expect(element).toHaveHeight([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHeight).parameter(0).extract<Array<unknown>>().toBeNever()
+            })
+
+            it('should support element array', async () => {
+                expectTypeOf(expect(elementArray).toHaveHeight([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveHeight([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveHeight).parameter(0).extract<Array<unknown>>().not.toBeNever()
             })
 
             it('should have ts errors when actual is string or Promise<string>', async () => {
@@ -210,16 +292,22 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveWidth({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveWidth({ gte: 100 })).toEqualTypeOf<Promise<void>>()
 
-                // Not really supported to fix one day
-                expectTypeOf(expect(element).toHaveWidth([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
-
-                // Multiple elements
                 expectTypeOf(expect(chainableElement).toHaveWidth(100)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveWidth([100])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toHaveWidth({ gte: 100 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveWidth([{ gte: 100 }])).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(browser).toHaveWidth).toBeNever()
+            })
+
+            it('Element should not support array as expected', async () => {
+                // @ts-expect-error
+                expectTypeOf(expect(element).toHaveWidth([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveWidth).parameter(0).extract<Array<unknown>>().toBeNever()
+            })
+
+            it('should support element array', async () => {
+                expectTypeOf(expect(elementArray).toHaveWidth([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveWidth([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveWidth).parameter(0).extract<Array<unknown>>().not.toBeNever()
             })
 
             it('should have ts errors when actual is string or Promise<string>', async () => {
@@ -236,18 +324,25 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).not.toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveSize({ height: 100, width: 100 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
 
-                // Not really supported to fix one day
-                expectTypeOf(expect(element).not.toHaveSize([{ height: 100, width: 100 }])).toEqualTypeOf<Promise<void>>()
-
-                // TODO one day
+                // TODO one day support NumberMatcher directly in toHaveSize, but for now it is not supported
                 // expectTypeOf(expect(element).toHaveSize({ gte: 100 })).toEqualTypeOf<Promise<void>>()
                 // expectTypeOf(expect(element).toHaveSize({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
                 // expectTypeOf(expect(element).not.toHaveSize({ gte: 100 })).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(chainableElement).toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveSize([{ height: 100, width: 100 }])).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(browser).toHaveWidth).toBeNever()
+            })
+
+            it('ù should not support array as expected', async () => {
+                // @ts-expect-error
+                expectTypeOf(expect(element).toHaveWidth([{ gte: 100, lte: 200 }])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveWidth).parameter(0).extract<Array<unknown>>().toBeNever()
+            })
+
+            it('should support element array', async () => {
+                expectTypeOf(expect(elementArray).toHaveSize([{ height: 100, width: 100 }])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveSize).parameter(0).extract<Array<unknown>>().not.toBeNever()
             })
 
             it('should have ts errors when actual is string or Promise<string>', async () => {

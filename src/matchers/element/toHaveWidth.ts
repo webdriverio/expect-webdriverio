@@ -1,24 +1,36 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElements } from '../../types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
-import { matchNumber, validateNumberArrayAndExtractOptions, type NumberMatcher } from '../../util/numberOptionsUtil.js'
+import { validateNumberArrayAndExtractOptions, type NumberMatcher } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedNumber: MaybeArray<NumberMatcher> | undefined) {
+async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined) {
     const actualWidth = await el.getSize('width')
 
     return {
-        result: matchNumber(actualWidth, expectedNumber),
+        result: expectedNumber?.match(actualWidth) ?? false,
         value: actualWidth
     }
 }
 
+/**
+ * Element $()
+ */
 export async function toHaveWidth(
-    received: WdioElementOrArrayMaybePromise,
+    received: WdioElementMaybePromise,
+    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
+    options?: ExpectWebdriverIO.CommandOptions
+):Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * Elements $$()
+ */
+export async function toHaveWidth(
+    received: WdioElementsMaybePromise,
     expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
     options?: ExpectWebdriverIO.CommandOptions
 ):Promise<ExpectWebdriverIO.AssertionResult>
@@ -55,8 +67,10 @@ export async function toHaveWidth(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
-                singleElementCompare: (element, expectedNumber: MaybeArray<NumberMatcher> | undefined) => condition(element, expectedNumber),
-                isNot
+                singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowEmptyElements: false, allowArrayWithSingleElement: false }
             })
 
             elements = result.subject

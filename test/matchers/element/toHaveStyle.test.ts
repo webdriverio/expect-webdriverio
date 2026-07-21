@@ -240,6 +240,20 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             expect(result.pass).toBe(true)
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
         })
+
+        test('fails with an array as expected', async () => {
+
+            // @ts-expect-error testing invalid input
+            const result = await thisContext.toHaveStyle(el, [])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have style
+
+Expected: []
+Received: undefined`
+            )
+        })
     })
 
     describe('given multiple elements', () => {

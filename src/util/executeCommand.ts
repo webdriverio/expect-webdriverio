@@ -26,14 +26,14 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     singleElementCompare,
     isNot,
     strategy = 'NewStrictMultipleElements',
-    configuration = { allowEmptyElements: false }
+    strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
 } :{
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown
     expectedValues: MaybeArray<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
     isNot: boolean
     strategy?: StrategyType,
-    configuration?: { allowEmptyElements?: boolean }
+    strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean }
 }
 ): Promise<StrategyResult<Actual>> {
     if (strategy === 'LegacyLooseMultipleElements') {
@@ -41,7 +41,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     }
 
     // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
-    return multipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot, configuration)
+    return multipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot, strictConfiguration)
 }
 
 /**
@@ -115,7 +115,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     expectedValues: MaybeArray<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     isNot: boolean,
-    { allowEmptyElements = false } = {}
+    { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
 ): Promise<StrategyResult<Actual>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
@@ -130,6 +130,9 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
 
     if (isElement(selector)) {
+        if (!allowArrayWithSingleElement && Array.isArray(expectedValues)) {
+            expectedValues = undefined // Force failure when we do not support array with single element, to avoid confusion with the new strategy.
+        }
         const compareResult = await singleElementCompare(selector, expectedValues)
         return {
             subject,
@@ -141,7 +144,13 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     const settled = await Promise.allSettled(
         Array.from(selector).map((element: WebdriverIO.Element, index: number) => {
             // For the new strategy, each element is compared against its index-based corresponding expected value (if it's an array) or the single expected value.
-            const indexedExpectedValue = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
+            let indexedExpectedValue = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
+
+            // Single element compare might not support array!
+            if (!allowArrayWithSingleElement && Array.isArray(indexedExpectedValue)) {
+                indexedExpectedValue = undefined // Force failure when we do not support array with single element, to avoid confusion with the new strategy.
+            }
+
             return singleElementCompare(element, indexedExpectedValue, index)
         })
     )

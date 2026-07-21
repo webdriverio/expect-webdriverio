@@ -42,6 +42,7 @@ export async function toHaveText(
                 },
                 isNot,
                 strategy: isNewStrictCompare ? 'NewStrictMultipleElements' : 'LegacyLooseMultipleElements',
+                strictConfiguration: { allowEmptyElements: false, allowArrayWithSingleElement: true }
             })
             subject = commandResult.subject
             actualText = commandResult.actual as string | string[] | undefined

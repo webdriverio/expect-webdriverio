@@ -1,6 +1,6 @@
 import type { RectReturn } from '@wdio/protocols'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
     compareObject,
@@ -10,12 +10,30 @@ import {
 } from '../../utils.js'
 
 export type Size = Pick<RectReturn, 'width' | 'height'>
-async function condition(el: WebdriverIO.Element, size: MaybeArray<Size> | undefined): Promise<{ result: boolean, value: Size }> {
+async function condition(el: WebdriverIO.Element, size: Size | undefined): Promise<{ result: boolean, value: Size }> {
     const actualSize = await el.getSize()
 
     // TODO: Handle array of Size for both single and multiple elements since for now it fails silently.
     return compareObject(actualSize, size)
 }
+
+/**
+ * Element $()
+ */
+export async function toHaveSize(
+    received: WdioElementMaybePromise,
+    expectedValue: Size,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * Elements $$()
+ */
+export async function toHaveSize(
+    received: WdioElementsMaybePromise,
+    expectedValue: MaybeArray<Size>,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveSize(
     received: WdioElementOrArrayMaybePromise,
@@ -38,8 +56,10 @@ export async function toHaveSize(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, expectedSize: MaybeArray<Size> | undefined) => condition(element, expectedSize),
-                isNot
+                singleElementCompare: (element, expectedSize: Size | undefined) => condition(element, expectedSize),
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowEmptyElements: false, allowArrayWithSingleElement: false }
             })
 
             el = result.subject
