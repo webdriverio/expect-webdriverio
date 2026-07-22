@@ -14,7 +14,7 @@ import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 async function condition(
     el: WebdriverIO.Element,
     property: string,
-    expectedValue: unknown, // TODO: review if an array of expected values should be supported for this matcher similarly as other matchers
+    expectedValue: string | number | RegExp | AsymmetricMatcher<string> | null | undefined, // TODO: review if an array of expected values should be supported for this matcher similarly as other matchers
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { asString = false } = options
@@ -114,16 +114,12 @@ export async function toHaveElementProperty(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: value,
-                singleElementCompare: (element, expectedValue: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null> | undefined) => {
-                    // Need to throw an error since the default behavior when not supporting array is to set undefined by this matcher do support undefined!
-                    if (Array.isArray(expectedValue)) {
-                        throw new Error(`Passing an array of expected values is not supported for the matcher ${matcherName}. Please provide a single expected value.`)
-                    }
+                singleElementCompare: (element, expectedValue: string | number | RegExp | AsymmetricMatcher<string> | null | undefined) => {
                     return condition(element, property, expectedValue, options)
                 },
                 isNot,
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowEmptyElements: false, allowArrayWithSingleElement: true }
+                strictConfiguration: { allowEmptyElements: false, allowArrayWithSingleElement: false }
             })
             elements = result.subject
             actualProppertyValue = result.actual

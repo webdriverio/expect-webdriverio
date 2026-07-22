@@ -130,28 +130,39 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
 
     if (isElement(selector)) {
+        let forceFailure = false
         if (!allowArrayWithSingleElement && Array.isArray(expectedValues)) {
+            // When arrays are not supported pass undefined instead and force a failure result below
             expectedValues = undefined // Force failure when we do not support array with single element, to avoid confusion with the new strategy.
+            forceFailure = true
         }
         const compareResult = await singleElementCompare(selector, expectedValues)
         return {
             subject,
-            success: compareResult.result,
+            success: forceFailure ? false : compareResult.result,
             actual: compareResult.value,
         }
     }
 
     const settled = await Promise.allSettled(
-        Array.from(selector).map((element: WebdriverIO.Element, index: number) => {
+        Array.from(selector).map(async (element: WebdriverIO.Element, index: number) => {
             // For the new strategy, each element is compared against its index-based corresponding expected value (if it's an array) or the single expected value.
             let indexedExpectedValue = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
 
+            let forceFailure = false
             // Single element compare might not support array!
             if (!allowArrayWithSingleElement && Array.isArray(indexedExpectedValue)) {
                 indexedExpectedValue = undefined // Force failure when we do not support array with single element, to avoid confusion with the new strategy.
+                forceFailure = true
+            } if (Array.isArray(expectedValues) && expectedValues.length !== selector.length) {
+                // If there are more expected values than elements, fill the missing expected values with undefined to force a failure for those elements.
+                indexedExpectedValue = expectedValues[index]
+                // Forcing is required when the matchers does support undefined for existence check.
+                forceFailure = true
             }
 
-            return singleElementCompare(element, indexedExpectedValue, index)
+            const compareResult = await singleElementCompare(element, indexedExpectedValue, index)
+            return forceFailure ? { result: false, value: compareResult.value } : compareResult
         })
     )
 

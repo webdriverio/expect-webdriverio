@@ -80,7 +80,8 @@ Received: "This is an example value"`
 
             test('should not pass with array of strings', async () => {
                 // @ts-expect-error testing invalid input
-                await expect(thisContext.toHaveValue(el, ['Passing an array of expected values is not supported for the matcher ${matcherName}. Please provide a single expected value.'])).rejects.toThrow()
+                const result = await thisContext.toHaveValue(el, ['Passing an array of expected values is not supported for the matcher ${matcherName}. Please provide a single expected value.'])
+                expect(result.pass).toBe(false)
             })
         })
 

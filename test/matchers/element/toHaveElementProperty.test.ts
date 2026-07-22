@@ -106,7 +106,14 @@ Received: {"foo": "bar"}`
             vi.mocked(el.getProperty).mockResolvedValue( { foo: 'bar' } )
 
             // @ts-expect-error -- object not working for now, to support later
-            await expect(thisContext.toHaveElementProperty(el, 'myPropertyName', [{ foo: 'bar' }])).rejects.toThrow('Passing an array of expected values is not supported for the matcher toHaveElementProperty. Please provide a single expected value.')
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', [{ foo: 'bar' }])
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have property myPropertyName
+
+Expected: [{"foo": "bar"}]
+Received: {"foo": "bar"}`
+            )
         })
 
         test('assymeric match with vitest asymmetrics matcher', async () => {
@@ -265,7 +272,13 @@ Received: "iphone"`)
         test('should return false if value is an array of strings', async () => {
             vi.mocked(el.getProperty).mockResolvedValue('Test Value')
 
-            await expect(thisContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'])).rejects.toThrow('Passing an array of expected values is not supported for the matcher toHaveElementProperty. Please provide a single expected value.')
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'])
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have property myPropertyName
+
+Expected: ["Test Value"]
+Received: "Test Value"`)
         })
     })
 
@@ -577,6 +590,44 @@ Expect $$(\`sel\`) to have property property
 -   /WDIO/,
 +   "iphone",
 +   "iphone",
+  ]`)
+                })
+            })
+
+            describe('should fail if there is less expected values than elements', () => {
+                test('failure', async () => {
+                    const result = await thisContext.toHaveElementProperty(els, 'property', ['iphone'])
+
+                    expect(result.pass).toBe(false)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have property property
+
+- Expected  - 0
++ Received  + 1
+
+  Array [
+    "iphone",
++   "iphone",
+  ]`)
+                })
+            })
+
+            describe('should fail if there is more expected values than elements', () => {
+                test('failure', async () => {
+                    const result = await thisContext.toHaveElementProperty(els, 'property', ['iphone', 'iphone', 'iphone'])
+
+                    expect(result.pass).toBe(false)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have property property
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "iphone",
+    "iphone",
+-   "iphone",
++   undefined,
   ]`)
                 })
             })
