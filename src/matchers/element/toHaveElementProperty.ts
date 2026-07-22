@@ -119,7 +119,7 @@ export async function toHaveElementProperty(
                 },
                 isNot,
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowEmptyElements: false, allowArrayWithSingleElement: false }
+                strictConfiguration: { allowArrayWithSingleElement: false }
             })
             elements = result.subject
             actualProppertyValue = result.actual

@@ -19,6 +19,7 @@ export function toHaveValue(
     value: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AsyncAssertionResult>{
+    // Using this context, allow better support of signature typing
     const context: { toHaveElementProperty: typeof toHaveElementProperty } = { ...this, toHaveElementProperty: toHaveElementProperty }
     return context.toHaveElementProperty(el, 'value', value, options)
 }
