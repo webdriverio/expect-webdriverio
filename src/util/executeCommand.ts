@@ -150,8 +150,8 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             let indexedExpectedValue = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
 
             let forceFailure = false
-            // Single element compare might not support array!
-            if (!allowArrayWithSingleElement && Array.isArray(indexedExpectedValue)) {
+            // The new strategy does not support passing an array of expected values for an index-based element comparison.
+            if (Array.isArray(indexedExpectedValue)) {
                 indexedExpectedValue = undefined // Force failure when we do not support array with single element, to avoid confusion with the new strategy.
                 forceFailure = true
             } if (Array.isArray(expectedValues) && expectedValues.length !== selector.length) {

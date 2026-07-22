@@ -817,6 +817,32 @@ Received: "webdriverio"`
                 await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for first element')
             })
 
+            test('given an arrays of array of expected values', async () => {
+                const elements = $$('elements')
+
+                elements.forEach(el => vi.mocked(el.getText).mockResolvedValue('webdriverio'))
+
+                // @ts-expect-error -- array of array of expected values is not supported, but we want to test that it fails gracefully
+                const results = await thisContext.toHaveText(elements, [['webdriverIO'], ['webdriverIO']])
+                expect(results.pass).toBe(false)
+                expect(stripAnsi(results.message())).toEqual(`\
+Expect $$(\`elements\`) to have text
+
+- Expected  - 6
++ Received  + 2
+
+  Array [
+-   Array [
+-     "webdriverIO",
+-   ],
+-   Array [
+-     "webdriverIO",
+-   ],
++   " Valid Text ",
++   " Valid Text ",
+  ]`)
+            })
+
             describe('Long promises', () => {
 
                 describe("given element's text takes more time then the configured wait to be retrieved", () => {
