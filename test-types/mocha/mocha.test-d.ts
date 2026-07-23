@@ -171,6 +171,90 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
         })
 
+        describe('toHaveHTML', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(element).toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHTML(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHTML(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHTML(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHTML([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHTML([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHTML(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                await expect(element).toHaveHTML(
+                    'My-Ex-Am-Ple',
+                    {
+                        replace: [[/-/g, ' '], [/[A-Z]+/g, (match: string) => match.toLowerCase()]]
+                    }
+                )
+
+                expectTypeOf(expect(element).not.toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(element).toHaveHTML).parameter(0).extract<number>().toBeNever()
+
+                expectTypeOf(expect(chainableElement).toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableElement).not.toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableElement).toHaveHTML).parameter(0).extract<number>().toBeNever()
+
+                expectTypeOf(expect(elementArray).toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveHTML(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveHTML(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveHTML([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveHTML([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveHTML(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(elementArray).not.toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(elementArray).toHaveHTML).parameter(0).extract<number>().toBeNever()
+
+                expectTypeOf(expect(chainableArray).toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveHTML(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveHTML(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveHTML([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveHTML([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveHTML(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableArray).not.toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableArray).toHaveHTML).parameter(0).extract<number>().toBeNever()
+
+                expectTypeOf(expect(browser).toHaveHTML).toBeNever()
+            })
+
+            it('should have ts errors when actual is not an element', async () => {
+                expectTypeOf(expect(browser).toHaveHTML).toBeNever()
+                expectTypeOf(expect(true).toHaveHTML).toBeNever()
+            })
+
+            it('should have ts errors when actual is string or Promise<string>', async () => {
+                expectTypeOf(expect('text').toHaveHTML).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveHTML).toBeNever()
+                expectTypeOf(expect(Promise.resolve('text')).toHaveHTML).toBeNever()
+            })
+
+            it('should be able to use array with element', async () => {
+                expectTypeOf(expect(element).toHaveHTML(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should use html options', async () => {
+                expectTypeOf(expect(element).toHaveHTML).parameter(1).extract<ExpectWebdriverIO.HTMLOptions>().toEqualTypeOf<ExpectWebdriverIO.HTMLOptions>()
+            })
+
+            it('support edge types case like Promises of ElementArray & Element[]', async () => {
+                const elementArrayPromise: Promise<WebdriverIO.ElementArray> = Promise.resolve([] as unknown as WebdriverIO.ElementArray)
+                const elementsPromise: Promise<WebdriverIO.Element[]> = Promise.resolve([] as unknown as WebdriverIO.Element[])
+
+                expectTypeOf(expect(elementArrayPromise).toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementsPromise).toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
+            })
+        })
+
         describe('toHaveAttribute', () => {
             it('should have ts errors when using array with element', async () => {
                 // @ts-expect-error

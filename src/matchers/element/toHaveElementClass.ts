@@ -1,5 +1,6 @@
+import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type {  WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { compareText, compareTextOrArray, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
@@ -45,7 +46,7 @@ export async function toHaveElementClass(
     received: WdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
+): Promise<AssertionResult> {
     const { expectation = 'class', verb = 'have', isNot, matcherName = 'toHaveElementClass' } = this
 
     await options.beforeAssertion?.({

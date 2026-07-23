@@ -1,4 +1,4 @@
-import type { AsyncAssertionResult } from 'expect-webdriverio'
+import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeArray, WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
@@ -47,7 +47,7 @@ export async function toHaveElementProperty(
     property: string,
     value: undefined | null,
     options?: ExpectWebdriverIO.StringOptions
-): Promise<AsyncAssertionResult>
+): Promise<AssertionResult>
 
 /**
  * Element or Elements
@@ -57,7 +57,7 @@ export async function toHaveElementProperty(
     received: WdioElementOrArrayMaybePromise,
     property: string,
     options?: ExpectWebdriverIO.StringOptions
-): Promise<AsyncAssertionResult>
+): Promise<AssertionResult>
 
 /**
  * Elements $$() only (even if `WdioElementOrArrayMaybePromise` is used)
@@ -69,7 +69,7 @@ export async function toHaveElementProperty(
     property: string,
     value: MaybeArray<string | number | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
-): Promise<AsyncAssertionResult>
+): Promise<AssertionResult>
 
 /**
  * Element (remove the support of array of expected values for single element, as it is not supported by the matcher)
@@ -80,7 +80,7 @@ export async function toHaveElementProperty(
     property: string,
     value: string | number | RegExp | AsymmetricMatcher<string>,
     options?: ExpectWebdriverIO.StringOptions
-): Promise<AsyncAssertionResult>
+): Promise<AssertionResult>
 
 // Implementation signature broadened to accept union types safely
 export async function toHaveElementProperty(
@@ -88,7 +88,7 @@ export async function toHaveElementProperty(
     property: string,
     valueOrOptions?: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null> | ExpectWebdriverIO.StringOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-): Promise<AsyncAssertionResult> {
+): Promise<AssertionResult> {
     const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
     let value: string | number | RegExp | AsymmetricMatcher<string> | null | undefined
 

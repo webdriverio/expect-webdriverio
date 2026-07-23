@@ -1,6 +1,6 @@
-import type { AsyncAssertionResult } from 'expect-webdriverio'
+import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
     compareTextOrArray,
@@ -106,7 +106,7 @@ export async function toHaveAttribute(
     attribute: string,
     value: undefined,
     options?: ExpectWebdriverIO.StringOptions
-): Promise<AsyncAssertionResult>
+): Promise<AssertionResult>
 
 /**
  * When called with only the attribute name (and optional configuration options).
@@ -115,24 +115,35 @@ export async function toHaveAttribute(
     received: WdioElementOrArrayMaybePromise,
     attribute: string,
     options?: ExpectWebdriverIO.StringOptions
-): Promise<AsyncAssertionResult>
+): Promise<AssertionResult>
+
+/**
+ * Element $() API
+ * When called with an expected attribute name and value.
+ */
+export async function toHaveAttribute(
+    received: WdioElementMaybePromise,
+    attribute: string,
+    value: string | RegExp | AsymmetricMatcher<string>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AssertionResult>
 
 /**
  * When called with an expected attribute name and value.
  */
 export async function toHaveAttribute(
-    received: WdioElementOrArrayMaybePromise,
+    received: WdioElementsMaybePromise,
     attribute: string,
     value: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
-): Promise<AsyncAssertionResult>
+): Promise<AssertionResult>
 
 export async function toHaveAttribute(
     received: WdioElementOrArrayMaybePromise,
     attribute: string,
     valueOrOptions?: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.StringOptions,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-): Promise<AsyncAssertionResult> {
+): Promise<AssertionResult> {
     const matcherName = 'toHaveAttribute'
 
     let value: string | RegExp | AsymmetricMatcher<string> | undefined

@@ -297,6 +297,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }>
 
     toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, {
+        /** Element $() API */
         /**
          * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveElementProperty(property, options)`.
          */
@@ -315,6 +316,20 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Assert both property name AND a specific expected value */
         (
             property: string,
+            value: string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+    }, {
+        /** Elements $$() API */
+        /** Check ONLY for the presence of the property (and optional configuration options) */
+        (
+            property: string,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+
+        /** Assert both property name AND a specific expected value */
+        (
+            property: string,
             value: MaybeArray<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
@@ -324,12 +339,20 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * `WebdriverIO.Element` -> `getProperty` value
      */
     toHaveValue: FnWhenElementOrArrayLike<ActualT,
-        /** Element $() or Elements $$() API */
+        /** Element $() API */
+        (
+
+            value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /** Elements $$() API */
         (
 
             value: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
-        ) => Promise<void>>
+        ) => Promise<void>
+    >
 
     /**
      * `WebdriverIO.Element` -> `$$('./*').length`
@@ -356,7 +379,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
          * When called with an expected child count or number matcher.
          */
         (
-            expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
+            expectedValue: number | ExpectWebdriverIO.NumberMatcher,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>;
 
@@ -388,15 +411,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
          * When called with an expected child count or number matcher.
          */
         (
-            expectedValue: number | ExpectWebdriverIO.NumberMatcher,
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>;
-
-        /**
-         * deprecated since 5.7.1, remove in v6.0.0. NumberOptions is no longer supported. Use `toHaveChildren(numberMatcher, options)` instead.
-         */
-        (
-            expectedValue: ExpectWebdriverIO.NumberOptions,
+            expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>;
     }>
@@ -406,6 +421,12 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      */
     toHaveHref: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
+        (
+            href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) : Promise<void>
+    }, {
+        /** Elements $$() API */
         (
             href: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
@@ -418,6 +439,12 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveLink: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         (
+            href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) : Promise<void>
+    }, {
+        /** Elements $$() API */
+        (
             href: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
@@ -426,10 +453,19 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     /**
      * `WebdriverIO.Element` -> `getProperty` value
      */
-    toHaveId: FnWhenElementOrArrayLike<ActualT, (
-        id: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
-        options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<void>>
+    toHaveId: FnWhenElementOrArrayLike<ActualT,
+        /** Element $() API */
+        (
+            id: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /** Elements $$() API */
+        (
+            id: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
 
     /**
      * `WebdriverIO.Element` -> `getText`
@@ -477,18 +513,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Element $() API */
         (
             text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-            options?: ExpectWebdriverIO.StringOptions
+            options?: ExpectWebdriverIO.HTMLOptions
         ) : Promise<void>
         /** soon deprecated to replace by oneOf() or anyOf() when available */
         (
             text: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
-            options?: ExpectWebdriverIO.StringOptions
+            options?: ExpectWebdriverIO.HTMLOptions
         ) : Promise<void>
     }, {
         /** Elements $$() API */
         (
             text: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
-            options?: ExpectWebdriverIO.StringOptions
+            options?: ExpectWebdriverIO.HTMLOptions
         ): Promise<void>
     }>
 
@@ -593,13 +629,13 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Element $() API */
         (
             size: { height: number; width: number },
-            options?: ExpectWebdriverIO.StringOptions
+            options?: ExpectWebdriverIO.CommandOptions
         ) : Promise<void>
     }, {
         /** Elements $$() API */
         (
             size: MaybeArray<{ height: number; width: number }>,
-            options?: ExpectWebdriverIO.StringOptions
+            options?: ExpectWebdriverIO.CommandOptions
         ) : Promise<void>
     }>
 
