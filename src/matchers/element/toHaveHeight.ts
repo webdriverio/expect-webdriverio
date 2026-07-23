@@ -47,7 +47,7 @@ export async function toHaveHeight(
 
 export async function toHaveHeight(
     received: WdioElementOrArrayMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'height', verb = 'have', isNot, matcherName = 'toHaveHeight' } = this
