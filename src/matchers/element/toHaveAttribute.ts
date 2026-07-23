@@ -3,7 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
-    compareTextOrArray,
+    compareText,
     enhanceError,
     waitUntil,
     wrapExpectedWithArray
@@ -21,14 +21,14 @@ async function conditionAttributeIsPresent(el: WebdriverIO.Element, attribute: s
 
 }
 
-async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions) {
+async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined, options: ExpectWebdriverIO.StringOptions) {
     const attributeValue = await el.getAttribute(attribute)
 
     if (typeof attributeValue !== 'string' || expectedValue === undefined) {
         return { result: false, value: attributeValue }
     }
 
-    return compareTextOrArray(attributeValue, expectedValue, options)
+    return compareText(attributeValue, expectedValue, options)
 }
 
 export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybePromise, attribute: string, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
@@ -41,7 +41,7 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => {
+                singleElementCompare: (element, values: string | RegExp | AsymmetricMatcher<string> | undefined) => {
                     return conditionAttributeValueMatchWithExpected(element, attribute, values, options)
                 },
                 isNot
