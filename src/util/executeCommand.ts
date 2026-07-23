@@ -154,10 +154,8 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             if (Array.isArray(indexedExpectedValue)) {
                 indexedExpectedValue = undefined // Force failure when we do not support array with single element, to avoid confusion with the new strategy.
                 forceFailure = true
-            } if (Array.isArray(expectedValues) && expectedValues.length !== selector.length) {
-                // If there are more expected values than elements, fill the missing expected values with undefined to force a failure for those elements.
-                indexedExpectedValue = expectedValues[index]
-                // Forcing is required when the matchers does support undefined for existence check.
+            } else if (Array.isArray(expectedValues) && expectedValues.length !== selector.length && index >= expectedValues.length) {
+                // Ensure we fails when expected vs number of elements do not match, mostly since some matchers asserting existence might pass when passing undefined expected value to fake a failure.
                 forceFailure = true
             }
 
@@ -179,13 +177,18 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         results.push(...missingValues.map((value) => ({ result: false, value })))
     }
 
+    let forceFailure = false
+    if (Array.isArray(expectedValues) && expectedValues.length !== selector.length) {
+        forceFailure = true
+    }
+
     const isNotEmpty = results.length > 0
 
     // Success if all elements pass the compare strategy, or when using `.not`, if all elements fail the compare strategy.
     // If there are no elements, it is considered a failure in both case with and without `.not`, as there are no elements to compare against.
     return {
         subject,
-        success: isNot ? !(isNotEmpty && isAllFalse(results)) : (isNotEmpty && isAllTrue(results)),
+        success: isNot ? !(!forceFailure && isNotEmpty && isAllFalse(results)) : (!forceFailure && isNotEmpty && isAllTrue(results)),
         actual: results.map(({ value }) => value)
     }
 }
