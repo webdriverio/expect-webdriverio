@@ -64,10 +64,10 @@ export const expect = expectWithSoft
 // Default options for the expect-webdriverio library
 export const getDefaultOptions = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
 export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOptions>): void => {
-    Object.entries(options).forEach(([key, value]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (Object.entries(options) as [keyof ExpectWebdriverIO.DefaultOptions, any][]).forEach(([key, value]) => {
         defaultOptionsList.forEach((option) => {
             if (key in option) {
-                // @ts-ignore
                 option[key] = value
             }
         })
@@ -75,11 +75,9 @@ export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOpti
 }
 
 export const setFeatureFlags = (featureFlags: Partial<ExpectWebdriverIO.FeatureFlags>): void => {
-    Object.entries(featureFlags).forEach(([ffName, ffValue]) => {
+    (Object.entries(featureFlags) as [keyof ExpectWebdriverIO.FeatureFlags, boolean][]).forEach(([ffName, ffValue]) => {
         defaultOptionsList.forEach((option) => {
-            const optionFeatureFlags = option.featureFlags
-            // @ts-ignore
-            optionFeatureFlags[ffName] = ffValue
+            option.featureFlags[ffName] = ffValue
         })
     })
 }
