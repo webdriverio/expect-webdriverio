@@ -77,9 +77,9 @@ export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOpti
 export const setFeatureFlags = (featureFlags: Partial<ExpectWebdriverIO.FeatureFlags>): void => {
     Object.entries(featureFlags).forEach(([ffName, ffValue]) => {
         defaultOptionsList.forEach((option) => {
-            const featureFlags = option.featureFlags
+            const optionFeatureFlags = option.featureFlags
             // @ts-ignore
-            featureFlags[ffName] = ffValue
+            optionFeatureFlags[ffName] = ffValue
         })
     })
 }
