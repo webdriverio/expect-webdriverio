@@ -1,6 +1,6 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeArray, WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeArray, WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { isStringOptions } from '../../util/commandOptionsUtils.js'
 import {
@@ -60,19 +60,18 @@ export async function toHaveElementProperty(
 ): Promise<AssertionResult>
 
 /**
- * Elements $$() only (even if `WdioElementOrArrayMaybePromise` is used)
- * Element is restricted below anyway - required to make typing pass with `toHaveValue` and `toHaveElementProperty` being used together
+ * Elements $$()
  * When called with an expected property name and value on a collection of elements.
  */
 export async function toHaveElementProperty(
-    received: WdioElementOrArrayMaybePromise,
+    received: WdioElementsMaybePromise,
     property: string,
     value: MaybeArray<string | number | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
 /**
- * Element (remove the support of array of expected values for single element, as it is not supported by the matcher)
+ * Element
  * When called with an expected property name and value on a single element.
  */
 export async function toHaveElementProperty(

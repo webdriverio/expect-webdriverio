@@ -269,9 +269,10 @@ Received: "iphone"`)
             })
         })
 
-        test('should return false if value is an array of strings', async () => {
+        test('should return false if value is an array of strings - tsc failure, not supported', async () => {
             vi.mocked(el.getProperty).mockResolvedValue('Test Value')
 
+            /// @ts-expect-error -- array of strings not supported for single element, to support later
             const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'])
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
