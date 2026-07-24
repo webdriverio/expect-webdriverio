@@ -146,12 +146,12 @@ export async function toHaveAttribute(
 ): Promise<AssertionResult> {
     const matcherName = 'toHaveAttribute'
 
-    let value: string | RegExp | AsymmetricMatcher<string> | undefined
+    let value: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined
     if (isStringOptions(valueOrOptions)) {
         options = valueOrOptions
         value = undefined
     } else {
-        value = valueOrOptions as string | RegExp | AsymmetricMatcher<string>
+        value = valueOrOptions
     }
 
     await options.beforeAssertion?.({

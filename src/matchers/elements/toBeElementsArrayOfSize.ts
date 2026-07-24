@@ -45,7 +45,7 @@ export async function toBeElementsArrayOfSize(
                 return false
             }
 
-            // Verify is size match first before refetching elements
+            // Verify if size match first before refetching elements
             const isPassing = expectedNumber.match(elements.length)
             if (isPassing) {
                 return isPassing

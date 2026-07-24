@@ -11,7 +11,7 @@ import {
 async function singleElementCompare(
     element: WebdriverIO.Element,
     label: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined,
-    options: ExpectWebdriverIO.HTMLOptions
+    options: ExpectWebdriverIO.StringOptions
 ) {
     const actualLabel = await element.getComputedLabel()
     return compareTextOrArray(actualLabel, label, options)

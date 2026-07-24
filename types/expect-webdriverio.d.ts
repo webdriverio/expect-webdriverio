@@ -663,16 +663,17 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
  * When actual is not of WebdriverIO.ElementArray nor ChainableElementArray, the return type is never, so the function cannot be used.
  */
 interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
-    // ===== $$ only =====
+    // ===== Elements $$() only =====
     /**
      * `WebdriverIO.ElementArray` -> `$$('...').length`
-     * supports less / greater then or equals to be passed in options
+     * The element arrays is refreshed/mutated until the size equals the size provided or matches the number matcher.
+     *
      */
     toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, {
         (
             size: number | ExpectWebdriverIO.NumberMatcher,
             options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void> & Promise<WebdriverIO.ElementArray>,
+        ): Promise<void>,
 
         /**
          * deprecated since 5.7.1, remove in v6.0.0. Use `toBeElementsArrayOfSize` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
@@ -680,7 +681,7 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
         (
             size: ExpectWebdriverIO.NumberOptions,
             options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void> & Promise<WebdriverIO.ElementArray>,
+        ): Promise<void>,
     }>
 }
 

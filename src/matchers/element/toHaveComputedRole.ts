@@ -11,7 +11,7 @@ import {
 async function singleElementCompare(
     element: WebdriverIO.Element,
     role: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined,
-    options: ExpectWebdriverIO.HTMLOptions
+    options: ExpectWebdriverIO.StringOptions
 ) {
     const actualRole = await element.getComputedRole()
     return compareTextOrArray(actualRole, role, options)
