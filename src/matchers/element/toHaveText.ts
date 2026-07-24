@@ -45,7 +45,7 @@ export async function toHaveText(
                 strictConfiguration: { allowArrayWithSingleElement: true }
             })
             subject = commandResult.subject
-            actualText = commandResult.actual as string | string[] | undefined
+            actualText = commandResult.actual
 
             return commandResult.success
         },

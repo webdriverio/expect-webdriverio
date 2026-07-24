@@ -585,7 +585,15 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         (
             width: number | ExpectWebdriverIO.NumberMatcher,
             options?: ExpectWebdriverIO.CommandOptions
-        ) : Promise<void>
+        ) : Promise<void>,
+
+        /**
+         * deprecated since 5.7.1, remove in v6.0.0. Use `toHaveWidth` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
+         */
+        (
+            size: ExpectWebdriverIO.NumberOptions,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>,
     }, {
         /** Elements $$() API */
         (
@@ -612,6 +620,14 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             height: number | ExpectWebdriverIO.NumberMatcher,
             options?: ExpectWebdriverIO.CommandOptions
         ) : Promise<void>
+
+        /**
+         * deprecated since 5.7.1, remove in v6.0.0. Use `toHaveHeight` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
+         */
+        (
+            size: ExpectWebdriverIO.NumberOptions,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>,
     }, {
         /** Elements $$() API */
         (
