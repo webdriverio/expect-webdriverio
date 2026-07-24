@@ -785,8 +785,13 @@ Received: undefined`)
                 expect(stripAnsi(results.message())).toEqual(`\
 Expect $$(\`elements\`) to have text
 
-Expected: ["NotMatchingText"]
-Received: "webdriverio"`
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "NotMatchingText",
++   "webdriverio",
+  ]`
                 )
             })
 
