@@ -139,7 +139,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         const compareResult = await singleElementCompare(selector, expectedValues)
         return {
             subject,
-            success: forceFailure ? false : compareResult.result,
+            success: forceFailure ? !!isNot : compareResult.result,
             actual: compareResult.value,
         }
     }

@@ -281,6 +281,20 @@ Expect $(\`sel\`) to have property myPropertyName
 Expected: ["Test Value"]
 Received: "Test Value"`)
         })
+
+        test('not - should fails (pass=true) if value is an array of strings - tsc failure, not supported', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue('Test Value')
+
+            /// @ts-expect-error -- array of strings not supported for single element, to support later
+            const result = await thisIsNotContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'])
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) not to have property myPropertyName
+
+Expected [not]: ["Test Value"]
+Received      : "Test Value"`)
+        })
+
     })
 
     describe('given multiple elements', () => {
