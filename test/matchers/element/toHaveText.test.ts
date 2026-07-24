@@ -295,7 +295,6 @@ Received: ""`
                 const result = await thisContext.toHaveText(el, /Webdriver/i, { wait: 0 })
 
                 expect(result.pass).toBe(false)
-                // TODO drepvost verify if we should see array as received value
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
@@ -308,7 +307,6 @@ Received: "This is example text"`
                 const result = await thisContext.toHaveText(el, ['WDIO', /Webdriver/i], { wait: 0 })
 
                 expect(result.pass).toBe(false)
-                // TODO drepvost verify if we should see array as received value
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
@@ -402,18 +400,6 @@ Expect ${selectorName} to have text
                         const result = await thisNotContext.toHaveText(els, 'WebdriverIO')
 
                         expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                        // TODO dprevost review if we should see an array failure with +/-
-                        //                         expect(stripAnsi(result.message())).toEqual(`\
-                        // Expect ${selectorName} not to have text
-
-                        // - Expected [not]  - 0
-                        // + Received        + 1
-
-                        //   Array [
-                        //     "WebdriverIO",
-                        // +   "WebdriverIO",
-                        //   ]`
-                        //                         )
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
@@ -423,7 +409,6 @@ Received      : ["WebdriverIO", "WebdriverIO"]`
 
                     })
 
-                    // TODO: This test is ambigious since there is at least one element matching the expected text, so should it succeed or fail? To be discussed and clarified later
                     test('should fails (pass=true) if the first received element in the array matches the expected text array', async () => {
                         const awaitedEls = await els
                         vi.mocked(awaitedEls[0].getText).mockResolvedValue('WebdriverIO1')
@@ -434,7 +419,6 @@ Received      : ["WebdriverIO", "WebdriverIO"]`
                         expect(result.pass).toBe(false) // Incorrect, should be true since the first element matches the expected text, but the second does not. This test needs clarification on expected behavior.
                     })
 
-                    // TODO: This test is ambigious since there is at least one element matching the expected text, so should it succeed or fail? To be discussed and clarified later
                     test('should fails (pass=true) if the second received element in the array matches the expected text array', async () => {
                         const awaitedEls = await els
                         vi.mocked(awaitedEls[0].getText).mockResolvedValue('WebdriverIO1')
@@ -453,18 +437,6 @@ Received      : ["WebdriverIO", "WebdriverIO"]`
                         const result = await thisNotContext.toHaveText(els, /WebdriverIO.*/i)
 
                         expect(result.pass).toBe(true)
-                        //                         expexct(stripAnsi(result.message())).toEqual(`\
-                        // Expect ${selectorName} not to have text
-
-                        // - Expected [not]  - 1
-                        // + Received        + 2
-
-                        //   Array [
-                        // -   /WebdriverIO.*/i,
-                        // +   "WebdriverIO1",
-                        // +   "WebdriverIO2",
-                        //   ]`
-                        //                         )
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
@@ -483,7 +455,6 @@ Received      : ["WebdriverIO1", "WebdriverIO2"]`
                         expect(result.pass).toBe(false)
                     })
 
-                    // TODO: This test is ambigious since there is at least one element matching the expected text, so should it succeed or fail? To be discussed and clarified later
                     test('should succeed (pass=false) if one elements match the expected Regex', async () => {
                         const awaitedEls = await els
                         vi.mocked(awaitedEls[0].getText).mockResolvedValue('WebdriverIO1')
@@ -515,7 +486,7 @@ Received      : ["WebdriverIO1", "WebdriverIO2"]`
 
                     const result = await thisContext.toHaveText( els, ['WebdriverIO', 'Get Started'], { wait: 0 })
 
-                    // TODO: For single element we trim by default but not for multiple elements, sounds like a bug
+                    // For single element we trim by default but not for multiple elements, sounds like a bug - Legacy behavior!
                     expect(result.pass).toBe(false)
                 })
 
@@ -598,19 +569,6 @@ Expect ${selectorName} to have text
                         const result = await thisNotContext.toHaveText(els, ['WebdriverIO', 'Get Started'])
 
                         expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                        //                         expect(stripAnsi(result.message())).toEqual(`\
-                        // Expect ${selectorName} not to have text
-
-                        // - Expected [not]  - 2
-                        // + Received        + 0
-
-                        //   Array [
-                        // -   Array [
-                        //     "WebdriverIO",
-                        //     "Get Started",
-                        // -   ],
-                        //   ]`
-                        //                         )
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
@@ -624,20 +582,6 @@ Received      : ["WebdriverIO", "Get Started"]`
                         const result = await thisNotContext.toHaveText(els, ['Get Started', 'WebdriverIO'])
 
                         expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                        //                         expect(stripAnsi(result.message())).toEqual(`\
-                        // Expect ${selectorName} not to have text
-
-                        // - Expected [not]  - 3
-                        // + Received        + 1
-
-                        //   Array [
-                        // -   Array [
-                        // +   "WebdriverIO",
-                        //     "Get Started",
-                        // -     "WebdriverIO",
-                        // -   ],
-                        //   ]`
-                        //                         )
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
@@ -646,14 +590,12 @@ Received      : ["WebdriverIO", "Get Started"]`
                         )
                     })
 
-                    // TODO: This test is ambigious since there is at least one element matching the expected text, so should it succeed or fail? To be discussed and clarified later
                     test('should fails (pass=true) if the first received element in the array matches the expected text array', async () => {
                         const result = await thisNotContext.toHaveText(els, ['WebdriverIO', 'NotMatchingText'])
 
                         expect(result.pass).toBe(false) // Incorrect, should be true since the first element matches the expected text, but the second does not. This test needs clarification on expected behavior.
                     })
 
-                    // TODO: This test is ambigious since there is at least one element matching the expected text, so should it succeed or fail? To be discussed and clarified later
                     test('should fails (pass=true) if the second received element in the array matches the expected text array', async () => {
                         const result = await thisNotContext.toHaveText(els, ['NotMatchingText', 'WebdriverIO'])
 
@@ -664,21 +606,6 @@ Received      : ["WebdriverIO", "Get Started"]`
                         const result = await thisNotContext.toHaveText(els, [/WebdriverI.*/i, /Get Starte.*/i])
 
                         expect(result.pass).toBe(true)
-                        //                         expect(stripAnsi(result.message())).toEqual(`\
-                        // Expect ${selectorName} not to have text
-
-                        // - Expected [not]  - 4
-                        // + Received        + 2
-
-                        //   Array [
-                        // -   Array [
-                        // -     /WebdriverI.*/i,
-                        // -     /Get Starte.*/i,
-                        // -   ],
-                        // +   "WebdriverIO",
-                        // +   "Get Started",
-                        //   ]`
-                        //                         )
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
@@ -693,7 +620,6 @@ Received      : ["WebdriverIO", "Get Started"]`
                         expect(result.pass).toBe(false)
                     })
 
-                    // TODO: This test is ambigious since there is at least one element matching the expected text, so should it succeed or fail? To be discussed and clarified later
                     test('should succeed (pass=false) if one elements match the expected Regex', async () => {
                         const result = await thisNotContext.toHaveText(els, [/NotMatching.*/i, /WebdriverIO.*/i])
 
@@ -705,7 +631,6 @@ Received      : ["WebdriverIO", "Get Started"]`
 
         describe('Edge cases', () => {
 
-            // TODO Review in major version to trim by default for multiple elements as well, to be consistent with single element behavior
             test('given exact text but with space in it should work by default', async () => {
                 const element = $('sel')
 
@@ -722,7 +647,6 @@ Received      : ["WebdriverIO", "Get Started"]`
                 const result = await thisContext.toHaveText(elements, 'webdriverio')
 
                 expect(result.pass).toBe(false)
-                // TODO to review for a better error message when no elements
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
@@ -740,21 +664,18 @@ Received: undefined`)
                 expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
 
-            // TODO view later to handle this case more gracefully
             test('given element is not found then it throws error when an element does not exists', async () => {
                 const element: WebdriverIO.Element = notFoundElementFactory('sel')
 
                 await expect(thisContext.toHaveText(element, 'webdriverio')).rejects.toThrow("Can't call getText on element with selector sel because element wasn't found")
             })
 
-            // TODO view later to handle this case more gracefully
             test('given element from out of bound ChainableArray, then it throws error when an element does not exists', async () => {
                 const element: ChainablePromiseElement = $$('elements')[3]
 
                 await expect(thisContext.toHaveText(element, 'webdriverio')).rejects.toThrow('Index out of bounds! $$(elements) returned only 2 elements.')
             })
 
-            // Throws with wierd and differrent error message!
             test.each([
                 { actual: undefined, selectorName: 'undefined' },
                 { actual: null, selectorName: 'null' },
@@ -1037,17 +958,6 @@ Expect ${selectorName} to have text
                         const result = await thisNotContext.toHaveText(els, 'WebdriverIO')
 
                         expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                        //                     expect(stripAnsi(result.message())).toEqual(`\
-                        // Expect ${selectorName} not to have text
-
-                        // - Expected [not]  - 0
-                        // + Received        + 1
-
-                        //   Array [
-                        //     "WebdriverIO",
-                        // +   "WebdriverIO",
-                        //   ]`
-                        //                     )
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
@@ -1097,18 +1007,6 @@ Received      : ["WebdriverIO1", "WebdriverIO2"]`
                         const result = await thisNotContext.toHaveText(els, /WebdriverIO.*/i)
 
                         expect(result.pass).toBe(true)
-                        //                     expect(stripAnsi(result.message())).toEqual(`\
-                        // Expect ${selectorName} not to have text
-
-                        // - Expected [not]  - 1
-                        // + Received        + 2
-
-                        //   Array [
-                        // -   /WebdriverIO.*/i,
-                        // +   "WebdriverIO1",
-                        // +   "WebdriverIO2",
-                        //   ]`
-                        //                     )
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
@@ -1203,7 +1101,6 @@ Received      : ["WebdriverIO1", "WebdriverIO2"]`
                     const result = await thisContext.toHaveText(els, ['WebdriverIO', 'get started'], { wait: 0 })
 
                     expect(result.pass).toBe(false)
-                    // Buggy error message to fix later with $$ support
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
@@ -1222,7 +1119,6 @@ Expect ${selectorName} to have text
                     const result = await thisContext.toHaveText(els, ['webdriverio', 'get started'], { message: 'Test', wait: 0 })
 
                     expect(result.pass).toBe(false)
-                    // Buggy error message to fix later with $$ support
                     expect(stripAnsi(result.message())).toEqual(`\
 Test
 Expect ${selectorName} to have text
@@ -1257,19 +1153,6 @@ Expect ${selectorName} to have text
                         const result = await thisNotContext.toHaveText(els, ['WebdriverIO', 'Get Started'])
 
                         expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                        //                     expect(stripAnsi(result.message())).toEqual(`\
-                        // Expect ${selectorName} not to have text
-
-                        // - Expected [not]  - 2
-                        // + Received        + 0
-
-                        //   Array [
-                        // -   Array [
-                        //     "WebdriverIO",
-                        //     "Get Started",
-                        // -   ],
-                        //   ]`
-                        //                     )
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
@@ -1307,21 +1190,6 @@ Received      : ["WebdriverIO", "Get Started"]`
                         const result = await thisNotContext.toHaveText(els, [/WebdriverI.*/i, /Get Starte.*/i])
 
                         expect(result.pass).toBe(true)
-                        //                     expect(stripAnsi(result.message())).toEqual(`\
-                        // Expect ${selectorName} not to have text
-
-                        // - Expected [not]  - 4
-                        // + Received        + 2
-
-                        //   Array [
-                        // -   Array [
-                        // -     /WebdriverI.*/i,
-                        // -     /Get Starte.*/i,
-                        // -   ],
-                        // +   "WebdriverIO",
-                        // +   "Get Started",
-                        //   ]`
-                        //                     )
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
@@ -1336,11 +1204,16 @@ Received      : ["WebdriverIO", "Get Started"]`
                         expect(result.pass).toBe(false)
                     })
 
-                    // TODO: This test is ambigious since there is at least one element matching the expected text, so should it succeed or fail? To be discussed and clarified later
                     test('should succeed (pass=false) if one elements match the expected Regex', async () => {
-                        const result = await thisNotContext.toHaveText(els, [/NotMatching.*/i, /WebdriverIO.*/i])
+                        const result = await thisNotContext.toHaveText(els, [/NotMatching.*/i, /Get Starte.*/i])
 
-                        expect(result.pass).toBe(false) // Incorrect, should be true since the second element matches the expected Regex, but the first does not. This test needs clarification on expected behavior.
+                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} not to have text
+
+Expected [not]: [/NotMatching.*/i, /Get Starte.*/i]
+Received      : ["WebdriverIO", "Get Started"]`
+                        )
                     })
                 })
             })
@@ -1514,8 +1387,7 @@ Expect $$(\`elements\`) to have text
                 )
             })
 
-            // TODO dprevost - We should fails if we cannot assert!?
-            test.skip('not - given not enough expected value', async () => {
+            test('not - given not enough expected value', async () => {
                 const elements = await $$('elements')
 
                 elements.forEach((el) => vi.mocked(el.getText).mockResolvedValue('webdriverio'))
@@ -1526,18 +1398,18 @@ Expect $$(\`elements\`) to have text
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`elements\`) not to have text
 
-- Expected [not]  - 0
-+ Received        + 1
+- Expected [not]  - 1
++ Received        + 2
 
   Array [
-    "webdriverio",
+-   "notWebdriverio",
++   "webdriverio",
 +   "webdriverio",
   ]`
                 )
             })
 
-            // TODO dprevost - We should fails if we cannot assert!?
-            test.skip('not - given too many expected value', async () => {
+            test('not - given too many expected value', async () => {
                 const elements = await $$('elements')
 
                 elements.forEach((el) => vi.mocked(el.getText).mockResolvedValue('webdriverio'))
@@ -1546,17 +1418,10 @@ Expect $$(\`elements\`) not to have text
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(stripAnsi(result.message())).toEqual(`\
-Expect $$(\`elements\`) to have text
+Expect $$(\`elements\`) not to have text
 
-- Expected  - 1
-+ Received  + 1
-
-  Array [
-    "webdriverio",
-    "webdriverio",
--   "webdriverio",
-+   undefined,
-  ]`
+Expected [not]: ["NotWebdriverio", "NotWebdriverio", "NotWebdriverio"]
+Received      : ["webdriverio", "webdriverio", undefined]`
                 )
             })
 
