@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle.js'
 import type { ParsedCSSValue } from 'webdriverio'
 import stripAnsi from 'strip-ansi'
@@ -239,6 +239,170 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
 
             expect(result.pass).toBe(true)
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
+        })
+
+        test('fails with an array as expected', async () => {
+
+            // @ts-expect-error testing invalid input
+            const result = await thisContext.toHaveStyle(el, [])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have style
+
+Expected: []
+Received: undefined`
+            )
+        })
+    })
+
+    describe('given multiple elements', () => {
+        let elements: ChainablePromiseArray
+
+        const mockStyle: { [key: string]: string; } = {
+            'font-family': 'Faktum',
+            'font-size': '26px',
+            'color': '#000'
+        }
+
+        beforeEach(async () => {
+            elements = await $$('elements')
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockImplementation(async (property: string) =>
+                    ({ value: mockStyle[property], parsed: {} } satisfies ParsedCSSValue)
+                )
+            })
+        })
+
+        test('wait for success - single expected value', async () => {
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockResolvedValueOnce({ value: 'Wrong Value', parsed: {} })
+                    .mockImplementation(async (property: string) => {
+                        return { value: mockStyle[property], parsed: {} }
+                    })
+            })
+
+            const result = await thisContext.toHaveStyle(elements, mockStyle)
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('wait for success - multiple expected values', async () => {
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockResolvedValueOnce({ value: 'Wrong Value', parsed: {} })
+                    .mockImplementation(async (property: string) => {
+                        return { value: mockStyle[property], parsed: {} }
+                    })
+            })
+
+            const result = await thisContext.toHaveStyle(elements, [mockStyle, mockStyle])
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('fails - not enough expected values', async () => {
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockResolvedValueOnce({ value: 'Wrong Value', parsed: {} })
+                    .mockImplementation(async (property: string) => {
+                        return { value: mockStyle[property], parsed: {} }
+                    })
+            })
+
+            const result = await thisContext.toHaveStyle(elements, [mockStyle])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) to have style
+
+- Expected  - 0
++ Received  + 1
+
+  Array [
+    Object {
+      "color": "#000",
+      "font-family": "Faktum",
+      "font-size": "26px",
+    },
++   undefined,
+  ]`
+            )
+        })
+
+        test('fails - too many expected values', async () => {
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockResolvedValueOnce({ value: 'Wrong Value', parsed: {} })
+                    .mockImplementation(async (property: string) => {
+                        return { value: mockStyle[property], parsed: {} }
+                    })
+            })
+
+            const result = await thisContext.toHaveStyle(elements, [mockStyle, mockStyle, mockStyle])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) to have style
+
+- Expected  - 5
++ Received  + 1
+
+  Array [
+    Object {
+      "color": "#000",
+      "font-family": "Faktum",
+      "font-size": "26px",
+    },
+    Object {
+      "color": "#000",
+      "font-family": "Faktum",
+      "font-size": "26px",
+    },
+-   Object {
+-     "color": "#000",
+-     "font-family": "Faktum",
+-     "font-size": "26px",
+-   },
++   undefined,
+  ]`
+            )
+        })
+
+        test('fails - empty expected values', async () => {
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockResolvedValueOnce({ value: 'Wrong Value', parsed: {} })
+                    .mockImplementation(async (property: string) => {
+                        return { value: mockStyle[property], parsed: {} }
+                    })
+            })
+
+            const result = await thisContext.toHaveStyle(elements, [])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) to have style
+
+- Expected  - 1
++ Received  + 4
+
+- Array []
++ Array [
++   undefined,
++   undefined,
++ ]`
+            )
+        })
+
+        test('fails - empty array for first expected values - edge case crashing flagged by Greptile', async () => {
+            elements.forEach(el => {
+                vi.mocked(el.getCSSProperty).mockResolvedValueOnce({ value: 'Wrong Value', parsed: {} })
+                    .mockImplementation(async (property: string) => {
+                        return { value: mockStyle[property], parsed: {} }
+                    })
+            })
+
+            // @ts-expect-error testing invalid input
+            const result = await thisContext.toHaveStyle(elements, [[]])
+
+            expect(result.pass).toBe(false)
         })
     })
 })

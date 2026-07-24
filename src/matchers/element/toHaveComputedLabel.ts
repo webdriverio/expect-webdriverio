@@ -1,29 +1,26 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
-    compareText,
-    compareTextWithArray,
+    compareTextOrArray,
     enhanceError,
-    executeCommand,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function condition(
-    el: WebdriverIO.Element,
-    label: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
-    options: ExpectWebdriverIO.HTMLOptions
+async function singleElementCompare(
+    element: WebdriverIO.Element,
+    label: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined,
+    options: ExpectWebdriverIO.StringOptions
 ) {
-    const actualLabel = await el.getComputedLabel()
-    if (Array.isArray(label)) {
-        return compareTextWithArray(actualLabel, label, options)
-    }
-    return compareText(actualLabel, label, options)
+    const actualLabel = await element.getComputedLabel()
+    return compareTextOrArray(actualLabel, label, options)
+
 }
 
 export async function toHaveComputedLabel(
-    received: WdioElementMaybePromise,
-    expectedValue: string | RegExp | AsymmetricMatcher<string> | Array<string | RegExp>,
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'computed label', verb = 'have', isNot, matcherName = 'toHaveComputedLabel' } = this
@@ -34,14 +31,21 @@ export async function toHaveComputedLabel(
         options,
     })
 
-    let el = await received?.getElement()
+    let el
     let actualLabel
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
-            el = result.el as WebdriverIO.Element
-            actualLabel = result.values
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowArrayWithSingleElement: true }
+            })
+            el = result.subject
+            actualLabel = result.actual
 
             return result.success
         },

@@ -44,6 +44,19 @@ export function validateNumberAndExtractOptions(
     }
 }
 
+export function validateNumberArrayAndExtractOptions(
+    expectedValues: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | undefined | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
+    commandOptions: ExpectWebdriverIO.CommandOptions,
+    { supportDefaultAsGteThen1 }: { supportDefaultAsGteThen1?: boolean } = {}
+): { numberMatcher: MaybeArray<NumberMatcher>; commandOptions: ExpectWebdriverIO.CommandOptions } {
+    if (Array.isArray(expectedValues)) {
+        const allNumbers = expectedValues.map((value) => validateNumberAndExtractOptions(value, commandOptions, { supportDefaultAsGteThen1 }))
+        return { numberMatcher: allNumbers.map( ({ numberMatcher }) =>  numberMatcher), commandOptions }
+    }
+    const { numberMatcher, commandOptions: numberCommandOptions } = validateNumberAndExtractOptions(expectedValues, commandOptions, { supportDefaultAsGteThen1 })
+    return { numberMatcher: numberMatcher, commandOptions: numberCommandOptions }
+}
+
 /**
  * Using a class to univerally handle number matching and stringification the same way everywhere and with Global Apis like equal() toString() and toJSON()
  */
@@ -119,4 +132,14 @@ export const numberMatcherTester = (a: unknown, b: unknown): boolean | undefined
 
     // Return undefined to let other testers handle it
     return undefined
+}
+
+export const matchNumber = (actual: number, expected: MaybeArray<NumberMatcher> | undefined): boolean => {
+    if (expected instanceof NumberMatcher) {
+        return expected.match(actual)
+    }
+    if (Array.isArray(expected)) {
+        return expected.some((matcher) => matcher.match(actual))
+    }
+    return false
 }

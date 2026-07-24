@@ -1,27 +1,25 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
-    compareText, compareTextWithArray,
+    compareTextOrArray,
     enhanceError,
-    executeCommand,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import type { CompareResult } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
-import { awaitElementOrArray } from '../../util/elementsUtil.js'
+import type { AssertionResult } from 'expect-webdriverio'
 
-async function condition(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.HTMLOptions) {
-    const actualHTML = await el.getHTML(options) // TODO: Support for array of elements is coming!
-    if (Array.isArray(html)) {
-        return compareTextWithArray(actualHTML, html, options)
-    }
-    return compareText(actualHTML, html, options)
+async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.HTMLOptions): Promise<CompareResult<string>> {
+    const actualHTML = await el.getHTML(options)
+    return compareTextOrArray(actualHTML, html, options)
 }
 
 export async function toHaveHTML(
-    received: WdioElementOrArrayMaybePromise, // TODO: aligning with the signature in expect-webdriverio.d.ts, but array support not yet implemented in the condition function above
+    received: WdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
-) {
+): Promise<AssertionResult> {
     const { expectation = 'HTML', verb = 'have', isNot, matcherName = 'toHaveHTML' } = this
 
     await options.beforeAssertion?.({
@@ -30,17 +28,20 @@ export async function toHaveHTML(
         options,
     })
 
+    let elements
     let actualHTML
-    let actualSubject: unknown = received
     const pass = await waitUntil(
         async () => {
-            const { selector, other, isEmptyElements } = await awaitElementOrArray(received)
-            actualSubject = selector ?? other
-            if (!selector || isEmptyElements) { return false }
-
-            const result = await executeCommand.call(this, selector, condition, options, [expectedValue, options])
-            actualSubject = result.el
-            actualHTML = result.values
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowArrayWithSingleElement: true }
+            })
+            elements = result.subject
+            actualHTML = result.actual
 
             return result.success
         },
@@ -48,7 +49,8 @@ export async function toHaveHTML(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(actualSubject, wrapExpectedWithArray(actualSubject, actualHTML, expectedValue), actualHTML, this, verb, expectation, '', options)
+    const expectedValues = wrapExpectedWithArray(elements, actualHTML, expectedValue)
+    const message = enhanceError(elements, expectedValues, actualHTML, this, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

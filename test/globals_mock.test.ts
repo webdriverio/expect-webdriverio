@@ -171,7 +171,7 @@ describe('globals mock', () => {
             const awaitedEl = await el
             const end = performance.now()
 
-            expect(Math.round(end - start)).toBeGreaterThanOrEqual(1000)
+            expect(Math.ceil(end - start)).toBeGreaterThanOrEqual(1000)
             expect('getElement' in awaitedEl).toBe(true)
             expect('getText' in awaitedEl).toBe(true)
             expect(await awaitedEl.getText()).toBe(' Valid Text ')
@@ -188,7 +188,7 @@ describe('globals mock', () => {
             const text = await el.getText()
             const end = performance.now()
 
-            expect(Math.round(end - start)).toBeGreaterThanOrEqual(1000)
+            expect(Math.ceil(end - start)).toBeGreaterThanOrEqual(1000)
             expect(text).toBe(' Valid Text ')
         })
     })

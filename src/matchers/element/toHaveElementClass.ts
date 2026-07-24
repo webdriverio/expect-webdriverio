@@ -1,12 +1,19 @@
+import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
-import { compareText, compareTextWithArray, enhanceError, executeCommand, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
-import { toHaveAttributeAndValue } from './toHaveAttribute.js'
+import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { CompareResult } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
+import { compareText, compareTextOrArray, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, attribute: string, value: string | RegExp | Array<string | RegExp> | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions) {
+async function singleElementCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const actualClass = await el.getAttribute(attribute)
+
+    if (value === undefined) {
+        return { result: false, value: actualClass }
+    }
+
     if (typeof actualClass !== 'string') {
-        return { result: false }
+        return { result: false, value: actualClass }
     }
 
     /**
@@ -18,15 +25,13 @@ async function condition(el: WebdriverIO.Element, attribute: string, value: stri
     }
 
     const classes = actualClass.split(' ')
-    const isValueInClasses = classes.some((t) => {
-        return Array.isArray(value)
-            ? compareTextWithArray(t, value, options).result
-            : compareText(t, value, options).result
+    const isValueInClasses = classes.some((clazz) => {
+        return compareTextOrArray(clazz, value, options).result
     })
 
     return {
-        value: actualClass,
-        result: isValueInClasses
+        result: isValueInClasses,
+        value: actualClass
     }
 }
 
@@ -38,10 +43,10 @@ export function toHaveClass(...args: unknown[]) {
 }
 
 export async function toHaveElementClass(
-    received: WdioElementMaybePromise,
-    expectedValue: string | RegExp | Array<string | RegExp> | AsymmetricMatcher<string>,
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
+): Promise<AssertionResult> {
     const { expectation = 'class', verb = 'have', isNot, matcherName = 'toHaveElementClass' } = this
 
     await options.beforeAssertion?.({
@@ -52,19 +57,27 @@ export async function toHaveElementClass(
 
     const attribute = 'class'
 
-    let el = await received?.getElement()
+    let el
     let attr
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [attribute, expectedValue, options])
-            el = result.el as WebdriverIO.Element
-            attr = result.values
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, attribute, expectedValue, options),
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowArrayWithSingleElement: true }
+            })
+            el = result.subject
+            attr = result.actual
 
             return result.success
         },
         isNot,
-        { wait: options.wait, interval: options.interval })
+        { wait: options.wait, interval: options.interval }
+    )
 
     const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
@@ -80,14 +93,4 @@ export async function toHaveElementClass(
     })
 
     return result
-}
-
-/**
- * @deprecated to remove in v6.0.0
- */
-export function toHaveClassContaining(el: WebdriverIO.Element, className: string | RegExp | AsymmetricMatcher<string>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
-    return toHaveAttributeAndValue.call(this, el, 'class', className, {
-        ...options,
-        containing: true
-    })
 }

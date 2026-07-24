@@ -1,25 +1,42 @@
+import type { RectReturn } from '@wdio/protocols'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
     compareObject,
     enhanceError,
-    executeCommand,
     waitUntil,
     wrapExpectedWithArray,
 } from '../../utils.js'
-import type { RectReturn } from '@wdio/protocols'
 
 export type Size = Pick<RectReturn, 'width' | 'height'>
-
-async function condition(el: WebdriverIO.Element, size: Size) {
+async function condition(el: WebdriverIO.Element, size: Size | undefined): Promise<{ result: boolean, value: Size }> {
     const actualSize = await el.getSize()
 
     return compareObject(actualSize, size)
 }
 
+/**
+ * Element $()
+ */
 export async function toHaveSize(
     received: WdioElementMaybePromise,
     expectedValue: Size,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * Elements $$()
+ */
+export async function toHaveSize(
+    received: WdioElementsMaybePromise,
+    expectedValue: MaybeArray<Size>,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveSize(
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<Size>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'size', verb = 'have', isNot, matcherName = 'toHaveSize' } = this
@@ -30,15 +47,22 @@ export async function toHaveSize(
         options,
     })
 
-    let el = await received?.getElement()
-    let actualSize: Size | undefined
+    let el
+    let actualSize
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                singleElementCompare: (element, expectedSize: Size | undefined) => condition(element, expectedSize),
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowArrayWithSingleElement: false }
+            })
 
-            el = result.el as WebdriverIO.Element
-            actualSize = result.values as Size
+            el = result.subject
+            actualSize = result.actual
 
             return result.success
         },

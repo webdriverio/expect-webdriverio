@@ -1,8 +1,9 @@
-import { waitUntil, enhanceError } from '../../utils.js'
+import { waitUntil, enhanceError, } from '../../utils.js'
 import { refetchElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElements, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementsMaybePromise } from '../../types.js'
 import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { awaitElementArray } from '../../util/elementsUtil.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -32,32 +33,41 @@ export async function toBeElementsArrayOfSize(
         options,
     })
 
-    const  { numberMatcher: expectNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
+    const  { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
 
-    let elements = await received as WdioElements
-    const originalLength = elements.length
+    // eslint-disable-next-line prefer-const
+    let { elements, other } = await awaitElementArray(received)
+    const originalLength =  elements ? elements.length : undefined
+
     const pass = await waitUntil(
         async () => {
-            /**
-             * check numbers first before refetching elements
-             */
-            const isPassing = expectNumber.match(elements.length)
+            if (!elements) {
+                return false
+            }
+
+            // Verify if size match first before refetching elements
+            const isPassing = expectedNumber.match(elements.length)
             if (isPassing) {
                 return isPassing
             }
+
+            // TODO should we do this on other matchers??
             elements = await refetchElements(elements, commandOptions.wait, true)
             return false
         },
         isNot,
-        { wait: commandOptions.wait, interval: commandOptions.interval })
+        { wait: commandOptions.wait, interval: commandOptions.interval }
+    )
 
-    if (Array.isArray(received) && pass) {
+    // TODO By using `(await received).push(elements[index])` we could update Promises of arrays, should we support that?
+    if (Array.isArray(received) && pass && originalLength !== undefined && elements) {
         for (let index = originalLength; index < elements.length; index++) {
             received.push(elements[index])
         }
     }
 
-    const message = enhanceError(elements, expectNumber, originalLength, this, verb, expectation, '', commandOptions)
+    const actual = originalLength
+    const message = enhanceError(elements ?? other, expectedNumber, actual, this, verb, expectation, '', commandOptions)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

@@ -1,23 +1,19 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
-    compareText, compareTextWithArray,
+    compareTextOrArray,
     enhanceError,
+    getFeatureFlagValue,
     waitUntil,
-    wrapExpectedWithArray
 } from '../../utils.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 
-async function compareElement(el: WebdriverIO.Element, text: MaybeArray<string | RegExp | AsymmetricMatcher<string>>, options: ExpectWebdriverIO.StringOptions) {
+async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
     const actualText = await el.getText()
-    const result = Array.isArray(text) ?
-        compareTextWithArray(actualText, text, options).result
-        : compareText(actualText, text, options).result
 
-    return {
-        value: actualText,
-        result
-    }
+    return compareTextOrArray(actualText, expectedText, options)
 }
 
 export async function toHaveText(
@@ -35,16 +31,21 @@ export async function toHaveText(
 
     let actualText: string | string[] | undefined
     let subject: unknown = received
+    const isNewStrictCompare = getFeatureFlagValue(options, 'useToHaveTextStrictMultiElementsCompareStrategy')
     const pass = await waitUntil(
         async () => {
             const commandResult = await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                singleElementCompare: (element, _index) => compareElement(element, expectedValue, options),
+                expectedValues: expectedValue,
+                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => {
+                    return compareElement(element, values, options)
+                },
                 isNot,
-                strategy: 'LegacyMultipleElements',
+                strategy: isNewStrictCompare ? 'NewStrictMultipleElements' : 'LegacyLooseMultipleElements',
+                strictConfiguration: { allowArrayWithSingleElement: true }
             })
             subject = commandResult.subject
-            actualText = commandResult.actual
+            actualText = commandResult.actual as string | string[] | undefined
 
             return commandResult.success
         },
@@ -52,7 +53,8 @@ export async function toHaveText(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(subject, wrapExpectedWithArray(subject, actualText, expectedValue), actualText, this, verb, expectation, '', options)
+    const expected = fillSingleExpectedForElementArray(subject, expectedValue)
+    const message = enhanceError(subject, expected, actualText, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

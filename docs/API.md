@@ -291,8 +291,7 @@ Calls [`isDisplayed`](https://webdriver.io/docs/api/element/isDisplayed/) on giv
 ##### Usage
 
 ```js
-const elem = await $('#someElem')
-await expect(elem).toBeDisplayed()
+await expect($('#someElem')).toBeDisplayed()
 ```
 
 ### toExist
@@ -302,8 +301,7 @@ Calls [`isExisting`](https://webdriver.io/docs/api/element/isExisting) on given 
 ##### Usage
 
 ```js
-const elem = await $('#someElem')
-await expect(elem).toExist()
+await expect($('#someElem')).toExist()
 ```
 
 ### toBePresent
@@ -313,8 +311,7 @@ Same as `toExist`.
 ##### Usage
 
 ```js
-const elem = await $('#someElem')
-await expect(elem).toBePresent()
+await expect($('#someElem')).toBePresent()
 ```
 
 ### toBeExisting
@@ -426,8 +423,7 @@ Checks if an element can be clicked by calling [`isClickable`](https://webdriver
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toBeClickable()
+await expect($('#elem')).toBeClickable()
 ```
 
 ### toBeDisabled
@@ -463,8 +459,7 @@ Checks if an element is enabled by calling [`isSelected`](https://webdriver.io/d
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toBeSelected()
+await expect($('#elem')).toBeSelected()
 ```
 
 ### toBeChecked
@@ -474,8 +469,7 @@ Same as `toBeSelected`.
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toBeChecked()
+await expect($('#elem')).toBeChecked()
 ```
 
 ### toHaveComputedLabel
@@ -553,8 +547,7 @@ Checks if element has a specific `id` attribute.
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toHaveId('elem')
+await expect($('#elem')).toHaveId('elem')
 ```
 
 ### toHaveStyle
@@ -564,8 +557,7 @@ Checks if an element has specific `CSS` properties. By default, values must matc
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toHaveStyle({
+await expect($('#elem')).toHaveStyle({
   'font-family': 'Faktum',
   'font-weight': '500',
   'font-size': '12px',
@@ -587,7 +579,7 @@ await expect(elem).toHaveText(['Next-gen browser and mobile automation test fram
 await expect(elem).toHaveText([expect.stringContaining('test framework for Node.js'), expect.stringContaining('Started')])
 ```
 
-In case there is a list of elements in the div below:
+If you have a list of elements like the HTML structure below:
 
 ```
 <ul>
@@ -597,12 +589,13 @@ In case there is a list of elements in the div below:
 </ul>
 ```
 
-You can assert them using an array:
+You can assert all of them at once using an array:
 
 ```js
-const elem = await $$('ul > li')
-await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
+await expect($$('ul > li')).toHaveText(['Coffee', 'Tea', 'Milk'])
 ```
+
+**Note:** To enable strict assertion matching, configure the `useToHaveTextStrictMultiElementsCompareStrategy` flag in your command options or globally via `setFeatureFlags`.
 
 ### toHaveHTML
 
@@ -634,8 +627,7 @@ Checks if an element is within the viewport by calling [`isDisplayedInViewport`]
 ##### Usage
 
 ```js
-const elem = await $('#elem')
-await expect(elem).toBeDisplayedInViewport()
+await expect($('#elem')).toBeDisplayedInViewport()
 ```
 
 ### toHaveChildren
@@ -730,26 +722,59 @@ await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
 
 ### Multiple Elements Support
 
-Matchers starting with `toBe` support arrays of elements returned from `$$()`:
+All element matchers support arrays of elements returned from `$$()`:
 - **Standard Behavior:** Every element must pass. One failure fails the assertion.
 - **Using `.not`:** Every element must *not* meet the matcher condition. One match fails the assertion.
-- **Empty Arrays:** Empty element arrays will fail the assertion. 
+- **Empty Arrays:** Empty element arrays will fail the assertion by default. 
   - *Note:* Only the `toExist`, `toBeExisting`, and `toBePresent` matchers succeed when using `.not` on an empty element array.
+- **Legacy Behavior:** `toHaveText` retains its legacy behavior unless the `useToHaveTextStrictMultiElementsCompareStrategy` flag is enabled.
+- See [MultipleElements.md](MultipleElements.md) for more details.
 
 #### Usage
 
-```ts
-// Awaited selector syntax
-await expect(await $$('#someElements')).toBeDisplayed()
+##### `toBe` matchers
 
-// Non-awaited
+```ts
+// Elements awaited selector syntax
+const elements = await $$('#someElements')
+await expect(elements).toBeDisplayed()
+
+// Elements non-awaited
 await expect($$('#someElements')).toBeDisplayed()
 
-// Works with filtered arrays
+// Works with filtered elemnts array
 await expect($$('#someElements').filter((t) => t.isExisting())).toBeDisplayed()
 
 // Using the .not modifier (Asserts NO elements are displayed)
 await expect($$('#someElements')).not.toBeDisplayed()
+```
+
+##### `toHave` matchers
+
+```ts
+const elements = await $$('#someElem')
+
+// Single value: checked against every element
+await expect(elements).toHaveAttribute('class', 'form-control')
+
+// Array: each value checked at corresponding element index (must match length)
+await expect(elements).toHaveAttribute('class', ['control1', 'control2'])
+
+// Use asymmetric matchers for flexible matching
+await expect(elements).toHaveAttribute('class', [expect.stringContaining('control1'), 'control2'])
+
+// Use RegEx `i` for case insensitive
+await expect(elements).toHaveAttribute('class', [/Control1/i, 'control2'])
+
+// Use RegEx with `|` to mimic contains
+await expect(elements).toHaveAttribute('class', /Control1|Control2/)
+await expect(elements).toHaveAttribute('class', [/Control1|Control2/, 'control3'])
+
+// Elements non-awaited
+await expect($$('#someElem')).toHaveAttribute('class', 'form-control')
+
+// Works with filtered elements array too
+await expect($$('#someElem').filter(el => el.isExisting())).toHaveAttribute('class', ['control1', 'control2'])
 ```
 
 ## Network Matchers

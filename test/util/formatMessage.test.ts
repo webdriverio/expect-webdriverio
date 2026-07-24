@@ -1,9 +1,16 @@
-import { test, describe, beforeEach, expect } from 'vitest'
-import { printDiffOrStringify } from 'jest-matcher-utils'
-
+import { test, describe, beforeEach, expect, vi } from 'vitest'
+import { INVERTED_COLOR, printDiffOrStringify } from 'jest-matcher-utils'
 import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
 import stripAnsi from 'strip-ansi'
 import { elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
+
+vi.mock('jest-matcher-utils', async (importActual) => {
+    const actual = await importActual<typeof import('jest-matcher-utils')>()
+    return {
+        ...actual,
+        INVERTED_COLOR: vi.fn(actual.INVERTED_COLOR)
+    }
+})
 
 describe('formatMessage', () => {
     describe(enhanceError, () => {
@@ -361,6 +368,8 @@ Expect ${elementName} not to have text
 Expected [not]: ["Test Expected Value 1", "Test Expected Value 2"]
 Received      : ["Test Expected Value 1", "Test Expected Value 2"]`
                     )
+
+                    expect(INVERTED_COLOR).toHaveBeenCalledTimes(4)
                 })
 
                 test('First elements failure then only first values are highlighted as failure', () => {
@@ -376,19 +385,16 @@ Received      : ["Test Expected Value 1", "Test Expected Value 2"]`
                         'text',
                     ))
 
-                    // TODO: Error message is ambigious, will be fixed with support of $$.
                     expect(actualFailureMessage).toEqual(`\
 Expect ${elementName} not to have text
 
-- Expected [not]  - 1
-+ Received        + 1
-
-  Array [
-    "Test Expected Value 1",
--   "Test Expected Value 2",
-+   "Test Actual Value 2",
-  ]`
+Expected [not]: ["Test Expected Value 1", "Test Expected Value 2"]
+Received      : ["Test Expected Value 1", "Test Actual Value 2"]`
                     )
+
+                    expect(INVERTED_COLOR).toHaveBeenCalledTimes(2)
+                    expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '"Test Expected Value 1"')
+                    expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '"Test Expected Value 1"')
                 })
 
                 test('Second elements failure then only second values are highlighted as failure', () => {
@@ -404,19 +410,16 @@ Expect ${elementName} not to have text
                         'text',
                     )
 
-                    // TODO: Error message is ambigious, will be fixed with support of $$.
                     expect(stripAnsi(actualFailureMessage)).toEqual(`\
 Expect ${elementName} not to have text
 
-- Expected [not]  - 1
-+ Received        + 1
-
-  Array [
--   "Test Expected Value 1",
-+   "Test Actual Value 1",
-    "Test Expected Value 2",
-  ]`
+Expected [not]: ["Test Expected Value 1", "Test Expected Value 2"]
+Received      : ["Test Actual Value 1", "Test Expected Value 2"]`
                     )
+
+                    expect(INVERTED_COLOR).toHaveBeenCalledTimes(2)
+                    expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '"Test Expected Value 2"')
+                    expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '"Test Expected Value 2"')
                 })
             })
         })

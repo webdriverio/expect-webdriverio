@@ -224,9 +224,9 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
             describe('toBeElementsArrayOfSize', async () => {
 
                 it('should work correctly when actual is chainableArray', async () => {
-                    expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize(5)).toEqualTypeOf<Promise<void> & Promise<WebdriverIO.ElementArray>>()
-                    expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })).toEqualTypeOf<Promise<void> & Promise<WebdriverIO.ElementArray>>()
-                    expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize(5, { message: 'foo' })).toEqualTypeOf<Promise<void> & Promise<WebdriverIO.ElementArray>>()
+                    expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize(5)).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize(5, { message: 'foo' })).toEqualTypeOf<Promise<void>>()
                 })
 
                 it('should not work when actual is not chainableArray', async () => {

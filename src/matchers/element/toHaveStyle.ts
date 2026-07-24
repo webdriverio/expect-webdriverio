@@ -1,22 +1,45 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { MaybeArray, WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { CompareResult } from '../../util/executeCommand.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
     compareStyle,
     enhanceError,
-    executeCommand,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, style: { [key: string]: string; }, options: ExpectWebdriverIO.StringOptions) {
+async function condition(el: WebdriverIO.Element, style: { [key: string]: string; } | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<{ [key: string]: string | undefined; } | undefined>> {
+    if (style === undefined) {
+        return { result: false, value: undefined }
+    }
+
     return compareStyle(el, style, options)
 }
 
+/**
+ * Element $()
+ */
 export async function toHaveStyle(
     received: WdioElementMaybePromise,
     expectedValue: { [key: string]: string; },
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * Elements $$()
+ */
+export async function toHaveStyle(
+    received: WdioElementsMaybePromise,
+    expectedValue: MaybeArray<{ [key: string]: string; }>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveStyle(
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<{ [key: string]: string; }>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
+): Promise<ExpectWebdriverIO.AssertionResult> {
     const { expectation = 'style', verb = 'have', isNot, matcherName = 'toHaveStyle' } = this
 
     await options.beforeAssertion?.({
@@ -25,14 +48,22 @@ export async function toHaveStyle(
         options,
     })
 
-    let el = await received?.getElement()
+    let el
     let actualStyle
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, options, [expectedValue, options])
-            el = result.el as WebdriverIO.Element
-            actualStyle = result.values
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedValue,
+                // TODO try to make the type work without casting expectedValues to { [key: string]: string; } | undefined
+                singleElementCompare: (element, expectedValues) => condition(element, expectedValues as { [key: string]: string; } | undefined, options),
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowArrayWithSingleElement: false }
+            })
+            el = result.subject
+            actualStyle = result.actual
 
             return result.success
         },
@@ -40,7 +71,8 @@ export async function toHaveStyle(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, wrapExpectedWithArray(el, actualStyle, expectedValue), actualStyle, this, verb, expectation, '', options)
+    const expected = wrapExpectedWithArray(el, actualStyle, expectedValue)
+    const message = enhanceError(el, expected, actualStyle, this, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

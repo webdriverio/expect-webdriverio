@@ -6,7 +6,6 @@ import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
 import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
-
 class TestMock implements Mock {
     _calls: any[]
 

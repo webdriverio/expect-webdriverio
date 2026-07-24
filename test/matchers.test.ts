@@ -31,7 +31,6 @@ const ALL_MATCHERS = [
     'toHaveComputedRole',
     'toHaveClass',
     'toHaveElementClass',
-    'toHaveClassContaining',
     'toHaveElementProperty',
     'toHaveHeight',
     'toHaveHref',
@@ -231,8 +230,8 @@ Received      : "some attribute"`
             await expect(() => expectLib(el).not.toHaveAttribute('someAttribute')).rejects.toThrow(`\
 Expect $(\`selector\`) not to have attribute someAttribute
 
-Expected [not]: "to have a defined value"
-Received      : "value some attribute"`
+Expected [not]: "\`a defined value\`"
+Received      : "some attribute"`
             )
 
             await expect(() => expectLib(el).not.toHaveAttr('someAttribute', 'some attribute')).rejects.toThrow(`\
@@ -348,8 +347,8 @@ Received: "some attribute"`)
             await expect(() => expectLib(el).toHaveAttribute('notExistingAttribute')).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute notExistingAttribute
 
-Expected: "to have a defined value"
-Received: "value null"`)
+Expected: "\`a defined value\`"
+Received: null`)
             await expect(() => expectLib(el).toHaveAttr('someAttribute', 'some other attribute')).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute someAttribute
 
@@ -429,7 +428,7 @@ Received: 100`)
                 .mockResolvedValueOnce(true)
 
             // Passes when element becomes displayed
-            await expectLib(el).toBeDisplayed({ wait: 300, interval: 100 })
+            await expectLib(el).toBeDisplayed({ wait: 300, interval: 5 })
 
             vi.mocked(el.isDisplayed)
                 .mockResolvedValueOnce(false)
@@ -437,7 +436,7 @@ Received: 100`)
                 .mockResolvedValueOnce(true)
 
             // Should not pass with the same scenario to be consistent
-            await expect(() => expectLib(el).not.toBeDisplayed({ wait: 300, interval: 100 })).rejects.toThrow(`\
+            await expect(() => expectLib(el).not.toBeDisplayed({ wait: 300, interval: 5 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to be displayed
 
 Expected: "not displayed"
@@ -449,9 +448,7 @@ Received: "displayed"`)
         test('when element eventually is not displayed, matcher and .not matcher should be consistent', async () => {
             const el = await $('selector')
             vi.mocked(el.isDisplayed)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(false)
+                .mockResolvedValue(false)
 
             // Does not pass since element never becomes displayed
             await expect(expectLib(el).toBeDisplayed({ wait: 300, interval: 100 })).rejects.toThrow(`\
@@ -461,9 +458,7 @@ Expected: "displayed"
 Received: "not displayed"`)
 
             vi.mocked(el.isDisplayed)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(false)
+                .mockResolvedValue(false)
 
             // Should pass with the same scenario to be consistent
             await expectLib(el).not.toBeDisplayed({ wait: 300, interval: 100 })
@@ -501,17 +496,42 @@ Received: "not displayed"`)
     describe('Matchers pass with success when using valid element array', async () => {
         const elements = await $$('selector')
 
+        test('toBe matchers', async () => {
+            await expectLib(elements).toBeDisplayed()
+            await expectLib(elements).toBeExisting()
+            await expectLib(elements).toBeEnabled()
+            await expectLib(elements).toBeClickable()
+            await expectLib(elements).toBeFocused()
+            await expectLib(elements).toBeSelected()
+        })
+
         test('toHave matchers', async () => {
             await expectLib(elements).toHaveText('Valid Text')
-
-            // TODO should have been support but throws el.getHTML is not a function error
-            // await expectLib(elements).toHaveHTML('<Html/>')
-
+            await expectLib(elements).toHaveHTML('<Html/>')
+            await expectLib(elements).toHaveComputedLabel('Computed Label')
+            await expectLib(elements).toHaveComputedRole('Computed Role')
+            await expectLib(elements).toHaveSize({ width: 100, height: 50 })
+            await expectLib(elements).toHaveHeight(50)
+            await expectLib(elements).toHaveWidth(100)
+            await expectLib(elements).toHaveAttribute('someAttribute', 'some attribute')
+            await expectLib(elements).toHaveAttribute('someAttribute')
+            await expectLib(elements).toHaveAttr('someAttribute', 'some attribute')
+            await expectLib(elements).toHaveElementProperty('someProperty', '1')
             await expectLib(elements).toBeElementsArrayOfSize(2)
         })
 
         test('toBe matchers and toHave matchers work with .not', async () => {
+            await expectLib(elements).not.toBeDisabled()
             await expectLib(elements).not.toHaveText('Some other text')
+            await expectLib(elements).not.toHaveHTML('<SomeOtherHtml/>')
+            await expectLib(elements).not.toHaveComputedLabel('Some Other Computed Label')
+            await expectLib(elements).not.toHaveComputedRole('Some Other Computed Role')
+            await expectLib(elements).not.toHaveElementProperty('someProperty', 'some other value')
+            await expectLib(elements).not.toHaveAttribute('someAttribute', 'some other attribute')
+            await expectLib(elements).not.toHaveAttr('someAttribute', 'some other attribute')
+            await expectLib(elements).not.toHaveSize({ width: 200, height: 100 })
+            await expectLib(elements).not.toHaveHeight(100)
+            await expectLib(elements).not.toHaveWidth(200)
             await expectLib(elements).not.toBeElementsArrayOfSize(3)
         })
 

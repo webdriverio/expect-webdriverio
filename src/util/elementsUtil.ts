@@ -1,4 +1,4 @@
-import type { WdioElementOrArrayMaybePromise, WdioElements } from '../types.js'
+import type { WdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise } from '../types.js'
 
 /**
  * Wraps the expected value in an array if both the target element (`el`) and the `actual` value are arrays.
@@ -8,11 +8,20 @@ import type { WdioElementOrArrayMaybePromise, WdioElements } from '../types.js'
  * @param expected - The expected result to potentially wrap.
  * @returns An array containing the expected result if conditions are met, otherwise returns the expected result as-is.
  */
-export const wrapExpectedWithArray = <T>(element: WebdriverIO.Element | WdioElements | unknown, actual: unknown, expected: T): T | T[] => {
-    if (Array.isArray(element) && element.length > 1 && Array.isArray(actual)) {
-        return [expected]
+export const wrapExpectedWithArray = (elements: WebdriverIO.Element | WdioElements | unknown, actual: unknown, expected: unknown) => {
+    if (Array.isArray(elements) && Array.isArray(actual) && !Array.isArray(expected)) {
+        expected = Array(actual.length).fill(expected)
     }
     return expected
+}
+
+export const fillSingleExpectedForElementArray = (subject: WebdriverIO.Element | WdioElements | unknown, value: unknown): unknown[] | unknown => {
+    if (isElementArrayLike(subject) && !Array.isArray(value)) {
+        // When subject has no elements, we should at least represent one for proper failure message!
+        const fillerlength = subject.length > 0 ? subject.length : 1
+        return Array(fillerlength).fill(value)
+    }
+    return value
 }
 
 /**
@@ -125,4 +134,26 @@ export const awaitElementOrArray = async(
 
     // for `WebdriverIO.Element[]`
     return { selector: awaitedElements, elements: awaitedElements, isEmptyElements: awaitedElements.length === 0 }
+}
+
+export const awaitElementArray = async(received: WdioElementsMaybePromise | undefined): Promise<{ elements?: WdioElements, other?: unknown }> => {
+    let awaitedElements = received
+    // For non-awaited `$$()`, so ChainablePromiseElement | ChainablePromiseArray.
+    // At some extend it also process non-awaited `$$().getElements()` or `$$().filter()` (e.g. Promise<WebdriverIO.Element[]>), but typings does not allow it
+    if (awaitedElements instanceof Promise) {
+        awaitedElements = await awaitedElements
+    }
+
+    if (!isElementArrayLike(awaitedElements)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return { other: awaitedElements as any }
+    }
+
+    // for `await $$()` or `WebdriverIO.ElementArray` but not `WebdriverIO.Element[]`
+    if ('getElements' in awaitedElements) {
+        return { elements: await awaitedElements.getElements() }
+    }
+
+    // for `WebdriverIO.Element[]` or any other object
+    return { elements: awaitedElements }
 }
