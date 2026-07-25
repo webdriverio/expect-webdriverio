@@ -56,6 +56,14 @@ type MockPromise = Promise<WebdriverIO.Mock>
  * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
  */
 type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser ? Fn : never
+/**
+ * Enables distinct function signatures for single elements versus arrays of elements.
+ *
+ * Note on Union Types: Passing a union type (e.g., `Element | Element[]`) may cause
+ * overload resolution failures, preventing the IDE and compiler from inferring the correct signature.
+ *
+ * Fix: If type inference issues arise, split the implementation into separate interfaces
+ */
 type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement> = ActualT extends ElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement: never
 type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn : never
 
