@@ -178,6 +178,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
 
     let forceFailure = false
+    // TODO mismatch lengths requires depleting the entire timeout instead of failing fast, to fix later!
     if (Array.isArray(expectedValues) && expectedValues.length !== selector.length) {
         forceFailure = true
     }
