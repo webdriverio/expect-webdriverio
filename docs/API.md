@@ -402,6 +402,8 @@ const elem = await $('#elem')
 await expect(elem).toHaveElementProperty('height')
 // Does not have height property
 await expect(elem).not.toHaveElementProperty('height')
+// With options
+await expect(elem).not.toHaveElementProperty('height', expect.anything(), { wait : 1 })
 ```
 
 ### toHaveValue

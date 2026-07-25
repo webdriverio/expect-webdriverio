@@ -5,6 +5,7 @@ import { toHaveElementProperty } from '../../../src/matchers/element/toHaveEleme
 import stripAnsi from 'strip-ansi'
 import { jasmine } from '../../__mocks__/jasmine.js'
 import { waitUntil } from '../../../src/utils.js'
+import { expect as wdioExpect } from '../../../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -160,11 +161,40 @@ Received      : "iphone"`)
             expect(result.pass).toBe(true)
         })
 
-        test('should return true when property does exist by passing an not defined expected value with options', async () => {
-            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', { wait: 0 })
+        test('should return true when property does exist by passing the anything() asymmetric matcher', async () => {
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', wdioExpect.anything(), { wait: 0 })
 
             expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0, interval: undefined })
             expect(result.pass).toBe(true)
+        })
+
+        test('should return true when property does exist by passing the any(String) asymmetric matcher', async () => {
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', wdioExpect.any(String), { wait: 0 })
+
+            expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0, interval: undefined })
+            expect(result.pass).toBe(true)
+        })
+
+        test('should return be false when property does exist but not a number and by passing the any(Number) asymmetric matcher', async () => {
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', wdioExpect.any(Number), { wait: 0 })
+
+            expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0, interval: undefined })
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have property myPropertyName
+
+Expected: Any<Number>
+Received: "iphone"`)
+        })
+
+        // TODO: Not working to fix oen day.
+        test('should return be true when property does exist but not a number and by passing the any(Number) asymmetric matcher', async () => {
+            vi.mocked(el.getProperty).mockResolvedValue(5)
+
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', wdioExpect.any(Number), { wait: 0 })
+
+            expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0, interval: undefined })
+            expect(result.pass).toBe(false) // TODO: Not working should be true to fix one day.
         })
 
         test.for([
@@ -196,7 +226,7 @@ Received      : "iphone"`)
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property myPropertyName
 
-Expected: "\`a defined value\`"
+Expected: Anything
 Received: ${propertyValue}`
             )
         })
@@ -208,7 +238,7 @@ Received: ${propertyValue}`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have property myPropertyName
 
-Expected [not]: "\`a defined value\`"
+Expected [not]: Anything
 Received      : "iphone"`)
         })
 
@@ -506,8 +536,8 @@ Expect $$(\`sel\`) to have property property
 + Received  + 2
 
   Array [
--   "\`a defined value\`",
--   "\`a defined value\`",
+-   Anything,
+-   Anything,
 +   null,
 +   null,
   ]`

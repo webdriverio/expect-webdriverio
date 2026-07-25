@@ -8,6 +8,7 @@ describe('Jasmine type agumentations', () => {
 
     const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
     const elementArray: WebdriverIO.ElementArray = [] as unknown as WebdriverIO.ElementArray
+    const elements: WebdriverIO.Element[] = [] as unknown as WebdriverIO.Element[]
     const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
 
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
@@ -69,7 +70,7 @@ describe('Jasmine type agumentations', () => {
             })
         })
 
-        describe('element', () => {
+        describe('element or elements', () => {
 
             describe('toBeDisabled', () => {
                 it('should return Promise<void>', async () => {
@@ -233,6 +234,50 @@ describe('Jasmine type agumentations', () => {
                 it('should not work when actual is not chainableArray', async () => {
                     expectTypeOf(expectAsync(chainableElement).toBeElementsArrayOfSize).toBeNever()
                     expectTypeOf(expectAsync(true).toBeElementsArrayOfSize).toBeNever()
+                })
+            })
+
+            describe('toHaveElementProperty', () => {
+                describe('given element', () => {
+                    it('should return Promise<void> with element', async () => {
+                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', jasmine.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', jasmine.anything())).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', jasmine.any(Number))).toEqualTypeOf<Promise<void>>()
+
+                        expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop', 'val')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop', jasmine.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+                    })
+
+                    it('should be deprecated', async () => {
+                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
+                    })
+                })
+
+                describe('given elements', () => {
+                    it('should return Promise<void> with elements', async () => {
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', jasmine.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', jasmine.anything())).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', jasmine.any(Number))).toEqualTypeOf<Promise<void>>()
+
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', ['val'])).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', [jasmine.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', [jasmine.anything(), jasmine.any(Number), 'value', jasmine.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
+                    })
+
+                    it('should not be supported (never)', async () => {
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<never>>()
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<never>>()
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
+                    })
                 })
             })
         })

@@ -2,7 +2,7 @@ import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeArray, WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
-import { isStringOptions } from '../../util/commandOptionsUtils.js'
+import { expect } from 'expect'
 import {
     compareText,
     enhanceError,
@@ -26,11 +26,6 @@ async function condition(
         return { result: false, value: propertyValue }
     }
 
-    // As specified in the w3c spec, cases where property simply exists
-    if (expectedValue === null || expectedValue === undefined) {
-        return { result: true, value: propertyValue }
-    }
-
     if (!(expectedValue instanceof RegExp) && typeof propertyValue !== 'string' && !asString) {
         return { result: propertyValue === expectedValue, value: propertyValue }
     }
@@ -40,22 +35,24 @@ async function condition(
 }
 
 /**
- * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` as a value is deprecated. Omit the third argument entirely or use `toHaveElementProperty(el, property, options)`.
- */
-export async function toHaveElementProperty(
-    received: WdioElementMaybePromise,
-    property: string,
-    value: undefined | null,
-    options?: ExpectWebdriverIO.StringOptions
-): Promise<AssertionResult>
-
-/**
- * Element or Elements
- * When called with only the property name (and optional configuration options) on a single element or collection.
+ * Elements $() or elements $$()
+ * When called with an expected property name to verify if the property exists on a collection of elements.
+ * Same as `toHaveElementProperty(el, property, expect.anything())`.
  */
 export async function toHaveElementProperty(
     received: WdioElementOrArrayMaybePromise,
     property: string,
+): Promise<AssertionResult>
+
+/**
+ * @deprecated since 6.0.0, remove in v10.0.0.
+ * Passing explicit `undefined` or `null` as a value is deprecated.
+ * Omit the third argument entirely or use `toHaveElementProperty(el, property, object.anything(), options)`.
+ */
+export async function toHaveElementProperty(
+    received: WdioElementOrArrayMaybePromise,
+    property: string,
+    value: undefined | null,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
@@ -66,7 +63,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementsMaybePromise,
     property: string,
-    value: MaybeArray<string | number | RegExp | AsymmetricMatcher<string>>,
+    value: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
@@ -77,7 +74,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
-    value: string | number | RegExp | AsymmetricMatcher<string>,
+    value: string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
@@ -85,18 +82,19 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementOrArrayMaybePromise,
     property: string,
-    valueOrOptions?: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null> | ExpectWebdriverIO.StringOptions,
+    value?: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher> | null | undefined,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
-    let value: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null> | undefined
 
-    // Determine if the third argument is actually options or the expected value
-    if (isStringOptions(valueOrOptions)) {
-        options = valueOrOptions
-        value = undefined
-    } else {
-        value = valueOrOptions
+    const paramsCount = arguments.length
+
+    if (value === undefined || value === null) {
+        if (paramsCount > 2) {
+            // User have passed an explicit undefined or null value, which is deprecated. We will log a warning to inform the user about this deprecation.
+            console.log('Using undefined or null as value for toHaveElementProperty is deprecated and will be removed in v6.0.0. Please omit the third argument entirely or use toHaveElementProperty(el, property, object.anything(), options).')
+        }
+        value = expect.anything()
     }
 
     await options.beforeAssertion?.({
