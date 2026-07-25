@@ -5,9 +5,11 @@ import { expect } from 'expect'
 
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
-import { executeCommand, executeCommandWithStrategy } from './util/executeCommand.js'
+import type { CompareResult } from './util/executeCommand.js'
+import { executeCommandWithStrategy } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
+import { DEFAULT_FEATURE_FLAGS } from './constants.js'
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
     return isAsymmetricMatcher(expected) && 'expected' in expected
@@ -76,12 +78,13 @@ async function executeCommandBe(
         async () => {
             const result = await executeCommandWithStrategy({
                 unresolvedElements: subject,
+                expectedValues: true,
                 singleElementCompare: async (element) => {
                     const result = await command(element)
                     return { result, value: result }
                 },
                 isNot,
-                configuration: { allowEmptyElements }
+                strictConfiguration: { allowEmptyElements }
 
             })
             subject = result.subject
@@ -129,6 +132,25 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
+export const compareTextOrArray = (
+    actualText: string,
+    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
+    options: ExpectWebdriverIO.StringOptions
+): CompareResult<string> => {
+    const unchangedActualText = actualText
+
+    if (expectedTexts === undefined) {
+        return { value: actualText, result: false }
+    }
+
+    const compareResults =  Array.isArray(expectedTexts) ?
+        compareTextWithArray(actualText, expectedTexts, options)
+        : compareText(actualText, expectedTexts, options)
+
+    // The above compare texts alter the actual text so we need to clone it and return the original actual text to the caller for error message formatting. To fix in major version
+    return { result: compareResults.result, value: unchangedActualText }
+}
+
 export const compareText = (
     actual: string,
     expected: string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>,
@@ -141,7 +163,7 @@ export const compareText = (
         atIndex,
         replace,
     }: ExpectWebdriverIO.StringOptions
-) => {
+): CompareResult<string> => {
     if (typeof actual !== 'string') {
         return {
             value: actual,
@@ -215,12 +237,21 @@ export const compareText = (
     }
 }
 
+/**
+ * Compare actual text with array of expected texts in a non-strict way
+ * if the actual text matches with any of the expected texts, it returns true
+ *
+ * @param actual
+ * @param expectedArray
+ * @param param2
+ * @returns
+ */
 export const compareTextWithArray = (
     actual: string,
     expectedArray: Array<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>,
     {
         ignoreCase = false,
-        trim = false,
+        trim = false, // TODO for single element we trim by default, but for array we don't trim by default. To review in v6.0.0 and make it consistent for both single and array of elements
         containing = false,
         atStart = false,
         atEnd = false,
@@ -357,26 +388,8 @@ export const compareStyle = async (
     }
 }
 
-/** @deprecated unused, to remove in v6.0.0 */
-/* v8 ignore next */
-function aliasFn(
-    fn: (...args: unknown[]) => void,
-    {
-        verb,
-        expectation,
-    }: {
-        verb?: string
-        expectation?: string
-    } = {},
-    ...args: unknown[]
-): unknown {
-    this.verb = verb
-    this.expectation = expectation
-    return fn.apply(this, args)
-}
-
 export {
-    aliasFn, compareNumbers, enhanceError, executeCommand,
+    compareNumbers, enhanceError,
     executeCommandBe, waitUntil, wrapExpectedWithArray
 }
 
@@ -401,4 +414,12 @@ function replaceActual(
     }
 
     return actual
+}
+
+export const getFeatureFlagValue = ({ featureFlags }: ExpectWebdriverIO.StringOptions, featureFlag: keyof ExpectWebdriverIO.FeatureFlags): boolean => {
+    const providedFeatureFlagValue = featureFlags?.[featureFlag]
+    if (providedFeatureFlagValue !== undefined) {
+        return providedFeatureFlagValue
+    }
+    return DEFAULT_FEATURE_FLAGS[featureFlag] ?? false
 }

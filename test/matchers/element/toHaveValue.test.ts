@@ -77,6 +77,12 @@ Expected: "webdriver"
 Received: "This is an example value"`
                 )
             })
+
+            test('should not pass with array of strings', async () => {
+                // @ts-expect-error testing invalid input
+                const result = await thisContext.toHaveValue(el, ['webdriver', 'example'])
+                expect(result.pass).toBe(false)
+            })
         })
 
         describe('failure with RegExp', () => {

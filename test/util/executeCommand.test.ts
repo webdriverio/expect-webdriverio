@@ -1,179 +1,148 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { $, $$ } from '@wdio/globals'
-import { executeCommand } from '../../src/util/executeCommand'
-import { WdioElements } from '../../src/types'
+import { describe, it, expect, vi } from 'vitest'
+import { multipleElementResultsStrategy } from '../../src/util/executeCommand'
+import { chainableElementArrayFactory } from '../__mocks__/@wdio/globals'
+import { $ } from '@wdio/globals'
 
 vi.mock('@wdio/globals')
 
-describe(executeCommand, () => {
+describe('executeCommand', () => {
 
-    describe('given single element', () => {
-        const selector = 'single-selector'
-        let element : WebdriverIO.Element
+    describe('multipleElementResultsStrategy', () => {
 
-        const conditionSingleElementPass = vi.fn(async (_element: WebdriverIO.Element) => {
-            return ({ result: true, value: 'myValue' })
-        })
+        const mockSingleCompare = vi.fn()
 
-        const conditionSingleElementFail = vi.fn(async (_element: WebdriverIO.Element) => {
-            return ({ result: false })
-        })
+        describe('given a single element', () => {
+            const element = $('selector')
 
-        beforeEach(async () => {
-            element = await $(selector).getElement()
-        })
+            it('should return success true when the element matches the expected value', async () => {
+                mockSingleCompare.mockResolvedValue({ result: true, value: 'Match' })
 
-        test('Element', async () => {
-            const result = await executeCommand(element, conditionSingleElementPass)
+                const result = await multipleElementResultsStrategy(
+                    element,
+                    'Match',
+                    mockSingleCompare,
+                    false
+                )
 
-            expect(result).toEqual({
-                el: element,
-                success: true,
-                values: 'myValue'
+                expect(result.success).toBe(true)
+                expect(result.actual).toEqual('Match')
+            })
+
+            it('should return success false when the element does not match the expected value', async () => {
+                mockSingleCompare.mockResolvedValue({ result: false, value: 'No Match' })
+
+                const result = await multipleElementResultsStrategy(
+                    element,
+                    'Match',
+                    mockSingleCompare,
+                    false
+                )
+
+                expect(result.success).toBe(false)
             })
         })
 
-        test('Element with value result being an array', async () => {
-            const conditionPassWithValueArray = vi.fn(async (_element: WebdriverIO.Element) => {
-                return ({ result: true, value: ['myValue'] })
+        describe('given multiple elements', () => {
+            const threeElements = chainableElementArrayFactory('selector', 3)
+            const twoElements = chainableElementArrayFactory('selector', 2)
+            const oneElements = chainableElementArrayFactory('selector', 1)
+
+            it('should return success true when all elements match expected values', async () => {
+                mockSingleCompare.mockResolvedValue({ result: true, value: 'Match' })
+
+                const result = await multipleElementResultsStrategy(
+                    threeElements,
+                    ['Match', 'Match', 'Match'],
+                    mockSingleCompare,
+                    false
+                )
+
+                expect(result.success).toBe(true)
+                expect(result.actual).toEqual(['Match', 'Match', 'Match'])
             })
 
-            const result = await executeCommand(element, conditionPassWithValueArray)
+            it('should return success false when some elements do not match', async () => {
+                mockSingleCompare
+                    .mockResolvedValueOnce({ result: true, value: 'Match' })
+                    .mockResolvedValueOnce({ result: false, value: 'No Match' })
+                    .mockResolvedValueOnce({ result: true, value: 'Match' })
 
-            expect(result).toEqual({
-                el: element,
-                success: true,
-                values: ['myValue']
+                const result = await multipleElementResultsStrategy(
+                    threeElements,
+                    ['Match', 'Match', 'Match'],
+                    mockSingleCompare,
+                    false
+                )
+
+                expect(result.success).toBe(false)
             })
-        })
 
-        test('Element with value result being an array of array', async () => {
-            const conditionPassWithValueArray = vi.fn(async (_element: WebdriverIO.Element) => {
-                return ({ result: true, value: [['myValue']] })
+            it('should pass (success=false) with .not when all elements fail to match', async () => {
+                mockSingleCompare.mockResolvedValue({ result: false, value: 'Other' })
+
+                const result = await multipleElementResultsStrategy(
+                    twoElements,
+                    'Match',
+                    mockSingleCompare,
+                    true // isNot: true
+                )
+
+                expect(result.success).toBe(false) // false is success for .not, since it is inverted later by Jest
             })
 
-            const result = await executeCommand(element, conditionPassWithValueArray)
+            it('should fail (success=true) when using .not but one element matches', async () => {
+                mockSingleCompare
+                    .mockResolvedValueOnce({ result: false, value: 'Other' })
+                    .mockResolvedValueOnce({ result: true, value: 'Match' })
 
-            expect(result).toEqual({
-                el: element,
-                success: true,
-                values: [['myValue']]
+                const result = await multipleElementResultsStrategy(
+                    twoElements,
+                    'Match',
+                    mockSingleCompare,
+                    true // isNot: true
+                )
+
+                expect(result.success).toBe(true) // true is failure for .not, since it is inverted later by Jest
             })
-        })
 
-        test('when condition is not met', async () => {
-            const result = await executeCommand(element, conditionSingleElementFail)
+            it('should fail when no elements are found (default behavior)', async () => {
+                const result = await multipleElementResultsStrategy(
+                    [],
+                    'Match',
+                    mockSingleCompare,
+                    false
+                )
 
-            expect(result).toEqual({
-                el: element,
-                success: false,
-                values: undefined,
+                expect(result.success).toBe(false)
             })
-        })
 
-        test('pass options to condition', async () => {
-            const options = { wait: 1000, interval: 100 }
+            it('should pass (success=false) with .not when no elements are found and allowEmptyElements is true', async () => {
+                const result = await multipleElementResultsStrategy(
+                    [],
+                    'Match',
+                    mockSingleCompare,
+                    true, // isNot
+                    { allowEmptyElements: true }
+                )
 
-            await executeCommand(element, conditionSingleElementPass, options)
-
-            expect(conditionSingleElementPass).toHaveBeenCalledWith(element, options)
-        })
-    })
-
-    describe('given multiple elements', () => {
-        const selector = 'multi-selector'
-
-        const conditionMultipleElementPass = vi.fn(async (_element: WdioElements) => {
-            return ({ result: true, value: ['myValue1', 'myValue2'] })
-        })
-
-        test('ElementArray', async () => {
-            const elementArray = await $$(selector).getElements()
-
-            const result = await executeCommand(elementArray, conditionMultipleElementPass)
-
-            expect(result).toEqual({
-                el: elementArray,
-                success: true,
-                values: ['myValue1', 'myValue2'],
+                expect(result.success).toBe(false) // false is success for .not, since it is inverted later by Jest
             })
-        })
 
-        test('Element[]', async () => {
-            const elementArray = await $$(selector)
-            const elements = Array.from(elementArray)
+            it('should handle missing elements compared to expected values array', async () => {
+                const expected = ['A', 'B'] // Expecting 2
 
-            expect(Array.isArray(elements)).toBe(true)
+                mockSingleCompare.mockResolvedValue({ result: true, value: 'A' })
 
-            const result = await executeCommand(elements, conditionMultipleElementPass)
+                const result = await multipleElementResultsStrategy(
+                    oneElements,
+                    expected,
+                    mockSingleCompare,
+                    false
+                )
 
-            expect(result).toEqual({
-                el: elements,
-                success: true,
-                values: ['myValue1', 'myValue2'],
-            })
-        })
-
-        test('pass options to condition', async () => {
-            const options = { wait: 1000, interval: 100 }
-            const elements = await $$(selector).getElements()
-
-            await executeCommand(elements, conditionMultipleElementPass, options)
-
-            expect(conditionMultipleElementPass).toHaveBeenCalledWith(elements, options)
-        })
-    })
-
-    describe('given not elements', () => {
-        const conditionFail = vi.fn(async (_element: unknown) => {
-            return ({ result: false })
-        })
-
-        test('undefined', async () => {
-
-            const result = await executeCommand(undefined as any, conditionFail)
-
-            expect(conditionFail).toHaveBeenCalledWith(undefined, {})
-            expect(result).toEqual({
-                el: undefined,
-                success: false,
-                values: undefined,
-            })
-        })
-
-        test('empty array', async () => {
-            const result = await executeCommand([], conditionFail)
-
-            expect(result).toEqual({
-                el: [],
-                success: false,
-                values: undefined,
-            })
-        })
-
-        test('object', async () => {
-            const anyOjbect = { foo: 'bar' }
-
-            const result = await executeCommand(anyOjbect as any, conditionFail)
-
-            expect(result).toEqual({
-                el: { foo: 'bar' },
-                success: false,
-                values: undefined,
-            })
-        })
-
-        test('number', async () => {
-            const anyNumber = 42
-
-            const result = await executeCommand(anyNumber as any, conditionFail)
-
-            expect(result).toEqual({
-                el: 42,
-                success: false,
-                values: undefined,
+                expect(result.success).toBe(false)
+                expect(result.actual).toEqual(['A', undefined])
             })
         })
     })
-
 })

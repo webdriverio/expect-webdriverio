@@ -1,6 +1,6 @@
 import { waitUntil, enhanceError } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { matchNumber, validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
 
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock,
@@ -39,7 +39,7 @@ export async function toBeRequestedTimes(
     const pass = await waitUntil(
         async () => {
             actual = received.calls.length
-            return expectedNumber.match(actual)
+            return matchNumber(actual, expectedNumber)
         },
         isNot,
         { wait: commandOptions.wait, interval: commandOptions.interval }

@@ -4,9 +4,9 @@ import { $, $$ } from '@wdio/globals'
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
+import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { DEFAULT_OPTIONS } from '../../../src/constants.js'
 import { setDefaultOptions, setOptions } from '../../../src/index.js'
-import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -56,6 +56,7 @@ describe(toBeDisplayed, async () => {
                     afterAssertion: afterAssertion,
                     interval: 1,
                     wait: 500,
+                    featureFlags: expect.any(Object)
                 },
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
@@ -250,6 +251,7 @@ Received: "not displayed"`)
                     afterAssertion: afterAssertion,
                     interval: 1,
                     wait: 500,
+                    featureFlags: expect.any(Object)
                 },
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {

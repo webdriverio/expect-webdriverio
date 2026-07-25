@@ -1,4 +1,5 @@
 import { browser, $, $$ } from '@wdio/globals'
+import { setFeatureFlags } from 'expect-webdriverio'
 
 describe('WebdriverIO Custom Matchers', () => {
     beforeEach(async () => {
@@ -96,7 +97,7 @@ describe('WebdriverIO Custom Matchers', () => {
         })
     })
 
-    describe('Element text matchers', () => {
+    describe('Legacy element text matchers', () => {
         it('should verify element text', async () => {
             const docsLink = await $('=Docs')
             await expect(docsLink).toBeDisplayed()
@@ -161,6 +162,133 @@ describe('WebdriverIO Custom Matchers', () => {
 
                         expect(heading.length).toBe(0)
                         await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                    })
+                })
+            })
+
+            describe('Non-awaited', () => {
+
+                it('should verify text with options with non-awaited ChainablePromiseArray', async () => {
+                    const heading = $$('h1')
+
+                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                })
+
+                it('should verify text with options with non-awaited filtered ChainablePromiseArray', async () => {
+                    const heading = $$('h1').filter(async (el) => (await el.getText()).includes('Open Source'))
+
+                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                })
+
+                it('should verify text with options with non-awaited getElements ChainablePromiseArray', async () => {
+                    const heading = $$('h1').getElements()
+
+                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                })
+
+                describe('Empty elements', () => {
+                    it('should fails if there is no elements with Element[]', async () => {
+                        const heading = $$('h1').filter(async (el) => (await el.getText()).includes('test'))
+
+                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                    })
+
+                    it('should fails if there is no elements with ElementArray', async () => {
+                        const heading = $$('h10')
+
+                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                    })
+                })
+            })
+        })
+    })
+
+    describe('New STRICT element text matchers', () => {
+        beforeEach(() => {
+            setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy: true })
+        })
+
+        it('should verify element text', async () => {
+            const docsLink = await $('=Docs')
+            await expect(docsLink).toBeDisplayed()
+            await expect(docsLink).toHaveText('Docs')
+        })
+
+        it('should verify element contains text', async () => {
+            const heading = await $$('h1')[1]  // Second h1 has text
+            await expect(heading).toHaveText(expect.stringContaining('Open Source'))
+        })
+
+        it('should verify text with options', async () => {
+            const heading = await $$('h1')[1]  // Second h1 has text
+            await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+        })
+
+        describe('Multiple Elements', () => {
+            describe('Awaited', () => {
+                it('should verify text with array of text & with options with awaited ChainablePromiseArray', async () => {
+                    const heading = await $$('h1')
+                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                })
+
+                it('should verify text with array of text without exact array match', async () => {
+                    const heading = await $$('h1')
+                    await expect(heading).toHaveText(['', 'Open Source and Open Governed'])
+                })
+
+                it('should fails verify a single text found in only one element', async () => {
+                    const heading = await $$('h1')
+                    await expect(expect(heading).toHaveText('Open Source and Open Governed', { ignoreCase: true, containing: true, wait: 500 })).rejects.toThrow()
+                })
+
+                it('should verify text with options with awaited filtered ChainablePromiseArray', async () => {
+                    const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('Open Source'))
+                    expect(heading.length).toBe(1)
+                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                })
+
+                it('should verify text with options with awaited getElements ChainablePromiseArray', async () => {
+                    const heading = await $$('h1').getElements()
+                    await expect(heading).toHaveText(['','Open Source and Open Governed'], { ignoreCase: true, containing: true })
+                })
+
+                it('should verify text with options with filetered awaited getElements ChainablePromiseArray', async () => {
+                    const heading = (await $$('h1').getElements()).filter(async (el) => (await el.getText()).includes('Open Source'))
+
+                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                })
+
+
+                describe('Empty elements & Array length mismatch', () => {
+                    it('should fails if there is no elements with Element[]', async () => {
+                        const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('test'))
+
+                        expect(heading.length).toBe(0)
+                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                    })
+
+                    it('should fails if there is no elements with ElementArray', async () => {
+                        const heading = await $$('h10')
+
+                        expect(heading.length).toBe(0)
+                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                    })
+
+                    it('should fails if there is not enough expected values', async () => {
+                        const heading = await $$('h1')
+
+                        expect(heading.length).toBe(2)
+                        await expect(heading[0]).toHaveText([''])
+                        await expect(expect(heading).toHaveText([''])).rejects.toThrow()
+                    })
+
+                    it('should fails if there is too many expected values', async () => {
+                        const heading = await $$('h1')
+
+                        expect(heading.length).toBe(2)
+                        await expect(heading[0]).toHaveText([''])
+                        await expect(heading[1]).toHaveText(['Open Source and Open Governed'])
+                        await expect(expect(heading).toHaveText(['', 'Open Source and Open Governed', 'tooMuchValue!'])).rejects.toThrow()
                     })
                 })
             })
@@ -304,6 +432,16 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(navLinks).toBeElementsArrayOfSize({ gte: 40 })
             await expect(navLinks).toBeElementsArrayOfSize({ lte: 50 })
         })
+
+        it('should works with non-awaited elements', async () => {
+            await expect($$('nav a')).toBeElementsArrayOfSize({ gte: 40 })
+            await expect($$('nav a')).toBeElementsArrayOfSize({ lte: 50 })
+        })
+
+        it('should works with filtered elements', async () => {
+            await expect($$('nav a').filter(el => el.isDisplayed())).toBeElementsArrayOfSize({ gte: 1 })
+        })
+
     })
 
     describe('Focus matchers', () => {

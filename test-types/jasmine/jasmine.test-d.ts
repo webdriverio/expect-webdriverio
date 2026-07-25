@@ -225,9 +225,9 @@ describe('Jasmine type agumentations', () => {
             describe('toBeElementsArrayOfSize', async () => {
 
                 it('should work correctly when actual is chainableArray', async () => {
-                    expectTypeOf(expectAsync(chainableArray).toBeElementsArrayOfSize(5)).toEqualTypeOf<Promise<void> & Promise<WebdriverIO.ElementArray>>()
-                    expectTypeOf(expectAsync(chainableArray).toBeElementsArrayOfSize({ lte: 10 })).toEqualTypeOf<Promise<void> & Promise<WebdriverIO.ElementArray>>()
-                    expectTypeOf(expectAsync(chainableArray).toBeElementsArrayOfSize(5, { message: 'foo' })).toEqualTypeOf<Promise<void> & Promise<WebdriverIO.ElementArray>>()
+                    expectTypeOf(expectAsync(chainableArray).toBeElementsArrayOfSize(5)).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(chainableArray).toBeElementsArrayOfSize({ lte: 10 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(chainableArray).toBeElementsArrayOfSize(5, { message: 'foo' })).toEqualTypeOf<Promise<void>>()
                 })
 
                 it('should not work when actual is not chainableArray', async () => {

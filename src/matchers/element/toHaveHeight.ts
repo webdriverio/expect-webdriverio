@@ -1,27 +1,40 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise, WdioElements } from '../../types.js'
+import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
-    executeCommand,
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher) {
+async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined) {
     const actualHeight = await el.getSize('height')
 
     return {
-        result: expectedNumber.match(actualHeight),
+        result: expectedNumber?.match(actualHeight) ?? false,
         value: actualHeight
     }
 }
 
+/**
+ * Element $()
+ */
 export async function toHaveHeight(
     received: WdioElementMaybePromise,
     expectedValue: number | ExpectWebdriverIO.NumberMatcher,
     options?: ExpectWebdriverIO.CommandOptions
-):Promise<ExpectWebdriverIO.AssertionResult>
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * Elements $$()
+ */
+export async function toHaveHeight(
+    received: WdioElementsMaybePromise,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
 
 /**
  * deprecated since 5.7.1, remove in 6.0.0. Use `toHaveHeight(received, NumberMatcher, options)` instead.
@@ -31,9 +44,10 @@ export async function toHaveHeight(
     expectedValue: ExpectWebdriverIO.NumberOptions,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
+
 export async function toHaveHeight(
-    received: WdioElementMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'height', verb = 'have', isNot, matcherName = 'toHaveHeight' } = this
@@ -44,17 +58,24 @@ export async function toHaveHeight(
         options,
     })
 
-    const { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
+    const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
-    let el = await received?.getElement()
-    let actualHeight
+    let elements: WebdriverIO.Element | WdioElements | unknown
+    let actualHeight: string | number | (string | number | undefined)[] | undefined
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, commandOptions, [expectedNumber])
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedNumber,
+                singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowArrayWithSingleElement: false }
+            })
 
-            el = result.el as WebdriverIO.Element
-            actualHeight = result.values
+            elements = result.subject
+            actualHeight = result.actual
 
             return result.success
         },
@@ -62,9 +83,10 @@ export async function toHaveHeight(
         { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
+    const expectedValues = wrapExpectedWithArray(elements, actualHeight, expectedNumber)
     const message = enhanceError(
-        el,
-        expectedNumber,
+        elements,
+        expectedValues,
         actualHeight,
         this,
         verb,

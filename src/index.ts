@@ -61,23 +61,31 @@ Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
 
 export const expect = expectWithSoft
 
-// TODO one day to rename to something more aligned with setDefaultOptions
-export const getConfig = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
+// Default options for the expect-webdriverio library
+export const getDefaultOptions = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
 export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOptions>): void => {
-    Object.entries(options).forEach(([key, value]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (Object.entries(options) as [keyof ExpectWebdriverIO.DefaultOptions, any][]).forEach(([key, value]) => {
         defaultOptionsList.forEach((option) => {
             if (key in option) {
-                // @ts-ignore
                 option[key] = value
             }
         })
     })
 }
 
-/**
- * @deprecated use setDefaultOptions instead
- */
+export const setFeatureFlags = (featureFlags: Partial<ExpectWebdriverIO.FeatureFlags>): void => {
+    (Object.entries(featureFlags) as [keyof ExpectWebdriverIO.FeatureFlags, boolean][]).forEach(([ffName, ffValue]) => {
+        defaultOptionsList.forEach((option) => {
+            option.featureFlags[ffName] = ffValue
+        })
+    })
+}
+
+/** @deprecated use setDefaultOptions instead. Will be removed in v6.0.0 */
 export const setOptions = setDefaultOptions
+/** @deprecated use `getDefaultOptions` instead, will be removed in v6.0.0 */
+export const getConfig = getDefaultOptions
 
 /**
  * export snapshot utilities

@@ -1,7 +1,7 @@
-import { printDiffOrStringify, printExpected, printReceived } from 'jest-matcher-utils'
+import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXPECTED_COLOR, INVERTED_COLOR, stringify } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
-import { isArrayOfElement, isElementArray, isElementArrayLike, isElementOrArrayLike } from './elementsUtil.js'
+import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray } from './elementsUtil.js'
 import { numberMatcherTester } from './numberOptionsUtil.js'
 import { toJsonString } from './stringUtil.js'
 
@@ -13,7 +13,7 @@ export const isDefined = <T>(value: T): value is NonNullable<T> => value !== nul
 export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
     if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
-        // todo handle custom$ selector
+        // TODO handle custom$ selector
         result += ', <props>'
     }
     return result
@@ -27,7 +27,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
     const selectors = []
     let parent: WebdriverIO.ElementArray['parent'] | undefined
 
-    if (isElementArray(el)) {
+    if (isStrictlyElementArray(el)) {
         // Type ElementArray
         selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)
         parent = el.parent
@@ -79,16 +79,31 @@ export const enhanceError = (
         verb += ' '
     }
 
+    const isNotInLabel = useNotInLabel && isNot
     const label =  {
-        expected: isNot && useNotInLabel ? 'Expected [not]' : 'Expected',
-        received: isNot && useNotInLabel ? 'Received      ' : 'Received'
+        expected: isNotInLabel ? 'Expected [not]' : 'Expected',
+        received: isNotInLabel ? 'Received      ' : 'Received'
     }
 
-    // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
-    const diffString = equals(actual, expected, CUSTOM_EQUALITY_TESTER) ?`\
+    let diffString = ''
+
+    // Special formatting for .not with arrays to highlight what matched
+    if (isNotInLabel && isElementOrArrayLike(subject) && Array.isArray(expected) && Array.isArray(actual) && expected.length === actual.length) {
+        // With multiple elements + `.not`, since `printDiffOrStringify` shows only diff and we need to highlight what matched, we do custom formatting
+        // Using FORCE_COLOR=1 npx vitest + console.log() can show colors in the test output console
+        const { expectedFormatted, receivedFormatted } = printArrayWithMatchingItemInRed(expected, actual)
+        diffString = `\
+${label.expected}: ${expectedFormatted}
+${label.received}: ${receivedFormatted}`
+    } else if (equals(actual, expected, CUSTOM_EQUALITY_TESTER)) {
+        // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
+        diffString =
+            `\
 ${label.expected}: ${printExpected(expected)}
 ${label.received}: ${printReceived(actual)}`
-        : printDiffOrStringify(expected, actual, label.expected, label.received, true)
+    } else {
+        diffString = printDiffOrStringify(expected, actual, label.expected, label.received, true)
+    }
 
     if (message) {
         message += '\n'
@@ -108,6 +123,44 @@ ${diffString}`
 
 const toArray = <T>(value: T | T[] | undefined): T[] => value === undefined ? [] : Array.isArray(value) ? value : [value]
 
+// Inspired by Jest's printReceivedArrayContainExpectedItem
+// Highlights matching elements when using .not to show what shouldn't have matched
+const printArrayWithMatchingItemInRed = (
+    expectedArray: unknown[],
+    actualArray: unknown[],
+): { expectedFormatted: string, receivedFormatted: string } => {
+    // Find matching indices
+    const matchingIndices: number[] = []
+    for (let i = 0; i < expectedArray.length; i++) {
+        if (equals(expectedArray[i], actualArray[i], CUSTOM_EQUALITY_TESTER)) {
+            matchingIndices.push(i)
+        }
+    }
+
+    // For .not, matching items are the problem - highlight them in red on both sides
+    const expectedFormatted = `[${expectedArray
+        .map((item, i) => {
+            const stringified = stringify(item)
+            // Problematic items (matched) in red, others in green
+            return matchingIndices.includes(i)
+                ? RECEIVED_COLOR(INVERTED_COLOR(stringified))
+                : EXPECTED_COLOR(stringified)
+        })
+        .join(', ')}]`
+
+    const receivedFormatted = `[${actualArray
+        .map((item, i) => {
+            const stringified = stringify(item)
+            // Problematic items (matched) in red, others in green
+            return matchingIndices.includes(i)
+                ? RECEIVED_COLOR(INVERTED_COLOR(stringified))
+                : EXPECTED_COLOR(stringified)
+        })
+        .join(', ')}]`
+
+    return { expectedFormatted, receivedFormatted }
+}
+
 export const enhanceErrorBe = (
     subject: WebdriverIO.Element | WdioElements | unknown,
     results: boolean[] | boolean | undefined,
@@ -122,7 +175,7 @@ export const enhanceErrorBe = (
     const actualValue = `${not(!isNot)}${expectation}`
 
     if (isElementArrayLike(subject)) {
-        expected = subject.length === 0? 'at least one result' : Array(subject.length).fill(expectedValue)
+        expected = subject.length === 0 ? 'at least one result' : Array(subject.length).fill(expectedValue)
         actual = toArray(results).map(result => isSuccess(isNot, result) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
     } else {
         expected = expectedValue

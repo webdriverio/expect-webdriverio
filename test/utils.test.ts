@@ -1,11 +1,11 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest'
-import { $, $$ } from '@wdio/globals'
 import { compareObject, compareText, compareTextWithArray, executeCommandBe, getAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
 import { jasmine } from './__mocks__/jasmine'
-import { CommandOptions } from 'expect-webdriverio'
+import type { CommandOptions } from 'expect-webdriverio'
+import { $, $$ } from '@wdio/globals'
 import stripAnsi from 'strip-ansi'
-import { enhanceErrorBe } from '../src/util/formatMessage'
 import { executeCommandWithStrategy } from '../src/util/executeCommand'
+import { enhanceErrorBe } from '../src/util/formatMessage'
 
 vi.mock('@wdio/globals')
 
@@ -13,7 +13,6 @@ vi.mock('../src/util/executeCommand', async (importOriginal) => {
     const actual = await importOriginal<typeof import('../src/util/executeCommand')>()
     return {
         ...actual,
-        executeCommand: vi.spyOn(actual, 'executeCommand'),
         executeCommandWithStrategy: vi.spyOn(actual, 'executeCommandWithStrategy'),
     }
 })
@@ -22,6 +21,13 @@ vi.mock('../src/util/formatMessage', async (importOriginal) => {
     return {
         ...actual,
         enhanceErrorBe: vi.spyOn(actual, 'enhanceErrorBe'),
+    }
+})
+vi.mock('../src/util/elementsUtil.js', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('../src/util/elementsUtil.js')>()
+    return {
+        ...actual,
+        awaitElementOrArray: vi.spyOn(actual, 'awaitElementOrArray'),
     }
 })
 
@@ -222,9 +228,10 @@ Received: []`)
                 expect(result.pass).toBe(true)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: received,
+                    expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
-                    configuration: { allowEmptyElements: false }
+                    strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, options)
             })
@@ -235,9 +242,10 @@ Received: []`)
                 expect(result.pass).toBe(true)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: received,
+                    expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
-                    configuration: { allowEmptyElements: false }
+                    strictConfiguration: { allowEmptyElements: false }
                 })
             })
 
@@ -325,9 +333,10 @@ Received: "displayed"`)
                 expect(result.pass).toBe(true)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elements,
+                    expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
-                    configuration: { allowEmptyElements: false }
+                    strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, options)
@@ -341,9 +350,10 @@ Received: "displayed"`)
                 expect(result.pass).toBe(true)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elementArray,
+                    expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
-                    configuration: { allowEmptyElements: false }
+                    strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
             })
@@ -356,9 +366,10 @@ Received: "displayed"`)
                 expect(result.pass).toBe(true)
                 expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                     unresolvedElements: elementArray,
+                    expectedValues: true,
                     singleElementCompare: expect.any(Function),
                     isNot: false,
-                    configuration: { allowEmptyElements: false }
+                    strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
             })
@@ -440,9 +451,10 @@ Expect ${selectorName} to be displayed
                     expect(result.pass).toBe(false)
                     expect(executeCommandWithStrategy).toHaveBeenCalledWith({
                         unresolvedElements: elements,
+                        expectedValues: true,
                         singleElementCompare: expect.any(Function),
                         isNot: true,
-                        configuration: { allowEmptyElements: false }
+                        strictConfiguration: { allowEmptyElements: false }
                     })
                     expect(command).toHaveBeenCalledTimes(2)
                     expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), true, options)

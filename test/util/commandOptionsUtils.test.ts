@@ -113,7 +113,8 @@ describe('Command Options Utility Functions', () => {
                     wait: 0,
                     interval: 0,
                     beforeAssertion: async () => {},
-                    afterAssertion: async () => {}
+                    afterAssertion: async () => {},
+                    featureFlags: {}
                 }
 
                 // Run the runtime check against the fully-populated type asset
@@ -214,7 +215,8 @@ describe('Command Options Utility Functions', () => {
                     wait: 0,
                     interval: 0,
                     beforeAssertion: async () => {},
-                    afterAssertion: async () => {}
+                    afterAssertion: async () => {},
+                    featureFlags: {}
                 }
 
                 // Run the runtime check against the fully-populated type asset

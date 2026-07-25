@@ -8,16 +8,47 @@ vi.mock('@wdio/globals')
 
 describe('elementsUtil', () => {
     describe(wrapExpectedWithArray, () => {
-        test('is not array ', async () => {
-            const el = (await $('sel')) as unknown as WebdriverIO.Element
-            const actual = wrapExpectedWithArray(el, 'Test Actual', 'Test Expected')
-            expect(actual).toEqual('Test Expected')
+
+        describe('given single expect value', () => {
+            const expected = 'Test Expected'
+            test('when having single element and single actual value then expected value is not wrapped into an array', async () => {
+                const actual = 'Test Actual'
+                const element = await $('sel').getElement()
+
+                const wrappedExpectedValue = wrapExpectedWithArray(element, actual, expected)
+
+                expect(wrappedExpectedValue).toEqual('Test Expected')
+            })
+
+            test('given array of elements and multiples actual values then expected value is wrapped into an array', async () => {
+                const elements = await $$('sel').getElements()
+                const actual = ['Test Actual', 'Test Actual']
+
+                const wrappedExpectedValue = wrapExpectedWithArray(elements, actual, expected)
+
+                expect(wrappedExpectedValue).toEqual(['Test Expected', 'Test Expected'])
+            })
         })
 
-        test('is array ', async () => {
-            const els = (await $$('sel')) as unknown as WebdriverIO.ElementArray
-            const actual = wrapExpectedWithArray(els, ['Test Actual', 'Test Actual'], 'Test Expected')
-            expect(actual).toEqual(['Test Expected'])
+        describe('given multiple expect values', () => {
+            const expected = ['Test Expected', 'Test Expected']
+            test('when having single element and single actual value then expected values is not wrapped in another array', async () => {
+                const actual = 'Test Actual'
+                const element = await $('sel').getElement()
+
+                const wrappedExpectedValue = wrapExpectedWithArray(element, actual, expected)
+
+                expect(wrappedExpectedValue).toEqual(['Test Expected', 'Test Expected'])
+            })
+
+            test('given array of elements and multiples actual values then expected values is not wrapped into another array', async () => {
+                const elements = await $$('sel').getElements()
+                const actual = ['Test Actual', 'Test Actual']
+
+                const wrappedExpectedValue = wrapExpectedWithArray(elements, actual, expected)
+
+                expect(wrappedExpectedValue).toEqual(['Test Expected', 'Test Expected'])
+            })
         })
     })
 

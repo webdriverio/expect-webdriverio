@@ -1,6 +1,7 @@
-import { test, describe, expect, vi } from 'vitest'
+import { test, describe, expect, vi, it } from 'vitest'
 import {
     isNumber,
+    matchNumber,
     NumberMatcher,
     numberMatcherTester,
     validateNumberAndExtractOptions
@@ -204,7 +205,7 @@ describe('numberOptionsUtil', () => {
         test('successfully extracts valid interface configurations and returns remaining command options', () => {
             const result = validateNumberAndExtractOptions({ gte: 2, lte: 5, wait: 200 }, DEFAULT_OPTIONS)
             expect(result.numberMatcher.match(3)).toBe(true)
-            expect(result.commandOptions).toEqual({ wait: 200, interval: 100, afterAssertion : DEFAULT_OPTIONS.afterAssertion, beforeAssertion: DEFAULT_OPTIONS.beforeAssertion })
+            expect(result.commandOptions).toEqual({ wait: 200, interval: 100, afterAssertion : DEFAULT_OPTIONS.afterAssertion, beforeAssertion: DEFAULT_OPTIONS.beforeAssertion, featureFlags: DEFAULT_OPTIONS.featureFlags })
         })
 
         test('throws error for empty or entirely invalid options objects', () => {
@@ -252,7 +253,7 @@ describe('numberOptionsUtil', () => {
 
             expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
             expect(result.numberMatcher.match(5)).toBe(true)
-            expect(result.commandOptions).toEqual({ wait: 0, interval: 100, afterAssertion : DEFAULT_OPTIONS.afterAssertion, beforeAssertion: DEFAULT_OPTIONS.beforeAssertion })
+            expect(result.commandOptions).toEqual({ wait: 0, interval: 100, afterAssertion : DEFAULT_OPTIONS.afterAssertion, beforeAssertion: DEFAULT_OPTIONS.beforeAssertion, featureFlags: DEFAULT_OPTIONS.featureFlags })
         })
 
         test('merge with DEFAULT_OPTIONS and prioritizes number options over command options - before/after assertions options', () => {
@@ -262,7 +263,7 @@ describe('numberOptionsUtil', () => {
 
             expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
             expect(result.numberMatcher.match(5)).toBe(true)
-            expect(result.commandOptions).toEqual({ wait: 0, interval: 100, afterAssertion, beforeAssertion })
+            expect(result.commandOptions).toEqual({ wait: 0, interval: 100, afterAssertion, beforeAssertion, featureFlags: expect.any(Object) })
 
             expect(result.commandOptions?.beforeAssertion?.({} as any)).toBe(1)
             expect(result.commandOptions?.afterAssertion?.({} as any)).toBe(2)
@@ -277,7 +278,7 @@ describe('numberOptionsUtil', () => {
 
             expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
             expect(result.numberMatcher.match(1)).toBe(true)
-            expect(result.commandOptions).toEqual({ wait: 0, interval: 100, afterAssertion, beforeAssertion })
+            expect(result.commandOptions).toEqual({ wait: 0, interval: 100, afterAssertion, beforeAssertion, featureFlags: expect.any(Object) })
 
             expect(result.commandOptions?.beforeAssertion?.({} as any)).toBe(1)
             expect(result.commandOptions?.afterAssertion?.({} as any)).toBe(2)
@@ -302,6 +303,47 @@ describe('numberOptionsUtil', () => {
         test('returns undefined when neither argument is a NumberMatcher instance', () => {
             expect(numberMatcherTester(5, 10)).toBeUndefined()
             expect(numberMatcherTester('string', {})).toBeUndefined()
+        })
+    })
+
+    describe(matchNumber, () => {
+        it('should return false if expected is undefined', () => {
+            expect(matchNumber(5, undefined)).toBe(false)
+        })
+
+        it('should return true if expected matcher evaluates to true', () => {
+            const mockMatcher = new NumberMatcher({ eq: 10 })
+            vi.spyOn(mockMatcher, 'match').mockReturnValue(true)
+
+            expect(matchNumber(10, mockMatcher)).toBe(true)
+            expect(mockMatcher.match).toHaveBeenCalledWith(10)
+        })
+
+        it('should return false if expected matcher evaluates to false', () => {
+            const mockMatcher = new NumberMatcher({ eq: 10 })
+            vi.spyOn(mockMatcher, 'match').mockReturnValue(false)
+
+            expect(matchNumber(10, mockMatcher)).toBe(false)
+        })
+
+        it('should return true if any matcher in the array evaluates to true', () => {
+            const matcher1 = new NumberMatcher({ eq: 1 })
+            const matcher2 = new NumberMatcher({ eq: 2 })
+
+            vi.spyOn(matcher1, 'match').mockReturnValue(false)
+            vi.spyOn(matcher2, 'match').mockReturnValue(true)
+
+            expect(matchNumber(42, [matcher1, matcher2])).toBe(true)
+        })
+
+        it('should return false if all matchers in the array evaluate to false', () => {
+            const matcher1 = new NumberMatcher({ eq: 1 })
+            const matcher2 = new NumberMatcher({ eq: 2 })
+
+            vi.spyOn(matcher1, 'match').mockReturnValue(false)
+            vi.spyOn(matcher2, 'match').mockReturnValue(false)
+
+            expect(matchNumber(42, [matcher1, matcher2])).toBe(false)
         })
     })
 })

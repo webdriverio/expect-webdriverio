@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import expectLib from 'expect'
 import { expect as expectWdio, SoftAssertionService, SoftAssertService } from '../src/index.js'
+import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
@@ -19,8 +20,7 @@ describe('Soft Assertions', () => {
         const elementToHaveText = expectWdio($('element1')).toHaveText('Valid Text')
         expect(elementToHaveText).toBeInstanceOf(Promise)
 
-        // TODO remove await once $$() support is merged
-        const elementsToHaveText = expectWdio(await $$('elements2')).toHaveText('Valid Text')
+        const elementsToHaveText = expectWdio($$('elements2')).toHaveText('Valid Text')
         expect(elementsToHaveText).toBeInstanceOf(Promise)
 
         const elementsNotToHaveText = expectWdio(await $$('elements3')).not.toHaveText('Not Valid Text')
@@ -242,13 +242,14 @@ Received: "Actual Text"`
             const failures = expectWdio.getSoftFailures()
             expect(failures.length).toBe(1)
             expect(failures[0].matcherName).toBe('toHaveText')
-            expect(failures[0].error.message).toEqual(`\
+            expect(stripAnsi(failures[0].error.message)).toEqual(`\
 Expect $$(\`sel\`) to have text
 
-- Expected  - 1
+- Expected  - 2
 + Received  + 2
 
   Array [
+-   "Expected Text",
 -   "Expected Text",
 +   "Actual Text 0",
 +   "Actual Text 1",

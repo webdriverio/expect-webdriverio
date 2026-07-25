@@ -1,25 +1,37 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise } from '../../types.js'
-import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise } from '../../types.js'
+import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
+import { executeCommandWithStrategy } from '../../util/executeCommand.js'
+import { validateNumberArrayAndExtractOptions, type NumberMatcher } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
-    executeCommand,
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher) {
+async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined) {
     const actualWidth = await el.getSize('width')
 
     return {
-        result: expectedNumber.match(actualWidth),
+        result: expectedNumber?.match(actualWidth) ?? false,
         value: actualWidth
     }
 }
 
+/**
+ * Element $()
+ */
 export async function toHaveWidth(
     received: WdioElementMaybePromise,
     expectedValue: number | ExpectWebdriverIO.NumberMatcher,
+    options?: ExpectWebdriverIO.CommandOptions
+):Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * Elements $$()
+ */
+export async function toHaveWidth(
+    received: WdioElementsMaybePromise,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
     options?: ExpectWebdriverIO.CommandOptions
 ):Promise<ExpectWebdriverIO.AssertionResult>
 
@@ -33,8 +45,8 @@ export async function toHaveWidth(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveWidth(
-    received: WdioElementMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
+    received: WdioElementOrArrayMaybePromise,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ):Promise<ExpectWebdriverIO.AssertionResult> {
     const { expectation = 'width', verb = 'have', isNot, matcherName = 'toHaveWidth' } = this
@@ -45,17 +57,24 @@ export async function toHaveWidth(
         options,
     })
 
-    const { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
+    const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
-    let el = await received?.getElement()
-    let actualWidth
+    let elements: WebdriverIO.Element | WdioElements | unknown
+    let actualWidth: MaybeArray<string | number | undefined> | undefined
 
     const pass = await waitUntil(
         async () => {
-            const result = await executeCommand.call(this, el, condition, commandOptions, [expectedNumber])
+            const result = await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                expectedValues: expectedNumber,
+                singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: { allowArrayWithSingleElement: false }
+            })
 
-            el = result.el as WebdriverIO.Element
-            actualWidth = result.values
+            elements = result.subject
+            actualWidth = result.actual
 
             return result.success
         },
@@ -63,9 +82,10 @@ export async function toHaveWidth(
         { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
+    const expectedValues = wrapExpectedWithArray(elements, actualWidth, expectedNumber)
     const message = enhanceError(
-        el,
-        expectedNumber,
+        elements,
+        expectedValues,
         actualWidth,
         this,
         verb,
