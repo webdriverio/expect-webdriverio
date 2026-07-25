@@ -42,6 +42,7 @@ export async function toHaveComputedLabel(
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
                 isNot,
                 strategy: 'NewStrictMultipleElements',
+                // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
                 strictConfiguration: { allowArrayWithSingleElement: true }
             })
             el = result.subject
