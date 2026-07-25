@@ -89,14 +89,14 @@ export async function toHaveElementProperty(
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
-    let value: string | number | RegExp | AsymmetricMatcher<string> | null | undefined
+    let value: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | null> | undefined
 
     // Determine if the third argument is actually options or the expected value
     if (isStringOptions(valueOrOptions)) {
         options = valueOrOptions
         value = undefined
     } else {
-        value = valueOrOptions as string | number | RegExp | AsymmetricMatcher<string> | null
+        value = valueOrOptions
     }
 
     await options.beforeAssertion?.({
