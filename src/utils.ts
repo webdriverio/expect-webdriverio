@@ -206,28 +206,28 @@ export const compareText = (
     if (containing) {
         return {
             value: actual,
-            result: actual.includes(expected.toString()),
+            result: actual.includes(expected),
         }
     }
 
     if (atStart) {
         return {
             value: actual,
-            result: actual.startsWith(expected.toString()),
+            result: actual.startsWith(expected),
         }
     }
 
     if (atEnd) {
         return {
             value: actual,
-            result: actual.endsWith(expected.toString()),
+            result: actual.endsWith(expected),
         }
     }
 
     if (atIndex) {
         return {
             value: actual,
-            result: actual.substring(atIndex, actual.length).startsWith(expected.toString()),
+            result: actual.substring(atIndex, actual.length).startsWith(expected),
         }
     }
 
