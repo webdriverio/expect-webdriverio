@@ -90,7 +90,7 @@ export async function toHaveElementProperty(
     if (value === undefined || value === null) {
         if (paramsCount > 2) {
             // User have passed an explicit undefined or null value, which is deprecated. We will log a warning to inform the user about this deprecation.
-            console.log('Using undefined or null as value for toHaveElementProperty is deprecated and will be removed in v6.0.0. Please omit the third argument entirely or use toHaveElementProperty(el, property, object.anything(), options).')
+            console.warn('Using undefined or null as value for toHaveElementProperty is deprecated and will be removed in v6.0.0. Please omit the third argument entirely or use toHaveElementProperty(el, property, object.anything(), options).')
         }
         value = wdioExpect.anything()
     }
