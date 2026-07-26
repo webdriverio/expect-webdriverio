@@ -12,7 +12,7 @@ import { waitUntil } from './util/waitUntil.js'
 import { DEFAULT_FEATURE_FLAGS } from './constants.js'
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
-    return isAsymmetricMatcher(expected) && 'expected' in expected
+    return isAsymmetricMatcher(expected) && 'jasmineToString' in expected && typeof expected.jasmineToString === 'function'
 }
 
 export function isAsymmetricMatcher<T>(expected: unknown): expected is WdioAsymmetricMatcher<T> | JasmineAsymmetricMatcher<T> {

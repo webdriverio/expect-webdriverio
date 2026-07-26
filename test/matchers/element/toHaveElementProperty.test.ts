@@ -168,6 +168,25 @@ Received      : "iphone"`)
                 expect(result.pass).toBe(true)
             })
 
+            test('should return true when property does exist by passing the jasmine anything() asymmetric matcher', async () => {
+                const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', jasmine.anything(), { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('should return false when property does not exist by passing the jasmine anything() asymmetric matcher', async () => {
+                vi.mocked(el.getProperty).mockResolvedValue(null)
+                const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', jasmine.anything(), { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have property myPropertyName
+
+Expected: "<jasmine.anything>"
+Received: null`
+                )
+            })
+
             test.for([
                 { actualValue: null },
                 { actualValue: undefined }
@@ -817,6 +836,19 @@ Expect $$(\`sel\`) to have property myPropertyName
 Expect $$(\`sel\`) not to have property myPropertyName
 
 Expected [not]: [Anything, Anything]
+Received      : ["iphone", null]`)
+                })
+
+                test('not - should fails (pass=true) when property does exist by using not but with options and jasmine.anything()', async () => {
+                    vi.mocked(els[1].getProperty).mockResolvedValue(null)
+
+                    const result = await thisIsNotContext.toHaveElementProperty(els, 'myPropertyName', jasmine.anything(), { wait: 0 })
+
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) not to have property myPropertyName
+
+Expected [not]: ["<jasmine.anything>", "<jasmine.anything>"]
 Received      : ["iphone", null]`)
                 })
             })
