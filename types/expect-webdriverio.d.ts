@@ -1108,7 +1108,7 @@ declare namespace ExpectWebdriverIO {
         replace?: [string | RegExp, string | Function] | Array<[string | RegExp, string | Function]>
 
         /**
-         * might be helpful to force converting property value to string
+         * convert element's property value to string
          */
         asString?: boolean
     }

@@ -85,6 +85,11 @@ describe('utils', () => {
         test('should support jasmine.stringMatching matchers', () => {
             expect(compareText(' FOO ', jasmine.stringMatching(/.*foo.*/i), {}).result).toBe(true)
         })
+
+        test('should support undefined/null expected value', () => {
+            expect(compareText(' FOO ', undefined, {}).result).toBe(false)
+            expect(compareText(' FOO ', null, {}).result).toBe(false)
+        })
     })
 
     describe(compareTextWithArray, () => {

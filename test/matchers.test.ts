@@ -535,12 +535,19 @@ Received: "not displayed"`)
             await expectLib(elements).not.toBeElementsArrayOfSize(3)
         })
 
-        // TODO: Should work on non-existing parameters...
-        test.skip('toHave existence of attribute and property matchers work with .not', async () => {
-            await expectLib(elements).not.toHaveAttribute('someNonExistingAttribute')
+        test('toHave existence of attribute and property matchers work with .not', async () => {
+            const elements = await $$('selector')
+
+            elements.forEach((el) => {
+                vi.mocked(el.getProperty).mockResolvedValue(null)
+            })
+
             await expectLib(elements).not.toHaveElementProperty('someNonExistingAttribute')
-            await expectLib(elements).not.toHaveAttribute('someNonExistingAttribute', expectLib.anything(), { wait: 2 })
             await expectLib(elements).not.toHaveElementProperty('someNonExistingAttribute', expectLib.anything(), { wait: 2 })
+
+            // TODO bring back toHaveAttribute when it is fixed to not throw when attribute does not exist, see
+            // await expectLib(elements).not.toHaveAttribute('someNonExistingAttribute')
+            // await expectLib(elements).not.toHaveAttribute('someNonExistingAttribute', expectLib.anything(), { wait: 2 })
         })
 
         test('toHave existence of attribute and property matchers work with options', async () => {

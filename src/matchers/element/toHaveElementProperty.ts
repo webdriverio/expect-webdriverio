@@ -29,7 +29,7 @@ async function condition(
     }
 
     // To review the cast to be more type safe but for now let's keep the existing behavior to ensure no regression
-    return compareText(propertyValue.toString(), expectedValue as string | RegExp | AsymmetricMatcher<string>, options)
+    return compareText(propertyValue.toString(), expectedValue as string | RegExp | AsymmetricMatcher<string> | null | undefined, options)
 }
 
 /**

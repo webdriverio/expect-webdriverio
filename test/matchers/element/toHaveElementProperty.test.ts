@@ -652,6 +652,15 @@ Expect $$(\`sel\`) to have property property
                 expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
 
+            test('not - success - should return false if actual value are not expected', async () => {
+                vi.mocked(els[0].getProperty).mockResolvedValue('no1')
+                vi.mocked(els[1].getProperty).mockResolvedValue('no2')
+
+                const result = await thisIsNotContext.toHaveElementProperty(els, 'property', ['yo1', 'yo2'])
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+            })
+
             test('should return false if actual value is non-string and expected is string', async () => {
                 els.forEach(el =>
                     vi.mocked(el.getProperty).mockResolvedValue(5)

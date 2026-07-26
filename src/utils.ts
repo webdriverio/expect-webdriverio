@@ -153,7 +153,7 @@ export const compareTextOrArray = (
 
 export const compareText = (
     actual: string,
-    expected: string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>,
+    expected: string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | null | undefined,
     {
         ignoreCase = false,
         trim = true,
@@ -164,7 +164,7 @@ export const compareText = (
         replace,
     }: ExpectWebdriverIO.StringOptions
 ): CompareResult<string> => {
-    if (typeof actual !== 'string') {
+    if (typeof actual !== 'string' || expected === null || expected === undefined) {
         return {
             value: actual,
             result: false,
@@ -206,28 +206,28 @@ export const compareText = (
     if (containing) {
         return {
             value: actual,
-            result: actual.includes(expected),
+            result: actual.includes(expected.toString()),
         }
     }
 
     if (atStart) {
         return {
             value: actual,
-            result: actual.startsWith(expected),
+            result: actual.startsWith(expected.toString()),
         }
     }
 
     if (atEnd) {
         return {
             value: actual,
-            result: actual.endsWith(expected),
+            result: actual.endsWith(expected.toString()),
         }
     }
 
     if (atIndex) {
         return {
             value: actual,
-            result: actual.substring(atIndex, actual.length).startsWith(expected),
+            result: actual.substring(atIndex, actual.length).startsWith(expected.toString()),
         }
     }
 
