@@ -338,7 +338,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
         it('should verify element exists immediately', async () => {
             const docsLink = await $('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).toHaveAttribute('href', { wait: 0 })
+            await expect(docsLink).toHaveAttribute('href', expect.anything(), { wait: 0 })
         })
 
         it('should verify element has attribute', async () => {
@@ -353,7 +353,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
         it('should verify element does not exist immediately', async () => {
             const docsLink = await $('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).not.toHaveAttribute('non-existent-attribute', { wait: 0 })
+            await expect(docsLink).not.toHaveAttribute('non-existent-attribute', expect.anything(), { wait: 0 })
         })
 
         it('should verify attribute contains value', async () => {

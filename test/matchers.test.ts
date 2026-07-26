@@ -230,7 +230,7 @@ Received      : "some attribute"`
             await expect(() => expectLib(el).not.toHaveAttribute('someAttribute')).rejects.toThrow(`\
 Expect $(\`selector\`) not to have attribute someAttribute
 
-Expected [not]: "\`a defined value\`"
+Expected [not]: Anything
 Received      : "some attribute"`
             )
 
@@ -347,7 +347,7 @@ Received: "some attribute"`)
             await expect(() => expectLib(el).toHaveAttribute('notExistingAttribute')).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute notExistingAttribute
 
-Expected: "\`a defined value\`"
+Expected: Anything
 Received: null`)
             await expect(() => expectLib(el).toHaveAttr('someAttribute', 'some other attribute')).rejects.toThrow(`\
 Expect $(\`selector\`) to have attribute someAttribute
@@ -540,14 +540,14 @@ Received: "not displayed"`)
 
             elements.forEach((el) => {
                 vi.mocked(el.getProperty).mockResolvedValue(null)
+                vi.mocked(el.getAttribute).mockResolvedValue(null)
             })
 
             await expectLib(elements).not.toHaveElementProperty('someNonExistingAttribute')
             await expectLib(elements).not.toHaveElementProperty('someNonExistingAttribute', expectLib.anything(), { wait: 2 })
 
-            // TODO bring back toHaveAttribute when it is fixed to not throw when attribute does not exist, see
-            // await expectLib(elements).not.toHaveAttribute('someNonExistingAttribute')
-            // await expectLib(elements).not.toHaveAttribute('someNonExistingAttribute', expectLib.anything(), { wait: 2 })
+            await expectLib(elements).not.toHaveAttribute('someNonExistingAttribute')
+            await expectLib(elements).not.toHaveAttribute('someNonExistingAttribute', expectLib.anything(), { wait: 2 })
         })
 
         test('toHave existence of attribute and property matchers work with options', async () => {

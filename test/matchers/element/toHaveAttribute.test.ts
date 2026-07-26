@@ -4,6 +4,7 @@ import { $, $$ } from '@wdio/globals'
 import { toHaveAttribute } from '../../../src/matchers/element/toHaveAttribute'
 import stripAnsi from 'strip-ansi'
 import { waitUntil } from '../../../src/util/waitUntil.js'
+import { expect as wdioExpect } from '../../../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -29,18 +30,18 @@ describe(toHaveAttribute, () => {
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
 
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', { beforeAssertion, afterAssertion, wait: 3, interval: 3 })
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', wdioExpect.anything(), { beforeAssertion, afterAssertion, wait: 3, interval: 3 })
 
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 3, interval: 3 })
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
-                    expectedValue: ['attribute_name', undefined],
+                    expectedValue: ['attribute_name', 'Anything'],
                     options: { beforeAssertion, afterAssertion, wait: 3, interval: 3 }
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
-                    expectedValue: ['attribute_name', undefined],
+                    expectedValue: ['attribute_name', 'Anything'],
                     options: { beforeAssertion, afterAssertion, wait: 3, interval: 3 },
                     result
                 })
@@ -77,7 +78,7 @@ describe(toHaveAttribute, () => {
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute attribute_name
 
-Expected: "\`a defined value\`"
+Expected: Anything
 Received: null`
                     )
                 })
@@ -166,7 +167,7 @@ Received: "Wrong"`
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have attribute attribute_name
 
-Expected: "\`a defined value\`"
+Expected: Anything
 Received: ${attributeValue}`
                 )
             })
@@ -177,7 +178,7 @@ Received: ${attributeValue}`
             ])('failure when not present (not expected value but with options) for %s', async ( attributeValue) => {
                 vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
 
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', { wait: 1, interval: 1 })
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', expect.anything(), { wait: 1, interval: 1 })
 
                 expect(result.pass).toBe(false)
             })
@@ -222,7 +223,7 @@ Received: ${attributeValue}`
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have attribute attribute_name
 
-Expected [not]: "\`a defined value\`"
+Expected [not]: Anything
 Received      : "Correct Value"`
                 )
             })
@@ -258,17 +259,17 @@ Received: undefined`)
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
 
-                const result = await thisContext.toHaveAttribute(els, 'attribute_name', { beforeAssertion, afterAssertion })
+                const result = await thisContext.toHaveAttribute(els, 'attribute_name', wdioExpect.anything(), { beforeAssertion, afterAssertion })
 
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
-                    expectedValue: ['attribute_name', undefined],
+                    expectedValue: ['attribute_name', 'Anything'],
                     options: { beforeAssertion, afterAssertion }
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveAttribute',
-                    expectedValue: ['attribute_name', undefined],
+                    expectedValue: ['attribute_name', 'Anything'],
                     options: { beforeAssertion, afterAssertion },
                     result
                 })
@@ -279,7 +280,7 @@ Received: undefined`)
                     vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
                 })
 
-                const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined)
+                const result = await thisContext.toHaveAttribute(els, 'attribute_name', wdioExpect.anything())
 
                 expect(result.pass).toBe(false)
             })
@@ -291,7 +292,7 @@ Received: undefined`)
                         vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
                     })
 
-                    const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined)
+                    const result = await thisContext.toHaveAttribute(els, 'attribute_name', wdioExpect.anything())
 
                     expect(result.pass).toBe(false)
                     expect(stripAnsi(result.message())).toEqual(`\
@@ -301,8 +302,8 @@ Expect $$(\`sel\`) to have attribute attribute_name
 + Received  + 2
 
   Array [
--   "\`a defined value\`",
--   "\`a defined value\`",
+-   Anything,
+-   Anything,
 +   null,
 +   null,
   ]`
@@ -427,7 +428,7 @@ Expect $$(\`sel\`) to have attribute attribute_name
                     vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
                 })
 
-                const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined)
+                const result = await thisContext.toHaveAttribute(els, 'attribute_name', wdioExpect.anything())
 
                 expect(result.pass).toBe(false)
             })
@@ -453,7 +454,7 @@ Expect $$(\`sel\`) to have attribute attribute_name
                     vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
                 })
 
-                const result = await thisIsNotContext.toHaveAttribute(els, 'attribute_name', undefined)
+                const result = await thisIsNotContext.toHaveAttribute(els, 'attribute_name', wdioExpect.anything())
 
                 expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
@@ -462,7 +463,7 @@ Expect $$(\`sel\`) to have attribute attribute_name
                 vi.mocked(els[0].getAttribute).mockResolvedValue('Some Value')
                 vi.mocked(els[1].getAttribute).mockResolvedValue(null as unknown as string)
 
-                const result = await thisIsNotContext.toHaveAttribute(els, 'attribute_name', undefined)
+                const result = await thisIsNotContext.toHaveAttribute(els, 'attribute_name', wdioExpect.anything())
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             })
@@ -471,7 +472,7 @@ Expect $$(\`sel\`) to have attribute attribute_name
                 vi.mocked(els[0].getAttribute).mockResolvedValue('Some Value')
                 vi.mocked(els[1].getAttribute).mockResolvedValue(null as unknown as string)
 
-                const result = await thisContext.toHaveAttribute(els, 'attribute_name', undefined)
+                const result = await thisContext.toHaveAttribute(els, 'attribute_name', wdioExpect.anything())
 
                 expect(result.pass).toBe(false)
             })

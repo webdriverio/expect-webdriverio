@@ -205,7 +205,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveAttribute: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         /**
-         * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
+         * @deprecated since 6.0.0, remove in v10.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
          */
         (
             attribute: string,
@@ -216,7 +216,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Check ONLY for the presence of the attribute (and optional configuration options) */
         (
             attribute: string,
-            options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
 
         /** Assert both attribute name AND a specific expected value */
@@ -228,7 +227,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Elements $$() API */
         /**
-         * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
+         * @deprecated Not supported
          */
         (
             attribute: string,
@@ -239,13 +238,12 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Check ONLY for the presence of the attribute (and optional configuration options) */
         (
             attribute: string,
-            options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
 
         /** Assert both attribute name AND a specific expected value */
         (
             attribute: string,
-            value: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            value: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }
