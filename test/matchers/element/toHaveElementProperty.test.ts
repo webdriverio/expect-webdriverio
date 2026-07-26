@@ -187,14 +187,13 @@ Expected: Any<Number>
 Received: "iphone"`)
         })
 
-        // TODO: Not working to fix oen day.
         test('should return be true when property does exist but not a number and by passing the any(Number) asymmetric matcher', async () => {
             vi.mocked(el.getProperty).mockResolvedValue(5)
 
             const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', wdioExpect.any(Number), { wait: 0 })
 
             expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0, interval: undefined })
-            expect(result.pass).toBe(false) // TODO: Not working should be true to fix one day.
+            expect(result.pass).toBe(true)
         })
 
         test.for([

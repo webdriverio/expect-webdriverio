@@ -6,6 +6,7 @@ import { expect } from 'expect'
 import {
     compareText,
     enhanceError,
+    isAsymmetricMatcher,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
@@ -21,12 +22,15 @@ async function condition(
 
     const propertyValue = await el.getProperty(property)
 
-    // As specified in the w3c spec, cases where property does not exist
+    // As specified in the w3c spec, cases where property does not exist so returning false
     if (propertyValue === null || propertyValue === undefined) {
         return { result: false, value: propertyValue }
     }
 
     if (!(expectedValue instanceof RegExp) && typeof propertyValue !== 'string' && !asString) {
+        if (isAsymmetricMatcher(expectedValue)) {
+            return { result: expectedValue.asymmetricMatch(propertyValue), value: propertyValue }
+        }
         return { result: propertyValue === expectedValue, value: propertyValue }
     }
 
