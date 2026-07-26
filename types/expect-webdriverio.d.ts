@@ -354,7 +354,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Assert both property name AND a specific expected value */
         (
             property: string,
-            value: MaybeArray<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string>> | ExpectWebdriverIO.PartialMatcherAnything,
+            value: MaybeArray<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null | undefined>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }>

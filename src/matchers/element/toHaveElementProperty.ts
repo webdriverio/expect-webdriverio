@@ -10,7 +10,6 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -22,12 +21,7 @@ async function condition(
 
     const propertyValue = await el.getProperty(property)
 
-    // As specified in the w3c spec, cases where property does not exist so returning false
-    if (propertyValue === null || propertyValue === undefined) {
-        return { result: false, value: propertyValue }
-    }
-
-    if (!(expectedValue instanceof RegExp) && typeof propertyValue !== 'string' && !asString) {
+    if (propertyValue === null || propertyValue === undefined || (!(expectedValue instanceof RegExp) && typeof propertyValue !== 'string' && !asString)) {
         if (isAsymmetricMatcher(expectedValue)) {
             return { result: expectedValue.asymmetricMatch(propertyValue), value: propertyValue }
         }
@@ -67,7 +61,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementsMaybePromise,
     property: string,
-    value: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
+    value: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null | undefined>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
@@ -131,16 +125,8 @@ export async function toHaveElementProperty(
         { wait: options.wait, interval: options.interval }
     )
 
-    let message: string
-    // TODO: review to handle null/undefined inside array of expected values, for now we will just handle the case where the expected value is undefined or null
-    if (value === undefined) {
-        const expected = fillSingleExpectedForElementArray(elements, '`a defined value`')
-        const actual = actualProppertyValue
-        message = enhanceError(elements, expected, actual, this, verb, expectation, property, options)
-    } else {
-        const expected = wrapExpectedWithArray(elements, actualProppertyValue, value)
-        message = enhanceError(elements, expected, actualProppertyValue, this, verb, expectation, property, options)
-    }
+    const expected = wrapExpectedWithArray(elements, actualProppertyValue, value)
+    const message = enhanceError(elements, expected, actualProppertyValue, this, verb, expectation, property, options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
