@@ -216,7 +216,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Check ONLY for the presence of the attribute (and optional configuration options) */
         (
             attribute: string,
-            options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
 
         /** Assert both attribute name AND a specific expected value */
@@ -239,13 +238,12 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Check ONLY for the presence of the attribute (and optional configuration options) */
         (
             attribute: string,
-            options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
 
         /** Assert both attribute name AND a specific expected value */
         (
             attribute: string,
-            value: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            value: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }
