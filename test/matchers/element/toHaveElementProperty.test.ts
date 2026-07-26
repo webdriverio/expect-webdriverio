@@ -731,6 +731,18 @@ Expect $$(\`sel\`) to have property property
             })
 
             describe('when using any/anything asymmetric matchers', () => {
+                test('should return true when property does exist by passing the anything() asymmetric matcher with options', async () => {
+                    const result = await thisContext.toHaveElementProperty(els, 'myPropertyName', wdioExpect.anything(), { wait: 0 })
+
+                    expect(result.pass).toBe(true)
+                })
+
+                test('should return true when property does exist by passing nothing', async () => {
+                    const result = await thisContext.toHaveElementProperty(els, 'myPropertyName')
+
+                    expect(result.pass).toBe(true)
+                })
+
                 test('should return true when property does exist by passing the anything() asymmetric matcher', async () => {
                     const result = await thisContext.toHaveElementProperty(els, 'myPropertyName', [wdioExpect.anything(), wdioExpect.any(String)], { wait: 0 })
 
@@ -775,6 +787,28 @@ Expect $$(\`sel\`) to have property myPropertyName
                     const result = await thisIsNotContext.toHaveElementProperty(els, 'myPropertyName')
 
                     expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                })
+
+                test('not - should succeed (pass=false) when property does not exist by using not but with options', async () => {
+                    vi.mocked(els[0].getProperty).mockResolvedValue(undefined)
+                    vi.mocked(els[1].getProperty).mockResolvedValue(null)
+
+                    const result = await thisIsNotContext.toHaveElementProperty(els, 'myPropertyName', wdioExpect.anything(), { wait: 0 })
+
+                    expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                })
+
+                test('not - should fails (pass=true) when property does exist by using not but with options', async () => {
+                    vi.mocked(els[1].getProperty).mockResolvedValue(null)
+
+                    const result = await thisIsNotContext.toHaveElementProperty(els, 'myPropertyName', wdioExpect.anything(), { wait: 0 })
+
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) not to have property myPropertyName
+
+Expected [not]: [Anything, Anything]
+Received      : ["iphone", null]`)
                 })
             })
         })
