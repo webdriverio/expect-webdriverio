@@ -131,3 +131,9 @@ export class NumberMatcher extends AsymmetricMatcher<number | ExpectWebdriverIO.
         return this.toString()
     }
 }
+
+export const isLegacyNumberOptions = (value: unknown): value is ExpectWebdriverIO.NumberOptions => {
+    if (!isDefinedObject(value)) {return false}
+    const keys = Object.keys(value ?? {})
+    return keys.some((key) => ['eq', 'gte', 'lte'].includes(key) && keys.length > 1)
+}

@@ -1,10 +1,9 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
-import { isStrictlyCommandOptions } from '../../util/commandOptionsUtils.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { isLegacyNumberOptions, validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
     waitUntil,
@@ -25,19 +24,20 @@ async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher |
 }
 
 /**
- * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` or `{}` as a value is deprecated. Omit the second argument entirely or use `toHaveChildren(el, options)`.
+ * Verifies that the element(s) has children.
+ * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
+ */
+export async function toHaveChildren(
+    received: WdioElementOrArrayMaybePromise,
+): Promise<AssertionResult>
+
+/**
+ * @deprecated since 6.0.0, remove in v10.0.0.
+ * Passing explicit `undefined` or `{}` as a value is deprecated. Omit the second argument entirely or use `toHaveChildren(el, { gte: 1 }, options)`.
  */
 export async function toHaveChildren(
     received: WdioElementMaybePromise,
     expectedValue: undefined, // {} also deprecated but we cannot use it as a type because it would match any object
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<AssertionResult>
-
-/**
- * When called with only configuration options (omitting the expected count) where default is gte 1.
- */
-export async function toHaveChildren(
-    received: WdioElementOrArrayMaybePromise,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<AssertionResult>
 
@@ -62,7 +62,9 @@ export async function toHaveChildren(
 ): Promise<AssertionResult>
 
 /**
- * deprecated since 5.7.1, remove in v6.0.0. NumberOptions is no longer supported. Use `toHaveChildren(el, numberMatcher, options)` instead.
+ * @deprecated since 6.0.0, remove in v10.0.0.
+ * NumberOptions is no longer supported. Use `expect(el).toHaveChildren(numberMatcher, options)` instead.
+ * Instead of `expect(el).toHaveChildren({ wait: 1 })` use `expect(el).toHaveChildren({ gte: 1 },  { wait: 1 })`.
  */
 export async function toHaveChildren(
     received: WdioElementMaybePromise,
@@ -73,17 +75,15 @@ export async function toHaveChildren(
 export async function toHaveChildren(
     received: WdioElementOrArrayMaybePromise,
     expectedValueOrOptions?: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
-    options?: ExpectWebdriverIO.CommandOptions
+    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'children', verb = 'have', isNot, matcherName = 'toHaveChildren' } = this
 
-    const hasOnlyTwoArgs = options === undefined
+    const paramsCount = arguments.length
     options = options ?? DEFAULT_OPTIONS
 
-    // Properly support new case `toHaveChildren(commandOptions)` where the second argument is the commandOptions and not a number or NumberMatcher for a clearer API instead of `toHaveChildren(undefined, commandOptions)`.
-    if (hasOnlyTwoArgs && isStrictlyCommandOptions(expectedValueOrOptions)) {
-        options = expectedValueOrOptions
-        expectedValueOrOptions = undefined
+    if (paramsCount > 1 && isLegacyNumberOptions(expectedValueOrOptions)) {
+        console.warn('Passing NumberOptions as the second argument to toHaveChildren is deprecated. Use a NumberMatcher instead. For example, `expect(el).toHaveChildren({ gte: 1 }, options)`')
     }
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValueOrOptions, options, { supportDefaultAsGteThen1: true })

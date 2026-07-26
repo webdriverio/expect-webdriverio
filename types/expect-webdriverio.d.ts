@@ -378,24 +378,22 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
 
     /**
      * `WebdriverIO.Element` -> `$$('./*').length`
-     * supports less / greater then or equals to be passed in options
+     * Supports less / greater then or equals to be passed in value as a NumberMatcher.
      */
     toHaveChildren: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         /**
-         * deprecated since 5.7.1, remove in v6.0.0.
-         * Passing explicit `undefined` or `{}` as a value is deprecated.
-         * Omit the second argument entirely or use options with `toHaveChildren({ gte: 1 }, options)`.????
+         * Verifies that the element has children.
+         * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
+         */
+        (): Promise<void>;
+        /**
+         * @deprecated since 6.0.0, remove in v10.0.0.
+         * Passing explicit `undefined` or `{ wait : 1 }` (NumberOptions) as a value is deprecated.
+         * Use options with `toHaveChildren({ gte: 1 }, options)`.
          */
         (
             expectedValue: undefined, // {} also deprecated but we cannot use it as a type because it would match any object
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>;
-
-        /**
-         * When called with only configuration options (omitting the expected count) where default is gte 1.
-         */
-        (
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>;
 
@@ -408,7 +406,9 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>;
 
         /**
-         * deprecated since 5.7.1, remove in v6.0.0. NumberOptions is no longer supported. Use `toHaveChildren(numberMatcher, options)` instead.
+         * @deprecated since 6.0.0, remove in v10.0.0.
+         * NumberOptions is no longer supported. Use `expect(el).toHaveChildren(numberMatcher, options)` instead.
+         * Instead of `expect(el).toHaveChildren({ wait: 1 })` use `expect(el).toHaveChildren({ gte: 1 }, { wait: 1 })`.
          */
         (
             expectedValue: ExpectWebdriverIO.NumberOptions,
@@ -417,17 +417,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Element $$() API */
         /**
-         * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` or `{}` as a value is deprecated. Omit the second argument entirely or use `toHaveChildren(options)`.
+         * Verifies that the element has children.
+         * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
          */
-        (
-            expectedValue: undefined, // {} also deprecated but we cannot use it as a type because it would match any object
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>;
+        (): Promise<void>;
 
         /**
-         * When called with only configuration options (omitting the expected count) where default is gte 1.
+         * @deprecated Not supported
+         * NumberOptions is no longer supported. Use `expect(el).toHaveChildren(numberMatcher, options)` instead.
+         * Instead of `expect(el).toHaveChildren({ wait: 1 })` use `expect(el).toHaveChildren({ gte: 1 }, { wait: 1 })`.
          */
         (
+            expectedValue: undefined,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>;
 

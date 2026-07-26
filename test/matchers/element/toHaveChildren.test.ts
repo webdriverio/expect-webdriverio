@@ -28,7 +28,7 @@ describe(toHaveChildren, () => {
                 expect(result.pass).toBe(true)
             })
 
-            test('no value - success - default to gte 1 with options', async () => {
+            test('no value - success - default to gte 1 with options - deprecated', async () => {
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
 
@@ -37,13 +37,13 @@ describe(toHaveChildren, () => {
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
-                    expectedValue: undefined,
-                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
+                    expectedValue: { gte: 1 },
+                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion, featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy: false } }
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
-                    expectedValue: undefined,
-                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
+                    expectedValue: { gte: 1 },
+                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion, featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy: false } },
                     result
                 })
             })
@@ -243,7 +243,7 @@ Received      : 2`
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
 
-                const result = await thisContext.toHaveChildren(elements, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
+                const result = await thisContext.toHaveChildren(elements, { gte: 1 },  { wait: 0, interval: 5, beforeAssertion, afterAssertion })
 
                 expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
 
