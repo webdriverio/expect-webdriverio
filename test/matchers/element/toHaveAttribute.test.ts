@@ -178,7 +178,7 @@ Received: ${attributeValue}`
             ])('failure when not present (not expected value but with options) for %s', async ( attributeValue) => {
                 vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
 
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', { wait: 1, interval: 1 })
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', expect.anything(), { wait: 1, interval: 1 })
 
                 expect(result.pass).toBe(false)
             })

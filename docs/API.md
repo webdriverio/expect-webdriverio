@@ -355,7 +355,8 @@ Checks if an element has a specific attribute.
 ```js
 const myInput = await $('input')
 await expect(myInput).toHaveAttribute('class')
-await expect(myInput).toHaveAttribute('class', { wait: 1000 })
+// With options
+await expect(myInput).toHaveAttribute('class', expect.anything(), { wait: 1000 })
 ```
 
 Checks if an element does not have the specified attribute.
@@ -365,7 +366,8 @@ Checks if an element does not have the specified attribute.
 ```js
 const myInput = await $('input')
 await expect(myInput).not.toHaveAttribute('class')
-await expect(myInput).not.toHaveAttribute('class', { wait: 1000 })
+// With options
+await expect(myInput).not.toHaveAttribute('class', expect.anything(), { wait: 1000 })
 ```
 
 ### toHaveElementClass

@@ -268,6 +268,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
                 await expect(element).toHaveAttribute(
                     'My-Ex-Am-Ple',
+                    expect.anything(),
                     {
                         replace: [[/-/g, ' '], [/[A-Z]+/g, (match: string) => match.toLowerCase()]]
                     }
