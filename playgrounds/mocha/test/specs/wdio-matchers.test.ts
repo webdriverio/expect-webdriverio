@@ -390,7 +390,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
         it('should verify that element property exists immediately', async () => {
             const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).toHaveElementProperty('type', { wait: 0 })
+            await expect(searchButton).toHaveElementProperty('type', expect.anything(), { wait: 0 })
         })
 
         it('should verify that element property does not exist', async () => {
@@ -400,7 +400,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
         it('should verify that element property does not exist immediately', async () => {
             const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).not.toHaveElementProperty('doesNNotExist', { wait: 0 })
+            await expect(searchButton).not.toHaveElementProperty('doesNNotExist', expect.anything(), { wait: 0 })
         })
     })
 
