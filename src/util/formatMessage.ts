@@ -4,6 +4,7 @@ import type { WdioElements } from '../types.js'
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray } from './elementsUtil.js'
 import { numberMatcherTester } from './numberOptionsUtil.js'
 import { toJsonString } from './stringUtil.js'
+import { isJasmineStringAsymmetricMatcher } from '../utils.js'
 
 // TODO one day use a real asymmetric matcher for number options instead of this custom equality tester
 const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
@@ -86,6 +87,13 @@ export const enhanceError = (
     }
 
     let diffString = ''
+
+    if (isJasmineStringAsymmetricMatcher(expected)) {
+        // With Jest's expect asymetric matcher, it uses a pretty-format plugin for asymetric matcher, but Jasmine's asymmetric matcher doesn't have that!
+        expected = expected.jasmineToString()
+    } else if (isElementOrArrayLike(subject) && Array.isArray(expected)) {
+        expected = expected.map(item => isJasmineStringAsymmetricMatcher(item) ? item.jasmineToString() : item)
+    }
 
     // Special formatting for .not with arrays to highlight what matched
     if (isNotInLabel && isElementOrArrayLike(subject) && Array.isArray(expected) && Array.isArray(actual) && expected.length === actual.length) {

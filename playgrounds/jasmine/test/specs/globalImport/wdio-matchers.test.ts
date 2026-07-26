@@ -109,6 +109,25 @@ describe('WebdriverIO Custom Matchers', () => {
         it('should verify element property', async () => {
             const searchButton = await $('.DocSearch-Button')
             await expect(searchButton).toHaveElementProperty('type', 'button')
+            await expect(searchButton).toHaveElementProperty('type')
+        })
+
+        it('should verify element property does not exists', async () => {
+            const searchButton = await $('.DocSearch-Button')
+            await expect(searchButton).not.toHaveElementProperty('non-existent', 'button')
+            await expect(searchButton).not.toHaveElementProperty('non-existent')
+        })
+
+        it('should verify element property with anything', async () => {
+            const searchButton = await $('.DocSearch-Button')
+            await expect(searchButton).toHaveElementProperty('type', jasmine.anything(),  { wait : 0 })
+            await expect(searchButton).toHaveElementProperty('type', jasmine.anything(),  { wait : 0 })
+        })
+
+        it('should verify element property does not exists with wait option', async () => {
+            const searchButton = await $('.DocSearch-Button')
+            await expect(searchButton).not.toHaveElementProperty('non-existent', 'button')
+            await expect(searchButton).not.toHaveElementProperty('non-existent', jasmine.anything(),  { wait : 0 })
         })
     })
 

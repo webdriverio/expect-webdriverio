@@ -21,6 +21,7 @@ type ExpectLibAsyncExpectationResult = import('expect').AsyncExpectationResult
 type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
 type MatchersObject = Parameters<typeof import('expect').expect.extend>[0]
+type ExpectLibAnything = ReturnType<typeof expect.any> | ReturnType<typeof expect.anything>
 
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
@@ -221,7 +222,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Assert both attribute name AND a specific expected value */
         (
             attribute: string,
-            value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }, {
@@ -307,38 +308,53 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         /**
-         * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveElementProperty(property, options)`.
+         * Allow to check ONLY for the presence of the property
+         * Use `toHaveElementProperty(property, expect.anything(), options)` to check for the presence of the property with options.
          */
         (
             property: string,
-            value: undefined | null,
-            options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
 
-        /** Check ONLY for the presence of the property (and optional configuration options) */
+        /**
+         * @deprecated since v6.0.0, removed in v10.0.0. Passing explicit `undefined` or `null` as a value is deprecated.
+         * Omit the second argument entirely or use expect.anything() with options: `toHaveElementProperty(property, expect.anything(), options)`.
+         */
         (
             property: string,
+            value: undefined | null, // Use expect.any(type) or expect.anything() instead of undefined or null
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
 
         /** Assert both property name AND a specific expected value */
         (
             property: string,
-            value: string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            value: string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }, {
         /** Elements $$() API */
-        /** Check ONLY for the presence of the property (and optional configuration options) */
+        /**
+         * Allow to check ONLY for the presence of the property
+         * Use `toHaveElementProperty(property, expect.anything(), options)` to check for the presence of the property with options.
+         */
         (
             property: string,
-            options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
+
+        /**
+         * @deprecated Not supported
+         * Use `expect.anything()` or `[expect.anything()] as value` to check for the presence of the property with options.
+         */
+        (
+            property: string,
+            propertyValue: undefined | null, // Use expect.any(type) or expect.anything() instead of undefined or null
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<never>;
 
         /** Assert both property name AND a specific expected value */
         (
             property: string,
-            value: MaybeArray<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            value: MaybeArray<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null | undefined>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }>
@@ -369,7 +385,9 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveChildren: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         /**
-         * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` or `{}` as a value is deprecated. Omit the second argument entirely or use `toHaveChildren(options)`.
+         * deprecated since 5.7.1, remove in v6.0.0.
+         * Passing explicit `undefined` or `{}` as a value is deprecated.
+         * Omit the second argument entirely or use options with `toHaveChildren({ gte: 1 }, options)`.????
          */
         (
             expectedValue: undefined, // {} also deprecated but we cannot use it as a type because it would match any object
@@ -820,7 +838,11 @@ type JasmineStringMatchingAsymmetricMatcher<R extends string | RegExp> = Jasmine
 
 type JasmineStringAsymmetricMatcher<R extends string | RegExp> = JasmineStringContainingAsymmetricMatcher<R> | JasmineStringMatchingAsymmetricMatcher<R>
 
+type JasmineAnythingAsymmetricMatcher = JasmineBaseAsymmetricMatcher & {}
+
 type AsymmetricMatcher<R> = WdioAsymmetricMatcher<R> | JasmineStringContainingAsymmetricMatcher<R> | (R extends string | RegExp ? JasmineStringMatchingAsymmetricMatcher<R> : never) | JasmineAsymmetricMatcher<R>
+
+type WdioAnythingAsymmetricMatcher = ExpectLibAnything | JasmineAnythingAsymmetricMatcher
 
 declare namespace ExpectWebdriverIO {
     /**
@@ -1086,7 +1108,7 @@ declare namespace ExpectWebdriverIO {
         replace?: [string | RegExp, string | Function] | Array<[string | RegExp, string | Function]>
 
         /**
-         * might be helpful to force converting property value to string
+         * convert element's property value to string
          */
         asString?: boolean
     }
@@ -1191,6 +1213,11 @@ declare namespace ExpectWebdriverIO {
      * Some properties are omitted for the type check to work correctly.
      */
     type PartialMatcher<T> = Omit<ExpectLibAsymmetricMatcher<T>, 'sample' | 'inverse' | '$$typeof'>
+
+    /**
+     * Allow to match any defined value or any defined value of a given type and simply validate a value exists.
+     */
+    type PartialMatcherAnything = ExpectLibAnything | JasmineAnythingAsymmetricMatcher
 }
 
 declare module 'expect-webdriverio' {

@@ -8,6 +8,7 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
     const element: WebdriverIO.Element = {} as unknown as WebdriverIO.Element
     const elementArray: WebdriverIO.ElementArray = [] as unknown as WebdriverIO.ElementArray
     const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
+    const elements: WebdriverIO.Element[] = [] as unknown as WebdriverIO.Element[]
 
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
 
@@ -68,7 +69,7 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
             })
         })
 
-        describe('element', () => {
+        describe('element or elements', () => {
 
             describe('toBeDisabled', () => {
                 it('should return Promise<void>', async () => {
@@ -232,6 +233,64 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
                 it('should not work when actual is not chainableArray', async () => {
                     expectTypeOf(expect(chainableElement).toBeElementsArrayOfSize).toBeNever()
                     expectTypeOf(expect(true).toBeElementsArrayOfSize).toBeNever()
+                })
+            })
+
+            describe('toHaveElementProperty', () => {
+                describe('given element', () => {
+                    it('should return Promise<void> with element', async () => {
+                        expectTypeOf(expect(element).toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(element).toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(element).toHaveElementProperty('prop', expect.anything())).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(element).toHaveElementProperty('prop', expect.any(Number))).toEqualTypeOf<Promise<void>>()
+
+                        expectTypeOf(expect(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(element).not.toHaveElementProperty('prop', 'val')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(element).not.toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+                    })
+
+                    it('should be deprecated', async () => {
+                        expectTypeOf(expect(element).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(element).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
+                    })
+
+                    it('should have ts errors but to support one day???', async () => {
+                    // @ts-expect-error
+                        expectTypeOf(expect(element).toHaveElementProperty('prop', ['test'])).toEqualTypeOf<Promise<void>>()
+                        // @ts-expect-error
+                        expectTypeOf(expect(element).toHaveElementProperty('prop', {})).toEqualTypeOf<Promise<void>>()
+                    })
+                })
+
+                describe('given elements', () => {
+                    it('should return Promise<void> with elements', async () => {
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', expect.anything())).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', expect.any(Number))).toEqualTypeOf<Promise<void>>()
+
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', ['val'])).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', [expect.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', [expect.anything(), expect.any(Number), 'value', expect.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
+                    })
+
+                    it('should not be supported (never)', async () => {
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<never>>()
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<never>>()
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
+                    })
+
+                    it('should have ts errors but to support one day???', async () => {
+                    // @ts-expect-error
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', [[]])).toEqualTypeOf<Promise<void>>()
+                        // @ts-expect-error
+                        expectTypeOf(expect(elements).toHaveElementProperty('prop', [{}])).toEqualTypeOf<Promise<void>>()
+                    })
                 })
             })
         })

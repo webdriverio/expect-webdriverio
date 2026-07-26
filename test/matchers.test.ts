@@ -535,6 +535,30 @@ Received: "not displayed"`)
             await expectLib(elements).not.toBeElementsArrayOfSize(3)
         })
 
+        test('toHave existence of attribute and property matchers work with .not', async () => {
+            const elements = await $$('selector')
+
+            elements.forEach((el) => {
+                vi.mocked(el.getProperty).mockResolvedValue(null)
+            })
+
+            await expectLib(elements).not.toHaveElementProperty('someNonExistingAttribute')
+            await expectLib(elements).not.toHaveElementProperty('someNonExistingAttribute', expectLib.anything(), { wait: 2 })
+
+            // TODO bring back toHaveAttribute when it is fixed to not throw when attribute does not exist, see
+            // await expectLib(elements).not.toHaveAttribute('someNonExistingAttribute')
+            // await expectLib(elements).not.toHaveAttribute('someNonExistingAttribute', expectLib.anything(), { wait: 2 })
+        })
+
+        test('toHave existence of attribute and property matchers work with options', async () => {
+            await expectLib(elements).toHaveAttribute('someOtherAttribute')
+            await expectLib(elements).toHaveElementProperty('someOtherProperty')
+            await expectLib(elements).toHaveAttribute('someOtherAttribute', expectLib.anything())
+            await expectLib(elements).toHaveElementProperty('someOtherProperty', expectLib.anything())
+            await expectLib(elements).toHaveAttribute('someOtherAttribute', expectLib.anything(), { wait: 2 })
+            await expectLib(elements).toHaveElementProperty('someOtherProperty', expectLib.anything(), { wait: 2 })
+        })
+
         test('toHave works with stringContaining asymmetric matcher', async () => {
             await expectLib(elements).toHaveText([expectLib.stringContaining('Valid'), expectLib.stringContaining('Valid')])
             await expectLib(elements).not.toHaveText([expectLib.stringContaining('Test'), expectLib.stringContaining('Test')])

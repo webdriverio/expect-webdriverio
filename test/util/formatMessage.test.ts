@@ -3,6 +3,7 @@ import { INVERTED_COLOR, printDiffOrStringify } from 'jest-matcher-utils'
 import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
 import stripAnsi from 'strip-ansi'
 import { elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
+import { jasmine } from '../__mocks__/jasmine.js'
 
 vi.mock('jest-matcher-utils', async (importActual) => {
     const actual = await importActual<typeof import('jest-matcher-utils')>()
@@ -421,6 +422,88 @@ Received      : ["Test Actual Value 1", "Test Expected Value 2"]`
                     expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '"Test Expected Value 2"')
                     expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '"Test Expected Value 2"')
                 })
+            })
+        })
+
+        describe('given jasmine asymmetric matchers', () => {
+            test('should return failure message for jasmine.any', async () => {
+                const subject = elementFactory('element')
+                const expected = jasmine.any(String)
+                const actual = 'Test Actual Value'
+
+                const result = await enhanceError(subject, expected, actual, { isNot: false }, 'have', 'text')
+
+                expect(stripAnsi(result)).toEqual(`\
+Expect $(\`element\`) to have text
+
+Expected: "<jasmine.any(String)>"
+Received: "Test Actual Value"`)
+            })
+
+            test('should return failure message for jasmine.any when given an array of elements', async () => {
+                const subject = elementArrayFactory('element', 2)
+                const expected = [jasmine.any(String), jasmine.any(Number)]
+                const actual = [null, 'Test Actual Value 2']
+
+                const result = await enhanceError(subject, expected, actual, { isNot: false }, 'have', 'text')
+
+                expect(stripAnsi(result)).toEqual(`\
+Expect $$(\`element\`) to have text
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "<jasmine.any(String)>",
+-   "<jasmine.any(Number)>",
++   null,
++   "Test Actual Value 2",
+  ]`
+                )
+            })
+
+            test('should return failure message for jasmine.any with isNot', async () => {
+                const subject = elementFactory('element')
+                const expected = jasmine.any(String)
+                const actual = 'Test Actual Value'
+
+                const result = await enhanceError(subject, expected, actual, { isNot: true }, 'have', 'text')
+
+                expect(stripAnsi(result)).toEqual(`\
+Expect $(\`element\`) not to have text
+
+Expected [not]: "<jasmine.any(String)>"
+Received      : "Test Actual Value"`)
+            })
+
+            test('should return failure message for jasmine.any with isNot when given an array of elements', async () => {
+                const subject = elementArrayFactory('element', 2)
+                const expected = [jasmine.any(String), jasmine.any(Number)]
+                const actual = ['Test Actual Value 2', 1]
+
+                const result = await enhanceError(subject, expected, actual, { isNot: true }, 'have', 'text')
+
+                expect(stripAnsi(result)).toEqual(`\
+Expect $$(\`element\`) not to have text
+
+Expected [not]: ["<jasmine.any(String)>", "<jasmine.any(Number)>"]
+Received      : ["Test Actual Value 2", 1]`)
+            })
+        })
+
+        describe('given expect asymmetric matchers', () => {
+            test('should return failure message for expect.stringContaining', async () => {
+                const subject = elementFactory('element')
+                const expected = expect.any(String)
+                const actual = 'Test Actual Value'
+
+                const result = await enhanceError(subject, expected, actual, { isNot: false }, 'have', 'text')
+
+                expect(stripAnsi(result)).toEqual(`\
+Expect $(\`element\`) to have text
+
+Expected: Any<String>
+Received: "Test Actual Value"`)
             })
         })
     })
