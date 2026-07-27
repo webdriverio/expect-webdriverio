@@ -22,6 +22,7 @@ type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
 type MatchersObject = Parameters<typeof import('expect').expect.extend>[0]
 type ExpectLibAnything = ReturnType<typeof expect.any> | ReturnType<typeof expect.anything>
+type OneOfMatcher = import('../src/matchers/asymmetrics/oneOf.js').OneOfMatcher
 
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
@@ -514,7 +515,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveText: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         (
-            text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
         /** soon deprecated to replace by oneOf() or anyOf() when available */
@@ -1217,6 +1218,8 @@ declare namespace ExpectWebdriverIO {
      * Allow to match any defined value or any defined value of a given type and simply validate a value exists.
      */
     type PartialMatcherAnything = ExpectLibAnything | JasmineAnythingAsymmetricMatcher
+
+    type OneOfPartialMatcher = OneOfMatcher
 }
 
 declare module 'expect-webdriverio' {

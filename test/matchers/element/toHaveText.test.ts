@@ -6,6 +6,7 @@ import { $Factory, chainableElementArrayFactory, elementArrayFactory, elementFac
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
 import { setFeatureFlags } from '../../../src/index.js'
+import { expect as wdioExpect } from '../../../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -186,10 +187,46 @@ Received: ""`
         })
 
         test('success if one of the values in the array matches with text and ignoreCase', async () => {
-
             const result = await thisContext.toHaveText(el, ['WDIO', 'Webdriverio'], { wait: 0, ignoreCase: true })
+
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(1)
+        })
+
+        test('success if one of the values of oneOf does match with text', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'WebdriverIO'))
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('success if one of the values of oneOf does match with text and ignore case', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'Webdriverio'), { ignoreCase: true })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('failures if all the values of oneOf does not match with text', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'notMatching'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have text
+
+Expected: startingWithOneOf<WDIO, notMatching>
+Received: "WebdriverIO"`
+            )
+        })
+
+        test('not - failures if all the values of oneOf does not match with text', async () => {
+            const result = await thisNotContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'WebdriverIO'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) not to have text
+
+Expected [not]: startingWithOneOf<WDIO, WebdriverIO>
+Received      : "WebdriverIO"`
+            )
         })
 
         test('success if one of the values in the array matches with text and trim', async () => {
@@ -1422,6 +1459,46 @@ Expect $$(\`elements\`) not to have text
 
 Expected [not]: ["NotWebdriverio", "NotWebdriverio", "NotWebdriverio"]
 Received      : ["webdriverio", "webdriverio", undefined]`
+                )
+            })
+
+            test('failures if all the values of oneOf does not match with text', async () => {
+                const elements = await $$('elements')
+
+                vi.mocked((elements)[0].getText).mockResolvedValue('WDIO')
+                vi.mocked((elements)[1].getText).mockResolvedValue('WebdriverIO')
+
+                const result = await thisContext.toHaveText(elements, wdioExpect.oneOf('WDIO', 'notMatching'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    startingWithOneOf<WDIO, notMatching>,
+-   startingWithOneOf<WDIO, notMatching>,
++   "WebdriverIO",
+  ]`
+                )
+            })
+
+            test('not - failures if all the values of oneOf does not match with text', async () => {
+                const elements = await $$('elements')
+
+                vi.mocked((elements)[0].getText).mockResolvedValue('WDIO')
+                vi.mocked((elements)[1].getText).mockResolvedValue('WebdriverIO')
+
+                const result = await thisNotContext.toHaveText(elements, wdioExpect.oneOf('WDIO', 'WebdriverIO'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) not to have text
+
+Expected [not]: [startingWithOneOf<WDIO, WebdriverIO>, startingWithOneOf<WDIO, WebdriverIO>]
+Received      : ["WDIO", "WebdriverIO"]`
                 )
             })
 

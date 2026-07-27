@@ -5,6 +5,7 @@ import * as wdioMatchers from './matchers.js'
 import { DEFAULT_OPTIONS, defaultOptionsList } from './constants.js'
 import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
+import { OneOfMatcher } from './matchers/asymmetrics/oneOf.js'
 
 /**
  * Contains only the custom WDIO matchers to be used with `expect.extend()`.
@@ -26,17 +27,28 @@ Object.keys(wdioMatchers).forEach(matcher => {
     }
 })
 
-expectLib.extend = (m) => {
-    if (!m || typeof m !== 'object') {
+expectLib.extend = (allCustomMatchers) => {
+    if (!allCustomMatchers || typeof allCustomMatchers !== 'object') {
         return
     }
 
-    Object.entries(m).forEach(([name, matcher]) => {
+    Object.entries(allCustomMatchers).forEach(([name, matcher]) => {
         wdioCustomMatchers[name] = matcher
         matchers.set(name, matcher)
     })
-    return extend(m)
+    return extend(allCustomMatchers)
 }
+
+// 3. Register it with the global `expect` framework
+expectLib.extend({
+    oneOf(actual, sample: Array<string | RegExp>) {
+        const matcher = new OneOfMatcher(...sample)
+        return {
+            pass: matcher.asymmetricMatch(actual),
+            message: () => `expected ${actual} to be one of ${JSON.stringify(sample)}`,
+        }
+    }
+})
 
 expectLib.extend(filteredMatchers)
 

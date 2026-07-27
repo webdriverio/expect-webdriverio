@@ -9,19 +9,23 @@ import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
+import { buildWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
 
-async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
+async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
     const actualText = await el.getText()
 
-    return compareTextOrArray(actualText, expectedText, options)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return compareTextOrArray(actualText, expectedText as any, options)
 }
 
 export async function toHaveText(
     received: WdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'text', verb = 'have', isNot, matcherName = 'toHaveText' } = this
+
+    expectedValue = buildWdioAsymmetricMatchers(expectedValue, options)
 
     await options.beforeAssertion?.({
         matcherName,
@@ -37,7 +41,7 @@ export async function toHaveText(
             const commandResult = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => {
+                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher> | undefined) => {
                     return compareElement(element, values, options)
                 },
                 isNot,

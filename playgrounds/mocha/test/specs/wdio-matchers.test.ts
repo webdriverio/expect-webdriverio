@@ -104,6 +104,13 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(docsLink).toHaveText('Docs')
         })
 
+        it('should verify element text with expected array', async () => {
+            const docsLink = await $('=Docs')
+            await expect(docsLink).toHaveText('Docs')
+            await expect(docsLink).toHaveText(['Docs', 'Doc'])
+            await expect(docsLink).toHaveText(expect.oneOf('Docs', 'Doc'))
+        })
+
         it('should verify element contains text', async () => {
             const heading = await $$('h1')[1]  // Second h1 has text
             await expect(heading).toHaveText(expect.stringContaining('Open Source'))
