@@ -30,6 +30,14 @@ export class OneOfMatcher extends AsymmetricMatcher<Array<string | RegExp>> {
     }
 }
 
+export function oneOf(actual: unknown, sample: Array<string | RegExp>) {
+    const matcher = new OneOfMatcher(...sample)
+    return {
+        pass: matcher.asymmetricMatch(actual),
+        message: () => `expected ${actual} to be one of ${JSON.stringify(sample)}`,
+    }
+}
+
 // TypeScript Global Type Augmentations
 declare module 'expect' {
     interface AsymmetricMatchers {

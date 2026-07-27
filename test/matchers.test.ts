@@ -54,7 +54,10 @@ const ALL_MATCHERS = [
 
     // snapshot
     'toMatchSnapshot',
-    'toMatchInlineSnapshot'
+    'toMatchInlineSnapshot',
+
+    // asymmetric matchers
+    'oneOf'
 ]
 
 test('matchers', () => {

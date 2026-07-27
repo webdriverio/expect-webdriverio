@@ -5,10 +5,15 @@ import * as wdioMatchers from './matchers.js'
 import { DEFAULT_OPTIONS, defaultOptionsList } from './constants.js'
 import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
-import { OneOfMatcher } from './matchers/asymmetrics/oneOf.js'
+import { oneOf } from './matchers/asymmetrics/oneOf.js'
 
 /**
- * Contains only the custom WDIO matchers to be used with `expect.extend()`.
+ * Contains all the custom WDIO matchers, registered through `expect.extend()`.
+ * 1. Normal matchers like `expect(element).toBeDisplayed()`
+ * 2. Asymmetric matchers like `expect.oneOf(...)`
+ * 3. Other User defined matchers registered through `expect.extend()`
+ *
+ * Does NOT include the default matchers from the `expect` library, like `toBe`, `toEqual`, etc.
  */
 export const wdioCustomMatchers: MatchersObject = {}
 
@@ -17,40 +22,31 @@ export const wdioCustomMatchers: MatchersObject = {}
  */
 export const matchers = new Map<string, RawMatcherFn>()
 
-const filteredMatchers: MatchersObject = {}
 const extend = expectLib.extend
-
-// filter out matchers that aren't a function
-Object.keys(wdioMatchers).forEach(matcher => {
-    if (typeof wdioMatchers[matcher as keyof typeof wdioMatchers] === 'function') {
-        filteredMatchers[matcher] = wdioMatchers[matcher as keyof typeof wdioMatchers] as RawMatcherFn
-    }
-})
-
-expectLib.extend = (allCustomMatchers) => {
-    if (!allCustomMatchers || typeof allCustomMatchers !== 'object') {
+expectLib.extend = (extendedMatchers) => {
+    if (!extendedMatchers || typeof extendedMatchers !== 'object') {
         return
     }
 
-    Object.entries(allCustomMatchers).forEach(([name, matcher]) => {
+    Object.entries(extendedMatchers).forEach(([name, matcher]) => {
         wdioCustomMatchers[name] = matcher
         matchers.set(name, matcher)
     })
-    return extend(allCustomMatchers)
+    return extend(extendedMatchers)
 }
 
-// 3. Register it with the global `expect` framework
-expectLib.extend({
-    oneOf(actual, sample: Array<string | RegExp>) {
-        const matcher = new OneOfMatcher(...sample)
-        return {
-            pass: matcher.asymmetricMatch(actual),
-            message: () => `expected ${actual} to be one of ${JSON.stringify(sample)}`,
-        }
+const filteredWdioMatchers: MatchersObject = {}
+// Filter out matchers that aren't a function
+Object.entries(wdioMatchers).forEach(([matcher, value]) => {
+    if (typeof value === 'function') {
+        filteredWdioMatchers[matcher] = value as RawMatcherFn
     }
 })
 
-expectLib.extend(filteredMatchers)
+// Register normal matchers like `expect(element).toBeDisplayed()`
+expectLib.extend(filteredWdioMatchers)
+// Register asymmetric matchers like `expect.oneOf(...)`
+expectLib.extend({ oneOf })
 
 // Extend the expect object with soft assertions
 const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect
@@ -94,9 +90,9 @@ export const setFeatureFlags = (featureFlags: Partial<ExpectWebdriverIO.FeatureF
     })
 }
 
-/** @deprecated use setDefaultOptions instead. Will be removed in v6.0.0 */
+/** @deprecated use setDefaultOptions instead. Will be removed in v10.0.0 */
 export const setOptions = setDefaultOptions
-/** @deprecated use `getDefaultOptions` instead, will be removed in v6.0.0 */
+/** @deprecated use `getDefaultOptions` instead, will be removed in v10.0.0 */
 export const getConfig = getDefaultOptions
 
 /**
