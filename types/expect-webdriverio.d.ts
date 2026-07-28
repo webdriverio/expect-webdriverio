@@ -1076,6 +1076,18 @@ declare namespace ExpectWebdriverIO {
         featureFlags?: FeatureFlags
     }
 
+    /**
+     * Options for multi-element matchers, such as `toHaveText` and `toHaveHTML`.
+     * These options allow you to specify how the matcher should behave when dealing with multiple elements.
+     */
+    type MultiElementOptions = {
+        /**
+         * Pass strict comparison if at least one element matches the expected value (or not matches with .not).
+         * Default: false
+         */
+        some?: boolean
+    }
+
     interface CommandOptions extends DefaultOptions {
         /**
          * user message to prepend before assertion error

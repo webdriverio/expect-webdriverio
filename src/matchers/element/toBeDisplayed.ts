@@ -4,7 +4,7 @@ import { DEFAULT_OPTIONS_TO_BE_DISPLAYED } from '../../constants.js'
 
 export async function toBeDisplayed(
     received: WdioElementOrArrayMaybePromise,
-    options: ExpectWebdriverIO.ToBeDisplayedOptions = DEFAULT_OPTIONS_TO_BE_DISPLAYED,
+    options: ExpectWebdriverIO.ToBeDisplayedOptions & ExpectWebdriverIO.MultiElementOptions = DEFAULT_OPTIONS_TO_BE_DISPLAYED,
 ) {
     this.expectation = this.expectation || 'displayed'
 

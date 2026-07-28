@@ -531,6 +531,71 @@ Expect [] to be displayed
 Expected: "at least one result"
 Received: []`)
         })
+
+        describe('with some option', () => {
+            test('success with some option', async () => {
+                vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
+                vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(true)
+
+                const result = await thisContext.toBeDisplayed(elements, { some: true })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('failures with some option', async () => {
+                vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
+                vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(false)
+
+                const result = await thisContext.toBeDisplayed(elements, { some: true })
+
+                expect(result.pass).toBe(false)
+                // TODO : improve message for some option
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} to be displayed
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "displayed",
+-   "displayed",
++   "not displayed",
++   "not displayed",
+  ]`)
+            })
+
+            test('not success (pass=false) with some option', async () => {
+                vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
+                vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(true)
+
+                const result = await thisNotContext.toBeDisplayed(elements, { some: true })
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+            })
+
+            test('not - failures (pass=true) with some option', async () => {
+                vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(true)
+                vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(true)
+
+                const result = await thisNotContext.toBeDisplayed(elements, { some: true })
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                // TODO dprevost: improve message for some option
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect ${selectorName} not to be displayed
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "not displayed",
+-   "not displayed",
++   "displayed",
++   "displayed",
+  ]`
+                )
+            })
+        })
     })
 
     test.for([

@@ -25,14 +25,14 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     singleElementCompare,
     isNot,
     strategy = 'NewStrictMultipleElements',
-    strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
+    strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false, some: false }
 } :{
     unresolvedElements: WdioElementOrArrayMaybePromise | unknown
     expectedValues: MaybeArray<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
     isNot: boolean
     strategy?: StrategyType,
-    strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean }
+    strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean, some?: boolean }
 }
 ): Promise<StrategyResult<MaybeArray<Actual>>> {
     if (strategy === 'LegacyLooseMultipleElements') {
@@ -114,7 +114,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     expectedValues: MaybeArray<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     isNot: boolean,
-    { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
+    { allowEmptyElements = false, allowArrayWithSingleElement = false, some = false } = {}
 ): Promise<StrategyResult<MaybeArray<Actual>>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
@@ -186,15 +186,21 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     const isNotEmpty = results.length > 0
 
+    const success = isNot
+        ? !(!forceFailure && isNotEmpty && (some ? isAtLeastOneFalse(results) : isAllFalse(results)))
+        : (!forceFailure && isNotEmpty && (some ? isAtLeastOneTrue(results) : isAllTrue(results)))
+
     // Success if all elements pass the compare strategy, or when using `.not`, if all elements fail the compare strategy.
     // If there are no elements, it is considered a failure in both case with and without `.not`, as there are no elements to compare against.
     return {
         subject,
-        success: isNot ? !(!forceFailure && isNotEmpty && isAllFalse(results)) : (!forceFailure && isNotEmpty && isAllTrue(results)),
-        actual: results.map(({ actual: value }) => value),
+        success,
+        actual: results.map(({ value }) => value)
         abort: forceFailure,
     }
 }
 
-const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === true)
-const isAllFalse = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === false)
+const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.result === true)
+const isAllFalse = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.result === false)
+const isAtLeastOneTrue = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.result === true)
+const isAtLeastOneFalse = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.result === false)
