@@ -28,22 +28,28 @@ describe(toHaveChildren, () => {
                 expect(result.pass).toBe(true)
             })
 
-            test('no value - success - default to gte 1 with options', async () => {
+            test('no value - success - with options', async () => {
+                const result = await thisContext.toHaveChildren(el, { gte: 1 }, { wait: 0, interval: 5 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('no value - success - default to gte 1 with options as NumberOptions  - deprecated', async () => {
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
 
-                const result = await thisContext.toHaveChildren(el, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
+                const result = await thisContext.toHaveChildren(el, { wait: 0, interval: 5 }, { beforeAssertion, afterAssertion })
 
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
-                    expectedValue: undefined,
-                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
+                    expectedValue: { wait: 0, interval: 5 },
+                    options: { beforeAssertion, afterAssertion }
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
-                    expectedValue: undefined,
-                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
+                    expectedValue: { wait: 0, interval: 5 },
+                    options: { beforeAssertion, afterAssertion },
                     result
                 })
             })
@@ -243,17 +249,19 @@ Received      : 2`
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
 
-                const result = await thisContext.toHaveChildren(elements, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
+                const result = await thisContext.toHaveChildren(elements, { gte: 1 },  { wait: 0, interval: 5, beforeAssertion, afterAssertion })
 
                 expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
 
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
+                    expectedValue: { gte: 1 },
                     options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
+                    expectedValue: { gte: 1 },
                     options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
                     result
                 })
@@ -290,7 +298,7 @@ Received      : 2`
             test('fails - If no options passed in + children do not exist', async () => {
                 elements[0].$$ = vi.fn(() => chainableElementArrayFactory('./child', 0))
 
-                const result = await thisContext.toHaveChildren(elements, undefined)
+                const result = await thisContext.toHaveChildren(elements)
 
                 expect(result.pass).toBe(false)
                 expect(stripAnsi(result.message())).toEqual(`\
@@ -517,6 +525,70 @@ Received      : [2, 2]`)
                 const result = await thisNotContext.toHaveChildren(elements, [{ eq: 2 }, { eq: 3 }])
 
                 expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
+            })
+
+            test('should fails when not enough expected values', async () => {
+                const result = await thisContext.toHaveChildren(elements, [{ eq: 2 }])
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have children
+
+- Expected  - 0
++ Received  + 1
+
+  Array [
+    2,
++   2,
+  ]`
+                )
+            })
+
+            test('should fails when more expected values (missing elements)', async () => {
+                const result = await thisContext.toHaveChildren(elements, [{ eq: 2 }])
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have children
+
+- Expected  - 0
++ Received  + 1
+
+  Array [
+    2,
++   2,
+  ]`
+                )
+            })
+
+            test('not - should fails (pass=true) when not enough expected values', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, [{ eq: 2 }])
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) not to have children
+
+- Expected [not]  - 0
++ Received        + 1
+
+  Array [
+    2,
++   2,
+  ]`
+                )
+
+            })
+
+            test('not - should fails (pass=true) when more expected values (missing elements)', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, [{ eq: 2 }, { eq: 2 }, { eq: 2 }])
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) not to have children
+
+Expected [not]: [2, 2, 2]
+Received      : [2, 2, undefined]`
+                )
             })
         })
     })

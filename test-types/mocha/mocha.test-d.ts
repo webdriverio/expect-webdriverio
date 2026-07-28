@@ -892,21 +892,55 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         })
 
         describe('toHaveChildren', () => {
-            it('should support various signatures', async () => {
-                // Preferred Signatures
-                expectTypeOf(expect(element).toHaveChildren()).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveChildren({ wait: 1000 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveChildren(5)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveChildren(5, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveChildren({ eq: 5 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveChildren({ eq: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+            describe('given element', () => {
+                it('should support various signatures', async () => {
+                    // Preferred Signatures
+                    expectTypeOf(expect(element).toHaveChildren()).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren(5)).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren(5, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren({ eq: 5 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren({ eq: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren({ gte: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren({ lte: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren({ gte: 1, lte: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
 
-                // Deprecated Signatures
-                expectTypeOf(expect(element).toHaveChildren(undefined)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveChildren(undefined, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveChildren({ eq: 5, wait: 1000 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
-                // Deprecating this is just too hard but let's not support this!
-                expectTypeOf(expect(element).toHaveChildren({})).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren).not.parameter(0).toBeArray()
+                })
+
+                it('should be deprecated', async () => {
+                    expectTypeOf(expect(element).toHaveChildren({ wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren(undefined)).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren(undefined, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveChildren({ eq: 5, wait: 1000 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+
+                    // Deprecating this is just too hard but let's not support this!
+                    expectTypeOf(expect(element).toHaveChildren({})).toEqualTypeOf<Promise<void>>()
+                })
+            })
+
+            describe('given elements', () => {
+                it('should support various signatures', async () => {
+                    expectTypeOf(expect(elements).toHaveChildren()).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveChildren(5)).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveChildren(5, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveChildren([5, 5], { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveChildren({ eq: 5 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveChildren({ gte: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveChildren({ lte: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveChildren({ gte: 1, lte: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveChildren([{ gte: 1, lte: 5 }, 1, { eq: 1 }], { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                })
+
+                it('should be deprecated since it was never supported', async () => {
+                    expectTypeOf(expect(elements).toHaveChildren(undefined)).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveChildren(undefined, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                })
+
+                it('should have tsc error since it is not supported', async () => {
+                    expectTypeOf(expect(elements).toHaveChildren).not.parameter(0).toEqualTypeOf<{ wait: 1000 }>()
+                    expectTypeOf(expect(elements).toHaveChildren).not.parameter(0).toEqualTypeOf<{ eq: 5, wait: 1000 }>()
+                    expectTypeOf(expect(elements).toHaveChildren).not.parameter(0).toEqualTypeOf<[{ gte: 1, lte: 5, wait: 1 }]>()
+                })
             })
         })
     })

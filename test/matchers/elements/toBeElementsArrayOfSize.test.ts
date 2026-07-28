@@ -222,14 +222,14 @@ Received      : 2`
             vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
             const elements = await $$('elements')
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 200, interval: 20 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 198, interval: 20 })
 
             expect(result.pass).toBe(false)
             expect(elements.length).toBe(2)
             expect(elements).toBe(elementArrayOf2)
             expect(browser.$$).toHaveBeenCalledTimes(11)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 200, true)
-            expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf5, 200, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 198, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf5, 198, true)
         })
 
         // TODO: By awaiting the promise we could update the actual elements array, so should we support that?
