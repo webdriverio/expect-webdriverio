@@ -152,7 +152,7 @@ describe(toHaveChildren, () => {
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have children
 
-Expected: ">= 1"
+Expected: >= 1
 Received: 0`
             )
         })
@@ -194,7 +194,7 @@ Received: 2`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have children
 
-Expected: "<= 1"
+Expected: <= 1
 Received: 2`
             )
         })
@@ -219,7 +219,7 @@ Received      : 2`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have children
 
-Expected [not]: "<= 2"
+Expected [not]: <= 2
 Received      : 2`
             )
         })
@@ -297,14 +297,13 @@ Received      : 2`
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have children
 
-- Expected  - 2
-+ Received  + 2
+- Expected  - 1
++ Received  + 1
 
   Array [
--   ">= 1",
--   ">= 1",
+-   >= 1,
 +   0,
-+   2,
+    >= 1,
   ]`
                 )
             })
@@ -357,8 +356,8 @@ Expect $$(\`sel\`) to have children
 + Received  + 2
 
   Array [
--   "<= 1",
--   "<= 1",
+-   <= 1,
+-   <= 1,
 +   2,
 +   2,
   ]`
@@ -384,7 +383,7 @@ Received      : [2, 2]`
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
-Expected [not]: ["<= 2", "<= 2"]
+Expected [not]: [<= 2, <= 2]
 Received      : [2, 2]`
                 )
             })
@@ -450,8 +449,8 @@ Expect $$(\`sel\`) to have children
 + Received  + 2
 
   Array [
--   "<= 1",
--   "<= 1",
+-   <= 1,
+-   <= 1,
 +   2,
 +   2,
   ]`
@@ -465,14 +464,13 @@ Expect $$(\`sel\`) to have children
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) to have children
 
-- Expected  - 2
-+ Received  + 2
+- Expected  - 1
++ Received  + 1
 
   Array [
--   "<= 1",
--   ">= 1",
+-   <= 1,
 +   2,
-+   2,
+    >= 1,
   ]`
                 )
             })
@@ -495,7 +493,7 @@ Received      : [2, 2]`)
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
-Expected [not]: ["<= 2", "<= 2"]
+Expected [not]: [<= 2, <= 2]
 Received      : [2, 2]`)
             })
 
@@ -506,7 +504,7 @@ Received      : [2, 2]`)
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have children
 
-Expected [not]: ["<= 2", ">= 2"]
+Expected [not]: [<= 2, >= 2]
 Received      : [2, 2]`)
             })
 

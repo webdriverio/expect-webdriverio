@@ -224,7 +224,7 @@ Received      : [50, 50]`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have width
 
-Expected [not]: ["<= 51", "<= 51"]
+Expected [not]: [<= 51, <= 51]
 Received      : [50, 50]`
             )
         })
@@ -238,7 +238,7 @@ Received      : [50, 50]`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have width
 
-Expected [not]: ["<= 51", 51]
+Expected [not]: [<= 51, 51]
 Received      : [50, 50]`
             )
         })
@@ -252,7 +252,7 @@ Received      : [50, 50]`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have width
 
-Expected [not]: [">= 49", ">= 49"]
+Expected [not]: [>= 49, >= 49]
 Received      : [50, 50]`
             )
         })

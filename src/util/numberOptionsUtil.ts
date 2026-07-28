@@ -1,3 +1,4 @@
+import { AsymmetricMatcher } from 'expect'
 import { isDefinedObject } from './commandOptionsUtils.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
@@ -60,86 +61,73 @@ export function validateNumberArrayAndExtractOptions(
 /**
  * Using a class to univerally handle number matching and stringification the same way everywhere and with Global Apis like equal() toString() and toJSON()
  */
-export class NumberMatcher {
-    constructor(private options: ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.NumberOptions) {}
+export class NumberMatcher extends AsymmetricMatcher<number | ExpectWebdriverIO.NumberMatcher> {
 
-    equals(other: unknown): boolean {
-        if (isNumber(other)) {
-            return this.match(other)
-        }
-        return false
+    public sample: number | ExpectWebdriverIO.NumberMatcher
+    constructor(sample: number | ExpectWebdriverIO.NumberMatcher) {
+        super(sample)
+        this.sample = sample
     }
 
-    match(expected: number | undefined): boolean {
-        if ( expected === undefined ) {
+    asymmetricMatch(actual: number | undefined): boolean {
+        if ( actual === undefined ) {
             return false
         }
 
-        if (isNumber(this.options.eq)) {
-            return expected === this.options.eq
+        if (isNumber(this.sample)) {
+            return actual === this.sample
         }
 
-        if (isNumber(this.options.gte) && isNumber(this.options.lte)) {
-            return expected >= this.options.gte && expected <= this.options.lte
+        if (isNumber(this.sample.eq)) {
+            return actual === this.sample.eq
         }
 
-        if (isNumber(this.options.gte)) {
-            return expected >= this.options.gte
+        if (isNumber(this.sample.gte) && isNumber(this.sample.lte)) {
+            return actual >= this.sample.gte && actual <= this.sample.lte
         }
 
-        if (isNumber(this.options.lte)) {
-            return expected <= this.options.lte
+        if (isNumber(this.sample.gte)) {
+            return actual >= this.sample.gte
+        }
+
+        if (isNumber(this.sample.lte)) {
+            return actual <= this.sample.lte
         }
 
         return false
     }
 
-    toString(): string {
-        if (isNumber(this.options.eq)) {
-            return String(this.options.eq)
+    toAsymmetricMatcher(): string {
+        if (isNumber(this.sample)) {
+            return `${this.sample}`
         }
 
-        if (isNumber(this.options.gte) && isNumber(this.options.lte)) {
-            return `>= ${this.options.gte} && <= ${this.options.lte}`
+        if (isNumber(this.sample.eq)) {
+            return `${this.sample.eq}`
         }
 
-        if (isNumber(this.options.gte)) {
-            return `>= ${this.options.gte}`
+        if (isNumber(this.sample.gte) && isNumber(this.sample.lte)) {
+            return `>= ${this.sample.gte} && <= ${this.sample.lte}`
         }
 
-        if (isNumber(this.options.lte))     {
-            return `<= ${this.options.lte}`
+        if (isNumber(this.sample.gte)) {
+            return `>= ${this.sample.gte}`
+        }
+
+        if (isNumber(this.sample.lte))     {
+            return `<= ${this.sample.lte}`
         }
 
         return 'Incorrect number options provided'
     }
 
-    toJSON(): string | number {
-        // Return the actual number for exact equality, so it serializes as 0 not "0"
-        if (isNumber(this.options.eq)) {
-            return this.options.eq
-        }
+    // Not used by default, just a fallback!
+    public toString() {
+        return this.toAsymmetricMatcher()
+    }
+
+    // When paired with Jasmine!
+    public jasmineToString() {
         return this.toString()
     }
-}
-
-/**
- * Custom tester for number matchers to be used by the equal of expect during failure message generation
- */
-export const numberMatcherTester = (a: unknown, b: unknown): boolean | undefined => {
-    if (a instanceof NumberMatcher && isNumber(b)) {return a.match(b)}
-    if (b instanceof NumberMatcher && isNumber(a)) {return b.match(a)}
-
-    // Return undefined to let other testers handle it
-    return undefined
-}
-
-export const matchNumber = (actual: number, expected: MaybeArray<NumberMatcher> | undefined): boolean => {
-    if (expected instanceof NumberMatcher) {
-        return expected.match(actual)
-    }
-    if (Array.isArray(expected)) {
-        return expected.some((matcher) => matcher.match(actual))
-    }
-    return false
 }

@@ -19,7 +19,7 @@ async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher |
     }
 
     return {
-        result: expectedValue?.match(children?.length) ?? false,
+        result: expectedValue?.asymmetricMatch(children?.length) ?? false,
         value: children?.length
     }
 }

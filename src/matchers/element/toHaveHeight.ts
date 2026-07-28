@@ -13,7 +13,7 @@ async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher 
     const actualHeight = await el.getSize('height')
 
     return {
-        result: expectedNumber?.match(actualHeight) ?? false,
+        result: expectedNumber?.asymmetricMatch(actualHeight) ?? false,
         value: actualHeight
     }
 }
