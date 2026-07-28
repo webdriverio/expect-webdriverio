@@ -1,5 +1,5 @@
 import { AsymmetricMatcher } from 'expect'
-import { isDefinedObject } from './commandOptionsUtils.js'
+import { isDefinedPlainObject } from './commandOptionsUtils.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
 export const isDefinedNotNumber = (value: unknown) => value !== undefined && !isNumber(value)
@@ -21,7 +21,7 @@ export function validateNumberAndExtractOptions(
     { supportDefaultAsGteThen1 }: { supportDefaultAsGteThen1?: boolean } = {}
 ): { numberMatcher: NumberMatcher; commandOptions: ExpectWebdriverIO.CommandOptions } {
     let defaultExpectedValue: NumberMatcher | undefined = undefined
-    if (supportDefaultAsGteThen1 && (expectedValue === undefined || (isDefinedObject(expectedValue) && expectedValue.eq === undefined && expectedValue.gte === undefined && expectedValue.lte === undefined))) {
+    if (supportDefaultAsGteThen1 && (expectedValue === undefined || (isDefinedPlainObject(expectedValue) && expectedValue.eq === undefined && expectedValue.gte === undefined && expectedValue.lte === undefined))) {
         defaultExpectedValue = new NumberMatcher({ gte: 1 })
     } else if (isNumber(expectedValue)) {
         return { numberMatcher: new NumberMatcher({ eq: expectedValue }), commandOptions }
@@ -132,7 +132,7 @@ export class NumberMatcher extends AsymmetricMatcher<number | ExpectWebdriverIO.
 }
 
 export const isEmptyOrLegacyNumberOptions = (value: unknown): value is ExpectWebdriverIO.NumberOptions => {
-    if (!isDefinedObject(value)) { return false }
+    if (!isDefinedPlainObject(value)) { return false }
     const keys = Object.keys(value)
     return keys.length === 0 || keys.filter((key) => !['eq', 'gte', 'lte'].includes(key)).length > 0
 }

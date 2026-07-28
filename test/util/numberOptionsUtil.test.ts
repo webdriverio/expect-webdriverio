@@ -1,5 +1,6 @@
 import { test, describe, expect, vi } from 'vitest'
 import {
+    isEmptyOrLegacyNumberOptions,
     isNumber,
     NumberMatcher,
     validateNumberAndExtractOptions
@@ -245,6 +246,20 @@ describe('numberOptionsUtil', () => {
             expect(result.commandOptions?.afterAssertion?.({} as any)).toBe(2)
             expect(beforeAssertion).toHaveBeenCalledTimes(1)
             expect(afterAssertion).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe(isEmptyOrLegacyNumberOptions, () => {
+        test('should return true for empty or legacy number options', () => {
+            expect(isEmptyOrLegacyNumberOptions({})).toBe(true)
+            expect(isEmptyOrLegacyNumberOptions({ wait: 0 })).toBe(true)
+            expect(isEmptyOrLegacyNumberOptions({ eq: 0, wait: 0 })).toBe(true)
+            expect(isEmptyOrLegacyNumberOptions({ gte: 1, lte: 10, wait: 0 })).toBe(true)
+        })
+
+        test('should return false for non-empty number options', () => {
+            expect(isEmptyOrLegacyNumberOptions({ eq: 5 })).toBe(false)
+            expect(isEmptyOrLegacyNumberOptions({ gte: 1, lte: 10 })).toBe(false)
         })
     })
 })
