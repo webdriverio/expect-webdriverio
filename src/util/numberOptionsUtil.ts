@@ -54,8 +54,7 @@ export function validateNumberArrayAndExtractOptions(
         const allNumbers = expectedValues.map((value) => validateNumberAndExtractOptions(value, commandOptions, { supportDefaultAsGteThen1 }))
         return { numberMatcher: allNumbers.map( ({ numberMatcher }) =>  numberMatcher), commandOptions }
     }
-    const { numberMatcher, commandOptions: numberCommandOptions } = validateNumberAndExtractOptions(expectedValues, commandOptions, { supportDefaultAsGteThen1 })
-    return { numberMatcher: numberMatcher, commandOptions: numberCommandOptions }
+    return validateNumberAndExtractOptions(expectedValues, commandOptions, { supportDefaultAsGteThen1 })
 }
 
 /**
@@ -132,8 +131,8 @@ export class NumberMatcher extends AsymmetricMatcher<number | ExpectWebdriverIO.
     }
 }
 
-export const isLegacyNumberOptions = (value: unknown): value is ExpectWebdriverIO.NumberOptions => {
-    if (!isDefinedObject(value)) {return false}
-    const keys = Object.keys(value ?? {})
-    return keys.some((key) => ['eq', 'gte', 'lte'].includes(key) && keys.length > 1)
+export const isEmptyOrLegacyNumberOptions = (value: unknown): value is ExpectWebdriverIO.NumberOptions => {
+    if (!isDefinedObject(value)) { return false }
+    const keys = Object.keys(value)
+    return keys.length === 0 || keys.filter((key) => !['eq', 'gte', 'lte'].includes(key)).length > 0
 }

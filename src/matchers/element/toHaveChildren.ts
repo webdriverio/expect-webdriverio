@@ -3,7 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { isLegacyNumberOptions, validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { isEmptyOrLegacyNumberOptions, validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
     waitUntil,
@@ -80,19 +80,18 @@ export async function toHaveChildren(
     const { expectation = 'children', verb = 'have', isNot, matcherName = 'toHaveChildren' } = this
 
     const paramsCount = arguments.length
-    options = options ?? DEFAULT_OPTIONS
 
-    if (paramsCount > 1 && isLegacyNumberOptions(expectedValueOrOptions)) {
+    if (paramsCount > 1 && (expectedValueOrOptions === undefined || isEmptyOrLegacyNumberOptions(expectedValueOrOptions))) {
         console.warn('Passing NumberOptions as the second argument to toHaveChildren is deprecated. Use a NumberMatcher instead. For example, `expect(el).toHaveChildren({ gte: 1 }, options)`')
     }
 
-    const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValueOrOptions, options, { supportDefaultAsGteThen1: true })
-
-    await commandOptions.beforeAssertion?.({
+    await options.beforeAssertion?.({
         matcherName,
-        expectedValue: expectedValueOrOptions, // Send unaltered value to the hook for backward compatibility
+        expectedValue: expectedValueOrOptions,
         options,
     })
+
+    const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValueOrOptions, options, { supportDefaultAsGteThen1: true })
 
     let subject
     let children
@@ -121,7 +120,7 @@ export async function toHaveChildren(
         message: (): string => message
     }
 
-    await commandOptions.afterAssertion?.({
+    await options.afterAssertion?.({
         matcherName,
         expectedValue: expectedValueOrOptions,
         options,

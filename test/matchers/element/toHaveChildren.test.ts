@@ -28,22 +28,28 @@ describe(toHaveChildren, () => {
                 expect(result.pass).toBe(true)
             })
 
-            test('no value - success - default to gte 1 with options - deprecated', async () => {
+            test('no value - success - with options', async () => {
+                const result = await thisContext.toHaveChildren(el, { gte: 1 }, { wait: 0, interval: 5 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('no value - success - default to gte 1 with options as NumberOptions  - deprecated', async () => {
                 const beforeAssertion = vi.fn()
                 const afterAssertion = vi.fn()
 
-                const result = await thisContext.toHaveChildren(el, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
+                const result = await thisContext.toHaveChildren(el, { wait: 0, interval: 5 }, { beforeAssertion, afterAssertion })
 
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
-                    expectedValue: { gte: 1 },
-                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion, featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy: false } }
+                    expectedValue: { wait: 0, interval: 5 },
+                    options: { beforeAssertion, afterAssertion }
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
-                    expectedValue: { gte: 1 },
-                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion, featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy: false } },
+                    expectedValue: { wait: 0, interval: 5 },
+                    options: { beforeAssertion, afterAssertion },
                     result
                 })
             })
@@ -250,10 +256,12 @@ Received      : 2`
                 expect(result.pass).toBe(true)
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
+                    expectedValue: { gte: 1 },
                     options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveChildren',
+                    expectedValue: { gte: 1 },
                     options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
                     result
                 })
@@ -290,7 +298,7 @@ Received      : 2`
             test('fails - If no options passed in + children do not exist', async () => {
                 elements[0].$$ = vi.fn(() => chainableElementArrayFactory('./child', 0))
 
-                const result = await thisContext.toHaveChildren(elements, undefined)
+                const result = await thisContext.toHaveChildren(elements)
 
                 expect(result.pass).toBe(false)
                 expect(stripAnsi(result.message())).toEqual(`\
