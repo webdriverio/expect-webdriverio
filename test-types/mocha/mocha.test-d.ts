@@ -894,7 +894,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         describe('toHaveChildren', () => {
             describe('given element', () => {
                 it('should support various signatures', async () => {
-                // Preferred Signatures
+                    // Preferred Signatures
                     expectTypeOf(expect(element).toHaveChildren()).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).toHaveChildren(5)).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).toHaveChildren(5, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
@@ -917,6 +917,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(element).toHaveChildren({})).toEqualTypeOf<Promise<void>>()
                 })
             })
+
             describe('given elements', () => {
                 it('should support various signatures', async () => {
                     expectTypeOf(expect(elements).toHaveChildren()).toEqualTypeOf<Promise<void>>()

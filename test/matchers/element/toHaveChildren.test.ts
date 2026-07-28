@@ -526,6 +526,70 @@ Received      : [2, 2]`)
 
                 expect(result.pass).toBe(true) // success, boolean is inverted later because of `.not`
             })
+
+            test('should fails when not enough expected values', async () => {
+                const result = await thisContext.toHaveChildren(elements, [{ eq: 2 }])
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have children
+
+- Expected  - 0
++ Received  + 1
+
+  Array [
+    2,
++   2,
+  ]`
+                )
+            })
+
+            test('should fails when more expected values (missing elements)', async () => {
+                const result = await thisContext.toHaveChildren(elements, [{ eq: 2 }])
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have children
+
+- Expected  - 0
++ Received  + 1
+
+  Array [
+    2,
++   2,
+  ]`
+                )
+            })
+
+            test('not - should fails (pass=true) when not enough expected values', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, [{ eq: 2 }])
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) not to have children
+
+- Expected [not]  - 0
++ Received        + 1
+
+  Array [
+    2,
++   2,
+  ]`
+                )
+
+            })
+
+            test('not - should fails (pass=true) when more expected values (missing elements)', async () => {
+                const result = await thisNotContext.toHaveChildren(elements, [{ eq: 2 }, { eq: 2 }, { eq: 2 }])
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) not to have children
+
+Expected [not]: [2, 2, 2]
+Received      : [2, 2, undefined]`
+                )
+            })
         })
     })
 })
