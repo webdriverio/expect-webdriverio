@@ -83,7 +83,7 @@ export async function toHaveChildren(
     const paramsCount = arguments.length
 
     if (paramsCount > 1 && (expectedValueOrOptions === undefined || isEmptyOrLegacyNumberOptions(expectedValueOrOptions))) {
-        console.warn('Passing NumberOptions as the second argument to toHaveChildren is deprecated. Use a NumberMatcher instead. For example, `expect(el).toHaveChildren({ gte: 1 }, options)`')
+        console.warn('Passing undefined or NumberOptions as the second argument to toHaveChildren is deprecated. Use a NumberMatcher instead. For example, `expect(el).toHaveChildren({ gte: 1 }, options)`')
     }
 
     await options.beforeAssertion?.({
