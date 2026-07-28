@@ -287,7 +287,6 @@ Received      : 2`
                 expect(result.pass).toBe(true)
             })
 
-            // TODO failure message show 2 expected missing while only one should, to enhance later
             test('fails - If no options passed in + children do not exist', async () => {
                 elements[0].$$ = vi.fn(() => chainableElementArrayFactory('./child', 0))
 
