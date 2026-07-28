@@ -9,6 +9,7 @@ import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 import type { AssertionResult } from 'expect-webdriverio'
+import { buildWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.HTMLOptions): Promise<CompareResult<string>> {
     const actualHTML = await el.getHTML(options)
@@ -21,6 +22,7 @@ export async function toHaveHTML(
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'HTML', verb = 'have', isNot, matcherName = 'toHaveHTML' } = this
+    expectedValue = buildWdioAsymmetricMatchers(expectedValue, options)
 
     await options.beforeAssertion?.({
         matcherName,

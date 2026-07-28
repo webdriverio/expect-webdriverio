@@ -7,6 +7,7 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import { buildWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
 
 async function singleElementCompare(
     element: WebdriverIO.Element,
@@ -23,6 +24,7 @@ export async function toHaveComputedRole(
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'computed role', verb = 'have', isNot, matcherName = 'toHaveComputedRole' } = this
+    expectedValue = buildWdioAsymmetricMatchers(expectedValue, options)
 
     await options.beforeAssertion?.({
         matcherName,
