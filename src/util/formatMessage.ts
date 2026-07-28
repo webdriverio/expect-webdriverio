@@ -2,12 +2,8 @@ import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXP
 import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray } from './elementsUtil.js'
-import { numberMatcherTester } from './numberOptionsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher } from '../utils.js'
-
-// TODO one day use a real asymmetric matcher for number options instead of this custom equality tester
-const CUSTOM_EQUALITY_TESTER = [numberMatcherTester]
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
@@ -103,7 +99,7 @@ export const enhanceError = (
         diffString = `\
 ${label.expected}: ${expectedFormatted}
 ${label.received}: ${receivedFormatted}`
-    } else if (equals(actual, expected, CUSTOM_EQUALITY_TESTER)) {
+    } else if (equals(actual, expected)) {
         // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
         diffString =
             `\
@@ -140,7 +136,7 @@ const printArrayWithMatchingItemInRed = (
     // Find matching indices
     const matchingIndices: number[] = []
     for (let i = 0; i < expectedArray.length; i++) {
-        if (equals(expectedArray[i], actualArray[i], CUSTOM_EQUALITY_TESTER)) {
+        if (equals(expectedArray[i], actualArray[i])) {
             matchingIndices.push(i)
         }
     }

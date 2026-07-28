@@ -178,7 +178,7 @@ Received      : 1`
         expect(stripAnsi(result4.message())).toEqual(`\
 Expect mock to be called times
 
-Expected: ">= 3"
+Expected: >= 3
 Received: 0`
         )
     })

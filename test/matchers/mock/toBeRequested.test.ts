@@ -92,7 +92,7 @@ describe(toBeRequested, () => {
         expect(stripAnsi(result.message())).toEqual(`\
 Expect mock to be called
 
-Expected: ">= 1"
+Expected: >= 1
 Received: 0`
         )
 
@@ -102,7 +102,7 @@ Received: 0`
         expect(stripAnsi(result2.message())).toEqual(`\
 Expect mock not to be called
 
-Expected [not]: ">= 1"
+Expected [not]: >= 1
 Received      : 1`
         )
     })

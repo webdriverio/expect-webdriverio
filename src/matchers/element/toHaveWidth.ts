@@ -12,7 +12,7 @@ async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher 
     const actualWidth = await el.getSize('width')
 
     return {
-        result: expectedNumber?.match(actualWidth) ?? false,
+        result: expectedNumber?.asymmetricMatch(actualWidth) ?? false,
         value: actualWidth
     }
 }

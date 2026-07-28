@@ -94,7 +94,7 @@ Received: 2`
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to be elements array of size
 
-Expected: ">= 3 && <= 5"
+Expected: >= 3 && <= 5
 Received: 2`
                 )
             })
@@ -118,7 +118,7 @@ Received      : 2`
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be elements array of size
 
-Expected [not]: "<= 3"
+Expected [not]: <= 3
 Received      : 2`
                 )
             })
@@ -130,7 +130,7 @@ Received      : 2`
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to be elements array of size
 
-Expected [not]: ">= 1"
+Expected [not]: >= 1
 Received      : 2`
                 )
             })
