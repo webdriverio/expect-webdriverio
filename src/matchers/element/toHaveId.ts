@@ -2,7 +2,7 @@ import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import type { AssertionResult } from 'expect-webdriverio'
-import { buildWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
+import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
 
 /**
  * Element $() API
@@ -27,13 +27,14 @@ export async function toHaveId(
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
-    expectedValue = buildWdioAsymmetricMatchers(expectedValue, options)
 
     await options.beforeAssertion?.({
         matcherName: 'toHaveId',
         expectedValue,
         options,
     })
+
+    injectOptionIntoWdioAsymmetricMatchers(expectedValue, options)
 
     const result: ExpectWebdriverIO.AssertionResult = await toHaveAttributeAndValue.call(this, el, 'id', expectedValue, options)
 

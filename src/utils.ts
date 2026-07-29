@@ -423,3 +423,5 @@ export const getFeatureFlagValue = ({ featureFlags }: ExpectWebdriverIO.StringOp
     }
     return DEFAULT_FEATURE_FLAGS[featureFlag] ?? false
 }
+
+export const toArray = <T>(value: T | T[] | undefined): T[] => value === undefined ? [] : Array.isArray(value) ? value : [value]

@@ -10,7 +10,7 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import { buildWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
+import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -85,8 +85,6 @@ export async function toHaveElementProperty(
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
-    value = buildWdioAsymmetricMatchers(value, options)
-
     const paramsCount = arguments.length
 
     if (value === undefined || value === null) {
@@ -102,6 +100,8 @@ export async function toHaveElementProperty(
         expectedValue: [property, value],
         options,
     })
+
+    injectOptionIntoWdioAsymmetricMatchers(value, options)
 
     let elements
     let actualProppertyValue: unknown

@@ -10,7 +10,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { expect as wdioExpect } from '../../index.js'
-import { buildWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
+import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
 
 async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined, options: ExpectWebdriverIO.StringOptions) {
     const attributeValue = await el.getAttribute(attribute)
@@ -105,9 +105,6 @@ export async function toHaveAttribute(
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const matcherName = 'toHaveAttribute'
-
-    value = buildWdioAsymmetricMatchers(value, options)
-
     const paramsCount = arguments.length
 
     if (value === undefined) {
@@ -123,6 +120,8 @@ export async function toHaveAttribute(
         expectedValue: [attribute, value],
         options,
     })
+
+    injectOptionIntoWdioAsymmetricMatchers(value, options)
 
     const result = await toHaveAttributeAndValue.call(this, received, attribute, value, options)
 

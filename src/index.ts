@@ -43,31 +43,33 @@ Object.entries(wdioMatchers).forEach(([matcher, value]) => {
     }
 })
 
-// Register normal matchers like `expect(element).toBeDisplayed()`
-expectLib.extend(filteredWdioMatchers)
-// Register asymmetric matchers like `expect.oneOf(...)`
-expectLib.extend({ oneOf })
+const wdioExpect = expectLib as unknown as ExpectWebdriverIO.Expect
 
-// Extend the expect object with soft assertions
-const expectWithSoft = expectLib as unknown as ExpectWebdriverIO.Expect
-Object.defineProperty(expectWithSoft, 'soft', {
+// Register normal matchers like `expect(element).toBeDisplayed()`
+wdioExpect.extend(filteredWdioMatchers)
+// Register asymmetric matchers like `expect.oneOf(...)`
+wdioExpect.oneOf = oneOf
+
+// Register soft assertions
+Object.defineProperty(wdioExpect, 'soft', {
     value: <T = unknown>(actual: T) => createSoftExpect(actual)
 })
 
 // Add soft assertions utility methods
-Object.defineProperty(expectWithSoft, 'getSoftFailures', {
+Object.defineProperty(wdioExpect, 'getSoftFailures', {
     value: (testId?: string) => SoftAssertService.getInstance().getFailures(testId)
 })
 
-Object.defineProperty(expectWithSoft, 'assertSoftFailures', {
+Object.defineProperty(wdioExpect, 'assertSoftFailures', {
     value: (testId?: string) => SoftAssertService.getInstance().assertNoFailures(testId)
 })
 
-Object.defineProperty(expectWithSoft, 'clearSoftFailures', {
+Object.defineProperty(wdioExpect, 'clearSoftFailures', {
     value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId)
 })
 
-export const expect = expectWithSoft
+// Fully configured global expect instance with all the custom WDIO matchers, asymmetric matchers, and soft assertions
+export const expect = wdioExpect
 
 // Default options for the expect-webdriverio library
 export const getDefaultOptions = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS

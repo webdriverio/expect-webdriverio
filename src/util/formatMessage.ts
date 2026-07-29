@@ -3,7 +3,7 @@ import { equals } from '../jasmineUtils.js'
 import type { WdioElements } from '../types.js'
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
-import { isJasmineStringAsymmetricMatcher } from '../utils.js'
+import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
@@ -124,8 +124,6 @@ ${diffString}`
 
     return msg
 }
-
-const toArray = <T>(value: T | T[] | undefined): T[] => value === undefined ? [] : Array.isArray(value) ? value : [value]
 
 // Inspired by Jest's printReceivedArrayContainExpectedItem
 // Highlights matching elements when using .not to show what shouldn't have matched
