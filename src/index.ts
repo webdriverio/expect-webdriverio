@@ -8,12 +8,11 @@ import { SoftAssertService } from './softAssert.js'
 import { oneOf } from './matchers/asymmetrics/oneOf.js'
 
 /**
- * Contains all the custom WDIO matchers, registered through `expect.extend()`.
- * 1. Normal matchers like `expect(element).toBeDisplayed()`
- * 2. Asymmetric matchers like `expect.oneOf(...)`
- * 3. Other User defined matchers registered through `expect.extend()`
+ * Contains the custom WDIO matchers, registered through `expect.extend()`.
+ * 1. Wdio custom matchers like `expect(element).toBeDisplayed()`
+ * 2. Other User defined matchers registered through `expect.extend()`
  *
- * Does NOT include the default matchers from the `expect` library, like `toBe`, `toEqual`, etc.
+ * Does NOT include the default matchers from the `expect` library, like `toBe`, `toEqual`, or wdio asymmetrics like `expect.oneOf()`
  */
 export const wdioCustomMatchers: MatchersObject = {}
 

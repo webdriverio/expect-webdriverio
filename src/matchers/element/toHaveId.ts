@@ -2,7 +2,7 @@ import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import type { AssertionResult } from 'expect-webdriverio'
-import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
+import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/asymmetricsUtils.js'
 
 /**
  * Element $() API

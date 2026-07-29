@@ -1,6 +1,6 @@
 import type { StringOptions } from 'expect-webdriverio'
 import { compareTextWithArray } from '../../utils.js'
-import { WdioAsymmetricMatchers } from './wdioAsymmetricMatchers.js'
+import { WdioAsymmetricMatchers } from './asymmetricsUtils.js'
 
 /**
  * oneOf matcher is used to check if a string matches any of the provided strings or regular expressions.
@@ -8,6 +8,7 @@ import { WdioAsymmetricMatchers } from './wdioAsymmetricMatchers.js'
  * @see oneOfWithContextMatcher
  */
 export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp>> {
+    // TODO support HTML options
     public options: StringOptions = {}
 
     constructor(...sample: Array<string | RegExp>) {

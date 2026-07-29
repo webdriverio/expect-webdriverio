@@ -9,13 +9,12 @@ import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
-import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
+import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/asymmetricsUtils.js'
 
 async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
     const actualText = await el.getText()
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return compareTextOrArray(actualText, expectedText as any, options)
+    return compareTextOrArray(actualText, expectedText, options)
 }
 
 export async function toHaveText(

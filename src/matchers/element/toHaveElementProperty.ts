@@ -10,7 +10,7 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
+import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/asymmetricsUtils.js'
 
 async function condition(
     el: WebdriverIO.Element,

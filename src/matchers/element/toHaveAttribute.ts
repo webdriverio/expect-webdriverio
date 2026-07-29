@@ -10,7 +10,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { expect as wdioExpect } from '../../index.js'
-import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/wdioAsymmetricMatchers.js'
+import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/asymmetricsUtils.js'
 
 async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined, options: ExpectWebdriverIO.StringOptions) {
     const attributeValue = await el.getAttribute(attribute)
