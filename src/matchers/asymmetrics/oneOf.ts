@@ -3,20 +3,17 @@ import { compareTextWithArray } from '../../utils.js'
 import { WdioAsymmetricMatchers } from './wdioAsymmetricMatchers.js'
 
 /**
- * Asymmetric Matcher for oneOf with context options, used in expect-webdriverio
- * Register only on the global expect instance, but superseed by oneOfWithContextMatcher.asymmetricMatch(actual, options) when called inside wdio matchers for more flexibility and context options.
+ * oneOf matcher is used to check if a string matches any of the provided strings or regular expressions.
+ * StringOptions is injected by the matcher for customization of the matching behavior.
  * @see oneOfWithContextMatcher
  */
 export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp>> {
     public options: StringOptions = {}
+
     constructor(...sample: Array<string | RegExp>) {
         super(sample)
     }
 
-    /**
-     * Defined but mostly unused, and superseed by oneOfWithContextMatcher.asymmetricMatch(actual, options) inside wdio matchers for more flexibility and context options.
-     * @see oneOfWithContextMatcher.asymmetricMatch
-     */
     public asymmetricMatch(actual: unknown): boolean {
         if (typeof actual !== 'string') {
             return false
