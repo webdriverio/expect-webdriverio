@@ -6,6 +6,7 @@ import { $Factory, chainableElementArrayFactory, elementArrayFactory, elementFac
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
 import { setFeatureFlags } from '../../../src/index.js'
+import { expect as wdioExpect } from '../../../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -186,13 +187,49 @@ Received: ""`
         })
 
         test('success if one of the values in the array matches with text and ignoreCase', async () => {
-
             const result = await thisContext.toHaveText(el, ['WDIO', 'Webdriverio'], { wait: 0, ignoreCase: true })
+
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(1)
         })
 
-        test('success if one of the values in the array matches with text and trim', async () => {
+        test('success if one of the values of oneOf does match with text', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'WebdriverIO'))
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('success if one of the values of oneOf does match with text and ignore case', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'Webdriverio'), { ignoreCase: true })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('failures if all the values of oneOf does not match with text', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'notMatching'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have text
+
+Expected: startingWithOneOf<"WDIO", "notMatching">
+Received: "WebdriverIO"`
+            )
+        })
+
+        test('not - failures if all the values of oneOf does not match with text', async () => {
+            const result = await thisNotContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'WebdriverIO'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) not to have text
+
+Expected [not]: startingWithOneOf<"WDIO", "WebdriverIO">
+Received      : "WebdriverIO"`
+            )
+        })
+
+        test('success if one of the values in the array matches with text and trim - deprecated (TODO)', async () => {
 
             vi.mocked(el.getText).mockResolvedValue('   WebdriverIO   ')
 
@@ -477,6 +514,13 @@ Received      : ["WebdriverIO1", "WebdriverIO2"]`
                 test('should return true if the received elements', async () => {
                     const result = await thisContext.toHaveText(els, ['WebdriverIO', 'Get Started'], { wait: 0 })
                     expect(result.pass).toBe(true)
+                })
+
+                test('should not support oneOf in array under legacy behavior', async () => {
+                    await expect(
+                        // @ts-expect-error
+                        thisContext.toHaveText(els, [wdioExpect.oneOf('WebdriverIO', 'Get Started'), wdioExpect.oneOf('WebdriverIO', 'Get Started')], { wait: 0 })
+                    ).rejects.toThrow('OneOf is not supported in array under legacy behavior. Please enable `useToHaveTextStrictMultiElementsCompareStrategy` feature flag to use the new strict index based matching strategy with `expect.oneOf()`.')
                 })
 
                 test('should return true if actual texts contains space since we trim by default', async () => {
@@ -1423,6 +1467,77 @@ Expect $$(\`elements\`) not to have text
 Expected [not]: ["NotWebdriverio", "NotWebdriverio", "NotWebdriverio"]
 Received      : ["webdriverio", "webdriverio", undefined]`
                 )
+            })
+
+            test('should support oneOf in array under strict behavior', async () => {
+                const elements = await $$('elements')
+
+                vi.mocked((elements)[0].getText).mockResolvedValue('WebdriverIO')
+                vi.mocked((elements)[1].getText).mockResolvedValue('Get Started')
+
+                // @ts-expect-error -- TODO fix typing soon!
+                const result = await thisContext.toHaveText(elements, [wdioExpect.oneOf('WebdriverIO', 'Get Started'), wdioExpect.oneOf('WebdriverIO', 'Get Started')], { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('failures if all the values of oneOf does not match with text', async () => {
+                const elements = await $$('elements')
+
+                vi.mocked((elements)[0].getText).mockResolvedValue('WDIO')
+                vi.mocked((elements)[1].getText).mockResolvedValue('WebdriverIO')
+
+                const result = await thisContext.toHaveText(elements, wdioExpect.oneOf('WDIO', 'notMatching'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) to have text
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    startingWithOneOf<"WDIO", "notMatching">,
+-   startingWithOneOf<"WDIO", "notMatching">,
++   "WebdriverIO",
+  ]`
+                )
+            })
+
+            test('not - failures if all the values of oneOf does not match with text', async () => {
+                const elements = await $$('elements')
+
+                vi.mocked((elements)[0].getText).mockResolvedValue('WDIO')
+                vi.mocked((elements)[1].getText).mockResolvedValue('WebdriverIO')
+
+                const result = await thisNotContext.toHaveText(elements, wdioExpect.oneOf('WDIO', 'WebdriverIO'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`elements\`) not to have text
+
+Expected [not]: [startingWithOneOf<"WDIO", "WebdriverIO">, startingWithOneOf<"WDIO", "WebdriverIO">]
+Received      : ["WDIO", "WebdriverIO"]`
+                )
+            })
+
+            test('should be able to reuse oneOf matcher in multiple tests', async () => {
+                const elements = await $$('elements')
+
+                vi.mocked((elements)[0].getText).mockResolvedValue('WDIO')
+                vi.mocked((elements)[1].getText).mockResolvedValue('WebdriverIO')
+
+                const matcher = wdioExpect.oneOf('DIO', 'ebdriverIO')
+
+                const resutls = await Promise.all([
+                    // assertion A: options injected → { containing: true }
+                    thisContext.toHaveText(elements, matcher, { containing: true }),
+                    // assertion B: options injected → { atStart: true }  ← overwrites matcher.options
+                    thisContext.toHaveText(elements, matcher, { atStart: true }),
+                ])
+
+                expect(resutls[0].pass).toBe(true)
+                expect(resutls[1].pass).toBe(false)
             })
 
             describe('Long promises', () => {

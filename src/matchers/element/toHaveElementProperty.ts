@@ -84,7 +84,6 @@ export async function toHaveElementProperty(
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
-
     const paramsCount = arguments.length
 
     if (value === undefined || value === null) {

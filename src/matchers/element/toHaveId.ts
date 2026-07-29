@@ -26,6 +26,7 @@ export async function toHaveId(
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
+
     await options.beforeAssertion?.({
         matcherName: 'toHaveId',
         expectedValue,

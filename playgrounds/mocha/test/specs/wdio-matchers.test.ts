@@ -104,6 +104,13 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(docsLink).toHaveText('Docs')
         })
 
+        it('should verify element text with expected array', async () => {
+            const docsLink = await $('=Docs')
+            await expect(docsLink).toHaveText('Docs')
+            await expect(docsLink).toHaveText(['Docs', 'Doc'])
+            await expect(docsLink).toHaveText(expect.oneOf('Docs', 'Doc'))
+        })
+
         it('should verify element contains text', async () => {
             const heading = await $$('h1')[1]  // Second h1 has text
             await expect(heading).toHaveText(expect.stringContaining('Open Source'))
@@ -119,6 +126,11 @@ describe('WebdriverIO Custom Matchers', () => {
                 it('should verify text with array of text & with options with awaited ChainablePromiseArray', async () => {
                     const heading = await $$('h1')
                     await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                })
+
+                it('should verify text with array of text with oneOf', async () => {
+                    const heading = await $$('h1')
+                    await expect(heading).toHaveText(expect.oneOf('1','Open source'), { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with array of text without exact array match', async () => {

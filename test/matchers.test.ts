@@ -54,7 +54,7 @@ const ALL_MATCHERS = [
 
     // snapshot
     'toMatchSnapshot',
-    'toMatchInlineSnapshot'
+    'toMatchInlineSnapshot',
 ]
 
 test('matchers', () => {

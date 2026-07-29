@@ -10,6 +10,7 @@ import { executeCommandWithStrategy } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
 import { DEFAULT_FEATURE_FLAGS } from './constants.js'
+import { OneOfMatcher } from './matchers/asymmetrics/oneOf.js'
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
     return isAsymmetricMatcher(expected) && !('toAsymmetricMatcher' in expected) && 'jasmineToString' in expected && typeof expected.jasmineToString === 'function'
@@ -134,7 +135,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareTextOrArray = (
     actualText: string,
-    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
+    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): CompareResult<string> => {
     const unchangedActualText = actualText
@@ -143,12 +144,31 @@ export const compareTextOrArray = (
         return { value: actualText, result: false }
     }
 
-    const compareResults =  Array.isArray(expectedTexts) ?
-        compareTextWithArray(actualText, expectedTexts, options)
-        : compareText(actualText, expectedTexts, options)
+    /**
+     * @deprecated path
+     * Since the strict-index based matching, comparing array is deprecated and will be removed in v10.0.0.
+     * Instead the `expect.oneOf()` asymmetric matcher should be used to compare against multiple expected values.
+     */
+    if (Array.isArray(expectedTexts)) {
+        if (expectedTexts.some((expected): expected is OneOfMatcher => expected instanceof OneOfMatcher)) {
+            throw new Error('OneOf is not supported in array under legacy behavior. Please enable `useToHaveTextStrictMultiElementsCompareStrategy` feature flag to use the new strict index based matching strategy with `expect.oneOf()`.')
+        } else {
 
-    // The above compare texts alter the actual text so we need to clone it and return the original actual text to the caller for error message formatting. To fix in major version
+            // Casting since typeScript cannot scale down the type and remove OneOfMatcher.
+            const compareResults = compareTextWithArray(actualText, expectedTexts as Array<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>, options)
+            return { result: compareResults.result, value: unchangedActualText }
+        }
+    }
+
+    if (expectedTexts instanceof OneOfMatcher) {
+        return { result: expectedTexts.asymmetricMatch(actualText), value: unchangedActualText }
+    }
+
+    // TODO one day consolidate typing and internal of oneOf so we do not need the below casting!
+    const compareResults = compareText(actualText, expectedTexts as string | RegExp, options)
+
     return { result: compareResults.result, value: unchangedActualText }
+
 }
 
 export const compareText = (
@@ -248,7 +268,7 @@ export const compareText = (
  */
 export const compareTextWithArray = (
     actual: string,
-    expectedArray: Array<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>,
+    expectedArray: Array<string | RegExp | AsymmetricMatcher<string>>,
     {
         ignoreCase = false,
         trim = false, // TODO for single element we trim by default, but for array we don't trim by default. To review in v6.0.0 and make it consistent for both single and array of elements
@@ -423,3 +443,5 @@ export const getFeatureFlagValue = ({ featureFlags }: ExpectWebdriverIO.StringOp
     }
     return DEFAULT_FEATURE_FLAGS[featureFlag] ?? false
 }
+
+export const toArray = <T>(value: T | T[] | undefined): T[] => value === undefined ? [] : Array.isArray(value) ? value : [value]

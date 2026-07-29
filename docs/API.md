@@ -573,17 +573,30 @@ await expect($('#elem')).toHaveStyle({
 
 ### toHaveText
 
-Checks if element has a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
+Checks if an element matches a specific text exactly. You can also pass an asymmetric matcher like `expect.stringContaining()` for partial matches, or use `expect.oneOf()` if the element can have different possible texts.
+
+**Note:** Passing a raw array for matching multiple possible texts is deprecated since v6.0.0 and must be replaced by `expect.oneOf()`.
+
+##### Usage
 
 ##### Usage
 
 ```js
 await browser.url('https://webdriver.io/')
 const elem = await $('.container')
+
+// Exact match assertion
 await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
+
+// Partial match assertion using stringContaining
 await expect(elem).toHaveText(expect.stringContaining('test framework for Node.js'))
+
+// Succeeds if one of the text options matches (v6.0.0+)
+await expect(elem).toHaveText(expect.oneOf('Next-gen browser and mobile automation test framework for Node.js', 'Get Started'))
+await expect(elem).toHaveText(expect.oneOf(expect.stringContaining('test framework for Node.js'), expect.stringContaining('Started')))
+
+// DEPRECATED: Do not pass arrays directly since v6.0.0
 await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'])
-await expect(elem).toHaveText([expect.stringContaining('test framework for Node.js'), expect.stringContaining('Started')])
 ```
 
 If you have a list of elements like the HTML structure below:
@@ -599,20 +612,25 @@ If you have a list of elements like the HTML structure below:
 You can assert all of them at once using an array:
 
 ```js
+// Order does not matter by default unless strict strategy flag is enabled (since v6.0.0)
 await expect($$('ul > li')).toHaveText(['Coffee', 'Tea', 'Milk'])
 ```
 
-**Note:** To enable strict assertion matching, configure the `useToHaveTextStrictMultiElementsCompareStrategy` flag in your command options or globally via `setFeatureFlags`.
+**Note:** Since v6.0.0, to enable strict assertion matching, configure the `useToHaveTextStrictMultiElementsCompareStrategy` flag in your command options or globally via `setFeatureFlags`.
 
 ### toHaveHTML
 
-Checks if element has a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
+Checks if an element matches a specific text exactly. You can also pass an asymmetric matcher like `expect.stringContaining()` for partial matches, or use `expect.oneOf()` if the element can have different possible texts.
+
+**Note:** Passing a raw array for matching multiple possible texts is deprecated since v6.0.0 and must be replaced by `expect.oneOf()`.
+
 
 ##### Usage
 
 ```js
 await browser.url('https://webdriver.io/')
 const elem = await $('.hero__subtitle')
+
 await expect(elem).toHaveHTML('<p class="hero__subtitle">Next-gen browser and mobile automation test framework for Node.js</p>')
 await expect(elem).toHaveHTML(expect.stringContaining('Next-gen browser and mobile automation test framework for Node.js'))
 await expect(elem).toHaveHTML('Next-gen browser and mobile automation test framework for Node.js', { includeSelectorTag: false })
@@ -623,6 +641,11 @@ await expect(elem).toHaveHTML('Next-gen browser and mobile automation test frame
 ```js
 await browser.url('https://webdriver.io/')
 const elem = await $('.hero__subtitle')
+
+await expect(elem).toHaveHTML(expect.oneof('Next-gen browser and mobile automation test framework for Node.js', 'Get Started'), { includeSelectorTag: false })
+await expect(elem).toHaveHTML(expect.oneof(expect.stringContaining('automation test framework for Node.js'), expect.stringContaining('Started')), { includeSelectorTag: false })
+
+// DEPRECATED: Do not pass arrays directly since v6.0.0
 await expect(elem).toHaveHTML(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'], { includeSelectorTag: false })
 await expect(elem).toHaveHTML([expect.stringContaining('automation test framework for Node.js'), expect.stringContaining('Started')], { includeSelectorTag: false })
 ```
@@ -763,6 +786,9 @@ const elements = await $$('#someElem')
 
 // Single value: checked against every element
 await expect(elements).toHaveAttribute('class', 'form-control')
+
+// One of: checked against every element and succeed if one of the expected text matches
+await expect(elements).toHaveAttribute('class', expect.oneOf('form-control1', 'form-control2'))
 
 // Array: each value checked at corresponding element index (must match length)
 await expect(elements).toHaveAttribute('class', ['control1', 'control2'])
@@ -1000,7 +1026,7 @@ You can also directly use regular expressions for all matchers that do text comp
 await browser.url('https://webdriver.io/')
 const elem = await $('.container')
 await expect(elem).toHaveText(/node\.js/i)
-await expect(elem).toHaveText([/node\.js/i, 'Get Started'])
+await expect(elem).toHaveText(expect.oneOf(/node\.js/i, 'Get Started'))
 await expect(browser).toHaveTitle(/webdriverio/i)
 await expect(browser).toHaveUrl(/webdriver\.io/)
 await expect(elem).toHaveElementClass(/Container/i)

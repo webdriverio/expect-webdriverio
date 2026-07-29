@@ -100,10 +100,10 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText(expect.oneOf('text1', 'text2'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText(expect.oneOf(expect.stringContaining('text1'), expect.stringContaining('text2')))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText(expect.oneOf(/text1/, /text2/))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText(expect.oneOf('text1', /text1/, expect.stringContaining('text3')))).toEqualTypeOf<Promise<void>>()
                 await expect(element).toHaveText(
                     'My-Ex-Am-Ple',
                     {
@@ -117,10 +117,10 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
                 expectTypeOf(expect(chainableElement).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText(expect.oneOf('text1', 'text2'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText(expect.oneOf(expect.stringContaining('text1'), expect.stringContaining('text2')))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText(expect.oneOf(/text1/, /text2/))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText(expect.oneOf('text1', /text1/, expect.stringContaining('text3')))).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(chainableElement).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 
@@ -132,6 +132,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(elementArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveText(['text1', expect.oneOf(/text1/, /text2/), expect.oneOf(expect.stringContaining('text3'))])).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(elementArray).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 
@@ -149,6 +150,18 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableArray).toHaveText).parameter(0).extract<number>().toBeNever()
 
                 expectTypeOf(expect(browser).toHaveText).toBeNever()
+            })
+
+            it('should be deprecated', async () => {
+                expectTypeOf(expect(element).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(chainableElement).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
             })
 
             it('should have ts errors when actual is not an element', async () => {

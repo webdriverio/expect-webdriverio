@@ -104,7 +104,6 @@ export async function toHaveAttribute(
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const matcherName = 'toHaveAttribute'
-
     const paramsCount = arguments.length
 
     if (value === undefined) {

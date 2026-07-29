@@ -73,6 +73,10 @@ type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn
  */
 type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
 
+interface WdioCustomAsymmetricMatchers {
+    oneOf(...values: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>): ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>
+}
+
 /**
  * Matchers dedicated to Wdio Browser.
  * When asserting on a browser's properties requiring to be awaited, the return type is a Promise.
@@ -514,10 +518,10 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveText: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         (
-            text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
-        /** soon deprecated to replace by oneOf() or anyOf() when available */
+        /** @deprecated Use `expect.oneOf()` instead. */
         (
             text: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
@@ -525,7 +529,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Elements $$() API */
         (
-            text: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            text: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }>
@@ -807,6 +811,10 @@ type WdioAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
     inverse?: boolean;
 }
 
+type WdioOneOfAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
+    sample: [R];
+}
+
 type JasmineBaseAsymmetricMatcher = {
     jasmineToString(): string;
     asymmetricMatch(other: unknown): boolean;
@@ -906,9 +914,9 @@ declare namespace ExpectWebdriverIO {
      */
     interface Matchers<R extends void | Promise<void>, T> extends WdioCustomMatchers<R, T> {}
 
-    interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
+    interface AsymmetricMatchers extends WdioAsymmetricMatchers, WdioCustomAsymmetricMatchers {}
 
-    interface InverseAsymmetricMatchers extends Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any'> {}
+    interface InverseAsymmetricMatchers extends Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any' | 'oneOf'> {}
 
     /**
      * End of block overloading types from the expect library.
@@ -1217,6 +1225,11 @@ declare namespace ExpectWebdriverIO {
      * Allow to match any defined value or any defined value of a given type and simply validate a value exists.
      */
     type PartialMatcherAnything = ExpectLibAnything | JasmineAnythingAsymmetricMatcher
+
+    /**
+     * Allow to match one of the specified value.
+     */
+    type OneOfPartialMatcher<T> = ExpectWebdriverIO.PartialMatcher<T[]>
 }
 
 declare module 'expect-webdriverio' {
