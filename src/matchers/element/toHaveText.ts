@@ -10,9 +10,8 @@ import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
-import type { OneOfMatcher } from '../asymmetrics/oneOf.js'
 
-async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string> | OneOfMatcher> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
+async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
     const actualText = await el.getText()
 
     return compareTextOrArray(actualText, expectedText, options)
@@ -20,7 +19,7 @@ async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<
 
 export async function toHaveText(
     received: WdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | OneOfMatcher,
+    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'text', verb = 'have', isNot, matcherName = 'toHaveText' } = this
@@ -41,12 +40,11 @@ export async function toHaveText(
             const commandResult = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | OneOfMatcher | undefined) => {
+                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp> | undefined) => {
                     return compareElement(element, values, options)
                 },
                 isNot,
                 strategy: isNewStrictCompare ? 'NewStrictMultipleElements' : 'LegacyLooseMultipleElements',
-                // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
                 strictConfiguration: { allowArrayWithSingleElement: true }
             })
             subject = commandResult.subject

@@ -135,7 +135,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareTextOrArray = (
     actualText: string,
-    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | OneOfMatcher> | undefined,
+    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp>> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): CompareResult<string> => {
     const unchangedActualText = actualText
@@ -164,7 +164,8 @@ export const compareTextOrArray = (
         return { result: expectedTexts.asymmetricMatch(actualText), value: unchangedActualText }
     }
 
-    const compareResults = compareText(actualText, expectedTexts, options)
+    // TODO one day consolidate typing and internal of oneOf so we do not need the below casting!
+    const compareResults = compareText(actualText, expectedTexts as string | RegExp, options)
 
     return { result: compareResults.result, value: unchangedActualText }
 

@@ -74,7 +74,7 @@ type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn
 type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
 
 interface WdioCustomAsymmetricMatchers {
-    oneOf: <T>(...values: Array<T | ExpectWebdriverIO.PartialMatcher<T>>) => ExpectWebdriverIO.PartialMatcher<T>
+    oneOf(...values: Array<string | RegExp>): ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp>
 }
 
 /**
@@ -914,9 +914,9 @@ declare namespace ExpectWebdriverIO {
      */
     interface Matchers<R extends void | Promise<void>, T> extends WdioCustomMatchers<R, T> {}
 
-    interface AsymmetricMatchers extends WdioAsymmetricMatchers {}
+    interface AsymmetricMatchers extends WdioAsymmetricMatchers, WdioCustomAsymmetricMatchers {}
 
-    interface InverseAsymmetricMatchers extends Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any'> {}
+    interface InverseAsymmetricMatchers extends Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any' | 'oneOf'> {}
 
     /**
      * End of block overloading types from the expect library.

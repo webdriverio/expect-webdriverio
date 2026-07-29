@@ -69,11 +69,3 @@ export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp>>
 export function oneOf(...sample: Array<string | RegExp>): OneOfMatcher {
     return new OneOfMatcher(...sample)
 }
-
-declare global {
-    namespace ExpectWebdriverIO {
-        interface AsymmetricMatchers {
-            oneOf(...sample: Array<string | RegExp>): OneOfMatcher;
-        }
-    }
-}
