@@ -10,7 +10,6 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/asymmetricsUtils.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -100,8 +99,6 @@ export async function toHaveElementProperty(
         expectedValue: [property, value],
         options,
     })
-
-    injectOptionIntoWdioAsymmetricMatchers(value, options)
 
     let elements
     let actualProppertyValue: unknown

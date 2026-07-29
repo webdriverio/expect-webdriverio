@@ -36,36 +36,31 @@ describe('OneOfMatcher', () => {
         })
 
         it('should format with containing prefix', () => {
-            const matcher = new OneOfMatcher('apple', 'banana')
-            matcher.setOptions({ containing: true })
+            const matcher = new OneOfMatcher('apple', 'banana').withOptions({ containing: true })
 
             expect(matcher.toAsymmetricMatcher()).toBe('containingOneOf<"apple", "banana">')
         })
 
         it('should format with startingWith prefix', () => {
-            const matcher = new OneOfMatcher('apple', 'banana')
-            matcher.setOptions({ atStart: true })
+            const matcher = new OneOfMatcher('apple', 'banana').withOptions({ atStart: true })
 
             expect(matcher.toAsymmetricMatcher()).toBe('startingWithOneOf<"apple", "banana">')
         })
 
         it('should format with endingWith prefix', () => {
-            const matcher = new OneOfMatcher('apple', 'banana')
-            matcher.setOptions({ atEnd: true })
+            const matcher = new OneOfMatcher('apple', 'banana').withOptions({ atEnd: true })
 
             expect(matcher.toAsymmetricMatcher()).toBe('endingWithOneOf<"apple", "banana">')
         })
 
         it('should format with matchingAtIndex prefix when atIndex is a number', () => {
-            const matcher = new OneOfMatcher('apple', 'banana')
-            matcher.setOptions({ atIndex: 0 })
+            const matcher = new OneOfMatcher('apple', 'banana').withOptions({ atIndex: 0 })
 
             expect(matcher.toAsymmetricMatcher()).toBe('matchingAtIndex<0>OneOf<"apple", "banana">')
         })
 
         it('should format with matchingAtIndex prefix and a single sample value', () => {
-            const matcher = new OneOfMatcher('apple')
-            matcher.setOptions({ atIndex: 1 })
+            const matcher = new OneOfMatcher('apple').withOptions({ atIndex: 1 })
 
             expect(matcher.toAsymmetricMatcher()).toBe('matchingAtIndex<1>OneOf<"apple">')
         })

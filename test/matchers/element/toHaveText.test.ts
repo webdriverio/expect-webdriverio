@@ -1502,6 +1502,25 @@ Received      : ["WDIO", "WebdriverIO"]`
                 )
             })
 
+            test('should be able to reuse oneOf matcher in multiple tests', async () => {
+                const elements = await $$('elements')
+
+                vi.mocked((elements)[0].getText).mockResolvedValue('WDIO')
+                vi.mocked((elements)[1].getText).mockResolvedValue('WebdriverIO')
+
+                const matcher = wdioExpect.oneOf('DIO', 'ebdriverIO')
+
+                const resutls = await Promise.all([
+                    // assertion A: options injected → { containing: true }
+                    thisContext.toHaveText(elements, matcher, { containing: true }),
+                    // assertion B: options injected → { atStart: true }  ← overwrites matcher.options
+                    thisContext.toHaveText(elements, matcher, { atStart: true }),
+                ])
+
+                expect(resutls[0].pass).toBe(true)
+                expect(resutls[1].pass).toBe(false)
+            })
+
             describe('Long promises', () => {
 
                 describe("given element's text takes more time then the configured wait to be retrieved", () => {

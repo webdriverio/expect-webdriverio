@@ -9,7 +9,7 @@ import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
-import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/asymmetricsUtils.js'
+import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import type { OneOfMatcher } from '../asymmetrics/oneOf.js'
 
 async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string> | OneOfMatcher> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
@@ -31,7 +31,7 @@ export async function toHaveText(
         options,
     })
 
-    injectOptionIntoWdioAsymmetricMatchers(expectedValue, options)
+    expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
     let actualText: string | string[] | undefined
     let subject: unknown = received

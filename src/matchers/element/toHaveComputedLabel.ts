@@ -7,7 +7,6 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/asymmetricsUtils.js'
 
 async function singleElementCompare(
     element: WebdriverIO.Element,
@@ -31,8 +30,6 @@ export async function toHaveComputedLabel(
         expectedValue,
         options,
     })
-
-    injectOptionIntoWdioAsymmetricMatchers(expectedValue, options)
 
     let el
     let actualLabel

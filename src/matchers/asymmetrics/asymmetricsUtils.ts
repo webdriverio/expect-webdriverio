@@ -1,14 +1,27 @@
 import { AsymmetricMatcher } from 'expect'
-import { isAsymmetricMatcher, toArray } from '../../utils.js'
+import { isAsymmetricMatcher } from '../../utils.js'
 
-export const injectOptionIntoWdioAsymmetricMatchers = <T>(expectedValue: T, options: ExpectWebdriverIO.StringOptions | undefined) => {
-    if (options ) {
-        toArray(expectedValue).forEach((value) => {
-            if (isAsymmetricMatcher(value) && 'setOptions' in value && typeof value.setOptions === 'function') {
-                value.setOptions(options || {})
-            }
-        })
+/**
+ * Build asymmetric matchers with options for WebdriverIO.
+ * Requires new instance of asymmetric matcher to not have multiple assertions mutating the same instance with different options.
+ */
+export const buildWdioAsymmetricMatchersWithOptions = <T>(expectedValue: T, options: ExpectWebdriverIO.StringOptions | undefined) => {
+    if (options) {
+        if (Array.isArray(expectedValue)) {
+            return expectedValue.map((value) => buildOneAsymmetricMatcherWithOptions(value, options))
+        }
+        return buildOneAsymmetricMatcherWithOptions(expectedValue, options)
     }
+    return expectedValue
+}
+
+const buildOneAsymmetricMatcherWithOptions = <T>(expectedValue: T, options: ExpectWebdriverIO.StringOptions | undefined) => {
+    if (options) {
+        if (isAsymmetricMatcher(expectedValue) && 'withOptions' in expectedValue && typeof expectedValue.withOptions === 'function') {
+            return expectedValue.withOptions(options)
+        }
+    }
+    return expectedValue
 }
 
 export abstract class WdioAsymmetricMatchers<T> extends AsymmetricMatcher<T> {
