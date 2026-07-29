@@ -10,8 +10,9 @@ import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import { injectOptionIntoWdioAsymmetricMatchers } from '../asymmetrics/asymmetricsUtils.js'
+import type { OneOfMatcher } from '../asymmetrics/oneOf.js'
 
-async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
+async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string> | OneOfMatcher> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
     const actualText = await el.getText()
 
     return compareTextOrArray(actualText, expectedText, options)
@@ -19,7 +20,7 @@ async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<
 
 export async function toHaveText(
     received: WdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | OneOfMatcher,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'text', verb = 'have', isNot, matcherName = 'toHaveText' } = this
@@ -40,7 +41,7 @@ export async function toHaveText(
             const commandResult = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => {
+                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | OneOfMatcher | undefined) => {
                     return compareElement(element, values, options)
                 },
                 isNot,

@@ -573,7 +573,7 @@ await expect($('#elem')).toHaveStyle({
 
 ### toHaveText
 
-Checks if element has a specific text. Can also be called with an array as parameter in the case where the element can have different texts.
+Checks if an element has a specific text. `oneOf` can also be used if the element can have different possible texts.
 
 ##### Usage
 
@@ -582,8 +582,10 @@ await browser.url('https://webdriver.io/')
 const elem = await $('.container')
 await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
 await expect(elem).toHaveText(expect.stringContaining('test framework for Node.js'))
-await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'])
-await expect(elem).toHaveText([expect.stringContaining('test framework for Node.js'), expect.stringContaining('Started')])
+
+// Succeed if one of the text matches
+await expect(elem).toHaveText(expect.oneOf('Next-gen browser and mobile automation test framework for Node.js', 'Get Started'))
+await expect(elem).toHaveText(expect.oneOf(expect.stringContaining('test framework for Node.js'), expect.stringContaining('Started')))
 ```
 
 If you have a list of elements like the HTML structure below:
@@ -1000,7 +1002,7 @@ You can also directly use regular expressions for all matchers that do text comp
 await browser.url('https://webdriver.io/')
 const elem = await $('.container')
 await expect(elem).toHaveText(/node\.js/i)
-await expect(elem).toHaveText([/node\.js/i, 'Get Started'])
+await expect(elem).toHaveText(expect.oneOf(/node\.js/i, 'Get Started'))
 await expect(browser).toHaveTitle(/webdriverio/i)
 await expect(browser).toHaveUrl(/webdriver\.io/)
 await expect(elem).toHaveElementClass(/Container/i)

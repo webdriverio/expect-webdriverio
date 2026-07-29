@@ -73,6 +73,8 @@ await expect(elements).toHaveText('myValue1');
 await expect(elements).toHaveText(/optionA|optionB/);
 // NOT Equivalent to:
 await expect(elements).toHaveText(['optionA', 'optionB']);
+// but equivalent to 
+await expect(elements).toHaveText(expect.oneOf('optionA', 'optionB'));
 
 // Multiple expected values
 // Elements must match index-by-index: element 0 must be 'valueForIndex0' AND element 1 must be 'valueForIndex1'.
@@ -81,6 +83,11 @@ await expect(elements).toHaveText(['valueForIndex0', 'valueForIndex1']);
 // Element at index 0 must match either `index0OptionA` or `index0OptionB` AND element 1 must match the exact string `index1OptionC`.
 await expect(elements).toHaveText([
   /index0OptionA|index0OptionB/, 
+  'index1OptionC'
+]);
+// Equivalent as
+await expect(elements).toHaveText([
+  expect.oneOf('index0OptionA','index0OptionB'), 
   'index1OptionC'
 ]);
 
@@ -93,16 +100,6 @@ await expect(elements).not.toHaveText(/forbiddenTextA|forbiddenTextB/);
 
 ```ts
 // To allow passing if at least one element matches, we can introduce a `.some` modifier.
-await expect(elements).some.toHaveText('myValue1');
-await expect(elements).some.toBeDisplayed();
-
-// Use oneOf to ease passing multiple values
-await expect(elements).toHaveText(/optionA|optionB/);
-// Equivalent to:
-await expect(elements).toHaveText(oneOf('optionA', 'optionB'));
-// Element 0 must match oneOf the value AND Element 1 must match the exact string.
-await expect(elements).toHaveText([
-  oneOf('index0OptionA','index0OptionB'), 
-  'index1OptionC'
-]);
+await expect(elements).toHaveText('myValue1',{ some: true });
+await expect(elements).toBeDisplayed({ some: true });
 ```

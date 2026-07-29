@@ -17,11 +17,6 @@ export abstract class WdioAsymmetricMatchers<T> extends AsymmetricMatcher<T> {
     // Required to show the asymmetric matcher in the failure message!
     public abstract toAsymmetricMatcher(): string
 
-    // When paired with Jasmine! TODO dprevost to test this with Jasmine!
-    public jasmineToString() {
-        return this.toString()
-    }
-
     // Not used by default, just a fallback!
     public toString() {
         return this.toAsymmetricMatcher()

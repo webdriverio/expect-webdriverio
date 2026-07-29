@@ -212,7 +212,7 @@ Received: ""`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have text
 
-Expected: startingWithOneOf<WDIO, notMatching>
+Expected: startingWithOneOf<"WDIO", "notMatching">
 Received: "WebdriverIO"`
             )
         })
@@ -224,7 +224,7 @@ Received: "WebdriverIO"`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have text
 
-Expected [not]: startingWithOneOf<WDIO, WebdriverIO>
+Expected [not]: startingWithOneOf<"WDIO", "WebdriverIO">
 Received      : "WebdriverIO"`
             )
         })
@@ -1478,8 +1478,8 @@ Expect $$(\`elements\`) to have text
 + Received  + 1
 
   Array [
-    startingWithOneOf<WDIO, notMatching>,
--   startingWithOneOf<WDIO, notMatching>,
+    startingWithOneOf<"WDIO", "notMatching">,
+-   startingWithOneOf<"WDIO", "notMatching">,
 +   "WebdriverIO",
   ]`
                 )
@@ -1497,7 +1497,7 @@ Expect $$(\`elements\`) to have text
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`elements\`) not to have text
 
-Expected [not]: [startingWithOneOf<WDIO, WebdriverIO>, startingWithOneOf<WDIO, WebdriverIO>]
+Expected [not]: [startingWithOneOf<"WDIO", "WebdriverIO">, startingWithOneOf<"WDIO", "WebdriverIO">]
 Received      : ["WDIO", "WebdriverIO"]`
                 )
             })

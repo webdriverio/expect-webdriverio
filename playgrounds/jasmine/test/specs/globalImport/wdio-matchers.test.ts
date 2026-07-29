@@ -1,4 +1,5 @@
 import { browser, $, $$ } from '@wdio/globals'
+import { expect } from 'expect-webdriverio'
 
 describe('WebdriverIO Custom Matchers', () => {
     beforeEach(async () => {
@@ -80,6 +81,15 @@ describe('WebdriverIO Custom Matchers', () => {
         it('should verify text with options', async () => {
             const heading = await $$('h1')[1]  // Second h1 has text
             await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+        })
+
+        it('should verify element text with expected array', async () => {
+            const docsLink = await $('=Docs')
+            await expect(docsLink).toHaveText('Docs')
+            await expect(docsLink).toHaveText(['Docs', 'Doc'])
+            // TODO to support one day expect.oneOf!
+            //await expect(docsLink).toHaveText(jasmine.oneOf('Docs', 'Doc'))
+            await expect(docsLink).toHaveText(expect.oneOf('Docs', 'Doc'))
         })
     })
 

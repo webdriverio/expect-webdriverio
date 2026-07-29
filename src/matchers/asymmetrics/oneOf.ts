@@ -46,7 +46,7 @@ export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp>>
         const samples = isArray ? this.sample : [this.sample]
 
         const formattedSamples = samples
-            .map((s) => (s instanceof RegExp ? s.toString() : s))
+            .map((s) => (s instanceof RegExp ? s.toString() : `"${s}"`))
             .join(', ')
 
         // 3. Combine prefix with 'OneOf' suffix if it's an array, otherwise keep casing clean
