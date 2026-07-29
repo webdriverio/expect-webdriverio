@@ -7,10 +7,11 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
 async function singleElementCompare(
     element: WebdriverIO.Element,
-    label: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined,
+    label: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ) {
     const actualLabel = await element.getComputedLabel()
@@ -31,6 +32,8 @@ export async function toHaveComputedLabel(
         options,
     })
 
+    expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
+
     let el
     let actualLabel
 
@@ -39,7 +42,7 @@ export async function toHaveComputedLabel(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
+                singleElementCompare: (element, expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
                 isNot,
                 strategy: 'NewStrictMultipleElements',
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements

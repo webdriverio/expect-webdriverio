@@ -8,7 +8,7 @@ import type { AssertionResult } from 'expect-webdriverio'
  */
 export async function toHaveHref(
     el: WdioElementMaybePromise,
-    expectedValue: string | RegExp | WdioAsymmetricMatcher<string>,
+    expectedValue: MaybeOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
@@ -17,13 +17,13 @@ export async function toHaveHref(
  */
 export async function toHaveHref(
     el: WdioElementsMaybePromise,
-    expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveHref(
     el: WdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
 

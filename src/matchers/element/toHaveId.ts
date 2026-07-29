@@ -8,7 +8,7 @@ import type { AssertionResult } from 'expect-webdriverio'
  */
 export async function toHaveId(
     el: WdioElementMaybePromise,
-    expectedValue: string | RegExp | AsymmetricMatcher<string>,
+    expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
@@ -17,13 +17,13 @@ export async function toHaveId(
  */
 export async function toHaveId(
     el: WdioElementsMaybePromise,
-    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveId(
     el: WdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
 

@@ -1,4 +1,4 @@
-import type { StringOptions } from 'expect-webdriverio'
+import type { HTMLOptions, StringOptions } from 'expect-webdriverio'
 import { compareTextWithArray } from '../../utils.js'
 import { WdioAsymmetricMatchers } from './asymmetricsUtils.js'
 
@@ -9,7 +9,7 @@ import { WdioAsymmetricMatchers } from './asymmetricsUtils.js'
  */
 export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp | AsymmetricMatcher<string>>> {
     // TODO support HTML options
-    public options: StringOptions = {}
+    public options: StringOptions | HTMLOptions = {}
 
     constructor(...sample: Array<string | RegExp | AsymmetricMatcher<string>>) {
         super(sample)

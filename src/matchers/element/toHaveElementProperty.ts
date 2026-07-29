@@ -1,6 +1,6 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeArray, WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { expect as wdioExpect } from '../../index.js'
 import {
@@ -10,11 +10,13 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
+import { OneOfMatcher } from '../asymmetrics/oneOf.js'
 
 async function condition(
     el: WebdriverIO.Element,
     property: string,
-    expectedValue: string | number | RegExp | AsymmetricMatcher<string> | null | undefined, // TODO: review if an array of expected values should be supported for this matcher similarly as other matchers
+    expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined, // TODO: review if an array of expected values should be supported for this matcher similarly as other matchers
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { asString = false } = options
@@ -26,6 +28,8 @@ async function condition(
             return { result: expectedValue.asymmetricMatch(propertyValue), value: propertyValue }
         }
         return { result: propertyValue === expectedValue, value: propertyValue }
+    } else if ( expectedValue instanceof OneOfMatcher) {
+        return { result: expectedValue.asymmetricMatch(propertyValue), value: propertyValue }
     }
 
     // To review the cast to be more type safe but for now let's keep the existing behavior to ensure no regression
@@ -61,7 +65,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementsMaybePromise,
     property: string,
-    value: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null | undefined>,
+    value: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null | undefined>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
@@ -72,7 +76,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
-    value: string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher,
+    value: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
@@ -80,7 +84,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementOrArrayMaybePromise,
     property: string,
-    value?: MaybeArray<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher> | null | undefined,
+    value?: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher> | null | undefined,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
@@ -100,6 +104,8 @@ export async function toHaveElementProperty(
         options,
     })
 
+    value = buildWdioAsymmetricMatchersWithOptions(value, options)
+
     let elements
     let actualProppertyValue: unknown
 
@@ -108,7 +114,7 @@ export async function toHaveElementProperty(
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: value,
-                singleElementCompare: (element, expectedValue: string | number | RegExp | AsymmetricMatcher<string> | null | undefined) => {
+                singleElementCompare: (element, expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined) => {
                     return condition(element, property, expectedValue, options)
                 },
                 isNot,

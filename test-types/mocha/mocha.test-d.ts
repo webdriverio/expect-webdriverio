@@ -206,10 +206,10 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
                 expectTypeOf(expect(chainableElement).toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toHaveHTML(/text/)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveHTML(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveHTML([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveHTML([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveHTML(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML(expect.oneOf('text1', 'text2'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML(expect.oneOf(expect.stringContaining('text1'), expect.stringContaining('text2')))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML(expect.oneOf(/text1/, /text2/))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML(expect.oneOf('text1', /text1/, expect.stringContaining('text3')))).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(chainableElement).not.toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
 
@@ -221,6 +221,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(elementArray).toHaveHTML([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toHaveHTML([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toHaveHTML(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveHTML(['text1', expect.oneOf('text1', /text1/, expect.stringContaining('text3'))])).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(elementArray).not.toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
 
@@ -238,6 +239,13 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableArray).toHaveHTML).parameter(0).extract<number>().toBeNever()
 
                 expectTypeOf(expect(browser).toHaveHTML).toBeNever()
+            })
+
+            it('should be deprecated', async () => {
+                expectTypeOf(expect(chainableElement).toHaveHTML(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveHTML(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
             })
 
             it('should have ts errors when actual is not an element', async () => {

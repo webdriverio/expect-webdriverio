@@ -29,7 +29,22 @@ type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherCont
     (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult;
 }
 
+/**
+ * Indicates that a value can be either one T or an array of T.
+ */
 type MaybeArray<T> = T | T[]
+
+/**
+ * Indicates that a value can be either one T, an array of T with oneOf of T, or a oneOf matcher of T.
+ * For oneOf anything is excluded since it does not make any sense to have a oneOf with Anything matcher.
+ */
+type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>)[] | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>
+
+/**
+ * Indicates that a value can be either one T, or oneOf matchers of T.
+ * For oneOf anything is excluded since it does not make any sense to have a oneOf with Anything matcher.
+ */
+type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>
 
 /**
  * Real Promise and wdio chainable promise types.
@@ -225,7 +240,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Assert both attribute name AND a specific expected value */
         (
             attribute: string,
-            value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
+            value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>> | ExpectWebdriverIO.PartialMatcherAnything,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }, {
@@ -247,7 +262,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Assert both attribute name AND a specific expected value */
         (
             attribute: string,
-            value: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+            value: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }
@@ -294,7 +309,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
             options?: ExpectWebdriverIO.StringOptions
         ) :Promise<void>
-        /** soon deprecated to replace by oneOf() or anyOf() when available */
+        /** @deprecated use `expect.oneOf()` instead of an array */
         (
             className: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
@@ -330,7 +345,8 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Assert both property name AND a specific expected value */
         (
             property: string,
-            value: string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
+            // TODO support `oneOf` for number!
+            value: string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }, {
@@ -356,7 +372,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Assert both property name AND a specific expected value */
         (
             property: string,
-            value: MaybeArray<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null | undefined>,
+            value: MaybeArray<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }>
@@ -368,14 +384,14 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Element $() API */
         (
 
-            value: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>,
 
         /** Elements $$() API */
         (
 
-            value: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            value: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>
     >
@@ -451,13 +467,13 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveHref: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         (
-            href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            href: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }, {
         /** Elements $$() API */
         (
-            href: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            href: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }>
@@ -468,13 +484,13 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveLink: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         (
-            href: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            href: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }, {
         /** Elements $$() API */
         (
-            href: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            href: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }>
@@ -485,13 +501,13 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveId: FnWhenElementOrArrayLike<ActualT,
         /** Element $() API */
         (
-            id: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            id: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>,
 
         /** Elements $$() API */
         (
-            id: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            id: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>
     >
@@ -518,7 +534,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveText: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         (
-            text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string>,
+            text: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
         /** @deprecated Use `expect.oneOf()` instead. */
@@ -529,7 +545,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Elements $$() API */
         (
-            text: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>,
+            text: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }>
@@ -541,10 +557,10 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveHTML: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         (
-            text: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            text: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.HTMLOptions
         ) : Promise<void>
-        /** soon deprecated to replace by oneOf() or anyOf() when available */
+        /** @deprecated to replace by oneOf() or anyOf() when available */
         (
             text: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.HTMLOptions
@@ -552,7 +568,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Elements $$() API */
         (
-            text: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            text: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>>,
             options?: ExpectWebdriverIO.HTMLOptions
         ): Promise<void>
     }>
@@ -564,11 +580,11 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveComputedLabel: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         (
-            computedLabel: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            computedLabel: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
 
-        /** soon deprecated to replace by oneOf() or anyOf() when available */
+        /** @deprecated use `expect.oneOf()` instead of an array */
         (
             computedLabel: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
@@ -576,7 +592,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Elements $$() API */
         (
-            computedLabel: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            computedLabel: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }>
@@ -588,11 +604,11 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveComputedRole: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         (
-            computedRole: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            computedRole: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
 
-        /** soon deprecated to replace by oneOf() or anyOf() when available */
+        /** @deprecated use `expect.oneOf()` instead of an array */
         (
             computedRole: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
@@ -600,7 +616,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Elements $$() API */
         (
-            computedRole: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            computedRole: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }>
