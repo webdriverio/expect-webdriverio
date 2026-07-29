@@ -74,7 +74,7 @@ type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn
 type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
 
 interface WdioCustomAsymmetricMatchers {
-    oneOf(...values: Array<string | RegExp>): ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp>
+    oneOf(...values: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>): ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>
 }
 
 /**

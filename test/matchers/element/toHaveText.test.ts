@@ -229,7 +229,7 @@ Received      : "WebdriverIO"`
             )
         })
 
-        test('success if one of the values in the array matches with text and trim', async () => {
+        test('success if one of the values in the array matches with text and trim - deprecated (TODO)', async () => {
 
             vi.mocked(el.getText).mockResolvedValue('   WebdriverIO   ')
 
@@ -514,6 +514,13 @@ Received      : ["WebdriverIO1", "WebdriverIO2"]`
                 test('should return true if the received elements', async () => {
                     const result = await thisContext.toHaveText(els, ['WebdriverIO', 'Get Started'], { wait: 0 })
                     expect(result.pass).toBe(true)
+                })
+
+                test('should not support oneOf in array under legacy behavior', async () => {
+                    await expect(
+                        // @ts-expect-error
+                        thisContext.toHaveText(els, [wdioExpect.oneOf('WebdriverIO', 'Get Started'), wdioExpect.oneOf('WebdriverIO', 'Get Started')], { wait: 0 })
+                    ).rejects.toThrow('OneOf is not supported in array under legacy behavior. Please enable `useToHaveTextStrictMultiElementsCompareStrategy` feature flag to use the new strict index based matching strategy with `expect.oneOf()`.')
                 })
 
                 test('should return true if actual texts contains space since we trim by default', async () => {
@@ -1460,6 +1467,18 @@ Expect $$(\`elements\`) not to have text
 Expected [not]: ["NotWebdriverio", "NotWebdriverio", "NotWebdriverio"]
 Received      : ["webdriverio", "webdriverio", undefined]`
                 )
+            })
+
+            test('should support oneOf in array under strict behavior', async () => {
+                const elements = await $$('elements')
+
+                vi.mocked((elements)[0].getText).mockResolvedValue('WebdriverIO')
+                vi.mocked((elements)[1].getText).mockResolvedValue('Get Started')
+
+                // @ts-expect-error -- TODO fix typing soon!
+                const result = await thisContext.toHaveText(elements, [wdioExpect.oneOf('WebdriverIO', 'Get Started'), wdioExpect.oneOf('WebdriverIO', 'Get Started')], { wait: 0 })
+
+                expect(result.pass).toBe(true)
             })
 
             test('failures if all the values of oneOf does not match with text', async () => {

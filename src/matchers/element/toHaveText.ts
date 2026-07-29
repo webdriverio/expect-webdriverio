@@ -11,7 +11,7 @@ import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
-async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
+async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
     const actualText = await el.getText()
 
     return compareTextOrArray(actualText, expectedText, options)
@@ -19,7 +19,7 @@ async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<
 
 export async function toHaveText(
     received: WdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp>,
+    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'text', verb = 'have', isNot, matcherName = 'toHaveText' } = this
@@ -40,7 +40,7 @@ export async function toHaveText(
             const commandResult = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
-                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp> | undefined) => {
+                singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string> | undefined) => {
                     return compareElement(element, values, options)
                 },
                 isNot,

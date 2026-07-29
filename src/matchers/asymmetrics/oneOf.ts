@@ -7,11 +7,11 @@ import { WdioAsymmetricMatchers } from './asymmetricsUtils.js'
  * StringOptions is injected by the matcher for customization of the matching behavior.
  * @see oneOfWithContextMatcher
  */
-export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp>> {
+export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp | AsymmetricMatcher<string>>> {
     // TODO support HTML options
     public options: StringOptions = {}
 
-    constructor(...sample: Array<string | RegExp>) {
+    constructor(...sample: Array<string | RegExp | AsymmetricMatcher<string>>) {
         super(sample)
     }
 
@@ -66,6 +66,6 @@ export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp>>
     }
 }
 
-export function oneOf(...sample: Array<string | RegExp>): OneOfMatcher {
+export function oneOf(...sample: Array<string | RegExp | AsymmetricMatcher<string>>): OneOfMatcher {
     return new OneOfMatcher(...sample)
 }

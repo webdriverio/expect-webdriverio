@@ -135,7 +135,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareTextOrArray = (
     actualText: string,
-    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp>> | undefined,
+    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): CompareResult<string> => {
     const unchangedActualText = actualText
@@ -151,7 +151,7 @@ export const compareTextOrArray = (
      */
     if (Array.isArray(expectedTexts)) {
         if (expectedTexts.some((expected): expected is OneOfMatcher => expected instanceof OneOfMatcher)) {
-            throw new Error('Mixing asymmetric matchers and string/regexp values in an array is not supported. Please use either all asymmetric matchers or all string/regexp values in the array.')
+            throw new Error('OneOf is not supported in array under legacy behavior. Please enable `useToHaveTextStrictMultiElementsCompareStrategy` feature flag to use the new strict index based matching strategy with `expect.oneOf()`.')
         } else {
 
             // Casting since typeScript cannot scale down the type and remove OneOfMatcher.
@@ -268,7 +268,7 @@ export const compareText = (
  */
 export const compareTextWithArray = (
     actual: string,
-    expectedArray: Array<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>,
+    expectedArray: Array<string | RegExp | AsymmetricMatcher<string>>,
     {
         ignoreCase = false,
         trim = false, // TODO for single element we trim by default, but for array we don't trim by default. To review in v6.0.0 and make it consistent for both single and array of elements
