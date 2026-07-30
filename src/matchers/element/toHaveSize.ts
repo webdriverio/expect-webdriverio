@@ -1,6 +1,7 @@
 import type { RectReturn } from '@wdio/protocols'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
     compareObject,
@@ -10,7 +11,7 @@ import {
 } from '../../utils.js'
 
 export type Size = Pick<RectReturn, 'width' | 'height'>
-async function condition(el: WebdriverIO.Element, size: Size | undefined): Promise<{ result: boolean, value: Size }> {
+async function condition(el: WebdriverIO.Element, size: Size | undefined): Promise<CompareResult<Size | null>> {
     const actualSize = await el.getSize()
 
     return compareObject(actualSize, size)

@@ -1,6 +1,7 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
+import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
@@ -9,12 +10,12 @@ import {
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined) {
+async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined): Promise<CompareResult<number | null>> {
     const actualHeight = await el.getSize('height')
 
     return {
-        result: expectedNumber?.asymmetricMatch(actualHeight) ?? false,
-        value: actualHeight
+        success: expectedNumber?.asymmetricMatch(actualHeight) ?? false,
+        actual: actualHeight
     }
 }
 

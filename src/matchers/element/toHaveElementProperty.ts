@@ -1,6 +1,7 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { expect as wdioExpect } from '../../index.js'
 import {
@@ -18,18 +19,18 @@ async function condition(
     property: string,
     expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined, // TODO: review if an array of expected values should be supported for this matcher similarly as other matchers
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
+): Promise<CompareResult<unknown>> {
     const { asString = false } = options
 
     const propertyValue = await el.getProperty(property)
 
     if (propertyValue === null || propertyValue === undefined || (!(expectedValue instanceof RegExp) && typeof propertyValue !== 'string' && !asString)) {
         if (isAsymmetricMatcher(expectedValue)) {
-            return { result: expectedValue.asymmetricMatch(propertyValue), value: propertyValue }
+            return { success: expectedValue.asymmetricMatch(propertyValue), actual: propertyValue }
         }
-        return { result: propertyValue === expectedValue, value: propertyValue }
+        return { success: propertyValue === expectedValue, actual: propertyValue }
     } else if ( expectedValue instanceof OneOfMatcher) {
-        return { result: expectedValue.asymmetricMatch(propertyValue), value: propertyValue }
+        return { success: expectedValue.asymmetricMatch(propertyValue), actual: propertyValue }
     }
 
     // To review the cast to be more type safe but for now let's keep the existing behavior to ensure no regression

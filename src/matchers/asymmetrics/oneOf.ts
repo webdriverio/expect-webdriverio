@@ -27,7 +27,7 @@ export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp |
             return false
         }
 
-        return compareTextWithArray(actual, this.sample.filter(s => s !== null), this.options).result
+        return compareTextWithArray(actual, this.sample.filter(s => s !== null), this.options).success
     }
 
     public withOptions(options: StringOptions): OneOfMatcher {

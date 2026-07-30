@@ -187,6 +187,6 @@ export const enhanceErrorBe = (
     return enhanceError(subject, expected, actual, { ...context, useNotInLabel: false }, verb, expectation, '', options)
 }
 
-const isSuccess = (isNot: boolean, result: boolean): boolean => {
-    return isNot ? !result : result
+const isSuccess = (isNot: boolean, success: boolean): boolean => {
+    return isNot ? !success : success
 }

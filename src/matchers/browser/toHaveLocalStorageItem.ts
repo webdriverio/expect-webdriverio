@@ -31,7 +31,7 @@ export async function toHaveLocalStorageItem(
 
             const compareResult = compareText(actual, expectedValue, options)
 
-            return { actual, success: compareResult.result, subject: browser }
+            return { actual, success: compareResult.success, subject: browser }
         },
         isNot,
         { wait: options.wait, interval: options.interval }

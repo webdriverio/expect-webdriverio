@@ -11,7 +11,7 @@ import {
 
 async function condition(el: WebdriverIO.Element, style: { [key: string]: string; } | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<{ [key: string]: string | undefined; } | undefined>> {
     if (style === undefined) {
-        return { result: false, value: undefined }
+        return { success: false, actual: undefined }
     }
 
     return compareStyle(el, style, options)

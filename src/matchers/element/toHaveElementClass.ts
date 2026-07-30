@@ -9,11 +9,11 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
     const actualClass = await el.getAttribute(attribute)
 
     if (value === undefined) {
-        return { result: false, value: actualClass }
+        return { success: false, actual: actualClass }
     }
 
     if (typeof actualClass !== 'string') {
-        return { result: false, value: actualClass }
+        return { success: false, actual: actualClass }
     }
 
     /**
@@ -26,12 +26,12 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
 
     const classes = actualClass.split(' ')
     const isValueInClasses = classes.some((clazz) => {
-        return compareTextOrArray(clazz, value, options).result
+        return compareTextOrArray(clazz, value, options).success
     })
 
     return {
-        result: isValueInClasses,
-        value: actualClass
+        success: isValueInClasses,
+        actual: actualClass
     }
 }
 
