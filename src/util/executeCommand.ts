@@ -7,11 +7,13 @@ export type StrategyMaybeArrayResult<T, E = WebdriverIO.Element | WebdriverIO.El
     subject: E;
     success: boolean;
     actual: MaybeArray<T> | undefined;
+    abort?: boolean;
 }
 export type StrategyResult<T, E = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown> = {
     subject: E;
     success: boolean;
     actual: T | undefined;
+    abort?: boolean;
 }
 
 /**
@@ -74,6 +76,7 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
             subject: subject,
             success: false,
             actual: undefined,
+            abort: true,
         }
     }
 
@@ -131,6 +134,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             // For the new strategy, beside toExist, empty elements even with `.not` is considered a failure since there are no elements to compare against.
             success: isNot ? !allowEmptyElements : false,
             actual: undefined,
+            abort: !allowEmptyElements,
         }
     }
 
@@ -146,6 +150,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             subject,
             success: forceFailure ? !!isNot : compareResult.result,
             actual: compareResult.value,
+            abort: forceFailure,
         }
     }
 
@@ -195,7 +200,8 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     return {
         subject,
         success: isNot ? !(!forceFailure && isNotEmpty && isAllFalse(results)) : (!forceFailure && isNotEmpty && isAllTrue(results)),
-        actual: results.map(({ value }) => value)
+        actual: results.map(({ value }) => value),
+        abort: forceFailure,
     }
 }
 

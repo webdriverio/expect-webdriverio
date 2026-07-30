@@ -3,6 +3,13 @@ import type { StrategyResult } from './executeCommand.js'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+class ForceAbortError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = 'ForceAbortError'
+    }
+}
+
 /**
  * wait for expectation to succeed
  * @param condition function
@@ -36,6 +43,8 @@ export const waitUntil = async <T>(
                 error = undefined
                 if (passed) {
                     break
+                } else if (result?.abort) {
+                    throw new ForceAbortError('force abort')
                 }
                 await sleep(interval)
             } catch (err) {
@@ -52,7 +61,7 @@ export const waitUntil = async <T>(
 
         return result
     } catch {
-        if (error) {
+        if (error && !(error instanceof ForceAbortError)) {
             throw error
         }
 
