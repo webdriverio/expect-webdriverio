@@ -346,7 +346,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         (
             property: string,
             // TODO support `oneOf` for number!
-            value: string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything> | number,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }, {
@@ -372,7 +372,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Assert both property name AND a specific expected value */
         (
             property: string,
-            value: MaybeArray<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>>,
+            value: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything> | MaybeArray<number>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }>

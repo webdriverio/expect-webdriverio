@@ -811,6 +811,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.anything())).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.any(Number))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveElementProperty('prop', expect.oneOf('val1', 'val2'))).toEqualTypeOf<Promise<void>>()
 
                     expectTypeOf(expect(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
