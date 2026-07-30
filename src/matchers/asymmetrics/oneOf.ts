@@ -69,6 +69,6 @@ export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp |
     }
 }
 
-export function oneOf(...sample: Array<string | RegExp | AsymmetricMatcher<string>>): OneOfMatcher {
+export function oneOf(...sample: Array<string | RegExp | AsymmetricMatcher<string> | null>): OneOfMatcher {
     return new OneOfMatcher(...sample)
 }
