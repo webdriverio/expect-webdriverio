@@ -42,7 +42,7 @@ export async function toBeElementsArrayOfSize(
     const { success: pass } = await waitUntil(
         async () => {
             if (!elements) {
-                return { success: false, subject: elements, actual: undefined }
+                return { success: false, subject: elements, actual: undefined, abort: true }
             }
 
             // Verify if size match first before refetching elements

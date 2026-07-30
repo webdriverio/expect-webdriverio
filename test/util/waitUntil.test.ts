@@ -185,4 +185,34 @@ describe(waitUntil, () => {
             })
         })
     })
+
+    describe('when condition returns abort: true', () => {
+        test('should return immediately without retrying (isNot=false)', async () => {
+            const condition = vi.fn().mockResolvedValue({
+                success: false,
+                abort: true,
+                subject: 'test',
+                actual: 'test',
+            })
+
+            const result = await waitUntil(condition, false, { wait: 5000, interval: 50 })
+
+            expect(result).toEqual({ success: false, subject: 'test', actual: 'test', abort: true })
+            expect(condition).toHaveBeenCalledTimes(1)
+        })
+
+        test('should return immediately without retrying (isNot=true), pass should be true since it is inverted later', async () => {
+            const condition = vi.fn().mockResolvedValue({
+                success: true,
+                abort: true,
+                subject: 'test',
+                actual: 'test',
+            })
+
+            const result = await waitUntil(condition, true, { wait: 5000, interval: 50 })
+
+            expect(result).toEqual({ success: true, subject: 'test', actual: 'test', abort: true })
+            expect(condition).toHaveBeenCalledTimes(1)
+        })
+    })
 })

@@ -121,7 +121,6 @@ describe(toBeRequestedWith, () => {
             mock.calls.push({ ...mockGet })
         }, 5)
         setTimeout(() => {
-            console.log('toBeRequestedWith.test: pushing calls', { ...mockGet }, { ...mockPost })
             mock.calls.push({ ...mockGet }, { ...mockPost })
         }, 15)
 
