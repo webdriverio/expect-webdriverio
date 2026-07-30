@@ -812,6 +812,10 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.anything())).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.any(Number))).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.oneOf('val1', 'val2'))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveElementProperty('prop', expect.oneOf('val1', null))).toEqualTypeOf<Promise<void>>()
+
+                    //@ts-expect-error: TODO one day support oneOf with number
+                    expectTypeOf(expect(element).toHaveElementProperty('prop', expect.oneOf(1, 'val2'))).toEqualTypeOf<Promise<void>>()
 
                     expectTypeOf(expect(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
@@ -842,7 +846,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(elements).toHaveElementProperty('prop', expect.any(Number))).toEqualTypeOf<Promise<void>>()
 
                     expectTypeOf(expect(elements).toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveElementProperty('prop', expect.oneOf(null, 'val', expect.stringContaining('val')))).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(elements).toHaveElementProperty('prop', ['val'])).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elements).toHaveElementProperty('prop', [null])).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(elements).toHaveElementProperty('prop', [expect.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(elements).toHaveElementProperty('prop', [expect.anything(), expect.any(Number), 'value', expect.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
                 })

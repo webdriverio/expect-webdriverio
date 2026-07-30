@@ -37,8 +37,9 @@ type MaybeArray<T> = T | T[]
 /**
  * Indicates that a value can be either one T, an array of T with oneOf of T, or a oneOf matcher of T.
  * For oneOf anything is excluded since it does not make any sense to have a oneOf with Anything matcher.
+ * TODO support number in oneOf until then we exclude it from the type to avoid confusion.
  */
-type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>)[] | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>
+type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything | number>>)[] | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything | number>>
 
 /**
  * Indicates that a value can be either one T, or oneOf matchers of T.
@@ -372,7 +373,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Assert both property name AND a specific expected value */
         (
             property: string,
-            value: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything> | MaybeArray<number>,
+            value: MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }>
