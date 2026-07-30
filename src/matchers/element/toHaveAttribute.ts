@@ -34,11 +34,9 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    let el
-    let attr
-    const pass = await waitUntil(
+    const { success: pass, actual: attr, subject: el } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, values: string | RegExp | AsymmetricMatcher<string> | undefined) => {
@@ -46,11 +44,6 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
                 },
                 isNot
             })
-
-            el = result.subject
-            attr = result.actual
-
-            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }

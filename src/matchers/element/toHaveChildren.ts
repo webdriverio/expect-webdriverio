@@ -94,21 +94,14 @@ export async function toHaveChildren(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValueOrOptions, options, { supportDefaultAsGteThen1: true })
 
-    let subject
-    let children
-    const pass = await waitUntil(
+    const { success: pass, actual: children, subject } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedValue: NumberMatcher | undefined) => condition(element, expectedValue),
                 isNot
             })
-
-            subject = result.subject
-            children = result.actual
-
-            return result.success
         },
         isNot,
         { wait: commandOptions.wait, interval: commandOptions.interval }

@@ -48,12 +48,9 @@ export async function toHaveStyle(
         options,
     })
 
-    let el
-    let actualStyle
-
-    const pass = await waitUntil(
+    const { success: pass, actual: actualStyle, subject: el } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 // TODO try to make the type work without casting expectedValues to { [key: string]: string; } | undefined
@@ -62,10 +59,6 @@ export async function toHaveStyle(
                 strategy: 'NewStrictMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: false }
             })
-            el = result.subject
-            actualStyle = result.actual
-
-            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }

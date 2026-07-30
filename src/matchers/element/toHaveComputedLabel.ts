@@ -34,12 +34,9 @@ export async function toHaveComputedLabel(
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    let el
-    let actualLabel
-
-    const pass = await waitUntil(
+    const { success: pass, actual: actualLabel, subject: el } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
@@ -48,10 +45,6 @@ export async function toHaveComputedLabel(
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
                 strictConfiguration: { allowArrayWithSingleElement: true }
             })
-            el = result.subject
-            actualLabel = result.actual
-
-            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }

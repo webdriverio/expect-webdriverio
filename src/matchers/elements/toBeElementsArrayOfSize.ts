@@ -39,21 +39,21 @@ export async function toBeElementsArrayOfSize(
     let { elements, other } = await awaitElementArray(received)
     const originalLength =  elements ? elements.length : undefined
 
-    const pass = await waitUntil(
+    const { success: pass } = await waitUntil(
         async () => {
             if (!elements) {
-                return false
+                return { success: false, subject: elements, actual: undefined }
             }
 
             // Verify if size match first before refetching elements
             const isPassing = expectedNumber.asymmetricMatch(elements.length)
             if (isPassing) {
-                return isPassing
+                return { success: isPassing, subject: elements, actual: elements.length }
             }
 
             // TODO should we do this on other matchers??
             elements = await refetchElements(elements, commandOptions.wait, true)
-            return false
+            return { success: false, subject: elements, actual: elements.length }
         },
         isNot,
         { wait: commandOptions.wait, interval: commandOptions.interval }

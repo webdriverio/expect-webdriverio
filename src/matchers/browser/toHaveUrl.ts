@@ -14,12 +14,13 @@ export async function toHaveUrl(
         options,
     })
 
-    let actual
-    const pass = await waitUntil(
+    const { success: pass, actual } = await waitUntil(
         async () => {
-            actual = await browser.getUrl()
+            const actual = await browser.getUrl()
 
-            return compareText(actual, expectedValue, options).result
+            const compareResult = compareText(actual, expectedValue, options)
+
+            return { actual, success: compareResult.result, subject: browser }
         },
         isNot,
         { wait: options.wait, interval: options.interval }

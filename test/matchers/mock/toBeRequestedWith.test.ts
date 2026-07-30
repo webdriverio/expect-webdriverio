@@ -108,8 +108,10 @@ const mockPost: local.NetworkAuthRequiredParameters = {
 
 describe(toBeRequestedWith, () => {
     let thisNotContext: { isNot: true,  toBeRequestedWith: typeof toBeRequestedWith }
+    let thisContext: { isNot: false,  toBeRequestedWith: typeof toBeRequestedWith }
 
     beforeEach(() => {
+        thisContext = { isNot: false,  toBeRequestedWith }
         thisNotContext = { isNot: true,  toBeRequestedWith }
     })
     test('wait for success, exact match', async () => {
@@ -119,6 +121,7 @@ describe(toBeRequestedWith, () => {
             mock.calls.push({ ...mockGet })
         }, 5)
         setTimeout(() => {
+            console.log('toBeRequestedWith.test: pushing calls', { ...mockGet }, { ...mockPost })
             mock.calls.push({ ...mockGet }, { ...mockPost })
         }, 15)
 
@@ -135,7 +138,7 @@ describe(toBeRequestedWith, () => {
         const beforeAssertion = vi.fn()
         const afterAssertion = vi.fn()
 
-        const result = await toBeRequestedWith(mock, params, { beforeAssertion, afterAssertion, wait: 500 })
+        const result = await thisContext.toBeRequestedWith(mock, params, { beforeAssertion, afterAssertion, wait: 500 })
 
         expect(result.pass).toBe(true)
         expect(beforeAssertion).toHaveBeenCalledWith({
@@ -457,7 +460,7 @@ Received      : {}`
     test('message', async () => {
         const mock: any = new TestMock()
 
-        const requested = await toBeRequestedWith(mock, {
+        const requested = await thisContext.toBeRequestedWith(mock, {
             url: () => false,
             method: ['DELETE', 'PUT'],
             requestHeaders: reduceHeaders(mockPost.request.headers),
@@ -466,7 +469,7 @@ Received      : {}`
             response: [...Array(50).keys()].map((_, id) => ({ id, name: `name_${id}` })),
         })
         expect(requested.pass).toBe(false)
-        expect(requested.message()).toEqual(`\
+        expect(stripAnsi(requested.message())).toEqual(`\
 Expect mock to be called with
 
 Expected: {"method": ["DELETE", "PUT"], "postData": "Anything ", "requestHeaders": {"Accept": "*", "Authorization": "Bearer ..2222222", "foo": "bar"}, "response": [{"id": 0, "name": "name_0"}, "... 49 more items"], "responseHeaders": {}, "url": "() => false"}
@@ -479,7 +482,7 @@ Received: "was not called"`
             method: mockPost.request.method,
         })
 
-        expect(notRequested.message()).toBe(
+        expect(stripAnsi(notRequested.message())).toBe(
             `Expect mock not to be called with
 
 - Expected [not]  - 1
@@ -544,7 +547,7 @@ Expect mock to be called with
         const mock: any = new TestMock()
         mock.calls.push({ ...mockPost })
 
-        const result = await toBeRequestedWith.call({}, mock, {
+        const result = await thisContext.toBeRequestedWith(mock, {
             url: jasmine.stringMatching(/\/api\/foo1$/),
         })
 

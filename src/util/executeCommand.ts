@@ -3,10 +3,15 @@ import { awaitElementOrArray, isElement } from './elementsUtil.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
 export type CompareResult<T> = { result: boolean; value: T }
-export type StrategyResult<T> = {
-    subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown;
+export type StrategyMaybeArrayResult<T, E = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown> = {
+    subject: E;
     success: boolean;
     actual: MaybeArray<T> | undefined;
+}
+export type StrategyResult<T, E = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown> = {
+    subject: E;
+    success: boolean;
+    actual: T | undefined;
 }
 
 /**
@@ -35,7 +40,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     strategy?: StrategyType,
     strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean }
 }
-): Promise<StrategyResult<Actual>> {
+): Promise<StrategyMaybeArrayResult<Actual>> {
     if (strategy === 'LegacyLooseMultipleElements') {
         return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot)
     }
@@ -61,7 +66,7 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     _isNot?: boolean,
 
-): Promise<StrategyResult<Actual>> => {
+): Promise<StrategyMaybeArrayResult<Actual>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
     if (!selector || isEmptyElements) {
@@ -116,7 +121,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     isNot: boolean,
     { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
-): Promise<StrategyResult<Actual>> => {
+): Promise<StrategyMaybeArrayResult<Actual>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
 

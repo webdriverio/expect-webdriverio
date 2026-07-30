@@ -106,12 +106,9 @@ export async function toHaveElementProperty(
 
     value = buildWdioAsymmetricMatchersWithOptions(value, options)
 
-    let elements
-    let actualProppertyValue: unknown
-
-    const pass = await waitUntil(
+    const { success: pass, actual: actualProppertyValue, subject: elements } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: value,
                 singleElementCompare: (element, expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined) => {
@@ -121,10 +118,6 @@ export async function toHaveElementProperty(
                 strategy: 'NewStrictMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: false }
             })
-            elements = result.subject
-            actualProppertyValue = result.actual
-
-            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }

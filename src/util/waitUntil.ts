@@ -1,4 +1,5 @@
 import { DEFAULT_OPTIONS } from '../constants.js'
+import type { StrategyResult } from './executeCommand.js'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -8,11 +9,11 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
  * @param isNot     https://jestjs.io/docs/expect#thisisnot
  * @param options   wait, interval, etc
  */
-export const waitUntil = async (
-    condition: () => Promise<boolean>,
+export const waitUntil = async <T>(
+    condition: () => Promise<StrategyResult<T>>,
     isNot = false,
     { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
-): Promise<boolean> => {
+): Promise<StrategyResult<T>> => {
     // single attempt
     if (wait === 0) {
         return await condition()
@@ -21,6 +22,7 @@ export const waitUntil = async (
     let error: Error | undefined
 
     // wait for condition to be truthy
+    let result: StrategyResult<T> | undefined
     try {
         const start = Date.now()
         while (true) {
@@ -29,9 +31,10 @@ export const waitUntil = async (
             }
 
             try {
-                const result = isNot !== (await condition())
+                result = await condition()
+                const passed = isNot !== result?.success
                 error = undefined
-                if (result) {
+                if (passed) {
                     break
                 }
                 await sleep(interval)
@@ -45,12 +48,14 @@ export const waitUntil = async (
             throw error
         }
 
-        return !isNot
+        result.success = !isNot
+
+        return result
     } catch {
         if (error) {
             throw error
         }
 
-        return isNot
+        return { subject: result?.subject, success: isNot, actual: result?.actual }
     }
 }

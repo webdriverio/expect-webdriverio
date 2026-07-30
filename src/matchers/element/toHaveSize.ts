@@ -47,12 +47,9 @@ export async function toHaveSize(
         options,
     })
 
-    let el
-    let actualSize
-
-    const pass = await waitUntil(
+    const { success: pass, actual: actualSize, subject: el } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedSize: Size | undefined) => condition(element, expectedSize),
@@ -60,11 +57,6 @@ export async function toHaveSize(
                 strategy: 'NewStrictMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: false }
             })
-
-            el = result.subject
-            actualSize = result.actual
-
-            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }

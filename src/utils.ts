@@ -3,7 +3,7 @@ import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
 
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from './types.js'
+import type { WdioElementOrArrayMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
@@ -73,12 +73,10 @@ async function executeCommandBe(
 ): ExpectWebdriverIO.AsyncAssertionResult {
     const { isNot, verb = 'be', allowEmptyElements = false } = this
 
-    let subject: WdioElementMaybePromise | unknown = received
-    let actual: boolean[] | boolean | undefined
-    const pass = await waitUntil(
+    const { success: pass, actual, subject } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy({
-                unresolvedElements: subject,
+            return await executeCommandWithStrategy({
+                unresolvedElements: received,
                 expectedValues: true,
                 singleElementCompare: async (element) => {
                     const result = await command(element)
@@ -88,9 +86,6 @@ async function executeCommandBe(
                 strictConfiguration: { allowEmptyElements }
 
             })
-            subject = result.subject
-            actual = result.actual
-            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
