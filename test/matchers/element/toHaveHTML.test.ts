@@ -4,6 +4,7 @@ import { toHaveHTML } from '../../../src/matchers/element/toHaveHTML.js'
 import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
+import { expect as wdioExpect } from 'expect-webdriverio'
 
 describe(toHaveHTML, () => {
 
@@ -237,7 +238,7 @@ Received: ""`)
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with html', async () => {
+            test('success if array matches with html - deprecated', async () => {
                 const result = await thisContext.toHaveHTML(element, ['This is example HTML', /Webdriver/i])
                 expect(result.pass).toBe(true)
             })
@@ -248,6 +249,33 @@ Received: ""`)
                     ignoreCase: true,
                 })
                 expect(result.pass).toBe(true)
+            })
+
+            test('success if matches one of the html', async () => {
+                const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('This is example HTML', /Webdriver/i))
+                expect(result.pass).toBe(true)
+            })
+
+            test('success if matches one of the html with ignoreCase', async () => {
+                const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('ThIs Is ExAmPlE HTML', /Webdriver/i), {
+                    wait: 1,
+                    ignoreCase: true,
+                })
+                expect(result.pass).toBe(true)
+            })
+
+            test('fails if does not match one of the html with ignoreCase', async () => {
+                const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('ThIs Is ExAmPlE', /Webdriv/i), {
+                    wait: 1,
+                    ignoreCase: true,
+                })
+                expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have HTML
+
+Expected: oneOf<"ThIs Is ExAmPlE", /Webdriv/i>
+Received: "This is example HTML"`
+                )
             })
 
             test('failure if no match', async () => {

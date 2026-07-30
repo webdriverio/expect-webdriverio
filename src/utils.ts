@@ -135,7 +135,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareTextOrArray = (
     actualText: string,
-    expectedTexts: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string>> | undefined,
+    expectedTexts: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): CompareResult<string> => {
     const unchangedActualText = actualText
@@ -153,10 +153,9 @@ export const compareTextOrArray = (
         if (expectedTexts.some((expected): expected is OneOfMatcher => expected instanceof OneOfMatcher)) {
             throw new Error('OneOf is not supported in array under legacy behavior. Please enable `useToHaveTextStrictMultiElementsCompareStrategy` feature flag to use the new strict index based matching strategy with `expect.oneOf()`.')
         } else {
-
-            // Casting since typeScript cannot scale down the type and remove OneOfMatcher.
-            const compareResults = compareTextWithArray(actualText, expectedTexts as Array<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>, options)
-            return { result: compareResults.result, value: unchangedActualText }
+            console.warn('Array of expected values is deprecated. Please use `expect.oneOf()` asymmetric matcher to compare against multiple expected values. This will be removed in v10.0.0.')
+            // TODO one day consolidate typing and internal of oneOf so we do not need the below casting!
+            expectedTexts = new OneOfMatcher(...expectedTexts as Array<string | RegExp | AsymmetricMatcher<string>>).withOptions(options)
         }
     }
 
@@ -171,6 +170,7 @@ export const compareTextOrArray = (
 
 }
 
+// TODO one day turn this into at least a asymetrics class to better report in failure messages the string case we are in (containing, atStart, atEnd, atIndex, etc) and the expected value(s)
 export const compareText = (
     actual: string,
     expected: string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | null | undefined,

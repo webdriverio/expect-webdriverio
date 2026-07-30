@@ -10,8 +10,10 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { expect as wdioExpect } from '../../index.js'
+import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
+import { OneOfMatcher } from '../asymmetrics/oneOf.js'
 
-async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined, options: ExpectWebdriverIO.StringOptions) {
+async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions) {
     const attributeValue = await el.getAttribute(attribute)
 
     if (typeof attributeValue !== 'string' || expectedValue === undefined || expectedValue === null) {
@@ -19,13 +21,18 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
             return { result: expectedValue.asymmetricMatch(attributeValue), value: attributeValue }
         }
         return { result: attributeValue === expectedValue, value: attributeValue }
+    } else if ( expectedValue instanceof OneOfMatcher) {
+        return { result: expectedValue.asymmetricMatch(attributeValue), value: attributeValue }
     }
 
-    return compareText(attributeValue, expectedValue, options)
+    // TODO fix OneOfMatcher typing to not require casting here!
+    return compareText(attributeValue, expectedValue as string | RegExp | AsymmetricMatcher<string> | undefined, options)
 }
 
-export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybePromise, attribute: string, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
+export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybePromise, attribute: string, expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     const { expectation = 'attribute', verb = 'have', isNot } = this
+
+    expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
     let el
     let attr
@@ -83,7 +90,7 @@ export async function toHaveAttribute(
 export async function toHaveAttribute(
     received: WdioElementMaybePromise,
     attribute: string,
-    value: string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher,
+    value: MaybeOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
@@ -93,14 +100,14 @@ export async function toHaveAttribute(
 export async function toHaveAttribute(
     received: WdioElementsMaybePromise,
     attribute: string,
-    value: MaybeArray<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
+    value: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveAttribute(
     received: WdioElementOrArrayMaybePromise,
     attribute: string,
-    value?: MaybeArray<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
+    value?: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const matcherName = 'toHaveAttribute'

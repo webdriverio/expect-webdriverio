@@ -13,9 +13,17 @@ describe('OneOfMatcher', () => {
         it('should return false if the actual value is not a string', () => {
             const matcher = new OneOfMatcher('apple', 'banana')
 
-            expect(matcher.asymmetricMatch(123 as any)).toBe(false)
-            expect(matcher.asymmetricMatch(null as any)).toBe(false)
-            expect(matcher.asymmetricMatch(undefined as any)).toBe(false)
+            expect(matcher.asymmetricMatch(123)).toBe(false)
+            expect(matcher.asymmetricMatch(null)).toBe(false)
+            expect(matcher.asymmetricMatch(undefined)).toBe(false)
+        })
+
+        it('should support null', () => {
+            const matcher = new OneOfMatcher('apple', 'banana', null)
+
+            expect(matcher.asymmetricMatch(123)).toBe(false)
+            expect(matcher.asymmetricMatch(null)).toBe(true)
+            expect(matcher.asymmetricMatch(undefined)).toBe(false)
         })
     })
 
