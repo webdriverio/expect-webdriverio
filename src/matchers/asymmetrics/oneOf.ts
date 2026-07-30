@@ -7,11 +7,11 @@ import { WdioAsymmetricMatchers } from './asymmetricsUtils.js'
  * StringOptions is injected by the matcher for customization of the matching behavior.
  * @see oneOfWithContextMatcher
  */
-export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp | AsymmetricMatcher<string>>> {
+export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp | AsymmetricMatcher<string> | null>> {
     // TODO support HTML options
     public options: StringOptions | HTMLOptions = {}
 
-    constructor(...sample: Array<string | RegExp | AsymmetricMatcher<string>>) {
+    constructor(...sample: Array<string | RegExp | AsymmetricMatcher<string> | null>) {
         super(sample)
     }
 
@@ -21,10 +21,13 @@ export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp |
     }
 
     public asymmetricMatch(actual: unknown): boolean {
-        if (typeof actual !== 'string') {
+        if (actual === null) {
+            return this.sample.includes(null)
+        } else if (typeof actual !== 'string') {
             return false
         }
-        return compareTextWithArray(actual, this.sample, this.options).result
+
+        return compareTextWithArray(actual, this.sample.filter(s => s !== null), this.options).result
     }
 
     public withOptions(options: StringOptions): OneOfMatcher {
