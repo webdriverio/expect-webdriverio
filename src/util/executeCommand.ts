@@ -5,10 +5,8 @@ export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleEle
 export type CompareResult<T> = { success: boolean; actual: T }
 export type StrategyResult<T, E = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown> = {
     subject: E;
-    success: boolean;
-    actual: T | undefined;
     abort?: boolean;
-}
+} & CompareResult<T | undefined>
 
 /**
  * Fetch element(s) and route them to the appropriate comparison strategy.

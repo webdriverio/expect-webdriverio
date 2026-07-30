@@ -37,7 +37,7 @@ export const waitUntil = async <T>(
                 if (passed) {
                     break
                 } else if (result?.abort) {
-                    return { subject: result.subject, success: isNot, actual: result.actual, abort: true }
+                    return { ...result, success: isNot }
                 }
                 await sleep(interval)
             } catch (err) {
@@ -50,9 +50,7 @@ export const waitUntil = async <T>(
             throw error
         }
 
-        result.success = !isNot
-
-        return result
+        return  { ...result, success: !isNot }
     } catch {
         if (error) {
             throw error
