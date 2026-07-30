@@ -314,13 +314,14 @@ Received: undefined`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`elements\`) to have style
 
-- Expected  - 0
-+ Received  + 1
+- Expected  - 1
++ Received  + 2
 
   Array [
     Object {
       "color": "#000",
-      "font-family": "Faktum",
+-     "font-family": "Faktum",
++     "font-family": "Wrong Value",
       "font-size": "26px",
     },
 +   undefined,
@@ -342,18 +343,20 @@ Expect $$(\`elements\`) to have style
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`elements\`) to have style
 
-- Expected  - 5
-+ Received  + 1
+- Expected  - 7
++ Received  + 3
 
   Array [
     Object {
       "color": "#000",
-      "font-family": "Faktum",
+-     "font-family": "Faktum",
++     "font-family": "Wrong Value",
       "font-size": "26px",
     },
     Object {
       "color": "#000",
-      "font-family": "Faktum",
+-     "font-family": "Faktum",
++     "font-family": "Wrong Value",
       "font-size": "26px",
     },
 -   Object {
