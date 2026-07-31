@@ -76,8 +76,7 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
         const compareResult = await singleElementCompare(selector, expectedValues)
         return {
             subject,
-            success: compareResult.success,
-            actual: compareResult.actual,
+            ...compareResult,
         }
     }
 

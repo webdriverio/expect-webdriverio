@@ -181,7 +181,7 @@ export const compareText = (
 ): CompareResult<string> => {
     if (typeof actual !== 'string' || expected === null || expected === undefined) {
         return {
-            actual: actual,
+            actual,
             success: false,
         }
     }
@@ -207,47 +207,47 @@ export const compareText = (
     if (isAsymmetricMatcher(expected)) {
         const result = expected.asymmetricMatch(actual)
         return {
-            actual: actual,
+            actual,
             success: result
         }
     }
 
     if (expected instanceof RegExp) {
         return {
-            actual: actual,
+            actual,
             success: !!actual.match(expected),
         }
     }
     if (containing) {
         return {
-            actual: actual,
+            actual,
             success: actual.includes(expected),
         }
     }
 
     if (atStart) {
         return {
-            actual: actual,
+            actual,
             success: actual.startsWith(expected),
         }
     }
 
     if (atEnd) {
         return {
-            actual: actual,
+            actual,
             success: actual.endsWith(expected),
         }
     }
 
     if (atIndex) {
         return {
-            actual: actual,
+            actual,
             success: actual.substring(atIndex, actual.length).startsWith(expected),
         }
     }
 
     return {
-        actual: actual,
+        actual,
         success: actual === expected,
     }
 }
@@ -276,7 +276,7 @@ export const compareTextWithArray = (
 ): CompareResult<string> => {
     if (typeof actual !== 'string') {
         return {
-            actual: actual,
+            actual,
             success: false,
         }
     }
@@ -325,7 +325,7 @@ export const compareTextWithArray = (
         return actual === expected
     })
     return {
-        actual: actual,
+        actual,
         success: hasFoundTextInArray,
     }
 }
@@ -333,13 +333,13 @@ export const compareTextWithArray = (
 export const compareObject = <T>(actual: T, expected: unknown): CompareResult<T> => {
     if (typeof actual !== 'object' || Array.isArray(actual)) {
         return {
-            actual: actual,
+            actual,
             success: false,
         }
     }
 
     return {
-        actual: actual,
+        actual,
         success: deepEql(actual, expected),
     }
 }
@@ -398,7 +398,7 @@ export const compareStyle = async (
     }
 
     return {
-        actual: actual,
+        actual,
         success,
     }
 }
