@@ -195,12 +195,12 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     return {
         subject,
         success,
-        actual: results.map(({ value }) => value)
+        actual: results.map(({ actual }) => actual),
         abort: forceFailure,
     }
 }
 
-const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.result === true)
-const isAllFalse = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.result === false)
-const isAtLeastOneTrue = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.result === true)
-const isAtLeastOneFalse = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.result === false)
+const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === true)
+const isAllFalse = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === false)
+const isAtLeastOneTrue = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.success === true)
+const isAtLeastOneFalse = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.success === false)
