@@ -43,7 +43,7 @@ export async function toHaveText(
                 },
                 isNot,
                 strategy: isNewStrictCompare ? 'NewStrictMultipleElements' : 'LegacyLooseMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: true }
+                strictConfiguration: { allowArrayWithSingleElement: true, some: options.some }
             })
         },
         isNot,

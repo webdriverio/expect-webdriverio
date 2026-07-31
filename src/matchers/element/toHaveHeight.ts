@@ -69,7 +69,7 @@ export async function toHaveHeight(
                 singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
                 isNot,
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: false }
+                strictConfiguration: { allowArrayWithSingleElement: false, some: options.some }
             })
         },
         isNot,

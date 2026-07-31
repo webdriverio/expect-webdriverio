@@ -43,7 +43,9 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
                 singleElementCompare: (element, values: string | RegExp | AsymmetricMatcher<string> | undefined) => {
                     return conditionAttributeValueMatchWithExpected(element, attribute, values, options)
                 },
-                isNot
+                isNot,
+                strategy: 'NewStrictMultipleElements',
+                strictConfiguration: {  some: options.some }
             })
         },
         isNot,

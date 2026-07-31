@@ -117,7 +117,7 @@ export async function toHaveElementProperty(
                 },
                 isNot,
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: false }
+                strictConfiguration: { allowArrayWithSingleElement: false, some: options.some }
             })
         },
         isNot,

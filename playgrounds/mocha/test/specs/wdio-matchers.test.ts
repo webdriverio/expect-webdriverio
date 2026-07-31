@@ -78,6 +78,14 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(await nav).toBeDisplayed()
             await expect(await nav.filter(n => n.isExisting())).toBeDisplayedInViewport()
         })
+
+        it('should verify that some elements are displayed', async () => {
+            const nav = $$('nav')
+
+            await expect(nav).toBeDisplayed({ some: true })
+            await expect(await nav).toBeDisplayed({ some: true })
+            await expect(await nav.filter(n => n.isExisting())).toBeDisplayedInViewport()
+        })
     })
 
     describe('Element state matchers', () => {
@@ -261,7 +269,14 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should verify text with options with awaited getElements ChainablePromiseArray', async () => {
                     const heading = await $$('h1').getElements()
+
                     await expect(heading).toHaveText(['','Open Source and Open Governed'], { ignoreCase: true, containing: true })
+                })
+
+                it('should verify if some elements match', async () => {
+                    const heading = await $$('h1').getElements()
+
+                    await expect(heading).toHaveText('Open Source and Open Governed', { ignoreCase: true, containing: true, some: true })
                 })
 
                 it('should verify text with options with filetered awaited getElements ChainablePromiseArray', async () => {

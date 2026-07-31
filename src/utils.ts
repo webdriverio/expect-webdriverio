@@ -69,7 +69,7 @@ export function getAsymmetricMatcherValue<T>(
 async function executeCommandBe(
     received: WdioElementOrArrayMaybePromise,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
-    options: ExpectWebdriverIO.CommandOptions & ExpectWebdriverIO.MultiElementOptions = {}
+    options: ExpectWebdriverIO.CommandOptions = {}
 ): ExpectWebdriverIO.AsyncAssertionResult {
     const { isNot, verb = 'be', allowEmptyElements = false } = this
 

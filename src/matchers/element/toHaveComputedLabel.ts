@@ -43,7 +43,7 @@ export async function toHaveComputedLabel(
                 isNot,
                 strategy: 'NewStrictMultipleElements',
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
-                strictConfiguration: { allowArrayWithSingleElement: true }
+                strictConfiguration: { allowArrayWithSingleElement: true, some: options.some }
             })
         },
         isNot,

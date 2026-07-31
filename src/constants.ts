@@ -10,7 +10,7 @@ export const DEFAULT_OPTIONS: Required<ExpectWebdriverIO.DefaultOptions> = {
     featureFlags: DEFAULT_FEATURE_FLAGS
 }
 
-export const DEFAULT_OPTIONS_TO_BE_DISPLAYED: Required<Omit<ExpectWebdriverIO.ToBeDisplayedOptions, 'message'>> = {
+export const DEFAULT_OPTIONS_TO_BE_DISPLAYED: Required<Omit<ExpectWebdriverIO.ToBeDisplayedOptions, 'message' | 'some'>> = {
     ...DEFAULT_OPTIONS,
     withinViewport: false,
     contentVisibilityAuto: true,

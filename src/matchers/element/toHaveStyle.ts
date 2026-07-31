@@ -57,7 +57,7 @@ export async function toHaveStyle(
                 singleElementCompare: (element, expectedValues) => condition(element, expectedValues as { [key: string]: string; } | undefined, options),
                 isNot,
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: false }
+                strictConfiguration: { allowArrayWithSingleElement: false, some: options.some }
             })
         },
         isNot,
