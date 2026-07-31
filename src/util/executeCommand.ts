@@ -2,12 +2,11 @@ import type { WdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
 import { awaitElementOrArray, isElement } from './elementsUtil.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
-export type CompareResult<T> = { result: boolean; value: T }
-export type StrategyResult<T> = {
-    subject: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | unknown;
-    success: boolean;
-    actual: MaybeArray<T> | undefined;
-}
+export type CompareResult<T> = { success: boolean; actual: T }
+export type StrategyResult<T, E = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown> = {
+    subject: E;
+    abort?: boolean;
+} & CompareResult<T | undefined>
 
 /**
  * Fetch element(s) and route them to the appropriate comparison strategy.
@@ -35,7 +34,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     strategy?: StrategyType,
     strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean }
 }
-): Promise<StrategyResult<Actual>> {
+): Promise<StrategyResult<MaybeArray<Actual>>> {
     if (strategy === 'LegacyLooseMultipleElements') {
         return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot)
     }
@@ -61,7 +60,7 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     _isNot?: boolean,
 
-): Promise<StrategyResult<Actual>> => {
+): Promise<StrategyResult<MaybeArray<Actual>>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
     if (!selector || isEmptyElements) {
@@ -69,6 +68,7 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
             subject: subject,
             success: false,
             actual: undefined,
+            abort: true,
         }
     }
 
@@ -76,8 +76,7 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
         const compareResult = await singleElementCompare(selector, expectedValues)
         return {
             subject,
-            success: compareResult.result,
-            actual: compareResult.value,
+            ...compareResult,
         }
     }
 
@@ -94,8 +93,8 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
 
     return {
         subject,
-        success: results.length > 0 && results.every((res) => res.result === true),
-        actual: results.map(({ value }) => value),
+        success: results.length > 0 && results.every((res) => res.success === true),
+        actual: results.map(({ actual: value }) => value),
     }
 }
 
@@ -116,7 +115,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     isNot: boolean,
     { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
-): Promise<StrategyResult<Actual>> => {
+): Promise<StrategyResult<MaybeArray<Actual>>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
 
@@ -126,6 +125,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             // For the new strategy, beside toExist, empty elements even with `.not` is considered a failure since there are no elements to compare against.
             success: isNot ? !allowEmptyElements : false,
             actual: undefined,
+            abort: !allowEmptyElements,
         }
     }
 
@@ -139,8 +139,9 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         const compareResult = await singleElementCompare(selector, expectedValues)
         return {
             subject,
-            success: forceFailure ? !!isNot : compareResult.result,
-            actual: compareResult.value,
+            success: forceFailure ? !!isNot : compareResult.success,
+            actual: compareResult.actual,
+            abort: forceFailure,
         }
     }
 
@@ -160,7 +161,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             }
 
             const compareResult = await singleElementCompare(element, indexedExpectedValue, index)
-            return forceFailure ? { result: false, value: compareResult.value } : compareResult
+            return forceFailure ? { success: false, actual: compareResult.actual } : compareResult
         })
     )
 
@@ -174,7 +175,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     // Fill with undefined element's actual value when having less elements than expected values.
     if (Array.isArray(expectedValues) && expectedValues.length > selector.length) {
         const missingValues = Array(expectedValues.length - selector.length).fill(undefined)
-        results.push(...missingValues.map((value) => ({ result: false, value })))
+        results.push(...missingValues.map((value) => ({ success: false, actual: value })))
     }
 
     let forceFailure = false
@@ -190,9 +191,10 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     return {
         subject,
         success: isNot ? !(!forceFailure && isNotEmpty && isAllFalse(results)) : (!forceFailure && isNotEmpty && isAllTrue(results)),
-        actual: results.map(({ value }) => value)
+        actual: results.map(({ actual: value }) => value),
+        abort: forceFailure,
     }
 }
 
-const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.result === true)
-const isAllFalse = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.result === false)
+const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === true)
+const isAllFalse = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === false)

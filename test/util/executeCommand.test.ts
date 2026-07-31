@@ -15,7 +15,7 @@ describe('executeCommand', () => {
             const element = $('selector')
 
             it('should return success true when the element matches the expected value', async () => {
-                mockSingleCompare.mockResolvedValue({ result: true, value: 'Match' })
+                mockSingleCompare.mockResolvedValue({ success: true, actual: 'Match' })
 
                 const result = await multipleElementResultsStrategy(
                     element,
@@ -29,7 +29,7 @@ describe('executeCommand', () => {
             })
 
             it('should return success false when the element does not match the expected value', async () => {
-                mockSingleCompare.mockResolvedValue({ result: false, value: 'No Match' })
+                mockSingleCompare.mockResolvedValue({ success: false, actual: 'No Match' })
 
                 const result = await multipleElementResultsStrategy(
                     element,
@@ -48,7 +48,7 @@ describe('executeCommand', () => {
             const oneElements = chainableElementArrayFactory('selector', 1)
 
             it('should return success true when all elements match expected values', async () => {
-                mockSingleCompare.mockResolvedValue({ result: true, value: 'Match' })
+                mockSingleCompare.mockResolvedValue({ success: true, actual: 'Match' })
 
                 const result = await multipleElementResultsStrategy(
                     threeElements,
@@ -63,9 +63,9 @@ describe('executeCommand', () => {
 
             it('should return success false when some elements do not match', async () => {
                 mockSingleCompare
-                    .mockResolvedValueOnce({ result: true, value: 'Match' })
-                    .mockResolvedValueOnce({ result: false, value: 'No Match' })
-                    .mockResolvedValueOnce({ result: true, value: 'Match' })
+                    .mockResolvedValueOnce({ success: true, actual: 'Match' })
+                    .mockResolvedValueOnce({ success: false, actual: 'No Match' })
+                    .mockResolvedValueOnce({ success: true, actual: 'Match' })
 
                 const result = await multipleElementResultsStrategy(
                     threeElements,
@@ -78,7 +78,7 @@ describe('executeCommand', () => {
             })
 
             it('should pass (success=false) with .not when all elements fail to match', async () => {
-                mockSingleCompare.mockResolvedValue({ result: false, value: 'Other' })
+                mockSingleCompare.mockResolvedValue({ success: false, actual: 'Other' })
 
                 const result = await multipleElementResultsStrategy(
                     twoElements,
@@ -92,8 +92,8 @@ describe('executeCommand', () => {
 
             it('should fail (success=true) when using .not but one element matches', async () => {
                 mockSingleCompare
-                    .mockResolvedValueOnce({ result: false, value: 'Other' })
-                    .mockResolvedValueOnce({ result: true, value: 'Match' })
+                    .mockResolvedValueOnce({ success: false, actual: 'Other' })
+                    .mockResolvedValueOnce({ success: true, actual: 'Match' })
 
                 const result = await multipleElementResultsStrategy(
                     twoElements,
@@ -131,7 +131,7 @@ describe('executeCommand', () => {
             it('should handle missing elements compared to expected values array', async () => {
                 const expected = ['A', 'B'] // Expecting 2
 
-                mockSingleCompare.mockResolvedValue({ result: true, value: 'A' })
+                mockSingleCompare.mockResolvedValue({ success: true, actual: 'A' })
 
                 const result = await multipleElementResultsStrategy(
                     oneElements,

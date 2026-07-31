@@ -32,11 +32,11 @@ export async function toBeRequestedWith(
         options,
     })
 
-    let actual: RequestMock | undefined
-    const pass = await waitUntil(
+    const { success: pass, actual } = await waitUntil(
         async () => {
-            for (const call of received.calls) {
-                actual = call
+            let lastCall: RequestMock | undefined
+            for (const call of received.calls as RequestMock[]) {
+                lastCall = call
                 if (
                     methodMatcher(call.request.method, expectedValue.method) &&
                     statusCodeMatcher(call.response.status, expectedValue.statusCode) &&
@@ -47,11 +47,10 @@ export async function toBeRequestedWith(
                     // bodyMatcher(call.postData, expectedValue.postData) &&
                     // bodyMatcher(call.body, expectedValue.response)
                 ) {
-                    return true
+                    return { success: true, subject: call, actual: call }
                 }
             }
-
-            return false
+            return { success: false, subject: lastCall, actual: lastCall }
         },
         isNot,
         { ...options, wait: isNot ? 0 : options.wait }

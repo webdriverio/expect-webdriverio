@@ -3,7 +3,7 @@ import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
 
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise } from './types.js'
+import type { WdioElementOrArrayMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
@@ -73,24 +73,19 @@ async function executeCommandBe(
 ): ExpectWebdriverIO.AsyncAssertionResult {
     const { isNot, verb = 'be', allowEmptyElements = false } = this
 
-    let subject: WdioElementMaybePromise | unknown = received
-    let actual: boolean[] | boolean | undefined
-    const pass = await waitUntil(
+    const { success: pass, actual, subject } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy({
-                unresolvedElements: subject,
+            return await executeCommandWithStrategy({
+                unresolvedElements: received,
                 expectedValues: true,
                 singleElementCompare: async (element) => {
                     const result = await command(element)
-                    return { result, value: result }
+                    return { success: result, actual: result }
                 },
                 isNot,
                 strictConfiguration: { allowEmptyElements }
 
             })
-            subject = result.subject
-            actual = result.actual
-            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
@@ -141,7 +136,7 @@ export const compareTextOrArray = (
     const unchangedActualText = actualText
 
     if (expectedTexts === undefined) {
-        return { value: actualText, result: false }
+        return { actual: actualText, success: false }
     }
 
     /**
@@ -160,13 +155,13 @@ export const compareTextOrArray = (
     }
 
     if (expectedTexts instanceof OneOfMatcher) {
-        return { result: expectedTexts.asymmetricMatch(actualText), value: unchangedActualText }
+        return { success: expectedTexts.asymmetricMatch(actualText), actual: unchangedActualText }
     }
 
     // TODO one day consolidate typing and internal of oneOf so we do not need the below casting!
     const compareResults = compareText(actualText, expectedTexts as string | RegExp, options)
 
-    return { result: compareResults.result, value: unchangedActualText }
+    return { success: compareResults.success, actual: unchangedActualText }
 
 }
 
@@ -186,8 +181,8 @@ export const compareText = (
 ): CompareResult<string> => {
     if (typeof actual !== 'string' || expected === null || expected === undefined) {
         return {
-            value: actual,
-            result: false,
+            actual,
+            success: false,
         }
     }
 
@@ -212,48 +207,48 @@ export const compareText = (
     if (isAsymmetricMatcher(expected)) {
         const result = expected.asymmetricMatch(actual)
         return {
-            value: actual,
-            result
+            actual,
+            success: result
         }
     }
 
     if (expected instanceof RegExp) {
         return {
-            value: actual,
-            result: !!actual.match(expected),
+            actual,
+            success: !!actual.match(expected),
         }
     }
     if (containing) {
         return {
-            value: actual,
-            result: actual.includes(expected),
+            actual,
+            success: actual.includes(expected),
         }
     }
 
     if (atStart) {
         return {
-            value: actual,
-            result: actual.startsWith(expected),
+            actual,
+            success: actual.startsWith(expected),
         }
     }
 
     if (atEnd) {
         return {
-            value: actual,
-            result: actual.endsWith(expected),
+            actual,
+            success: actual.endsWith(expected),
         }
     }
 
     if (atIndex) {
         return {
-            value: actual,
-            result: actual.substring(atIndex, actual.length).startsWith(expected),
+            actual,
+            success: actual.substring(atIndex, actual.length).startsWith(expected),
         }
     }
 
     return {
-        value: actual,
-        result: actual === expected,
+        actual,
+        success: actual === expected,
     }
 }
 
@@ -278,11 +273,11 @@ export const compareTextWithArray = (
         atIndex,
         replace,
     }: ExpectWebdriverIO.StringOptions
-) => {
+): CompareResult<string> => {
     if (typeof actual !== 'string') {
         return {
-            value: actual,
-            result: false,
+            actual,
+            success: false,
         }
     }
 
@@ -308,7 +303,7 @@ export const compareTextWithArray = (
         })
     }
 
-    const textInArray = expectedArray.some((expected) => {
+    const hasFoundTextInArray = expectedArray.some((expected) => {
         if (expected instanceof RegExp) {
             return !!actual.match(expected)
         }
@@ -330,22 +325,22 @@ export const compareTextWithArray = (
         return actual === expected
     })
     return {
-        value: actual,
-        result: textInArray,
+        actual,
+        success: hasFoundTextInArray,
     }
 }
 
-export const compareObject = <T>(actual: T, expected: unknown) => {
+export const compareObject = <T>(actual: T, expected: unknown): CompareResult<T> => {
     if (typeof actual !== 'object' || Array.isArray(actual)) {
         return {
-            value: actual,
-            result: false,
+            actual,
+            success: false,
         }
     }
 
     return {
-        value: actual,
-        result: deepEql(actual, expected),
+        actual,
+        success: deepEql(actual, expected),
     }
 }
 
@@ -361,8 +356,8 @@ export const compareStyle = async (
         atIndex,
         replace,
     }: ExpectWebdriverIO.StringOptions
-) => {
-    let result = true
+): Promise<CompareResult<Record<string, string | undefined>>> => {
+    let success = true
     const actual: Record<string, string | undefined> = {}
 
     for (const key in style) {
@@ -381,30 +376,30 @@ export const compareStyle = async (
         }
 
         if (containing) {
-            result = actualVal.includes(expectedVal)
+            success = actualVal.includes(expectedVal)
             actual[key] = actualVal
         } else if (atStart) {
-            result = actualVal.startsWith(expectedVal)
+            success = actualVal.startsWith(expectedVal)
             actual[key] = actualVal
         } else if (atEnd) {
-            result = actualVal.endsWith(expectedVal)
+            success = actualVal.endsWith(expectedVal)
             actual[key] = actualVal
         } else if (atIndex) {
-            result = actualVal.substring(atIndex, actualVal.length).startsWith(expectedVal)
+            success = actualVal.substring(atIndex, actualVal.length).startsWith(expectedVal)
             actual[key] = actualVal
         } else if (replace){
             const replacedActual = replaceActual(replace, actualVal)
-            result = replacedActual === expectedVal
+            success = replacedActual === expectedVal
             actual[key] = replacedActual
         } else {
-            result = result && actualVal === expectedVal
+            success = success && actualVal === expectedVal
             actual[key] = css.value
         }
     }
 
     return {
-        value: actual,
-        result,
+        actual,
+        success,
     }
 }
 

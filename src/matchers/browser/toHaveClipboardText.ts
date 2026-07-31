@@ -18,16 +18,15 @@ export async function toHaveClipboardText(
         options,
     })
 
-    let actual
-    const pass = await waitUntil(
+    const { actual, success: pass } = await waitUntil(
         async () => {
             await browser.setPermissions({ name: 'clipboard-read' }, 'granted')
-            /**
-             * changes are that some browser don't support the clipboard API yet
-             */
+                // chances are that some browsers don't support the clipboard API yet
                 .catch((err) => log.warn(`Couldn't set clipboard permissions: ${err}`))
-            actual = await browser.execute(() => window.navigator.clipboard.readText())
-            return compareText(actual, expectedValue, options).result
+            const actual = await browser.execute(() => window.navigator.clipboard.readText())
+
+            const compareResult = compareText(actual, expectedValue, options)
+            return  { actual, success: compareResult.success, subject: browser }
         },
         isNot,
         { wait: options.wait, interval: options.interval }

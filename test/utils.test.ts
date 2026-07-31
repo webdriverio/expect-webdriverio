@@ -34,148 +34,148 @@ vi.mock('../src/util/elementsUtil.js', async (importOriginal) => {
 describe('utils', () => {
     describe(compareText, () => {
         test('should pass when strings match', () => {
-            expect(compareText('foo', 'foo', {}).result).toBe(true)
+            expect(compareText('foo', 'foo', {}).success).toBe(true)
         })
 
         test('should fail when strings do not match', () => {
-            expect(compareText('foo', 'bar', {}).result).toBe(false)
+            expect(compareText('foo', 'bar', {}).success).toBe(false)
         })
 
         test('should pass when trims away white space', () => {
-            expect(compareText(' foo ', 'foo', {}).result).toBe(true)
+            expect(compareText(' foo ', 'foo', {}).success).toBe(true)
         })
 
         test('should fail without trimming away white space', () => {
-            expect(compareText(' foo ', 'foo ', { trim: false }).result).toBe(false)
+            expect(compareText(' foo ', 'foo ', { trim: false }).success).toBe(false)
         })
 
         test('should pass if same word but wrong case and using ignoreCase', () => {
-            expect(compareText(' FOO ', 'foo', { ignoreCase: true }).result).toBe(true)
-            expect(compareText(' foo ', 'FOO', { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' FOO ', 'foo', { ignoreCase: true }).success).toBe(true)
+            expect(compareText(' foo ', 'FOO', { ignoreCase: true }).success).toBe(true)
         })
 
         test('should pass if string contains expected and using containing', () => {
-            expect(compareText('qwe_AsD_zxc', 'asd', { ignoreCase: true, containing: true }).result).toBe(true)
+            expect(compareText('qwe_AsD_zxc', 'asd', { ignoreCase: true, containing: true }).success).toBe(true)
         })
 
         test('should support stringContaining asymmetric matchers', () => {
-            expect(compareText('foo', expect.stringContaining('oo'), {}).result).toBe(true)
-            expect(compareText('foo', expect.not.stringContaining('oo'), {}).result).toBe(false)
+            expect(compareText('foo', expect.stringContaining('oo'), {}).success).toBe(true)
+            expect(compareText('foo', expect.not.stringContaining('oo'), {}).success).toBe(false)
         })
 
         test('should support stringMatching asymmetric matchers', () => {
-            expect(compareText('foo', expect.stringMatching(/.*oo.*/), {}).result).toBe(true)
-            expect(compareText('foo', expect.not.stringMatching(/.*oo.*/), {}).result).toBe(false)
+            expect(compareText('foo', expect.stringMatching(/.*oo.*/), {}).success).toBe(true)
+            expect(compareText('foo', expect.not.stringMatching(/.*oo.*/), {}).success).toBe(false)
         })
 
         test('should support stringContaining asymmetric and using ignoreCase', () => {
-            expect(compareText(' FOO ', expect.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
-            expect(compareText(' FOO ', expect.not.stringContaining('foo'), { ignoreCase: true }).result).toBe(false)
-            expect(compareText(' Foo ', expect.stringContaining('FOO'), { ignoreCase: true }).result).toBe(true)
-            expect(compareText(' Foo ', expect.not.stringContaining('FOO'), { ignoreCase: true }).result).toBe(false)
-            expect(compareText(' foo ', expect.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' FOO ', expect.stringContaining('foo'), { ignoreCase: true }).success).toBe(true)
+            expect(compareText(' FOO ', expect.not.stringContaining('foo'), { ignoreCase: true }).success).toBe(false)
+            expect(compareText(' Foo ', expect.stringContaining('FOO'), { ignoreCase: true }).success).toBe(true)
+            expect(compareText(' Foo ', expect.not.stringContaining('FOO'), { ignoreCase: true }).success).toBe(false)
+            expect(compareText(' foo ', expect.stringContaining('foo'), { ignoreCase: true }).success).toBe(true)
         })
 
         test('should support jasmine.stringContaining matchers and using ignoreCase', () => {
-            expect(compareText(' FOO ', jasmine.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
-            expect(compareText(' Foo ', jasmine.stringContaining('FOO'), { ignoreCase: true }).result).toBe(true)
-            expect(compareText(' foo ', jasmine.stringContaining('foo'), { ignoreCase: true }).result).toBe(true)
+            expect(compareText(' FOO ', jasmine.stringContaining('foo'), { ignoreCase: true }).success).toBe(true)
+            expect(compareText(' Foo ', jasmine.stringContaining('FOO'), { ignoreCase: true }).success).toBe(true)
+            expect(compareText(' foo ', jasmine.stringContaining('foo'), { ignoreCase: true }).success).toBe(true)
         })
 
         test('should support jasmine.stringMatching matchers', () => {
-            expect(compareText(' FOO ', jasmine.stringMatching(/.*foo.*/i), {}).result).toBe(true)
+            expect(compareText(' FOO ', jasmine.stringMatching(/.*foo.*/i), {}).success).toBe(true)
         })
 
         test('should support undefined/null expected value', () => {
-            expect(compareText(' FOO ', undefined, {}).result).toBe(false)
-            expect(compareText(' FOO ', null, {}).result).toBe(false)
+            expect(compareText(' FOO ', undefined, {}).success).toBe(false)
+            expect(compareText(' FOO ', null, {}).success).toBe(false)
         })
     })
 
     describe(compareTextWithArray, () => {
         test('should pass if strings match in array', () => {
-            expect(compareTextWithArray('foo', ['foo', 'bar'], {}).result).toBe(true)
+            expect(compareTextWithArray('foo', ['foo', 'bar'], {}).success).toBe(true)
         })
 
         test('should fail if string does not match in array', () => {
-            expect(compareTextWithArray('foo', ['foot', 'bar'], {}).result).toBe(false)
+            expect(compareTextWithArray('foo', ['foot', 'bar'], {}).success).toBe(false)
         })
 
         test('should pass if white space and using trim', () => {
-            expect(compareTextWithArray(' foo ', ['foo', 'bar'], { trim: true }).result).toBe(true)
+            expect(compareTextWithArray(' foo ', ['foo', 'bar'], { trim: true }).success).toBe(true)
         })
 
         test('should pass if wrong case and using ignoreCase', () => {
-            expect(compareTextWithArray(' FOO ', ['foO', 'bar'], { trim: true, ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' foo ', ['foO', 'BAR'], { trim: true, ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' foo ', ['foOo', 'BAR'], { trim: true, ignoreCase: true }).result).toBe(false)
-            expect(compareTextWithArray(' FOO ', ['foOO', 'bar'], { trim: true, ignoreCase: true }).result).toBe(false)
+            expect(compareTextWithArray(' FOO ', ['foO', 'bar'], { trim: true, ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' foo ', ['foO', 'BAR'], { trim: true, ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' foo ', ['foOo', 'BAR'], { trim: true, ignoreCase: true }).success).toBe(false)
+            expect(compareTextWithArray(' FOO ', ['foOO', 'bar'], { trim: true, ignoreCase: true }).success).toBe(false)
         })
 
         test('should pass if string contains and using containing', () => {
-            expect(compareTextWithArray('qwe_AsD_zxc', ['foo', 'ZXC'], { ignoreCase: true, containing: true }).result).toBe(true)
-            expect(compareTextWithArray('qwe_AsD_ZXC', ['foo', 'zxc'], { ignoreCase: true, containing: true }).result).toBe(true)
-            expect(compareTextWithArray('qwe_AsD_ZXC', ['foo', 'zxcc'], { ignoreCase: true, containing: true }).result).toBe(false)
-            expect(compareTextWithArray('qwe_AsD_ZXC', ['foo', 'zxcc'], { ignoreCase: true, containing: false }).result).toBe(false)
+            expect(compareTextWithArray('qwe_AsD_zxc', ['foo', 'ZXC'], { ignoreCase: true, containing: true }).success).toBe(true)
+            expect(compareTextWithArray('qwe_AsD_ZXC', ['foo', 'zxc'], { ignoreCase: true, containing: true }).success).toBe(true)
+            expect(compareTextWithArray('qwe_AsD_ZXC', ['foo', 'zxcc'], { ignoreCase: true, containing: true }).success).toBe(false)
+            expect(compareTextWithArray('qwe_AsD_ZXC', ['foo', 'zxcc'], { ignoreCase: true, containing: false }).success).toBe(false)
         })
 
         test('should support asymmetric matchers', () => {
-            expect(compareTextWithArray('foo', [expect.stringContaining('oo'), expect.stringContaining('oobb')], {}).result).toBe(true)
-            expect(compareTextWithArray('foo', [expect.stringContaining('oobb'), expect.stringContaining('oo')], {}).result).toBe(true)
-            expect(compareTextWithArray('foo', [expect.not.stringContaining('oo'), expect.stringContaining('oobb')], {}).result).toBe(false)
-            expect(compareTextWithArray('foo', [expect.stringContaining('oobb'), expect.not.stringContaining('oo')], {}).result).toBe(false)
-            expect(compareTextWithArray('foo', [expect.stringContaining('oo'), expect.not.stringContaining('oobb')], {}).result).toBe(true)
-            expect(compareTextWithArray('foo', [expect.not.stringContaining('oobb'), expect.not.stringContaining('oo')], {}).result).toBe(true)
-            expect(compareTextWithArray('foo', [expect.not.stringContaining('oof'), expect.not.stringContaining('oobb')], {}).result).toBe(true)
-            expect(compareTextWithArray('foo', [expect.not.stringContaining('oo'), expect.not.stringContaining('foo')], {}).result).toBe(false)
+            expect(compareTextWithArray('foo', [expect.stringContaining('oo'), expect.stringContaining('oobb')], {}).success).toBe(true)
+            expect(compareTextWithArray('foo', [expect.stringContaining('oobb'), expect.stringContaining('oo')], {}).success).toBe(true)
+            expect(compareTextWithArray('foo', [expect.not.stringContaining('oo'), expect.stringContaining('oobb')], {}).success).toBe(false)
+            expect(compareTextWithArray('foo', [expect.stringContaining('oobb'), expect.not.stringContaining('oo')], {}).success).toBe(false)
+            expect(compareTextWithArray('foo', [expect.stringContaining('oo'), expect.not.stringContaining('oobb')], {}).success).toBe(true)
+            expect(compareTextWithArray('foo', [expect.not.stringContaining('oobb'), expect.not.stringContaining('oo')], {}).success).toBe(true)
+            expect(compareTextWithArray('foo', [expect.not.stringContaining('oof'), expect.not.stringContaining('oobb')], {}).success).toBe(true)
+            expect(compareTextWithArray('foo', [expect.not.stringContaining('oo'), expect.not.stringContaining('foo')], {}).success).toBe(false)
         })
 
         test('should support asymmetric matchers and using ignoreCase', () => {
-            expect(compareTextWithArray(' FOO ', [expect.stringContaining('foo'), expect.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' FOO ', [expect.not.stringContaining('foo'), expect.stringContaining('oobb')], { ignoreCase: true }).result).toBe(false)
-            expect(compareTextWithArray(' foo ', [expect.stringContaining('FOO'), expect.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOO'), expect.stringContaining('oobb')], { ignoreCase: true }).result).toBe(false)
-            expect(compareTextWithArray(' foo ', [expect.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).result).toBe(false)
-            expect(compareTextWithArray('foo', [expect.stringContaining('FOOO'), 'FOO'], { ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('OO'), expect.not.stringContaining('FOOO')], { ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOOO'), expect.not.stringContaining('OO')], { ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOOO'), expect.not.stringContaining('OOO')], { ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOO'), expect.not.stringContaining('OO')], { ignoreCase: true }).result).toBe(false)
+            expect(compareTextWithArray(' FOO ', [expect.stringContaining('foo'), expect.stringContaining('oobb')], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' FOO ', [expect.not.stringContaining('foo'), expect.stringContaining('oobb')], { ignoreCase: true }).success).toBe(false)
+            expect(compareTextWithArray(' foo ', [expect.stringContaining('FOO'), expect.stringContaining('oobb')], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOO'), expect.stringContaining('oobb')], { ignoreCase: true }).success).toBe(false)
+            expect(compareTextWithArray(' foo ', [expect.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).success).toBe(false)
+            expect(compareTextWithArray('foo', [expect.stringContaining('FOOO'), 'FOO'], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('OO'), expect.not.stringContaining('FOOO')], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOOO'), expect.not.stringContaining('OO')], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOOO'), expect.not.stringContaining('OOO')], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' foo ', [expect.not.stringContaining('FOO'), expect.not.stringContaining('OO')], { ignoreCase: true }).success).toBe(false)
         })
 
         test('should support jasmine asymmetric matchers', () => {
-            expect(compareTextWithArray('foo', [jasmine.stringContaining('oobb'), jasmine.stringContaining('oo')], {}).result).toBe(true)
+            expect(compareTextWithArray('foo', [jasmine.stringContaining('oobb'), jasmine.stringContaining('oo')], {}).success).toBe(true)
         })
 
         test('should support jasmine asymmetric matchers and using ignoreCase', () => {
-            expect(compareTextWithArray(' FOO ', [jasmine.stringContaining('foo'), jasmine.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), jasmine.stringContaining('oobb')], { ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).result).toBe(true)
-            expect(compareTextWithArray('foo', [jasmine.stringContaining('FOOO'), 'FOO'], { ignoreCase: true }).result).toBe(true)
+            expect(compareTextWithArray(' FOO ', [jasmine.stringContaining('foo'), jasmine.stringContaining('oobb')], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), jasmine.stringContaining('oobb')], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray('foo', [jasmine.stringContaining('FOOO'), 'FOO'], { ignoreCase: true }).success).toBe(true)
         })
     })
 
     describe(compareObject, () => {
         test('should pass if the objects are equal', () => {
-            expect(compareObject({ 'foo': 'bar' }, { 'foo': 'bar' }).result).toBe(true)
+            expect(compareObject({ 'foo': 'bar' }, { 'foo': 'bar' }).success).toBe(true)
         })
 
         test('should pass if the objects are deep equal', () => {
-            expect(compareObject({ 'foo': { 'bar': 'baz' } }, { 'foo': { 'bar': 'baz' } }).result).toBe(true)
+            expect(compareObject({ 'foo': { 'bar': 'baz' } }, { 'foo': { 'bar': 'baz' } }).success).toBe(true)
         })
 
         test('should fail if the objects are not equal', () => {
-            expect(compareObject({ 'foo': 'bar' }, { 'baz': 'quux' }).result).toBe(false)
+            expect(compareObject({ 'foo': 'bar' }, { 'baz': 'quux' }).success).toBe(false)
         })
 
         test('should fail if the objects are only shallow equal', () => {
-            expect(compareObject({ 'foo': { 'bar': 'baz' } }, { 'foo': { 'baz': 'quux' } }).result).toBe(false)
+            expect(compareObject({ 'foo': { 'bar': 'baz' } }, { 'foo': { 'baz': 'quux' } }).success).toBe(false)
         })
 
         test('should fail if the actual value is a number or array', () => {
-            expect(compareObject(10, { 'foo': 'bar' }).result).toBe(false)
-            expect(compareObject([{ 'foo': 'bar' }], { 'foo': 'bar' }).result).toBe(false)
+            expect(compareObject(10, { 'foo': 'bar' }).success).toBe(false)
+            expect(compareObject([{ 'foo': 'bar' }], { 'foo': 'bar' }).success).toBe(false)
         })
     })
 

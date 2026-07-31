@@ -14,12 +14,13 @@ export async function toHaveTitle(
         options,
     })
 
-    let actual
-    const pass = await waitUntil(
+    const { actual, success } = await waitUntil(
         async () => {
-            actual = await browser.getTitle()
+            const actual = await browser.getTitle()
 
-            return compareText(actual, expectedValue, options).result
+            const compareResult = compareText(actual, expectedValue, options)
+
+            return { actual, success: compareResult.success, subject: browser }
         },
         isNot,
         { wait: options.wait, interval: options.interval }
@@ -27,7 +28,7 @@ export async function toHaveTitle(
 
     const message = enhanceError('window', expectedValue, actual, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
-        pass,
+        pass: success,
         message: () => message
     }
 

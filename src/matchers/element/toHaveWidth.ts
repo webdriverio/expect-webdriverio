@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { validateNumberArrayAndExtractOptions, type NumberMatcher } from '../../util/numberOptionsUtil.js'
@@ -12,8 +12,8 @@ async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher 
     const actualWidth = await el.getSize('width')
 
     return {
-        result: expectedNumber?.asymmetricMatch(actualWidth) ?? false,
-        value: actualWidth
+        success: expectedNumber?.asymmetricMatch(actualWidth) ?? false,
+        actual: actualWidth
     }
 }
 
@@ -59,12 +59,9 @@ export async function toHaveWidth(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
-    let elements: WebdriverIO.Element | WdioElements | unknown
-    let actualWidth: MaybeArray<string | number | undefined> | undefined
-
-    const pass = await waitUntil(
+    const { success: pass, actual: actualWidth, subject: elements } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
@@ -72,11 +69,6 @@ export async function toHaveWidth(
                 strategy: 'NewStrictMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: false }
             })
-
-            elements = result.subject
-            actualWidth = result.actual
-
-            return result.success
         },
         isNot,
         { wait: commandOptions.wait, interval: commandOptions.interval }

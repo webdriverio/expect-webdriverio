@@ -1,6 +1,7 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise, WdioElements } from '../../types.js'
+import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
+import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
@@ -9,12 +10,12 @@ import {
     waitUntil,
 } from '../../utils.js'
 
-async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined) {
+async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined): Promise<CompareResult<number | null>> {
     const actualHeight = await el.getSize('height')
 
     return {
-        result: expectedNumber?.asymmetricMatch(actualHeight) ?? false,
-        value: actualHeight
+        success: expectedNumber?.asymmetricMatch(actualHeight) ?? false,
+        actual: actualHeight
     }
 }
 
@@ -60,12 +61,9 @@ export async function toHaveHeight(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
-    let elements: WebdriverIO.Element | WdioElements | unknown
-    let actualHeight: string | number | (string | number | undefined)[] | undefined
-
-    const pass = await waitUntil(
+    const { success: pass, actual: actualHeight, subject: elements } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
@@ -73,11 +71,6 @@ export async function toHaveHeight(
                 strategy: 'NewStrictMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: false }
             })
-
-            elements = result.subject
-            actualHeight = result.actual
-
-            return result.success
         },
         isNot,
         { wait: commandOptions.wait, interval: commandOptions.interval }

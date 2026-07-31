@@ -1,6 +1,7 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
     compareText,
@@ -13,16 +14,16 @@ import { expect as wdioExpect } from '../../index.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { OneOfMatcher } from '../asymmetrics/oneOf.js'
 
-async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions) {
+async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const attributeValue = await el.getAttribute(attribute)
 
     if (typeof attributeValue !== 'string' || expectedValue === undefined || expectedValue === null) {
         if (isAsymmetricMatcher(expectedValue)) {
-            return { result: expectedValue.asymmetricMatch(attributeValue), value: attributeValue }
+            return { success: expectedValue.asymmetricMatch(attributeValue), actual: attributeValue }
         }
-        return { result: attributeValue === expectedValue, value: attributeValue }
+        return { success: attributeValue === expectedValue, actual: attributeValue }
     } else if ( expectedValue instanceof OneOfMatcher) {
-        return { result: expectedValue.asymmetricMatch(attributeValue), value: attributeValue }
+        return { success: expectedValue.asymmetricMatch(attributeValue), actual: attributeValue }
     }
 
     // TODO fix OneOfMatcher typing to not require casting here!
@@ -34,11 +35,9 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    let el
-    let attr
-    const pass = await waitUntil(
+    const { success: pass, actual: attr, subject: el } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, values: string | RegExp | AsymmetricMatcher<string> | undefined) => {
@@ -46,11 +45,6 @@ export async function toHaveAttributeAndValue(received: WdioElementOrArrayMaybeP
                 },
                 isNot
             })
-
-            el = result.subject
-            attr = result.actual
-
-            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }

@@ -32,12 +32,10 @@ export async function toHaveText(
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    let actualText: string | string[] | undefined
-    let subject: unknown = received
     const isNewStrictCompare = getFeatureFlagValue(options, 'useToHaveTextStrictMultiElementsCompareStrategy')
-    const pass = await waitUntil(
+    const { success: pass, actual: actualText, subject: subject } = await waitUntil(
         async () => {
-            const commandResult = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string> | undefined) => {
@@ -47,10 +45,6 @@ export async function toHaveText(
                 strategy: isNewStrictCompare ? 'NewStrictMultipleElements' : 'LegacyLooseMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: true }
             })
-            subject = commandResult.subject
-            actualText = commandResult.actual
-
-            return commandResult.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }

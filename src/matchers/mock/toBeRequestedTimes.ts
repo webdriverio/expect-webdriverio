@@ -35,11 +35,10 @@ export async function toBeRequestedTimes(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
 
-    let actual
-    const pass = await waitUntil(
+    const { success: pass, actual } = await waitUntil(
         async () => {
-            actual = received.calls.length
-            return expectedNumber.asymmetricMatch(actual)
+            const actual = received.calls.length
+            return { success: expectedNumber.asymmetricMatch(actual), subject: received, actual }
         },
         isNot,
         { wait: commandOptions.wait, interval: commandOptions.interval }

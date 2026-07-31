@@ -31,9 +31,7 @@ export async function toHaveHTML(
         options,
     })
 
-    let elements
-    let actualHTML
-    const pass = await waitUntil(
+    const { success: pass, actual: actualHTML, subject: elements } = await waitUntil(
         async () => {
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -44,10 +42,7 @@ export async function toHaveHTML(
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
                 strictConfiguration: { allowArrayWithSingleElement: true }
             })
-            elements = result.subject
-            actualHTML = result.actual
-
-            return result.success
+            return result
         },
         isNot,
         { wait: options.wait, interval: options.interval }

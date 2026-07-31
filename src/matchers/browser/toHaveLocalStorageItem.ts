@@ -14,22 +14,24 @@ export async function toHaveLocalStorageItem(
         expectedValue: expectedValue ? [key, expectedValue] : key,
         options,
     })
-    let actual
-    const pass = await waitUntil(
+    const { actual, success: pass } = await waitUntil(
         async () => {
-            actual = await browser.execute(
+            const actual = await browser.execute(
                 (storageKey) => {
                     return localStorage.getItem(storageKey)
                 }, key)
             // if no expected value is provided, we just check if the item exists
             if (expectedValue === undefined) {
-                return actual !== null
+                return { actual, success: actual !== null, subject: browser }
             }
             // no localStorage item found
             if (actual === null) {
-                return false
+                return { actual, success: false, subject: browser }
             }
-            return compareText(actual, expectedValue, options).result
+
+            const compareResult = compareText(actual, expectedValue, options)
+
+            return { actual, success: compareResult.success, subject: browser }
         },
         isNot,
         { wait: options.wait, interval: options.interval }

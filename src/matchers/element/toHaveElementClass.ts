@@ -9,11 +9,11 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
     const actualClass = await el.getAttribute(attribute)
 
     if (value === undefined) {
-        return { result: false, value: actualClass }
+        return { success: false, actual: actualClass }
     }
 
     if (typeof actualClass !== 'string') {
-        return { result: false, value: actualClass }
+        return { success: false, actual: actualClass }
     }
 
     /**
@@ -26,12 +26,12 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
 
     const classes = actualClass.split(' ')
     const isValueInClasses = classes.some((clazz) => {
-        return compareTextOrArray(clazz, value, options).result
+        return compareTextOrArray(clazz, value, options).success
     })
 
     return {
-        result: isValueInClasses,
-        value: actualClass
+        success: isValueInClasses,
+        actual: actualClass
     }
 }
 
@@ -57,12 +57,9 @@ export async function toHaveElementClass(
 
     const attribute = 'class'
 
-    let el
-    let attr
-
-    const pass = await waitUntil(
+    const { success: pass, actual: attr, subject: el } = await waitUntil(
         async () => {
-            const result = await executeCommandWithStrategy( {
+            return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, attribute, expectedValue, options),
@@ -71,10 +68,6 @@ export async function toHaveElementClass(
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
                 strictConfiguration: { allowArrayWithSingleElement: true }
             })
-            el = result.subject
-            attr = result.actual
-
-            return result.success
         },
         isNot,
         { wait: options.wait, interval: options.interval }
