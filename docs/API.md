@@ -1125,7 +1125,7 @@ await expect(browser).not.toHaveTitle('some title', { wait: 0 })
 
 since: v6.0.0
 
-The custom `some()` modifiers also exists with a different syntax then `.not` allowing to asserrt that only one element from multiple elements meet the assertion
+The custom `some()` function (distinct syntax compared to `.not`) allows you to assert that at least one element from multiple elements meets the assertion.
 
 ```ts
 // Allow to succeed only if one element matches (or not match)
