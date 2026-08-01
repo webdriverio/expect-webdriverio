@@ -40,7 +40,9 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     const isSome = isSomeWrapper(unresolvedElements)
 
     if (strategy === 'LegacyLooseMultipleElements') {
-        console.error('some(elements) works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
+        if (isSome) {
+            throw new Error('some(elements) works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
+        }
         return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot)
     }
 

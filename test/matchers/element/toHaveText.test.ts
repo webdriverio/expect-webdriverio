@@ -603,15 +603,7 @@ Expect ${selectorName} to have text
                 })
 
                 test('should not support some modifiers', async () => {
-                    const result = await thisContext.toHaveText( some(els), 'webdriverio', { wait: 0 })
-
-                    expect(result.pass).toBe(false)
-                    expect(stripAnsi(result.message())).toEqual(`\
-Expect {"elements":[{"selector":"sel","index":0,"parent":{},"elementId":"sel"},{"selector":"sel","index":1,... to have text
-
-Expected: "webdriverio"
-Received: undefined`
-                    )
+                    await expect(thisContext.toHaveText(some(els), 'webdriverio', { wait: 0 })).rejects.toThrow('some(elements) works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
                 })
 
                 describe('when using .not', () => {
