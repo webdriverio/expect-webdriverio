@@ -1,7 +1,9 @@
-const SOME_TAG = Symbol('expect-webdriverio.some')
+const SOME_TAG = 'expect-webdriverio.some'
+const SOME_SYMBOL = Symbol.for(SOME_TAG)
 
 export class SomeElementsWrapper<T> {
-    readonly [SOME_TAG] = true
+    // Not used but keeping in case it is needed in the future for type checking
+    readonly [SOME_SYMBOL] = true
     constructor(public readonly elements: T) {}
 }
 

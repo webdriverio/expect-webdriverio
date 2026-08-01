@@ -1,5 +1,5 @@
 import { browser, $, $$ } from '@wdio/globals'
-import { expect } from 'expect-webdriverio'
+import { expect, some } from 'expect-webdriverio'
 
 describe('WebdriverIO Custom Matchers', () => {
     beforeEach(async () => {
@@ -43,6 +43,14 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(nav).toBeDisplayed()
         })
 
+        it('should verify that some elements are displayed', async () => {
+            const nav = $$('nav')
+
+            await expect(some(nav)).toBeDisplayed()
+            await expect(some(await nav)).toBeDisplayed()
+            await expect(some(await nav.filter(n => n.isExisting()))).toBeDisplayedInViewport()
+        })
+
         it('should verify element is displayed in viewport', async () => {
             const searchButton = await $('.DocSearch-Button')
             await expect(searchButton).toBeDisplayedInViewport()
@@ -67,6 +75,8 @@ describe('WebdriverIO Custom Matchers', () => {
     })
 
     describe('Element text matchers', () => {
+        const newStrictStrategy = { featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy: true } }
+
         it('should verify element text', async () => {
             const docsLink = await $('=Docs')
             await expect(docsLink).toBeDisplayed()
@@ -81,6 +91,24 @@ describe('WebdriverIO Custom Matchers', () => {
         it('should verify text with options', async () => {
             const heading = await $$('h1')[1]  // Second h1 has text
             await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+        })
+
+        it("should verify multiple elements's texts with options", async () => {
+            const headings = await $$('h1')
+
+            await expect(headings).toHaveText(expect.oneOf('','OPEN SOURCE'), { ignoreCase: true, containing: true, ...newStrictStrategy.featureFlags})
+        })
+
+        it("should verify multiple elements's texts exactly", async () => {
+            const headings = await $$('h1')
+
+            await expect(headings).toHaveText(['', 'Open Source and Open Governed'], newStrictStrategy)
+        })
+
+        it("should verify some elements with oneOf", async () => {
+            const headings = await $$('h1')
+
+            await expect(some(headings)).toHaveText(expect.oneOf('Open Source and Open Governed'), newStrictStrategy)
         })
 
         it('should verify element text with expected array', async () => {
