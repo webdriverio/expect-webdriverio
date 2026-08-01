@@ -37,11 +37,13 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean, some?: boolean }
 }
 ): Promise<StrategyResult<MaybeArray<Actual>>> {
+    const isSome = isSomeWrapper(unresolvedElements)
+
     if (strategy === 'LegacyLooseMultipleElements') {
+        console.error('some(elements) works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
         return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot)
     }
 
-    const isSome = isSomeWrapper(unresolvedElements)
     const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
 
     // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
