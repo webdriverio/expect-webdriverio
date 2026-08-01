@@ -1,4 +1,4 @@
-import type { WdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise } from '../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise } from '../types.js'
 
 /**
  * Wraps the expected value in an array if both the target element (`el`) and the `actual` value are arrays.
@@ -103,7 +103,7 @@ export const isElementOrArrayLike = (obj: unknown): obj is WebdriverIO.ElementAr
  *  - `other`: Contains the original value if it was a primitive, `undefined`, or not a recognized element/array.
  */
 export const awaitElementOrArray = async(
-    received: WdioElementOrArrayMaybePromise | PromiseLike<WebdriverIO.Element> | unknown
+    received: MaybeSomeWdioElementOrArrayMaybePromise | PromiseLike<WebdriverIO.Element> | unknown
 ): Promise<{ selector?: WdioElements | WebdriverIO.Element, elements?: WdioElements, element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean }> => {
     if (!received || typeof received !== 'object') {
         return { other: received }

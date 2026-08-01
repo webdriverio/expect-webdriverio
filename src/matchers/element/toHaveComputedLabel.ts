@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
     compareTextOrArray,
@@ -20,7 +20,7 @@ async function singleElementCompare(
 }
 
 export async function toHaveComputedLabel(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -34,7 +34,7 @@ export async function toHaveComputedLabel(
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: actualLabel, subject: el } = await waitUntil(
+    const { success: pass, actual: actualLabel, subject: el, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -54,7 +54,7 @@ export async function toHaveComputedLabel(
         el,
         wrapExpectedWithArray(el, actualLabel, expectedValue),
         actualLabel,
-        this,
+        { isNot, isSome },
         verb,
         expectation,
         '',

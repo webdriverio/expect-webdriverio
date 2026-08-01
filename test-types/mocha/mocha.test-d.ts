@@ -1,5 +1,7 @@
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { expectTypeOf } from 'vitest'
+import { some } from 'expect-webdriverio'
+import type { SomeElementsWrapper } from '../../src/matchers/modifiers/some.js'
 
 describe('WebDriverIO Expect Type Assertions under Mocha', () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
@@ -104,6 +106,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveText(expect.oneOf(expect.stringContaining('text1'), expect.stringContaining('text2')))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(expect.oneOf(/text1/, /text2/))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(expect.oneOf('text1', /text1/, expect.stringContaining('text3')))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+
                 await expect(element).toHaveText(
                     'My-Ex-Am-Ple',
                     {
@@ -135,6 +139,16 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(elementArray).toHaveText(['text1', expect.oneOf(/text1/, /text2/), expect.oneOf(expect.stringContaining('text3'))])).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(elementArray).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(some(elementArray)).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(elementArray)).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(elementArray)).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(elementArray)).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(elementArray)).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(elementArray)).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(elementArray)).toHaveText(['text1', expect.oneOf(/text1/, /text2/), expect.oneOf(expect.stringContaining('text3'))])).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(some(elementArray)).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(elementArray).toHaveText).parameter(0).extract<number>().toBeNever()
 
@@ -1096,6 +1110,22 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expect(number).toEqual(expect.closeTo(1.0001, 0.0001))
             // New from jest 30, should work!
             expect(['apple', 'banana', 'cherry']).toEqual(expect.arrayOf(expect.any(String)))
+        })
+    })
+
+    describe('Wdio custom some modifier', () => {
+        it('should have some work with elements what ever the type', async () => {
+            expectTypeOf(some([element])).toEqualTypeOf<SomeElementsWrapper<WebdriverIO.Element[]>>()
+            expectTypeOf(some(chainableArray)).toEqualTypeOf<SomeElementsWrapper<typeof chainableArray>>()
+            expectTypeOf(some(Promise.resolve([element]))).toEqualTypeOf<SomeElementsWrapper<Promise<WebdriverIO.Element[]>>>()
+        })
+
+        it('should not work with element', () => {
+            // @ts-expect-error some(element)
+            expectTypeOf(some(element)).toBeTypeError()
+
+            // @ts-expect-error some(chainableElement)
+            expectTypeOf(some(chainableElement)).toBeTypeError()
         })
     })
 })

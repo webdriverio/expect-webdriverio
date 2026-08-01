@@ -53,7 +53,7 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean, useNotInLabel?: boolean },
+    context: { isNot: boolean, useNotInLabel?: boolean, isSome?: boolean },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
@@ -117,8 +117,10 @@ ${label.received}: ${printReceived(actual)}`
         expectedValueArgument2 = ` ${expectedValueArgument2}`
     }
 
+    const some = context.isSome ? 'some of ' : ''
+
     const msg = `\
-${message}Expect ${subjectStr} ${not(isNot)}to ${verb}${expectation}${expectedValueArgument2}${contain}
+${message}Expect ${some}${subjectStr} ${not(isNot)}to ${verb}${expectation}${expectedValueArgument2}${contain}
 
 ${diffString}`
 
@@ -166,7 +168,7 @@ const printArrayWithMatchingItemInRed = (
 export const enhanceErrorBe = (
     subject: WebdriverIO.Element | WdioElements | unknown,
     results: boolean[] | boolean | undefined,
-    context: { isNot: boolean, verb: string, expectation: string },
+    context: { isNot: boolean, isSome: boolean, verb: string, expectation: string },
     options: ExpectWebdriverIO.CommandOptions
 ) => {
     const { isNot, verb, expectation } = context

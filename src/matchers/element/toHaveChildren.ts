@@ -1,6 +1,6 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
@@ -29,7 +29,7 @@ async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher |
  * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
  */
 export async function toHaveChildren(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
 ): Promise<AssertionResult>
 
 /**
@@ -75,7 +75,7 @@ export async function toHaveChildren(
 ): Promise<AssertionResult>
 
 export async function toHaveChildren(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValueOrOptions?: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
@@ -95,13 +95,14 @@ export async function toHaveChildren(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValueOrOptions, options, { supportDefaultAsGteThen1: true })
 
-    const { success: pass, actual: children, subject } = await waitUntil(
+    const { success: pass, actual: children, subject, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedValue: NumberMatcher | undefined) => condition(element, expectedValue),
-                isNot
+                isNot,
+                strategy: 'NewStrictMultipleElements',
             })
         },
         isNot,
@@ -109,7 +110,7 @@ export async function toHaveChildren(
     )
 
     const expectedArray = wrapExpectedWithArray(subject, children, expectedNumber)
-    const message = enhanceError(subject, expectedArray, children, this, verb, expectation, '', commandOptions)
+    const message = enhanceError(subject, expectedArray, children, { isNot, isSome }, verb, expectation, '', commandOptions)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

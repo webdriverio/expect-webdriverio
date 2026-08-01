@@ -3,7 +3,7 @@ import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
 
-import type { WdioElementOrArrayMaybePromise } from './types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
@@ -67,13 +67,13 @@ export function getAsymmetricMatcherValue<T>(
 }
 
 async function executeCommandBe(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
-    options: ExpectWebdriverIO.CommandOptions
+    options: ExpectWebdriverIO.CommandOptions = {}
 ): ExpectWebdriverIO.AsyncAssertionResult {
     const { isNot, verb = 'be', allowEmptyElements = false } = this
 
-    const { success: pass, actual, subject } = await waitUntil(
+    const { success: pass, actual, subject, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy({
                 unresolvedElements: received,
@@ -83,7 +83,7 @@ async function executeCommandBe(
                     return { success: result, actual: result }
                 },
                 isNot,
-                strictConfiguration: { allowEmptyElements }
+                strictConfiguration: { allowEmptyElements },
 
             })
         },
@@ -91,7 +91,7 @@ async function executeCommandBe(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceErrorBe(subject, actual, { ...this, verb }, options)
+    const message = enhanceErrorBe(subject, actual, { ...this, verb, isSome }, options)
 
     return {
         pass,

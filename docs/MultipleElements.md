@@ -94,12 +94,16 @@ await expect(elements).toHaveText([
 // Negation with `.not`
 // Every element in the list must NOT match the regex pattern.
 await expect(elements).not.toHaveText(/forbiddenTextA|forbiddenTextB/);
+
+// Allow to succeed only if one element matches (or not match)
+// Succeeds if at least one element matches either 'optionA' or 'optionB'
+await expect(some(elements)).toHaveText(expect.oneOf('optionA', 'optionB'));
+// Succeeds if at least one element does not matches either 'forbiddenTextA' or 'forbiddenTextB'
+await expect(some(elements)).not.toHaveText(/forbiddenTextA|forbiddenTextB/);
+// Succeeds if the first element matches 'valueForIndex0' OR the second matches 'valueForIndex1'
+await expect(some(elements)).toHaveText(['valueForIndex0', 'valueForIndex1']);
 ```
 
 ## COMING SOON
 
-```ts
-// To allow passing if at least one element matches, we can introduce a `.some` modifier.
-await expect(elements).toHaveText('myValue1',{ some: true });
-await expect(elements).toBeDisplayed({ some: true });
-```
+- Refresh ElementArrays automatically on failures for more robust assertions

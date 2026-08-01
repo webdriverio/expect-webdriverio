@@ -268,7 +268,7 @@ Received: "not displayed"`)
                 expect(enhanceErrorBe).toHaveBeenCalledWith(
                     await received,
                     false,
-                    expect.objectContaining({ isNot: false }),
+                    expect.objectContaining({ isNot: false, isSome: false }),
                     options
                 )
             })
@@ -296,6 +296,7 @@ Received: "not displayed"`)
                         {
                             expectation: 'displayed',
                             isNot: true,
+                            isSome: false,
                             verb: 'be',
                         },
                         options
@@ -319,6 +320,7 @@ Received: "displayed"`)
                         {
                             expectation: 'displayed',
                             isNot: true,
+                            isSome: false,
                             verb: 'be',
                         },
                         options

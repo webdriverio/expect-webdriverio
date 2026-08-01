@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { validateNumberArrayAndExtractOptions, type NumberMatcher } from '../../util/numberOptionsUtil.js'
@@ -45,7 +45,7 @@ export async function toHaveWidth(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveWidth(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ):Promise<ExpectWebdriverIO.AssertionResult> {
@@ -59,7 +59,7 @@ export async function toHaveWidth(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
-    const { success: pass, actual: actualWidth, subject: elements } = await waitUntil(
+    const { success: pass, actual: actualWidth, subject: elements, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -79,7 +79,7 @@ export async function toHaveWidth(
         elements,
         expectedValues,
         actualWidth,
-        this,
+        { isNot, isSome },
         verb,
         expectation,
         '',

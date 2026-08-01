@@ -1,6 +1,6 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { compareText, compareTextOrArray, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
@@ -43,7 +43,7 @@ export function toHaveClass(...args: unknown[]) {
 }
 
 export async function toHaveElementClass(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
@@ -57,7 +57,7 @@ export async function toHaveElementClass(
 
     const attribute = 'class'
 
-    const { success: pass, actual: attr, subject: el } = await waitUntil(
+    const { success: pass, actual: attr, subject: el, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -73,7 +73,7 @@ export async function toHaveElementClass(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, this, verb, expectation, '', options)
+    const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, { isNot, isSome }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

@@ -1,5 +1,5 @@
 import { toHaveElementProperty } from './toHaveElementProperty.js'
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { AssertionResult } from 'expect-webdriverio'
 
@@ -22,7 +22,7 @@ export function toHaveValue(
 ): Promise<AssertionResult>
 
 export function toHaveValue(
-    el: WdioElementOrArrayMaybePromise,
+    el: MaybeSomeWdioElementOrArrayMaybePromise,
     value: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult>{
@@ -31,7 +31,7 @@ export function toHaveValue(
 
 // toHaveElementProperty.call does not respect well the tsc so using the below workaround to make it work with the correct typing.
 type ToHaveElementPropertyFn = (
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     property: string,
     value: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | null> | ExpectWebdriverIO.StringOptions | undefined,
     options?: ExpectWebdriverIO.StringOptions

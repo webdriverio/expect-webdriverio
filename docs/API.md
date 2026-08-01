@@ -1099,11 +1099,12 @@ For Jasmine, see the official documentation for [expect/expectAsync](https://jas
 
 ## Modifiers
 
+### .not
 WebdriverIO supports usage of modifiers as `.not` and it will wait until the reverse condition is meet
 
 ```ts
 // Wait until the element is no longer present
-await expect(element).not.toBeDisplayed()
+await expect($('element')).not.toBeDisplayed()
 
 // Wait until the text is no more 'some title'
 await expect(browser).not.toHaveTitle('some title')
@@ -1112,13 +1113,31 @@ await expect(browser).not.toHaveTitle('some title')
 In case immediate assertion is required, use `{ wait: 0 }`
 ```ts
 // Ensure element is not present right now
-await expect(element).not.toBeDisplayed({ wait: 0 })
+await expect($('element')).not.toBeDisplayed({ wait: 0 })
 
 // Ensure the text is not 'some title' right now
 await expect(browser).not.toHaveTitle('some title', { wait: 0 })
 ```
 
 **Note:** You can pair `.not` with asymmetric matchers, but to enable the wait-until behavior, `.not` must be used directly on the `expect()` call. 
+
+### some()
+
+since: v6.0.0
+
+The custom `some()` function (distinct syntax compared to `.not`) allows you to assert that at least one element from multiple elements meets the assertion.
+
+```ts
+// Allow to succeed only if one element matches (or not match)
+// Succeeds if at least one element matches either 'optionA' or 'optionB'
+await expect(some($$('elements'))).toHaveText(expect.oneOf('optionA', 'optionB'));
+// Succeeds if at least one element does not matches either 'forbiddenTextA' or 'forbiddenTextB'
+await expect(some($$('elements'))).not.toHaveText(/forbiddenTextA|forbiddenTextB/);
+// Succeeds if the first element matches 'valueForIndex0' OR the second matches 'valueForIndex1'
+await expect(some($$('elements'))).toHaveText(['valueForIndex0', 'valueForIndex1']);
+```
+
+**Note**: On `toHaveText`, the feature flag `useToHaveTextStrictMultiElementsCompareStrategy` must be enable to have `some()` working.
 
 ## Asymmetric Matchers
 

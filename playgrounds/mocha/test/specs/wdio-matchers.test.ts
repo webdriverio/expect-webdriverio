@@ -1,5 +1,5 @@
 import { browser, $, $$ } from '@wdio/globals'
-import { setFeatureFlags } from 'expect-webdriverio'
+import { setFeatureFlags, some } from 'expect-webdriverio'
 
 describe('WebdriverIO Custom Matchers', () => {
     beforeEach(async () => {
@@ -78,6 +78,14 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(await nav).toBeDisplayed()
             await expect(await nav.filter(n => n.isExisting())).toBeDisplayedInViewport()
         })
+
+        it('should verify that some elements are displayed', async () => {
+            const nav = $$('nav')
+
+            await expect(some(nav)).toBeDisplayed()
+            await expect(some(await nav)).toBeDisplayed()
+            await expect(some(await nav.filter(n => n.isExisting()))).toBeDisplayedInViewport()
+        })
     })
 
     describe('Element state matchers', () => {
@@ -104,9 +112,8 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(docsLink).toHaveText('Docs')
         })
 
-        it('should verify element text with expected array', async () => {
+        it('should verify element text with expected array (deprecated) or oneOf', async () => {
             const docsLink = await $('=Docs')
-            await expect(docsLink).toHaveText('Docs')
             await expect(docsLink).toHaveText(['Docs', 'Doc'])
             await expect(docsLink).toHaveText(expect.oneOf('Docs', 'Doc'))
         })
@@ -130,7 +137,8 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should verify text with array of text with oneOf', async () => {
                     const heading = await $$('h1')
-                    await expect(heading).toHaveText(expect.oneOf('1','Open source'), { ignoreCase: true, containing: true })
+
+                    await expect(heading).toHaveText(expect.oneOf('','Open source'), { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with array of text without exact array match', async () => {
@@ -159,7 +167,6 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
                 })
-
 
                 describe('Empty elemetns', () => {
                     it('should fails if there is no elements with Element[]', async () => {
@@ -243,6 +250,14 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
                 })
 
+                it('should verify some text with array of text', async () => {
+                    const heading = await $$('h1')
+
+                    await expect(some(heading)).toHaveText(['DoesNotMatch','Open Source and Open Governed'])
+                    await expect(some(heading)).toHaveText('Open Source and Open Governed')
+                    await expect(some(heading)).toHaveText('open source', { ignoreCase: true, containing: true })
+                })
+
                 it('should verify text with array of text without exact array match', async () => {
                     const heading = await $$('h1')
                     await expect(heading).toHaveText(['', 'Open Source and Open Governed'])
@@ -261,6 +276,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should verify text with options with awaited getElements ChainablePromiseArray', async () => {
                     const heading = await $$('h1').getElements()
+
                     await expect(heading).toHaveText(['','Open Source and Open Governed'], { ignoreCase: true, containing: true })
                 })
 

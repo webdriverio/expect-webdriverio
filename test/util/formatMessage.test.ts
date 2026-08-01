@@ -25,7 +25,7 @@ describe('formatMessage', () => {
                     'window',
                     expected,
                     actual,
-                    { isNot: false },
+                    { isNot: false, isSome: false },
                     'have',
                     'title',
                 ))
@@ -61,7 +61,7 @@ Received: "Test Actual Value"`)
                         'window',
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'title'
                     ))
@@ -97,7 +97,7 @@ Received      : "Test Same"`
                         'window',
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'title',
                         '',
@@ -124,7 +124,7 @@ Received: "Test Actual Value"`)
                         'window',
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'title',
                         '',
@@ -151,7 +151,7 @@ Received      : "same value"`)
                     'window',
                     'Test Expected Value',
                     'Test Actual Value',
-                    { isNot: false },
+                    { isNot: false, isSome: false },
                     'have',
                     'title',
                     '',
@@ -183,7 +183,7 @@ Received: "Test Actual Value"`)
                         'window',
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'property',
                         expectedArg2,
@@ -209,7 +209,7 @@ Received: "Actual Property Value"`)
                         'window',
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'property',
                         expectedArg2,
@@ -235,7 +235,7 @@ Received      : "Actual Property Value"`)
             { actual: {}, selectorName: '{}' },
             { actual: ['1', '2'], selectorName: '["1","2"]' },
         ])('should return failure message for unsupported type $actual when isNot is false', async ({ actual, selectorName }) => {
-            const result = await enhanceError(actual as any, 'webdriverio', undefined, { isNot: false }, 'have', 'text')
+            const result = await enhanceError(actual as any, 'webdriverio', undefined, { isNot: false, isSome: false }, 'have', 'text')
 
             expect(stripAnsi(result)).toEqual(`\
 Expect ${selectorName} to have text
@@ -253,7 +253,7 @@ Received: undefined`)
             { actual: {}, selectorName: '{}' },
             { actual: ['1', '2'], selectorName: '["1","2"]' },
         ])('should return failure message for unsupported type $actual when isNot is true', async ({ actual, selectorName }) => {
-            const result = await enhanceError(actual as any, 'webdriverio', undefined, { isNot: true }, 'have', 'text')
+            const result = await enhanceError(actual as any, 'webdriverio', undefined, { isNot: true, isSome: false }, 'have', 'text')
 
             expect(stripAnsi(result)).toEqual(`\
 Expect ${selectorName} not to have text
@@ -276,7 +276,7 @@ Received      : undefined`)
                         elements,
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'text',
                     ))
@@ -303,7 +303,7 @@ Expect ${elementName} to have text
                         elements,
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'text',
                     ))
@@ -329,7 +329,7 @@ Expect ${elementName} to have text
                         elements,
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'text',
                     ))
@@ -358,7 +358,7 @@ Expect ${elementName} to have text
                         elements,
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'text',
                     ))
@@ -381,7 +381,7 @@ Received      : ["Test Expected Value 1", "Test Expected Value 2"]`
                         elements,
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'text',
                     ))
@@ -406,7 +406,7 @@ Received      : ["Test Expected Value 1", "Test Actual Value 2"]`
                         elements,
                         expected,
                         actual,
-                        { isNot },
+                        { isNot, isSome: false },
                         'have',
                         'text',
                     )
@@ -431,7 +431,7 @@ Received      : ["Test Actual Value 1", "Test Expected Value 2"]`
                 const expected = jasmine.any(String)
                 const actual = 'Test Actual Value'
 
-                const result = await enhanceError(subject, expected, actual, { isNot: false }, 'have', 'text')
+                const result = await enhanceError(subject, expected, actual, { isNot: false, isSome: false }, 'have', 'text')
 
                 expect(stripAnsi(result)).toEqual(`\
 Expect $(\`element\`) to have text
@@ -445,7 +445,7 @@ Received: "Test Actual Value"`)
                 const expected = [jasmine.any(String), jasmine.any(Number)]
                 const actual = [null, 'Test Actual Value 2']
 
-                const result = await enhanceError(subject, expected, actual, { isNot: false }, 'have', 'text')
+                const result = await enhanceError(subject, expected, actual, { isNot: false, isSome: false }, 'have', 'text')
 
                 expect(stripAnsi(result)).toEqual(`\
 Expect $$(\`element\`) to have text
@@ -467,7 +467,7 @@ Expect $$(\`element\`) to have text
                 const expected = jasmine.any(String)
                 const actual = 'Test Actual Value'
 
-                const result = await enhanceError(subject, expected, actual, { isNot: true }, 'have', 'text')
+                const result = await enhanceError(subject, expected, actual, { isNot: true, isSome: false }, 'have', 'text')
 
                 expect(stripAnsi(result)).toEqual(`\
 Expect $(\`element\`) not to have text
@@ -481,7 +481,7 @@ Received      : "Test Actual Value"`)
                 const expected = [jasmine.any(String), jasmine.any(Number)]
                 const actual = ['Test Actual Value 2', 1]
 
-                const result = await enhanceError(subject, expected, actual, { isNot: true }, 'have', 'text')
+                const result = await enhanceError(subject, expected, actual, { isNot: true, isSome: false }, 'have', 'text')
 
                 expect(stripAnsi(result)).toEqual(`\
 Expect $$(\`element\`) not to have text
@@ -497,13 +497,37 @@ Received      : ["Test Actual Value 2", 1]`)
                 const expected = expect.any(String)
                 const actual = 'Test Actual Value'
 
-                const result = await enhanceError(subject, expected, actual, { isNot: false }, 'have', 'text')
+                const result = await enhanceError(subject, expected, actual, { isNot: false, isSome: false }, 'have', 'text')
 
                 expect(stripAnsi(result)).toEqual(`\
 Expect $(\`element\`) to have text
 
 Expected: Any<String>
 Received: "Test Actual Value"`)
+            })
+        })
+
+        describe('given some elements', () => {
+            test('should return failure message for some elements when isNot is false', async () => {
+                const subject = elementArrayFactory('element', 2)
+                const expected = ['Test Expected Value 1', 'Test Expected Value 2']
+                const actual = ['Test Actual Value 1', 'Test Actual Value 2']
+
+                const result = await enhanceError(subject, expected, actual, { isNot: false, isSome: true }, 'have', 'text')
+
+                // TODO maybe one day try to change `- Expected  - 2` to `- Expected one of - 2` but this is not supported by jest-diff yet!
+                expect(stripAnsi(result)).toEqual(`\
+Expect some of $$(\`element\`) to have text
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "Test Expected Value 1",
+-   "Test Expected Value 2",
++   "Test Actual Value 1",
++   "Test Actual Value 2",
+  ]`)
             })
         })
     })
@@ -518,7 +542,7 @@ Received: "Test Actual Value"`)
 
             const isNot = false
             test('when isNot is false and failure with result having pass=false', () => {
-                const message = stripAnsi(enhanceErrorBe(subject, [false], { isNot, verb, expectation }, options ))
+                const message = stripAnsi(enhanceErrorBe(subject, [false], { isNot, verb, expectation, isSome: false }, options ))
                 expect(message).toEqual(`\
 Expect $(\`element\`) to be displayed
 
@@ -528,7 +552,7 @@ Received: "not displayed"`)
 
             test('with custom message', () => {
                 const customMessage = 'Custom Error Message'
-                const message = stripAnsi(enhanceErrorBe(subject, [false], { isNot, verb, expectation }, { ...options, message: customMessage }))
+                const message = stripAnsi(enhanceErrorBe(subject, [false], { isNot, verb, expectation, isSome: false }, { ...options, message: customMessage }))
                 expect(message).toEqual(`\
 Custom Error Message
 Expect $(\`element\`) to be displayed
@@ -539,7 +563,7 @@ Received: "not displayed"`)
 
             test('when isNot is true and failure with result having pass=true (inverted later by Jest)', () => {
                 const isNot = true
-                const message = stripAnsi(enhanceErrorBe(subject, [true], { isNot, verb, expectation }, options))
+                const message = stripAnsi(enhanceErrorBe(subject, [true], { isNot, verb, expectation, isSome: false }, options))
                 expect(message).toEqual(`\
 Expect $(\`element\`) not to be displayed
 
@@ -557,7 +581,7 @@ Received: "displayed"`)
                 { actual: {}, selectorName: '{}' },
                 { actual: ['1', '2'], selectorName: '["1","2"]' },
             ])('should return failure message for unsupported type $actual when isNot is false and not result from element function call', async ({ actual: subject, selectorName }) => {
-                const result = await enhanceErrorBe(subject as any,  [], { isNot, verb, expectation }, options)
+                const result = await enhanceErrorBe(subject as any,  [], { isNot, verb, expectation, isSome: false }, options)
 
                 expect(stripAnsi(result)).toEqual(`\
 Expect ${selectorName} to be displayed
@@ -575,7 +599,7 @@ Received: "not displayed"`)
                 { actual: {}, selectorName: '{}' },
                 { actual: ['1', '2'], selectorName: '["1","2"]' },
             ])('should return failure message for unsupported type $actual when isNot is true and not result from element function call', async ({ actual: subject, selectorName }) => {
-                const result = await enhanceErrorBe(subject as any, [], { isNot: true, verb, expectation }, options)
+                const result = await enhanceErrorBe(subject as any, [], { isNot: true, verb, expectation, isSome: false }, options)
 
                 expect(stripAnsi(result)).toEqual(`\
 Expect ${selectorName} not to be displayed
@@ -592,7 +616,7 @@ Received: "displayed"`)
                 const isNot = false
 
                 test('failure with all results having pass=false', () => {
-                    const message = stripAnsi(enhanceErrorBe(subject, [false, false], { isNot, verb, expectation }, options ))
+                    const message = stripAnsi(enhanceErrorBe(subject, [false, false], { isNot, verb, expectation, isSome: false }, options ))
                     expect(message).toEqual(`\
 Expect $$(\`elements\`) to be displayed
 
@@ -608,7 +632,7 @@ Expect $$(\`elements\`) to be displayed
                 })
 
                 test('failure with first results having pass=true', () => {
-                    const message = enhanceErrorBe(subject, [true, false], { isNot, verb, expectation }, options )
+                    const message = enhanceErrorBe(subject, [true, false], { isNot, verb, expectation, isSome: false }, options )
                     expect(stripAnsi(message)).toEqual(`\
 Expect $$(\`elements\`) to be displayed
 
@@ -623,7 +647,7 @@ Expect $$(\`elements\`) to be displayed
                 })
 
                 test('failure with second results having pass=true', () => {
-                    const message = enhanceErrorBe(subject, [false, true], { isNot, verb, expectation }, options )
+                    const message = enhanceErrorBe(subject, [false, true], { isNot, verb, expectation, isSome: false }, options )
                     expect(stripAnsi(message)).toEqual(`\
 Expect $$(\`elements\`) to be displayed
 
@@ -638,7 +662,7 @@ Expect $$(\`elements\`) to be displayed
                 })
 
                 test('when no element', () => {
-                    const message = enhanceErrorBe([], [], { isNot, verb, expectation }, options )
+                    const message = enhanceErrorBe([], [], { isNot, verb, expectation, isSome: false }, options )
                     expect(stripAnsi(message)).toEqual(`\
 Expect [] to be displayed
 
@@ -651,7 +675,7 @@ Received: []`)
                 const isNot = true
 
                 test('failure with all results having pass=true', () => {
-                    const message = enhanceErrorBe(subject, [true, true], { isNot, verb, expectation }, options )
+                    const message = enhanceErrorBe(subject, [true, true], { isNot, verb, expectation, isSome: false }, options )
                     expect(stripAnsi(message)).toEqual(`\
 Expect $$(\`elements\`) not to be displayed
 
@@ -667,7 +691,7 @@ Expect $$(\`elements\`) not to be displayed
                 })
 
                 test('failure with first results having success pass=false (inverted later)', () => {
-                    const message = enhanceErrorBe(subject, [false, true], { isNot, verb, expectation }, options )
+                    const message = enhanceErrorBe(subject, [false, true], { isNot, verb, expectation, isSome: false }, options )
                     expect(stripAnsi(message)).toEqual(`\
 Expect $$(\`elements\`) not to be displayed
 
@@ -682,7 +706,7 @@ Expect $$(\`elements\`) not to be displayed
                 })
 
                 test('failure with second results having success pass=false (inverted later)', () => {
-                    const message = enhanceErrorBe(subject, [true, false], { isNot, verb, expectation }, options )
+                    const message = enhanceErrorBe(subject, [true, false], { isNot, verb, expectation, isSome: false }, options )
                     expect(stripAnsi(message)).toEqual(`\
 Expect $$(\`elements\`) not to be displayed
 
@@ -697,7 +721,7 @@ Expect $$(\`elements\`) not to be displayed
                 })
 
                 test('when no elements', () => {
-                    const message = enhanceErrorBe([], [], { isNot, verb, expectation }, options )
+                    const message = enhanceErrorBe([], [], { isNot, verb, expectation, isSome: false }, options )
                     expect(stripAnsi(message)).toEqual(`\
 Expect [] not to be displayed
 

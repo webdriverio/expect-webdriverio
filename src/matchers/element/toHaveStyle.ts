@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeArray, WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { MaybeArray, WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
@@ -36,7 +36,7 @@ export async function toHaveStyle(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveStyle(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<{ [key: string]: string; }>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<ExpectWebdriverIO.AssertionResult> {
@@ -48,7 +48,7 @@ export async function toHaveStyle(
         options,
     })
 
-    const { success: pass, actual: actualStyle, subject: el } = await waitUntil(
+    const { success: pass, actual: actualStyle, subject: el, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -65,7 +65,7 @@ export async function toHaveStyle(
     )
 
     const expected = wrapExpectedWithArray(el, actualStyle, expectedValue)
-    const message = enhanceError(el, expected, actualStyle, this, verb, expectation, '', options)
+    const message = enhanceError(el, expected, actualStyle, { isNot, isSome }, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

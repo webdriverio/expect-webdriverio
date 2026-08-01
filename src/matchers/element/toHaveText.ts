@@ -5,7 +5,7 @@ import {
     getFeatureFlagValue,
     waitUntil,
 } from '../../utils.js'
-import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeArray, MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
@@ -18,7 +18,7 @@ async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<
 }
 
 export async function toHaveText(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -33,7 +33,7 @@ export async function toHaveText(
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
     const isNewStrictCompare = getFeatureFlagValue(options, 'useToHaveTextStrictMultiElementsCompareStrategy')
-    const { success: pass, actual: actualText, subject: subject } = await waitUntil(
+    const { success: pass, actual: actualText, subject: subject, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -51,7 +51,7 @@ export async function toHaveText(
     )
 
     const expected = fillSingleExpectedForElementArray(subject, expectedValue)
-    const message = enhanceError(subject, expected, actualText, this, verb, expectation, '', options)
+    const message = enhanceError(subject, expected, actualText, { isNot, isSome }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

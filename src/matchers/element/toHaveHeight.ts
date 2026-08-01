@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
@@ -47,7 +47,7 @@ export async function toHaveHeight(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveHeight(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
@@ -61,7 +61,7 @@ export async function toHaveHeight(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
-    const { success: pass, actual: actualHeight, subject: elements } = await waitUntil(
+    const { success: pass, actual: actualHeight, subject: elements, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -81,7 +81,7 @@ export async function toHaveHeight(
         elements,
         expectedValues,
         actualHeight,
-        this,
+        { isNot, isSome },
         verb,
         expectation,
         '',
