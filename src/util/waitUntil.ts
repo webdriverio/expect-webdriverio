@@ -56,6 +56,6 @@ export const waitUntil = async <T>(
             throw error
         }
 
-        return { subject: result?.subject, success: isNot, actual: result?.actual }
+        return { ...result, subject: result?.subject, success: isNot, actual: result?.actual }
     }
 }

@@ -31,7 +31,7 @@ export async function toHaveHTML(
         options,
     })
 
-    const { success: pass, actual: actualHTML, subject: elements } = await waitUntil(
+    const { success: pass, actual: actualHTML, subject: elements, context: { isSome } = {} } = await waitUntil(
         async () => {
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -49,7 +49,7 @@ export async function toHaveHTML(
     )
 
     const expectedValues = wrapExpectedWithArray(elements, actualHTML, expectedValue)
-    const message = enhanceError(elements, expectedValues, actualHTML, this, verb, expectation, '', options)
+    const message = enhanceError(elements, expectedValues, actualHTML, { isNot, isSome }, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

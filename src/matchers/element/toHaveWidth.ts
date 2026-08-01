@@ -59,7 +59,7 @@ export async function toHaveWidth(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
-    const { success: pass, actual: actualWidth, subject: elements } = await waitUntil(
+    const { success: pass, actual: actualWidth, subject: elements, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -79,7 +79,7 @@ export async function toHaveWidth(
         elements,
         expectedValues,
         actualWidth,
-        this,
+        { isNot, isSome },
         verb,
         expectation,
         '',

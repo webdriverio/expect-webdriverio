@@ -107,7 +107,7 @@ export async function toHaveElementProperty(
 
     value = buildWdioAsymmetricMatchersWithOptions(value, options)
 
-    const { success: pass, actual: actualProppertyValue, subject: elements } = await waitUntil(
+    const { success: pass, actual: actualProppertyValue, subject: elements, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -125,7 +125,7 @@ export async function toHaveElementProperty(
     )
 
     const expected = wrapExpectedWithArray(elements, actualProppertyValue, value)
-    const message = enhanceError(elements, expected, actualProppertyValue, this, verb, expectation, property, options)
+    const message = enhanceError(elements, expected, actualProppertyValue, { isNot, isSome }, verb, expectation, property, options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

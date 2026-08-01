@@ -5,7 +5,7 @@ import type { ChainablePromiseArray } from 'webdriverio'
 import { $Factory, chainableElementArrayFactory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
-import { setFeatureFlags } from '../../../src/index.js'
+import { setFeatureFlags, some } from '../../../src/index.js'
 import { expect as wdioExpect } from '../../../src/index.js'
 
 vi.mock('@wdio/globals')
@@ -602,6 +602,18 @@ Expect ${selectorName} to have text
                     expect(stripAnsi(result.message())).toMatch(/Test\nExpect .* to have text/)
                 })
 
+                test('should not support some modifiers', async () => {
+                    const result = await thisContext.toHaveText( some(els), 'webdriverio', { wait: 0 })
+
+                    expect(result.pass).toBe(false)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect {"elements":[{"selector":"sel","index":0,"parent":{},"elementId":"sel"},{"selector":"sel","index":1,... to have text
+
+Expected: "webdriverio"
+Received: undefined`
+                    )
+                })
+
                 describe('when using .not', () => {
                     test('should succeed (pass=false) if none of the received elements match the expected text', async () => {
                         const result = await thisNotContext.toHaveText(els, ['NotHaveThisText1', 'NotHaveThisText2'])
@@ -1186,7 +1198,7 @@ Expect ${selectorName} to have text
                     expect(stripAnsi(result.message())).toMatch(/Test\nExpect .* to have text/)
                 })
 
-                describe('when using .not', () => {
+                describe('when using .not modifier', () => {
                     test('should succeed (pass=false) if none of the received elements match the expected text', async () => {
                         const result = await thisNotContext.toHaveText(els, ['NotHaveThisText1', 'NotHaveThisText2'])
 
@@ -1257,6 +1269,39 @@ Expect ${selectorName} not to have text
 
 Expected [not]: [/NotMatching.*/i, /Get Starte.*/i]
 Received      : ["WebdriverIO", "Get Started"]`
+                        )
+                    })
+                })
+
+                describe('when using some() modifier', () => {
+                    test('should succeed when using some() modifier and only one element matches', async () => {
+                        vi.mocked((await els)[0].getText).mockResolvedValue('Does not match')
+                        vi.mocked((await els)[1].getText).mockResolvedValue('webdriverio')
+
+                        const result = await thisContext.toHaveText( some(els), 'webdriverio')
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('should fails with `some` text when no element matches', async () => {
+                        vi.mocked((await els)[0].getText).mockResolvedValue('Does not match')
+                        vi.mocked((await els)[1].getText).mockResolvedValue('Also does not match')
+
+                        const result = await thisContext.toHaveText( some(els), 'webdriverio')
+
+                        expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect some of ${selectorName} to have text
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   "webdriverio",
+-   "webdriverio",
++   "Does not match",
++   "Also does not match",
+  ]`
                         )
                     })
                 })

@@ -73,7 +73,7 @@ async function executeCommandBe(
 ): ExpectWebdriverIO.AsyncAssertionResult {
     const { isNot, verb = 'be', allowEmptyElements = false } = this
 
-    const { success: pass, actual, subject } = await waitUntil(
+    const { success: pass, actual, subject, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy({
                 unresolvedElements: received,
@@ -91,7 +91,7 @@ async function executeCommandBe(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceErrorBe(subject, actual, { ...this, verb }, options)
+    const message = enhanceErrorBe(subject, actual, { ...this, verb, isSome }, options)
 
     return {
         pass,

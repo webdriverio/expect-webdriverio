@@ -550,9 +550,8 @@ Received: []`)
                 const result = await thisContext.toBeDisplayed(some(elements))
 
                 expect(result.pass).toBe(false)
-                // TODO : improve message for some option
                 expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} to be displayed
+Expect some of ${selectorName} to be displayed
 
 - Expected  - 2
 + Received  + 2
@@ -581,9 +580,8 @@ Expect ${selectorName} to be displayed
                 const result = await thisNotContext.toBeDisplayed(some(elements))
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                // TODO dprevost: improve message for some option
                 expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} not to be displayed
+Expect some of ${selectorName} not to be displayed
 
 - Expected  - 2
 + Received  + 2

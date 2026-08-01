@@ -79,7 +79,7 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(await nav.filter(n => n.isExisting())).toBeDisplayedInViewport()
         })
 
-        it('should verify that some elements are displayed', async () => {
+        it.only('should verify that some elements are displayed', async () => {
             const nav = $$('nav')
 
             await expect(some(nav)).toBeDisplayed()

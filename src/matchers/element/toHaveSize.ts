@@ -48,7 +48,7 @@ export async function toHaveSize(
         options,
     })
 
-    const { success: pass, actual: actualSize, subject: el } = await waitUntil(
+    const { success: pass, actual: actualSize, subject: el, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -67,7 +67,7 @@ export async function toHaveSize(
         el,
         wrapExpectedWithArray(el, actualSize, expectedValue),
         actualSize,
-        this,
+        { isNot, isSome },
         verb,
         expectation,
         '',

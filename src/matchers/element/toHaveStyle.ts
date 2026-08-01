@@ -48,7 +48,7 @@ export async function toHaveStyle(
         options,
     })
 
-    const { success: pass, actual: actualStyle, subject: el } = await waitUntil(
+    const { success: pass, actual: actualStyle, subject: el, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -65,7 +65,7 @@ export async function toHaveStyle(
     )
 
     const expected = wrapExpectedWithArray(el, actualStyle, expectedValue)
-    const message = enhanceError(el, expected, actualStyle, this, verb, expectation, '', options)
+    const message = enhanceError(el, expected, actualStyle, { isNot, isSome }, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

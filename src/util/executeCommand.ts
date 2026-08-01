@@ -7,6 +7,7 @@ export type CompareResult<T> = { success: boolean; actual: T }
 export type StrategyResult<T, E = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown> = {
     subject: E;
     abort?: boolean;
+    context?: { isSome: boolean };
 } & CompareResult<T | undefined>
 
 /**
@@ -130,6 +131,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             success: isNot ? !allowEmptyElements : false,
             actual: undefined,
             abort: !allowEmptyElements,
+            context: { isSome }
         }
     }
 
@@ -146,6 +148,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             success: forceFailure ? !!isNot : compareResult.success,
             actual: compareResult.actual,
             abort: forceFailure,
+            context: { isSome }
         }
     }
 
@@ -201,6 +204,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         success,
         actual: results.map(({ actual }) => actual),
         abort: forceFailure,
+        context: { isSome }
     }
 }
 

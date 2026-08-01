@@ -35,7 +35,7 @@ export async function toHaveAttributeAndValue(received: MaybeSomeWdioElementOrAr
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: attr, subject: el } = await waitUntil(
+    const { success: pass, actual: attr, subject: el, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -53,7 +53,7 @@ export async function toHaveAttributeAndValue(received: MaybeSomeWdioElementOrAr
     )
 
     const expected = wrapExpectedWithArray(el, attr, expectedValue)
-    const message = enhanceError(el, expected, attr, this, verb, expectation, attribute, options)
+    const message = enhanceError(el, expected, attr, { isNot, isSome }, verb, expectation, attribute, options)
 
     return {
         pass,

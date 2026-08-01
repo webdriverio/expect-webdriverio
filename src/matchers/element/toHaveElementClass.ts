@@ -57,7 +57,7 @@ export async function toHaveElementClass(
 
     const attribute = 'class'
 
-    const { success: pass, actual: attr, subject: el } = await waitUntil(
+    const { success: pass, actual: attr, subject: el, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -73,7 +73,7 @@ export async function toHaveElementClass(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, this, verb, expectation, '', options)
+    const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, { isNot, isSome }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

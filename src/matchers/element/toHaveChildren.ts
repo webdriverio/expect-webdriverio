@@ -95,7 +95,7 @@ export async function toHaveChildren(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValueOrOptions, options, { supportDefaultAsGteThen1: true })
 
-    const { success: pass, actual: children, subject } = await waitUntil(
+    const { success: pass, actual: children, subject, context: { isSome } = {} } = await waitUntil(
         async () => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -111,7 +111,7 @@ export async function toHaveChildren(
     )
 
     const expectedArray = wrapExpectedWithArray(subject, children, expectedNumber)
-    const message = enhanceError(subject, expectedArray, children, this, verb, expectation, '', commandOptions)
+    const message = enhanceError(subject, expectedArray, children, { isNot, isSome }, verb, expectation, '', commandOptions)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message
