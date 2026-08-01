@@ -79,7 +79,7 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(await nav.filter(n => n.isExisting())).toBeDisplayedInViewport()
         })
 
-        it.only('should verify that some elements are displayed', async () => {
+        it('should verify that some elements are displayed', async () => {
             const nav = $$('nav')
 
             await expect(some(nav)).toBeDisplayed()
@@ -112,9 +112,8 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(docsLink).toHaveText('Docs')
         })
 
-        it('should verify element text with expected array', async () => {
+        it('should verify element text with expected array (deprecated) or oneOf', async () => {
             const docsLink = await $('=Docs')
-            await expect(docsLink).toHaveText('Docs')
             await expect(docsLink).toHaveText(['Docs', 'Doc'])
             await expect(docsLink).toHaveText(expect.oneOf('Docs', 'Doc'))
         })
@@ -167,7 +166,6 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
                 })
-
 
                 describe('Empty elemetns', () => {
                     it('should fails if there is no elements with Element[]', async () => {
@@ -249,6 +247,11 @@ describe('WebdriverIO Custom Matchers', () => {
                 it('should verify text with array of text & with options with awaited ChainablePromiseArray', async () => {
                     const heading = await $$('h1')
                     await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                })
+
+                it('should verify some text with array of text', async () => {
+                    const heading = await $$('h1')
+                    await expect(some(heading)).toHaveText(['DoesNotMatch','Open Source and Open Governed'])
                 })
 
                 it('should verify text with array of text without exact array match', async () => {
