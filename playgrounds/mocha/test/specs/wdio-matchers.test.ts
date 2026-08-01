@@ -251,7 +251,10 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should verify some text with array of text', async () => {
                     const heading = await $$('h1')
+
                     await expect(some(heading)).toHaveText(['DoesNotMatch','Open Source and Open Governed'])
+                    await expect(some(heading)).toHaveText('Open Source and Open Governed')
+                    await expect(some(heading)).toHaveText('open source', { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with array of text without exact array match', async () => {
@@ -274,12 +277,6 @@ describe('WebdriverIO Custom Matchers', () => {
                     const heading = await $$('h1').getElements()
 
                     await expect(heading).toHaveText(['','Open Source and Open Governed'], { ignoreCase: true, containing: true })
-                })
-
-                it('should verify if some elements match', async () => {
-                    const heading = await $$('h1').getElements()
-
-                    await expect(heading).toHaveText('Open Source and Open Governed', { ignoreCase: true, containing: true, some: true })
                 })
 
                 it('should verify text with options with filetered awaited getElements ChainablePromiseArray', async () => {
