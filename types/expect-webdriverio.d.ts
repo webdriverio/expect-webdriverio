@@ -1086,12 +1086,6 @@ declare namespace ExpectWebdriverIO {
          * user message to prepend before assertion error
          */
         message?: string
-
-        /**
-         * Pass strict elements comparison if at least one element matches the expected value (or not matches with .not).
-         * Default: false
-         */
-        some?: boolean
     }
 
     interface HTMLOptions extends StringOptions {
