@@ -6,6 +6,7 @@ import { DEFAULT_OPTIONS, defaultOptionsList } from './constants.js'
 import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
 import { oneOf } from './matchers/asymmetrics/oneOf.js'
+import { some as wdioSome } from './matchers/modifiers/some.js'
 
 /**
  * Contains the custom WDIO matchers, registered through `expect.extend()`.
@@ -69,6 +70,7 @@ Object.defineProperty(wdioExpect, 'clearSoftFailures', {
 
 // Fully configured global expect instance with all the custom WDIO matchers, asymmetric matchers, and soft assertions
 export const expect = wdioExpect
+export const some = wdioSome
 
 // Default options for the expect-webdriverio library
 export const getDefaultOptions = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
