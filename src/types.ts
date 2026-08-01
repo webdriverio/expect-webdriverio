@@ -12,9 +12,11 @@ export type WdioElementsMaybePromise =
     WdioElements |
     ChainablePromiseArray | Promise<WebdriverIO.Element[]> | Promise<WebdriverIO.ElementArray>
 
+export type WdioElementOrArrayMaybePromise =
+    WdioElementMaybePromise | WdioElementsMaybePromise
+
 export type MaybeSomeWdioElementOrArrayMaybePromise =
-    WdioElementMaybePromise | WdioElementsMaybePromise |
-    SomeElementsWrapper<WdioElementMaybePromise | WdioElementsMaybePromise>
+    MaybeSome<WdioElementMaybePromise | WdioElementsMaybePromise>
 
 export type RawMatcherFn<Context extends MatcherContext = MatcherContext> = {
     (this: Context, actual: unknown, ...expected: unknown[]): ExpectationResult;

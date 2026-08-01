@@ -45,7 +45,6 @@ export async function toHaveAttributeAndValue(received: MaybeSomeWdioElementOrAr
                 },
                 isNot,
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: {  some: options.some }
             })
         },
         isNot,

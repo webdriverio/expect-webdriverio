@@ -68,9 +68,10 @@ type ArrayOfElementsPromise = Promise<WebdriverIO.Element[]>
 /**
  * Type helpers to be able to targets specific types mostly used in conjunctions with the Type of the `actual` parameter of the `expect`
  */
-type ElementOrArrayLike = ElementLike | ElementArrayLike
+type ElementOrMaybeSomeArrayLike = ElementLike | MaybeSomeElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
-type ElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise>
+type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise
+type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise>
 type MockPromise = Promise<WebdriverIO.Mock>
 
 /**
@@ -85,8 +86,8 @@ type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser ? Fn : nev
  *
  * Fix: If type inference issues arise, split the implementation into separate interfaces
  */
-type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement> = ActualT extends ElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement: never
-type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends ElementArrayLike ? Fn : never
+type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement> = ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement: never
+type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends MaybeSomeElementArrayLike ? Fn : never
 
 /**
  * Same as the other but because of Jasmine and it's expectAsync typing which does not force T to be a promise, then we need to account for `WebdriverIO.Mock

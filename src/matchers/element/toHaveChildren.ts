@@ -103,7 +103,6 @@ export async function toHaveChildren(
                 singleElementCompare: (element, expectedValue: NumberMatcher | undefined) => condition(element, expectedValue),
                 isNot,
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { some: commandOptions.some }
             })
         },
         isNot,

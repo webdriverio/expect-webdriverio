@@ -27,14 +27,14 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     singleElementCompare,
     isNot,
     strategy = 'NewStrictMultipleElements',
-    strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false, some: false }
+    strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
 } :{
-    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | ReturnType<typeof isSomeWrapper> | unknown
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown
     expectedValues: MaybeArray<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
     isNot: boolean
     strategy?: StrategyType,
-    strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean, some?: boolean }
+    strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean }
 }
 ): Promise<StrategyResult<MaybeArray<Actual>>> {
     const isSome = isSomeWrapper(unresolvedElements)
