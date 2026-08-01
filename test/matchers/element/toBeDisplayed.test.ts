@@ -547,7 +547,7 @@ Received: []`)
                 vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
                 vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(false)
 
-                const result = await thisContext.toBeDisplayed(elements, { some: true })
+                const result = await thisContext.toBeDisplayed(some(elements))
 
                 expect(result.pass).toBe(false)
                 // TODO : improve message for some option
@@ -578,7 +578,7 @@ Expect ${selectorName} to be displayed
                 vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(true)
                 vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(true)
 
-                const result = await thisNotContext.toBeDisplayed(elements, { some: true })
+                const result = await thisNotContext.toBeDisplayed(some(elements))
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 // TODO dprevost: improve message for some option

@@ -1,5 +1,5 @@
 import { browser, $, $$ } from '@wdio/globals'
-import { setFeatureFlags } from 'expect-webdriverio'
+import { setFeatureFlags, some } from 'expect-webdriverio'
 
 describe('WebdriverIO Custom Matchers', () => {
     beforeEach(async () => {
@@ -82,9 +82,9 @@ describe('WebdriverIO Custom Matchers', () => {
         it('should verify that some elements are displayed', async () => {
             const nav = $$('nav')
 
-            await expect(nav).toBeDisplayed({ some: true })
-            await expect(await nav).toBeDisplayed({ some: true })
-            await expect(await nav.filter(n => n.isExisting())).toBeDisplayedInViewport()
+            await expect(some(nav)).toBeDisplayed()
+            await expect(some(await nav)).toBeDisplayed()
+            await expect(some(await nav.filter(n => n.isExisting()))).toBeDisplayedInViewport()
         })
     })
 
