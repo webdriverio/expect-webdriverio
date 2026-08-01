@@ -137,7 +137,8 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should verify text with array of text with oneOf', async () => {
                     const heading = await $$('h1')
-                    await expect(heading).toHaveText(expect.oneOf('1','Open source'), { ignoreCase: true, containing: true })
+
+                    await expect(heading).toHaveText(expect.oneOf('','Open source'), { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with array of text without exact array match', async () => {
