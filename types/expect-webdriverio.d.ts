@@ -69,7 +69,7 @@ type ArrayOfElementsPromise = Promise<WebdriverIO.Element[]>
  * Type helpers to be able to targets specific types mostly used in conjunctions with the Type of the `actual` parameter of the `expect`
  */
 type ElementOrArrayLike = ElementLike | ElementArrayLike
-type ElementLike = MaybeSome<WebdriverIO.Element | ChainablePromiseElement>
+type ElementLike = WebdriverIO.Element | ChainablePromiseElement
 type ElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise>
 type MockPromise = Promise<WebdriverIO.Mock>
 
@@ -1257,6 +1257,19 @@ declare namespace ExpectWebdriverIO {
      * Allow to match one of the specified value.
      */
     type OneOfPartialMatcher<T> = ExpectWebdriverIO.PartialMatcher<T[]>
+
+    /**
+     * Quantifier modifier. Wraps a `$$()` result so that the matcher passes
+     * when at least one element satisfies the condition (∃ semantics).
+     *
+     * @example
+     * await expect(some($$('.items'))).toBeDisplayed()
+     * await expect(some($$('.items'))).not.toBeDisplayed() // at least one is NOT displayed
+     * await expect(some($$('.items'))).toHaveText('foo')
+     */
+    function some<T extends ElementArrayLike>(
+        elements: T
+    ): WdioSome<T>
 }
 
 declare module 'expect-webdriverio' {

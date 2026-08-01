@@ -1,5 +1,6 @@
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { expectTypeOf } from 'vitest'
+import { some } from '../../src/matchers/modifiers/some.js'
 
 describe('WebDriverIO Expect Type Assertions under Mocha', () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
@@ -104,6 +105,10 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveText(expect.oneOf(expect.stringContaining('text1'), expect.stringContaining('text2')))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(expect.oneOf(/text1/, /text2/))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(expect.oneOf('text1', /text1/, expect.stringContaining('text3')))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(some(element)).toHaveText(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+
                 await expect(element).toHaveText(
                     'My-Ex-Am-Ple',
                     {
@@ -121,6 +126,13 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableElement).toHaveText(expect.oneOf(expect.stringContaining('text1'), expect.stringContaining('text2')))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toHaveText(expect.oneOf(/text1/, /text2/))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toHaveText(expect.oneOf('text1', /text1/, expect.stringContaining('text3')))).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(some(chainableElement)).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(chainableElement)).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(chainableElement)).toHaveText(expect.oneOf('text1', 'text2'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(chainableElement)).toHaveText(expect.oneOf(expect.stringContaining('text1'), expect.stringContaining('text2')))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(chainableElement)).toHaveText(expect.oneOf(/text1/, /text2/))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(chainableElement)).toHaveText(expect.oneOf('text1', /text1/, expect.stringContaining('text3')))).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(chainableElement).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 
