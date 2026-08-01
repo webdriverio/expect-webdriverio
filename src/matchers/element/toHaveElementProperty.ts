@@ -1,6 +1,6 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { expect as wdioExpect } from '../../index.js'
@@ -55,7 +55,7 @@ export async function toHaveElementProperty(
  * Same as `toHaveElementProperty(el, property, expect.anything())`.
  */
 export async function toHaveElementProperty(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     property: string,
 ): Promise<AssertionResult>
 
@@ -83,7 +83,7 @@ export async function toHaveElementProperty(
 
 // Implementation signature broadened to accept union types safely
 export async function toHaveElementProperty(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     property: string,
     value?: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>  | undefined,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
@@ -117,7 +117,7 @@ export async function toHaveElementProperty(
                 },
                 isNot,
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: false, some: options.some }
+                strictConfiguration: { allowArrayWithSingleElement: false }
             })
         },
         isNot,

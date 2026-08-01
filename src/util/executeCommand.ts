@@ -1,4 +1,5 @@
-import type { WdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
+import { isSomeWrapper } from '../matchers/modifiers/some.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
 import { awaitElementOrArray, isElement } from './elementsUtil.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
@@ -27,7 +28,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     strategy = 'NewStrictMultipleElements',
     strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false, some: false }
 } :{
-    unresolvedElements: WdioElementOrArrayMaybePromise | unknown
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | ReturnType<typeof isSomeWrapper> | unknown
     expectedValues: MaybeArray<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
     isNot: boolean
@@ -39,8 +40,11 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
         return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot)
     }
 
+    const isSome = isSomeWrapper(unresolvedElements)
+    const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
+
     // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
-    return multipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot, strictConfiguration)
+    return multipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, { isNot, isSome }, strictConfiguration)
 }
 
 /**
@@ -55,7 +59,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
  * Kept for backward compatibility, to not be breaking but still be able to rollout the below new strategy.
  */
 export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
-    unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown,
     expectedValues: MaybeArray<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     _isNot?: boolean,
@@ -110,11 +114,11 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
  * `allowEmptyElements` to let an empty element set pass the assertion instead of failing.
  */
 export const multipleElementResultsStrategy = async <Actual, Expected>(
-    unresolvedElements: WdioElementOrArrayMaybePromise | unknown,
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown,
     expectedValues: MaybeArray<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
-    isNot: boolean,
-    { allowEmptyElements = false, allowArrayWithSingleElement = false, some = false } = {}
+    { isNot, isSome }: { isNot: boolean; isSome: boolean },
+    { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
 ): Promise<StrategyResult<MaybeArray<Actual>>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
@@ -187,8 +191,8 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     const isNotEmpty = results.length > 0
 
     const success = isNot
-        ? !(!forceFailure && isNotEmpty && (some ? isAtLeastOneFalse(results) : isAllFalse(results)))
-        : (!forceFailure && isNotEmpty && (some ? isAtLeastOneTrue(results) : isAllTrue(results)))
+        ? !(!forceFailure && isNotEmpty && (isSome ? isAtLeastOneFalse(results) : isAllFalse(results)))
+        : (!forceFailure && isNotEmpty && (isSome ? isAtLeastOneTrue(results) : isAllTrue(results)))
 
     // Success if all elements pass the compare strategy, or when using `.not`, if all elements fail the compare strategy.
     // If there are no elements, it is considered a failure in both case with and without `.not`, as there are no elements to compare against.

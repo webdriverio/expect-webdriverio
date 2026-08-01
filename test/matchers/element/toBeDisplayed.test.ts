@@ -7,6 +7,7 @@ import stripAnsi from 'strip-ansi'
 import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { DEFAULT_OPTIONS } from '../../../src/constants.js'
 import { setDefaultOptions, setOptions } from '../../../src/index.js'
+import { some } from '../../../src/matchers/modifiers/some.js'
 
 vi.mock('@wdio/globals')
 
@@ -537,7 +538,7 @@ Received: []`)
                 vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
                 vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(true)
 
-                const result = await thisContext.toBeDisplayed(elements, { some: true })
+                const result = await thisContext.toBeDisplayed(some(elements))
 
                 expect(result.pass).toBe(true)
             })
@@ -568,7 +569,7 @@ Expect ${selectorName} to be displayed
                 vi.mocked(awaitedElements[0].isDisplayed).mockResolvedValue(false)
                 vi.mocked(awaitedElements[1].isDisplayed).mockResolvedValue(true)
 
-                const result = await thisNotContext.toBeDisplayed(elements, { some: true })
+                const result = await thisNotContext.toBeDisplayed(some(elements))
 
                 expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })

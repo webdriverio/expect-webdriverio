@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeArray, WdioElementMaybePromise, WdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { MaybeArray, WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
@@ -36,7 +36,7 @@ export async function toHaveStyle(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveStyle(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<{ [key: string]: string; }>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<ExpectWebdriverIO.AssertionResult> {
@@ -57,7 +57,7 @@ export async function toHaveStyle(
                 singleElementCompare: (element, expectedValues) => condition(element, expectedValues as { [key: string]: string; } | undefined, options),
                 isNot,
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: false, some: options.some }
+                strictConfiguration: { allowArrayWithSingleElement: false }
             })
         },
         isNot,

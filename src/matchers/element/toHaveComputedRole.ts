@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
     compareTextOrArray,
@@ -19,7 +19,7 @@ async function singleElementCompare(
 }
 
 export async function toHaveComputedRole(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -42,7 +42,7 @@ export async function toHaveComputedRole(
                 isNot,
                 strategy: 'NewStrictMultipleElements',
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
-                strictConfiguration: { allowArrayWithSingleElement: true, some: options.some }
+                strictConfiguration: { allowArrayWithSingleElement: true }
             })
         },
         isNot,

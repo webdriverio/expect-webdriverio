@@ -1,9 +1,9 @@
 import { executeCommandBe } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 
 export async function toBeClickable(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'clickable'

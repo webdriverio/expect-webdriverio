@@ -1,6 +1,6 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { compareText, compareTextOrArray, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
@@ -43,7 +43,7 @@ export function toHaveClass(...args: unknown[]) {
 }
 
 export async function toHaveElementClass(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
@@ -66,7 +66,7 @@ export async function toHaveElementClass(
                 isNot,
                 strategy: 'NewStrictMultipleElements',
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
-                strictConfiguration: { allowArrayWithSingleElement: true, some: options.some }
+                strictConfiguration: { allowArrayWithSingleElement: true }
             })
         },
         isNot,

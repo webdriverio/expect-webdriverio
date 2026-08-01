@@ -23,6 +23,8 @@ type ExpectLibMatcherContext = import('expect').MatcherContext
 type MatchersObject = Parameters<typeof import('expect').expect.extend>[0]
 type ExpectLibAnything = ReturnType<typeof expect.any> | ReturnType<typeof expect.anything>
 
+type WdioSome<T> = import('../src/matchers/modifiers/some.js').SomeElementsWrapper<T>
+
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,6 +35,8 @@ type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherCont
  * Indicates that a value can be either one T or an array of T.
  */
 type MaybeArray<T> = T | T[]
+
+type MaybeSome<T> = T | WdioSome<T>
 
 /**
  * Indicates that a value can be either one T, an array of T with oneOf of T, or a oneOf matcher of T.
@@ -65,8 +69,8 @@ type ArrayOfElementsPromise = Promise<WebdriverIO.Element[]>
  * Type helpers to be able to targets specific types mostly used in conjunctions with the Type of the `actual` parameter of the `expect`
  */
 type ElementOrArrayLike = ElementLike | ElementArrayLike
-type ElementLike = WebdriverIO.Element | ChainablePromiseElement
-type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise
+type ElementLike = MaybeSome<WebdriverIO.Element | ChainablePromiseElement>
+type ElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise>
 type MockPromise = Promise<WebdriverIO.Mock>
 
 /**

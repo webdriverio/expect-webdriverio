@@ -5,7 +5,7 @@ import {
     getFeatureFlagValue,
     waitUntil,
 } from '../../utils.js'
-import type { MaybeArray, WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeArray, MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
@@ -18,7 +18,7 @@ async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<
 }
 
 export async function toHaveText(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -43,7 +43,7 @@ export async function toHaveText(
                 },
                 isNot,
                 strategy: isNewStrictCompare ? 'NewStrictMultipleElements' : 'LegacyLooseMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: true, some: options.some }
+                strictConfiguration: { allowArrayWithSingleElement: true }
             })
         },
         isNot,

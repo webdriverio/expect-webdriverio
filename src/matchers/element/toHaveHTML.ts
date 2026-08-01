@@ -7,7 +7,7 @@ import {
 } from '../../utils.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
-import type { WdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 import type { AssertionResult } from 'expect-webdriverio'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
@@ -17,7 +17,7 @@ async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArrayOrO
 }
 
 export async function toHaveHTML(
-    received: WdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise,
     expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
@@ -40,7 +40,7 @@ export async function toHaveHTML(
                 isNot,
                 strategy: 'NewStrictMultipleElements',
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
-                strictConfiguration: { allowArrayWithSingleElement: true, some: options.some }
+                strictConfiguration: { allowArrayWithSingleElement: true }
             })
             return result
         },
