@@ -130,7 +130,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     if (iteration > 0 && isStrictlyElementArray(selector)) {
         // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
-        refreshElementArray(selector)
+        await refreshElementArray(selector)
     }
 
     const subject = selector ?? other

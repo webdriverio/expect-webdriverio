@@ -31,7 +31,7 @@ export const syncronizeElements = async (subject: WebdriverIO.ElementArray | Cha
 export const syncronizeChainableElementArray = async (subject: ChainablePromiseArray | Promise<unknown>, refetchedElements: WebdriverIO.ElementArray) => {
     const awaitedSubject = await subject
     if (isStrictlyElementArray(awaitedSubject) && refetchedElements) {
-        await synchronizeElementArray(await awaitedSubject.getElements(), refetchedElements)
+        synchronizeElementArray(await awaitedSubject.getElements(), refetchedElements)
     }
 }
 
