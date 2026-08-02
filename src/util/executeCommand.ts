@@ -1,4 +1,3 @@
-import { DEFAULT_OPTIONS } from '../constants.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
 import { awaitElementOrArray, isArray, isElement, isStrictlyElementArray } from './elementsUtil.js'
@@ -132,7 +131,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     if (iteration > 0 && isStrictlyElementArray(selector)) {
         // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
-        await refreshElementArray(selector, DEFAULT_OPTIONS.wait, true)
+        await refreshElementArray(selector)
     }
 
     const subject = selector ?? other

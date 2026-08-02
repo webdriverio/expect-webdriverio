@@ -219,7 +219,7 @@ Received      : 2`
             expect(elements).toBe(elements) // Original actual elements array but altered
             expect(elements.length).toBe(5) // Altered actual elements array
             expect(browser.$$).toHaveBeenCalledTimes(1)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elements, 95, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elements)
             expect(refetchElements).toHaveBeenCalledTimes(1)
         })
 
@@ -234,9 +234,9 @@ Received      : 2`
             expect(elements.length).toBe(2)
             expect(elements).toBe(elements) // Original actual elements array but altered
             expect(browser.$$).toHaveBeenCalledTimes(9)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elements, 198, true)
-            expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf2, 198, true)
-            expect(refetchElements).toHaveBeenNthCalledWith(3, elementArrayOf5, 198, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elements)
+            expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf2)
+            expect(refetchElements).toHaveBeenNthCalledWith(3, elementArrayOf5)
         })
 
         // TODO: By awaiting the promise we could update the actual elements array, so should we support that?
@@ -252,7 +252,7 @@ Received      : 2`
             expect((await nonAwaitedElements).length).toBe(5)
             expect(await nonAwaitedElements).toBe(elements) // Original actual elements array but altered
             expect(browser.$$).toHaveBeenCalledTimes(2)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elements, 500, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elements)
             expect(refetchElements).toHaveBeenCalledTimes(2)
         })
 
@@ -280,7 +280,7 @@ Received      : 2`
 
             expect(result.pass).toBe(true)
             expect(elements.length).toBe(5)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elements, 450, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elements)
             expect(browser.$$).toHaveBeenCalledTimes(2)
             expect(waitUntil).toHaveBeenCalledWith(
                 expect.any(Function),
@@ -297,7 +297,7 @@ Received      : 2`
             const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { beforeAssertion: undefined, afterAssertion: undefined })
 
             expect(result.pass).toBe(true)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elements, undefined, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elements)
             expect(browser.$$).toHaveBeenCalledTimes(2)
             expect(waitUntil).toHaveBeenCalledWith(
                 expect.any(Function),

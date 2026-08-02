@@ -22,27 +22,17 @@ describe(refetchElements, () => {
 
         test('default should refresh once', async () => {
 
-            const actual = await refetchElements(elements, 5, true)
+            const actual = await refetchElements(elements)
 
             expect(actual.length).toBe(5)
             expect(actual).not.toBe(elements)
             expect(elements.parent.$$).toHaveBeenCalledTimes(1)
         })
 
-        test('wait is 0 should not refresh', async () => {
-            const wait = 0
-
-            const actual = await refetchElements(elements, wait, true)
-
-            expect(actual).toEqual(elements)
-            expect(actual).toHaveLength(2)
-            expect(elements.parent.$$).not.toHaveBeenCalled()
-        })
-
         test('should call $$ with all props', async () => {
             elements.props = ['prop1', 'prop2']
 
-            await refetchElements(elements, 5, true)
+            await refetchElements(elements)
 
             expect(elements.parent.$$).toHaveBeenCalledWith('elements', 'prop1', 'prop2')
         })
@@ -50,7 +40,7 @@ describe(refetchElements, () => {
         test('should call $$ with the proper parent "this" context', async () => {
             const parentFoundWith = vi.mocked(elements.parent.$$)
 
-            await refetchElements(elements, 5, true)
+            await refetchElements(elements)
 
             expect(parentFoundWith.mock.contexts[0]).toBe(elements.parent)
         })
@@ -64,7 +54,7 @@ describe(refetchElements, () => {
         })
 
         test('default should not refresh', async () => {
-            const actual = await refetchElements(elements, 5, true)
+            const actual = await refetchElements(elements)
 
             expect(actual).toEqual(elements)
             expect(actual).toHaveLength(2)

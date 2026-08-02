@@ -1,5 +1,4 @@
 import type { ChainablePromiseArray } from 'webdriverio'
-import { DEFAULT_OPTIONS } from '../constants.js'
 import type { WdioElements } from '../types.js'
 import { isStrictlyElementArray } from './elementsUtil.js'
 
@@ -9,11 +8,8 @@ import { isStrictlyElementArray } from './elementsUtil.js'
  */
 export const refetchElements = async <T extends WdioElements>(
     elements: T,
-    wait = DEFAULT_OPTIONS.wait,
-    full = false
 ): Promise<T> => {
-    if (elements && wait > 0
-        && (elements.length === 0 || full)
+    if (elements
         && isStrictlyElementArray(elements)
         && elements.parent && elements.foundWith && elements.foundWith in elements.parent) {
 
@@ -46,7 +42,7 @@ export const syncronizeElementArray = (subject: WebdriverIO.ElementArray, refetc
     }
 }
 
-export const refreshElementArray = async (subject: WebdriverIO.ElementArray, wait = DEFAULT_OPTIONS.wait, full = false) => {
-    const refetchedElements = await refetchElements(subject, wait, full)
+export const refreshElementArray = async (subject: WebdriverIO.ElementArray) => {
+    const refetchedElements = await refetchElements(subject)
     syncronizeElementArray(subject, refetchedElements)
 }

@@ -45,7 +45,7 @@ export async function toBeElementsArrayOfSize(
                 return { success: false, subject: elements, actual: undefined, abort: true }
             }
             if (iteration > 0) {
-                elements = await refetchElements(elements, commandOptions.wait, true)
+                elements = await refetchElements(elements)
             }
 
             // Verify if size match first before refetching elements
