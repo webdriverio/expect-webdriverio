@@ -210,9 +210,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         : (!forceFailure && isNotEmpty && (isSome ? isAtLeastOneTrue(results) : isAllTrue(results)))
 
     if (!success && isStrictlyElementArray(selector)) {
-        console.log('BEFORE selector length', selector.length)
         await refreshElementArray(selector, DEFAULT_OPTIONS.wait, true)
-        console.log('AFTER selector length', selector.length)
     }
 
     // Success if all elements pass the compare strategy, or when using `.not`, if all elements fail the compare strategy.
