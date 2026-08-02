@@ -121,17 +121,17 @@ export const $Factory = (element: WebdriverIO.Element, findDelay = 0): Chainable
     return runtimeChainableElement as unknown as ChainablePromiseElement
 }
 
-const $ = vi.fn((_selector: string) => {
+export const $ = vi.fn((_selector: string) => {
     const element = elementFactory(_selector)
 
     return $Factory(element)
 })
 
-const $$ = vi.fn((selector: string) => {
-    return chainableElementArrayFactory(selector, 2)
+export const $$ = vi.fn((selector: string) => {
+    return chainableElementArrayFactory(selector, 2, browserFactory())
 })
 
-export function elementArrayFactory(selector: string, length?: number): WebdriverIO.ElementArray {
+export function elementArrayFactory(selector: string, length: number = 2, parent: WebdriverIO.Browser | WebdriverIO.Element = browserFactory(length)): WebdriverIO.ElementArray {
     const elements: WebdriverIO.Element[] = Array(length).fill(null).map((_, index) => elementFactory(selector, index))
 
     const elementArray = elements as unknown as WebdriverIO.ElementArray
@@ -144,13 +144,13 @@ export function elementArrayFactory(selector: string, length?: number): Webdrive
         const results = await Promise.all(elements.map((el, i) => fn(el, i, elements as unknown as T[])))
         return Array.prototype.filter.call(elements, (_, i) => results[i])
     }
-    elementArray.parent = browser
+    elementArray.parent = parent
 
     return elementArray
 }
 
-export function chainableElementArrayFactory(selector: string, length: number) {
-    const elementArray = elementArrayFactory(selector, length)
+export function chainableElementArrayFactory(selector: string, length: number, parent: WebdriverIO.Browser | WebdriverIO.Element = browserFactory()): ChainablePromiseArray {
+    const elementArray = elementArrayFactory(selector, length, parent)
 
     // Wdio framework does return a Promise-wrapped element, so we need to mimic this behavior
     const chainablePromiseArray = Promise.resolve(elementArray) as unknown as ChainablePromiseArray
@@ -164,9 +164,9 @@ export function chainableElementArrayFactory(selector: string, length: number) {
                 if (index >= length) {
                     const error = new Error(`Index out of bounds! $$(${selector}) returned only ${length} elements.`)
                     return new Proxy(Promise.resolve(), {
-                        get(target, prop) {
+                        get(_target, prop) {
                             if (prop === 'then') {
-                                return (resolve: any, reject: any) => reject(error)
+                                return (_resolve: any, reject: any) => reject(error)
                             }
                             return () => Promise.reject(error)
                         }
@@ -181,19 +181,37 @@ export function chainableElementArrayFactory(selector: string, length: number) {
         }
     })
 
+    elementArray.parent.$$ = vi.fn().mockImplementation((selector: string) =>   {
+        if (selector === elementArray.selector) {
+            return runtimeChainablePromiseArray
+        }
+
+        return chainableElementArrayFactory(selector, length, elementArray.parent as WebdriverIO.Browser)
+    })
+
     return runtimeChainablePromiseArray
 }
 
-export const browserFactory = (): WebdriverIO.Browser => {
-    return  {
-        $,
-        $$,
+export const browserFactory = (elementArrayLength = 2): WebdriverIO.Browser => {
+    const browser = {
+        $: vi.fn((_selector: string) => {
+            const element = elementFactory(_selector)
+
+            return $Factory(element)
+        }),
+        $$: vi.fn(),
         execute: vi.fn(),
         setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
         getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
         getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
         call(fn: Function) { return fn() },
     } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+
+    browser.$$ = vi.fn((selector: string) => {
+        return chainableElementArrayFactory(selector, elementArrayLength, browser)
+    })
+
+    return browser
 }
 
 export const browser = browserFactory()

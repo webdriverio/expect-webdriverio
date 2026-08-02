@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
-import { $, $$ } from '@wdio/globals'
-import { $Factory, elementFactory, notFoundElementFactory } from './__mocks__/@wdio/globals.js'
+import { $, $$, browser } from '@wdio/globals'
+import { $Factory, browserFactory, chainableElementArrayFactory, elementFactory, notFoundElementFactory } from './__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -134,6 +134,177 @@ describe('globals mock', () => {
             await expect(async () => await $$('foo')[3]).rejects.toThrow('Index out of bounds! $$(foo) returned only 2 elements.')
             await expect(async () => await $$('foo')[3].getElement()).rejects.toThrow('Index out of bounds! $$(foo) returned only 2 elements.')
             await expect(async () => await $$('foo')[3].getText()).rejects.toThrow('Index out of bounds! $$(foo) returned only 2 elements.')
+        })
+
+        it('should return same elements in parent $$', async () => {
+            const els = await $$('foo')
+            const awaitedElements = await els.getElements()
+
+            expect(awaitedElements).toHaveLength(2)
+            expect(awaitedElements.parent).not.toBe(browser)
+            expect(awaitedElements.foundWith).toBe('$$')
+            expect(awaitedElements.selector).toBe('foo')
+
+            const parentBrowser =  awaitedElements.parent
+            const parent$$ = parentBrowser[awaitedElements.foundWith as keyof typeof parentBrowser] as Function
+
+            const parentEls = await parent$$.call(parentBrowser, awaitedElements.selector, ...awaitedElements.props)
+            const awaitedParentEls = await parentEls.getElements()
+
+            expect(awaitedParentEls.parent).toBe(parentBrowser)
+            expect(awaitedParentEls.foundWith).toBe('$$')
+            expect(awaitedParentEls.selector).toBe('foo')
+
+            expect(awaitedParentEls.length).toEqual(awaitedElements.length)
+            expect(awaitedParentEls[0].selector).toEqual(awaitedElements[0].selector)
+            expect(awaitedParentEls[1].selector).toEqual(awaitedElements[1].selector)
+            expect(awaitedParentEls).toEqual(awaitedElements)
+        })
+
+        it('should return two different $$', async () => {
+            const els = await $$('foo')
+            const els2 = await $$('foo')
+            const awaitedElements = await els.getElements()
+            const awaitedElements2 = await els2.getElements()
+
+            expect(awaitedElements).not.toBe(awaitedElements2)
+
+            expect(awaitedElements).toHaveLength(2)
+            expect(awaitedElements2).toHaveLength(2)
+            expect(awaitedElements.parent).not.toBe(awaitedElements2.parent)
+            expect(awaitedElements.foundWith).toBe('$$')
+            expect(awaitedElements.selector).toBe('foo')
+            expect(awaitedElements2.foundWith).toBe('$$')
+            expect(awaitedElements2.selector).toBe('foo')
+        })
+    })
+
+    describe('browser', () => {
+        it('should return an element with the correct selector', async () => {
+            expect(browser).toBeDefined()
+            expect(browser).toHaveProperty('$')
+            expect(browser).toHaveProperty('$$')
+
+            const el = await browser.$('foo')
+            expect(el.selector).toBe('foo')
+
+            const els = await browser.$$('foo')
+            expect(els).toHaveLength(2)
+
+            expect(el.parent).toBe(browser)
+            expect(els.parent).toBe(browser)
+        })
+    })
+
+    describe('browserFactory', () => {
+        it('should return a browser object with $ and $$ not the same as the global', async () => {
+            const browser = browserFactory()
+
+            expect(browser).toHaveProperty('$')
+            expect(browser).toHaveProperty('$$')
+            expect(browser.$).not.toBe($)
+            expect(browser.$$).not.toBe($$)
+
+            const el = await browser.$('foo')
+            expect(el.selector).toBe('foo')
+
+            const els = await browser.$$('foo')
+            expect(els).toHaveLength(2)
+        })
+    })
+
+    describe('chainableElementArrayFactory', () => {
+        it('should return empty element and similar elements in parent $$', async () => {
+            const els = await chainableElementArrayFactory('empty', 0)
+            const awaitedElements = await els.getElements()
+
+            expect(awaitedElements).toHaveLength(0)
+            expect(awaitedElements.parent).not.toBe(browser)
+            expect(awaitedElements.foundWith).toBe('$$')
+            expect(awaitedElements.selector).toBe('empty')
+
+            const parentBrowser =  awaitedElements.parent
+            const parent$$ = parentBrowser[awaitedElements.foundWith as keyof typeof parentBrowser] as Function
+
+            const parentEls = await parent$$.call(parentBrowser, awaitedElements.selector, ...awaitedElements.props)
+            const awaitedParentEls = await parentEls.getElements()
+
+            expect(awaitedParentEls.parent).toBe(parentBrowser)
+            expect(awaitedParentEls.foundWith).toBe('$$')
+            expect(awaitedParentEls.selector).toBe('empty')
+
+            expect(awaitedParentEls.length).toEqual(awaitedElements.length)
+            expect(awaitedParentEls).toEqual(awaitedElements)
+        })
+
+        it('should return 1 elements and new element in parent $$', async () => {
+            const els = await chainableElementArrayFactory('foo', 1)
+            const awaitedElements = await els.getElements()
+
+            expect(awaitedElements).toHaveLength(1)
+            expect(awaitedElements.parent).not.toBe(browser)
+            expect(awaitedElements.foundWith).toBe('$$')
+            expect(awaitedElements.selector).toBe('foo')
+
+            const parentBrowser =  awaitedElements.parent
+            const parent$$ = parentBrowser[awaitedElements.foundWith as keyof typeof parentBrowser] as Function
+
+            const parentEls = await parent$$.call(parentBrowser, 'fooParent', ...awaitedElements.props)
+            const awaitedParentEls = await parentEls.getElements()
+
+            expect(awaitedParentEls.parent).toBe(parentBrowser)
+            expect(awaitedParentEls.foundWith).toBe('$$')
+            expect(awaitedParentEls.selector).toBe('fooParent')
+
+            expect(awaitedParentEls.length).toEqual(awaitedElements.length)
+            expect(awaitedParentEls[0].selector).not.toEqual(awaitedElements[0].selector)
+            expect(awaitedParentEls).not.toEqual(awaitedElements)
+        })
+
+        it('should have 2 different chainableElementFactory', async () => {
+            const els = await chainableElementArrayFactory('foo', 1, browserFactory())
+            const els2 = await chainableElementArrayFactory('foo', 2, browserFactory())
+            const awaitedElements = await els.getElements()
+            const awaitedElements2 = await els2.getElements()
+
+            expect(awaitedElements).toHaveLength(1)
+            expect(awaitedElements2).toHaveLength(2)
+            expect(awaitedElements.parent).toBe(els.parent)
+            expect(awaitedElements2.parent).toBe(els2.parent)
+            expect(awaitedElements.parent).not.toBe(awaitedElements2.parent)
+            expect(awaitedElements.foundWith).toBe('$$')
+            expect(awaitedElements.selector).toBe('foo')
+            expect(awaitedElements2.foundWith).toBe('$$')
+            expect(awaitedElements2.selector).toBe('foo')
+
+            const parentBrowser =  awaitedElements.parent
+            const parent$$ = parentBrowser[awaitedElements.foundWith as keyof typeof parentBrowser] as Function
+
+            const parentEls = await parent$$.call(parentBrowser, 'fooParent', ...awaitedElements.props)
+            const awaitedParentEls = await parentEls.getElements()
+
+            expect(awaitedParentEls.parent).toBe(parentBrowser)
+            expect(awaitedParentEls.foundWith).toBe('$$')
+            expect(awaitedParentEls.selector).toBe('fooParent')
+
+            expect(awaitedParentEls.length).toEqual(awaitedElements.length)
+            expect(awaitedParentEls[0].selector).not.toEqual(awaitedElements[0].selector)
+            expect(awaitedParentEls).not.toEqual(awaitedElements)
+
+            const parentBrowser2 =  awaitedElements2.parent
+            const parent$$2 = parentBrowser2[awaitedElements2.foundWith as keyof typeof parentBrowser2] as Function
+
+            const parentEls2 = await parent$$2. call(parentBrowser2, 'fooParent2', ...awaitedElements2.props)
+            const awaitedParentEls2 = await parentEls2.getElements()
+
+            expect(awaitedParentEls2.parent).toBe(parentBrowser2)
+            expect(awaitedParentEls2.foundWith).toBe('$$')
+            expect(awaitedParentEls2.selector).toBe('fooParent2')
+
+            expect(awaitedParentEls2.length).toEqual(awaitedElements2.length)
+            expect(awaitedParentEls2[0].selector).not.toEqual(awaitedElements2[0].selector)
+            expect(awaitedParentEls2).not.toEqual(awaitedElements2)
+            expect(awaitedParentEls2.parent).not.toBe(awaitedParentEls.parent)
         })
     })
 

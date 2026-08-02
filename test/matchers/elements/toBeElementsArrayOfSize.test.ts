@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $$, browser } from '@wdio/globals'
+import { $$ } from '@wdio/globals'
 
 import { toBeElementsArrayOfSize } from '../../../src/matchers/elements/toBeElementsArrayOfSize.js'
 import { chainableElementArrayFactory, elementArrayFactory, elementFactory } from '../../__mocks__/@wdio/globals.js'
@@ -178,6 +178,9 @@ Received      : 2`
     })
 
     describe('Refresh ElementArray', async () => {
+        let elements: ChainablePromiseArray | WebdriverIO.Element[] | WebdriverIO.ElementArray
+        let nonAwaitedElements: ChainablePromiseArray | WebdriverIO.Element[] | WebdriverIO.ElementArray
+        let browser: WebdriverIO.Browser
         let elementArrayOf2: ChainablePromiseArray
         let elementArrayOf5: ChainablePromiseArray
 
@@ -185,18 +188,22 @@ Received      : 2`
             const actuatlRefetchElements = await vi.importActual<typeof import('../../../src/util/refetchElements.js')>('../../../src/util/refetchElements.js')
             vi.spyOn(actuatlRefetchElements, 'refetchElements')
 
-            elementArrayOf2 = await chainableElementArrayFactory('elements', 2)
-            elementArrayOf5 = await chainableElementArrayFactory('elements', 5)
+            nonAwaitedElements = $$('elements')
+            elements = await nonAwaitedElements
+            browser = await elements.parent as WebdriverIO.Browser
+            elementArrayOf2 = await chainableElementArrayFactory('elements', 2, browser)
+            elementArrayOf5 = await chainableElementArrayFactory('elements', 5, browser)
         })
 
         test('does not refresh the element array with the wait 0', async () => {
-            vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
-            const elements = await $$('elements')
+            vi.mocked(browser.$$)
+                .mockResolvedValueOnce(elementArrayOf2)
+                .mockResolvedValue(elementArrayOf5)
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, 2, { beforeAssertion: undefined, afterAssertion: undefined, wait: 0 })
 
             expect(result.pass).toBe(true)
-            expect(browser.$$).toHaveBeenCalledTimes(1)
+            expect(browser.$$).toHaveBeenCalledTimes(0)
             expect(waitUntil).toHaveBeenCalledWith(
                 expect.any(Function),
                 undefined,
@@ -205,47 +212,48 @@ Received      : 2`
         })
 
         test('refresh once the elements array using parent $$ and update actual element with newly fetched elements', async () => {
-            vi.mocked(browser.$$).mockResolvedValueOnce(elementArrayOf2).mockResolvedValueOnce(elementArrayOf5)
-            const elements = await $$('elements')
-
+            vi.mocked(browser.$$).mockReturnValue(elementArrayOf5)
             const result = await thisContext.toBeElementsArrayOfSize(elements, 5, { wait: 95, interval: 50 })
 
             expect(result.pass).toBe(true)
-            expect(elements).toBe(elementArrayOf2) // Original actual elements array but altered
+            expect(elements).toBe(elements) // Original actual elements array but altered
             expect(elements.length).toBe(5) // Altered actual elements array
-            expect(browser.$$).toHaveBeenCalledTimes(2)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 95, true)
+            expect(browser.$$).toHaveBeenCalledTimes(1)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elements)
             expect(refetchElements).toHaveBeenCalledTimes(1)
         })
 
         test('refresh multiple time actual elements but does not update it since it failed', async () => {
-            vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
-            const elements = await $$('elements')
+            vi.mocked(browser.$$)
+                .mockResolvedValueOnce(elementArrayOf2)
+                .mockResolvedValue(elementArrayOf5)
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 198, interval: 20 })
 
             expect(result.pass).toBe(false)
             expect(elements.length).toBe(2)
-            expect(elements).toBe(elementArrayOf2)
-            expect(browser.$$).toHaveBeenCalledTimes(11)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 198, true)
-            expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf5, 198, true)
+            expect(elements).toBe(elements) // Original actual elements array but altered
+            expect(browser.$$).toHaveBeenCalledTimes(9)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elements)
+            expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf2)
+            expect(refetchElements).toHaveBeenNthCalledWith(3, elementArrayOf5)
         })
 
         // TODO: By awaiting the promise we could update the actual elements array, so should we support that?
         test('refresh once but does not update actual elements since they are not of type ElementArray or Element[]', async () => {
-            vi.mocked(browser.$$).mockResolvedValueOnce(elementArrayOf2).mockResolvedValueOnce(elementArrayOf5)
-            const nonAwaitedElements = $$('elements')
+            vi.mocked(browser.$$)
+                .mockResolvedValueOnce(elementArrayOf2)
+                .mockResolvedValue(elementArrayOf5)
 
             const result = await thisContext.toBeElementsArrayOfSize(nonAwaitedElements, 5, { wait: 500 })
 
             expect(result.pass).toBe(true)
             expect(nonAwaitedElements).toBeInstanceOf(Promise)
-            expect((await nonAwaitedElements).length).toBe(2)
-            expect(await nonAwaitedElements).toBe(elementArrayOf2)
+            expect((await nonAwaitedElements).length).toBe(5)
+            expect(await nonAwaitedElements).toBe(elements) // Original actual elements array but altered
             expect(browser.$$).toHaveBeenCalledTimes(2)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 500, true)
-            expect(refetchElements).toHaveBeenCalledTimes(1)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elements)
+            expect(refetchElements).toHaveBeenCalledTimes(2)
         })
 
         test.for([
@@ -264,14 +272,15 @@ Received      : 2`
         })
 
         test('refresh once the element array with the NumberOptions wait value', async () => {
-            vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
-            const elements = await $$('elements')
+            vi.mocked(browser.$$)
+                .mockReturnValueOnce(elementArrayOf2)
+                .mockReturnValue(elementArrayOf5)
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5, wait: 450, interval: 100 })
 
             expect(result.pass).toBe(true)
             expect(elements.length).toBe(5)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, 450, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elements)
             expect(browser.$$).toHaveBeenCalledTimes(2)
             expect(waitUntil).toHaveBeenCalledWith(
                 expect.any(Function),
@@ -281,13 +290,14 @@ Received      : 2`
         })
 
         test('refresh once the element array with the DEFAULT_OPTIONS wait value', async () => {
-            vi.mocked(browser.$$).mockReturnValueOnce(elementArrayOf2).mockReturnValue(elementArrayOf5)
-            const elements = await $$('elements')
+            vi.mocked(browser.$$)
+                .mockReturnValueOnce(elementArrayOf2)
+                .mockReturnValue(elementArrayOf5)
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { beforeAssertion: undefined, afterAssertion: undefined })
 
             expect(result.pass).toBe(true)
-            expect(refetchElements).toHaveBeenNthCalledWith(1, elementArrayOf2, undefined, true)
+            expect(refetchElements).toHaveBeenNthCalledWith(1, elements)
             expect(browser.$$).toHaveBeenCalledTimes(2)
             expect(waitUntil).toHaveBeenCalledWith(
                 expect.any(Function),

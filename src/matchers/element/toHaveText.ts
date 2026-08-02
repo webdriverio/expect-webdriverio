@@ -34,14 +34,14 @@ export async function toHaveText(
 
     const isNewStrictCompare = getFeatureFlagValue(options, 'useToHaveTextStrictMultiElementsCompareStrategy')
     const { success: pass, actual: actualText, subject: subject, context: { isSome } = {} } = await waitUntil(
-        async () => {
+        async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string> | undefined) => {
                     return compareElement(element, values, options)
                 },
-                isNot,
+                context: { isNot, iteration },
                 strategy: isNewStrictCompare ? 'NewStrictMultipleElements' : 'LegacyLooseMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: true }
             })

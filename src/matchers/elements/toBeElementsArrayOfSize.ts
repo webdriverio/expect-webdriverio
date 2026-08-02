@@ -1,9 +1,9 @@
 import { waitUntil, enhanceError, } from '../../utils.js'
-import { refetchElements } from '../../util/refetchElements.js'
+import { refetchElements, syncronizeElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementsMaybePromise } from '../../types.js'
 import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
-import { awaitElementArray } from '../../util/elementsUtil.js'
+import { awaitElementArray, isStrictlyElementArray } from '../../util/elementsUtil.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -40,9 +40,12 @@ export async function toBeElementsArrayOfSize(
     const originalLength =  elements ? elements.length : undefined
 
     const { success: pass } = await waitUntil(
-        async () => {
+        async (iteration) => {
             if (!elements) {
                 return { success: false, subject: elements, actual: undefined, abort: true }
+            }
+            if (iteration > 0) {
+                elements = await refetchElements(elements)
             }
 
             // Verify if size match first before refetching elements
@@ -51,19 +54,14 @@ export async function toBeElementsArrayOfSize(
                 return { success: isPassing, subject: elements, actual: elements.length }
             }
 
-            // TODO should we do this on other matchers??
-            elements = await refetchElements(elements, commandOptions.wait, true)
             return { success: false, subject: elements, actual: elements.length }
         },
         isNot,
         { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
-    // TODO By using `(await received).push(elements[index])` we could update Promises of arrays, should we support that?
-    if (Array.isArray(received) && pass && originalLength !== undefined && elements) {
-        for (let index = originalLength; index < elements.length; index++) {
-            received.push(elements[index])
-        }
+    if (pass && originalLength !== undefined && elements !== received && (isStrictlyElementArray(received) || received instanceof Promise) && isStrictlyElementArray(elements)) {
+        await syncronizeElements(received, elements)
     }
 
     const actual = originalLength

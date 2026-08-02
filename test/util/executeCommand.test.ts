@@ -21,7 +21,7 @@ describe('executeCommand', () => {
                     element,
                     'Match',
                     mockSingleCompare,
-                    { isNot: false, isSome: false }
+                    { isNot: false, isSome: false, iteration: 0 }
                 )
 
                 expect(result.success).toBe(true)
@@ -35,7 +35,7 @@ describe('executeCommand', () => {
                     element,
                     'Match',
                     mockSingleCompare,
-                    { isNot: false, isSome: false }
+                    { isNot: false, isSome: false, iteration: 0 }
                 )
 
                 expect(result.success).toBe(false)
@@ -54,7 +54,7 @@ describe('executeCommand', () => {
                     threeElements,
                     ['Match', 'Match', 'Match'],
                     mockSingleCompare,
-                    { isNot: false, isSome: false }
+                    { isNot: false, isSome: false, iteration: 0 }
                 )
 
                 expect(result.success).toBe(true)
@@ -71,7 +71,7 @@ describe('executeCommand', () => {
                     threeElements,
                     ['Match', 'Match', 'Match'],
                     mockSingleCompare,
-                    { isNot: false, isSome: false }
+                    { isNot: false, isSome: false, iteration: 0 }
                 )
 
                 expect(result.success).toBe(false)
@@ -84,7 +84,7 @@ describe('executeCommand', () => {
                     twoElements,
                     'Match',
                     mockSingleCompare,
-                    { isNot: true, isSome: false } // isNot: true
+                    { isNot: true, isSome: false, iteration: 0 } // isNot: true
                 )
 
                 expect(result.success).toBe(false) // false is success for .not, since it is inverted later by Jest
@@ -99,7 +99,7 @@ describe('executeCommand', () => {
                     twoElements,
                     'Match',
                     mockSingleCompare,
-                    { isNot: true, isSome: false }
+                    { isNot: true, isSome: false, iteration: 0 }
                 )
 
                 expect(result.success).toBe(true) // true is failure for .not, since it is inverted later by Jest
@@ -110,7 +110,7 @@ describe('executeCommand', () => {
                     [],
                     'Match',
                     mockSingleCompare,
-                    { isNot: false, isSome: false }
+                    { isNot: false, isSome: false, iteration: 0 }
                 )
 
                 expect(result.success).toBe(false)
@@ -121,7 +121,7 @@ describe('executeCommand', () => {
                     [],
                     'Match',
                     mockSingleCompare,
-                    { isNot: false, isSome: false },
+                    { isNot: false, isSome: false, iteration: 0 },
                     { allowEmptyElements: true }
                 )
 
@@ -137,7 +137,7 @@ describe('executeCommand', () => {
                     oneElements,
                     expected,
                     mockSingleCompare,
-                    { isNot: false, isSome: false }
+                    { isNot: false, isSome: false, iteration: 0 },
                 )
 
                 expect(result.success).toBe(false)

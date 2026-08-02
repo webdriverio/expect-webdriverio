@@ -1,6 +1,7 @@
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
-import { awaitElementOrArray, isElement } from './elementsUtil.js'
+import { awaitElementOrArray, isArray, isElement, isStrictlyElementArray } from './elementsUtil.js'
+import { refreshElementArray } from './refetchElements.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
 export type CompareResult<T> = { success: boolean; actual: T }
@@ -25,14 +26,14 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     unresolvedElements,
     expectedValues,
     singleElementCompare,
-    isNot,
+    context: { isNot, iteration },
     strategy = 'NewStrictMultipleElements',
     strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
 } :{
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown
     expectedValues: MaybeArray<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
-    isNot: boolean
+    context: { isNot: boolean, iteration: number },
     strategy?: StrategyType,
     strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean }
 }
@@ -49,7 +50,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
 
     // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
-    return multipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, { isNot, isSome }, strictConfiguration)
+    return multipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)
 }
 
 /**
@@ -122,20 +123,27 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown,
     expectedValues: MaybeArray<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
-    { isNot, isSome }: { isNot: boolean; isSome: boolean },
+    { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
     { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
 ): Promise<StrategyResult<MaybeArray<Actual>>> => {
-    const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
+    const { selector, other } = await awaitElementOrArray(unresolvedElements)
+
+    if (iteration > 0 && isStrictlyElementArray(selector)) {
+        // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
+        await refreshElementArray(selector)
+    }
+
     const subject = selector ?? other
 
-    if (!selector || isEmptyElements) {
+    if (!selector || (Array.isArray(selector) && selector.length === 0)) {
+
         return {
             subject: subject,
             // For the new strategy, beside toExist, empty elements even with `.not` is considered a failure since there are no elements to compare against.
             success: isNot ? !allowEmptyElements : false,
             actual: undefined,
-            abort: !allowEmptyElements,
-            context: { isSome }
+            abort: !allowEmptyElements && !isStrictlyElementArray(selector),
+            context: { isSome },
         }
     }
 
@@ -166,7 +174,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             if (Array.isArray(indexedExpectedValue)) {
                 indexedExpectedValue = undefined // Force failure when we do not support array with single element, to avoid confusion with the new strategy.
                 forceFailure = true
-            } else if (Array.isArray(expectedValues) && expectedValues.length !== selector.length && index >= expectedValues.length) {
+            } else if (Array.isArray(expectedValues) && isArray(selector) && expectedValues.length !== selector.length && index >= expectedValues.length) {
                 // Ensure we fails when expected vs number of elements do not match, mostly since some matchers asserting existence might pass when passing undefined expected value to fake a failure.
                 forceFailure = true
             }
@@ -190,7 +198,6 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
 
     let forceFailure = false
-    // TODO mismatch lengths requires depleting the entire timeout instead of failing fast, to fix later!
     if (Array.isArray(expectedValues) && expectedValues.length !== selector.length) {
         forceFailure = true
     }
@@ -207,8 +214,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         subject,
         success,
         actual: results.map(({ actual }) => actual),
-        abort: forceFailure,
-        context: { isSome }
+        context: { isSome },
     }
 }
 
