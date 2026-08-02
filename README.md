@@ -7,15 +7,20 @@
 
 ## Key Features
 
-- [waits](#default-options) for expectation to succeed
-- detailed [error messages](#error-messages)
-- works in Mocha, Cucumber, Jest, Jasmine
-- builtin [types](docs/Types.md) for TypeScript and JS autocompletion
+- [Waits](#default-options) for expectation to succeed
+- Support single element & multi-elements
+- Detailed [error messages](#error-messages)
+- Works in Mocha, Cucumber, Jest, Jasmine
+- Builtin [types](docs/Types.md) for TypeScript and JS autocompletion
 
 ## Installation
 
-1. `npm install expect` (**Jasmine** and **Jest** users should skip this step)
-2. `npm install expect-webdriverio`
+1. `npm install expect-webdriverio`
+2. `npm install @wdio/mocha-framework` -- Choose your framework mocha being the default one!
+   - **Jasmine**: `npm install @wdio/jasmine-framework`
+   - **Cucumber**: `npm install @wdio/cucumber-framework`
+   - **Jest**: None, manual configuration requires, see [Jest Framework section](docs/Framework.md#jest) 
+3. Configure you tsc configuration, see [Types](docs/Types.md#typescript)
 
 NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v9.0.0` or higher is required!
 
@@ -26,15 +31,15 @@ NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v9.0.0` or high
 If you run your tests through the [WDIO testrunner](https://webdriver.io/docs/clioptions) no additional setup is needed. WebdriverIO initialises `expect-webdriverio` and makes `expect` available in the global scope. So you can use it directly in your tests:
 
 ```js
-const $button = await $('button')
-await expect($button).toBeDisplayed()
+const button = await $('button')
+await expect(button).toBeDisplayed()
 ```
 
 See more [Examples](docs/Examples.md)
 
 ### Using in a standalone script
 
-If you embed WebdriverIO in a standalone script, make sure you import `expect-webdriverio` before you use it anywhere.
+If you embed WebdriverIO in a standalone (without `@wdio/globals`), make sure you import `expect-webdriverio` before you use it anywhere.
 
 ```js
 import { remote } from 'webdriverio'
@@ -77,8 +82,5 @@ First of all, **feel free to raise an issue with your suggestions or help with P
 
 ### Planned
 
-- css matcher
-- size matcher
-- cookie / localStorage matchers?
-- text regex matchers
-- multiremote support (if requested)
+- cookie
+- multiremote support (coming)
