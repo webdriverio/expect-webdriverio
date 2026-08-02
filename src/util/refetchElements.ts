@@ -24,18 +24,18 @@ export const syncronizeElements = async (subject: WebdriverIO.ElementArray | Cha
     if (subject instanceof Promise) {
         await syncronizeChainableElementArray(subject, refetchedElements)
     } else if (isStrictlyElementArray(subject)) {
-        syncronizeElementArray(subject, refetchedElements)
+        synchronizeElementArray(subject, refetchedElements)
     }
 }
 
 export const syncronizeChainableElementArray = async (subject: ChainablePromiseArray | Promise<unknown>, refetchedElements: WebdriverIO.ElementArray) => {
     const awaitedSubject = await subject
     if (isStrictlyElementArray(awaitedSubject) && refetchedElements) {
-        await syncronizeElementArray(await awaitedSubject.getElements(), refetchedElements)
+        await synchronizeElementArray(await awaitedSubject.getElements(), refetchedElements)
     }
 }
 
-export const syncronizeElementArray = (subject: WebdriverIO.ElementArray, refetchedElements: WebdriverIO.ElementArray) => {
+export const synchronizeElementArray = (subject: WebdriverIO.ElementArray, refetchedElements: WebdriverIO.ElementArray) => {
     subject.length = refetchedElements.length
     for (let index = 0; index < refetchedElements.length; index++) {
         subject[index] = refetchedElements[index]
@@ -44,5 +44,5 @@ export const syncronizeElementArray = (subject: WebdriverIO.ElementArray, refetc
 
 export const refreshElementArray = async (subject: WebdriverIO.ElementArray) => {
     const refetchedElements = await refetchElements(subject)
-    syncronizeElementArray(subject, refetchedElements)
+    synchronizeElementArray(subject, refetchedElements)
 }
