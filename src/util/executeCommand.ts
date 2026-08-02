@@ -8,8 +8,7 @@ export type CompareResult<T> = { success: boolean; actual: T }
 export type StrategyResult<T, E = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown> = {
     subject: E;
     abort?: boolean;
-    refreshElements?: boolean;
-    context?: { isSome: boolean, refreshedElements?: boolean };
+    context?: { isSome: boolean };
 } & CompareResult<T | undefined>
 
 /**
