@@ -62,12 +62,12 @@ export async function toHaveHeight(
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
     const { success: pass, actual: actualHeight, subject: elements, context: { isSome } = {} } = await waitUntil(
-        async () => {
+        async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
-                isNot,
+                context: { isNot, iteration },
                 strategy: 'NewStrictMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: false }
             })

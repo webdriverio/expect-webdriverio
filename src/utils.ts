@@ -74,7 +74,7 @@ async function executeCommandBe(
     const { isNot, verb = 'be', allowEmptyElements = false } = this
 
     const { success: pass, actual, subject, context: { isSome } = {} } = await waitUntil(
-        async () => {
+        async (iteration) => {
             return await executeCommandWithStrategy({
                 unresolvedElements: received,
                 expectedValues: true,
@@ -82,7 +82,7 @@ async function executeCommandBe(
                     const result = await command(element)
                     return { success: result, actual: result }
                 },
-                isNot,
+                context: { isNot, iteration },
                 strictConfiguration: { allowEmptyElements },
 
             })

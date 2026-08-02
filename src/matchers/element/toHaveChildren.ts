@@ -96,12 +96,12 @@ export async function toHaveChildren(
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValueOrOptions, options, { supportDefaultAsGteThen1: true })
 
     const { success: pass, actual: children, subject, context: { isSome } = {} } = await waitUntil(
-        async () => {
+        async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedValue: NumberMatcher | undefined) => condition(element, expectedValue),
-                isNot,
+                context: { isNot, iteration },
                 strategy: 'NewStrictMultipleElements',
             })
         },

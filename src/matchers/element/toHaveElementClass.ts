@@ -58,12 +58,12 @@ export async function toHaveElementClass(
     const attribute = 'class'
 
     const { success: pass, actual: attr, subject: el, context: { isSome } = {} } = await waitUntil(
-        async () => {
+        async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, attribute, expectedValue, options),
-                isNot,
+                context: { isNot, iteration },
                 strategy: 'NewStrictMultipleElements',
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
                 strictConfiguration: { allowArrayWithSingleElement: true }

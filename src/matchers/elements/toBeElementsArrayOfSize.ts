@@ -40,9 +40,12 @@ export async function toBeElementsArrayOfSize(
     const originalLength =  elements ? elements.length : undefined
 
     const { success: pass } = await waitUntil(
-        async () => {
+        async (iteration) => {
             if (!elements) {
                 return { success: false, subject: elements, actual: undefined, abort: true }
+            }
+            if (iteration > 0) {
+                elements = await refetchElements(elements, commandOptions.wait, true)
             }
 
             // Verify if size match first before refetching elements
@@ -51,7 +54,6 @@ export async function toBeElementsArrayOfSize(
                 return { success: isPassing, subject: elements, actual: elements.length }
             }
 
-            elements = await refetchElements(elements, commandOptions.wait, true)
             return { success: false, subject: elements, actual: elements.length }
         },
         isNot,

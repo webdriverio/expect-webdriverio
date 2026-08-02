@@ -28,14 +28,14 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     unresolvedElements,
     expectedValues,
     singleElementCompare,
-    isNot,
+    context: { isNot, iteration },
     strategy = 'NewStrictMultipleElements',
     strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
 } :{
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown
     expectedValues: MaybeArray<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
-    isNot: boolean
+    context: { isNot: boolean, iteration: number },
     strategy?: StrategyType,
     strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean }
 }
@@ -52,7 +52,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
 
     // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
-    return multipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, { isNot, isSome }, strictConfiguration)
+    return multipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)
 }
 
 /**
@@ -125,18 +125,21 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown,
     expectedValues: MaybeArray<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
-    { isNot, isSome }: { isNot: boolean; isSome: boolean },
+    { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
     { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
 ): Promise<StrategyResult<MaybeArray<Actual>>> => {
     // eslint-disable-next-line prefer-const
     let { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
 
+    if (iteration > 0 && isStrictlyElementArray(selector)) {
+        await refreshElementArray(selector, DEFAULT_OPTIONS.wait, true)
+        isEmptyElements = selector.length === 0
+    }
+
     const subject = selector ?? other
 
     if (!selector || isEmptyElements) {
-        if (isEmptyElements && isStrictlyElementArray(selector)) {
-            await refreshElementArray(selector)
-        }
+
         return {
             subject: subject,
             // For the new strategy, beside toExist, empty elements even with `.not` is considered a failure since there are no elements to compare against.
@@ -208,10 +211,6 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     const success = isNot
         ? !(!forceFailure && isNotEmpty && (isSome ? isAtLeastOneFalse(results) : isAllFalse(results)))
         : (!forceFailure && isNotEmpty && (isSome ? isAtLeastOneTrue(results) : isAllTrue(results)))
-
-    if (!success && isStrictlyElementArray(selector)) {
-        await refreshElementArray(selector, DEFAULT_OPTIONS.wait, true)
-    }
 
     // Success if all elements pass the compare strategy, or when using `.not`, if all elements fail the compare strategy.
     // If there are no elements, it is considered a failure in both case with and without `.not`, as there are no elements to compare against.

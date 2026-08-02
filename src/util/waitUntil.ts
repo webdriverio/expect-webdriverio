@@ -10,19 +10,20 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
  * @param options   wait, interval, etc
  */
 export const waitUntil = async <T>(
-    condition: () => Promise<StrategyResult<T>>,
+    condition: (iteration: number) => Promise<StrategyResult<T>>,
     isNot = false,
     { wait = DEFAULT_OPTIONS.wait, interval = DEFAULT_OPTIONS.interval } = {}
 ): Promise<StrategyResult<T>> => {
     // single attempt
     if (wait === 0) {
-        return await condition()
+        return await condition(0)
     }
 
     let error: Error | undefined
 
     // wait for condition to be truthy
     let result: StrategyResult<T> | undefined
+    let iteration = 0
     try {
         const start = Date.now()
         while (true) {
@@ -31,7 +32,7 @@ export const waitUntil = async <T>(
             }
 
             try {
-                result = await condition()
+                result = await condition(iteration++)
                 const passed = isNot !== result?.success
                 error = undefined
                 if (passed) {

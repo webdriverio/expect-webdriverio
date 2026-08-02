@@ -233,7 +233,7 @@ Received      : 2`
             expect(result.pass).toBe(false)
             expect(elements.length).toBe(2)
             expect(elements).toBe(elements) // Original actual elements array but altered
-            expect(browser.$$).toHaveBeenCalledTimes(10)
+            expect(browser.$$).toHaveBeenCalledTimes(9)
             expect(refetchElements).toHaveBeenNthCalledWith(1, elements, 198, true)
             expect(refetchElements).toHaveBeenNthCalledWith(2, elementArrayOf2, 198, true)
             expect(refetchElements).toHaveBeenNthCalledWith(3, elementArrayOf5, 198, true)

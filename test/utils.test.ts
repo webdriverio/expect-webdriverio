@@ -235,7 +235,7 @@ Received: []`)
                     unresolvedElements: received,
                     expectedValues: true,
                     singleElementCompare: expect.any(Function),
-                    isNot: false,
+                    context: { isNot: false, iteration: 0 },
                     strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), false, options)
@@ -249,7 +249,7 @@ Received: []`)
                     unresolvedElements: received,
                     expectedValues: true,
                     singleElementCompare: expect.any(Function),
-                    isNot: false,
+                    context: { isNot: false, iteration: 0 },
                     strictConfiguration: { allowEmptyElements: false }
                 })
             })
@@ -342,7 +342,7 @@ Received: "displayed"`)
                     unresolvedElements: elements,
                     expectedValues: true,
                     singleElementCompare: expect.any(Function),
-                    isNot: false,
+                    context: { isNot: false, iteration: 0 },
                     strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
@@ -359,7 +359,7 @@ Received: "displayed"`)
                     unresolvedElements: elementArray,
                     expectedValues: true,
                     singleElementCompare: expect.any(Function),
-                    isNot: false,
+                    context: { isNot: false, iteration: 0 },
                     strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
@@ -375,7 +375,7 @@ Received: "displayed"`)
                     unresolvedElements: elementArray,
                     expectedValues: true,
                     singleElementCompare: expect.any(Function),
-                    isNot: false,
+                    context: { isNot: false, iteration: 0 },
                     strictConfiguration: { allowEmptyElements: false }
                 })
                 expect(command).toHaveBeenCalledTimes(2)
@@ -460,7 +460,7 @@ Expect ${selectorName} to be displayed
                         unresolvedElements: elements,
                         expectedValues: true,
                         singleElementCompare: expect.any(Function),
-                        isNot: true,
+                        context: { isNot: true, iteration: 0 },
                         strictConfiguration: { allowEmptyElements: false }
                     })
                     expect(command).toHaveBeenCalledTimes(2)

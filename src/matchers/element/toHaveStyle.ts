@@ -49,13 +49,13 @@ export async function toHaveStyle(
     })
 
     const { success: pass, actual: actualStyle, subject: el, context: { isSome } = {} } = await waitUntil(
-        async () => {
+        async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 // TODO try to make the type work without casting expectedValues to { [key: string]: string; } | undefined
                 singleElementCompare: (element, expectedValues) => condition(element, expectedValues as { [key: string]: string; } | undefined, options),
-                isNot,
+                context: { isNot, iteration },
                 strategy: 'NewStrictMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: false }
             })

@@ -32,12 +32,12 @@ export async function toHaveHTML(
     })
 
     const { success: pass, actual: actualHTML, subject: elements, context: { isSome } = {} } = await waitUntil(
-        async () => {
+        async (iteration) => {
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
-                isNot,
+                context: { isNot, iteration },
                 strategy: 'NewStrictMultipleElements',
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
                 strictConfiguration: { allowArrayWithSingleElement: true }
