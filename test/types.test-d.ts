@@ -24,11 +24,10 @@ describe('Type test', () => {
         })
 
         test('Wdio expect & matchers type tests', () => {
-        // Basic matchers
+            // Basic matchers
             expectTypeOf(expectWdio(true)).toExtend<Matchers<void, boolean> & Inverse<Matchers<void, boolean>>>()
             expectTypeOf(expectWdio(true).toBe(true)).toBeVoid()
             expectTypeOf(expectWdio(true).toBe(true)).not.toExtend<Promise<void>>()
-            expectTypeOf(expectWdio(Promise.resolve(true)).toBe(true))
             expectTypeOf(expectWdio(Promise.resolve(true)).resolves.toBe(true)).resolves.toBeVoid()
 
             // element matchers

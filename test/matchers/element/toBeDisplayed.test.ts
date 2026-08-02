@@ -8,7 +8,7 @@ import { browserFactory, chainableElementArrayFactory, notFoundElementFactory } 
 import { DEFAULT_OPTIONS } from '../../../src/constants.js'
 import { setDefaultOptions, setOptions } from '../../../src/index.js'
 import { some } from '../../../src/matchers/modifiers/some.js'
-import { refreshElements } from '../../../src/util/refetchElements.js'
+import { refreshElementArray } from '../../../src/util/refetchElements.js'
 
 vi.mock('@wdio/globals')
 
@@ -683,7 +683,7 @@ Received: "not displayed"`)
         })
     })
 
-    test('refresh elements', async () => {
+    test('refresh elements from empty to 2', async () => {
         const browser = browserFactory()
         const emptyElements = await chainableElementArrayFactory('sel0', 0, browser)
 
@@ -699,7 +699,7 @@ Received: "not displayed"`)
 
         const result = await thisContext.toBeDisplayed(emptyElements)
         expect(browser.$$).toHaveBeenCalledWith('sel0')
-        expect(refreshElements).toHaveBeenCalled()
+        expect(refreshElementArray).toHaveBeenCalled()
 
         expect(result.pass).toBe(true)
     })

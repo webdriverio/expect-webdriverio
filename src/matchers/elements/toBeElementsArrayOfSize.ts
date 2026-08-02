@@ -1,9 +1,9 @@
 import { waitUntil, enhanceError, } from '../../utils.js'
-import { refetchElements, replaceElements } from '../../util/refetchElements.js'
+import { refetchElements, syncronizeElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementsMaybePromise } from '../../types.js'
 import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
-import { awaitElementArray, isArray, isStrictlyElementArray } from '../../util/elementsUtil.js'
+import { awaitElementArray, isStrictlyElementArray } from '../../util/elementsUtil.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -58,19 +58,8 @@ export async function toBeElementsArrayOfSize(
         { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
-    if (pass && originalLength !== undefined && (isArray(received) || received instanceof Promise) && elements !== received) {
-        let receivedArray: WebdriverIO.ElementArray | undefined = undefined
-        if (received instanceof Promise) {
-            received = await received
-            if ('getElements' in received) {
-                receivedArray = await received.getElements()
-            }
-        } else if (isStrictlyElementArray(received)) {
-            receivedArray = received
-        }
-        if (receivedArray && isStrictlyElementArray(elements)) {
-            replaceElements(receivedArray, elements)
-        }
+    if (pass && originalLength !== undefined && elements !== received && (isStrictlyElementArray(received) || received instanceof Promise) && isStrictlyElementArray(elements)) {
+        await syncronizeElements(received, elements)
     }
 
     const actual = originalLength

@@ -2,11 +2,12 @@ import { $, $$ } from '@wdio/globals'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray } from 'webdriverio'
-import { $Factory, chainableElementArrayFactory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { $Factory, browserFactory, chainableElementArrayFactory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
 import { setFeatureFlags, some } from '../../../src/index.js'
 import { expect as wdioExpect } from '../../../src/index.js'
+import { refreshElementArray } from '../../../src/util/refetchElements.js'
 
 vi.mock('@wdio/globals')
 
@@ -1490,7 +1491,7 @@ Expect $$(\`elements\`) not to have text
                 )
             })
 
-            test.only('not - given too many expected value', async () => {
+            test('not - given too many expected value', async () => {
                 const elements = await $$('elements')
 
                 elements.forEach((el) => vi.mocked(el.getText).mockResolvedValue('webdriverio'))
@@ -1506,7 +1507,7 @@ Received      : ["webdriverio", "webdriverio", undefined]`
                 )
             })
 
-            test.only('should support oneOf in array under strict behavior', async () => {
+            test('should support oneOf in array under strict behavior', async () => {
                 const elements = await $$('elements')
 
                 vi.mocked((elements)[0].getText).mockResolvedValue('WebdriverIO')
@@ -1637,6 +1638,42 @@ Received: "Invalid Text"`)
 
                         expect(result.pass).toBe(true)
                     })
+                })
+            })
+
+            describe('when refreshing the elements', () => {
+                test('refresh elements from empty to 2', async () => {
+                    const browser = browserFactory()
+                    const emptyElements = await chainableElementArrayFactory('sel0', 0, browser)
+
+                    const elements2 = await chainableElementArrayFactory('sel0', 2, browser)
+
+                    vi.mocked(browser.$$)
+                        .mockReturnValueOnce(emptyElements)
+                        .mockReturnValueOnce(elements2)
+
+                    const result = await thisContext.toHaveText(emptyElements, ['Valid Text', 'Valid Text'], { wait: 250, interval: 100 })
+                    expect(browser.$$).toHaveBeenCalledWith('sel0')
+                    expect(refreshElementArray).toHaveBeenCalled()
+
+                    expect(result.pass).toBe(true)
+                })
+
+                test('refresh elements from 2 to 1', async () => {
+                    const browser = browserFactory()
+                    const elements1 = await chainableElementArrayFactory('sel0', 1, browser)
+
+                    const elements2 = await chainableElementArrayFactory('sel0', 2, browser)
+
+                    vi.mocked(browser.$$)
+                        .mockReturnValueOnce(elements2)
+                        .mockReturnValueOnce(elements1)
+
+                    const result = await thisContext.toHaveText(elements2, ['Valid Text'], { wait: 250, interval: 100 })
+                    expect(browser.$$).toHaveBeenCalledWith('sel0')
+                    expect(refreshElementArray).toHaveBeenCalled()
+
+                    expect(result.pass).toBe(true)
                 })
             })
         })

@@ -1,7 +1,8 @@
+import { DEFAULT_OPTIONS } from '../constants.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
 import { awaitElementOrArray, isArray, isElement, isStrictlyElementArray } from './elementsUtil.js'
-import { refetchElements, refreshElements } from './refetchElements.js'
+import { refreshElementArray } from './refetchElements.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
 export type CompareResult<T> = { success: boolean; actual: T }
@@ -134,7 +135,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     if (!selector || isEmptyElements) {
         if (isEmptyElements && isStrictlyElementArray(selector)) {
-            selector =  await refreshElements(selector)
+            await refreshElementArray(selector)
         }
         return {
             subject: subject,
@@ -198,6 +199,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     let forceFailure = false
     if (Array.isArray(expectedValues) && expectedValues.length !== selector.length) {
+        console.warn(`Warning: Number of expected values (${expectedValues.length}) does not match number of elements (${selector.length}). This will force a failure result.`)
         forceFailure = true
     }
 
@@ -207,8 +209,10 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         ? !(!forceFailure && isNotEmpty && (isSome ? isAtLeastOneFalse(results) : isAllFalse(results)))
         : (!forceFailure && isNotEmpty && (isSome ? isAtLeastOneTrue(results) : isAllTrue(results)))
 
-    if (!success) {
-        selector =  await refetchElements(selector)
+    if (!success && isStrictlyElementArray(selector)) {
+        console.log('BEFORE selector length', selector.length)
+        await refreshElementArray(selector, DEFAULT_OPTIONS.wait, true)
+        console.log('AFTER selector length', selector.length)
     }
 
     // Success if all elements pass the compare strategy, or when using `.not`, if all elements fail the compare strategy.

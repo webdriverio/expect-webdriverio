@@ -1,3 +1,4 @@
+import type { ChainablePromiseArray } from 'webdriverio'
 import { DEFAULT_OPTIONS } from '../constants.js'
 import type { WdioElements } from '../types.js'
 import { isStrictlyElementArray } from './elementsUtil.js'
@@ -23,16 +24,29 @@ export const refetchElements = async <T extends WdioElements>(
     return elements
 }
 
-export const replaceElements = (subject: WebdriverIO.ElementArray, refetchedElements: WebdriverIO.ElementArray): WebdriverIO.ElementArray => {
-    if (Array.isArray(subject) && refetchedElements && refetchedElements.length > 0) {
-        for (let index = 0; index < refetchedElements.length; index++) {
-            subject[index] = refetchedElements[index]
-        }
+export const syncronizeElements = async (subject: WebdriverIO.ElementArray | ChainablePromiseArray | Promise<unknown>, refetchedElements: WebdriverIO.ElementArray) => {
+    if (subject instanceof Promise) {
+        await syncronizeChainableElementArray(subject, refetchedElements)
+    } else if (isStrictlyElementArray(subject)) {
+        syncronizeElementArray(subject, refetchedElements)
     }
-    return subject
 }
 
-export const refreshElements = async (subject: WebdriverIO.ElementArray, wait = DEFAULT_OPTIONS.wait, full = false): Promise<WebdriverIO.ElementArray> => {
+export const syncronizeChainableElementArray = async (subject: ChainablePromiseArray | Promise<unknown>, refetchedElements: WebdriverIO.ElementArray) => {
+    const awaitedSubject = await subject
+    if (isStrictlyElementArray(awaitedSubject) && refetchedElements) {
+        await syncronizeElementArray(await awaitedSubject.getElements(), refetchedElements)
+    }
+}
+
+export const syncronizeElementArray = (subject: WebdriverIO.ElementArray, refetchedElements: WebdriverIO.ElementArray) => {
+    subject.length = refetchedElements.length
+    for (let index = 0; index < refetchedElements.length; index++) {
+        subject[index] = refetchedElements[index]
+    }
+}
+
+export const refreshElementArray = async (subject: WebdriverIO.ElementArray, wait = DEFAULT_OPTIONS.wait, full = false) => {
     const refetchedElements = await refetchElements(subject, wait, full)
-    return replaceElements(subject, refetchedElements)
+    syncronizeElementArray(subject, refetchedElements)
 }

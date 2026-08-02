@@ -33,6 +33,9 @@ export default wdioEslint.config([
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/consistent-type-imports': 'off',
             'vitest/no-identical-title': 'error',
+            'vitest/no-disabled-tests': 'warn',
+            'vitest/no-focused-tests': 'error',
+            'vitest/valid-expect': 'error'
         }
     },
     {
