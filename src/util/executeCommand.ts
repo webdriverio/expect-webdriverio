@@ -141,7 +141,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             subject,
             // allowEmptyElements=true (toExist): empty+.not passes (no elements = don't exist); empty+positive retries.
             // allowEmptyElements=false (default): empty always fails regardless of isNot — no elements to compare.
-            success: allowEmptyElements ? !!isNot : false,
+            success: isNot ? !allowEmptyElements : false,
             actual: undefined,
             // Abort only when we cannot refetch (non-ElementArray): no point retrying a static empty array.
             abort: !allowEmptyElements && !isStrictlyElementArray(selector),
