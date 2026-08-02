@@ -128,17 +128,16 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
     { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
 ): Promise<StrategyResult<MaybeArray<Actual>>> => {
-    // eslint-disable-next-line prefer-const
-    let { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
+    const { selector, other } = await awaitElementOrArray(unresolvedElements)
 
     if (iteration > 0 && isStrictlyElementArray(selector)) {
+        // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
         await refreshElementArray(selector, DEFAULT_OPTIONS.wait, true)
-        isEmptyElements = selector.length === 0
     }
 
     const subject = selector ?? other
 
-    if (!selector || isEmptyElements) {
+    if (!selector || (Array.isArray(selector) && selector.length === 0)) {
 
         return {
             subject: subject,
