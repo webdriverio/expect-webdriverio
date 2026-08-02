@@ -1,9 +1,9 @@
 import { waitUntil, enhanceError, } from '../../utils.js'
-import { refetchElements } from '../../util/refetchElements.js'
+import { refetchElements, replaceElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementsMaybePromise } from '../../types.js'
 import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
-import { awaitElementArray } from '../../util/elementsUtil.js'
+import { awaitElementArray, isArray, isStrictlyElementArray } from '../../util/elementsUtil.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -51,7 +51,6 @@ export async function toBeElementsArrayOfSize(
                 return { success: isPassing, subject: elements, actual: elements.length }
             }
 
-            // TODO should we do this on other matchers??
             elements = await refetchElements(elements, commandOptions.wait, true)
             return { success: false, subject: elements, actual: elements.length }
         },
@@ -59,10 +58,18 @@ export async function toBeElementsArrayOfSize(
         { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
-    // TODO By using `(await received).push(elements[index])` we could update Promises of arrays, should we support that?
-    if (Array.isArray(received) && pass && originalLength !== undefined && elements) {
-        for (let index = originalLength; index < elements.length; index++) {
-            received.push(elements[index])
+    if (pass && originalLength !== undefined && (isArray(received) || received instanceof Promise) && elements !== received) {
+        let receivedArray: WebdriverIO.ElementArray | undefined = undefined
+        if (received instanceof Promise) {
+            received = await received
+            if ('getElements' in received) {
+                receivedArray = await received.getElements()
+            }
+        } else if (isStrictlyElementArray(received)) {
+            receivedArray = received
+        }
+        if (receivedArray && isStrictlyElementArray(elements)) {
+            replaceElements(receivedArray, elements)
         }
     }
 

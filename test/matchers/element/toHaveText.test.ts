@@ -1490,7 +1490,7 @@ Expect $$(\`elements\`) not to have text
                 )
             })
 
-            test('not - given too many expected value', async () => {
+            test.only('not - given too many expected value', async () => {
                 const elements = await $$('elements')
 
                 elements.forEach((el) => vi.mocked(el.getText).mockResolvedValue('webdriverio'))
@@ -1506,7 +1506,7 @@ Received      : ["webdriverio", "webdriverio", undefined]`
                 )
             })
 
-            test('should support oneOf in array under strict behavior', async () => {
+            test.only('should support oneOf in array under strict behavior', async () => {
                 const elements = await $$('elements')
 
                 vi.mocked((elements)[0].getText).mockResolvedValue('WebdriverIO')

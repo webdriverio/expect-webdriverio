@@ -1,13 +1,15 @@
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
-import { awaitElementOrArray, isElement } from './elementsUtil.js'
+import { awaitElementOrArray, isArray, isElement, isStrictlyElementArray } from './elementsUtil.js'
+import { refetchElements, refreshElements } from './refetchElements.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
 export type CompareResult<T> = { success: boolean; actual: T }
 export type StrategyResult<T, E = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown> = {
     subject: E;
     abort?: boolean;
-    context?: { isSome: boolean };
+    refreshElements?: boolean;
+    context?: { isSome: boolean, refreshedElements?: boolean };
 } & CompareResult<T | undefined>
 
 /**
@@ -125,17 +127,22 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     { isNot, isSome }: { isNot: boolean; isSome: boolean },
     { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
 ): Promise<StrategyResult<MaybeArray<Actual>>> => {
-    const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
+    // eslint-disable-next-line prefer-const
+    let { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
+
     const subject = selector ?? other
 
     if (!selector || isEmptyElements) {
+        if (isEmptyElements && isStrictlyElementArray(selector)) {
+            selector =  await refreshElements(selector)
+        }
         return {
             subject: subject,
             // For the new strategy, beside toExist, empty elements even with `.not` is considered a failure since there are no elements to compare against.
             success: isNot ? !allowEmptyElements : false,
             actual: undefined,
-            abort: !allowEmptyElements,
-            context: { isSome }
+            abort: !allowEmptyElements && !isStrictlyElementArray(selector),
+            context: { isSome },
         }
     }
 
@@ -166,7 +173,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             if (Array.isArray(indexedExpectedValue)) {
                 indexedExpectedValue = undefined // Force failure when we do not support array with single element, to avoid confusion with the new strategy.
                 forceFailure = true
-            } else if (Array.isArray(expectedValues) && expectedValues.length !== selector.length && index >= expectedValues.length) {
+            } else if (Array.isArray(expectedValues) && isArray(selector) && expectedValues.length !== selector.length && index >= expectedValues.length) {
                 // Ensure we fails when expected vs number of elements do not match, mostly since some matchers asserting existence might pass when passing undefined expected value to fake a failure.
                 forceFailure = true
             }
@@ -190,7 +197,6 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
 
     let forceFailure = false
-    // TODO mismatch lengths requires depleting the entire timeout instead of failing fast, to fix later!
     if (Array.isArray(expectedValues) && expectedValues.length !== selector.length) {
         forceFailure = true
     }
@@ -201,14 +207,17 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         ? !(!forceFailure && isNotEmpty && (isSome ? isAtLeastOneFalse(results) : isAllFalse(results)))
         : (!forceFailure && isNotEmpty && (isSome ? isAtLeastOneTrue(results) : isAllTrue(results)))
 
+    if (!success) {
+        selector =  await refetchElements(selector)
+    }
+
     // Success if all elements pass the compare strategy, or when using `.not`, if all elements fail the compare strategy.
     // If there are no elements, it is considered a failure in both case with and without `.not`, as there are no elements to compare against.
     return {
         subject,
         success,
         actual: results.map(({ actual }) => actual),
-        abort: forceFailure,
-        context: { isSome }
+        context: { isSome },
     }
 }
 

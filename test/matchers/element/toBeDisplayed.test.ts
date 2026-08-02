@@ -4,10 +4,11 @@ import { $, $$ } from '@wdio/globals'
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
-import { notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { browserFactory, chainableElementArrayFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { DEFAULT_OPTIONS } from '../../../src/constants.js'
 import { setDefaultOptions, setOptions } from '../../../src/index.js'
 import { some } from '../../../src/matchers/modifiers/some.js'
+import { refreshElements } from '../../../src/util/refetchElements.js'
 
 vi.mock('@wdio/globals')
 
@@ -680,5 +681,26 @@ Received: "not displayed"`)
                 )
             })
         })
+    })
+
+    test('refresh elements', async () => {
+        const browser = browserFactory()
+        const emptyElements = await chainableElementArrayFactory('sel0', 0, browser)
+
+        const elements2 = await chainableElementArrayFactory('sel0', 2, browser)
+        elements2.forEach((element) => {
+            vi.mocked(element.isDisplayed).mockResolvedValue(true)
+        })
+
+        vi.mocked(browser.$$)
+            .mockReturnValueOnce(emptyElements)
+            .mockReturnValueOnce(emptyElements)
+            .mockReturnValueOnce(elements2)
+
+        const result = await thisContext.toBeDisplayed(emptyElements)
+        expect(browser.$$).toHaveBeenCalledWith('sel0')
+        expect(refreshElements).toHaveBeenCalled()
+
+        expect(result.pass).toBe(true)
     })
 })
