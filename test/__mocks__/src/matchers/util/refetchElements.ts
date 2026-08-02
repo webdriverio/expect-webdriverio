@@ -8,6 +8,6 @@ vi.mock('../../../../../src/util/refetchElements.js', async (importOriginal) => 
         refreshElementArray: vi.spyOn(actual, 'refreshElementArray'),
         syncronizeElements: vi.spyOn(actual, 'syncronizeElements'),
         syncronizeChainableElementArray: vi.spyOn(actual, 'syncronizeChainableElementArray'),
-        syncronizeElementArray: vi.spyOn(actual, 'syncronizeElementArray')
+        synchronizeElementArray: vi.spyOn(actual, 'synchronizeElementArray')
     }
 })
