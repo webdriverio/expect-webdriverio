@@ -140,8 +140,9 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         return {
             subject,
             /**
-             * allowEmptyElements=true (toExist): empty+.not passes (no elements = don't exist); empty+positive retries.
-             * allowEmptyElements=false (default): empty always fails regardless of isNot — no elements to compare.
+             * Empty with no negation → retry (false).
+             * Empty + .not + default matchers → terminal failure (true): nothing to compare against.
+             * Empty + .not.toExist() → pass immediately (false): no element means it doesn't exist.
              */
             success: isNot ? !allowEmptyElements : false,
             actual: undefined,
