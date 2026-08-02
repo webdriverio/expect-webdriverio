@@ -152,11 +152,12 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     // --- Single element case ---
     if (isElement(selector)) {
         // Array of expected values is unsupported for a single element in the new strict strategy.
-        if (!allowArrayWithSingleElement && Array.isArray(expectedValues)) {
-            return { subject, success: !!isNot, actual: undefined, abort: true, context: { isSome } }
-        }
-        const compareResult = await singleElementCompare(selector, expectedValues)
-        return { subject, ...compareResult, context: { isSome } }
+        const forceFailure = !allowArrayWithSingleElement && Array.isArray(expectedValues)
+
+        const compareResult = await singleElementCompare(selector, forceFailure ? undefined : expectedValues)
+        const success = forceFailure ? !!isNot : compareResult.success
+
+        return { subject, success, actual: compareResult.actual, abort: forceFailure, context: { isSome } }
     }
 
     // --- Multiple elements case ---
