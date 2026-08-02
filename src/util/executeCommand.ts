@@ -199,7 +199,6 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     let forceFailure = false
     if (Array.isArray(expectedValues) && expectedValues.length !== selector.length) {
-        console.warn(`Warning: Number of expected values (${expectedValues.length}) does not match number of elements (${selector.length}). This will force a failure result.`)
         forceFailure = true
     }
 
