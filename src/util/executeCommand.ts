@@ -1,6 +1,6 @@
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
-import { awaitElementOrArray, isArray, isElement, isStrictlyElementArray } from './elementsUtil.js'
+import { awaitElementOrArray, isElement, isStrictlyElementArray } from './elementsUtil.js'
 import { refreshElementArray } from './refetchElements.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
@@ -135,87 +135,72 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     const subject = selector ?? other
 
+    // --- Empty / no element case ---
     if (!selector || (Array.isArray(selector) && selector.length === 0)) {
-
         return {
-            subject: subject,
-            // For the new strategy, beside toExist, empty elements even with `.not` is considered a failure since there are no elements to compare against.
-            success: isNot ? !allowEmptyElements : false,
+            subject,
+            // allowEmptyElements=true (toExist): empty+.not passes (no elements = don't exist); empty+positive retries.
+            // allowEmptyElements=false (default): empty always fails regardless of isNot — no elements to compare.
+            success: allowEmptyElements ? !!isNot : false,
             actual: undefined,
+            // Abort only when we cannot refetch (non-ElementArray): no point retrying a static empty array.
             abort: !allowEmptyElements && !isStrictlyElementArray(selector),
             context: { isSome },
         }
     }
 
+    // --- Single element case ---
     if (isElement(selector)) {
-        let forceFailure = false
+        // Array of expected values is unsupported for a single element in the new strict strategy.
         if (!allowArrayWithSingleElement && Array.isArray(expectedValues)) {
-            // When arrays are not supported pass undefined instead and force a failure result below
-            expectedValues = undefined // Force failure when we do not support array with single element, to avoid confusion with the new strategy.
-            forceFailure = true
+            return { subject, success: !!isNot, actual: undefined, abort: true, context: { isSome } }
         }
         const compareResult = await singleElementCompare(selector, expectedValues)
-        return {
-            subject,
-            success: forceFailure ? !!isNot : compareResult.success,
-            actual: compareResult.actual,
-            abort: forceFailure,
-            context: { isSome }
-        }
+        return { subject, ...compareResult, context: { isSome } }
     }
+
+    // --- Multiple elements case ---
+    const lengthMismatch = Array.isArray(expectedValues) && expectedValues.length !== selector.length
 
     const settled = await Promise.allSettled(
         Array.from(selector).map(async (element: WebdriverIO.Element, index: number) => {
-            // For the new strategy, each element is compared against its index-based corresponding expected value (if it's an array) or the single expected value.
-            let indexedExpectedValue = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
+            const indexedExpected = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
+            // Force per-element failure when: expected is a nested array (unsupported) or this index
+            // is beyond the expected array bounds. Still call compare to get the actual value for the
+            // error message, but ignore its success.
+            const forceElementFailure = Array.isArray(indexedExpected)
+                || (lengthMismatch && Array.isArray(expectedValues) && index >= expectedValues.length)
 
-            let forceFailure = false
-            // The new strategy does not support passing an array of expected values for an index-based element comparison.
-            if (Array.isArray(indexedExpectedValue)) {
-                indexedExpectedValue = undefined // Force failure when we do not support array with single element, to avoid confusion with the new strategy.
-                forceFailure = true
-            } else if (Array.isArray(expectedValues) && isArray(selector) && expectedValues.length !== selector.length && index >= expectedValues.length) {
-                // Ensure we fails when expected vs number of elements do not match, mostly since some matchers asserting existence might pass when passing undefined expected value to fake a failure.
-                forceFailure = true
-            }
-
-            const compareResult = await singleElementCompare(element, indexedExpectedValue, index)
-            return forceFailure ? { success: false, actual: compareResult.actual } : compareResult
+            const compareResult = await singleElementCompare(element, forceElementFailure ? undefined : indexedExpected, index)
+            return forceElementFailure ? { success: false, actual: compareResult.actual } : compareResult
         })
     )
 
-    // Re-throw the first rejection so waitUntil surfaces the real error message
     const firstRejection = settled.find((r): r is PromiseRejectedResult => r.status === 'rejected')
-    if (firstRejection) {
-        throw firstRejection.reason
-    }
+    if (firstRejection) {throw firstRejection.reason}
+
     const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<Actual>>).value)
 
-    // Fill with undefined element's actual value when having less elements than expected values.
+    // Pad actuals for display when expected has more entries than actual elements.
     if (Array.isArray(expectedValues) && expectedValues.length > selector.length) {
-        const missingValues = Array(expectedValues.length - selector.length).fill(undefined)
-        results.push(...missingValues.map((value) => ({ success: false, actual: value })))
+        results.push(...Array(expectedValues.length - selector.length).fill({ success: false, actual: undefined }))
     }
 
-    let forceFailure = false
-    if (Array.isArray(expectedValues) && expectedValues.length !== selector.length) {
-        forceFailure = true
+    // Length mismatch is an immediate structural failure (positive) / pass (.not): no need to
+    // evaluate element results — the arrays can never match as-is.
+    if (lengthMismatch) {
+        return { subject, success: !!isNot, actual: results.map(({ actual }) => actual), context: { isSome } }
     }
 
     const isNotEmpty = results.length > 0
+    const checkFn    = isSome ? isAtLeastOneTrue  : isAllTrue
+    const checkNotFn = isSome ? isAtLeastOneFalse : isAllFalse
 
     const success = isNot
-        ? !(!forceFailure && isNotEmpty && (isSome ? isAtLeastOneFalse(results) : isAllFalse(results)))
-        : (!forceFailure && isNotEmpty && (isSome ? isAtLeastOneTrue(results) : isAllTrue(results)))
+        ? !(isNotEmpty && checkNotFn(results))
+        : isNotEmpty && checkFn(results)
 
-    // Success if all elements pass the compare strategy, or when using `.not`, if all elements fail the compare strategy.
-    // If there are no elements, it is considered a failure in both case with and without `.not`, as there are no elements to compare against.
-    return {
-        subject,
-        success,
-        actual: results.map(({ actual }) => actual),
-        context: { isSome },
-    }
+    return { subject, success, actual: results.map(({ actual }) => actual), context: { isSome } }
 }
 
 const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === true)
