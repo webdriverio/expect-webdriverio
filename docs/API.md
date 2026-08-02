@@ -757,6 +757,7 @@ All element matchers support arrays of elements returned from `$$()`:
 - **Using `.not`:** Every element must *not* meet the matcher condition. One match fails the assertion.
 - **Empty Arrays:** Empty element arrays will fail the assertion by default. 
   - *Note:* Only the `toExist`, `toBeExisting`, and `toBePresent` matchers succeed when using `.not` on an empty element array.
+- **Retry / Array Refresh:** On failure or stale references, the element array is automatically re-fetched until the matcher passes or times out.
 - **Legacy Behavior:** `toHaveText` retains its legacy behavior unless the `useToHaveTextStrictMultiElementsCompareStrategy` flag is enabled.
 - See [MultipleElements.md](MultipleElements.md) for more details.
 
