@@ -16,11 +16,13 @@
 ## Installation
 
 1. `npm install expect-webdriverio`
-2. `npm install @wdio/mocha-framework` -- Choose your framework mocha being the default one!
+1. `npm install expect-webdriverio`
+2. Install your test framework adapter (if not already set up via WDIO testrunner):
+   - **Mocha** (default): `npm install @wdio/mocha-framework`
    - **Jasmine**: `npm install @wdio/jasmine-framework`
    - **Cucumber**: `npm install @wdio/cucumber-framework`
-   - **Jest**: None, manual configuration requires, see [Jest Framework section](docs/Framework.md#jest) 
-3. Configure you tsc configuration, see [Types](docs/Types.md#typescript)
+   - **Jest**: No adapter needed — see [Jest Framework section](docs/Framework.md#jest)
+3. *(TypeScript only)* Configure your `tsconfig`, see [Types](docs/Types.md#typescript)
 
 NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v9.0.0` or higher is required!
 
