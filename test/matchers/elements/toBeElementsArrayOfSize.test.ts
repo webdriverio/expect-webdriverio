@@ -239,7 +239,6 @@ Received      : 2`
             expect(refetchElements).toHaveBeenNthCalledWith(3, elementArrayOf5)
         })
 
-        // TODO: By awaiting the promise we could update the actual elements array, so should we support that?
         test('refresh once but does not update actual elements since they are not of type ElementArray or Element[]', async () => {
             vi.mocked(browser.$$)
                 .mockResolvedValueOnce(elementArrayOf2)
