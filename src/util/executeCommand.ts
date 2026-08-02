@@ -139,8 +139,10 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     if (!selector || (Array.isArray(selector) && selector.length === 0)) {
         return {
             subject,
-            // allowEmptyElements=true (toExist): empty+.not passes (no elements = don't exist); empty+positive retries.
-            // allowEmptyElements=false (default): empty always fails regardless of isNot — no elements to compare.
+            /**
+             * allowEmptyElements=true (toExist): empty+.not passes (no elements = don't exist); empty+positive retries.
+             * allowEmptyElements=false (default): empty always fails regardless of isNot — no elements to compare.
+             */
             success: isNot ? !allowEmptyElements : false,
             actual: undefined,
             // Abort only when we cannot refetch (non-ElementArray): no point retrying a static empty array.
@@ -166,9 +168,11 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     const settled = await Promise.allSettled(
         Array.from(selector).map(async (element: WebdriverIO.Element, index: number) => {
             const indexedExpected = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
-            // Force per-element failure when: expected is a nested array (unsupported) or this index
-            // is beyond the expected array bounds. Still call compare to get the actual value for the
-            // error message, but ignore its success.
+            /**
+             * Force per-element failure when: expected is a nested array (unsupported) or this index
+             * is beyond the expected array bounds. Still call compare to get the actual value for the
+             * error message, but ignore its success.
+             */
             const forceElementFailure = Array.isArray(indexedExpected)
                 || (lengthMismatch && Array.isArray(expectedValues) && index >= expectedValues.length)
 
@@ -187,8 +191,10 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         results.push(...Array(expectedValues.length - selector.length).fill({ success: false, actual: undefined }))
     }
 
-    // Length mismatch is an immediate structural failure (positive) / pass (.not): no need to
-    // evaluate element results — the arrays can never match as-is.
+    /**
+     * Length mismatch is an immediate structural failure (positive) / pass (.not): no need to
+     * evaluate element results — the arrays can never match as-is.
+     */
     if (lengthMismatch) {
         return { subject, success: !!isNot, actual: results.map(({ actual }) => actual), context: { isSome } }
     }
