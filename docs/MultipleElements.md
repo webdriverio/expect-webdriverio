@@ -9,6 +9,7 @@ Matchers support an element array returned from `$$()`:
 - Options like `StringOptions` or `HTMLOptions` apply to the whole array; `NumberMatcher` behaves like any expected provided value.
 - The assertion passes only if **all** elements match.
 - Using `.not` means all elements must **not** match.
+- On failures, the element array is automatically re-fetched until the matcher passes or times out, ensuring reliability against dynamic DOM changes.
 
 **Note:** To apply strict index-based matching to the `toHaveText` matcher, `useToHaveTextStrictMultiElementsCompareStrategy` must be enabled. Else legacy behavior applies.
 
