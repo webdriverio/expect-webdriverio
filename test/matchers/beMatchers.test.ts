@@ -463,8 +463,8 @@ Expect [$$(\`sel\`)[0],$$(\`sel\`)[1]] ${verb} ${lastMatcherWords(matcherFn.name
             describe('Edge cases', () => {
 
                 test.each([
-                    // { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
-                    // { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
+                    { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
+                    { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
                     { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
                 ])('should fail with proper error message when actual is an empty of $name', async ({ elements, selectorName }) => {
                     const result = await thisContext.matcherFn(elements)

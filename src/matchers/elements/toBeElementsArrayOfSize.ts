@@ -43,8 +43,7 @@ export async function toBeElementsArrayOfSize(
         async (iteration) => {
             if (!elements) {
                 return { success: false, subject: elements, actual: undefined, abort: true }
-            }
-            if (iteration > 0) {
+            } else if (iteration > 0) {
                 elements = await refetchElements(elements)
             }
 
