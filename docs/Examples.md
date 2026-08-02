@@ -59,4 +59,4 @@ more boilerplate projects coming soon, feel free to propose yours!
 
 ## Playgrounds
 
-Additional examples are available as internal playgrounds to the project. See [playgrounds folder](playgrounds)
+Additional examples are available as internal playgrounds to the project. See [playgrounds folder](../playgrounds)
