@@ -54,10 +54,7 @@ type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclu
  */
 type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>
 
-type MultiRemoteValues<T> = Record<string, T>
-type MultiRemoteValuesOrOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<T> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.MultiRemotePartialMatcher<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>
-type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
-type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
+type MaybeArrayOrMultiRemoteValues<T> = T | MaybeArray<T> | Record<string, T>
 
 /**
  * Real Promise and wdio chainable promise types.
@@ -125,7 +122,35 @@ interface WdioBrowserMatchers<_R, ActualT>{
     /**
      * Browser`s url
      */
-    toHaveUrl: FnWhenBrowserOrMultiRemote<ActualT,
+    toHaveUrl: FnWhenBrowser<ActualT, (url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
+
+    toHaveTitle: FnWhenBrowserOrMultiRemote<ActualT,
+        /**
+        * `WebdriverIO.Browser` -> `getTitle`
+        */
+        (
+            title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getTitle`
+        */
+        (
+            title: MaybeArrayOrMultiRemoteValues<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
+
+    /**
+     * `WebdriverIO.Browser` -> `execute`
+     */
+    toHaveClipboardText: FnWhenBrowser<ActualT, (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Browser` -> `execute`
+     */
+    toHaveLocalStorageItem: FnWhenBrowser<ActualT, {
         /**
         * `WebdriverIO.Browser` -> `getUrl`
         */

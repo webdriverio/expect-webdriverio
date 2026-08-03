@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "webdriverio": {
+      "signature": "03c36b16eefcd1ce8383ca77aa23c9e7",
+      "file": true,
+      "replaced": "9.30.0-multiremote.0"
+    }
+  }
+}
