@@ -1,0 +1,26 @@
+{
+  "name": "expect-wdio-playground-mocha",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Playground project for testing expect-webdriverio",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "wdio run wdio.conf.ts",
+    "lint": "eslint .",
+    "checks:all": "npm run typecheck && npm run lint && npm test",
+    "snapshots:update": "npm run test -- --spec snapshot.test.ts --updateSnapshots && npm run test -- --spec visual-snapshot.test.ts --update-visual-baseline"
+  },
+  "devDependencies": {
+    "@wdio/mocha-framework": "^9.30.0",
+    "eslint-plugin-mocha": "^11.3.0",
+    "expect-webdriverio": "file:../.."
+  },
+  "peerDependencies": {
+    "@wdio/cli": "*",
+    "@wdio/globals": "*",
+    "@wdio/local-runner": "*",
+    "@wdio/spec-reporter": "*",
+    "@wdio/visual-service": "*"
+  }
+}
