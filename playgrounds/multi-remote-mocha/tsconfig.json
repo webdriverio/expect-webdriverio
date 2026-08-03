@@ -9,7 +9,6 @@
       "expect-webdriverio", // Pull the development version from this project
       "@wdio/mocha-framework", // Must be listed after development versions so they take priority
       "@wdio/globals/types", // Must be listed after development versions so they take priority
-      "@wdio/visual-service"
     ],
     "esModuleInterop": true,
     "skipLibCheck": true,
