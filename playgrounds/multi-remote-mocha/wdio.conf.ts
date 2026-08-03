@@ -1,5 +1,5 @@
 
-import { setDefaultOptions, setFeatureFlags, setOptions } from 'expect-webdriverio'
+import { setDefaultOptions, setFeatureFlags } from 'expect-webdriverio'
 
 export const config: WebdriverIO.MultiremoteConfig = {
     //
