@@ -1,7 +1,9 @@
 import { multiRemoteBrowser } from '@wdio/globals'
 
 describe('Basic Expect Matchers', () => {
-    beforeEach(async () => {
+    beforeEach(async function() {
+        // When running all project it timeout here!
+        this.timeout(10000);
         await multiRemoteBrowser.url('https://webdriver.io')
     })
 
