@@ -20,7 +20,7 @@ describe('Global Options', () => {
     it('should allow setting and using global wait option', async () => {
         const start = Date.now()
 
-        // Should fail immediately (wait: 1ms)
+        // Should fail immediately (wait: 1ms) TODO swap for multiRemoteBrowser.$() one day
         await expect(expect($('non-existent-element-' + Date.now())).toBeDisplayed()).rejects.toThrow()
         const duration = Date.now() - start
 
