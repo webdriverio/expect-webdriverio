@@ -4,9 +4,13 @@ import vitest from '@vitest/eslint-plugin'
 export default wdioEslint.config([
     {
         ignores: [
+            '.vscode/**',
+            '.yalc/**',
+            'coverage/**',
             'lib',
+            'node_modules/**',
+            'playgrounds/**',
             '**/*/dist',
-            'playgrounds/**'
         ]
     },
     /**

@@ -1,7 +1,5 @@
 
-import { join } from 'node:path'
-import type { VisualServiceOptions } from '@wdio/visual-service'
-import { SoftAssertionService, setDefaultOptions, setFeatureFlags, setOptions } from 'expect-webdriverio'
+import { setDefaultOptions, setFeatureFlags, setOptions } from 'expect-webdriverio'
 
 export const config: WebdriverIO.MultiremoteConfig = {
     //
@@ -17,14 +15,9 @@ export const config: WebdriverIO.MultiremoteConfig = {
     // ==================
     //
     specs: [
-        // TODO renable other test when multi-remote is supported
-        //'./test/specs/**/*.test.ts',
-        './test/specs/**/basic-matchers.test.ts',
-        //'./test/specs/**/visual-snapshot.test.ts'
-        //'./test/specs/**/soft-expect.test.ts',
-        //'./test/specs/**/snapshot.test.ts'
-        //'./test/specs/**/wdio-matchers.test.ts'
-        './test/specs/**/network-matchers.test.ts'
+        './test/specs/**/*.test.ts',
+        //'./test/specs/**/basic-matchers.test.ts',
+        //'./test/specs/**/network-matchers.test.ts'
     ],
 
     maxInstances: 10,
@@ -75,24 +68,6 @@ export const config: WebdriverIO.MultiremoteConfig = {
     waitforTimeout: 10000,
     connectionRetryTimeout: 120000,
     connectionRetryCount: 3,
-    services: [
-        [SoftAssertionService, {}],
-        [
-            'visual',
-            {
-                baselineFolder: join(process.cwd(), 'visual-snapshot/baseline'),
-                formatImageName: '{tag}-{logName}-{width}x{height}',
-                screenshotPath: join(process.cwd(), 'visual-snapshot/.temp'),
-                savePerInstance: true,
-                autoSaveBaseline: true,
-                compareOptions: {
-                    // Block out the changing elements
-                    blockOutStatusBar: true,
-                    blockOutToolBar: true
-                }
-            } satisfies VisualServiceOptions
-        ]
-    ],
     framework: 'mocha',
     reporters: ['spec'],
     mochaOpts: {
@@ -105,10 +80,10 @@ export const config: WebdriverIO.MultiremoteConfig = {
     // Hooks
     // =====
     //
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    before: function (_capabilities, _specs) {
-        setOptions({ wait: 250 })
+    before: function () {
         setDefaultOptions({ wait: 250 })
-        setFeatureFlags({})
+        setFeatureFlags({
+            useToHaveTextStrictMultiElementsCompareStrategy: true,
+        })
     },
 }

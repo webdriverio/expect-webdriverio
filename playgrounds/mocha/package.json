@@ -1,5 +1,5 @@
 {
-  "name": "expect-wdio-playground-mocha",
+  "name": "expect-wdio-playground-multi-remote-mocha",
   "version": "1.0.0",
   "private": true,
   "type": "module",
