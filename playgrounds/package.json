@@ -4,11 +4,14 @@
   "type": "module",
   "private": true,
   "description": "Playground projects common dependencies",
-  "workspaces": ["./jasmine", "./jest", "./mocha"],
+  "workspaces": ["./jasmine", "./jest", "./mocha", "./multi-remote-mocha"],
   "scripts": {
     "preinstall": "cd .. && npm run compile",
     "setup": "npm install",
-    "checks:all": "npm exec --workspaces --call 'npm run checks:all'",
+    "typecheck": "npm exec --workspaces --call 'npm run typecheck'",
+    "test": "npm exec --workspaces --call 'npm run test'",
+    "lint": "npm exec --workspaces --call 'npm run lint'",
+    "checks:all": "npm run typecheck && npm run lint && npm test",
     "snapshots:update": "npm exec --workspace=mocha --call 'npm run snapshots:update'"
   },
   "devDependencies": {
