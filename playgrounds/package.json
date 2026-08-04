@@ -4,7 +4,12 @@
   "type": "module",
   "private": true,
   "description": "Playground projects common dependencies",
-  "workspaces": ["./jasmine", "./jest", "./mocha", "./multi-remote-mocha"],
+  "workspaces": [
+    "./jasmine",
+    "./jest",
+    "./mocha",
+    "./multi-remote-mocha"
+  ],
   "scripts": {
     "preinstall": "cd .. && npm run compile",
     "setup": "npm install",
@@ -15,10 +20,10 @@
     "snapshots:update": "npm exec --workspace=mocha --call 'npm run snapshots:update'"
   },
   "devDependencies": {
-    "@wdio/cli": "^9.30.0",
-    "@wdio/globals": "^9.29.1",
-    "@wdio/local-runner": "^9.30.0",
-    "@wdio/spec-reporter": "^9.29.1",
+    "@wdio/cli": "file:.yalc/@wdio/cli",
+    "@wdio/globals": "file:.yalc/@wdio/globals",
+    "@wdio/local-runner": "file:.yalc/@wdio/local-runner",
+    "@wdio/spec-reporter": "file:.yalc/@wdio/spec-reporter",
     "@wdio/visual-service": "^10.1.0",
     "eslint": "^9.39.4",
     "ts-node": "^10.9.2",
