@@ -24,9 +24,11 @@
     "@wdio/globals": "file:.yalc/@wdio/globals",
     "@wdio/local-runner": "file:.yalc/@wdio/local-runner",
     "@wdio/spec-reporter": "file:.yalc/@wdio/spec-reporter",
+    "@wdio/utils": "file:.yalc/@wdio/utils",
     "@wdio/visual-service": "^10.1.0",
     "eslint": "^9.39.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "webdriverio": "file:.yalc/webdriverio"
   }
 }

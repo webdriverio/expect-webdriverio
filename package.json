@@ -77,6 +77,8 @@
   },
   "dependencies": {
     "@vitest/snapshot": "^4.1.10",
+    "@wdio/mocha-framework": "file:.yalc/@wdio/mocha-framework",
+    "@wdio/utils": "file:.yalc/@wdio/utils",
     "deep-eql": "^5.0.2",
     "expect": "^30.4.1",
     "jest-matcher-utils": "^30.4.1"

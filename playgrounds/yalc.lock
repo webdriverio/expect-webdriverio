@@ -3,23 +3,27 @@
   "packages": {
     "@wdio/cli": {
       "signature": "2e046160db3d01a285b1ec8616390f54",
-      "file": true,
+      "pure": true,
       "replaced": "^9.30.0"
     },
     "@wdio/globals": {
       "signature": "175d9b28d35f5ff1f33d2a40df2a001f",
-      "file": true,
+      "pure": true,
       "replaced": "^9.29.1"
     },
     "@wdio/local-runner": {
       "signature": "6f8e94369de4354eaaceb01a28b7b1d1",
-      "file": true,
+      "pure": true,
       "replaced": "^9.30.0"
     },
     "@wdio/spec-reporter": {
       "signature": "5436f1477dd3c27922186f336a7e9817",
-      "file": true,
+      "pure": true,
       "replaced": "^9.29.1"
+    },
+    "webdriverio": {
+      "signature": "83d918d9a35f034c779e6f860a672710",
+      "pure": true
     }
   }
 }
