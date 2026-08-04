@@ -11,10 +11,10 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "eslint-plugin-jest": "^29.15.2",
+    "eslint-plugin-jest": "^29.16.0",
     "expect-webdriverio": "file:../..",
     "jest": "^30.4.2",
-    "ts-jest": "^29.4.11"
+    "ts-jest": "^29.4.12"
   },
   "peerDependencies": {
     "@wdio/cli": "*",
