@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "@wdio/mocha-framework": {
+      "signature": "f5e7cba226f4b49b46c10b249e62cdce",
+      "file": true,
+      "replaced": "^9.30.1"
+    }
+  }
+}

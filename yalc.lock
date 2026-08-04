@@ -2,9 +2,18 @@
   "version": "v1",
   "packages": {
     "webdriverio": {
-      "signature": "03c36b16eefcd1ce8383ca77aa23c9e7",
+      "signature": "4d1e8fff5fd9509e8adbf5bc736ce145",
       "file": true,
-      "replaced": "9.30.0-multiremote.0"
+      "replaced": "^9.30.1"
+    },
+    "@wdio/mocha-framework": {
+      "signature": "f5e7cba226f4b49b46c10b249e62cdce",
+      "file": true
+    },
+    "@wdio/types": {
+      "signature": "14c34a998d912ea8cd21174a62dda558",
+      "file": true,
+      "replaced": "^9.30.1"
     }
   }
 }
