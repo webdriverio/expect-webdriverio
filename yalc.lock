@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "webdriverio": {
-      "signature": "e9cb57d6a2b63e71f3ba4ffc461c9e3a",
+      "signature": "f8dfce0f0b5770fbcf87d26a3f1684c1",
       "file": true,
       "replaced": "^9.30.1"
     },
@@ -16,7 +16,7 @@
       "replaced": "^9.30.1"
     },
     "@wdio/utils": {
-      "signature": "e822b7e6883d5dca53969c00f72d4a18",
+      "signature": "2fa15bacae2cd25f856ed89be0da51a3",
       "file": true
     }
   }

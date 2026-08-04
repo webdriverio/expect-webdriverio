@@ -30,5 +30,8 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "webdriverio": "file:.yalc/webdriverio"
+  },
+  "dependencies": {
+    "@wdio/runner": "file:.yalc/@wdio/runner"
   }
 }

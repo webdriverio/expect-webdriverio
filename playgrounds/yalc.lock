@@ -22,8 +22,12 @@
       "replaced": "^9.29.1"
     },
     "webdriverio": {
-      "signature": "83d918d9a35f034c779e6f860a672710",
+      "signature": "f8dfce0f0b5770fbcf87d26a3f1684c1",
       "pure": true
+    },
+    "@wdio/runner": {
+      "signature": "0fee5a4af7522f82027d91e4c3b7a4f9",
+      "file": true
     }
   }
 }
