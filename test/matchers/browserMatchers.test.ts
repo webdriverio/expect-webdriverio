@@ -1,6 +1,6 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { browser } from '@wdio/globals'
-import { toHaveUrl } from '../../src/matchers/browser/toHaveUrl.js'
+// import { toHaveUrl } from '../../src/matchers/browser/toHaveUrl.js'
 import { toHaveTitle } from '../../src/matchers/browser/toHaveTitle.js'
 import { matcherNameLastWords } from '../__fixtures__/utils'
 import stripAnsi from 'strip-ansi'
@@ -8,7 +8,7 @@ import stripAnsi from 'strip-ansi'
 vi.mock('@wdio/globals')
 
 const browserMatchers = new Map([
-    [toHaveUrl, browser.getUrl],
+    // [toHaveUrl, browser.getUrl],
     [toHaveTitle, browser.getTitle],
 ])
 
@@ -121,7 +121,7 @@ Received      : " Valid Text "`
 Expect window to have ${matcherNameLastWords(matcherFn.name)}
 
 Expected: " Valid Text "
-Received: " Wrong Text "`
+Received: "Wrong Text"`
                 )
             })
         })

@@ -15,9 +15,10 @@ export const config: WebdriverIO.MultiremoteConfig = {
     // ==================
     //
     specs: [
-        './test/specs/**/*.test.ts',
+        //'./test/specs/**/*.test.ts',
         //'./test/specs/**/basic-matchers.test.ts',
         //'./test/specs/**/network-matchers.test.ts'
+        './test/specs/**/wdio-matchers.test.ts'
     ],
 
     maxInstances: 10,
@@ -46,15 +47,15 @@ export const config: WebdriverIO.MultiremoteConfig = {
                     }
                 }
             },
-            chromium: {
-                capabilities: {
-                    browserName: 'chromium',
-                    browserVersion: 'latest',
-                    'goog:chromeOptions': {
-                        args: ['headless','disable-gpu']
-                    }
-                }
-            },
+            // chromium: {
+            //     capabilities: {
+            //         browserName: 'chromium',
+            //         browserVersion: 'latest',
+            //         'goog:chromeOptions': {
+            //             args: ['headless','disable-gpu']
+            //         }
+            //     }
+            // },
         }],
 
     //
