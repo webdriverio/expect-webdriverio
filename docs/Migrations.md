@@ -164,7 +164,7 @@ This document covers all breaking changes and deprecations introduced in **v6.0.
 + await expect(el).toHaveText(expect.oneOf('foo', 'bar'))
 ```
 
-> **Note:** Requires the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag enabled for `expect.oneOf()` to work correctly.
+> **Note:** The `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is required when using `expect.oneOf()` inside an expected array for strict index-based multi-element comparison.
 
 ---
 
