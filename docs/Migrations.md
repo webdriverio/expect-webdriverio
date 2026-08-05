@@ -122,7 +122,7 @@ This document covers all breaking changes and deprecations introduced in **v6.0.
 
 ```diff
 - await expect($$('.item')).toBeElementsArrayOfSize({ gte: 2, wait: 0 })
-+ await expect($$('.item')).toBeElementsArrayOfSize({ gte: 2 }, { wait: 0 }))
++ await expect($$('.item')).toBeElementsArrayOfSize({ gte: 2 }, { wait: 0 })
 ```
 
 ---
