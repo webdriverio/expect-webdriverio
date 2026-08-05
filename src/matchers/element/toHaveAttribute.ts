@@ -61,7 +61,7 @@ export async function toHaveAttributeAndValue(received: MaybeSomeWdioElementOrAr
 }
 
 /**
- * deprecated since 5.7.1, remove in v6.0.0. Passing explicit `undefined` as a value is deprecated. Omit the third argument entirely or use `toHaveAttribute(el, attribute, options)`.
+ * @deprecated since v6.0.0, remove in v8.0.0. Passing explicit `undefined` as a value is deprecated. Omit the third argument entirely or use `toHaveAttribute(el, attribute, options)`.
  */
 export async function toHaveAttribute(
     received: MaybeSomeWdioElementOrArrayMaybePromise,
@@ -138,6 +138,6 @@ export async function toHaveAttribute(
 }
 
 /**
- * @deprecated since 5.7.0 Use `toHaveAttribute`
+ * @deprecated since v5.7.0 Use `toHaveAttribute`, will be removed in v8.0.0
  */
 export const toHaveAttr = toHaveAttribute

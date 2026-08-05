@@ -12,7 +12,7 @@ export async function toBeElementsArrayOfSize(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 /**
- * deprecated since version 5.7.1. Use `toBeElementsArrayOfSize` with NumberMatcher instead. This matcher will be removed in version 6.0.0.
+ * @deprecated since v6.0.0, remove in v8.0.0. Use `toBeElementsArrayOfSize` with NumberMatcher instead. This matcher will be removed in version 8.0.0.
  */
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,

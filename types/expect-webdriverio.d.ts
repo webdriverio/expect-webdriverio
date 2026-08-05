@@ -124,7 +124,7 @@ interface WdioBrowserMatchers<_R, ActualT>{
      */
     toHaveLocalStorageItem: FnWhenBrowser<ActualT, {
         /**
-         * @deprecated since v6.0.0, removed in v10.0.0. Use `expect.anything()` instead of `undefined` as expected value.
+         * @deprecated since v6.0.0, removed in v8.0.0. Use `expect.anything()` instead of `undefined` as expected value.
          */
         (
             key: string,
@@ -162,7 +162,7 @@ interface WdioNetworkMatchers<_R, ActualT> {
         ): Promise<void>
 
         /**
-        * deprecated since 5.7.1, remove in v6.0.0. Use `NumberMatcher` & `CommandOptions` separately `toBeRequestedTimes(NumberMatcher, options)`.
+        * @deprecated since v6.0.0, remove in v8.0.0. Use `NumberMatcher` & `CommandOptions` separately `toBeRequestedTimes(NumberMatcher, options)`.
         */
         (
             times: ExpectWebdriverIO.NumberOptions,
@@ -242,7 +242,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     toHaveAttribute: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         /**
-         * @deprecated since 6.0.0, remove in v10.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
+         * @deprecated since v6.0.0, remove in v8.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
          */
         (
             attribute: string,
@@ -287,7 +287,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     >
 
     /**
-     * @deprecated since v5.7.1 Use `toHaveAttribute` instead.
+     * @deprecated since v6.0.0, removed in v8.0.0. Use `toHaveAttribute` instead.
      * `WebdriverIO.Element` -> `getAttribute`
      */
     toHaveAttr: FnWhenElementOrArrayLike<ActualT, (
@@ -351,7 +351,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>;
 
         /**
-         * @deprecated since v6.0.0, removed in v10.0.0. Passing explicit `undefined` or `null` as a value is deprecated.
+         * @deprecated since v6.0.0, removed in v8.0.0. Passing explicit `undefined` or `null` as a value is deprecated.
          * Omit the second argument entirely or use expect.anything() with options: `toHaveElementProperty(property, expect.anything(), options)`.
          */
         (
@@ -426,7 +426,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
          */
         (): Promise<void>;
         /**
-         * @deprecated since 6.0.0, remove in v10.0.0.
+         * @deprecated since 6.0.0, remove in v8.0.0.
          * Passing explicit `undefined` or `{ wait : 1 }` (NumberOptions) as a value is deprecated.
          * Use options with `toHaveChildren({ gte: 1 }, options)`.
          */
@@ -444,7 +444,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>;
 
         /**
-         * @deprecated since 6.0.0, remove in v10.0.0.
+         * @deprecated since 6.0.0, remove in v8.0.0.
          * NumberOptions is no longer supported. Use `expect(el).toHaveChildren(numberMatcher, options)` instead.
          * Instead of `expect(el).toHaveChildren({ wait: 1 })` use `expect(el).toHaveChildren({ gte: 1 }, { wait: 1 })`.
          */
@@ -651,7 +651,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ) : Promise<void>,
 
         /**
-         * deprecated since 5.7.1, remove in v6.0.0. Use `toHaveWidth` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
+         * @deprecated since v6.0.0, remove in v8.0.0. Use `toHaveWidth` with number | NumberMatcher instead. This matcher will be removed in version 8.0.0.
          */
         (
             size: ExpectWebdriverIO.NumberOptions,
@@ -685,7 +685,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ) : Promise<void>
 
         /**
-         * deprecated since 5.7.1, remove in v6.0.0. Use `toHaveHeight` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
+         * @deprecated since v6.0.0, will be removed in version v8.0.0. Use `toHaveHeight` with number | NumberMatcher instead.
          */
         (
             size: ExpectWebdriverIO.NumberOptions,
@@ -755,7 +755,7 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
         ): Promise<void>,
 
         /**
-         * deprecated since 5.7.1, remove in v6.0.0. Use `toBeElementsArrayOfSize` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
+         * @deprecated since v6.0.0, remove in v8.0.0. Use `toBeElementsArrayOfSize` with number | NumberMatcher instead. This matcher will be removed in version 8.0.0.
          */
         (
             size: ExpectWebdriverIO.NumberOptions,
@@ -896,7 +896,7 @@ declare namespace ExpectWebdriverIO {
      * Used by the webdriverio main project to configure the matchers in the runner.
      */
     function setDefaultOptions(options: DefaultOptions): void
-    /** @deprecated use setDefaultOptions instead, will be removed in v6.0.0 */
+    /** @deprecated since v6.0.0, use setDefaultOptions instead, will be removed in v8.0.0 */
     function setOptions(options: DefaultOptions): void
 
     /**
@@ -909,7 +909,7 @@ declare namespace ExpectWebdriverIO {
      * Get the default options set by the user.
      */
     function getDefaultOptions(): DefaultOptions
-    /** @deprecated use getDefaultOptions instead, will be removed in v6.0.0 */
+    /** @deprecated since v6.0.0, use getDefaultOptions instead, will be removed in v8.0.0 */
     function getConfig(): DefaultOptions
 
     /**
@@ -1029,7 +1029,7 @@ declare namespace ExpectWebdriverIO {
     const wdioCustomMatchers: MatchersObject
 
     /**
-     * @deprecated since 5.6.9 use `wdioCustomMatchers` instead
+     * @deprecated since 5.6.9 use `wdioCustomMatchers` instead, will be removed in v8.0.0?
      */
     const matchers: Map<string, RawMatcherFn>
 
@@ -1155,7 +1155,7 @@ declare namespace ExpectWebdriverIO {
     }
 
     /**
-     * deprecated since 5.7.1, remove in v6.0.0. Use `NumberMatcher` & `CommandOptions` as seperate parameters instead.
+     * @deprecated since v6.0.0, remove in v8.0.0. Use `NumberMatcher` & `CommandOptions` as separate parameters instead.
      * @see NumberMatcher
      * @see CommandOptions
      */

@@ -36,7 +36,7 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
 }
 
 /**
- * @deprecated to remove in v6.0.0
+ * @deprecated since v6.0.0, remove in v8.0.0
  */
 export function toHaveClass(...args: unknown[]) {
     return toHaveElementClass.call(this || {}, ...args)
