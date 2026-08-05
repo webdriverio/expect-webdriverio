@@ -80,7 +80,7 @@ export async function toHaveLocalStorageItem(
     }
     await options.afterAssertion?.({
         matcherName,
-        expectedValue: expected ? [key, expected] : key,
+        expectedValue: expectedValue ? [key, expectedValue] : key,
         options,
         result
     })
