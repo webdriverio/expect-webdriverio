@@ -43,7 +43,7 @@ This document covers all breaking changes and deprecations introduced in **v6.0.
 
 ### `toHaveAttr` → `toHaveAttribute`
 
-**Deprecated since:** v6.0.0 | **Removed in:** v8.0.0
+**Deprecated since:** v5.7.0 | **Removed in:** v8.0.0
 
 ```diff
 - await expect(el).toHaveAttr('class', 'active')
