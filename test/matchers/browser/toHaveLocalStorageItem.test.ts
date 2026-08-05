@@ -91,6 +91,12 @@ Received      : "someLocalStorageValue"`
             expect.any(Function),
             'nonExistentKey'
         )
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect browser to have localStorage item nonExistentKey
+
+Expected: "someValue"
+Received: null`
+        )
     })
 
     it('passes when only checking key existence', async () => {
@@ -101,6 +107,22 @@ Received      : "someLocalStorageValue"`
         const result = await thisContext.toHaveLocalStorageItem(browser, 'existingKey')
 
         expect(result.pass).toBe(true)
+    })
+
+    it('fails when only checking key existence', async () => {
+        // Mock browser.execute to return any non-null value
+        vi.mocked(browser.execute).mockResolvedValue(null)
+
+        // no expectedValue parameter
+        const result = await thisContext.toHaveLocalStorageItem(browser, 'existingKey')
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect browser to have localStorage item existingKey
+
+Expected: Anything
+Received: null`
+        )
     })
 
     it('passes when only checking key existence with undefined - deprecated', async () => {

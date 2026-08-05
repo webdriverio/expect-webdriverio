@@ -34,11 +34,14 @@ export async function toHaveLocalStorageItem(
     })
 
     const paramsCount = arguments.length
+    let expected: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything
     if (expectedValue === undefined) {
         if (paramsCount > 2) {
             console.warn('[DEPRECATION] Using toHaveLocalStorageItem with undefined is deprecated in favor of expect.anything().')
         }
-        expectedValue = expect.anything()
+        expected = expect.anything()
+    } else {
+        expected = expectedValue
     }
 
     const { actual, success: pass } = await waitUntil(
@@ -53,7 +56,7 @@ export async function toHaveLocalStorageItem(
                 return { actual, success: false, subject: browser }
             }
 
-            const compareResult = compareText(actual, expectedValue, options)
+            const compareResult = compareText(actual, expected, options)
 
             return { actual, success: compareResult.success, subject: browser }
         },
@@ -63,7 +66,7 @@ export async function toHaveLocalStorageItem(
 
     const message = enhanceError(
         'browser',
-        expectedValue !== undefined ? expectedValue : `localStorage item "${key}"`,
+        expected,
         actual,
         this,
         verb,
@@ -77,7 +80,7 @@ export async function toHaveLocalStorageItem(
     }
     await options.afterAssertion?.({
         matcherName,
-        expectedValue: expectedValue ? [key, expectedValue] : key,
+        expectedValue: expected ? [key, expected] : key,
         options,
         result
     })
