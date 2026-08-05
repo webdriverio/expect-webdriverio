@@ -3,7 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import { expect } from '../../index.js'
 
 /**
- * @deprecated use expect.anything() instead of undefined as expected value
+ * @deprecated since v6.0.0, use expect.anything() instead of undefined as expected value, will be removed in v8.0.0
  */
 export async function toHaveLocalStorageItem(
     browser: WebdriverIO.Browser,
@@ -33,8 +33,11 @@ export async function toHaveLocalStorageItem(
         options,
     })
 
-    if (expectedValue === undefined ) {
-        console.warn('[DEPRECATION] Using toHaveLocalStorageItem with undefined is deprecated in favor of expect.anything().')
+    const paramsCount = arguments.length
+    if (expectedValue === undefined) {
+        if (paramsCount > 2) {
+            console.warn('[DEPRECATION] Using toHaveLocalStorageItem with undefined is deprecated in favor of expect.anything().')
+        }
         expectedValue = expect.anything()
     }
 
