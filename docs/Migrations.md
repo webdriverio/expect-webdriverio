@@ -1,6 +1,6 @@
-# Migration Guide: expect-webdriverio v5 → v6/v7/v8
+# Migration Guide: expect-webdriverio v5 → v6
 
-This document covers all breaking changes and deprecations introduced in **v6.0.0** that will be **removed in v8.0.0**.
+This document covers all breaking changes and deprecations introduced in **v6.0.0** that will be **removed only in v8.0.0**.
 
 ---
 
