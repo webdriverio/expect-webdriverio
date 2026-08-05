@@ -685,7 +685,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ) : Promise<void>
 
         /**
-         * @deprecated since v6.0.0, remove in v8.0.0. Use `toHaveHeight` with number | NumberMatcher instead. This matcher will be removed in version 6.0.0.
+         * @deprecated since v6.0.0, will be removed in version v8.0.0. Use `toHaveHeight` with number | NumberMatcher instead.
          */
         (
             size: ExpectWebdriverIO.NumberOptions,
