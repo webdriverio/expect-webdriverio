@@ -109,7 +109,7 @@ This document covers all breaking changes and deprecations introduced in **v6.0.
 
 ```diff
 - await expect(el).toHaveHeight({ gte: 100, wait: 0 })
-+ await expect(el).toHaveHeight(expect.numberMatching({ gte: 100 }, { wait: 0 }))
++ await expect(el).toHaveHeight({ gte: 100 }, { wait: 0 })
 ```
 
 ---
