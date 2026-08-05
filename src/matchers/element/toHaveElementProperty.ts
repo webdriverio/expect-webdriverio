@@ -38,7 +38,7 @@ async function condition(
 }
 
 /**
- * @deprecated since 6.0.0, remove in v10.0.0.
+ * @deprecated since 6.0.0, remove in v8.0.0.
  * Passing explicit `undefined` or `null` as a value is deprecated.
  * Omit the third argument entirely or use `toHaveElementProperty(el, property, object.anything(), options)`.
  */

@@ -93,9 +93,9 @@ export const setFeatureFlags = (featureFlags: Partial<ExpectWebdriverIO.FeatureF
     })
 }
 
-/** @deprecated use setDefaultOptions instead. Will be removed in v10.0.0 */
+/** @deprecated since v6.0.0, use setDefaultOptions instead. Will be removed in v8.0.0 */
 export const setOptions = setDefaultOptions
-/** @deprecated use `getDefaultOptions` instead, will be removed in v10.0.0 */
+/** @deprecated since v6.0.0, use `getDefaultOptions` instead, will be removed in v8.0.0 */
 export const getConfig = getDefaultOptions
 
 /**

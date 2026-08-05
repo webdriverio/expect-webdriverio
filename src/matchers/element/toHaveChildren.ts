@@ -33,7 +33,7 @@ export async function toHaveChildren(
 ): Promise<AssertionResult>
 
 /**
- * @deprecated since 6.0.0, remove in v10.0.0.
+ * @deprecated since 6.0.0, remove in v8.0.0.
  * Passing explicit `undefined` or `{}` as a value is deprecated.
  * Omit the second argument entirely or use `toHaveChildren(el, { gte: 1 }, options)`.
  */
@@ -64,7 +64,7 @@ export async function toHaveChildren(
 ): Promise<AssertionResult>
 
 /**
- * @deprecated since 6.0.0, remove in v10.0.0.
+ * @deprecated since 6.0.0, remove in v8.0.0.
  * NumberOptions is no longer supported. Use `expect(el).toHaveChildren(numberMatcher, options)` instead.
  * Instead of `expect(el).toHaveChildren({ wait: 1 })` use `expect(el).toHaveChildren({ gte: 1 }, { wait: 1 })`.
  */

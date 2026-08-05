@@ -100,7 +100,7 @@ async function executeCommandBe(
 }
 
 /**
- * @deprecated not longer used in 5.7.1, replaced by `NumberMatcher.match()`. To remove in 6.0.0
+ * @deprecated not longer used in v6.0.0, replaced by `NumberMatcher.match()`. To remove in v8.0.0
  * @see src/util/numberOptionsUtil.ts#NumberMatcher.match
  */
 /* v8 ignore next */
@@ -139,14 +139,14 @@ export const compareTextOrArray = (
 
     /**
      * @deprecated path
-     * Since the strict-index based matching, comparing array is deprecated and will be removed in v10.0.0.
+     * Since the strict-index based matching, comparing array is deprecated and will be removed in v8.0.0.
      * Instead the `expect.oneOf()` asymmetric matcher should be used to compare against multiple expected values.
      */
     if (Array.isArray(expectedTexts)) {
         if (expectedTexts.some((expected): expected is OneOfMatcher => expected instanceof OneOfMatcher)) {
             throw new Error('OneOf is not supported in array under legacy behavior. Please enable `useToHaveTextStrictMultiElementsCompareStrategy` feature flag to use the new strict index based matching strategy with `expect.oneOf()`.')
         } else {
-            console.warn('Array of expected values is deprecated. Please use `expect.oneOf()` asymmetric matcher to compare against multiple expected values. This will be removed in v10.0.0.')
+            console.warn('Array of expected values is deprecated. Please use `expect.oneOf()` asymmetric matcher to compare against multiple expected values. This will be removed in v8.0.0.')
             // TODO one day consolidate typing and internal of oneOf so we do not need the below casting!
             expectedTexts = new OneOfMatcher(...expectedTexts as Array<string | RegExp | AsymmetricMatcher<string>>).withOptions(options)
         }
