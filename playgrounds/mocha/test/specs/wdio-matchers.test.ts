@@ -22,6 +22,16 @@ describe('WebdriverIO Custom Matchers', () => {
         it('should verify URL contains path', async () => {
             await expect(browser).toHaveUrl(expect.stringContaining('webdriver.io'))
         })
+
+        it('should verify not localStorage item', async () => {
+            await expect(browser).not.toHaveLocalStorageItem('key', 'value')
+        })
+
+        it('should verify not localStorage item with options', async () => {
+            await expect(browser).not.toHaveLocalStorageItem('key', expect.anything(), { wait: 0 })
+            await expect(browser).not.toHaveLocalStorageItem('key', undefined, { wait: 0 })
+            await expect(browser).not.toHaveLocalStorageItem('key', undefined)
+        })
     })
 
     describe('Element existence matchers', () => {

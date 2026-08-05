@@ -108,21 +108,24 @@ export async function toHaveAttribute(
     const matcherName = 'toHaveAttribute'
     const paramsCount = arguments.length
 
-    if (value === undefined) {
-        if (paramsCount > 2) {
-            // User have passed an explicit undefined or null value, which is deprecated. We will log a warning to inform the user about this deprecation.
-            console.warn('Using undefined or null as value for toHaveAttribute is deprecated and will be removed in v6.0.0. Please omit the third argument entirely or use toHaveAttribute(el, attribute, wdioExpect.anything(), options).')
-        }
-        value = wdioExpect.anything()
-    }
-
     await options.beforeAssertion?.({
         matcherName,
         expectedValue: [attribute, value],
         options,
     })
 
-    const result = await toHaveAttributeAndValue.call(this, received, attribute, value, options)
+    let expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>
+    if (value === undefined) {
+        if (paramsCount > 2) {
+            // User have passed an explicit undefined or null value, which is deprecated. We will log a warning to inform the user about this deprecation.
+            console.warn('Using undefined or null as value for toHaveAttribute is deprecated and will be removed in v6.0.0. Please omit the third argument entirely or use toHaveAttribute(el, attribute, wdioExpect.anything(), options).')
+        }
+        expectedValue = wdioExpect.anything()
+    } else {
+        expectedValue = value
+    }
+
+    const result = await toHaveAttributeAndValue.call(this, received, attribute, expectedValue, options)
 
     await options.afterAssertion?.({
         matcherName,

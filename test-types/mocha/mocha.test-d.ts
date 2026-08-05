@@ -68,6 +68,28 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(true).toHaveClipboardText).toBeNever()
             })
         })
+
+        describe('toHaveLocalStorageItem', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', 'value')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveLocalStorageItem('key', 'value')).toEqualTypeOf<Promise<void>>()
+                // Asymmetric matchers
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', expect.stringContaining('value'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', expect.any(String))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', expect.anything())).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should have ts errors when actual is not a Browser element', async () => {
+                expectTypeOf(expect(element).toHaveLocalStorageItem).toBeNever()
+                expectTypeOf(expect(true).toHaveLocalStorageItem).toBeNever()
+            })
+
+            it('should have deprecated when expected value is undefined', async () => {
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', undefined)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', undefined, { wait: 0 })).toEqualTypeOf<Promise<void>>()
+            })
+        })
     })
 
     describe('element or elements', () => {
