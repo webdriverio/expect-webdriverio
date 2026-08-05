@@ -16,7 +16,7 @@ export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected
     return isAsymmetricMatcher(expected) && !('toAsymmetricMatcher' in expected) && 'jasmineToString' in expected && typeof expected.jasmineToString === 'function'
 }
 
-export function isAsymmetricMatcher<T>(expected: unknown): expected is WdioAsymmetricMatcher<T> | JasmineAsymmetricMatcher<T> {
+export function isAsymmetricMatcher<T>(expected: unknown): expected is WdioAsymmetricMatcher<T> | JasmineAsymmetricMatcher<T> | ExpectWebdriverIO.PartialMatcherAnything {
     return (
         typeof expected === 'object' &&
         !!expected &&
@@ -50,7 +50,7 @@ export function getStringAsymmetricMatcherValue(
 }
 
 export function getAsymmetricMatcherValue<T>(
-    expected: AsymmetricMatcher<T>
+    expected: AsymmetricMatcher<T> | ExpectWebdriverIO.PartialMatcherAnything | JasmineAsymmetricMatcher<T>
 ): string | RegExp | T | undefined {
     if ('expected' in expected) {
         return expected.expected // Jasmine string containing asymmetric matcher
@@ -133,8 +133,6 @@ export const compareTextOrArray = (
     expectedTexts: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): CompareResult<string> => {
-    const unchangedActualText = actualText
-
     if (expectedTexts === undefined) {
         return { actual: actualText, success: false }
     }
@@ -155,20 +153,20 @@ export const compareTextOrArray = (
     }
 
     if (expectedTexts instanceof OneOfMatcher) {
-        return { success: expectedTexts.asymmetricMatch(actualText), actual: unchangedActualText }
+        return { success: expectedTexts.asymmetricMatch(actualText), actual: actualText }
     }
 
     // TODO one day consolidate typing and internal of oneOf so we do not need the below casting!
     const compareResults = compareText(actualText, expectedTexts as string | RegExp, options)
 
-    return { success: compareResults.success, actual: unchangedActualText }
+    return { success: compareResults.success, actual: actualText }
 
 }
 
 // TODO one day turn this into at least a asymetrics class to better report in failure messages the string case we are in (containing, atStart, atEnd, atIndex, etc) and the expected value(s)
 export const compareText = (
     actual: string,
-    expected: string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | null | undefined,
+    expected: string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null | undefined,
     {
         ignoreCase = false,
         trim = true,

@@ -1,12 +1,30 @@
 import { waitUntil, enhanceError, compareText } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import { expect } from '../../index.js'
+
+/**
+ * @deprecated use expect.anything() instead of undefined as expected value
+ */
+export async function toHaveLocalStorageItem(
+    browser: WebdriverIO.Browser,
+    key: string,
+    expectedValue: undefined,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveLocalStorageItem(
     browser: WebdriverIO.Browser,
     key: string,
-    expectedValue?: string | RegExp | AsymmetricMatcher<string>,
+    expectedValue?: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveLocalStorageItem(
+    browser: WebdriverIO.Browser,
+    key: string,
+    expectedValue?: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
+): Promise<ExpectWebdriverIO.AssertionResult> {
     const { expectation = 'localStorage item', verb = 'have', isNot, matcherName = 'toHaveLocalStorageItem' } = this
 
     await options.beforeAssertion?.({
@@ -14,16 +32,19 @@ export async function toHaveLocalStorageItem(
         expectedValue: expectedValue ? [key, expectedValue] : key,
         options,
     })
+
+    if (expectedValue === undefined ) {
+        console.warn('[DEPRECATION] Using toHaveLocalStorageItem with undefined is deprecated in favor of expect.anything().')
+        expectedValue = expect.anything()
+    }
+
     const { actual, success: pass } = await waitUntil(
         async () => {
             const actual = await browser.execute(
                 (storageKey) => {
                     return localStorage.getItem(storageKey)
                 }, key)
-            // if no expected value is provided, we just check if the item exists
-            if (expectedValue === undefined) {
-                return { actual, success: actual !== null, subject: browser }
-            }
+
             // no localStorage item found
             if (actual === null) {
                 return { actual, success: false, subject: browser }

@@ -122,11 +122,23 @@ interface WdioBrowserMatchers<_R, ActualT>{
     /**
      * `WebdriverIO.Browser` -> `execute`
      */
-    toHaveLocalStorageItem: FnWhenBrowser<ActualT, (
-        key: string,
-        expectedValue?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-        options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<void>>
+    toHaveLocalStorageItem: FnWhenBrowser<ActualT, {
+        /**
+         * @deprecated since v6.0.0, removed in v10.0.0. Use `expect.anything()` instead of `undefined` as expected value.
+         */
+        (
+            key: string,
+            expectedValue: undefined,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>,
+
+        (
+            key: string,
+            expectedValue?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
+            options?: ExpectWebdriverIO.StringOptions
+        ) : Promise<void>
+    }
+    >
 }
 
 /**
