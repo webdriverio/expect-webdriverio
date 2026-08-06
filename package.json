@@ -61,7 +61,6 @@
     "tsc:root-types": "node types-checks-filter-out-node_modules.js",
     "test": "run-s test:*",
     "test:tsc": "tsc --project tsconfig.json --noEmit --rootDir .",
-    "test:lint": "eslint .",
     "test:unit": "vitest --run",
     "test:types": "npm run ts && npm run tsc:root-types",
     "ts": "run-s ts:* ts:*:*",
@@ -78,6 +77,8 @@
   },
   "dependencies": {
     "@vitest/snapshot": "^4.1.10",
+    "@wdio/mocha-framework": "file:.yalc/@wdio/mocha-framework",
+    "@wdio/utils": "file:.yalc/@wdio/utils",
     "deep-eql": "^5.0.2",
     "expect": "^30.4.1",
     "jest-matcher-utils": "^30.4.1"
@@ -92,7 +93,7 @@
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/eslint-plugin": "^1.6.26",
     "@wdio/eslint": "^0.1.3",
-    "@wdio/types": "^9.30.1",
+    "@wdio/types": "file:.yalc/@wdio/types",
     "eslint": "^9.39.5",
     "husky": "^9.1.7",
     "npm-run-all2": "^9.0.3",
@@ -101,7 +102,7 @@
     "strip-ansi": "^7.2.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.10",
-    "webdriverio": "^9.30.1"
+    "webdriverio": "file:.yalc/webdriverio"
   },
   "peerDependencies": {
     "@wdio/globals": "^9.0.0",

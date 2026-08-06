@@ -215,3 +215,26 @@ export const browserFactory = (elementArrayLength = 2): WebdriverIO.Browser => {
 }
 
 export const browser = browserFactory()
+
+export const multiRemoteBrowserFactory = (): WebdriverIO.MultiRemoteBrowser => {
+    const chromeBrowser = browserFactory()
+    const firefoxBrowser = browserFactory()
+    const multiRemoteBrowser = {
+        'chrome': chromeBrowser,
+        'firefox': firefoxBrowser,
+        select: vi.fn(),
+    } satisfies Partial<WebdriverIO.MultiRemoteBrowser & { 'chrome': WebdriverIO.Browser, 'firefox': WebdriverIO.Browser }> as unknown as WebdriverIO.MultiRemoteBrowser
+
+    vi.mocked(multiRemoteBrowser.select).mockImplementation((instanceNames: string[]) => {
+        const selectedBrowsers: Record<string, WebdriverIO.Browser> = {}
+        for (const name of instanceNames) {
+            selectedBrowsers[name] = multiRemoteBrowser[name as keyof WebdriverIO.MultiRemoteBrowser] as WebdriverIO.Browser
+        }
+        // TODO dpreovst to review
+        return selectedBrowsers as unknown as WebdriverIO.MultiRemoteBrowser
+    })
+
+    return multiRemoteBrowser
+}
+
+export const multiRemoteBrowser = multiRemoteBrowserFactory()

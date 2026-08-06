@@ -1,0 +1,23 @@
+{
+  "version": "v1",
+  "packages": {
+    "webdriverio": {
+      "signature": "f8dfce0f0b5770fbcf87d26a3f1684c1",
+      "file": true,
+      "replaced": "^9.30.1"
+    },
+    "@wdio/mocha-framework": {
+      "signature": "f5e7cba226f4b49b46c10b249e62cdce",
+      "file": true
+    },
+    "@wdio/types": {
+      "signature": "50e851f7bb48646e024ff160043f8831",
+      "file": true,
+      "replaced": "^9.30.1"
+    },
+    "@wdio/utils": {
+      "signature": "2fa15bacae2cd25f856ed89be0da51a3",
+      "file": true
+    }
+  }
+}
