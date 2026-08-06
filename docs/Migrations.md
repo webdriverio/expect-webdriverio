@@ -43,7 +43,7 @@ This document covers all deprecations (no breakings) introduced in **v6.0.0** th
 
 ### `toHaveAttr` → `toHaveAttribute`
 
-**Deprecated since:** v6.0.0 | **Removed in:** v8.0.0
+**Deprecated since:** v5.7.0 | **Removed in:** v8.0.0
 
 ```diff
 - await expect(el).toHaveAttr('class', 'active')
@@ -122,7 +122,7 @@ This document covers all deprecations (no breakings) introduced in **v6.0.0** th
 
 ```diff
 - await expect($$('.item')).toBeElementsArrayOfSize({ gte: 2, wait: 0 })
-+ await expect($$('.item')).toBeElementsArrayOfSize({ gte: 2 }, { wait: 0 }))
++ await expect($$('.item')).toBeElementsArrayOfSize({ gte: 2 }, { wait: 0 })
 ```
 
 ---
@@ -164,7 +164,7 @@ This document covers all deprecations (no breakings) introduced in **v6.0.0** th
 + await expect(el).toHaveText(expect.oneOf('foo', 'bar'))
 ```
 
-> **Note:** Requires the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag enabled for `expect.oneOf()` to work correctly.
+> **Note:** The `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is required when using `expect.oneOf()` inside an expected array for strict index-based multi-element comparison.
 
 ---
 
