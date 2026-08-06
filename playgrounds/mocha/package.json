@@ -13,8 +13,7 @@
   },
   "devDependencies": {
     "@wdio/mocha-framework": "^9.30.1",
-    "eslint-plugin-mocha": "^11.3.0",
-    "expect-webdriverio": "file:../.."
+    "eslint-plugin-mocha": "^11.3.0"
   },
   "peerDependencies": {
     "@wdio/cli": "*",
