@@ -1,8 +1,5 @@
 
 import os from 'node:os'
-// import path from 'node:path'
-// import { loadEnv } from 'vite'
-import { setDefaultOptions, setFeatureFlags, setOptions } from 'expect-webdriverio'
 
 const isMac = os.platform() === 'darwin' && process.env.CI
 
@@ -92,10 +89,10 @@ export const config: WebdriverIO.Config = {
     // =====
     //
     before: () => {
-        setOptions({ wait: 250 })
-        setDefaultOptions({ wait: 250 })
-        setFeatureFlags({})
-
+        // Fail on loading expect-webdriverio
+        // setOptions({ wait: 250 })
+        // setDefaultOptions({ wait: 250 })
+        // setFeatureFlags({})
         /**
          * only run this test in lit
          */
