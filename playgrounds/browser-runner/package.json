@@ -1,0 +1,28 @@
+{
+  "name": "expect-wdio-playground-browser-runner",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Playground project for testing expect-webdriverio",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "wdio run wdio.conf.ts",
+    "lint": "eslint .",
+    "checks:all": "npm run typecheck && npm run lint && npm test",
+    "snapshots:update": "npm run test -- --spec snapshot.test.ts --updateSnapshots && npm run test -- --spec visual-snapshot.test.ts --update-visual-baseline"
+  },
+  "devDependencies": {
+    "vite": "^5.4.21",
+    "@testing-library/vue": "^8.1.0",
+    "@vue/test-utils": "^2.4.11",
+    "eslint-plugin-mocha": "^11.3.0",
+    "@wdio/browser-runner": "^9.30.1",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "expect": "^30.4.1"
+  },
+  "overrides": {
+    "expect": {
+      "version": "^30.4.1"
+    }
+  }
+}
