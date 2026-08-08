@@ -26,10 +26,25 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
+    "eslint-plugin-wdio": {
+      "expect-webdriverio": "$expect-webdriverio"
+    },
+    "@wdio/browser-runner": {
+      "expect-webdriverio": "$expect-webdriverio"
+    },
     "@wdio/globals": {
       "expect-webdriverio": "$expect-webdriverio"
     },
+    "@wdio/wdio-jasmine-framework": {
+      "expect-webdriverio": "$expect-webdriverio"
+    },
+    "@wdio/local-runner": {
+      "expect-webdriverio": "$expect-webdriverio"
+    },
     "@wdio/runner": {
+      "expect-webdriverio": "$expect-webdriverio"
+    },
+    "@wdio/mocha-framework": {
       "expect-webdriverio": "$expect-webdriverio"
     }
   }
