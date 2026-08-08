@@ -53,6 +53,7 @@
   },
   "scripts": {
     "build": "run-s clean compile",
+    "clean-node-modules": "rimraf --glob '**/node_modules' 'node_modules'",
     "clean": "run-p clean:*",
     "clean:build": "rimraf ./lib",
     "compile": "run-s compile:*",

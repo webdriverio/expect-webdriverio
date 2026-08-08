@@ -46,6 +46,9 @@
     },
     "@wdio/mocha-framework": {
       "expect-webdriverio": "$expect-webdriverio"
+    },
+    "expect": {
+      "version": "^30.4.1"
     }
   }
 }
