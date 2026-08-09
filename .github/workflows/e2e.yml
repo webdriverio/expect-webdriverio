@@ -1,9 +1,9 @@
-name: E2e Test
+name: E2e Tests
 
 on:
   push:
     branches:
-      - develop
+      - main
   workflow_dispatch: # Allows manual trigger from the GitHub UI or CLI
 
 jobs:
