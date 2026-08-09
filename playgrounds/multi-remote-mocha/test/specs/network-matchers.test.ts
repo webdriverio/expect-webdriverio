@@ -5,7 +5,7 @@ describe('Network Matchers', () => {
 
     before(async function() {
         if(process.env.CI) {
-            this.timeout(60000)
+            this.timeout(120000)
         }
 
         mocks = await multiRemoteBrowser.mock('https://webdriver.io/api/foo', {
