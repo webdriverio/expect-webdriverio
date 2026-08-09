@@ -44,7 +44,7 @@ jobs:
         if: matrix.workspace == 'mocha'
         run: npm run playgrounds:snapshots:update
 
-      - name: Run Workspace Tests (${{ matrix.workspace }})
+      - name: Run ${{ matrix.workspace }} E2e Tests
         run: npm --workspace=${{ matrix.workspace }} test
         working-directory: playgrounds
 
@@ -52,9 +52,6 @@ jobs:
   playgrounds-e2e-tests-multi-remote:
     needs: playgrounds-tsc-and-lint
     runs-on: macos-latest
-    strategy:
-      matrix:
-        workspace: [multi-remote-mocha]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -64,6 +61,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci && npm ci --prefix playgrounds
 
-      - name: Run Workspace Tests (${{ matrix.workspace }})
-        run: npm --workspace=${{ matrix.workspace }} test
+      - name: Run multi-remote-mocha E2e Tests
+        run: npm --workspace=multi-remote-mocha test
         working-directory: playgrounds

@@ -48,18 +48,19 @@ export const config: WebdriverIO.MultiremoteConfig = {
                     }
                 }
             },
-            chromium: {
-                capabilities: {
-                    browserName: 'chromium',
-                    'goog:chromeOptions': {
-                        args: [
-                            'headless','disable-gpu',
-                            ...(isLinux ? ['no-sandbox'] : [])
-                        ]
-
+            ...(process.env.CI ? [] : [{
+                chromium: {
+                    capabilities: {
+                        browserName: 'chromium',
+                        'goog:chromeOptions': {
+                            args: [
+                                'headless','disable-gpu',
+                                ...(isLinux ? ['no-sandbox'] : [])
+                            ]
+                        }
                     }
                 }
-            },
+            }])
         }],
 
     //
