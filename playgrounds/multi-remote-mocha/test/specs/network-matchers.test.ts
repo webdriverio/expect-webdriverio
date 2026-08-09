@@ -1,6 +1,11 @@
 import { multiRemoteBrowser } from '@wdio/globals'
 
-describe('Network Matchers', () => {
+// TODO multie-remote network failure as below, issue entered already in wdio
+// Error: Timeout
+// at listOnTimeout (node:internal/timers:605:17)
+// at process.processTimers (node:internal/timers:541:7)
+// See https://github.com/webdriverio/webdriverio/issues/15465
+describe.skip('Network Matchers', () => {
     let mocks: WebdriverIO.Mock[]
 
     before(async () => {
