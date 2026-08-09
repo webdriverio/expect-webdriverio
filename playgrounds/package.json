@@ -11,7 +11,7 @@
     "typecheck": "npm exec --workspaces --call 'npm run typecheck'",
     "test": "npm exec --workspaces --call 'npm run test'",
     "lint": "npm exec --workspaces --call 'npm run lint'",
-    "checks:all": "npm run typecheck && npm run lint && npm test",
+    "checks:all": "npm run typecheck && npm run lint && npm --workspace=multi-remote-mocha test",
     "snapshots:update": "npm exec --workspace=mocha --call 'npm run snapshots:update'"
   },
   "devDependencies": {
