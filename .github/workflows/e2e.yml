@@ -12,8 +12,8 @@ jobs:
   playgrounds-tsc-and-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22.x
 
@@ -32,8 +32,8 @@ jobs:
       matrix:
         workspace: [jasmine, jest, mocha]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22.x
 
@@ -52,8 +52,8 @@ jobs:
       matrix:
         workspace: [multi-remote-mocha]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22.x
 
