@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+  workflow_dispatch: # Allows manual trigger from the GitHub UI or CLI
 
 jobs:
   linux:
