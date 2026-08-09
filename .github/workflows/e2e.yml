@@ -16,5 +16,7 @@ jobs:
           node-version: 22.x
       - name: Install Dependencies
         run: npm ci && npm ci --prefix playgrounds
+      - name: Ensure Snapshots
+        run: npm run playgrounds:snapshots:update
       - name: Run All Checks
         run: npm run playgrounds:checks:all
