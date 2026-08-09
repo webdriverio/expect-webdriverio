@@ -1,5 +1,8 @@
 
 import { setDefaultOptions, setFeatureFlags } from 'expect-webdriverio'
+import os from 'os'
+
+const isLinux = os.platform() === 'linux'
 
 export const config: WebdriverIO.MultiremoteConfig = {
     //
@@ -41,7 +44,7 @@ export const config: WebdriverIO.MultiremoteConfig = {
                 capabilities: {
                     browserName: 'firefox',
                     'moz:firefoxOptions': {
-                        args: ['-headless']
+                        args: ['-headless', 'disable-gpu']
                     }
                 }
             },
@@ -49,7 +52,11 @@ export const config: WebdriverIO.MultiremoteConfig = {
                 capabilities: {
                     browserName: 'chromium',
                     'goog:chromeOptions': {
-                        args: ['headless','disable-gpu']
+                        args: [
+                            'headless','disable-gpu',
+                            ...(isLinux ? ['no-sandbox'] : [])
+                        ]
+
                     }
                 }
             },
