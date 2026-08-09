@@ -26,7 +26,7 @@ export const config: WebdriverIO.Config = {
         //'./test/specs/**/wdio-matchers.test.ts'
         //'./test/specs/**/network-matchers.test.ts'
     ],
-    exclude: process.env.CI ? [] : ['./test/specs/*snapshot.test.ts'],
+    exclude: process.env.CI ? [] : ['./test/specs/snapshot.test.ts', './test/specs/visual-snapshot.test.ts'],
 
     //
     // ============
