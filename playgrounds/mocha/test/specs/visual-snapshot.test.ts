@@ -30,13 +30,14 @@ describe('Visual Snapshot Testing', () => {
 
         it('should match element visual snapshot with mismatch percentage', async () => {
             const heading = await $('h1')
-            // Allow up to 5% mismatch
+
             await expect(heading).toMatchElementSnapshot('mainHeading', 5)
         })
     })
 
     describe('Screen Visual Snapshots', () => {
-        it('should match screen visual snapshot', async () => {
+
+        it('should match screen visual snapshot', async function () {
             await expect(browser).toMatchScreenSnapshot('gettingStartedPage')
         })
 
@@ -52,12 +53,12 @@ describe('Visual Snapshot Testing', () => {
         })
 
         it('should match screen snapshot with mismatch percentage', async () => {
-            // Allow up to 2% mismatch
             await expect(browser).toMatchScreenSnapshot('dynamicContent', 2)
         })
     })
 
     describe('Full Page Visual Snapshots', () => {
+
         it('should match full page visual snapshot', async () => {
             await expect(browser).toMatchFullPageSnapshot('fullPage', 0.3)
         })

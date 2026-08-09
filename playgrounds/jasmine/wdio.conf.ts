@@ -8,7 +8,7 @@ export const config: WebdriverIO.Config = {
     // ====================
     //
     runner: 'local',
-    bail: 1,
+    bail: process.env.CI ? 0 : 1,
 
     //
     // ==================
@@ -57,7 +57,7 @@ export const config: WebdriverIO.Config = {
     reporters: ['spec'],
     jasmineOpts: {
         defaultTimeoutInterval: 60000,
-        cleanStack: false,
+        cleanStack: false
     },
 
     //
@@ -69,4 +69,11 @@ export const config: WebdriverIO.Config = {
     before: function (_capabilities, _specs) {
         setOptions({ wait: 500 })
     },
+    afterTest: function (_test, _context, { error }) {
+        if (error) {
+        console.log('\n--- FULL STACK TRACE ---')
+        console.log(error.stack)
+        console.log('------------------------\n')
+        }
+    }
 }

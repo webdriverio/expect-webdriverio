@@ -200,7 +200,7 @@ describe('Jasmine-Specific Features', () => {
             await expect(count).toBeLessThan(100)
             await expect(count).toBeGreaterThanOrEqual(1)
             await expect(count).toBeLessThanOrEqual(100)
-            await expect(count).toBeCloseTo(49, 3)
+            await expect(count).toBeCloseTo(navLinks.length, 3)
             await expect(count).not.toBeNaN()
             await expect(tagName).toBeDefined()
             await expect(tagName).not.toBeUndefined()

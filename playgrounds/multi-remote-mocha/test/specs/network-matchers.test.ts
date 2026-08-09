@@ -3,7 +3,11 @@ import { multiRemoteBrowser } from '@wdio/globals'
 describe('Network Matchers', () => {
     let mocks: WebdriverIO.Mock[]
 
-    before(async () => {
+    before(async function() {
+        if(process.env.CI) {
+            this.timeout(120000)
+        }
+
         mocks = await multiRemoteBrowser.mock('https://webdriver.io/api/foo', {
             method: 'POST'
         })

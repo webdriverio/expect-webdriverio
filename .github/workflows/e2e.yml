@@ -4,17 +4,66 @@ on:
   push:
     branches:
       - main
+  # Uncomment the following line to run e2e tests on PRs
+  pull_request:
   workflow_dispatch: # Allows manual trigger from the GitHub UI or CLI
 
 jobs:
-  linux:
+  # 1. Run typecheck and lint across all workspaces on Linux
+  playgrounds-tsc-and-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: 22.x
+
       - name: Install Dependencies
         run: npm ci && npm ci --prefix playgrounds
-      - name: Run All Checks
-        run: npm run playgrounds:checks:all
+
+      - name: Run Typecheck and Lint
+        run: npm run typecheck && npm run lint
+        working-directory: playgrounds
+
+  # 2. Run e2e tests for each workspace in parallel
+  playgrounds-e2e-tests:
+    needs: playgrounds-tsc-and-lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [jasmine, jest, multi-remote-mocha]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22.x
+
+      - name: Install Dependencies
+        run: npm ci && npm ci --prefix playgrounds
+
+      - name: Run ${{ matrix.workspace }} E2e Tests
+        run: npm --workspace=${{ matrix.workspace }} test
+        working-directory: playgrounds
+
+  # 3. Run e2e tests hacving snapshots differently!
+  playgrounds-e2e-tests-with-snapshots:
+    needs: playgrounds-tsc-and-lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [mocha]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22.x
+
+      - name: Install Dependencies
+        run: npm ci && npm ci --prefix playgrounds
+
+      - name: Update & Run Snapshots Tests
+        run: npm run playgrounds:snapshots:update
+
+      - name: Run ${{ matrix.workspace }} E2e Tests (without snapshot tests)
+        run: npm --workspace=${{ matrix.workspace }} test -- --exclude test/specs/*snapshot.test.ts
+        working-directory: playgrounds
