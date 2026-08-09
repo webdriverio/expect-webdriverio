@@ -8,7 +8,7 @@ export const config: WebdriverIO.MultiremoteConfig = {
     // ====================
     //
     runner: 'local',
-    bail: 1,
+    bail: process.env.CI ? 0 : 1,
 
     //
     // ==================
