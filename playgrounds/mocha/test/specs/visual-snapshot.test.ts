@@ -1,5 +1,3 @@
-const isCI = process.env.CI
-
 describe('Visual Snapshot Testing', () => {
     beforeEach(async () => {
         await browser.url('https://webdriver.io/docs/gettingstarted')
@@ -40,9 +38,6 @@ describe('Visual Snapshot Testing', () => {
     describe('Screen Visual Snapshots', () => {
 
         it('should match screen visual snapshot', async function () {
-             // Too much failures on CI, to fix one day
-            if (isCI) this.skip();
-
             await expect(browser).toMatchScreenSnapshot('gettingStartedPage')
         })
 
@@ -65,11 +60,11 @@ describe('Visual Snapshot Testing', () => {
     describe('Full Page Visual Snapshots', () => {
 
         it('should match full page visual snapshot', async () => {
-            await expect(browser).toMatchFullPageSnapshot('fullPage', isCI ? 30 : 0.3)
+            await expect(browser).toMatchFullPageSnapshot('fullPage', 0.3)
         })
 
         it('should match full page snapshot with zero mismatch', async () => {
-            await expect(browser).toMatchFullPageSnapshot('fullPageExact', isCI ? 30 : 0.3)
+            await expect(browser).toMatchFullPageSnapshot('fullPageExact', 0.3)
         })
 
         // Skipping flaky test
