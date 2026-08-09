@@ -56,7 +56,8 @@ export const config: WebdriverIO.Config = {
     framework: 'jasmine',
     reporters: ['spec'],
     jasmineOpts: {
-        defaultTimeoutInterval: 60000
+        defaultTimeoutInterval: 60000,
+        cleanStack: false,
     },
 
     //
