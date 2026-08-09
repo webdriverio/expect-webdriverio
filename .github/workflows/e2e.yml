@@ -20,4 +20,4 @@ jobs:
       - name: Ensure Snapshots
         run: npm run playgrounds:snapshots:update
       - name: Run All Checks
-        run: npm run playgrounds:checks:all
+        run: npm run playgrounds:ci:checks:all
