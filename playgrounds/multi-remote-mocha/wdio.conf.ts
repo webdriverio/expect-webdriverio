@@ -32,7 +32,6 @@ export const config: WebdriverIO.MultiremoteConfig = {
             chrome: {
                 capabilities: {
                     browserName: 'chrome',
-                    browserVersion: 'stable',
                     'goog:chromeOptions': {
                         args: ['headless', 'disable-gpu']
                     }
@@ -41,7 +40,6 @@ export const config: WebdriverIO.MultiremoteConfig = {
             firefox: {
                 capabilities: {
                     browserName: 'firefox',
-                    browserVersion: 'stable',
                     'moz:firefoxOptions': {
                         args: ['-headless']
                     }
@@ -50,7 +48,6 @@ export const config: WebdriverIO.MultiremoteConfig = {
             chromium: {
                 capabilities: {
                     browserName: 'chromium',
-                    browserVersion: 'latest',
                     'goog:chromeOptions': {
                         args: ['headless','disable-gpu']
                     }
