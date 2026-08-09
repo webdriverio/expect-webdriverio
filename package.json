@@ -72,7 +72,7 @@
     "checks:all": "npm run build && npm run compile && npm run tsc:root-types && npm run test && npm run ts",
     "watch": "npm run compile -- --watch",
     "prepare": "husky",
-    "playgrounds:clean": "rimraf --glob '**/node_modules' '/node_modules'",
+    "playgrounds:clean": "rimraf --glob '**/node_modules'",
     "playgrounds:setup": "npm run playgrounds:clean; npm i && cd playgrounds && npm run setup",
     "playgrounds:checks:all": "cd playgrounds && npm run checks:all",
     "playgrounds:snapshots:update": "cd playgrounds && npm run snapshots:update"
