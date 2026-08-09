@@ -8,6 +8,8 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('Browser matchers', () => {
         it('should verify browser title', async () => {
+            const title = await browser.getTitle()
+            console.log('Browser title:', title)
             await expect(browser).toHaveTitle('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js | WebdriverIO')
         })
 
