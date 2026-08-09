@@ -41,12 +41,12 @@ jobs:
       - name: Install Dependencies
         run: npm ci && npm ci --prefix playgrounds
 
-      - name: Ensure Mocha Snapshots are up to date
+      - name: Update & Run Snapshots Tests
         if: matrix.workspace == 'mocha'
         run: npm run playgrounds:snapshots:update
 
-      - name: Run ${{ matrix.workspace }} E2e Tests
-        run: npm --workspace=${{ matrix.workspace }} test
+      - name: Run ${{ matrix.workspace }} E2e Tests (without snapshot tests)
+        run: npm --workspace=${{ matrix.workspace }} test -- --exclude test/specs/*snapshot.test.ts
         working-directory: playgrounds
 
   # 3. Run multi-remote on macos since linux has a hard time
