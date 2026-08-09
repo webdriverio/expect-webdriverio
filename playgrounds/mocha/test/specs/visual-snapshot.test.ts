@@ -37,10 +37,10 @@ describe('Visual Snapshot Testing', () => {
 
     describe('Screen Visual Snapshots', () => {
         before(function () {
-            // Too much failures on CI, to fix one day
-            if (process.env.CI) {
-                this.skip();
-            }
+            // // Too much failures on CI, to fix one day
+            // if (process.env.CI) {
+            //     this.skip();
+            // }
         });
 
 
