@@ -75,7 +75,6 @@
     "playgrounds:clean": "rimraf --glob '**/node_modules'",
     "playgrounds:setup": "npm run playgrounds:clean; npm i && cd playgrounds && npm run setup",
     "playgrounds:checks:all": "cd playgrounds && npm run checks:all",
-    "playgrounds:ci:checks:all": "cd playgrounds && npm run ci:checks:all",
     "playgrounds:snapshots:update": "cd playgrounds && npm run snapshots:update"
   },
   "dependencies": {
