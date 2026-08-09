@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  # Uncomment the following line to run e2e tests on PRs
   pull_request:
   workflow_dispatch: # Allows manual trigger from the GitHub UI or CLI
 
@@ -30,7 +31,27 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        workspace: [jasmine, jest, mocha]
+        workspace: [jasmine, jest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22.x
+
+      - name: Install Dependencies
+        run: npm ci && npm ci --prefix playgrounds
+
+      - name: Run ${{ matrix.workspace }} E2e Tests
+        run: npm --workspace=${{ matrix.workspace }} test
+        working-directory: playgrounds
+
+  # 3. Run e2e tests hacving snapshots differently!
+  playgrounds-e2e-tests-with-snapshots:
+    needs: playgrounds-tsc-and-lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [mocha]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -41,7 +62,6 @@ jobs:
         run: npm ci && npm ci --prefix playgrounds
 
       - name: Update & Run Snapshots Tests
-        if: matrix.workspace == 'mocha'
         run: npm run playgrounds:snapshots:update
 
       - name: Run ${{ matrix.workspace }} E2e Tests (without snapshot tests)
@@ -51,7 +71,7 @@ jobs:
   # 3. Run multi-remote on macos since linux has a hard time
   playgrounds-e2e-tests-multi-remote:
     needs: playgrounds-tsc-and-lint
-    runs-on: macos-latest
+    runs-on: linux-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
