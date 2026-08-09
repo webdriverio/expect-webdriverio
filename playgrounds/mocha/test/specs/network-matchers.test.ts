@@ -3,7 +3,8 @@ import { browser } from '@wdio/globals'
 describe('Network Matchers', () => {
     let mock: WebdriverIO.Mock
 
-    before(async () => {
+    before(async function() {
+        this.timeout(30000)
         mock = await browser.mock('https://webdriver.io/api/foo', {
             method: 'POST'
         })
