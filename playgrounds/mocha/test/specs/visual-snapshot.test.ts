@@ -36,13 +36,6 @@ describe('Visual Snapshot Testing', () => {
     })
 
     describe('Screen Visual Snapshots', () => {
-        before(function () {
-            // // Too much failures on CI, to fix one day
-            // if (process.env.CI) {
-            //     this.skip();
-            // }
-        });
-
 
         it('should match screen visual snapshot', async () => {
             await expect(browser).toMatchScreenSnapshot('gettingStartedPage')
@@ -66,12 +59,6 @@ describe('Visual Snapshot Testing', () => {
     })
 
     describe('Full Page Visual Snapshots', () => {
-        before(function () {
-            // Too much failures on CI, to fix one day
-            if (process.env.CI) {
-                this.skip();
-            }
-        });
 
         it('should match full page visual snapshot', async () => {
             await expect(browser).toMatchFullPageSnapshot('fullPage', 0.3)
