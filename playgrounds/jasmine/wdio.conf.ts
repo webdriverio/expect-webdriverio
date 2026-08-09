@@ -44,7 +44,7 @@ export const config: WebdriverIO.Config = {
     // Test Configurations
     // ===================
     //
-    logLevel: 'debug',
+    logLevel: 'info',
     baseUrl: 'http://localhost',
     waitforTimeout: 10000,
     connectionRetryTimeout: 120000,
