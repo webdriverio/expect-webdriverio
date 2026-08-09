@@ -4,7 +4,10 @@ describe('Network Matchers', () => {
     let mock: WebdriverIO.Mock
 
     before(async function() {
-        this.timeout(30000)
+        if(process.env.CI) {
+            this.timeout(60000)
+        }
+
         mock = await browser.mock('https://webdriver.io/api/foo', {
             method: 'POST'
         })
