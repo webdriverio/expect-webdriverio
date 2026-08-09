@@ -70,14 +70,14 @@ describe('Basic Expect Matchers', () => {
             const element = await multiRemoteBrowser.$('.navbar')
             const isDisplayed = await element.isDisplayed()
 
-            expect(isDisplayed).toEqual([true, true, true])
+            expect(isDisplayed).toEqual([true, true])
         })
 
         it('should verify falsy values', async () => {
             const element = await multiRemoteBrowser.$('.non-existent-element')
             const exists = await element.isExisting()
 
-            expect(exists).toEqual([false, false, false])
+            expect(exists).toEqual([false, false])
         })
     })
 
@@ -87,7 +87,6 @@ describe('Basic Expect Matchers', () => {
 
             expect(title).toEqual([
                 expect.stringContaining('WebdriverIO'),
-                expect.stringContaining('WebdriverIO'),
                 expect.stringContaining('WebdriverIO')
             ])
         })
@@ -95,7 +94,6 @@ describe('Basic Expect Matchers', () => {
         it('should match with regex', async () => {
             const url = await multiRemoteBrowser.getUrl()
             expect(url).toEqual([
-                expect.stringMatching(/^https:\/\/webdriver\.io/),
                 expect.stringMatching(/^https:\/\/webdriver\.io/),
                 expect.stringMatching(/^https:\/\/webdriver\.io/)
             ])

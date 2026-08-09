@@ -24,7 +24,7 @@ jobs:
         run: npm run typecheck && npm run lint
         working-directory: playgrounds
 
-  # 2. Run multi-remote tests for each workspace in parallel
+  # 2. Run e2e tests for each workspace in parallel
   playgrounds-e2e-tests:
     needs: playgrounds-tsc-and-lint
     runs-on: ubuntu-latest
