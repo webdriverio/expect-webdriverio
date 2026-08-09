@@ -1,8 +1,5 @@
 
 import { setDefaultOptions, setFeatureFlags } from 'expect-webdriverio'
-import os from 'os'
-
-const isLinux = os.platform() === 'linux'
 
 export const config: WebdriverIO.MultiremoteConfig = {
     //
