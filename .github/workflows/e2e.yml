@@ -1,0 +1,19 @@
+name: E2e Test
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22.x
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run All Checks
+        run: npm run playgrounds:checks:all
