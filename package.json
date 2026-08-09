@@ -72,7 +72,8 @@
     "checks:all": "npm run build && npm run compile && npm run tsc:root-types && npm run test && npm run ts",
     "watch": "npm run compile -- --watch",
     "prepare": "husky",
-    "playgrounds:setup": "cd playgrounds && npm run setup",
+    "playgrounds:clean": "rimraf --glob '**/node_modules'",
+    "playgrounds:setup": "npm run playgrounds:clean; npm i && cd playgrounds && npm run setup",
     "playgrounds:checks:all": "cd playgrounds && npm run checks:all",
     "playgrounds:snapshots:update": "cd playgrounds && npm run snapshots:update"
   },
@@ -96,7 +97,7 @@
     "eslint": "^9.39.5",
     "husky": "^9.1.7",
     "npm-run-all2": "^9.0.3",
-    "release-it": "^21.0.1",
+    "release-it": "^21.0.2",
     "rimraf": "^6.1.3",
     "strip-ansi": "^7.2.0",
     "typescript": "^5.9.3",

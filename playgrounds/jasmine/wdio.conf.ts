@@ -8,6 +8,7 @@ export const config: WebdriverIO.Config = {
     // ====================
     //
     runner: 'local',
+    bail: 1,
 
     //
     // ==================
@@ -44,7 +45,6 @@ export const config: WebdriverIO.Config = {
     // ===================
     //
     logLevel: 'info',
-    bail: 0,
     baseUrl: 'http://localhost',
     waitforTimeout: 10000,
     connectionRetryTimeout: 120000,
@@ -56,7 +56,8 @@ export const config: WebdriverIO.Config = {
     framework: 'jasmine',
     reporters: ['spec'],
     jasmineOpts: {
-        defaultTimeoutInterval: 60000
+        defaultTimeoutInterval: 60000,
+        cleanStack: false,
     },
 
     //
