@@ -1,14 +1,13 @@
 import { multiRemoteBrowser } from '@wdio/globals'
 
-// TODO multi-remote network failure as below, issue entered already in wdio
-// Error: Timeout
-// at listOnTimeout (node:internal/timers:605:17)
-// at process.processTimers (node:internal/timers:541:7)
-// See https://github.com/webdriverio/webdriverio/issues/15465
-describe.skip('Network Matchers', () => {
+describe('Network Matchers', () => {
     let mocks: WebdriverIO.Mock[]
 
-    before(async () => {
+    before(async function() {
+        if(process.env.CI) {
+            this.timeout(60000)
+        }
+
         mocks = await multiRemoteBrowser.mock('https://webdriver.io/api/foo', {
             method: 'POST'
         })
