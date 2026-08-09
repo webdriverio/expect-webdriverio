@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        workspace: [jasmine, jest]
+        workspace: [jasmine, jest, multi-remote-mocha]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -66,21 +66,4 @@ jobs:
 
       - name: Run ${{ matrix.workspace }} E2e Tests (without snapshot tests)
         run: npm --workspace=${{ matrix.workspace }} test -- --exclude test/specs/*snapshot.test.ts
-        working-directory: playgrounds
-
-  # 3. Run multi-remote on macos since linux has a hard time
-  playgrounds-e2e-tests-multi-remote:
-    needs: playgrounds-tsc-and-lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22.x
-
-      - name: Install Dependencies
-        run: npm ci && npm ci --prefix playgrounds
-
-      - name: Run multi-remote-mocha E2e Tests
-        run: npm --workspace=multi-remote-mocha test
         working-directory: playgrounds
