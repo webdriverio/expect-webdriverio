@@ -31,9 +31,11 @@ const getElementMethods = () => ({
     $$,
 } satisfies Partial<WebdriverIO.Element>)
 
-export const elementFactory = (_selector: string, index?: number, parent: WebdriverIO.Browser | WebdriverIO.Element = browser): WebdriverIO.Element => {
+/**
+ * When doing $() an passing and already resolved element, the selector field is stripped out!
+ */
+export const elementWithoutSelectorFactory = (index?: number, parent: WebdriverIO.Browser | WebdriverIO.Element = browser): WebdriverIO.Element => {
     const partialElement = {
-        selector: _selector,
         ...getElementMethods(),
         index,
         $,
@@ -45,7 +47,26 @@ export const elementFactory = (_selector: string, index?: number, parent: Webdri
     element.getElement = vi.fn().mockResolvedValue(element)
 
     // Note: an element found has element.elementId while a not found has element.error
-    element.elementId = `${_selector}${index ? '-' + index : ''}`
+    element.elementId = 'element-without-selector' + (index ? '-' + index : '')
+
+    return element
+}
+
+export const elementFactory = (selector: string, index?: number, parent: WebdriverIO.Browser | WebdriverIO.Element = browser): WebdriverIO.Element => {
+    const partialElement = {
+        selector: selector,
+        ...getElementMethods(),
+        index,
+        $,
+        $$,
+        parent
+    } satisfies Partial<WebdriverIO.Element>
+
+    const element = partialElement as unknown as WebdriverIO.Element
+    element.getElement = vi.fn().mockResolvedValue(element)
+
+    // Note: an element found has element.elementId while a not found has element.error
+    element.elementId = `${selector}${index ? '-' + index : ''}`
 
     return element
 }

@@ -305,3 +305,7 @@ describe('My tests', async () => {
 ### Cucumber
 
 More details to come. In short, when paired with [`@wdio/cucumber-framework`](https://www.npmjs.com/package/@wdio/cucumber-framework), you can use WebDriverIO's `expect` library seamlessly within your Cucumber step definitions and [Gherkin-based](https://www.npmjs.com/package/@cucumber/gherkin) tests.
+
+### Browser Runner
+
+Browser Runner is a special case that relies on standard `expect` and only registers `expect-webdriverio` matchers. Because it does not fully leverage `expect-webdriverio`, features such as `DefaultOption`, `SoftAssertion`, `expect.oneOf`, and `some` are currently unsupported.

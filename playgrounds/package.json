@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "description": "Playground projects common dependencies",
-  "workspaces": ["./jasmine", "./jest", "./mocha", "./multi-remote-mocha"],
+  "workspaces": ["./jasmine", "./jest", "./mocha", "./multi-remote-mocha", "./browser-runner"],
   "scripts": {
     "preinstall": "cd .. && npm run compile",
     "setup": "npm install",
@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "expect-webdriverio": "file:..",
+    "@wdio/browser-runner": "^9.30.1",
     "@wdio/cli": "^9.30.1",
     "@wdio/globals": "^9.29.1",
     "@wdio/local-runner": "^9.30.1",

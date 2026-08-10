@@ -35,6 +35,10 @@ before: function (_capabilities, _specs) {
   - For `containing` use Asymmetric Matchers (`expect.stringContaining('Example')`)
 - Passing an array of "containing" values is a legacy behavior and only used by default with `toHaveText` when `useToHaveTextStrictMultiElementsCompareStrategy` is disabled.
 
+### Browser Runner
+
+Since the Browser Runner uses standard `expect` by only extending the `expect-webdriverio` matchers, `expect.oneOf` and `some` are not currently supported.
+
 ## Supported types
 
 You can pass any of these element types to `expect`:

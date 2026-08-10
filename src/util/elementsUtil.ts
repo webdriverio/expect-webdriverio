@@ -31,11 +31,11 @@ export const isArray = (obj: unknown): obj is unknown[] | WebdriverIO.ElementArr
     return Array.isArray(obj)
 }
 
-export const isSelector = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element => {
+const isSelector = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element => {
+    // WARNING: selector can be undefined, so it is unreliable to check for it.
     return !!obj
     && typeof obj === 'object'
-    && 'selector' in obj
-    && 'parent' in obj // commun with Element
+    && 'parent' in obj
 }
 
 export const isElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
