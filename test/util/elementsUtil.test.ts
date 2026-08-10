@@ -2,7 +2,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 
 import { awaitElementOrArray, isArray, isElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
-import { elementFactory, elementArrayFactory, chainableElementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
+import { elementFactory, elementArrayFactory, chainableElementArrayFactory, notFoundElementFactory, elementWithoutSelectorFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -308,7 +308,8 @@ describe('elementsUtil', () => {
             await $('element').getElement(),
             await $('element'),
             elementFactory('element'),
-            notFoundElementFactory('notFoundElement')
+            notFoundElementFactory('notFoundElement'),
+            elementWithoutSelectorFactory()
         ])('should return true for Element: %s', async (element) => {
             const isElementResult = isElement(element)
 

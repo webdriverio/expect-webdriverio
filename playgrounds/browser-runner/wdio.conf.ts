@@ -1,15 +1,11 @@
-
-import os from 'node:os'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { dirname } from 'node:path'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const isMac = os.platform() === 'darwin' && process.env.CI
-
 export const config: WebdriverIO.Config = {
+
+    //
+    // ====================
+    // Runner Configuration
+    // ====================
+    //
+    runner: ['browser', { preset: 'vue' }],
 
     //
     // ==================
@@ -28,16 +24,12 @@ export const config: WebdriverIO.Config = {
     /**
      * capabilities
      */
-    capabilities: [
-        isMac
-            ? {
-                browserName: 'safari'
-            }
-            : {
-                browserName: 'chrome',
-                browserVersion: 'canary',
-            }
-    ],
+    capabilities: [{
+        browserName: 'chrome',
+        'goog:chromeOptions': {
+            args: ['--headless', '--disable-gpu']
+        },
+    }],
 
     /**
      * test configurations
@@ -45,62 +37,32 @@ export const config: WebdriverIO.Config = {
     logLevel: 'trace',
     framework: 'mocha',
     reporters: ['spec'],
-    runner: ['browser', {
-        preset: 'vue',
-        viteConfig: {
-            resolve: {
-                alias: {
-                    'expect-webdriverio': path.resolve(__dirname, '../../lib/index.js'),
-                },
-            }
-        }
-    }],
 
     mochaOpts: {
         ui: 'bdd',
         timeout: 150000,
-        // require: ['./__fixtures__/setup.js']
     },
 
-    /**
-     * in order to test custom matchers added by services, we push a service instance
-     * to the service list
-     */
-    // services: [[{
-    //     before() {
-    //         expect.extend({
-    //             toBeFoo(received) {
-    //                 return received === 'foo'
-    //                     ? {
-    //                         message: () => `expected ${received} not to be foo`,
-    //                         pass: true
-    //                     }
-    //                     : {
-    //                         message: () => `expected ${received} to be foo`,
-    //                         pass: false
-    //                     }
-    //             }
-    //         })
-    //     }
-    // }, {}]],
-
-        //
     // =====
     // Hooks
     // =====
     //
     before: () => {
-        // Fail on loading expect-webdriverio
+        // Fail on loading expect-webdriverio, TODO fix this???
         // setOptions({ wait: 250 })
         // setDefaultOptions({ wait: 250 })
         // setFeatureFlags({})
-        /**
-         * only run this test in lit
-         */
-        // if (process.env.WDIO_PRESET !== 'lit') {
-        //     return
-        // }
+    },
+    afterTest: async function (test, context, { passed, error }) {
+        if (!passed) {
+        console.log(`Test failed: "${test.title}". Keeping browser open for inspection...`)
+        console.log('error:', error)
 
-        // browser.addCommand('someCustomCommand', () => 'Hello World')
+        // Pause indefinitely (or set a high timeout like 600000 ms / 10 mins)
+        // await browser.pause(600000)
+
+        // Alternatively, start an interactive REPL session:
+        // await browser.debug()
+        }
     }
 }
