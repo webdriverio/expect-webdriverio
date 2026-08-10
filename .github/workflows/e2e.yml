@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        workspace: [jasmine, jest, multi-remote-mocha]
+        workspace: [jasmine, jest, multi-remote-mocha, browser-runner]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
