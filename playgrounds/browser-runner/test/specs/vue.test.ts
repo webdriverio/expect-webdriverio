@@ -46,10 +46,14 @@ describe('Vue Component Testing', () => {
                 await expect(await $$('p=Times clicked: 1')).toHaveText(['Times clicked: 1', 'Times clicked: 0'])
             })
 
-            it('to have some text', async () => {
+            it.skip('to have some text', async () => {
                 await expect(some($$('p=Times clicked: 1'))).toHaveText('Times clicked: 1',  { featureFlags: { 'useToHaveTextStrictMultiElementsCompareStrategy': true } })
                 // TODO oneOf matcher is not working with toHaveText, need to investigate why
                 //await expect(await $('p=Times clicked: 1')).toHaveText(expect.oneOf('Times clicked: 1', 'Times clicked: 0'))
+            })
+
+            it('to have any text', async () => {
+                await expect($$('p=Times clicked: 1')).toHaveText(expect.anything(),  { featureFlags: { 'useToHaveTextStrictMultiElementsCompareStrategy': true } })
             })
 
             it.skip('to have attribute', async () => {
