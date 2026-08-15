@@ -1234,11 +1234,17 @@ declare namespace ExpectWebdriverIO {
             | ((headers: Record<string, string>) => boolean)
         postData?:
             | string
+            | boolean
+            | number
+            | null
             | ExpectWebdriverIO.JsonCompatible
             | ExpectWebdriverIO.PartialMatcher<string | ExpectWebdriverIO.JsonCompatible>
             | ((postData: string | undefined) => boolean)
         response?:
             | string
+            | boolean
+            | number
+            | null
             | ExpectWebdriverIO.JsonCompatible
             | ExpectWebdriverIO.PartialMatcher<string | ExpectWebdriverIO.JsonCompatible>
             | ((response: unknown) => boolean)
