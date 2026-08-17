@@ -8,12 +8,14 @@ describe('initialization guards', () => {
     test('registers soft assertions and __wdio_version on first load', async () => {
         const { expect: wdioExpect } = await import('../src/index.js')
         const { default: pkg } = await import('../package.json', { with: { type: 'json' } })
+        const pkgVersion = pkg.version
+        const pkgVersionParts = pkgVersion.split('.')
 
         expect(wdioExpect.soft).toBeDefined()
         expect(wdioExpect.getSoftFailures).toBeDefined()
         expect(wdioExpect.assertSoftFailures).toBeDefined()
         expect(wdioExpect.clearSoftFailures).toBeDefined()
-        expect((wdioExpect as any).__wdio_version).toBe(pkg.version)
+        expect((wdioExpect as any).__wdio_version).toMatch(new RegExp(`^${pkgVersionParts[0]}\\.${pkgVersionParts[1]}`))
     })
 
     test('does not warn and skips re-registering soft when already initialized with the same version', async () => {

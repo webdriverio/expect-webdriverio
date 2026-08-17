@@ -7,11 +7,11 @@ import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
 import { oneOf } from './matchers/asymmetrics/oneOf.js'
 import { some as wdioSome } from './matchers/modifiers/some.js'
-import packageJson from '../package.json' with { type: 'json' }
 
 const wdioExpect = expectLib as unknown as ExpectWebdriverIO.Expect & { __wdio_version?: string }
 
-const MATCHERS_VERSION = packageJson.version
+// TODO: once node 20 is dropped let read with `import packageJson from '../package.json' with { type: 'json' }
+const MATCHERS_VERSION = '6.0.3'
 
 // Warn if a different version already decorated expect
 if ((wdioExpect.__wdio_version && wdioExpect.__wdio_version !== MATCHERS_VERSION) || (!wdioExpect.__wdio_version && wdioExpect.soft !== undefined)) {
