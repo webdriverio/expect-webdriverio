@@ -22,7 +22,6 @@ type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
 type MatchersObject = Parameters<typeof import('expect').expect.extend>[0]
 type ExpectLibAnything = ReturnType<typeof expect.any> | ReturnType<typeof expect.anything>
-
 type WdioSome<T> = import('../src/matchers/modifiers/some.js').SomeElementsWrapper<T>
 
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
@@ -1264,7 +1263,17 @@ declare namespace ExpectWebdriverIO {
      * Allow to match one of the specified value.
      */
     type OneOfPartialMatcher<T> = ExpectWebdriverIO.PartialMatcher<T[]>
+}
 
+declare module 'expect-webdriverio' {
+    export = ExpectWebdriverIO
+}
+
+/**
+ * Expose the expect-wdio API without the burden of initialization.
+ * Required since importing from 'expect-webdriverio' can trigger double initialization.
+ */
+declare module 'expect-webdriverio/api' {
     /**
      * Quantifier modifier. Wraps a `$$()` result so that the matcher passes
      * when at least one element satisfies the condition (∃ semantics).
@@ -1274,11 +1283,7 @@ declare namespace ExpectWebdriverIO {
      * await expect(some($$('.items'))).not.toBeDisplayed() // at least one is NOT displayed
      * await expect(some($$('.items'))).toHaveText('foo')
      */
-    function some<T extends ElementArrayLike>(
+    export function some<T extends ElementArrayLike>(
         elements: T
     ): WdioSome<T>
-}
-
-declare module 'expect-webdriverio' {
-    export = ExpectWebdriverIO
 }

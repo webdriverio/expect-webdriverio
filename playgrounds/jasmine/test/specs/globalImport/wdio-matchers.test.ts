@@ -1,5 +1,6 @@
 import { browser, $, $$ } from '@wdio/globals'
-import { expect, some } from 'expect-webdriverio'
+import { expect } from 'expect-webdriverio'
+import { some } from 'expect-webdriverio/api'
 
 describe('WebdriverIO Custom Matchers', () => {
     beforeEach(async () => {

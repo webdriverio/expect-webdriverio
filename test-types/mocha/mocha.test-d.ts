@@ -1,6 +1,6 @@
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { expectTypeOf } from 'vitest'
-import { some } from 'expect-webdriverio'
+import { some } from 'expect-webdriverio/api'
 import type { SomeElementsWrapper } from '../../src/matchers/modifiers/some.js'
 
 describe('WebDriverIO Expect Type Assertions under Mocha', () => {

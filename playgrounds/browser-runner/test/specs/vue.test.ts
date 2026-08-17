@@ -1,7 +1,7 @@
 import { $, expect } from '@wdio/globals'
 import { render } from '@testing-library/vue'
 import Component from '../../components/Component.vue'
-import { some } from 'expect-webdriverio'
+import { some } from 'expect-webdriverio/api'
 
 describe('Vue Component Testing', () => {
 

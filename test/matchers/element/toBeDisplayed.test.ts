@@ -7,8 +7,8 @@ import stripAnsi from 'strip-ansi'
 import { browserFactory, chainableElementArrayFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { DEFAULT_OPTIONS } from '../../../src/constants.js'
 import { setDefaultOptions, setOptions } from '../../../src/index.js'
-import { some } from '../../../src/matchers/modifiers/some.js'
 import { refreshElementArray } from '../../../src/util/refetchElements.js'
+import { some } from '../../../src/api/index.js'
 
 vi.mock('@wdio/globals')
 

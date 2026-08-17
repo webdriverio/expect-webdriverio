@@ -5,9 +5,10 @@ import type { ChainablePromiseArray } from 'webdriverio'
 import { $Factory, browserFactory, chainableElementArrayFactory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
-import { setFeatureFlags, some } from '../../../src/index.js'
+import { setFeatureFlags } from '../../../src/index.js'
 import { expect as wdioExpect } from '../../../src/index.js'
 import { refreshElementArray } from '../../../src/util/refetchElements.js'
+import { some } from '../../../src/api/index.js'
 
 vi.mock('@wdio/globals')
 
