@@ -2,12 +2,16 @@ import type { HTMLOptions, StringOptions } from 'expect-webdriverio'
 import { compareTextWithArray } from '../../utils.js'
 import { WdioAsymmetricMatchers } from './asymmetricsUtils.js'
 
+const ONE_OF_TAG = 'expect-webdriverio.oneOf'
+const ONE_OF_SYMBOL = Symbol.for(ONE_OF_TAG)
+
 /**
  * oneOf matcher is used to check if a string matches any of the provided strings or regular expressions.
  * StringOptions is injected by the matcher for customization of the matching behavior.
  * @see oneOfWithContextMatcher
  */
 export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp | AsymmetricMatcher<string> | null>> {
+    readonly [ONE_OF_SYMBOL] = true
     // TODO support HTML options
     public options: StringOptions | HTMLOptions = {}
 
@@ -71,4 +75,8 @@ export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp |
 
 export function oneOf(...sample: Array<string | RegExp | AsymmetricMatcher<string> | null>): OneOfMatcher {
     return new OneOfMatcher(...sample)
+}
+
+export function isOneOfMatcher(oneOfMatcher: unknown): oneOfMatcher is OneOfMatcher {
+    return oneOfMatcher instanceof OneOfMatcher || (oneOfMatcher as OneOfMatcher)?.[ONE_OF_SYMBOL] === true
 }

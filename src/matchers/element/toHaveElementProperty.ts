@@ -12,7 +12,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
-import { OneOfMatcher } from '../asymmetrics/oneOf.js'
+import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -29,7 +29,7 @@ async function condition(
             return { success: expectedValue.asymmetricMatch(propertyValue), actual: propertyValue }
         }
         return { success: propertyValue === expectedValue, actual: propertyValue }
-    } else if ( expectedValue instanceof OneOfMatcher) {
+    } else if (isOneOfMatcher(expectedValue)) {
         return { success: expectedValue.asymmetricMatch(propertyValue), actual: propertyValue }
     }
 
