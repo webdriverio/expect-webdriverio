@@ -584,6 +584,67 @@ Received      : {}`
         })
     })
 
+    describe('uncollected body diagnostics', () => {
+        test('hints at the likely cause when a matching call never got its body collected', async () => {
+            const mock: any = new TestMock()
+            // matches url/method, but the body was never collected (old webdriverio, or
+            // `maxSpyCollectedBodySize: 0`)
+            mock.calls.push({ ...mockPost, postData: undefined, body: undefined })
+
+            const result = await thisContext.toBeRequestedWith(mock, {
+                url: mockPost.request.url,
+                response: { foo: 'bar' },
+            }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            const message = stripAnsi(result.message())
+            expect(message).toContain('its body was never collected')
+            expect(message).toContain('response could not be compared')
+            expect(message).toContain('v9.28.0')
+            expect(message).toContain('maxSpyCollectedBodySize')
+        })
+
+        test('names both fields when postData and response are asserted together', async () => {
+            const mock: any = new TestMock()
+            mock.calls.push({ ...mockPost, postData: undefined, body: undefined })
+
+            const result = await thisContext.toBeRequestedWith(mock, {
+                url: mockPost.request.url,
+                postData: { a: 1 },
+                response: { foo: 'bar' },
+            }, { wait: 0 })
+
+            expect(stripAnsi(result.message())).toContain('postData and response could not be compared')
+        })
+
+        test('does not hint when the body was collected but genuinely differs', async () => {
+            const mock: any = new TestMock()
+            mock.calls.push({ ...mockPost })
+
+            const result = await thisContext.toBeRequestedWith(mock, {
+                url: mockPost.request.url,
+                response: { totally: 'different' },
+            }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).not.toContain('never collected')
+        })
+
+        test('does not hint when the failure is unrelated to the payload', async () => {
+            const mock: any = new TestMock()
+            mock.calls.push({ ...mockPost, postData: undefined, body: undefined })
+
+            // url never matches, so the payload is not why this failed
+            const result = await thisContext.toBeRequestedWith(mock, {
+                url: 'https://not-the-endpoint',
+                response: { foo: 'bar' },
+            }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).not.toContain('never collected')
+        })
+    })
+
     test('message', async () => {
         const mock: any = new TestMock()
 

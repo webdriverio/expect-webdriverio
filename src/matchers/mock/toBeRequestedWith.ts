@@ -63,6 +63,13 @@ export async function toBeRequestedWith(
     // postData/body string is JSON.parsed at most once per assertion instead of once per read
     const parseCache: Map<string, ParsedJson> = new Map()
 
+    /**
+     * a call matched everything except its payload, and that payload never arrived. Kept from the
+     * final iteration so the failure message can explain *why* the body looks empty rather than
+     * just diffing against `undefined` - see `payloadCollectionHint()`.
+     */
+    let payloadNeverCollected = false
+
     const { success: pass, actual } = await waitUntil(
         async () => {
             let lastCall: RequestMock | undefined
@@ -96,6 +103,7 @@ export async function toBeRequestedWith(
                     hasPendingPayloadCandidate = true
                 }
             }
+            payloadNeverCollected = hasPendingPayloadCandidate
             return {
                 success: false,
                 subject: lastCall,
@@ -116,7 +124,7 @@ export async function toBeRequestedWith(
         expectation,
         '',
         options
-    )
+    ) + (!pass && !isNot && payloadNeverCollected ? payloadCollectionHint(expectedValue) : '')
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
@@ -131,6 +139,28 @@ export async function toBeRequestedWith(
     })
 
     return result
+}
+
+/**
+ * Explain why a `postData`/`response` assertion is diffing against an empty body.
+ *
+ * A call matched every other criterion but its payload never arrived, which almost always means
+ * the request/response body was never collected in the first place rather than that it genuinely
+ * differed. Without this the user just sees a diff against `undefined` with no way to tell the two
+ * apart.
+ */
+const payloadCollectionHint = (expectedValue: ExpectWebdriverIO.RequestedWith) => {
+    const fields = [
+        expectedValue.postData !== undefined ? 'postData' : undefined,
+        expectedValue.response !== undefined ? 'response' : undefined,
+    ].filter(Boolean).join(' and ')
+
+    return `
+
+A request matched every other criterion, but its body was never collected, so ${fields} could not be compared.
+This usually means either:
+  - webdriverio is older than v9.28.0, which did not populate \`mock.calls[].postData\` (upgrade to v9.28.0 or later), or
+  - body collection is turned off via \`maxSpyCollectedBodySize: 0\` in your config (it defaults to 10MB - remove the override or raise it).`
 }
 
 /**
