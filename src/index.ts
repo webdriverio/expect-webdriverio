@@ -14,7 +14,7 @@ const wdioExpect = expectLib as unknown as ExpectWebdriverIO.Expect & { __wdio_v
 const MATCHERS_VERSION = packageJson.version
 
 // Warn if a different version already decorated expect
-if (wdioExpect.__wdio_version && wdioExpect.__wdio_version !== MATCHERS_VERSION || wdioExpect.soft !== undefined) {
+if ((wdioExpect.__wdio_version && wdioExpect.__wdio_version !== MATCHERS_VERSION) || (!wdioExpect.__wdio_version && wdioExpect.soft !== undefined)) {
     if (wdioExpect.__wdio_version) {
         console.warn(
             `[expect-webdriverio] Conflict: Initializing v${MATCHERS_VERSION}, but v${wdioExpect.__wdio_version} is already loaded.`
