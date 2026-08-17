@@ -1129,6 +1129,8 @@ since: v6.0.0
 The custom `some()` function (distinct syntax compared to `.not`) allows you to assert that at least one element from multiple elements meets the assertion.
 
 ```ts
+import { some } from 'expect-webdriverio/api'
+
 // Allow to succeed only if one element matches (or not match)
 // Succeeds if at least one element matches either 'optionA' or 'optionB'
 await expect(some($$('elements'))).toHaveText(expect.oneOf('optionA', 'optionB'));

@@ -69,6 +69,8 @@ Example in Mocha:
 `useToHaveTextStrictMultiElementsCompareStrategy` is assumed to be enabled
 
 ```ts
+import { some } from 'expect-webdriverio/api'
+
 const elements = $$('myElements')
 
 // Single expected value
