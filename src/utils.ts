@@ -10,7 +10,7 @@ import { executeCommandWithStrategy } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
 import { DEFAULT_FEATURE_FLAGS } from './constants.js'
-import { OneOfMatcher } from './matchers/asymmetrics/oneOf.js'
+import { isOneOfMatcher, OneOfMatcher } from './matchers/asymmetrics/oneOf.js'
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
     return isAsymmetricMatcher(expected) && !('toAsymmetricMatcher' in expected) && 'jasmineToString' in expected && typeof expected.jasmineToString === 'function'
@@ -143,7 +143,7 @@ export const compareTextOrArray = (
      * Instead the `expect.oneOf()` asymmetric matcher should be used to compare against multiple expected values.
      */
     if (Array.isArray(expectedTexts)) {
-        if (expectedTexts.some((expected): expected is OneOfMatcher => expected instanceof OneOfMatcher)) {
+        if (expectedTexts.some((expected): expected is OneOfMatcher => isOneOfMatcher(expected))) {
             throw new Error('OneOf is not supported in array under legacy behavior. Please enable `useToHaveTextStrictMultiElementsCompareStrategy` feature flag to use the new strict index based matching strategy with `expect.oneOf()`.')
         } else {
             console.warn('Array of expected values is deprecated. Please use `expect.oneOf()` asymmetric matcher to compare against multiple expected values. This will be removed in v8.0.0.')
@@ -152,7 +152,7 @@ export const compareTextOrArray = (
         }
     }
 
-    if (expectedTexts instanceof OneOfMatcher) {
+    if (isOneOfMatcher(expectedTexts)) {
         return { success: expectedTexts.asymmetricMatch(actualText), actual: actualText }
     }
 

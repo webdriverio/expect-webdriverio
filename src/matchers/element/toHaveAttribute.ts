@@ -12,7 +12,7 @@ import {
 } from '../../utils.js'
 import { expect as wdioExpect } from '../../index.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
-import { OneOfMatcher } from '../asymmetrics/oneOf.js'
+import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 
 async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const attributeValue = await el.getAttribute(attribute)
@@ -22,7 +22,7 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
             return { success: expectedValue.asymmetricMatch(attributeValue), actual: attributeValue }
         }
         return { success: attributeValue === expectedValue, actual: attributeValue }
-    } else if ( expectedValue instanceof OneOfMatcher) {
+    } else if (isOneOfMatcher(expectedValue)) {
         return { success: expectedValue.asymmetricMatch(attributeValue), actual: attributeValue }
     }
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { OneOfMatcher } from '../../../src/matchers/asymmetrics/oneOf'
+import { isOneOfMatcher, oneOf, OneOfMatcher } from '../../../src/matchers/asymmetrics/oneOf'
 
 describe('OneOfMatcher', () => {
     describe('asymmetricMatch', () => {
@@ -71,6 +71,46 @@ describe('OneOfMatcher', () => {
             const matcher = new OneOfMatcher('apple').withOptions({ atIndex: 1 })
 
             expect(matcher.toAsymmetricMatcher()).toBe('matchingAtIndex<1>OneOf<"apple">')
+        })
+    })
+
+    describe('isOneOfMatcher', () => {
+        it('should return true for a OneOfMatcher instance', () => {
+            const matcher = new OneOfMatcher('apple', 'banana')
+            expect(isOneOfMatcher(matcher)).toBe(true)
+        })
+
+        it('should return true for a OneOfMatcher created via oneOf()', () => {
+            expect(isOneOfMatcher(oneOf('apple', 'banana'))).toBe(true)
+        })
+
+        it('should return true for an object with the ONE_OF_SYMBOL set to true (cross-module scenario)', () => {
+            const fakeFromAnotherModule = {
+                [Symbol.for('expect-webdriverio.oneOf')]: true,
+            }
+            expect(isOneOfMatcher(fakeFromAnotherModule)).toBe(true)
+        })
+
+        it('should return false for null', () => {
+            expect(isOneOfMatcher(null)).toBe(false)
+        })
+
+        it('should return false for undefined', () => {
+            expect(isOneOfMatcher(undefined)).toBe(false)
+        })
+
+        it('should return false for a plain object without the symbol', () => {
+            expect(isOneOfMatcher({ sample: ['apple'] })).toBe(false)
+        })
+
+        it('should return false for a primitive', () => {
+            expect(isOneOfMatcher('apple')).toBe(false)
+            expect(isOneOfMatcher(42)).toBe(false)
+        })
+
+        it('should return false for an object with the symbol set to false', () => {
+            const obj = { [Symbol.for('expect-webdriverio.oneOf')]: false }
+            expect(isOneOfMatcher(obj)).toBe(false)
         })
     })
 })
