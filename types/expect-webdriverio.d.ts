@@ -27,7 +27,7 @@ type WdioSome<T> = import('../src/matchers/modifiers/some.js').SomeElementsWrapp
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult;
+    (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult
 }
 
 /**
@@ -101,7 +101,7 @@ interface WdioCustomAsymmetricMatchers {
 }
 
 /**
- * Matchers dedicated to Wdio Browser.
+ * Matchers dedicated to Wdio Browser or multi-remote Browser.
  * When asserting on a browser's properties requiring to be awaited, the return type is a Promise.
  * When actual is not a browser, the return type is never, so the function cannot be used.
  */
