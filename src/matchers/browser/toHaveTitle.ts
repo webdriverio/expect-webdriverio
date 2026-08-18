@@ -76,7 +76,7 @@ const compareMultiRemoteTitles = async (
     let browserNames: string[] | undefined
     let expectedValues: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined
 
-    if (typeof expectedValue === 'object') {
+    if (typeof expectedValue === 'object' && !Array.isArray(expectedValue) && !isAsymmetricMatcher(expectedValue) && !(expectedValue instanceof RegExp)) {
         browserNames = Object.keys(expectedValue)
         if (browserNames.length === 0) {
             throw new Error('Expected value object is empty. Please provide at least one browser instance name with its expected title.')
