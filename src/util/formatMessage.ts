@@ -47,13 +47,13 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
     return selectors.reverse().join('.')
 }
 
-const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
+const not = (isNot: boolean | undefined): string => `${isNot ? 'not ' : ''}`
 
 export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean, useNotInLabel?: boolean, isSome?: boolean },
+    context: { isNot: boolean | undefined, useNotInLabel?: boolean, isSome?: boolean },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
