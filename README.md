@@ -1,17 +1,16 @@
 # expect-webdriverio [![Test](https://github.com/webdriverio/expect-webdriverio/actions/workflows/test.yml/badge.svg)](https://github.com/webdriverio/expect-webdriverio/actions/workflows/test.yml)
 
-
 ###### [API](docs/API.md) | [TypeScript / JS Autocomplete](docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](docs/CustomMatchers.md)
 
-> [WebdriverIO](https://webdriver.io/) Assertion library inspired by [expect](https://www.npmjs.com/package/expect)
+> [WebdriverIO](https://webdriver.io/) assertion library inspired by [expect](https://www.npmjs.com/package/expect)
 
 ## Key Features
 
-- [Waits](#default-options) for expectation to succeed
-- Support single element & multi-elements
+- [Waits](#default-options) for expectations to succeed
+- Supports single element `$()` & multiple elements `$$()`
 - Detailed [error messages](#error-messages)
-- Works in Mocha, Cucumber, Jest, Jasmine
-- Builtin [types](docs/Types.md) for TypeScript and JS autocompletion
+- Works in Mocha, Cucumber, Jest, and Jasmine
+- Built-in [types](docs/Types.md) for TypeScript and JS autocompletion
 
 ## Installation
 
@@ -22,24 +21,28 @@
    - **Cucumber**: `npm install @wdio/cucumber-framework`
    - **Jest**: No adapter needed — see [Jest Framework section](docs/Framework.md#jest)
 
-NOTE: [WebdriverIO](https://github.com/webdriverio/webdriverio) `v9.0.0` or higher is required!
+**Note:** [WebdriverIO](https://github.com/webdriverio/webdriverio) `v9.0.0` or higher is required!
 
 ## Usage
 
 ### Using WebdriverIO Testrunner
 
-If you run your tests through the [WDIO testrunner](https://webdriver.io/docs/clioptions) no additional setup is needed. WebdriverIO initialises `expect-webdriverio` and makes `expect` available in the global scope. So you can use it directly in your tests:
+If you run your tests through the [WDIO testrunner](https://webdriver.io/docs/clioptions), no additional setup is needed. WebdriverIO initializes `expect-webdriverio` and makes `expect` available in the global scope so you can use it directly in your tests:
 
 ```js
-const button = await $('button')
-await expect(button).toBeDisplayed()
+await expect($('button')).toBeDisplayed()
+await expect($$('buttons')).toBeDisplayed()
 ```
 
-See more [Examples](docs/Examples.md)
+See more [Examples](docs/Examples.md).
 
-### Using in a standalone script
+#### Local & Browser Runners
+- **Local Runner**: Fully compatible. You can leverage your test framework adapter as mentioned above.
+- **Browser Runner**: Designed for component frameworks like React, Preact, Vue.js, Svelte, and SolidJS, with a few known limitations. For details, see the [Browser Runner Framework section](docs/Framework.md#browser-runner).
 
-If you embed WebdriverIO in a standalone (without `@wdio/globals`), make sure you import `expect-webdriverio` before you use it anywhere.
+### Using in Standalone Mode
+
+If you use WebdriverIO in standalone mode (without `@wdio/globals`), make sure you import `expect-webdriverio` before using it anywhere.
 
 ```js
 import { remote } from 'webdriverio'
@@ -63,24 +66,24 @@ import { expect } from 'expect-webdriverio'
 
 ## API
 
-Please see [API doc](docs/API.md)
+Please see the [API documentation](docs/API.md).
 
-## Error messages
+## Error Messages
 
 Error messages are informative out of the box and contain:
 
-- full element selector, like `$('form').$('input')`
-- actual and expected values
-- highlight the difference (texts assertions)
+- Full element selector, like `$('form')`
+- Actual and expected values
+- Highlighted differences (text assertions)
 
 ![toHaveText](/docs/img/errors/text.png?raw=true "toHaveText")
 ![toHaveElementClass](/docs/img/errors/class.png?raw=true "toHaveElementClass")
 
-## What's next?
+## What's Next?
 
-First of all, **feel free to raise an issue with your suggestions or help with PR!**
+First of all, **feel free to raise an issue with your suggestions or help with PRs!**
 
 ### Planned
 
-- cookie
-- multiremote support (coming)
+- Cookie matchers
+- Multiremote support (in progress)
