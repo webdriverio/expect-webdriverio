@@ -3,18 +3,21 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { StrategyResult } from '../../util/executeCommand.js'
 
 export async function toHaveTitle(
+    this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.Browser,
     expectedValue: string | RegExp | AsymmetricMatcher<string>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveTitle(
+    this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.MultiRemoteBrowser,
     expectedValue: MaybeArrayOrMultiRemoteValues<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveTitle(
+    this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
     expectedValue: MaybeArrayOrMultiRemoteValues<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
@@ -45,7 +48,7 @@ export async function toHaveTitle(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(subject, expected, actual, { isNot, browserTargetType: 'window' }, verb, expectation, '', options)
+    const message = enhanceError('window', expectedValue, actual, { isNot }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass: success,
         message: () => message
@@ -89,6 +92,8 @@ const compareMultiRemoteTitles = async (
     } else {
         expectedValues = expectedValue
     }
+
+    // @ts-expect-error working only with yalc
     const actual = await (browserNames ? browser.select(browserNames) : browser).getTitle()
 
     if (Array.isArray(actual)){

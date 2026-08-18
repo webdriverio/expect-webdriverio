@@ -54,7 +54,7 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean | undefined, useNotInLabel?: boolean, isSome?: boolean, browserTargetType?: 'browser' | 'window' },
+    context: { isNot: boolean | undefined, useNotInLabel?: boolean, isSome?: boolean },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
