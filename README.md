@@ -31,6 +31,7 @@ If you run your tests through the [WDIO testrunner](https://webdriver.io/docs/cl
 
 ```js
 await expect($('button')).toBeDisplayed()
+await expect($$('buttons')).toBeDisplayed()
 ```
 
 See more [Examples](docs/Examples.md).
