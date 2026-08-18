@@ -308,4 +308,17 @@ More details to come. In short, when paired with [`@wdio/cucumber-framework`](ht
 
 ### Browser Runner
 
-Browser Runner is a special case that relies on standard `expect` and only registers `expect-webdriverio` matchers. Because it does not fully leverage `expect-webdriverio`, features such as `DefaultOption`, `SoftAssertion`, `expect.oneOf`, and `some` are currently unsupported.
+Browser Runner ([@wdio/browser-runner](https://www.npmjs.com/package/@wdio/browser-runner)) allows you to leverage component frameworks like React, Preact, Vue.js, Svelte, and SolidJS. It relies on the Jest's standard `expect`   library and only registers core `expect-webdriverio` matchers. Because it runs within a browser environment rather than fully embedding `expect-webdriverio`, global features like `DefaultOption` and `SoftAssertion` are currently unsupported.
+
+#### OneOf & Some
+The asymmetric matcher `expect.oneOf` and the modifier `some` have been adapted to work in Browser Runner:
+- `expect.oneOf`: Works standard out of the box.
+- `expect.some`: Reimplemented to integrate with Jest's native expect runner and exposed directly via `expect.some`.
+**Note:** Importing `some` from `expect-webdriverio/api` will not work in Browser Runner mode. Always access it through `expect.some`
+
+```js
+it('some elements are displayed', async () => {
+    // `expect.some` uses global export. Ignore TypeScript errors on `expect.some` until proper typings are provided.
+    await expect(expect.some($$('p=Times clicked: 1'))).toBeDisplayed()
+})            
+```

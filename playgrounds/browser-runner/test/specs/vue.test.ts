@@ -1,7 +1,5 @@
-import { $, expect } from '@wdio/globals'
 import { render } from '@testing-library/vue'
 import Component from '../../components/Component.vue'
-import { some } from 'expect-webdriverio/api'
 
 describe('Vue Component Testing', () => {
 
@@ -18,14 +16,21 @@ describe('Vue Component Testing', () => {
                 await expect($('p=Times clicked: 1')).toExist()
                 await expect(await $('p=Times clicked: 1')).toExist()
                 await expect($('p=Times clicked: 2')).not.toExist()
+                await expect(await $('p=Times clicked: 2')).not.toExist()
             })
 
-            it('to have text', async () => {
-                await expect($('p=Times clicked: 1')).toHaveText('Times clicked: 1')
-                await expect(await $('p=Times clicked: 1')).toHaveText('Times clicked: 1')
-                await expect($('p=Times clicked: 1')).toHaveText(['Times clicked: 1', 'Times clicked: 0'])
-                // TODO oneOf matcher is not working with toHaveText, need to investigate why
-                //await expect(await $('p=Times clicked: 1')).toHaveText(expect.oneOf('Times clicked: 1', 'Times clicked: 0'))
+            it('to be displayed', async () => {
+                await expect($('p=Times clicked: 1')).toBeDisplayed()
+                await expect(await $('p=Times clicked: 1')).toBeDisplayed()
+                await expect($('p=Times clicked: 2')).not.toBeDisplayed()
+                await expect(await $('p=Times clicked: 2')).not.toBeDisplayed()
+            })
+
+            it('non-existing', async () => {
+                await expect($('non-existing')).not.toExist()
+                await expect(await $('non-existing')).not.toExist()
+                await expect($('non-existing')).not.toBeDisplayed()
+                await expect(await $('non-existing')).not.toBeDisplayed()
             })
 
             it.skip('to have attribute', async () => {
@@ -41,15 +46,19 @@ describe('Vue Component Testing', () => {
                 await expect(await $$('p=Times clicked: 2')).not.toExist()
             })
 
+            it('some elements are displayed', async () => {
+                await expect(expect.some($$('p=Times clicked: 1'))).toBeDisplayed()
+            })
+
             it('to have text', async () => {
                 await expect($$('p=Times clicked: 1')).toHaveText('Times clicked: 1')
                 await expect(await $$('p=Times clicked: 1')).toHaveText(['Times clicked: 1', 'Times clicked: 0'])
             })
 
-            it.skip('to have some text', async () => {
-                await expect(some($$('p=Times clicked: 1'))).toHaveText('Times clicked: 1',  { featureFlags: { 'useToHaveTextStrictMultiElementsCompareStrategy': true } })
-                // TODO oneOf matcher is not working with toHaveText, need to investigate why
-                //await expect(await $('p=Times clicked: 1')).toHaveText(expect.oneOf('Times clicked: 1', 'Times clicked: 0'))
+            it('to have some text', async () => {
+                // @ts-expect-error: Browser runner is not using the expect-webdriverio types per see, it needs to defined it's own types on top of Jest's `expect` augmented with it's own types!
+                await expect(expect.some($$('p=Times clicked: 1'))).toHaveText('Times clicked: 1',  { featureFlags: { 'useToHaveTextStrictMultiElementsCompareStrategy': true } })
+                await expect(await $('p=Times clicked: 1')).toHaveText(expect.oneOf('Times clicked: 1', 'Times clicked: 0'))
             })
 
             it('to have any text', async () => {
