@@ -47,6 +47,7 @@ describe('Vue Component Testing', () => {
             })
 
             it('some elements are displayed', async () => {
+                // @ts-expect-error: Browser runner is not using the expect-webdriverio types per see, it needs to defined it's own types on top of Jest's `expect` augmented with it's own types!
                 await expect(expect.some($$('p=Times clicked: 1'))).toBeDisplayed()
             })
 
