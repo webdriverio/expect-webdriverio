@@ -931,6 +931,17 @@ declare namespace ExpectWebdriverIO {
     function getConfig(): DefaultOptions
 
     /**
+     * The this context available inside each matcher function.
+     */
+    interface MatcherContext /* extends ExpectLibMatcherContext */ {
+        verb?: string
+        expectation?: string
+        isNot?: boolean
+        isMultiRemote?: boolean
+        matcherName?: keyof Matchers<void, unknown>
+    }
+
+    /**
      * The below block are overloaded types from the expect library.
      * They are required to show "everything" under the `ExpectWebdriverIO` namespace.
      * They are also required to be be able to declare custom asymmetric/normal matchers under the `ExpectWebdriverIO` namespace.
