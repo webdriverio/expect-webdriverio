@@ -65,12 +65,14 @@ export const enhanceError = (
 
     if (isBrowser(subject)) {
         if (subject.isMultiremote) {
-            subject = formatMultiRemoteInstanceNames(subject.instances)
+            let instanceNames = subject.instances.join(', ')
+            instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
+            subject = `multi-remote<${instanceNames}>`
         } else if (subject.isMobile) {
-            subject = context.browserTargetType === 'window' ? 'mobile screen' : 'mobile'
+            subject = 'mobile screen'
         } else {
             const prefix = subject.requestedCapabilities?.browserName ?? 'browser'
-            subject = context.browserTargetType === 'window' ? `${prefix}'s window` : prefix
+            subject = `${prefix}'s window`
         }
     }
 

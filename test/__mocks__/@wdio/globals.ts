@@ -235,31 +235,79 @@ export class Browser {
     }
 }
 
+export class Browser {
+    execute = vi.fn()
+    setPermissions = vi.fn()
+    getUrl = vi.fn().mockResolvedValue(' Valid Text ')
+    getTitle = vi.fn().mockResolvedValue(' Valid Text ')
+
+    $ = vi.fn((_selector: string) => {
+        const element = elementFactory(_selector)
+        return $Factory(element)
+    })
+
+    $$: ReturnType<typeof vi.fn>
+
+    constructor(elementArrayLength = 2) {
+        this.$$ = vi.fn((selector: string) => {
+            return chainableElementArrayFactory(selector, elementArrayLength, this as unknown as WebdriverIO.Browser)
+        })
+    }
+
+    call(fn: Function) {
+        return fn()
+    }
+}
+
 export const browserFactory = (elementArrayLength = 2): WebdriverIO.Browser => {
     return new Browser(elementArrayLength) as unknown as WebdriverIO.Browser
 }
 
 export const browser = browserFactory()
 
-export const multiRemoteBrowserFactory = (): WebdriverIO.MultiRemoteBrowser => {
-    const chromeBrowser = browserFactory()
-    const firefoxBrowser = browserFactory()
-    const multiRemoteBrowser = {
-        'chrome': chromeBrowser,
-        'firefox': firefoxBrowser,
-        select: vi.fn(),
-    } satisfies Partial<WebdriverIO.MultiRemoteBrowser & { 'chrome': WebdriverIO.Browser, 'firefox': WebdriverIO.Browser }> as unknown as WebdriverIO.MultiRemoteBrowser
+export class CustomMultiRemoteDriver {
+    instances: string[]
+    isMultiremote = true
+    getTitle: ReturnType<typeof vi.fn>
+    getUrl: ReturnType<typeof vi.fn>
+    select: ReturnType<typeof vi.fn>
+    [key: string]: unknown
 
-    vi.mocked(multiRemoteBrowser.select).mockImplementation((instanceNames: string[]) => {
-        const selectedBrowsers: Record<string, WebdriverIO.Browser> = {}
-        for (const name of instanceNames) {
-            selectedBrowsers[name] = multiRemoteBrowser[name as keyof WebdriverIO.MultiRemoteBrowser] as WebdriverIO.Browser
+    constructor(
+        browsers: Record<string, WebdriverIO.Browser> = {
+            chrome: browserFactory(),
+            firefox: browserFactory(),
         }
-        // TODO dpreovst to review
-        return selectedBrowsers as unknown as WebdriverIO.MultiRemoteBrowser
-    })
+    ) {
+    // Attach browser instances (e.g., this.chrome, this.firefox)
+        Object.assign(this, browsers)
 
-    return multiRemoteBrowser
+        const availableBrowsers = Object.values(browsers)
+
+        this.instances = Object.keys(browsers)
+
+        this.getTitle = vi.fn().mockResolvedValue(
+            Promise.all(availableBrowsers.map((browser) => browser.getTitle()))
+        )
+
+        this.getUrl = vi.fn().mockResolvedValue(
+            Promise.all(availableBrowsers.map((browser) => browser.getUrl()))
+        )
+
+        this.select = vi.fn((instanceNames: string[]) => {
+            const selectedBrowsers: Record<string, WebdriverIO.Browser> = {}
+            for (const name of instanceNames) {
+                selectedBrowsers[name] = this[name] as WebdriverIO.Browser
+            }
+            return multiRemoteBrowserFactory(selectedBrowsers)
+        })
+    }
+}
+
+export const multiRemoteBrowserFactory = (
+    browsers?: Record<string, WebdriverIO.Browser>
+): WebdriverIO.MultiRemoteBrowser => {
+    return new CustomMultiRemoteDriver(browsers) as unknown as WebdriverIO.MultiRemoteBrowser
 }
 
 export const multiRemoteBrowser = multiRemoteBrowserFactory()

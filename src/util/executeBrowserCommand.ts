@@ -1,72 +1,47 @@
-import type { CompareResult, MultiRemoteCompareResult, StrategyResult } from './executeCommand.js'
-import { getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
+import { MultiRemoteValuesMatcher } from '../matchers/asymmetrics/multiRemoteValuesMatcher.js'
+import { isOneOfMatcher } from '../matchers/asymmetrics/oneOf.js'
+import type { CompareResult, StrategyResult } from './executeCommand.js'
+import { isMultiRemoteValues } from './multiRemoteUtils.js'
 
 export async function executeBrowserCommand<Actual, Expected>( {
     browser,
     expectedValue,
     compare,
-    isNot = false,
+    multiRemoteCompare,
 } :{
     browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser
     expectedValue: MaybeArrayOrMultiRemoteValues<Expected> | Expected | unknown
     compare: (browser: WebdriverIO.Browser, expectedValue: Expected | unknown, index?: number) => Promise<CompareResult<Actual>>
-    /** Needed so a forced (structural) failure also fails under `.not`, since Jest inverts `success` afterwards */
-    isNot?: boolean
+    multiRemoteCompare: (browser: WebdriverIO.MultiRemoteBrowser, expectedValue: ArrayOrMultiRemoteValues<Expected> | unknown, index?: number) => Promise<CompareResult<ArrayOrMultiRemoteValues<Actual>>>
 }
-): Promise<StrategyResult<ArrayOrMultiRemoteValues<Actual | undefined> | Actual | undefined>> {
+): Promise<StrategyResult<ArrayOrMultiRemoteValues<Actual> | Actual>> {
+
+    let results: CompareResult<ArrayOrMultiRemoteValues<Actual>> | CompareResult<Actual>
+    let subject: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser = browser
+    let expected: MaybeArrayOrMultiRemoteValues<Expected> | unknown = expectedValue
 
     if (browser.isMultiremote) {
-        const { instances } = browser
+        let multiRemoteBrowser: WebdriverIO.MultiRemoteBrowser = browser
 
-        // `expect.multiRemote()` or, since browser expected values are never plain objects, any plain object holds one value per instance
-        const perInstanceValues = getPerInstanceValues(expectedValue)
-        // Otherwise a single expected value is replicated for each browser instance
-        const expected: MultiRemoteValues<unknown> = perInstanceValues ?? Object.fromEntries(instances.map((name) => [name, expectedValue]))
-
-        // Structural failures: per-instance values not naming exactly the instances, or an array (unsupported, use `expect.oneOf()`)
-        const forceFailure = (!!perInstanceValues && !hasSameInstanceNames(perInstanceValues, instances))
-            || Object.values(expected).some(Array.isArray)
-
-        const arrayResults = await Promise.all(
-            // Iterating through instance is a must else order of results may not match the order of browser instances
-            instances.map(async (name) => {
-                let singleBrowser: WebdriverIO.Browser
-                try {
-                    singleBrowser = browser.getInstance(name)!
-                } catch {
-                    // Invalid browser name
-                    return { success: false, actual: undefined, multiRemoteBrowserName: name } satisfies MultiRemoteCompareResult<undefined>
-                }
-
-                // Look up by name: the user's key order may differ from `browser.instances` order.
-                // On structural failure, still compare with `undefined` to get the actual value for the failure message.
-                const isExpected = name in expected
-                const results = await compare(singleBrowser, forceFailure || !isExpected ? undefined : expected[name])
-                return { ...results, multiRemoteBrowserName: name } satisfies MultiRemoteCompareResult<Actual>
-            })
-        )
-
-        const actual = arrayResults.reduce((acc, result) => {
-            acc[result.multiRemoteBrowserName] = result.actual
-            return acc
-        },  {} as Record<string, Actual | undefined>)
-
-        if (forceFailure) {
-            return { actual, success: isNot, abort: true, subject: browser, expected }
+        if (isMultiRemoteValues(expectedValue)) {
+            // TODO review to be better
+            const multiRemoteValuesMatcher = new MultiRemoteValuesMatcher(expectedValue as Record<string, string | RegExp | AsymmetricMatcher<string>>)
+            // @ts-expect-error working only with yalc
+            multiRemoteBrowser = browser.select(multiRemoteValuesMatcher.browserNames)
+            expected = multiRemoteValuesMatcher
+        } else if (Array.isArray(expectedValue) || isOneOfMatcher(expectedValue)) {
+            expected = expectedValue
+        } else {
+            expected = Array(browser.instances.length).fill(expectedValue)
         }
-        // Strict on every instance: with `.not`, no instance may match. `success` is inverted by `waitUntil` for `.not`,
-        // so it must stay true while at least one instance still matches.
-        const success = isNot ? arrayResults.some(result => result.success) : arrayResults.every(result => result.success)
 
-        return { actual, success, subject: browser, expected }
+        results = await multiRemoteCompare(multiRemoteBrowser, expected)
+        subject = multiRemoteBrowser
+    } else if (isMultiRemoteValues(expectedValue) || Array.isArray(expectedValue)) {
+        // TODO review if this is accurate!
+        throw new Error('Expected value object or array is not supported for a single browser instance. Use a string, RegExp or asymmetric matcher instead.')
+    } else {
+        results = await compare(browser, expectedValue)
     }
-
-    // Per-instance values or an array (unsupported, use `expect.oneOf()`) can never match a single browser
-    const forceFailure = getPerInstanceValues(expectedValue) !== undefined || Array.isArray(expectedValue)
-    const results = await compare(browser, forceFailure ? undefined : expectedValue)
-
-    if (forceFailure) {
-        return { ...results, success: isNot, abort: true, subject: browser, expected: expectedValue }
-    }
-    return { ...results, subject: browser, expected: expectedValue }
+    return { ...results, subject, expected }
 }
