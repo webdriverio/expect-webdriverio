@@ -1,6 +1,8 @@
-import { waitUntil, enhanceError, compareText, isAsymmetricMatcher } from '../../utils.js'
+import { waitUntil, enhanceError, compareText } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { StrategyResult } from '../../util/executeCommand.js'
+import type {  StrategyResult } from '../../util/executeCommand.js'
+import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
+import { isMultiRemoteValuesMatcher } from '../asymmetrics/multiRemoteValuesMatcher.js'
 
 export async function toHaveTitle(
     this: ExpectWebdriverIO.MatcherContext,
@@ -13,7 +15,7 @@ export async function toHaveTitle(
     this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.MultiRemoteBrowser,
     expectedValue: MaybeArrayOrMultiRemoteValues<string | RegExp | AsymmetricMatcher<string>>,
-    options: ExpectWebdriverIO.StringOptions
+    options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveTitle(
@@ -30,22 +32,24 @@ export async function toHaveTitle(
         options,
     })
 
-    const { actual, success } = await waitUntil(
+    const { actual, success, subject, expected } = await waitUntil(
         async () => {
-
-            if (browser.isMultiremote) {
-                return await compareMultiRemoteTitles(browser, expectedValue, options)
-            } else if (typeof expectedValue === 'object' || Array.isArray(expectedValue) && !isAsymmetricMatcher(expectedValue)) {
-                throw new Error('Expected value object or array is not supported for a single browser instance. Use a string, RegExp or asymmetric matcher instead.')
-            } else {
-                return await compareBrowserTitle(browser, expectedValue, options)
-            }
+            return await executeBrowserCommand({
+                browser,
+                expectedValue,
+                compare: (
+                    browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
+                ) => compareBrowserTitle(browser, expectedValue, options),
+                multiRemoteCompare: (
+                    multiRemoteBrowser, expectedValue: ArrayOrMultiRemoteValues<string | RegExp | AsymmetricMatcher<string>> | undefined
+                ) => compareMultiRemoteTitles(multiRemoteBrowser, expectedValue, options)
+            })
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError('window', expectedValue, actual, { isNot }, verb, expectation, '', options)
+    const message = enhanceError(subject, expected, actual, { isNot }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass: success,
         message: () => message
@@ -63,7 +67,7 @@ export async function toHaveTitle(
 
 const compareBrowserTitle = async (
     browser: WebdriverIO.Browser,
-    expectedValue: string | RegExp | AsymmetricMatcher<string>,
+    expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): Promise<StrategyResult<string>> => {
     const actual = await browser.getTitle()
@@ -73,35 +77,23 @@ const compareBrowserTitle = async (
 
 const compareMultiRemoteTitles = async (
     browser: WebdriverIO.MultiRemoteBrowser,
-    expectedValue: MaybeArrayOrMultiRemoteValues<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: ArrayOrMultiRemoteValues<string | RegExp | AsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
-): Promise<StrategyResult<MaybeArray<string>>> => {
-    let browserNames: string[] | undefined
-    let expectedValues: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined
+) => {
+    const actual = await browser.getTitle()
 
-    if (typeof expectedValue === 'object' && !Array.isArray(expectedValue) && !isAsymmetricMatcher(expectedValue) && !(expectedValue instanceof RegExp)) {
-        browserNames = Object.keys(expectedValue)
-        if (browserNames.length === 0) {
-            throw new Error('Expected value object is empty. Please provide at least one browser instance name with its expected title.')
-        }
+    if (isMultiRemoteValuesMatcher(expectedValue)) {
+        expectedValue.setOptions(options)
 
-        expectedValues = Object.values(expectedValue)
-    } else {
-        expectedValues = expectedValue
+        const multiRemoteActualValues = expectedValue.buildActual(actual)
+        const isMatch = expectedValue.asymmetricMatch(multiRemoteActualValues)
+        // TODO need to account for .not
+        return { actual: multiRemoteActualValues, success: isMatch, subject: browser }
+    } else if (!Array.isArray(expectedValue)) {
+        return { actual, success: false, subject: browser }
     }
+    const results = actual.map((title, index) => compareText(title, expectedValue[index], options))
 
-    // @ts-expect-error working only with yalc
-    const actual = await (browserNames ? browser.select(browserNames) : browser).getTitle()
-
-    if (Array.isArray(actual)){
-        const results = actual.map((title, index) => compareText(title, Array.isArray(expectedValues) ? expectedValues[index] : expectedValues, options))
-        return { actual: results.map(r => r.actual), success: results.every(r => r.success), subject: browser }
-    } else if (Array.isArray(expectedValues)) {
-        throw new Error('Expected value is an array but actual value is not. Please provide a single expected value for a single browser instance.')
-    }
-
-    const result = compareText(actual, expectedValues, options)
-    return { ...result, subject: browser }
-
+    // TODO need to account for .not
+    return { actual: results.map(r => r.actual), success: results.every(r => r.success), subject: browser }
 }
-

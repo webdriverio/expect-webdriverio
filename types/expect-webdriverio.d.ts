@@ -50,7 +50,9 @@ type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclu
  */
 type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>
 
-type MaybeArrayOrMultiRemoteValues<T> = T | MaybeArray<T> | Record<string, T>
+type MultiRemoteValues<T> = Record<string, T>
+type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
+type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
 
 /**
  * Real Promise and wdio chainable promise types.

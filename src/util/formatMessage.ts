@@ -4,6 +4,7 @@ import type { WdioElements } from '../types.js'
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
+import { isBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
@@ -50,7 +51,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
 const not = (isNot: boolean | undefined): string => `${isNot ? 'not ' : ''}`
 
 export const enhanceError = (
-    subject: string | WebdriverIO.Element | WdioElements | unknown,
+    subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
     context: { isNot: boolean | undefined, useNotInLabel?: boolean, isSome?: boolean },
@@ -61,6 +62,19 @@ export const enhanceError = (
         containing = false
     } = {}): string => {
     const { isNot, useNotInLabel = true } = context
+
+    if (isBrowser(subject)) {
+        if (subject.isMultiremote) {
+            let instanceNames = subject.instances.join(', ')
+            instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
+            subject = `multi-remote<${instanceNames}>`
+        } else if (subject.isMobile) {
+            subject = 'mobile screen'
+        } else {
+            const prefix = subject.requestedCapabilities?.browserName ?? 'browser'
+            subject = `${prefix}'s window`
+        }
+    }
 
     let subjectStr = (isElementOrArrayLike(subject) ? getSelectors(subject) : toJsonString(subject))
     if (subjectStr.length > 100) {

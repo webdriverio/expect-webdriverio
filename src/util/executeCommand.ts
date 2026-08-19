@@ -4,12 +4,13 @@ import { awaitElementOrArray, isElement, isStrictlyElementArray } from './elemen
 import { refreshElementArray } from './refetchElements.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
-export type CompareResult<T> = { success: boolean; actual: T }
-export type StrategyResult<T, E = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown> = {
-    subject: E;
+export type CompareResult<Actual> = { success: boolean; actual: Actual }
+export type StrategyResult<Actual, Subject = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown, Expected = unknown> = {
+    subject: Subject;
+    expected?: Expected;
     abort?: boolean;
     context?: { isSome: boolean };
-} & CompareResult<T | undefined>
+} & CompareResult<Actual | undefined>
 
 /**
  * Fetch element(s) and route them to the appropriate comparison strategy.
