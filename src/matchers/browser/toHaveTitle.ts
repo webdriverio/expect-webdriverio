@@ -1,27 +1,26 @@
-import { waitUntil, enhanceError, compareText } from '../../utils.js'
+import { waitUntil, enhanceError, isAsymmetricMatcher, compareTextOrOneOf } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type {  StrategyResult } from '../../util/executeCommand.js'
+import type {  CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
-import { isMultiRemoteValuesMatcher } from '../asymmetrics/multiRemoteValuesMatcher.js'
 
 export async function toHaveTitle(
     this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.Browser,
-    expectedValue: string | RegExp | AsymmetricMatcher<string>,
+    expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveTitle(
     this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.MultiRemoteBrowser,
-    expectedValue: MaybeArrayOrMultiRemoteValues<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveTitle(
     this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
-    expectedValue: MaybeArrayOrMultiRemoteValues<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'title', verb = 'have', isNot, matcherName = 'toHaveTitle' } = this
@@ -41,7 +40,7 @@ export async function toHaveTitle(
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
                 ) => compareBrowserTitle(browser, expectedValue, options),
                 multiRemoteCompare: (
-                    multiRemoteBrowser, expectedValue: ArrayOrMultiRemoteValues<string | RegExp | AsymmetricMatcher<string>> | undefined
+                    multiRemoteBrowser, expectedValue: Array<string | RegExp | AsymmetricMatcher<string>> | undefined
                 ) => compareMultiRemoteTitles(multiRemoteBrowser, expectedValue, options)
             })
         },
@@ -69,31 +68,24 @@ const compareBrowserTitle = async (
     browser: WebdriverIO.Browser,
     expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
     options: ExpectWebdriverIO.StringOptions
-): Promise<StrategyResult<string>> => {
+): Promise<CompareResult<string>> => {
     const actual = await browser.getTitle()
-    const result = compareText(actual, expectedValue, options)
-    return { actual: result.actual, success: result.success, subject: browser }
+    return compareTextOrOneOf(actual, expectedValue, options)
 }
 
 const compareMultiRemoteTitles = async (
     browser: WebdriverIO.MultiRemoteBrowser,
-    expectedValue: ArrayOrMultiRemoteValues<string | RegExp | AsymmetricMatcher<string>> | undefined,
+    expectedValue: Array<string | RegExp | AsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ) => {
     const actual = await browser.getTitle()
-
-    if (isMultiRemoteValuesMatcher(expectedValue)) {
-        expectedValue.setOptions(options)
-
-        const multiRemoteActualValues = expectedValue.buildActual(actual)
-        const isMatch = expectedValue.asymmetricMatch(multiRemoteActualValues)
-        // TODO need to account for .not
-        return { actual: multiRemoteActualValues, success: isMatch, subject: browser }
+    if (isAsymmetricMatcher(expectedValue)) {
+        return { actual, success: expectedValue.asymmetricMatch(actual) }
     } else if (!Array.isArray(expectedValue)) {
-        return { actual, success: false, subject: browser }
+        return { actual, success: false }
     }
-    const results = actual.map((title, index) => compareText(title, expectedValue[index], options))
 
-    // TODO need to account for .not
-    return { actual: results.map(r => r.actual), success: results.every(r => r.success), subject: browser }
+    const results = actual.map((title, index) => compareTextOrOneOf(title, expectedValue[index], options))
+    // TODO move this into executeBrowserCommand to avoid having to do this here
+    return { actual, success: results.every(result => result.success) }
 }

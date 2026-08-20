@@ -7,6 +7,7 @@ const ONE_OF_SYMBOL = Symbol.for(ONE_OF_TAG)
 
 /**
  * oneOf matcher is used to check if a string matches any of the provided strings or regular expressions.
+ * TODO: to delete?
  */
 export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp | AsymmetricMatcher<string> | null>> {
     readonly [ONE_OF_SYMBOL] = true
