@@ -216,8 +216,8 @@ export function chainableElementArrayFactory(selector: string, length: number, p
 export class Browser {
     execute = vi.fn()
     setPermissions = vi.fn()
-    getUrl = vi.fn().mockResolvedValue(' Valid Text ')
-    getTitle = vi.fn().mockResolvedValue(' Valid Text ')
+    getUrl = vi.fn().mockResolvedValue('  Valid text  ')
+    getTitle = vi.fn().mockResolvedValue('Example Domain')
 
     $ = vi.fn((_selector: string) => {
         const element = elementFactory(_selector)
@@ -244,12 +244,13 @@ export const browserFactory = (elementArrayLength = 2): WebdriverIO.Browser => {
 export const browser = browserFactory()
 
 export class CustomMultiRemoteDriver {
+    [key: string]: unknown
     instances: string[]
     isMultiremote = true
     getTitle: ReturnType<typeof vi.fn>
     getUrl: ReturnType<typeof vi.fn>
     select: ReturnType<typeof vi.fn>
-    [key: string]: unknown
+    getInstance: ReturnType<typeof vi.fn>
 
     constructor(
         browsers: Record<string, WebdriverIO.Browser> = {
@@ -257,20 +258,20 @@ export class CustomMultiRemoteDriver {
             firefox: browserFactory(),
         }
     ) {
-    // Attach browser instances (e.g., this.chrome, this.firefox)
+        // Attach browser instances (e.g., this.chrome, this.firefox)
         Object.assign(this, browsers)
 
         const availableBrowsers = Object.values(browsers)
 
         this.instances = Object.keys(browsers)
 
-        this.getTitle = vi.fn().mockResolvedValue(
-            Promise.all(availableBrowsers.map((browser) => browser.getTitle()))
-        )
+        this.getTitle = vi.fn().mockImplementation(() => {
+            return Promise.all(availableBrowsers.map((browser) => browser.getTitle()))
+        })
 
-        this.getUrl = vi.fn().mockResolvedValue(
-            Promise.all(availableBrowsers.map((browser) => browser.getUrl()))
-        )
+        this.getUrl = vi.fn().mockImplementation(() => {
+            return Promise.all(availableBrowsers.map((browser) => browser.getUrl()))
+        })
 
         this.select = vi.fn((instanceNames: string[]) => {
             const selectedBrowsers: Record<string, WebdriverIO.Browser> = {}
@@ -278,6 +279,10 @@ export class CustomMultiRemoteDriver {
                 selectedBrowsers[name] = this[name] as WebdriverIO.Browser
             }
             return multiRemoteBrowserFactory(selectedBrowsers)
+        })
+
+        this.getInstance = vi.fn((instanceName: string) => {
+            return this[instanceName] as WebdriverIO.Browser
         })
     }
 }

@@ -3,7 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
-import { compareText, compareTextOrArray, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import { compareText, compareTextOrOneOf, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const actualClass = await el.getAttribute(attribute)
@@ -26,7 +26,7 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
 
     const classes = actualClass.split(' ')
     const isValueInClasses = classes.some((clazz) => {
-        return compareTextOrArray(clazz, value, options).success
+        return compareTextOrOneOf(clazz, value, options).success
     })
 
     return {

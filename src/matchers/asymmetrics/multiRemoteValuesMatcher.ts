@@ -76,12 +76,13 @@ export class MultiRemoteValuesMatcher extends WdioAsymmetricMatchers<Record<stri
 
     // Allow pretty-print in failure messages without quote for a better generic message
     toString(): string {
-        return 'Multi-remote values'
+        return `${this.sample}`
     }
 
     // Pretty-prints the expected map in test failures
+    // Must return a string representation to satisfy pretty-format requirements
     toAsymmetricMatcher(): string {
-        return this.toString()
+        return JSON.stringify(this.sample, null, 2)
     }
 }
 
