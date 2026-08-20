@@ -1,7 +1,7 @@
 import { isAsymmetricMatcher } from '../utils.js'
 
 export const isMultiRemoteValues = (value: unknown, existingInstanceNames?: string[]): value is MultiRemoteValues<unknown> =>  {
-    if (value && typeof value === 'object' && !Array.isArray(value) && !isAsymmetricMatcher(value) && !(value instanceof RegExp)) {
+    if (value && typeof value === 'object' && !Array.isArray(value) && !isAsymmetricMatcher(value) && !(value instanceof RegExp) && Object.keys(value).length > 0) {
         if (existingInstanceNames) {
             return existingInstanceNames?.some(name => Object.keys(value).includes(name))
         }
