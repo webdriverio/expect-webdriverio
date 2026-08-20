@@ -22,7 +22,7 @@ export async function executeBrowserCommand<Actual, Expected>( {
         let multiRemoteBrowser: WebdriverIO.MultiRemoteBrowser = browser
 
         let forceFailure = false
-        if (isMultiRemoteValues(expectedValue)) {
+        if (isMultiRemoteValues(expectedValue, browser.instances)) {
             let browserNames = Object.keys(expectedValue)
 
             if (browserNames.some(name => !browser.instances.includes(name))) {
@@ -45,7 +45,7 @@ export async function executeBrowserCommand<Actual, Expected>( {
         const actuals = arrayResults.map(result => result.actual)
 
         let actual: ArrayOrMultiRemoteValues<Actual> | Actual = actuals
-        if (isMultiRemoteValues(expectedValue) && actual.length === browser.instances.length) {
+        if (isMultiRemoteValues(expectedValue, browser.instances) && actual.length === browser.instances.length) {
             // Build a multi-remote actual value object when the expected value is a multi-remote object, so we have a nicer error message
             actual = Object.fromEntries(browser.instances.map((name, index) => [name, actuals[index]]))
             expected = expectedValue
