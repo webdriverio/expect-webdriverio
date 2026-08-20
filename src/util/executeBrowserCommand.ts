@@ -10,7 +10,7 @@ export async function executeBrowserCommand<Actual, Expected>( {
     browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser
     expectedValue: MaybeArrayOrMultiRemoteValues<Expected> | Expected | unknown
     compare: (browser: WebdriverIO.Browser, expectedValue: Expected | unknown, index?: number) => Promise<CompareResult<Actual>>
-    multiRemoteCompare: (browser: WebdriverIO.MultiRemoteBrowser, expectedValue: ArrayOrMultiRemoteValues<Expected> | unknown, index?: number) => Promise<CompareResult<ArrayOrMultiRemoteValues<Actual>>>
+    multiRemoteCompare: (browser: WebdriverIO.MultiRemoteBrowser, expectedValue: ArrayOrMultiRemoteValues<Expected> | unknown, index?: number) => Promise<CompareResult<Actual>[]>
 }
 ): Promise<StrategyResult<ArrayOrMultiRemoteValues<Actual> | Actual>> {
 
@@ -21,8 +21,15 @@ export async function executeBrowserCommand<Actual, Expected>( {
     if (browser.isMultiremote) {
         let multiRemoteBrowser: WebdriverIO.MultiRemoteBrowser = browser
 
+        let forceFailure = false
         if (isMultiRemoteValues(expectedValue)) {
-            const browserNames = Object.keys(expectedValue)
+            let browserNames = Object.keys(expectedValue)
+
+            if (browserNames.some(name => !browser.instances.includes(name))) {
+                // Force failure when expecting a browser that is not part of the multiremote instance
+                forceFailure = true
+                browserNames = browserNames.filter(name => browser.instances.includes(name))
+            }
 
             // TODO should we do strict check and select a subset only when using the expect.objectContaining() matcher?
             // @ts-expect-error working only with yalc
@@ -32,18 +39,24 @@ export async function executeBrowserCommand<Actual, Expected>( {
             expected = Array(browser.instances.length).fill(expectedValue)
         }
 
-        results = await multiRemoteCompare(multiRemoteBrowser, expected)
+        const arrayResults = await multiRemoteCompare(multiRemoteBrowser, expected)
         subject = multiRemoteBrowser
 
-        // Transform the actual values into an multi-remote values object for nicer error messages
-        let actual: ArrayOrMultiRemoteValues<Actual> = results.actual
-        if (isMultiRemoteValues(expectedValue) && Array.isArray(results.actual) && results.actual.length === browser.instances.length) {
-            const actualArray = results.actual
-            actual = Object.fromEntries(browser.instances.map((name, index) => [name, actualArray[index]]))
+        const actuals = arrayResults.map(result => result.actual)
+
+        let actual: ArrayOrMultiRemoteValues<Actual> | Actual = actuals
+        if (isMultiRemoteValues(expectedValue) && actual.length === browser.instances.length) {
+            // Build a multi-remote actual value object when the expected value is a multi-remote object, so we have a nicer error message
+            actual = Object.fromEntries(browser.instances.map((name, index) => [name, actuals[index]]))
             expected = expectedValue
+        } else if (Array.isArray(expectedValue) && actual.length !== expectedValue.length) {
+            // Force failure when the number of actual values does not match the number of expected values for array strict comparison
+            forceFailure = true
         }
 
-        return { ...results, actual, subject, expected }
+        const success = !forceFailure && arrayResults.every(result => result.success)
+
+        return { actual, success, subject, expected }
     } else if (isMultiRemoteValues(expectedValue) || Array.isArray(expectedValue)) {
         // TODO review if this is accurate!
         throw new Error('Expected value object or array is not supported for a single browser instance. Use a string, RegExp or asymmetric matcher instead.')

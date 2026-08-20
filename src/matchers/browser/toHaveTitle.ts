@@ -1,4 +1,4 @@
-import { waitUntil, enhanceError, isAsymmetricMatcher, compareTextOrOneOf } from '../../utils.js'
+import { waitUntil, enhanceError, compareTextOrOneOf } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type {  CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
@@ -77,15 +77,11 @@ const compareMultiRemoteTitles = async (
     browser: WebdriverIO.MultiRemoteBrowser,
     expectedValue: Array<string | RegExp | AsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
-) => {
+): Promise<CompareResult<string>[]> => {
     const actual = await browser.getTitle()
-    if (isAsymmetricMatcher(expectedValue)) {
-        return { actual, success: expectedValue.asymmetricMatch(actual) }
-    } else if (!Array.isArray(expectedValue)) {
-        return { actual, success: false }
+    if (!expectedValue) {
+        return actual.map((title) => ({ actual: title, success: false }))
     }
 
-    const results = actual.map((title, index) => compareTextOrOneOf(title, expectedValue[index], options))
-    // TODO move this into executeBrowserCommand to avoid having to do this here
-    return { actual, success: results.every(result => result.success) }
+    return actual.map((title, index) => compareTextOrOneOf(title, expectedValue[index], options))
 }
