@@ -139,7 +139,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
-export const compareTextOrArray = (
+export const compareTextOrOneOf = (
     actualText: string,
     expectedTexts: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions

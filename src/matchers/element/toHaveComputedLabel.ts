@@ -2,7 +2,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
-    compareTextOrArray,
+    compareTextOrOneOf,
     enhanceError,
     waitUntil,
     wrapExpectedWithArray
@@ -15,7 +15,7 @@ async function singleElementCompare(
     options: ExpectWebdriverIO.StringOptions
 ) {
     const actualLabel = await element.getComputedLabel()
-    return compareTextOrArray(actualLabel, label, options)
+    return compareTextOrOneOf(actualLabel, label, options)
 
 }
 

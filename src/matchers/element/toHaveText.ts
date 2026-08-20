@@ -1,6 +1,6 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
-    compareTextOrArray,
+    compareTextOrOneOf,
     enhanceError,
     getFeatureFlagValue,
     waitUntil,
@@ -14,7 +14,7 @@ import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetri
 async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
     const actualText = await el.getText()
 
-    return compareTextOrArray(actualText, expectedText, options)
+    return compareTextOrOneOf(actualText, expectedText, options)
 }
 
 export async function toHaveText(

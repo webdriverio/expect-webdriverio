@@ -55,6 +55,7 @@ type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, Expect
 
 type MultiRemoteValues<T> = Record<string, T>
 type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
+type MaybeArrayOrMultiRemoteValuesOrOneOf<T> = MaybeArray<T> | MultiRemoteValues<T> | ExpectWebdriverIO.OneOfPartialMatcher<T>
 type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
 
 /**
