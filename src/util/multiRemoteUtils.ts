@@ -11,5 +11,5 @@ export const isMultiRemoteValues = (value: unknown, existingInstanceNames?: stri
 }
 
 export const isBrowser = (obj: unknown): obj is WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser => {
-    return !!obj && typeof obj === 'object' && (obj.constructor.name === 'Browser' || obj.constructor.name.endsWith('MultiRemoteDriver'))
+    return !!obj && !!obj.constructor && (obj.constructor.name === 'Browser' || obj.constructor.name.endsWith('MultiRemoteDriver'))
 }
