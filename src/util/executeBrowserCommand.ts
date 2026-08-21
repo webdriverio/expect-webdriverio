@@ -32,8 +32,7 @@ export async function executeBrowserCommand<Actual, Expected>( {
             }
 
             // TODO should we do strict check and select a subset only when using the expect.objectContaining() matcher?
-            // @ts-expect-error working only with yalc
-            multiRemoteBrowser = browser.select(browserNames)
+            multiRemoteBrowser = browser.unstable_select(browserNames)
             expected = Object.values(expectedValue)
         } else if (!Array.isArray(expectedValue)) {
             expected = Array(browser.instances.length).fill(expectedValue)
