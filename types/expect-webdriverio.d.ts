@@ -1277,7 +1277,7 @@ declare module 'expect-webdriverio/api' {
     const SOME_SYMBOL: unique symbol
 
     export {}
-    
+
     export interface WdioSome<T> {
         readonly [SOME_SYMBOL]: true
         readonly elements: T
