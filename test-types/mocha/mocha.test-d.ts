@@ -1,7 +1,6 @@
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { expectTypeOf } from 'vitest'
 import { some } from 'expect-webdriverio/api'
-import type { SomeElementsWrapper } from '../../src/matchers/modifiers/some.js'
 
 describe('WebDriverIO Expect Type Assertions under Mocha', () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
@@ -1137,9 +1136,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
     describe('Wdio custom some modifier', () => {
         it('should have some work with elements what ever the type', async () => {
-            expectTypeOf(some([element])).toEqualTypeOf<SomeElementsWrapper<WebdriverIO.Element[]>>()
-            expectTypeOf(some(chainableArray)).toEqualTypeOf<SomeElementsWrapper<typeof chainableArray>>()
-            expectTypeOf(some(Promise.resolve([element]))).toEqualTypeOf<SomeElementsWrapper<Promise<WebdriverIO.Element[]>>>()
+            expectTypeOf(some([element])).toEqualTypeOf<WdioSome<WebdriverIO.Element[]>>()
+            expectTypeOf(some(chainableArray)).toEqualTypeOf<WdioSome<typeof chainableArray>>()
+            expectTypeOf(some(Promise.resolve([element]))).toEqualTypeOf<WdioSome<Promise<WebdriverIO.Element[]>>>()
         })
 
         it('should not work with element', () => {
