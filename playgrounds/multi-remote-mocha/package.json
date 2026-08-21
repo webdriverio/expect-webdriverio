@@ -11,7 +11,7 @@
     "checks:all": "npm run typecheck && npm run lint && npm test"
   },
   "devDependencies": {
-    "@wdio/mocha-framework": "^9.30.1",
+    "@wdio/mocha-framework": "^9.31.2",
     "eslint-plugin-mocha": "^11.3.0",
     "expect-webdriverio": "file:../.."
   },
