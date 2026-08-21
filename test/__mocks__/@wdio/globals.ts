@@ -249,7 +249,7 @@ export class CustomMultiRemoteDriver {
     isMultiremote = true
     getTitle: ReturnType<typeof vi.fn>
     getUrl: ReturnType<typeof vi.fn>
-    select: ReturnType<typeof vi.fn>
+    unstable_select: ReturnType<typeof vi.fn>
     getInstance: ReturnType<typeof vi.fn>
 
     constructor(
@@ -273,7 +273,7 @@ export class CustomMultiRemoteDriver {
             return Promise.all(availableBrowsers.map((browser) => browser.getUrl()))
         })
 
-        this.select = vi.fn((instanceNames: string[]) => {
+        this.unstable_select = vi.fn((instanceNames: string[]) => {
             const selectedBrowsers: Record<string, WebdriverIO.Browser> = {}
             for (const name of instanceNames) {
                 selectedBrowsers[name] = this[name] as WebdriverIO.Browser
