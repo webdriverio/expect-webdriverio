@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script>
+    class CustomButton extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <button id="import-btn" data-url="/import" style="padding: 10px 20px;">
+            Import Data
+          </button>
+        `;
+      }
+    }
+    customElements.define('custom-button', CustomButton);
+  </script>
+</head>
+<body>
+  <custom-button></custom-button>
+</body>
+</html>

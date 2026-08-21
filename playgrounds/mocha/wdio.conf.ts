@@ -18,13 +18,14 @@ export const config: WebdriverIO.Config = {
     // ==================
     //
     specs: [
-        './test/specs/**/*.test.ts',
+        //'./test/specs/**/*.test.ts',
         //'./test/specs/**/basic-matchers.test.ts',
         //'./test/specs/**/visual-snapshot.test.ts'
         //'./test/specs/**/soft-expect.test.ts',
         //'./test/specs/**/snapshot.test.ts'
         //'./test/specs/**/wdio-matchers.test.ts'
         //'./test/specs/**/network-matchers.test.ts'
+        './test/specs/**/shadow-clickable.spec.ts'
     ],
 
     //
