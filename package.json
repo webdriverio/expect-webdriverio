@@ -47,7 +47,7 @@
     "./expect-global": "./types/expect-global.d.ts",
     "./api": {
         "types": "./types/expect-webdriverio.d.ts",
-        "import": "./lib/api.js"
+        "import": "./lib/api/index.js"
     }
   },
   "types": "./types/expect-webdriverio.d.ts",
