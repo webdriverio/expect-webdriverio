@@ -1,9 +1,26 @@
-import { waitUntil, enhanceError, compareText } from '../../utils.js'
+import { waitUntil, enhanceError, compareTextOrOneOf } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type {  CompareResult } from '../../util/executeCommand.js'
+import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 
 export async function toHaveTitle(
+    this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.Browser,
-    expectedValue: string | RegExp | AsymmetricMatcher<string>,
+    expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveTitle(
+    this: ExpectWebdriverIO.MatcherContext,
+    browser: WebdriverIO.MultiRemoteBrowser,
+    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveTitle(
+    this: ExpectWebdriverIO.MatcherContext,
+    browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
+    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'title', verb = 'have', isNot, matcherName = 'toHaveTitle' } = this
@@ -14,19 +31,24 @@ export async function toHaveTitle(
         options,
     })
 
-    const { actual, success } = await waitUntil(
+    const { actual, success, subject, expected } = await waitUntil(
         async () => {
-            const actual = await browser.getTitle()
-
-            const compareResult = compareText(actual, expectedValue, options)
-
-            return { actual, success: compareResult.success, subject: browser }
+            return await executeBrowserCommand({
+                browser,
+                expectedValue,
+                compare: (
+                    browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
+                ) => compareBrowserTitle(browser, expectedValue, options),
+                multiRemoteCompare: (
+                    multiRemoteBrowser, expectedValue: Array<string | RegExp | AsymmetricMatcher<string>> | undefined
+                ) => compareMultiRemoteTitles(multiRemoteBrowser, expectedValue, options)
+            })
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError('window', expectedValue, actual, this, verb, expectation, '', options)
+    const message = enhanceError(subject, expected, actual, { isNot }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass: success,
         message: () => message
@@ -40,4 +62,26 @@ export async function toHaveTitle(
     })
 
     return result
+}
+
+const compareBrowserTitle = async (
+    browser: WebdriverIO.Browser,
+    expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
+    options: ExpectWebdriverIO.StringOptions
+): Promise<CompareResult<string>> => {
+    const actual = await browser.getTitle()
+    return compareTextOrOneOf(actual, expectedValue, options)
+}
+
+const compareMultiRemoteTitles = async (
+    browser: WebdriverIO.MultiRemoteBrowser,
+    expectedValue: Array<string | RegExp | AsymmetricMatcher<string>> | undefined,
+    options: ExpectWebdriverIO.StringOptions
+): Promise<CompareResult<string>[]> => {
+    const actual = await browser.getTitle()
+    if (!expectedValue) {
+        return actual.map((title) => ({ actual: title, success: false }))
+    }
+
+    return actual.map((title, index) => compareTextOrOneOf(title, expectedValue[index], options))
 }

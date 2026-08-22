@@ -26,7 +26,7 @@ type ExpectLibAnything = ReturnType<typeof expect.any> | ReturnType<typeof expec
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult;
+    (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult
 }
 
 interface WdioSome<T> {
@@ -52,6 +52,11 @@ type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclu
  * For oneOf anything is excluded since it does not make any sense to have a oneOf with Anything matcher.
  */
 type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>
+
+type MultiRemoteValues<T> = Record<string, T>
+type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
+type MaybeArrayOrMultiRemoteValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
+type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
 
 /**
  * Real Promise and wdio chainable promise types.
@@ -80,6 +85,7 @@ type MockPromise = Promise<WebdriverIO.Mock>
  * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
  */
 type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser ? Fn : never
+type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT extends WebdriverIO.Browser ? FnBrowser : ActualT extends WebdriverIO.MultiRemoteBrowser ? FnMultiRemote : never
 /**
  * Enables distinct function signatures for single elements versus arrays of elements.
  *
@@ -101,7 +107,7 @@ interface WdioCustomAsymmetricMatchers {
 }
 
 /**
- * Matchers dedicated to Wdio Browser.
+ * Matchers dedicated to Wdio Browser or multi-remote Browser.
  * When asserting on a browser's properties requiring to be awaited, the return type is a Promise.
  * When actual is not a browser, the return type is never, so the function cannot be used.
  */
@@ -111,10 +117,23 @@ interface WdioBrowserMatchers<_R, ActualT>{
      */
     toHaveUrl: FnWhenBrowser<ActualT, (url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
 
-    /**
-     * `WebdriverIO.Browser` -> `getTitle`
-     */
-    toHaveTitle: FnWhenBrowser<ActualT, (title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
+    toHaveTitle: FnWhenBrowserOrMultiRemote<ActualT,
+        /**
+        * `WebdriverIO.Browser` -> `getTitle`
+        */
+        (
+            title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getTitle`
+        */
+        (
+            title: MaybeArrayOrMultiRemoteValues<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
 
     /**
      * `WebdriverIO.Browser` -> `execute`
@@ -913,6 +932,17 @@ declare namespace ExpectWebdriverIO {
     function getDefaultOptions(): DefaultOptions
     /** @deprecated since v6.0.0, use getDefaultOptions instead, will be removed in v8.0.0 */
     function getConfig(): DefaultOptions
+
+    /**
+     * The this context available inside each matcher function.
+     */
+    interface MatcherContext /* extends ExpectLibMatcherContext */ {
+        verb?: string
+        expectation?: string
+        isNot?: boolean
+        isMultiRemote?: boolean
+        matcherName?: keyof Matchers<void, unknown>
+    }
 
     /**
      * The below block are overloaded types from the expect library.
