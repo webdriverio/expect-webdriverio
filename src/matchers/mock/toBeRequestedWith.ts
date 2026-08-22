@@ -10,6 +10,13 @@ const KEY_LIMIT = 12
 interface RequestMock {
     request: local.NetworkRequestData,
     response: local.NetworkResponseData
+    /**
+     * Populated asynchronously by WebDriverInterception via `network.getData`.
+     * Flat properties on the call object (not nested under `request`/`response`),
+     * mirroring `WebdriverIO.Mock`'s `Response` type.
+     */
+    postData?: string
+    body?: string
 }
 
 function reduceHeaders(headers: local.NetworkHeader[]) {
@@ -32,40 +39,92 @@ export async function toBeRequestedWith(
         options,
     })
 
+    /**
+     * `postData`/`body` are populated asynchronously (via a `network.getData` round-trip in
+     * WebDriverInterception), so they may not be attached to a call yet at the very first check.
+     * `.not` assertions normally check once, immediately (`wait: 0`), since a mock's call log only
+     * grows and can't "become unmatched" - but that immediate check would race the payload
+     * collection and could report a false pass. So when `postData`/`response` are part of the
+     * expectation, give `.not` the same "wait for a match to appear" retry window a positive
+     * assertion gets, instead of deciding on the first, possibly incomplete, snapshot of the call -
+     * but ONLY while there's an actual pending candidate (a call that already matches everything
+     * else and is just waiting on its body/postData to attach). If no call matches the non-payload
+     * criteria at all, the outcome can't change by waiting, so the predicate below sets `abort` and
+     * `waitUntil` resolves immediately - keeping the fast, single-check behavior for the common case
+     * (wrong URL, no calls made, etc.) while still closing the race for the one case that needs it.
+     * `pass` below always means "was a matching call found" either way - `.not` inversion is
+     * handled downstream by the test framework, not by this function - so no extra inversion here,
+     * only the retry direction passed into `waitUntil` changes.
+     */
+    const hasPayloadExpectation = expectedValue.postData !== undefined || expectedValue.response !== undefined
+    const waitForPayloadOnNot = isNot && hasPayloadExpectation
+
+    // shared across every `waitUntil` iteration and the later message-building step, so a given
+    // postData/body string is JSON.parsed at most once per assertion instead of once per read
+    const parseCache: Map<string, ParsedJson> = new Map()
+
+    /**
+     * a call matched everything except its payload, and that payload never arrived. Kept from the
+     * final iteration so the failure message can explain *why* the body looks empty rather than
+     * just diffing against `undefined` - see `payloadCollectionHint()`.
+     */
+    let payloadNeverCollected = false
+
     const { success: pass, actual } = await waitUntil(
         async () => {
             let lastCall: RequestMock | undefined
+            let hasPendingPayloadCandidate = false
             for (const call of received.calls as RequestMock[]) {
                 lastCall = call
-                if (
+                const matchesNonPayloadCriteria =
                     methodMatcher(call.request.method, expectedValue.method) &&
                     statusCodeMatcher(call.response.status, expectedValue.statusCode) &&
                     urlMatcher(call.request.url, expectedValue.url) &&
                     headersMatcher(reduceHeaders(call.request.headers), expectedValue.requestHeaders) &&
                     headersMatcher(reduceHeaders(call.response.headers), expectedValue.responseHeaders)
-                    // &&
-                    // bodyMatcher(call.postData, expectedValue.postData) &&
-                    // bodyMatcher(call.body, expectedValue.response)
+
+                if (!matchesNonPayloadCriteria) {
+                    continue
+                }
+
+                if (
+                    bodyMatcher(call.postData, expectedValue.postData, parseCache) &&
+                    bodyMatcher(call.body, expectedValue.response, parseCache)
                 ) {
                     return { success: true, subject: call, actual: call }
                 }
+
+                // this call matches everything else - if its body/postData hasn't attached yet,
+                // it could still turn into a match once it does, so it's worth continuing to wait for
+                if (
+                    (expectedValue.postData !== undefined && call.postData === undefined) ||
+                    (expectedValue.response !== undefined && call.body === undefined)
+                ) {
+                    hasPendingPayloadCandidate = true
+                }
             }
-            return { success: false, subject: lastCall, actual: lastCall }
+            payloadNeverCollected = hasPendingPayloadCandidate
+            return {
+                success: false,
+                subject: lastCall,
+                actual: lastCall,
+                abort: waitForPayloadOnNot && !hasPendingPayloadCandidate,
+            }
         },
-        isNot,
-        { ...options, wait: isNot ? 0 : options.wait }
+        waitForPayloadOnNot ? false : isNot,
+        { ...options, wait: (isNot && !waitForPayloadOnNot) ? 0 : options.wait }
     )
 
     const message = enhanceError(
         'mock',
         minifyRequestedWith(expectedValue),
-        minifyRequestMock(actual, expectedValue) || 'was not called',
+        minifyRequestMock(actual, expectedValue, parseCache) || 'was not called',
         this,
         verb,
         expectation,
         '',
         options
-    )
+    ) + (!pass && !isNot && payloadNeverCollected ? payloadCollectionHint(expectedValue) : '')
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
@@ -80,6 +139,28 @@ export async function toBeRequestedWith(
     })
 
     return result
+}
+
+/**
+ * Explain why a `postData`/`response` assertion is diffing against an empty body.
+ *
+ * A call matched every other criterion but its payload never arrived, which almost always means
+ * the request/response body was never collected in the first place rather than that it genuinely
+ * differed. Without this the user just sees a diff against `undefined` with no way to tell the two
+ * apart.
+ */
+const payloadCollectionHint = (expectedValue: ExpectWebdriverIO.RequestedWith) => {
+    const fields = [
+        expectedValue.postData !== undefined ? 'postData' : undefined,
+        expectedValue.response !== undefined ? 'response' : undefined,
+    ].filter(Boolean).join(' and ')
+
+    return `
+
+A request matched every other criterion, but its body was never collected, so ${fields} could not be compared.
+This usually means either:
+  - webdriverio is older than v9.28.0, which did not populate \`mock.calls[].postData\` (upgrade to v9.28.0 or later), or
+  - body collection is turned off via \`maxSpyCollectedBodySize: 0\` in your config (it defaults to 10MB - remove the override or raise it).`
 }
 
 /**
@@ -161,86 +242,134 @@ const headersMatcher = (
 }
 
 /**
- * is postData/response matching an expected condition
+ * a JSON-compatible expected value for `postData`/`response`, shared by every function that
+ * needs to reason about "what shape of value is the user asserting against"
  */
-// const bodyMatcher = (
-//     body: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined,
-//     expected?:
-//         | string
-//         | ExpectWebdriverIO.JsonCompatible
-//         | ExpectWebdriverIO.PartialMatcher
-//         | ((r: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined) => boolean)
-// ) => {
-//     if (typeof expected === 'undefined') {
-//         return true
-//     }
-//     if (typeof expected === 'function') {
-//         return expected(body)
-//     }
-//     if (typeof body === 'undefined') {
-//         return false
-//     }
+type ExpectedBody =
+    | string
+    | boolean
+    | number
+    | null
+    | ExpectWebdriverIO.JsonCompatible
+    | ExpectWebdriverIO.PartialMatcher<string | ExpectWebdriverIO.JsonCompatible>
 
-//     let parsedBody = body
-//     if (body instanceof Buffer) {
-//         parsedBody = body.toString()
-//     }
+/**
+ * is postData/response matching an expected condition
+ *
+ * Note: `body`/`postData` populate asynchronously and may still be `undefined` here on an early
+ * `waitUntil` iteration - see the timing comment on `toBeRequestedWith` for how retries handle that.
+ */
+const bodyMatcher = (
+    body: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined,
+    expected: ExpectedBody | ((r: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined) => boolean) | undefined,
+    parseCache: Map<string, ParsedJson>
+) => {
+    if (typeof expected === 'undefined') {
+        return true
+    }
+    if (typeof expected === 'function') {
+        return expected(body)
+    }
+    if (typeof body === 'undefined') {
+        return false
+    }
 
-//     // convert postData/body from string to JSON if expected value is JSON-like
-//     if (typeof(body) === 'string' && isExpectedJsonLike(expected)) {
-//         parsedBody = tryParseBody(body)
+    let parsedBody: unknown = body
+    if (body instanceof Buffer) {
+        parsedBody = body.toString()
+    }
 
-//         // failed to parse string as JSON
-//         if (parsedBody === null) {
-//             return false
-//         }
-//     }
+    // convert postData/body from string to JSON if expected value is JSON-like
+    // (checked against the Buffer-normalized value, so JSON carried as a Buffer is parsed too)
+    if (typeof parsedBody === 'string' && isExpectedJsonLike(expected)) {
+        const parsed = parseJsonOnce(parsedBody, parseCache)
 
-//     return equals(parsedBody, expected)
-// }
+        // failed to parse string as JSON (a genuine parsed `null` must still be matchable)
+        if (!parsed.ok) {
+            return false
+        }
+        parsedBody = parsed.value
+    }
 
-// const isExpectedJsonLike = (
-//     expected:
-//         | string
-//         | ExpectWebdriverIO.JsonCompatible
-//         | ExpectWebdriverIO.PartialMatcher
-//         | undefined
-//         | Function
-// ) => {
-//     if (typeof expected === 'undefined') {
-//         return false
-//     }
+    return equals(parsedBody, expected)
+}
 
-//     // get matcher sample if expected value is a special matcher like `expect.objectContaining({ foo: 'bar })`
-//     const actualSample = isMatcher(expected)
-//         ? (expected as WdioAsymmetricMatcher).sample
-//         : expected
+// `expect.any(Number)`/`expect.any(Boolean)`/`expect.any(Array)`/`expect.any(Object)` carry their
+// constructor as the matcher's "sample" (not an instance of it), so `typeof actualSample` is
+// 'function' - detect those specifically. `String` is deliberately excluded: a raw (unparsed)
+// string already satisfies `expect.any(String)` without needing to go through JSON.parse first.
+const JSON_LIKE_ANY_CONSTRUCTORS = new Set<unknown>([Number, Boolean, Array, Object])
 
-//     return (
-//         Array.isArray(actualSample) ||
-//         (typeof actualSample === 'object' &&
-//             actualSample !== null &&
-//             actualSample instanceof RegExp === false)
-//     )
-// }
+const isExpectedJsonLike = (
+    expected: ExpectedBody | Function | undefined
+) => {
+    if (typeof expected === 'undefined') {
+        return false
+    }
 
-// const tryParseBody = (jsonString: string | undefined, fallback: any = null) => {
-//     try {
-//         return typeof jsonString === 'undefined' ? fallback : JSON.parse(jsonString)
-//     } catch {
-//         return fallback
-//     }
-// }
+    // get matcher sample if expected value is a special matcher like `expect.objectContaining({ foo: 'bar })`
+    const actualSample = isAsymmetricMatcher(expected)
+        ? getAsymmetricMatcherValue(expected)
+        : expected
+
+    return (
+        actualSample === null ||
+        typeof actualSample === 'boolean' ||
+        typeof actualSample === 'number' ||
+        Array.isArray(actualSample) ||
+        JSON_LIKE_ANY_CONSTRUCTORS.has(actualSample) ||
+        (typeof actualSample === 'object' &&
+            actualSample !== null &&
+            actualSample instanceof RegExp === false)
+    )
+}
+
+type ParsedJson = { ok: true, value: unknown } | { ok: false }
+
+/**
+ * `JSON.parse` a string at most once per assertion - `cache` is shared between the matching
+ * step (`bodyMatcher`) and the message-building step (`minifyRequestMock`) so a failed/passing
+ * assertion doesn't pay for parsing the same postData/body string twice.
+ */
+const parseJsonOnce = (jsonString: string, cache: Map<string, ParsedJson>): ParsedJson => {
+    const cached = cache.get(jsonString)
+    if (cached) {
+        return cached
+    }
+
+    let result: ParsedJson
+    try {
+        result = { ok: true, value: JSON.parse(jsonString) }
+    } catch {
+        result = { ok: false }
+    }
+    cache.set(jsonString, result)
+    return result
+}
+
+/**
+ * resolve a raw postData/body string to its parsed JSON value for display, falling back to the
+ * raw string when it isn't JSON-like or fails to parse
+ */
+const resolveBodyForDisplay = (
+    raw: string | undefined,
+    expectedForField: ExpectedBody | Function | undefined,
+    parseCache: Map<string, ParsedJson>
+): unknown => {
+    if (typeof raw !== 'string' || !isExpectedJsonLike(expectedForField)) {
+        return raw
+    }
+    const parsed = parseJsonOnce(raw, parseCache)
+    return parsed.ok ? parsed.value : raw
+}
 
 /**
  * shorten long url, headers, postData, body
  */
 const minifyRequestMock = (
-    requestMock?: {
-        request: local.NetworkRequestData,
-        response: local.NetworkResponseData
-    },
-    requestedWith?: ExpectWebdriverIO.RequestedWith
+    requestMock: RequestMock | undefined,
+    requestedWith: ExpectWebdriverIO.RequestedWith = {},
+    parseCache: Map<string, ParsedJson> = new Map()
 ) => {
     if (requestMock === undefined) {
         return requestMock
@@ -251,12 +380,8 @@ const minifyRequestMock = (
         method: requestMock.request.method,
         requestHeaders: requestMock.request.headers,
         responseHeaders: requestMock.response.headers,
-        // postData: typeof requestMock.postData === 'string' && isExpectedJsonLike(requestedWith.postData)
-        //     ? tryParseBody(requestMock.postData, requestMock.postData)
-        //     : requestMock.postData,
-        // response: typeof requestMock.body === 'string' && isExpectedJsonLike(requestedWith.response)
-        //     ? tryParseBody(requestMock.body, requestMock.body)
-        //     : requestMock.body,
+        postData: resolveBodyForDisplay(requestMock.postData, requestedWith.postData, parseCache),
+        response: resolveBodyForDisplay(requestMock.body, requestedWith.response, parseCache),
     }
 
     deleteUndefinedValues(r, requestedWith)
@@ -287,12 +412,7 @@ const minifyRequestedWith = (r: ExpectWebdriverIO.RequestedWith) => {
  * transform Function/Matcher/JSON to string if needed
  */
 const requestedWithParamToString = (
-    param:
-        | string
-        | ExpectWebdriverIO.JsonCompatible
-        | ExpectWebdriverIO.PartialMatcher<string>
-        | Function
-        | undefined,
+    param: ExpectedBody | ExpectWebdriverIO.PartialMatcher<string> | Function | undefined,
     transformFn?: (param: ExpectWebdriverIO.JsonCompatible) => ExpectWebdriverIO.JsonCompatible | string
 ) => {
     if (param === undefined) {

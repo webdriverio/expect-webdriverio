@@ -871,6 +871,18 @@ await expect(mock).toBeRequestedWith({
 })
 ```
 
+> **Note on `postData`/`response` timing:** unlike the other options, the request/response body is
+> collected asynchronously (an extra round-trip after the request/response headers are already
+> available), so it may not be attached to a call yet at the very first check. Regular assertions
+> retry within their `wait` timeout and pick it up once it arrives. `.not.toBeRequestedWith({ postData
+> / response })` also retries within `wait` - but only while there's a call that already matches every
+> other criterion and is just waiting on its body to attach; if nothing matches at all (wrong URL, no
+> call made, etc.) it still resolves immediately, same as any other `.not` assertion. The one residual
+> case this can't close: if the body genuinely takes longer to arrive than your configured `wait`, a
+> `.not` assertion can still report a false pass. If you rely on `.not` with `postData`/`response` and
+> see intermittent false passes, increase `wait` (or await a signal that the request has fully
+> completed) before asserting.
+
 ## Snapshot Matcher
 
 WebdriverIO supports basic snapshot tests as well as DOM snapshot testing.
