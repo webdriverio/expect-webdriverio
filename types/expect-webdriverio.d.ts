@@ -22,12 +22,15 @@ type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
 type MatchersObject = Parameters<typeof import('expect').expect.extend>[0]
 type ExpectLibAnything = ReturnType<typeof expect.any> | ReturnType<typeof expect.anything>
-type WdioSome<T> = import('expect-webdriverio/api').WdioSome<T>
 
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.
 type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult;
+}
+
+interface WdioSome<T> {
+    readonly elements: T
 }
 
 /**
@@ -1274,9 +1277,6 @@ declare module 'expect-webdriverio' {
  * Required since importing from 'expect-webdriverio' can trigger double initialization.
  */
 declare module 'expect-webdriverio/api' {
-    export interface WdioSome<T> {
-        readonly elements: T
-    }
     /**
      * Quantifier modifier. Wraps a `$$()` result so that the matcher passes
      * when at least one element satisfies the condition (∃ semantics).
