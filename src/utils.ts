@@ -373,26 +373,32 @@ export const compareStyle = async (
             expectedVal = expectedVal.toLowerCase()
         }
 
+        /**
+         * every property must match - accumulate with `&&` so an earlier mismatch cannot be
+         * overwritten by a later property that happens to match
+         */
+        let matches: boolean
         if (containing) {
-            success = actualVal.includes(expectedVal)
+            matches = actualVal.includes(expectedVal)
             actual[key] = actualVal
         } else if (atStart) {
-            success = actualVal.startsWith(expectedVal)
+            matches = actualVal.startsWith(expectedVal)
             actual[key] = actualVal
         } else if (atEnd) {
-            success = actualVal.endsWith(expectedVal)
+            matches = actualVal.endsWith(expectedVal)
             actual[key] = actualVal
         } else if (atIndex) {
-            success = actualVal.substring(atIndex, actualVal.length).startsWith(expectedVal)
+            matches = actualVal.substring(atIndex, actualVal.length).startsWith(expectedVal)
             actual[key] = actualVal
         } else if (replace){
             const replacedActual = replaceActual(replace, actualVal)
-            success = replacedActual === expectedVal
+            matches = replacedActual === expectedVal
             actual[key] = replacedActual
         } else {
-            success = success && actualVal === expectedVal
+            matches = actualVal === expectedVal
             actual[key] = css.value
         }
+        success = success && matches
     }
 
     return {

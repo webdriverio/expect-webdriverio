@@ -179,6 +179,44 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
         })
 
+        test('failure if an earlier property mismatches with containing', async () => {
+            // regression: each property's result used to overwrite the previous one, so a
+            // mismatch on any but the last property was silently discarded
+            const result = await thisContext.toHaveStyle(
+                el,
+                {
+                    color: 'totally-wrong',
+                    'font-family': 'Faktum',
+                },
+                { wait: 0, containing: true }
+            )
+            expect(result.pass).toBe(false)
+        })
+
+        test('failure if an earlier property mismatches with atStart', async () => {
+            const result = await thisContext.toHaveStyle(
+                el,
+                {
+                    color: 'totally-wrong',
+                    'font-family': 'Faktum',
+                },
+                { wait: 0, atStart: true }
+            )
+            expect(result.pass).toBe(false)
+        })
+
+        test('failure if an earlier property mismatches with atEnd', async () => {
+            const result = await thisContext.toHaveStyle(
+                el,
+                {
+                    'font-family': 'totally-wrong',
+                    color: '000',
+                },
+                { wait: 0, atEnd: true }
+            )
+            expect(result.pass).toBe(false)
+        })
+
         test('success if style matches with atStart', async () => {
             const actualStyle: { [key: string]: string } = {
                 'font-family': 'Faktum Lorem ipsum dolor sit amet',
@@ -239,6 +277,34 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
 
             expect(result.pass).toBe(true)
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
+        })
+
+        test('failure if an earlier property mismatches with atIndex', async () => {
+            const actualStyle: { [key: string]: string } = {
+                'font-family': 'Faktum Lorem ipsum dolor sit amet',
+                'text-rendering': 'optimizeLegibility',
+            }
+            vi.mocked(el.getCSSProperty).mockImplementation(async (property: string) => ({ value: actualStyle[property], parsed: {} }))
+
+            const result = await thisContext.toHaveStyle(el,
+                {
+                    'font-family': 'totally-wrong',
+                    'text-rendering': 'imizeLegibility',
+                },
+                { wait: 0, atIndex: 3 })
+
+            expect(result.pass).toBe(false)
+        })
+
+        test('failure if an earlier property mismatches with replace', async () => {
+            const result = await thisContext.toHaveStyle(el,
+                {
+                    color: 'totally-wrong',
+                    'font-family': 'Faktum',
+                },
+                { wait: 0, replace: [/-/g, ''] })
+
+            expect(result.pass).toBe(false)
         })
 
         test('fails with an array as expected', async () => {
