@@ -237,7 +237,7 @@ export const compareText = (
         }
     }
 
-    if (atIndex) {
+    if (atIndex !== undefined) {
         return {
             actual,
             success: actual.substring(atIndex, actual.length).startsWith(expected),
@@ -317,7 +317,7 @@ export const compareTextWithArray = (
         if (atEnd) {
             return actual.endsWith(expected)
         }
-        if (atIndex) {
+        if (atIndex !== undefined) {
             return actual.substring(atIndex, actual.length).startsWith(expected)
         }
         return actual === expected
@@ -387,7 +387,7 @@ export const compareStyle = async (
         } else if (atEnd) {
             matches = actualVal.endsWith(expectedVal)
             actual[key] = actualVal
-        } else if (atIndex) {
+        } else if (atIndex !== undefined) {
             matches = actualVal.substring(atIndex, actualVal.length).startsWith(expectedVal)
             actual[key] = actualVal
         } else if (replace){

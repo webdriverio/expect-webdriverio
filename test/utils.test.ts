@@ -90,6 +90,13 @@ describe('utils', () => {
             expect(compareText(' FOO ', undefined, {}).success).toBe(false)
             expect(compareText(' FOO ', null, {}).success).toBe(false)
         })
+
+        test('should apply atIndex when it is 0', () => {
+            // regression: `if (atIndex)` treated 0 as falsy and silently fell through to a plain
+            // equality check instead of substring(0, len).startsWith(expected)
+            expect(compareText('hello world', 'hello', { atIndex: 0 }).success).toBe(true)
+            expect(compareText('hello world', 'world', { atIndex: 0 }).success).toBe(false)
+        })
     })
 
     describe(compareTextWithArray, () => {
@@ -153,6 +160,13 @@ describe('utils', () => {
             expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), jasmine.stringContaining('oobb')], { ignoreCase: true }).success).toBe(true)
             expect(compareTextWithArray(' foo ', [jasmine.stringContaining('FOO'), 'oobb'], { ignoreCase: true }).success).toBe(true)
             expect(compareTextWithArray('foo', [jasmine.stringContaining('FOOO'), 'FOO'], { ignoreCase: true }).success).toBe(true)
+        })
+
+        test('should apply atIndex when it is 0', () => {
+            // regression: `if (atIndex)` treated 0 as falsy and silently fell through to a plain
+            // equality check instead of substring(0, len).startsWith(expected)
+            expect(compareTextWithArray('hello world', ['hello'], { atIndex: 0 }).success).toBe(true)
+            expect(compareTextWithArray('hello world', ['world'], { atIndex: 0 }).success).toBe(false)
         })
     })
 
