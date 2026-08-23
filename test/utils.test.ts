@@ -86,6 +86,86 @@ describe('utils', () => {
             expect(compareText(' FOO ', jasmine.stringMatching(/.*foo.*/i), {}).success).toBe(true)
         })
 
+        test('should apply ignoreCase to a RegExp expected value', () => {
+            // ignoreCase makes the pattern case-insensitive (via the `i` flag) instead of
+            // lowercasing `actual` - otherwise a matching text would be reported as not matching
+            expect(compareText('Hello', /Hello/, { ignoreCase: true }).success).toBe(true)
+            expect(compareText('HELLO', /hello/, { ignoreCase: true }).success).toBe(true)
+            expect(compareText('Hello', /^H/, { ignoreCase: true }).success).toBe(true)
+            // a genuine mismatch must still fail
+            expect(compareText('Hello', /Goodbye/, { ignoreCase: true }).success).toBe(false)
+        })
+
+        test('should preserve existing RegExp flags when applying ignoreCase', () => {
+            expect(compareText('Hello\nWorld', /^world$/m, { ignoreCase: true }).success).toBe(true)
+            // already case-insensitive patterns keep working
+            expect(compareText('Hello', /hello/i, { ignoreCase: true }).success).toBe(true)
+        })
+
+        test('should not apply ignoreCase to a RegExp when the option is off', () => {
+            expect(compareText('Hello', /Hello/, {}).success).toBe(true)
+            expect(compareText('Hello', /hello/, {}).success).toBe(false)
+        })
+
+        test('should match a RegExp against the original-case actual value, not a lowercased copy', () => {
+            // 'İ' (Turkish dotted capital I, U+0130) expands to two code points when lowercased
+            // ('i' + combining dot above), which would corrupt a length-sensitive pattern if
+            // `actual` were lowercased before matching. The RegExp's own `i` flag (applied by
+            // ignoreCase) already provides the case-insensitivity, so `actual` must stay as-is.
+            expect(compareText('İstanbul', /^.{8}$/i, { ignoreCase: true }).success).toBe(true)
+        })
+
+        test('should preserve a sticky RegExp lastIndex when applying ignoreCase', () => {
+            const pattern = /world/y
+            pattern.lastIndex = 6
+            // requires the ignoreCase-cloned regex to retain lastIndex 6 (String.prototype.match
+            // honors it for sticky patterns) and its own `i` flag to bridge the case difference
+            expect(compareText('hello WORLD', pattern, { ignoreCase: true }).success).toBe(true)
+        })
+
+        test('should not mutate the caller\'s RegExp lastIndex when the pattern already has `i`', () => {
+            // withIgnoreCaseFlag always clones, even when `i` is already set, so matching never
+            // mutates a `lastIndex` the caller still holds a reference to
+            const pattern = /world/giy
+            pattern.lastIndex = 6
+            compareText('hello world', pattern, { ignoreCase: true })
+            expect(pattern.lastIndex).toBe(6)
+        })
+
+        test('should apply ignoreCase to a stringMatching matcher wrapping a RegExp', () => {
+            // stringMatching(regex) was still lowercasing `actual` without adding `i` to the
+            // regex, so ignoreCase had no effect on it
+            expect(compareText('Hello', expect.stringMatching(/Hello/), { ignoreCase: true }).success).toBe(true)
+            expect(compareText('Hello', jasmine.stringMatching(/Hello/), { ignoreCase: true }).success).toBe(true)
+            expect(compareText('Hello', expect.stringMatching(/Goodbye/), { ignoreCase: true }).success).toBe(false)
+        })
+
+        test('should apply ignoreCase to a stringMatching matcher wrapping a string', () => {
+            // expect.stringMatching(string) treats the string as regex source (both `expect` and
+            // jasmine build a RegExp from it immediately), so this is exercising the same `i`-flag
+            // path as a bare RegExp, not a plain case-insensitive string comparison
+            expect(compareText('Hello', expect.stringMatching('HELLO'), { ignoreCase: true }).success).toBe(true)
+        })
+
+        test('should not corrupt regex escapes when a stringMatching-like matcher stores a raw string sample', () => {
+            // stringMatching's sample is regex source, never literal text - `\D` means "non-digit".
+            // A matcher that (per its type contract, JasmineStringMatchingAsymmetricMatcher<string
+            // | RegExp>) stores the sample as a string rather than a pre-built RegExp must still be
+            // treated as regex source: lowercasing it as literal text would turn it into `\d`
+            // ("digit"), inverting the match entirely.
+            const rawStringSampleMatcher = {
+                constructor: { name: 'StringMatching' },
+                sample: '\\D+',
+            }
+            expect(compareText('abc', rawStringSampleMatcher as any, { ignoreCase: true }).success).toBe(true)
+            expect(compareText('123', rawStringSampleMatcher as any, { ignoreCase: true }).success).toBe(false)
+        })
+
+        test('should apply ignoreCase to an inverted (not.stringMatching) matcher', () => {
+            expect(compareText('Hello', expect.not.stringMatching(/Hello/), { ignoreCase: true }).success).toBe(false)
+            expect(compareText('Hello', expect.not.stringMatching(/Goodbye/), { ignoreCase: true }).success).toBe(true)
+        })
+
         test('should support undefined/null expected value', () => {
             expect(compareText(' FOO ', undefined, {}).success).toBe(false)
             expect(compareText(' FOO ', null, {}).success).toBe(false)
@@ -110,6 +190,30 @@ describe('utils', () => {
             expect(compareTextWithArray(' foo ', ['foO', 'BAR'], { trim: true, ignoreCase: true }).success).toBe(true)
             expect(compareTextWithArray(' foo ', ['foOo', 'BAR'], { trim: true, ignoreCase: true }).success).toBe(false)
             expect(compareTextWithArray(' FOO ', ['foOO', 'bar'], { trim: true, ignoreCase: true }).success).toBe(false)
+        })
+
+        test('should apply ignoreCase to RegExp entries in the array', () => {
+            expect(compareTextWithArray('Hello', [/Hello/], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray('HELLO', ['nope', /hello/], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray('Hello', [/Goodbye/], { ignoreCase: true }).success).toBe(false)
+        })
+
+        test('should match RegExp entries against the original-case actual value, not a lowercased copy', () => {
+            // see the equivalent compareText test for why: lowercasing 'İ' expands it to two
+            // code points, corrupting a length-sensitive pattern
+            expect(compareTextWithArray('İstanbul', [/^.{8}$/i], { ignoreCase: true }).success).toBe(true)
+        })
+
+        test('should preserve a sticky RegExp lastIndex when applying ignoreCase', () => {
+            const pattern = /world/y
+            pattern.lastIndex = 6
+            expect(compareTextWithArray('hello WORLD', [pattern], { ignoreCase: true }).success).toBe(true)
+        })
+
+        test('should apply ignoreCase to a stringMatching entry wrapping a RegExp', () => {
+            expect(compareTextWithArray('Hello', [expect.stringMatching(/Hello/)], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray('HELLO', ['nope', expect.stringMatching(/hello/)], { ignoreCase: true }).success).toBe(true)
+            expect(compareTextWithArray('Hello', [expect.stringMatching(/Goodbye/)], { ignoreCase: true }).success).toBe(false)
         })
 
         test('should pass if string contains and using containing', () => {
