@@ -169,7 +169,7 @@ This option can be applied in addition to the command options when strings are b
 
 | Name | Type | Details |
 | ---- | ---- | ------- |
-| <code><var>ignoreCase</var></code> | boolean | apply `toLowerCase` to both actual and expected values |
+| <code><var>ignoreCase</var></code> | boolean | apply `toLowerCase` to both actual and expected values. A RegExp expected value is matched case-insensitively instead (the `i` flag is applied), since a pattern cannot be lowercased safely. |
 | <code><var>trim</var></code> | boolean | apply `trim` to actual value |
 | <code><var>replace</var></code> | Replacer \| Replacer[] | replace parts of the actual value that match the string/RegExp. The replacer can be a string or a function.
 | <code><var>containing</var></code> | boolean | expect actual value to contain expected value, otherwise strict equal. |

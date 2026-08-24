@@ -36,6 +36,17 @@ export function isInversedStringContainingMatcher(expected: unknown): expected i
     return isStringContainingMatcherLike(expected) && (expected as WdioAsymmetricMatcher<string>).inverse === true
 }
 
+export function isStringMatchingMatcherLike(expected: unknown): expected is WdioAsymmetricMatcher<string | RegExp> | JasmineStringMatchingAsymmetricMatcher<string | RegExp> {
+    return !!expected && expected.constructor.name === 'StringMatching'
+}
+
+/**
+ * Detect `not.stringMatching` matcher. Jasmine does not have an inverse stringMatching matcher.
+ */
+export function isInversedStringMatchingMatcher(expected: unknown): expected is WdioAsymmetricMatcher<string | RegExp> {
+    return isStringMatchingMatcherLike(expected) && (expected as WdioAsymmetricMatcher<string | RegExp>).inverse === true
+}
+
 export function getStringAsymmetricMatcherValue(
     expected: WdioAsymmetricMatcher<string> | JasmineStringAsymmetricMatcher<string>
 ): string | RegExp {
@@ -190,15 +201,36 @@ export const compareText = (
     if (Array.isArray(replace)) {
         actual = replaceActual(replace, actual)
     }
+
+    // a RegExp expected value (bare or wrapped in stringMatching) expresses case-insensitivity via
+    // its own `i` flag (added below), so `actual` is left in its original case for it - lowercasing
+    // first can corrupt characters with special casing (e.g. Turkish İ expands to two code points
+    // via toLowerCase()), silently breaking otherwise-correct matches.
     if (ignoreCase) {
-        actual = actual.toLowerCase()
         if (typeof expected === 'string') {
+            actual = actual.toLowerCase()
             expected = expected.toLowerCase()
+        } else if (expected instanceof RegExp) {
+            expected = withIgnoreCaseFlag(expected)
         } else if (isStringContainingMatcherLike(expected)) {
+            actual = actual.toLowerCase()
             const sample = getStringAsymmetricMatcherValue(expected).toString().toLocaleLowerCase()
             expected = (isInversedStringContainingMatcher(expected)
                 ? expect.not.stringContaining(sample)
                 : expect.stringContaining(sample)) as WdioAsymmetricMatcher<string>
+        } else if (isStringMatchingMatcherLike(expected)) {
+            // stringMatching's sample is regex source regardless of whether it was given as a
+            // string or a RegExp instance, so lowercasing it as if it were literal text would
+            // corrupt regex escapes (e.g. `\D` -> `\d` flips "non-digit" to "digit"). Build/extend
+            // a RegExp and add the `i` flag instead - `actual` stays in its original case, same as
+            // the bare RegExp branch above.
+            const sample = getStringAsymmetricMatcherValue(expected as WdioAsymmetricMatcher<string> | JasmineStringAsymmetricMatcher<string>)
+            const caseInsensitiveSample = withIgnoreCaseFlag(sample instanceof RegExp ? sample : new RegExp(sample))
+            expected = (isInversedStringMatchingMatcher(expected)
+                ? expect.not.stringMatching(caseInsensitiveSample)
+                : expect.stringMatching(caseInsensitiveSample)) as WdioAsymmetricMatcher<string>
+        } else {
+            actual = actual.toLowerCase()
         }
     }
 
@@ -285,11 +317,20 @@ export const compareTextWithArray = (
     if (Array.isArray(replace)) {
         actual = replaceActual(replace, actual)
     }
+
+    // Entries that carry their own RegExp - a bare RegExp, or one wrapped in stringMatching - carry
+    // their own case-insensitivity via the `i` flag (added below), so they are matched against
+    // `actualOriginalCase` instead of the lowercased `actual` - lowercasing it first can corrupt
+    // characters with special casing (e.g. Turkish İ), silently breaking otherwise-valid matches.
+    const actualOriginalCase = actual
     if (ignoreCase) {
         actual = actual.toLowerCase()
         expectedArray = expectedArray.map((item) => {
             if (typeof item === 'string') {
                 return item.toLowerCase()
+            }
+            if (item instanceof RegExp) {
+                return withIgnoreCaseFlag(item)
             }
             if (isStringContainingMatcherLike(item)) {
                 const sample = getStringAsymmetricMatcherValue(item).toString().toLocaleLowerCase()
@@ -297,13 +338,25 @@ export const compareTextWithArray = (
                     ? expect.not.stringContaining(sample)
                     : expect.stringContaining(sample)) as WdioAsymmetricMatcher<string>
             }
+            if (isStringMatchingMatcherLike(item)) {
+                // see the equivalent branch in compareText for why the sample is turned into a
+                // RegExp rather than lowercased as literal text
+                const sample = getStringAsymmetricMatcherValue(item as WdioAsymmetricMatcher<string> | JasmineStringAsymmetricMatcher<string>)
+                const caseInsensitiveSample = withIgnoreCaseFlag(sample instanceof RegExp ? sample : new RegExp(sample))
+                return (isInversedStringMatchingMatcher(item)
+                    ? expect.not.stringMatching(caseInsensitiveSample)
+                    : expect.stringMatching(caseInsensitiveSample)) as WdioAsymmetricMatcher<string>
+            }
             return item
         })
     }
 
     const hasFoundTextInArray = expectedArray.some((expected) => {
         if (expected instanceof RegExp) {
-            return !!actual.match(expected)
+            return !!actualOriginalCase.match(expected)
+        }
+        if (isStringMatchingMatcherLike(expected) && getStringAsymmetricMatcherValue(expected as WdioAsymmetricMatcher<string> | JasmineStringAsymmetricMatcher<string>) instanceof RegExp) {
+            return expected.asymmetricMatch(actualOriginalCase)
         }
         if (isAsymmetricMatcher(expected)) {
             return expected.asymmetricMatch(actual)
@@ -323,7 +376,7 @@ export const compareTextWithArray = (
         return actual === expected
     })
     return {
-        actual,
+        actual: actualOriginalCase,
         success: hasFoundTextInArray,
     }
 }
@@ -410,6 +463,27 @@ export const compareStyle = async (
 export {
     compareNumbers, enhanceError,
     executeCommandBe, waitUntil, wrapExpectedWithArray
+}
+
+/**
+ * Return an equivalent RegExp carrying the `i` (ignore case) flag.
+ *
+ * The actual value being compared is generally left untouched when it's matched against a RegExp
+ * (see the callers), since a RegExp pattern can't be lowercased without corrupting it (character
+ * classes, escapes, etc.) - the case-insensitivity has to be expressed on the pattern itself.
+ *
+ * Always returns a clone, even when `i` is already set, so matching never mutates a `lastIndex`
+ * the caller still holds a reference to. The clone's `lastIndex` is copied from the source - for a
+ * sticky (`y`) pattern this is the position the match is anchored to, and `String.prototype.match`
+ * honors it, so losing it (it would otherwise reset to 0 on the new instance) silently changes
+ * where the match is attempted.
+ */
+function withIgnoreCaseFlag(expected: RegExp): RegExp {
+    const cloned = expected.ignoreCase
+        ? new RegExp(expected.source, expected.flags)
+        : new RegExp(expected.source, `${expected.flags}i`)
+    cloned.lastIndex = expected.lastIndex
+    return cloned
 }
 
 function replaceActual(
