@@ -7,15 +7,19 @@ import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
 
+// mirrors `RequestMock` in src/matchers/mock/toBeRequestedWith.ts - `postData`/`body` are flat
+// properties attached to the call object by WebDriverInterception, not part of the BiDi types
+type MockCallFixture = local.NetworkAuthRequiredParameters & { postData?: string, body?: string | Buffer }
+
 interface Scenario {
     name: string
-    mocks: local.NetworkBaseParameters[]
+    mocks: MockCallFixture[]
     pass: boolean
     params: ExpectWebdriverIO.RequestedWith
 }
 
 class TestMock {
-    _calls: local.NetworkBaseParameters[]
+    _calls: MockCallFixture[]
 
     constructor() {
         this._calls = []
@@ -34,7 +38,7 @@ function reduceHeaders(headers: local.NetworkHeader[]) {
 
 const authKey = 'Bearer ' + '2'.repeat(128)
 
-const mockGet: local.NetworkAuthRequiredParameters = {
+const mockGet: MockCallFixture = {
     request: {
         url: 'http://localhost:8080/api/search?pages=20',
         method: 'GET',
@@ -55,25 +59,23 @@ const mockGet: local.NetworkAuthRequiredParameters = {
         headers: {},
         status: 200,
     } as any,
-    // body: JSON.stringify({
-    //     total: 100,
-    //     page: 1,
-    //     data: {
-    //         aLongValue1: {
-    //             k1: { value1: 'bar1' },
-    //             k2: { value2: 'bar2' },
-    //         },
-    //         foo: { id: 1 },
-    //         bar: { id: 2 },
-    //         longValue2: { value: 'foo2' },
-    //         longValue3: { value: 'foo3' },
-    //     },
-    // }),
-    // initialPriority: 'Low',
-    // referrerPolicy: 'origin',
+    body: JSON.stringify({
+        total: 100,
+        page: 1,
+        data: {
+            aLongValue1: {
+                k1: { value1: 'bar1' },
+                k2: { value2: 'bar2' },
+            },
+            foo: { id: 1 },
+            bar: { id: 2 },
+            longValue2: { value: 'foo2' },
+            longValue3: { value: 'foo3' },
+        },
+    }),
 } as any
 
-const mockPost: local.NetworkAuthRequiredParameters = {
+const mockPost: MockCallFixture = {
     request: {
         url: 'https://my-app/api/add-tags',
         method: 'POST',
@@ -97,13 +99,11 @@ const mockPost: local.NetworkAuthRequiredParameters = {
         status: 201,
         headers: []
     } as any,
-    // body: JSON.stringify([
-    //     { id: 1, name: 'foo' },
-    //     { id: 2, name: 'bar' },
-    // ]),
-    // postData: JSON.stringify([{ id: 1 }, { search: { name: 'bar' } }]),
-    // initialPriority: 'Low',
-    // referrerPolicy: 'origin',
+    body: JSON.stringify([
+        { id: 1, name: 'foo' },
+        { id: 2, name: 'bar' },
+    ]),
+    postData: JSON.stringify([{ id: 1 }, { search: { name: 'bar' } }]),
 } as any
 
 describe(toBeRequestedWith, () => {
@@ -130,8 +130,8 @@ describe(toBeRequestedWith, () => {
             requestHeaders: {},
             statusCode: mockPost.response.status,
             responseHeaders: {},
-            // postData: mockPost.postData,
-            // response: JSON.parse(mockPost.body as string),
+            postData: mockPost.postData,
+            response: JSON.parse(mockPost.body as string),
         }
 
         const beforeAssertion = vi.fn()
@@ -164,9 +164,9 @@ describe(toBeRequestedWith, () => {
             url: 'post.url',
             method: 'post.method',
             requestHeaders: {},
-            responseHeaders: {}
-            // postData: {},
-            // response: 'post.body',
+            responseHeaders: {},
+            postData: {},
+            response: 'post.body',
         }
 
         const result = await toBeRequestedWith(mock, params, { wait: 20 })
@@ -199,6 +199,64 @@ Received      : {}`
 
         const result = await thisNotContext.toBeRequestedWith(mock, { method: 'DELETE' }, { wait: 20 })
         expect(result.pass).toBe(false) // success, boolean inverted later because of .not
+    })
+
+    test('wait for NOT - fails when a matching payload is attached after a delay', async () => {
+        const mock: any = new TestMock()
+
+        // Simulate real WebDriverInterception timing: the call is already recorded (method/url/
+        // headers resolve synchronously) but its response body is attached to the *same* object
+        // slightly later via a separate `network.getData` round-trip.
+        const call: any = { ...mockPost, body: undefined }
+        mock.calls.push(call)
+
+        setTimeout(() => {
+            call.body = mockPost.body
+        }, 10)
+
+        const result = await thisNotContext.toBeRequestedWith(mock, {
+            url: mockPost.request.url,
+            response: JSON.parse(mockPost.body as string),
+        }, { wait: 200 })
+
+        // a matching call did eventually happen, so `.not` must not silently pass just because
+        // the payload hadn't arrived yet at the first check
+        expect(result.pass).toBe(true) // matched, boolean inverted later because of .not
+    })
+
+    test('wait for NOT - resolves immediately when nothing could possibly match (no perf regression)', async () => {
+        const mock: any = new TestMock()
+        mock.calls.push({ ...mockPost, body: undefined })
+
+        const start = Date.now()
+        const result = await thisNotContext.toBeRequestedWith(mock, {
+            url: 'https://completely-different-endpoint',
+            response: { foo: 'bar' },
+        }, { wait: 1000 })
+        const elapsed = Date.now() - start
+
+        // url never matches, so there's no candidate whose payload could still turn this into a
+        // match - this must resolve well under the 1000ms wait, not block for the full window
+        expect(result.pass).toBe(false) // no match found, boolean inverted later because of .not
+        expect(elapsed).toBeLessThan(500)
+    })
+
+    test('wait for NOT - still waits out the full window when a pending candidate exists but never resolves', async () => {
+        const mock: any = new TestMock()
+        // matches url, but body never arrives within the wait window
+        mock.calls.push({ ...mockPost, body: undefined })
+
+        const start = Date.now()
+        const result = await thisNotContext.toBeRequestedWith(mock, {
+            url: mockPost.request.url,
+            response: { foo: 'bar' },
+        }, { wait: 300 })
+        const elapsed = Date.now() - start
+
+        // a pending candidate exists (url matches, body not attached yet), so this correctly
+        // waits out the full window before concluding no match - this is the known residual limit
+        expect(result.pass).toBe(false) // no match found, boolean inverted later because of .not
+        expect(elapsed).toBeGreaterThanOrEqual(200)
     })
 
     const scenarios: Scenario[] = [
@@ -247,22 +305,22 @@ Received      : {}`
                 responseHeaders: {},
             },
         },
-        // {
-        //     name: 'success, postData only',
-        //     mocks: [{ ...mockPost }],
-        //     pass: true,
-        //     params: {
-        //         postData: JSON.parse(mockPost.postData as string),
-        //     },
-        // },
-        // {
-        //     name: 'success, response only',
-        //     mocks: [{ ...mockPost }],
-        //     pass: true,
-        //     params: {
-        //         response: mockPost.body,
-        //     },
-        // },
+        {
+            name: 'success, postData only',
+            mocks: [{ ...mockPost }],
+            pass: true,
+            params: {
+                postData: JSON.parse(mockPost.postData as string),
+            },
+        },
+        {
+            name: 'success, response only',
+            mocks: [{ ...mockPost }],
+            pass: true,
+            params: {
+                response: mockPost.body,
+            },
+        },
         // failure
         {
             name: 'failure, url only',
@@ -304,22 +362,22 @@ Received      : {}`
                 responseHeaders: { Cache: 'false' },
             },
         },
-        // {
-        //     name: 'failure, postData only',
-        //     mocks: [{ ...mockPost }],
-        //     pass: false,
-        //     params: {
-        //         postData: 'foobar',
-        //     },
-        // },
-        // {
-        //     name: 'failure, response only',
-        //     mocks: [{ ...mockGet }],
-        //     pass: false,
-        //     params: {
-        //         response: { foobar: true },
-        //     },
-        // },
+        {
+            name: 'failure, postData only',
+            mocks: [{ ...mockPost }],
+            pass: false,
+            params: {
+                postData: 'foobar',
+            },
+        },
+        {
+            name: 'failure, response only',
+            mocks: [{ ...mockGet }],
+            pass: false,
+            params: {
+                response: { foobar: true },
+            },
+        },
         // special matcher
         {
             name: 'special matcher, url',
@@ -389,39 +447,109 @@ Received      : {}`
             },
         },
         // no postData
-        // {
-        //     name: 'no postData',
-        //     mocks: [{ ...mockGet }],
-        //     pass: false,
-        //     params: {
-        //         postData: 'something',
-        //     },
-        // },
+        {
+            name: 'no postData',
+            mocks: [{ ...mockGet }],
+            pass: false,
+            params: {
+                postData: 'something',
+            },
+        },
         // body is not a JSON
-        // {
-        //     name: 'body as string',
-        //     mocks: [{ ...mockGet, body: 'asd' }],
-        //     pass: true,
-        //     params: {
-        //         response: 'asd',
-        //     },
-        // },
-        // {
-        //     name: 'body as Buffer',
-        //     mocks: [{ ...mockGet, body: Buffer.from('asd') }],
-        //     pass: true,
-        //     params: {
-        //         response: 'asd',
-        //     },
-        // },
-        // {
-        //     name: 'body as JSON',
-        //     mocks: [{ ...mockGet, body: 'asd' }],
-        //     pass: false,
-        //     params: {
-        //         response: { foo: 'bar' },
-        //     },
-        // },
+        {
+            name: 'body as string',
+            mocks: [{ ...mockGet, body: 'asd' }],
+            pass: true,
+            params: {
+                response: 'asd',
+            },
+        },
+        {
+            name: 'body as Buffer',
+            mocks: [{ ...mockGet, body: Buffer.from('asd') }],
+            pass: true,
+            params: {
+                response: 'asd',
+            },
+        },
+        {
+            name: 'body as JSON',
+            mocks: [{ ...mockGet, body: 'asd' }],
+            pass: false,
+            params: {
+                response: { foo: 'bar' },
+            },
+        },
+        // JSON body carried as a Buffer must still be parsed (normalized value, not the raw Buffer)
+        {
+            name: 'body as JSON Buffer',
+            mocks: [{ ...mockGet, body: Buffer.from(JSON.stringify({ foo: 'bar' })) }],
+            pass: true,
+            params: {
+                response: { foo: 'bar' },
+            },
+        },
+        // primitive JSON bodies (boolean/number/null) must be JSON-like and matchable
+        {
+            name: 'body as JSON primitive - number',
+            mocks: [{ ...mockGet, body: '42' }],
+            pass: true,
+            params: {
+                response: 42,
+            },
+        },
+        {
+            name: 'body as JSON primitive - mismatched number',
+            mocks: [{ ...mockGet, body: '42' }],
+            pass: false,
+            params: {
+                response: 43,
+            },
+        },
+        {
+            name: 'body as JSON primitive - boolean',
+            mocks: [{ ...mockGet, body: 'true' }],
+            pass: true,
+            params: {
+                response: true,
+            },
+        },
+        // a genuinely parsed JSON `null` must remain matchable, not be confused with parse failure
+        {
+            name: 'body as JSON primitive - null',
+            mocks: [{ ...mockGet, body: 'null' }],
+            pass: true,
+            params: {
+                response: null,
+            },
+        },
+        // `expect.any(Number/Boolean)` carries its constructor as the matcher sample (not an
+        // instance), so it must still be recognized as JSON-like or the raw string body never
+        // gets parsed and the match fails against an otherwise-valid primitive payload
+        {
+            name: 'special matcher, response as expect.any(Number) against a JSON number body',
+            mocks: [{ ...mockGet, body: '42' }],
+            pass: true,
+            params: {
+                response: expect.any(Number),
+            },
+        },
+        {
+            name: 'special matcher, response as expect.any(Boolean) against a JSON boolean body',
+            mocks: [{ ...mockGet, body: 'true' }],
+            pass: true,
+            params: {
+                response: expect.any(Boolean),
+            },
+        },
+        {
+            name: 'special matcher, postData as expect.any(Array) against a JSON array body',
+            mocks: [{ ...mockPost }],
+            pass: true,
+            params: {
+                postData: expect.any(Array),
+            },
+        },
     ]
 
     scenarios.forEach((scenario) => {
@@ -453,6 +581,67 @@ Received      : {}`
 
         afterEach(() => {
             global.console.error = consoleError
+        })
+    })
+
+    describe('uncollected body diagnostics', () => {
+        test('hints at the likely cause when a matching call never got its body collected', async () => {
+            const mock: any = new TestMock()
+            // matches url/method, but the body was never collected (old webdriverio, or
+            // `maxSpyCollectedBodySize: 0`)
+            mock.calls.push({ ...mockPost, postData: undefined, body: undefined })
+
+            const result = await thisContext.toBeRequestedWith(mock, {
+                url: mockPost.request.url,
+                response: { foo: 'bar' },
+            }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            const message = stripAnsi(result.message())
+            expect(message).toContain('its body was never collected')
+            expect(message).toContain('response could not be compared')
+            expect(message).toContain('v9.28.0')
+            expect(message).toContain('maxSpyCollectedBodySize')
+        })
+
+        test('names both fields when postData and response are asserted together', async () => {
+            const mock: any = new TestMock()
+            mock.calls.push({ ...mockPost, postData: undefined, body: undefined })
+
+            const result = await thisContext.toBeRequestedWith(mock, {
+                url: mockPost.request.url,
+                postData: { a: 1 },
+                response: { foo: 'bar' },
+            }, { wait: 0 })
+
+            expect(stripAnsi(result.message())).toContain('postData and response could not be compared')
+        })
+
+        test('does not hint when the body was collected but genuinely differs', async () => {
+            const mock: any = new TestMock()
+            mock.calls.push({ ...mockPost })
+
+            const result = await thisContext.toBeRequestedWith(mock, {
+                url: mockPost.request.url,
+                response: { totally: 'different' },
+            }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).not.toContain('never collected')
+        })
+
+        test('does not hint when the failure is unrelated to the payload', async () => {
+            const mock: any = new TestMock()
+            mock.calls.push({ ...mockPost, postData: undefined, body: undefined })
+
+            // url never matches, so the payload is not why this failed
+            const result = await thisContext.toBeRequestedWith(mock, {
+                url: 'https://not-the-endpoint',
+                response: { foo: 'bar' },
+            }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).not.toContain('never collected')
         })
     })
 

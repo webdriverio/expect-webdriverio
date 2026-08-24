@@ -96,4 +96,58 @@ describe('Network Matchers', () => {
     it('should throw an error when asserting not be requested', async () => {
         await expect(expect(mock).not.toBeRequested()).rejects.toThrow()
     })
+
+    /**
+     * `postData`/`response` were silently ignored before #2184 - any assertion on them passed
+     * regardless of the real payload. These cover the restored comparison end-to-end.
+     *
+     * Note: `mock.calls[n].body` is the *upstream* response, not `mock.respond()`'s override
+     * (respond changes what the page receives; the collector still records what the server sent).
+     * So `response` is asserted structurally rather than against the mocked value.
+     */
+    it('should assert on postData', async () => {
+        await expect(mock).toBeRequestedWith({
+            method: 'POST',
+            postData: { title: 'foo', description: 'bar' }
+        })
+    })
+
+    it('should assert on postData with an asymmetric matcher', async () => {
+        await expect(mock).toBeRequestedWith({
+            postData: expect.objectContaining({ title: 'foo' })
+        })
+    })
+
+    it('should assert on postData with a function matcher', async () => {
+        await expect(mock).toBeRequestedWith({
+            postData: (postData) => typeof postData === 'string' && postData.includes('description')
+        })
+    })
+
+    it('should FAIL when postData does not match', async () => {
+        // the regression guard: this silently passed before the fix
+        await expect(
+            expect(mock).toBeRequestedWith({ postData: { title: 'WRONG' } })
+        ).rejects.toThrow()
+    })
+
+    it('should FAIL when postData is expected but the request had none', async () => {
+        const getMock = await browser.mock('https://webdriver.io/**', { method: 'GET' })
+        await browser.url('https://webdriver.io/')
+        await expect(
+            expect(getMock).toBeRequestedWith({ postData: { any: 'thing' } })
+        ).rejects.toThrow()
+    })
+
+    it('should assert that a response body was collected', async () => {
+        await expect(mock).toBeRequestedWith({
+            response: (response) => typeof response === 'string' && response.length > 0
+        })
+    })
+
+    it('should FAIL when response does not match', async () => {
+        await expect(
+            expect(mock).toBeRequestedWith({ response: { definitely: 'not-this' } })
+        ).rejects.toThrow()
+    })
 })
