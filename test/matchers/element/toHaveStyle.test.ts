@@ -307,6 +307,20 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             expect(result.pass).toBe(false)
         })
 
+        test('success if style matches with atIndex 0', async () => {
+            // regression: `atIndex` was checked with a plain truthy test, so `atIndex: 0` was
+            // silently ignored and fell through to a strict equality check instead. Using a
+            // prefix of the actual value ('Fak' of 'Faktum') means the strict-equality fallback
+            // would fail, so this only passes with atIndex actually applied.
+            const result = await thisContext.toHaveStyle(el,
+                {
+                    'font-family': 'Fak',
+                },
+                { atIndex: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
         test('fails with an array as expected', async () => {
 
             // @ts-expect-error testing invalid input
