@@ -46,9 +46,11 @@
     "./types": "./types/expect-global.d.ts",
     "./expect-global": "./types/expect-global.d.ts",
     "./api": {
-      "types": "./types/expect-webdriverio.d.ts",
-      "import": "./lib/api/index.js"
-    }
+        "types": "./types/expect-webdriverio.d.ts",
+        "import": "./lib/api/index.js",
+        "require": "./lib/api/index.js",
+        "default": "./lib/api/index.js"
+      }
   },
   "types": "./types/expect-webdriverio.d.ts",
   "typeScriptVersion": "3.8.3",
