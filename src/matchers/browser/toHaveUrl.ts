@@ -1,9 +1,26 @@
-import { waitUntil, enhanceError, compareText } from '../../utils.js'
+import { waitUntil, enhanceError, compareTextOrOneOf } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { CompareResult } from '../../util/executeCommand.js'
+import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 
 export async function toHaveUrl(
+    this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.Browser,
-    expectedValue: string | RegExp | AsymmetricMatcher<string>,
+    expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveUrl(
+    this: ExpectWebdriverIO.MatcherContext,
+    browser: WebdriverIO.MultiRemoteBrowser,
+    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveUrl(
+    this: ExpectWebdriverIO.MatcherContext,
+    browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
+    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'url', verb = 'have', isNot, matcherName = 'toHaveUrl' } = this
@@ -14,19 +31,21 @@ export async function toHaveUrl(
         options,
     })
 
-    const { success: pass, actual } = await waitUntil(
+    const { success: pass, actual, subject, expected } = await waitUntil(
         async () => {
-            const actual = await browser.getUrl()
-
-            const compareResult = compareText(actual, expectedValue, options)
-
-            return { actual, success: compareResult.success, subject: browser }
+            return await executeBrowserCommand({
+                browser,
+                expectedValue,
+                compare: (
+                    browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
+                ) => compareUrl(browser, expectedValue, options),
+            })
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError('window', expectedValue, actual, this, verb, expectation, '', options)
+    const message = enhanceError(subject, expected, actual, { isNot }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: () => message
@@ -40,4 +59,13 @@ export async function toHaveUrl(
     })
 
     return result
+}
+
+const compareUrl = async (
+    browser: WebdriverIO.Browser,
+    expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
+    options: ExpectWebdriverIO.StringOptions
+): Promise<CompareResult<string>> => {
+    const actual = await browser.getUrl()
+    return compareTextOrOneOf(actual, expectedValue, options)
 }
