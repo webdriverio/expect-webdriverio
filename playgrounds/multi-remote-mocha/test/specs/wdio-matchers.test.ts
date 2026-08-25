@@ -93,15 +93,15 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(h1).toHaveText(['WebdriverJS Testpage', 'WebdriverJS Testpage'])
                 })
 
-                // TODO not working but should work with multi-remote values
-                // it.only('should verify element have text with multi-remote expect values', async () => {
-                //     const h1 = multiRemoteBrowser.$('h1')
+                it('should verify element have text with multi-remote expect values', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
 
-                //     await expect(h1).toHaveText({
-                //         'firefox': 'WebdriverJS Testpage',
-                //         'chrome': 'WebdriverJS Testpage'
-                //     })
-                // })
+                    await expect(h1).toHaveText({
+                        // @ts-expect-error --- TODO dprevost to fix
+                        'firefox': 'WebdriverJS Testpage',
+                        'chrome': 'WebdriverJS Testpage'
+                    })
+                })
             })
 
             describe('Multiple elements', () => {
@@ -111,15 +111,15 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(h1).toHaveText(['WebdriverJS Testpage', 'Test CSS Attributes'])
                 })
 
-                // TODO working but missing typings
-                // it('should verify elements have texts with multi-remote values', async () => {
-                //     const h1 = multiRemoteBrowser.$$('h1')
+                it('should verify elements have texts with multi-remote values', async () => {
+                    const h1 = multiRemoteBrowser.$$('h1')
 
-                //     await expect(h1).toHaveText({
-                //         'firefox': ['WebdriverJS Testpage', 'Test CSS Attributes'],
-                //         'chrome': ['WebdriverJS Testpage', 'Test CSS Attributes']
-                //     })
-                // })
+                    await expect(h1).toHaveText({
+                        // @ts-expect-error --- TODO dprevost to fix
+                        'firefox': ['WebdriverJS Testpage', 'Test CSS Attributes'],
+                        'chrome': ['WebdriverJS Testpage', 'Test CSS Attributes']
+                    })
+                })
               })
         })
     })
