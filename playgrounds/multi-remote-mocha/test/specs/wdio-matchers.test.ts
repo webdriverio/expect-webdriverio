@@ -34,7 +34,6 @@ describe('WebdriverIO Custom Matchers', () => {
             })
         })
 
-
         it('should verify browser URL', async () => {
             await expect(multiRemoteBrowser).toHaveUrl('https://guinea-pig.webdriver.io/')
         })
@@ -44,10 +43,10 @@ describe('WebdriverIO Custom Matchers', () => {
         })
 
         it('should verify URL contains path for multi-remote values', async () => {
-            await expect(multiRemoteBrowser).toHaveUrl( {
+            await expect(multiRemoteBrowser).toHaveUrl({
                 chrome: expect.stringContaining('guinea-pig.webdriver.io'),
                 firefox: expect.stringContaining('guinea-pig.webdriver.io')
-            } )
+            })
         })
 
         it('should verify not localStorage item', async () => {
@@ -58,6 +57,70 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(browser).not.toHaveLocalStorageItem('key', expect.anything(), { wait: 0 })
             await expect(browser).not.toHaveLocalStorageItem('key', undefined, { wait: 0 })
             await expect(browser).not.toHaveLocalStorageItem('key', undefined)
+        })
+    })
+
+    describe('Multi-Remote Elements Matchers', () => {
+        describe('toBe Matchers', () => {
+            it('should verify element is displayed', async () => {
+                const h1 = multiRemoteBrowser.$('h1')
+
+                await expect(h1).toBeDisplayed()
+                await expect(await h1).toBeDisplayed()
+            })
+
+            it('should verify elements are displayed', async () => {
+                const h1 = multiRemoteBrowser.$$('h1')
+
+                await expect(h1).toBeDisplayed()
+                await expect(await h1).toBeDisplayed()
+            })
+        })
+
+        describe('toHave Matchers', () => {
+
+            describe('Single element', () => {
+                it('should verify element have text with one expect value', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    await expect(h1).toHaveText('WebdriverJS Testpage')
+                    await expect(await h1).toHaveText('WebdriverJS Testpage')
+                })
+
+                it('should verify element have text with multiple expect values', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    await expect(h1).toHaveText(['WebdriverJS Testpage', 'WebdriverJS Testpage'])
+                })
+
+                // TODO not working but should work with multi-remote values
+                // it.only('should verify element have text with multi-remote expect values', async () => {
+                //     const h1 = multiRemoteBrowser.$('h1')
+
+                //     await expect(h1).toHaveText({
+                //         'firefox': 'WebdriverJS Testpage',
+                //         'chrome': 'WebdriverJS Testpage'
+                //     })
+                // })
+            })
+
+            describe('Multiple elements', () => {
+                it('should verify elements have texts', async () => {
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    await expect(h1).toHaveText(['WebdriverJS Testpage', 'Test CSS Attributes'])
+                })
+
+                // TODO working but missing typings
+                // it('should verify elements have texts with multi-remote values', async () => {
+                //     const h1 = multiRemoteBrowser.$$('h1')
+
+                //     await expect(h1).toHaveText({
+                //         'firefox': ['WebdriverJS Testpage', 'Test CSS Attributes'],
+                //         'chrome': ['WebdriverJS Testpage', 'Test CSS Attributes']
+                //     })
+                // })
+              })
         })
     })
 })
