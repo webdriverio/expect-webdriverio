@@ -15,7 +15,10 @@ describe('WebdriverIO Custom Matchers', () => {
         })
 
         it('should verify browser title contains text for each browser by array', async () => {
-            await expect(multiRemoteBrowser).toHaveTitle([expect.stringContaining('WebdriverJS'), expect.stringContaining('WebdriverJS')])
+            await expect(multiRemoteBrowser).toHaveTitle([
+                expect.stringContaining('WebdriverJS'),
+                expect.stringContaining('WebdriverJS')
+            ])
         })
 
         it('should verify browser title contains text for each browser by map', async () => {

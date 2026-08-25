@@ -155,14 +155,14 @@ Received: "Wrong Text"`
                     const result = await thisContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 0 })
 
                     expect(result.pass).toBe(true)
-                    expect(multiRemoteBrowser.getTitle).toHaveBeenCalledTimes(1)
+                    expect(chromeBrowser.getTitle).toHaveBeenCalledTimes(1)
+                    expect(firefoxBrowser.getTitle).toHaveBeenCalledTimes(1)
                 })
 
                 test('success when passing one single asymmetric expected value', async () => {
                     const result = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.stringContaining('Valid'), { trim: false, wait: 0 })
 
                     expect(result.pass).toBe(true)
-                    expect(multiRemoteBrowser.getTitle).toHaveBeenCalledTimes(1)
                 })
 
                 test('success when passing oneOf expected value', async () => {

@@ -39,9 +39,6 @@ export async function toHaveTitle(
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
                 ) => compareBrowserTitle(browser, expectedValue, options),
-                multiRemoteCompare: (
-                    multiRemoteBrowser, expectedValue: Array<string | RegExp | AsymmetricMatcher<string>> | undefined
-                ) => compareMultiRemoteTitles(multiRemoteBrowser, expectedValue, options)
             })
         },
         isNot,
@@ -71,17 +68,4 @@ const compareBrowserTitle = async (
 ): Promise<CompareResult<string>> => {
     const actual = await browser.getTitle()
     return compareTextOrOneOf(actual, expectedValue, options)
-}
-
-const compareMultiRemoteTitles = async (
-    browser: WebdriverIO.MultiRemoteBrowser,
-    expectedValue: Array<string | RegExp | AsymmetricMatcher<string>> | undefined,
-    options: ExpectWebdriverIO.StringOptions
-): Promise<CompareResult<string>[]> => {
-    const actual = await browser.getTitle()
-    if (!expectedValue) {
-        return actual.map((title) => ({ actual: title, success: false }))
-    }
-
-    return actual.map((title, index) => compareTextOrOneOf(title, expectedValue[index], options))
 }

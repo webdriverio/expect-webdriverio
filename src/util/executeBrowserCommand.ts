@@ -5,12 +5,10 @@ export async function executeBrowserCommand<Actual, Expected>( {
     browser,
     expectedValue,
     compare,
-    multiRemoteCompare,
 } :{
     browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser
     expectedValue: MaybeArrayOrMultiRemoteValues<Expected> | Expected | unknown
     compare: (browser: WebdriverIO.Browser, expectedValue: Expected | unknown, index?: number) => Promise<CompareResult<Actual>>
-    multiRemoteCompare: (browser: WebdriverIO.MultiRemoteBrowser, expectedValue: ArrayOrMultiRemoteValues<Expected> | unknown, index?: number) => Promise<CompareResult<Actual>[]>
 }
 ): Promise<StrategyResult<ArrayOrMultiRemoteValues<Actual> | Actual>> {
 
@@ -19,6 +17,7 @@ export async function executeBrowserCommand<Actual, Expected>( {
     let expected: MaybeArrayOrMultiRemoteValues<Expected> | unknown = expectedValue
 
     if (browser.isMultiremote) {
+        let multiRemoteExpected: unknown[]
         let multiRemoteBrowser: WebdriverIO.MultiRemoteBrowser = browser
 
         let forceFailure = false
@@ -33,13 +32,22 @@ export async function executeBrowserCommand<Actual, Expected>( {
 
             // TODO should we do strict check and select a subset only when using the expect.objectContaining() matcher?
             multiRemoteBrowser = browser.unstable_select(browserNames)
-            expected = Object.values(expectedValue)
+            multiRemoteExpected = Object.values(expectedValue)
         } else if (!Array.isArray(expectedValue)) {
-            expected = Array(browser.instances.length).fill(expectedValue)
+            multiRemoteExpected = Array(browser.instances.length).fill(expectedValue)
+        } else {
+            multiRemoteExpected = expectedValue
         }
 
-        const arrayResults = await multiRemoteCompare(multiRemoteBrowser, expected)
+        // Replace the multiRemoteCompare call with:
+        const arrayResults = await Promise.all(
+            multiRemoteBrowser.instances.map((name, index) => {
+                const singleBrowser = multiRemoteBrowser.getInstance(name)
+                return compare(singleBrowser, multiRemoteExpected[index])
+            })
+        )
         subject = multiRemoteBrowser
+        expected = multiRemoteExpected
 
         const actuals = arrayResults.map(result => result.actual)
 
