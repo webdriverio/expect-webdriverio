@@ -212,22 +212,19 @@ export function chainableElementArrayFactory(selector: string, length: number, p
 
     return runtimeChainablePromiseArray
 }
-
 export class Browser {
+    $ = vi.fn((selector: string) => {
+        const element = elementFactory(selector)
+        return $Factory(element)
+    })
+    $$ = vi.fn()
     execute = vi.fn()
-    setPermissions = vi.fn()
+    setPermissions = vi.spyOn({ setPermissions: async () => {} }, 'setPermissions')
     getUrl = vi.fn().mockResolvedValue('  Valid text  ')
     getTitle = vi.fn().mockResolvedValue('Example Domain')
 
-    $ = vi.fn((_selector: string) => {
-        const element = elementFactory(_selector)
-        return $Factory(element)
-    })
-
-    $$: ReturnType<typeof vi.fn>
-
     constructor(elementArrayLength = 2) {
-        this.$$ = vi.fn((selector: string) => {
+        vi.mocked(this.$$).mockImplementation((selector: string) => {
             return chainableElementArrayFactory(selector, elementArrayLength, this as unknown as WebdriverIO.Browser)
         })
     }
@@ -244,13 +241,20 @@ export const browserFactory = (elementArrayLength = 2): WebdriverIO.Browser => {
 export const browser = browserFactory()
 
 export class CustomMultiRemoteDriver {
+    // Multi remote properties
     [key: string]: unknown
     instances: string[]
     isMultiremote = true
-    getTitle: ReturnType<typeof vi.fn>
-    getUrl: ReturnType<typeof vi.fn>
-    unstable_select: ReturnType<typeof vi.fn>
-    getInstance: ReturnType<typeof vi.fn>
+    unstable_select = vi.fn()
+    getInstance = vi.fn()
+
+    // Common Browser methods
+    $ = vi.fn()
+    $$ = vi.fn()
+    execute = vi.fn()
+    setPermissions = vi.fn()
+    getUrl = vi.fn()
+    getTitle = vi.fn()
 
     constructor(
         browsers: Record<string, WebdriverIO.Browser> = {
@@ -258,6 +262,9 @@ export class CustomMultiRemoteDriver {
             firefox: browserFactory(),
         }
     ) {
+        /**
+         * Multi-remote properties
+         */
         // Attach browser instances (e.g., this.chrome, this.firefox)
         Object.assign(this, browsers)
 
@@ -265,15 +272,7 @@ export class CustomMultiRemoteDriver {
 
         this.instances = Object.keys(browsers)
 
-        this.getTitle = vi.fn().mockImplementation(() => {
-            return Promise.all(availableBrowsers.map((browser) => browser.getTitle()))
-        })
-
-        this.getUrl = vi.fn().mockImplementation(() => {
-            return Promise.all(availableBrowsers.map((browser) => browser.getUrl()))
-        })
-
-        this.unstable_select = vi.fn((instanceNames: string[]) => {
+        vi.mocked(this.unstable_select).mockImplementation((instanceNames: string[]) => {
             const selectedBrowsers: Record<string, WebdriverIO.Browser> = {}
             for (const name of instanceNames) {
                 selectedBrowsers[name] = this[name] as WebdriverIO.Browser
@@ -281,8 +280,31 @@ export class CustomMultiRemoteDriver {
             return multiRemoteBrowserFactory(selectedBrowsers)
         })
 
-        this.getInstance = vi.fn((instanceName: string) => {
+        vi.mocked(this.getInstance).mockImplementation((instanceName: string) => {
             return this[instanceName] as WebdriverIO.Browser
+        })
+
+        /**
+         * Common browser methods
+         */
+        vi.mocked(this.$).mockImplementation((selector: string) => {
+            return Promise.all(availableBrowsers.map((browser) => browser.$(selector)))
+        })
+
+        vi.mocked(this.$$).mockImplementation((selector: string) => {
+            return Promise.all(availableBrowsers.map((browser) => browser.$$(selector)))
+        })
+
+        vi.mocked(this.setPermissions).mockImplementation((descriptor: object, state: string, oneRealm?: boolean) => {
+            return Promise.all(availableBrowsers.map((browser) => browser.setPermissions(descriptor, state, oneRealm)))
+        })
+
+        vi.mocked(this.getUrl).mockImplementation(() => {
+            return Promise.all(availableBrowsers.map((browser) => browser.getUrl()))
+        })
+
+        vi.mocked(this.getTitle).mockImplementation(() => {
+            return Promise.all(availableBrowsers.map((browser) => browser.getTitle()))
         })
     }
 }

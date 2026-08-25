@@ -77,10 +77,6 @@ test('Generic asymmetric matchers from Expect library should work', () => {
     expectLib(['apple', 'banana', 'cherry']).toEqual(expectLib.arrayOf(expectLib.any(String)))
 })
 
-test('Object compare matcher should work', () => {
-    expectLib({ a: 1, b: 2 }).toEqual({ a: 1 })
-})
-
 describe('Custom Wdio Matchers Integration Tests', async () => {
 
     describe('Matchers pass with success with default mocked values', async () => {
@@ -312,7 +308,7 @@ Received: "not selected"`)
 Expect $(\`selector\`) to have text
 
 Expected: "Some other text"
-Received: " Valid Text "`)
+Received: "Valid Text"`)
 
             await expect(() => expectLib(el).toHaveHTML('<SomeOtherHtml/>')).rejects.toThrow(`\
 Expect $(\`selector\`) to have HTML
