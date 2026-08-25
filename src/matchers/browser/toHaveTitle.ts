@@ -38,7 +38,7 @@ export async function toHaveTitle(
                 expectedValue,
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
-                ) => compareBrowserTitle(browser, expectedValue, options),
+                ) => compareTitle(browser, expectedValue, options),
             })
         },
         isNot,
@@ -61,7 +61,7 @@ export async function toHaveTitle(
     return result
 }
 
-const compareBrowserTitle = async (
+const compareTitle = async (
     browser: WebdriverIO.Browser,
     expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
     options: ExpectWebdriverIO.StringOptions
