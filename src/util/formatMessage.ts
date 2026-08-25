@@ -17,7 +17,7 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) 
     return result
 }
 
-export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => {
+export const getSelectors = (el: WebdriverIO.Element | WdioElements | WebdriverIO.MultiRemoteElement[]): string => {
     if (!el || typeof el !== 'object') {
         return ''
     }
@@ -34,6 +34,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
         return `[${el.map(getSelectors).join(',')}]`
     } else {
         // Type Element
+        // @ts-expect-error TODO dprevost
         parent = el
     }
 
@@ -76,6 +77,7 @@ export const enhanceError = (
         }
     }
 
+    // @ts-expect-error TODO dprevost
     let subjectStr = (isElementOrArrayLike(subject) ? getSelectors(subject) : toJsonString(subject))
     if (subjectStr.length > 100) {
         subjectStr = `${subjectStr.substring(0, 100)}...`

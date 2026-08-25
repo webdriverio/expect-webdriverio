@@ -316,3 +316,104 @@ export const multiRemoteBrowserFactory = (
 }
 
 export const multiRemoteBrowser = multiRemoteBrowserFactory()
+
+interface MockBrowser {
+    $: ReturnType<typeof vi.fn>
+    $$: ReturnType<typeof vi.fn>
+    [key: string]: any
+}
+
+export function createMultiRemoteElementMock(
+    browsers: Record<string, MockBrowser>,
+    selector: string
+): WebdriverIO.MultiRemoteElement {
+    const instanceNames = Object.keys(browsers)
+
+    // 1. Fetch element instance from each browser mock
+    // @ts-expect-error: TODO to fix
+    const instances = instanceNames.map((name) => browsers[name].$(selector))
+
+    // 2. Base wrapper object
+    const multiRemoteElement: any = {
+        isMultiremote: true,
+        selector,
+        instances,
+        instancesNames: instanceNames,
+
+        // Returns specific element instance by session name
+        getInstance(name: string) {
+            const idx = instanceNames.indexOf(name)
+            if (idx === -1) {
+                throw new Error(`Instance "${name}" not found in multiremote session.`)
+            }
+            return instances[idx]
+        },
+
+        // Delegate $() on multiremote element across all browser instances
+        $: vi.fn().mockImplementation((subSelector: string) => {
+            const childBrowsers: Record<string, MockBrowser> = {}
+            instanceNames.forEach((name, index) => {
+                childBrowsers[name] = {
+                    // @ts-expect-error: TODO to fix
+                    $: () => instances[index].$(subSelector),
+                    // @ts-expect-error: TODO to fix
+                    $$: () => instances[index].$$(subSelector),
+                }
+            })
+            return createMultiRemoteElementMock(childBrowsers, subSelector)
+        }),
+
+        // Delegate $$() across all browser instances
+        $$: vi.fn().mockImplementation((subSelector: string) => {
+            return Promise.all(
+                instances.map((el) => el.$$(subSelector))
+            )
+        }),
+
+        // Common element method proxies returning Promise.all array of results
+        click: vi.fn().mockImplementation(() =>
+            Promise.all(instances.map((el) => el.click()))
+        ),
+        getText: vi.fn().mockImplementation(() =>
+            Promise.all(instances.map((el) => el.getText()))
+        ),
+        setValue: vi.fn().mockImplementation((val: string) =>
+            Promise.all(instances.map((el) => el.setValue(val)))
+        ),
+        isDisplayed: vi.fn().mockImplementation(() =>
+            Promise.all(instances.map((el) => el.isDisplayed()))
+        ),
+    }
+
+    // 3. Attach named instance shortcuts (e.g. multiElement.chrome, multiElement.firefox)
+    instanceNames.forEach((name, idx) => {
+        multiRemoteElement[name] = instances[idx]
+    })
+
+    return multiRemoteElement as WebdriverIO.MultiRemoteElement
+}
+
+/**
+ * Mock wrapper for multiremote global $() lookup (Patterned after line 290)
+ */
+export function createMultiRemote$Mock(
+    browsers: Record<string, MockBrowser>
+) {
+    return vi.fn().mockImplementation((selector: string) => {
+        return createMultiRemoteElementMock(browsers, selector)
+    })
+}
+
+/**
+ * Mock wrapper for multiremote global $$() lookup (Patterned after line 294)
+ */
+export function createMultiRemote$$zMock(
+    browsers: Record<string, MockBrowser>
+) {
+    return vi.fn().mockImplementation((selector: string) => {
+        return Promise.all(
+            // @ts-ignore TODO: to fix
+            Object.values(browsers).map((browser) => browser.$$(selector))
+        )
+    })
+}

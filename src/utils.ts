@@ -3,7 +3,7 @@ import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
 
-import type { MaybeSomeWdioElementOrArrayMaybePromise } from './types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise, WdioMultiRemoteElements } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
@@ -78,7 +78,7 @@ export function getAsymmetricMatcherValue<T>(
 }
 
 async function executeCommandBe(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromise | WdioMultiRemoteElements,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions = {}
 ): ExpectWebdriverIO.AsyncAssertionResult {

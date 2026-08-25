@@ -77,8 +77,8 @@ type ArrayOfElementsPromise = Promise<WebdriverIO.Element[]>
  */
 type ElementOrMaybeSomeArrayLike = ElementLike | MaybeSomeElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
-type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise
-type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise>
+type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]
+type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]>
 type MockPromise = Promise<WebdriverIO.Mock>
 
 /**

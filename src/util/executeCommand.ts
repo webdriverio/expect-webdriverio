@@ -1,6 +1,7 @@
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
-import { awaitElementOrArray, isElement, isStrictlyElementArray } from './elementsUtil.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray, WdioMultiRemoteElements } from '../types.js'
+import { awaitElementOrArray, isElement, isMultiRemoteElements, isStrictlyElementArray } from './elementsUtil.js'
+import { isMultiRemoteValues } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
@@ -31,7 +32,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     strategy = 'NewStrictMultipleElements',
     strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
 } :{
-    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | WdioMultiRemoteElements | unknown
     expectedValues: MaybeArray<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
     context: { isNot: boolean, iteration: number },
@@ -93,6 +94,7 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
 
     const settled = await Promise.allSettled(
         // Former `toHaveText` mechanism was to pass all the expected values (when an array) to each element and not an index-based expected value like the new strategy. This is kept for backward compatibility with the legacy strategy.
+        // @ts-expect-error TODO dprevost
         Array.from(selector).map((element: WebdriverIO.Element, index: number) => singleElementCompare(element, expectedValues, index))
     )
     // Re-throw the first rejection so waitUntil surfaces the real error message
@@ -121,7 +123,7 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
  * `allowEmptyElements` to let an empty element set pass the assertion instead of failing.
  */
 export const multipleElementResultsStrategy = async <Actual, Expected>(
-    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown,
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | WdioMultiRemoteElements | unknown,
     expectedValues: MaybeArray<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
@@ -167,26 +169,43 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     // --- Multiple elements case ---
     const lengthMismatch = Array.isArray(expectedValues) && expectedValues.length !== selector.length
 
-    const settled = await Promise.allSettled(
-        Array.from(selector).map(async (element: WebdriverIO.Element, index: number) => {
-            const indexedExpected = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
-            /**
+    let results: CompareResult<Actual>[] = []
+    if (isMultiRemoteElements(selector)) {
+        for (const [index, element] of Array.from(selector.entries())) {
+            const instanceResults = await Promise.all(
+                element.instances.map((instance) => {
+                    const elementInstance = element.getInstance(instance)
+
+                    const instanceValue = isMultiRemoteValues(expectedValues) ? expectedValues[instance] : expectedValues
+                    const indexedExpected = Array.isArray(instanceValue) ? instanceValue[index] : instanceValue
+
+                    return singleElementCompare(elementInstance, indexedExpected, index)
+                })
+            )
+            results.push(...instanceResults)
+        }
+    } else {
+        const settled = await Promise.allSettled(
+            Array.from(selector).map(async (element: WebdriverIO.Element, index: number) => {
+                const indexedExpected = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
+                /**
              * Force per-element failure when: expected is a nested array (unsupported) or this index
              * is beyond the expected array bounds. Still call compare to get the actual value for the
              * error message, but ignore its success.
              */
-            const forceElementFailure = Array.isArray(indexedExpected)
+                const forceElementFailure = Array.isArray(indexedExpected)
                 || (lengthMismatch && Array.isArray(expectedValues) && index >= expectedValues.length)
 
-            const compareResult = await singleElementCompare(element, forceElementFailure ? undefined : indexedExpected, index)
-            return forceElementFailure ? { success: false, actual: compareResult.actual } : compareResult
-        })
-    )
+                const compareResult = await singleElementCompare(element, forceElementFailure ? undefined : indexedExpected, index)
+                return forceElementFailure ? { success: false, actual: compareResult.actual } : compareResult
+            })
+        )
 
-    const firstRejection = settled.find((r): r is PromiseRejectedResult => r.status === 'rejected')
-    if (firstRejection) {throw firstRejection.reason}
+        const firstRejection = settled.find((r): r is PromiseRejectedResult => r.status === 'rejected')
+        if (firstRejection) {throw firstRejection.reason}
 
-    const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<Actual>>).value)
+        results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<Actual>>).value)
+    }
 
     // Pad actuals for display when expected has more entries than actual elements.
     if (Array.isArray(expectedValues) && expectedValues.length > selector.length) {
@@ -216,3 +235,4 @@ const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every(
 const isAllFalse = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === false)
 const isAtLeastOneTrue = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.success === true)
 const isAtLeastOneFalse = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.success === false)
+
