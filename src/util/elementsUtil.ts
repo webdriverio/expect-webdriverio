@@ -112,7 +112,7 @@ export const isElementOrArrayOrMultiRemoteElementLike = (obj: unknown): obj is W
  */
 export const awaitElementOrArray = async(
     received: MaybeSomeWdioElementOrArrayMaybePromise | PromiseLike<WebdriverIO.Element> | WdioMultiRemoteElements | unknown
-): Promise<{ selector?: WdioElements | WebdriverIO.Element | WebdriverIO.MultiRemoteElement[], elements?: WdioElements | WebdriverIO.MultiRemoteElement[], element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean }> => {
+): Promise<{ selector?: WdioElements | WebdriverIO.Element | WebdriverIO.MultiRemoteElement[], elements?: WdioElements | WebdriverIO.MultiRemoteElement[], element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean, multiRemote?: WebdriverIO.MultiRemoteElement }> => {
     if (!received || typeof received !== 'object') {
         return { other: received }
     }
@@ -131,9 +131,9 @@ export const awaitElementOrArray = async(
 
     // for `await $()` or `WebdriverIO.Element` and `MultiRemoteElement` for Multi-Remote
     if ('getElement' in awaitedElements) {
-        if (isMultiRemoteElementLike(awaitedElements)) {
+        if (isMultiRemoteElement(awaitedElements)) {
             const elements = await awaitedElements.getElement()
-            return { selector: elements, elements: elements }
+            return { selector: elements, elements, multiRemote: awaitedElements }
         }
 
         const element = await (awaitedElements as WebdriverIO.Element).getElement()

@@ -129,7 +129,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
     { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
 ): Promise<StrategyResult<MaybeArray<Actual>>> => {
-    const { selector, other } = await awaitElementOrArray(unresolvedElements)
+    const { selector, other, multiRemote } = await awaitElementOrArray(unresolvedElements)
 
     if (iteration > 0 && isStrictlyElementArray(selector)) {
         // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
@@ -170,7 +170,17 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     const lengthMismatch = Array.isArray(expectedValues) && expectedValues.length !== selector.length
 
     let results: CompareResult<Actual>[] = []
-    if (isMultiRemoteElements(selector)) {
+
+    if (multiRemote && isMultiRemoteValues(expectedValues)) {
+        console.log('multi-remote', multiRemote, expectedValues)
+        results = await Promise.all(
+            Object.keys(expectedValues).map(async (instance) => {
+                const element = multiRemote.getInstance(instance)
+                const expectValue = expectedValues[instance]
+                return await singleElementCompare(element, expectValue as Expected)
+            })
+        )
+    } else if (isMultiRemoteElements(selector)) {
         for (const [index, element] of Array.from(selector.entries())) {
             const instanceResults = await Promise.all(
                 element.instances.map((instance) => {
