@@ -113,10 +113,29 @@ interface WdioCustomAsymmetricMatchers {
  */
 interface WdioBrowserMatchers<_R, ActualT>{
     /**
-     * `WebdriverIO.Browser` -> `getUrl`
+     * Browser`s url
      */
-    toHaveUrl: FnWhenBrowser<ActualT, (url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
+    toHaveUrl: FnWhenBrowserOrMultiRemote<ActualT,
+        /**
+        * `WebdriverIO.Browser` -> `getUrl`
+        */
+        (
+            url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
 
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getUrl`
+        */
+        (
+            url: MaybeArrayOrMultiRemoteValues<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
+
+    /**
+     * Browser`s title
+     */
     toHaveTitle: FnWhenBrowserOrMultiRemote<ActualT,
         /**
         * `WebdriverIO.Browser` -> `getTitle`

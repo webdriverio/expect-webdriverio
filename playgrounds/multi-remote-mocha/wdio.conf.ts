@@ -41,6 +41,7 @@ export const config: WebdriverIO.MultiremoteConfig = {
             firefox: {
                 capabilities: {
                     browserName: 'firefox',
+                    browserVersion: 'stable', // Required locally to force downloading!
                     'moz:firefoxOptions': {
                         args: ['-headless', 'disable-gpu']
                     }
@@ -72,6 +73,7 @@ export const config: WebdriverIO.MultiremoteConfig = {
     // =====
     //
     before: function () {
+        console.log('Firefox Capabilities:', browser.capabilities);
         setDefaultOptions({ wait: 250 })
         setFeatureFlags({
             useToHaveTextStrictMultiElementsCompareStrategy: true,
