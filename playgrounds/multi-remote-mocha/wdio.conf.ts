@@ -81,7 +81,8 @@ export const config: WebdriverIO.MultiremoteConfig = {
     // =====
     //
     before: function () {
-        setDefaultOptions({ wait: 1000, interval: 100 })
+        console.log('Firefox Capabilities:', browser.capabilities);
+        setDefaultOptions({ wait: 250 })
         setFeatureFlags({
             useToHaveTextStrictMultiElementsCompareStrategy: true,
         })
