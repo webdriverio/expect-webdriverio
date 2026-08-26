@@ -62,18 +62,34 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('Multi-Remote Elements Matchers', () => {
         describe('toBe Matchers', () => {
-            it('should verify element is displayed', async () => {
-                const h1 = multiRemoteBrowser.$('h1')
+            describe('$', () => {
+                it('should verify element is displayed', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
 
-                await expect(h1).toBeDisplayed()
-                await expect(await h1).toBeDisplayed()
+                    await expect(h1).toBeDisplayed()
+                    await expect(await h1).toBeDisplayed()
+                })
+
+                it('should verify element is displayed for specific browser', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    await expect(h1.unstable_select('firefox')).toBeDisplayed()
+                })
             })
+            describe('$$', () => {
+                it('should verify elements are displayed', async () => {
+                    const h1 = multiRemoteBrowser.$$('h1')
 
-            it('should verify elements are displayed', async () => {
-                const h1 = multiRemoteBrowser.$$('h1')
+                    await expect(h1).toBeDisplayed()
+                    await expect(await h1).toBeDisplayed()
+                })
 
-                await expect(h1).toBeDisplayed()
-                await expect(await h1).toBeDisplayed()
+                it('should verify elements are displayed for selected remote', async () => {
+                    // TODO one day we should have select on MultiRemoteElement[]
+                    const h1 = multiRemoteBrowser.unstable_select('firefox').$$('h1')
+
+                    await expect(h1).toBeDisplayed()
+                })
             })
         })
 
