@@ -175,20 +175,25 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     let results: CompareResult<Actual>[] = []
 
     let multiRemoteActual: MultiRemoteValuesWithArray<Actual> | undefined
+    let multiRemoteExpected: MultiRemoteValues<Expected> | undefined
     // --- Multi-remote $() single element case ---
     if (multiRemoteSelector && !Array.isArray(expectedValues)) {
-        let multiRemoteExpected = expectedValues
-        if (!isMultiRemoteValues(expectedValues, multiRemoteSelector.instances)) {
+        multiRemoteActual = {}
+
+        // eslint-disable-next-line unicorn/prefer-ternary
+        if (isMultiRemoteValues(expectedValues, multiRemoteSelector.instances)) {
+            multiRemoteExpected = expectedValues
+        } else {
             multiRemoteExpected = multiRemoteSelector.instances.reduce((acc, instance) => {
                 acc[instance] = expectedValues as Expected
                 return acc
             }, {} as MultiRemoteValues<Expected>)
         }
 
-        if (!isMultiRemoteValues(multiRemoteExpected, multiRemoteSelector.instances)) { throw new Error('multiRemoteExpected is not a MultiRemoteValues') }
-
         results = await Promise.all(
             Object.keys(multiRemoteExpected).map(async (instance) => {
+                if (!multiRemoteExpected)  {throw new Error('multiRemoteExpected is undefined')}
+
                 const expectValue = multiRemoteExpected[instance]
 
                 // TODO: non-existing multi-remote element should probably be a element with error and not to throw??
@@ -289,7 +294,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         ? !(isNotEmpty && checkNotFn(results))
         : isNotEmpty && checkFn(results)
 
-    return { subject, success, actual: multiRemoteActual ?? results.map(({ actual }) => actual), context: { isSome } }
+    return { subject, success, actual: multiRemoteActual ?? results.map(({ actual }) => actual), context: { isSome }, expected: multiRemoteExpected }
 }
 
 const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === true)

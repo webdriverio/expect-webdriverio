@@ -33,7 +33,7 @@ export async function toHaveText(
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
     const isNewStrictCompare = getFeatureFlagValue(options, 'useToHaveTextStrictMultiElementsCompareStrategy')
-    const { success: pass, actual: actualText, subject: subject, context: { isSome } = {} } = await waitUntil(
+    const { success: pass, actual: actualText, subject: subject, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -50,8 +50,8 @@ export async function toHaveText(
         { wait: options.wait, interval: options.interval }
     )
 
-    const expected = fillSingleExpectedForElementArray(subject, expectedValue)
-    const message = enhanceError(subject, expected, actualText, { isNot, isSome }, verb, expectation, '', options)
+    const finalExpected =expected ?? fillSingleExpectedForElementArray(subject, expectedValue)
+    const message = enhanceError(subject, finalExpected, actualText, { isNot, isSome }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message
