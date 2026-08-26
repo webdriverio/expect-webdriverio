@@ -180,7 +180,7 @@ export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemo
 }
 
 export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] => {
-    return Array.isArray(obj) && obj.every(isMultiRemoteElement)
+    return Array.isArray(obj) && obj.length > 0 && obj.every(isMultiRemoteElement)
 }
 
 const isMultiRemoteElementLike = (obj: unknown): obj is WdioMultiRemoteElements => {

@@ -171,16 +171,20 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     let results: CompareResult<Actual>[] = []
 
+    let multiRemoteActual: Record<string, Actual> | undefined
     if (multiRemote && isMultiRemoteValues(expectedValues)) {
-        console.log('multi-remote', multiRemote, expectedValues)
+        multiRemoteActual = {} as Record<string, Actual>
         results = await Promise.all(
             Object.keys(expectedValues).map(async (instance) => {
                 const element = multiRemote.getInstance(instance)
                 const expectValue = expectedValues[instance]
-                return await singleElementCompare(element, expectValue as Expected)
+                const result = await singleElementCompare(element, expectValue as Expected)
+                multiRemoteActual![instance] = result.actual
+                return result
             })
         )
     } else if (isMultiRemoteElements(selector)) {
+        // TODO dprevost return multi-remote actual values...
         for (const [index, element] of Array.from(selector.entries())) {
             const instanceResults = await Promise.all(
                 element.instances.map((instance) => {
@@ -238,7 +242,8 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         ? !(isNotEmpty && checkNotFn(results))
         : isNotEmpty && checkFn(results)
 
-    return { subject, success, actual: results.map(({ actual }) => actual), context: { isSome } }
+    // TODO dprevost review casting `as unknown as Actual[]`
+    return { subject, success, actual: (multiRemoteActual as unknown as Actual[]) ?? results.map(({ actual }) => actual), context: { isSome } }
 }
 
 const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === true)
