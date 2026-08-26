@@ -136,7 +136,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         await refreshElementArray(selector)
     }
 
-    const subject = selector ?? other
+    const subject = multiRemote ?? selector ?? other
 
     // --- Empty / no element case ---
     if (!selector || (Array.isArray(selector) && selector.length === 0)) {

@@ -175,7 +175,7 @@ const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | We
     return !!obj && typeof obj === 'object' && 'isMultiremote' in obj && obj.isMultiremote === true
 }
 
-const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemoteElement => {
+export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemoteElement => {
     return isMultiRemote(obj) && (('selector' in obj) || ('getElement' in obj))
 }
 

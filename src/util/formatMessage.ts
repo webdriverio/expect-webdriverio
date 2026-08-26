@@ -1,14 +1,14 @@
 import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXPECTED_COLOR, INVERTED_COLOR, stringify } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
-import type { WdioElements } from '../types.js'
-import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray } from './elementsUtil.js'
+import type { WdioElements, WdioMultiRemoteElements } from '../types.js'
+import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElements, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
 import { isBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
-export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
+export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElement) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
     if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
         // TODO handle custom$ selector
@@ -17,7 +17,7 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) 
     return result
 }
 
-export const getSelectors = (el: WebdriverIO.Element | WdioElements | WebdriverIO.MultiRemoteElement[]): string => {
+export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiRemoteElements): string => {
     if (!el || typeof el !== 'object') {
         return ''
     }
@@ -25,7 +25,20 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements | WebdriverI
     const selectors = []
     let parent: WebdriverIO.ElementArray['parent'] | undefined
 
-    if (isStrictlyElementArray(el)) {
+    if (isMultiRemoteElement(el)) {
+        let instanceNames = el.instances.join(', ')
+        instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
+        const subject = `multi-remote<${instanceNames}>`
+
+        return `${subject}.$(\`${getSelector(el)}\`)`
+    } else if (isMultiRemoteElements(el)) {
+        const firstElement = el[0]
+        let instanceNames = firstElement.instances.join(', ')
+        instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
+        const subject = `multi-remote<${instanceNames}>`
+
+        return `${subject}.$$(\`${getSelector(firstElement)}\`)`
+    } else if (isStrictlyElementArray(el)) {
         // Type ElementArray
         selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)
         parent = el.parent
@@ -34,7 +47,6 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements | WebdriverI
         return `[${el.map(getSelectors).join(',')}]`
     } else {
         // Type Element
-        // @ts-expect-error TODO dprevost
         parent = el
     }
 
@@ -77,8 +89,7 @@ export const enhanceError = (
         }
     }
 
-    // @ts-expect-error TODO dprevost
-    let subjectStr = (isElementOrArrayLike(subject) ? getSelectors(subject) : toJsonString(subject))
+    let subjectStr = (isElementOrArrayOrMultiRemoteElementLike(subject) ? getSelectors(subject) : toJsonString(subject))
     if (subjectStr.length > 100) {
         subjectStr = `${subjectStr.substring(0, 100)}...`
     }
