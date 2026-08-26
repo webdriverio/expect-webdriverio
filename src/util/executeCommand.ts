@@ -130,7 +130,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
     { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
-    const { selector, other, multiRemote } = await awaitElementOrArray(unresolvedElements)
+    const { selector, other, multiRemoteSelector } = await awaitElementOrArray(unresolvedElements)
 
     if (iteration > 0 && isStrictlyElementArray(selector)) {
         // TODO dprevost adapt for Multi-remote?
@@ -138,7 +138,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         await refreshElementArray(selector)
     }
 
-    const subject = multiRemote ?? selector ?? other
+    const subject = multiRemoteSelector ?? selector ?? other
 
     // --- Empty / no element case ---
     if (!selector || (Array.isArray(selector) && selector.length === 0)) {
@@ -176,12 +176,35 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     let multiRemoteActual: MultiRemoteValuesWithArray<Actual> | undefined
     // --- Multi-remote $() single element case ---
-    if (multiRemote && isMultiRemoteValues(expectedValues, multiRemote.instances)) {
-        multiRemoteActual = {}
+    if (multiRemoteSelector && !Array.isArray(expectedValues)) {
+        let multiRemoteExpected = expectedValues
+        if (!isMultiRemoteValues(expectedValues, multiRemoteSelector.instances)) {
+            multiRemoteExpected = multiRemoteSelector.instances.reduce((acc, instance) => {
+                acc[instance] = expectedValues as Expected
+                return acc
+            }, {} as MultiRemoteValues<Expected>)
+        }
+
+        if (!isMultiRemoteValues(multiRemoteExpected, multiRemoteSelector.instances)) { throw new Error('multiRemoteExpected is not a MultiRemoteValues') }
+
         results = await Promise.all(
-            Object.keys(expectedValues).map(async (instance) => {
-                const element = multiRemote.getInstance(instance)
-                const expectValue = expectedValues[instance]
+            Object.keys(multiRemoteExpected).map(async (instance) => {
+                const expectValue = multiRemoteExpected[instance]
+
+                // TODO: non-existing multi-remote element should probably be a element with error and not to throw??
+                let element: WebdriverIO.Element
+                try {
+                    element = multiRemoteSelector.getInstance(instance)
+                } catch (error) {
+                    if (error instanceof Error && error.message.includes('Multiremote object has no instance named')) {
+                        if (!multiRemoteActual) {throw new Error('multiRemoteActual is undefined')}
+                        multiRemoteActual[instance] = undefined as Actual
+
+                        return { success: false, actual: undefined as Actual }
+                    }
+                    throw error
+                }
+
                 const result = await singleElementCompare(element, expectValue as Expected)
                 if (!multiRemoteActual) {throw new Error('multiRemoteActual is undefined')}
                 multiRemoteActual[instance] = result.actual
@@ -194,14 +217,28 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         for (const [index, element] of Array.from(selector.entries())) {
             const instanceResults = await Promise.all(
                 element.instances.map(async (instance) => {
-                    const elementInstance = element.getInstance(instance)
+                    if (!multiRemoteActual) { throw new Error('multiRemoteActual is undefined') }
+                    if (!multiRemoteActual[instance])  { multiRemoteActual[instance] = [] }
+                    const typedActual = multiRemoteActual[instance] as Actual[]
+
+                    let elementInstance: WebdriverIO.Element
+                    try {
+                        elementInstance = element.getInstance(instance)
+                    } catch (error) {
+                        if (error instanceof Error && error.message.includes('Multiremote object has no instance named')) {
+                            if (!multiRemoteActual) {throw new Error('multiRemoteActual is undefined')}
+                            typedActual.push(undefined as Actual)
+
+                            return { success: false, actual: undefined as Actual }
+                        }
+                        throw error
+                    }
 
                     const instanceValue = isMultiRemoteValues(expectedValues, element.instances) ? expectedValues[instance] : expectedValues
                     const indexedExpected = Array.isArray(instanceValue) ? instanceValue[index] : instanceValue
-                    if (!multiRemoteActual) {throw new Error('multiRemoteActual is undefined')}
 
                     const result = await singleElementCompare(elementInstance, indexedExpected, index)
-                    multiRemoteActual[instance] = result.actual
+                    typedActual.push(result.actual)
                     return  result
                 })
             )

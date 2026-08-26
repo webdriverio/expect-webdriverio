@@ -210,6 +210,18 @@ export const enhanceErrorBe = (
                 acc[instance] = expectedValue
                 return acc
             }, {} as MultiRemoteValues<string>)
+        } else if (isMultiRemoteElements(subject)) {
+            const typedActuals = actuals as MultiRemoteValues<boolean[]>
+            actual = subject[0].instances.reduce((acc, instance) => {
+                acc[instance] = typedActuals[instance].map(actual => isSuccess(isNot, actual) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
+                return acc
+            }, {} as MultiRemoteValues<string[]>)
+            expected = subject[0].instances.reduce((acc, instance) => {
+                acc[instance] = Array(typedActuals[instance].length).fill(expectedValue)
+                return acc
+            }, {} as MultiRemoteValues<string[]>)
+        } else {
+            throw new Error('Unsupported Multi-remote object type for enhanceErrorBe')
         }
     } else if (isElementArrayLike(subject)) {
         expected = subject.length === 0 ? 'at least one result' : Array(subject.length).fill(expectedValue)
