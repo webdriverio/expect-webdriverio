@@ -3,7 +3,7 @@ import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
 
-import type { MaybeSomeWdioElementOrArrayMaybePromise, WdioMultiRemoteElements } from './types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise, MultiRemoteValuesWithArray, WdioMultiRemoteElements } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
@@ -102,9 +102,9 @@ async function executeCommandBe(
         isNot,
         { wait: options.wait, interval: options.interval }
     )
-    if (isMultiRemoteValues(actual)) { throw new Error('actual is a multi-remote value, which is not supported for this command. Please report this issue to the expect-webdriverio maintainers.')}
 
-    const message = enhanceErrorBe(subject, actual, { ...this, verb, isSome }, options)
+    // TODO dprevost fix typing?
+    const message = enhanceErrorBe(subject, actual as boolean[] | boolean | MultiRemoteValuesWithArray<boolean> | undefined, { ...this, verb, isSome }, options)
 
     return {
         pass,

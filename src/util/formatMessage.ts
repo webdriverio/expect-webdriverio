@@ -1,7 +1,7 @@
 import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXPECTED_COLOR, INVERTED_COLOR, stringify } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
-import type { WdioElements, WdioMultiRemoteElements } from '../types.js'
-import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElements, isStrictlyElementArray } from './elementsUtil.js'
+import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements } from '../types.js'
+import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementLike, isMultiRemoteElements, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
 import { isBrowser } from './multiRemoteUtils.js'
@@ -188,7 +188,7 @@ const printArrayWithMatchingItemInRed = (
 
 export const enhanceErrorBe = (
     subject: WebdriverIO.Element | WdioElements | unknown,
-    results: boolean[] | boolean | undefined,
+    actuals: boolean[] | boolean | MultiRemoteValuesWithArray<boolean> | undefined,
     context: { isNot: boolean, isSome: boolean, verb: string, expectation: string },
     options: ExpectWebdriverIO.CommandOptions
 ) => {
@@ -199,9 +199,22 @@ export const enhanceErrorBe = (
     const expectedValue = `${not(isNot)}${expectation}`
     const actualValue = `${not(!isNot)}${expectation}`
 
-    if (isElementArrayLike(subject)) {
+    if (isMultiRemoteElementLike(subject)) {
+        if (isMultiRemoteElement(subject)) {
+            const typedActuals = actuals as MultiRemoteValues<boolean>
+            actual = Object.entries(subject.instances).reduce((acc, [index, instance]) => {
+                acc[instance] = isSuccess(isNot, typedActuals[index]) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`
+                return acc
+            }, {} as MultiRemoteValues<string>)
+            expected = subject.instances.reduce((acc, instance) => {
+                acc[instance] = expectedValue
+                return acc
+            }, {} as MultiRemoteValues<string>)
+        }
+    } else if (isElementArrayLike(subject)) {
         expected = subject.length === 0 ? 'at least one result' : Array(subject.length).fill(expectedValue)
-        actual = toArray(results).map(result => isSuccess(isNot, result) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
+        // @ts-expect-error TODO dprevost fix typing
+        actual = toArray(actuals).map(actual => isSuccess(isNot, actual) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
     } else {
         expected = expectedValue
         actual = actualValue
