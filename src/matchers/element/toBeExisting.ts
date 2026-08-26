@@ -11,7 +11,7 @@ export async function toExist(
     this.allowEmptyElements = true
 
     await options.beforeAssertion?.({
-        matcherName: 'toExist', // TODO use this.matcher =  this.matcher || toExist in v6.0.0 to fix matcherName issue with toBeExisting and toBePresent
+        matcherName: 'toExist', // TODO use this.matcher =  this.matcher || toExist in v10.0.0 to fix matcherName issue with toBeExisting and toBePresent
         options,
     })
 
