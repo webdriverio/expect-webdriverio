@@ -1,6 +1,6 @@
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
-import { awaitElementOrArray, isElement, isMultiRemoteElements, isStrictlyElementArray } from './elementsUtil.js'
+import { awaitElementOrArray, isElement, isMultiRemoteElementLike, isMultiRemoteElements, isStrictlyElementArray } from './elementsUtil.js'
 import { isMultiRemoteValues } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
@@ -11,7 +11,7 @@ export type StrategyResult<Actual, Subject = WebdriverIO.Element | WebdriverIO.E
     expected?: Expected;
     abort?: boolean;
     context?: { isSome: boolean };
-} & CompareResult<Actual | undefined>
+} & CompareResult<Actual | MultiRemoteValues<Actual> | undefined>
 
 /**
  * Fetch element(s) and route them to the appropriate comparison strategy.
@@ -77,7 +77,7 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValuesWithArray<Actual>>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
-    if (!selector || isEmptyElements) {
+    if (!selector || isEmptyElements || isMultiRemoteElementLike(selector)) {
         return {
             subject: subject,
             success: false,
@@ -96,7 +96,6 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
 
     const settled = await Promise.allSettled(
         // Former `toHaveText` mechanism was to pass all the expected values (when an array) to each element and not an index-based expected value like the new strategy. This is kept for backward compatibility with the legacy strategy.
-        // @ts-expect-error TODO dprevost
         Array.from(selector).map((element: WebdriverIO.Element, index: number) => singleElementCompare(element, expectedValues, index))
     )
     // Re-throw the first rejection so waitUntil surfaces the real error message
@@ -134,6 +133,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     const { selector, other, multiRemote } = await awaitElementOrArray(unresolvedElements)
 
     if (iteration > 0 && isStrictlyElementArray(selector)) {
+        // TODO dprevost adapt for Multi-remote?
         // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
         await refreshElementArray(selector)
     }
@@ -169,12 +169,13 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         return { subject, success, actual: compareResult.actual, abort: forceFailure, context: { isSome } }
     }
 
-    // --- Multiple elements case ---
+    // --- Multiple elements & Multi-remote element(s) case ---
     const lengthMismatch = Array.isArray(expectedValues) && expectedValues.length !== selector.length
 
     let results: CompareResult<Actual>[] = []
 
     let multiRemoteActual: MultiRemoteValuesWithArray<Actual> | undefined
+    // --- Multi-remote $() single element case ---
     if (multiRemote && isMultiRemoteValues(expectedValues, multiRemote.instances)) {
         multiRemoteActual = {}
         results = await Promise.all(
@@ -188,6 +189,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             })
         )
     } else if (isMultiRemoteElements(selector)) {
+        // --- Multi-remote $$() multiple elements case ---
         multiRemoteActual = {}
         for (const [index, element] of Array.from(selector.entries())) {
             const instanceResults = await Promise.all(
@@ -206,6 +208,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             results.push(...instanceResults)
         }
     } else {
+        // --- Multiple elements $$() case ---
         const settled = await Promise.allSettled(
             Array.from(selector).map(async (element: WebdriverIO.Element, index: number) => {
                 const indexedExpected = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
@@ -249,8 +252,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         ? !(isNotEmpty && checkNotFn(results))
         : isNotEmpty && checkFn(results)
 
-    // TODO dprevost review casting `as unknown as Actual[]`
-    return { subject, success, actual: (multiRemoteActual as unknown as Actual[]) ?? results.map(({ actual }) => actual), context: { isSome } }
+    return { subject, success, actual: multiRemoteActual ?? results.map(({ actual }) => actual), context: { isSome } }
 }
 
 const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === true)

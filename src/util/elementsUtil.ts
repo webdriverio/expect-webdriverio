@@ -183,6 +183,6 @@ export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRem
     return Array.isArray(obj) && obj.length > 0 && obj.every(isMultiRemoteElement)
 }
 
-const isMultiRemoteElementLike = (obj: unknown): obj is WdioMultiRemoteElements => {
+export const isMultiRemoteElementLike = (obj: unknown): obj is WdioMultiRemoteElements => {
     return isMultiRemoteElement(obj) || isMultiRemoteElements(obj)
 }
