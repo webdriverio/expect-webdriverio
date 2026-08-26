@@ -13,6 +13,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
     const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
 
+    const multiRemoteElement: WebdriverIO.MultiRemoteElement = {} as unknown as WebdriverIO.MultiRemoteElement
+    const multiRemoteElements: WebdriverIO.MultiRemoteElement[] = [] as unknown as WebdriverIO.MultiRemoteElement[]
+
     describe('Browser', () => {
         describe('toHaveUrl', () => {
             it('should return Promise<void>', async () => {
@@ -217,6 +220,73 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(elementArrayPromise).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementsPromise).toHaveText('text')).toEqualTypeOf<Promise<void>>()
             })
+
+            it('should support multi-remote element', async () => {
+                expectTypeOf(expect(multiRemoteElement).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveText(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveText(expect.oneOf('text1', 'text2'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveText(expect.oneOf(expect.stringContaining('text1'), expect.stringContaining('text2')))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveText(expect.oneOf(/text1/, /text2/))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveText(expect.oneOf('text1', /text1/, expect.stringContaining('text3')))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                await expect(multiRemoteElement).toHaveText(
+                    'My-Ex-Am-Ple',
+                    {
+                        replace: [[/-/g, ' '], [/[A-Z]+/g, (match: string) => match.toLowerCase()]]
+                    }
+                )
+                expectTypeOf(expect(multiRemoteElement).toHaveText({
+                    'chrome': 'text1',
+                    'firefox': 'text2'
+                })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveText({
+                    'chrome': expect.stringContaining('text'),
+                    'firefox': expect.oneOf('text2')
+                })).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(multiRemoteElement).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(multiRemoteElement).toHaveText).parameter(0).extract<number>().toBeNever()
+
+                expectTypeOf(expect(browser).toHaveText).toBeNever()
+            })
+
+            it('should support multi-remote elements', async () => {
+                expectTypeOf(expect(multiRemoteElements).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveText(['text1', expect.oneOf(/text1/, /text2/), expect.oneOf(expect.stringContaining('text3'))])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveText({
+                    'chrome': 'text1',
+                    'firefox': 'text2'
+                })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveText({
+                    'chrome': expect.stringContaining('text'),
+                    'firefox': expect.oneOf('text2')
+                })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveText({
+                    'chrome': ['text1', 'text2'],
+                    'firefox': [expect.oneOf('text2'), expect.stringContaining('text3')],
+                    'edge': [/text1/, /text2/]
+                })).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(multiRemoteElements).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(some(multiRemoteElements)).toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(multiRemoteElements)).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(multiRemoteElements)).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(multiRemoteElements)).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(multiRemoteElements)).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(multiRemoteElements)).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(multiRemoteElements)).toHaveText(['text1', expect.oneOf(/text1/, /text2/), expect.oneOf(expect.stringContaining('text3'))])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(multiRemoteElements)).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveText).parameter(0).extract<number>().toBeNever()
+            })
+
         })
 
         describe('toHaveHTML', () => {

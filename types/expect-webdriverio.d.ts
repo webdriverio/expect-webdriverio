@@ -56,6 +56,7 @@ type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, Expect
 type MultiRemoteValues<T> = Record<string, T>
 type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
 type MaybeArrayOrMultiRemoteValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
+type MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
 type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
 
 /**
@@ -79,6 +80,7 @@ type ElementOrMaybeSomeArrayLike = ElementLike | MaybeSomeElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
 type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]
 type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]>
+type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]
 type MockPromise = Promise<WebdriverIO.Mock>
 
 /**
@@ -94,7 +96,7 @@ type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT ext
  *
  * Fix: If type inference issues arise, split the implementation into separate interfaces
  */
-type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement> = ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement: never
+type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement, FnMultiRemoteElement = FnElement, FnMultiRemoteElements = FnElement> = ActualT extends WebdriverIO.MultiRemoteElement[] ? FnMultiRemoteElements : ActualT extends WebdriverIO.MultiRemoteElement ? FnMultiRemoteElement : ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement : never
 type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends MaybeSomeElementArrayLike ? Fn : never
 
 /**
@@ -590,7 +592,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * ```
      */
     toHaveText: FnWhenElementOrArrayLike<ActualT, {
-        /** Element $() API */
+        /** Element browser.$() API */
         (
             text: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
@@ -601,12 +603,25 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }, {
-        /** Elements $$() API */
+        /** Elements browser.$$() API */
         (
             text: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
-    }>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            text: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) : Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            text: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) : Promise<void>
+    }
+    >
 
     /**
      * `WebdriverIO.Element` -> `getHTML`
