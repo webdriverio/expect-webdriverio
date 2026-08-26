@@ -75,6 +75,32 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await expect(h1.unstable_select('firefox')).toBeDisplayed()
                 })
+
+                it('should verify element exists', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    await expect(h1).toExist()
+                    await expect(await h1).toExist()
+                })
+
+                it('should verify element exists for specific browser', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    await expect(h1.unstable_select('firefox')).toExist()
+                })
+
+                it('should verify element does not exists', async () => {
+                    const nonExistingElement = multiRemoteBrowser.$('non-existing-element')
+
+                    await expect(nonExistingElement).not.toExist()
+                    await expect(await nonExistingElement).not.toExist()
+                })
+
+                it('should verify element does not exist for specific browser', async () => {
+                    const nonExistingElement = multiRemoteBrowser.$('non-existing-element')
+
+                    await expect(nonExistingElement.unstable_select('firefox')).not.toExist()
+                })
             })
             describe('$$', () => {
                 it('should verify elements are displayed', async () => {
@@ -89,6 +115,34 @@ describe('WebdriverIO Custom Matchers', () => {
                     const h1 = multiRemoteBrowser.unstable_select('firefox').$$('h1')
 
                     await expect(h1).toBeDisplayed()
+                })
+
+                it('should verify elements are existing', async () => {
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    await expect(h1).toBeExisting()
+                    await expect(await h1).toBeExisting()
+                })
+
+                it('should verify elements are existing for selected remote', async () => {
+                    // TODO one day we should have select on MultiRemoteElement[]
+                    const h1 = multiRemoteBrowser.unstable_select('firefox').$$('h1')
+
+                    await expect(h1).toBeExisting()
+                })
+
+                it('should verify elements are not existing', async () => {
+                    const nonExistingElements = multiRemoteBrowser.$$('non-existing-element')
+
+                    await expect(nonExistingElements).not.toBeExisting()
+                    await expect(await nonExistingElements).not.toBeExisting()
+                })
+
+                it('should verify elements are not existing for selected remote', async () => {
+                    // TODO one day we should have select on MultiRemoteElement[]
+                    const nonExistingElements = multiRemoteBrowser.unstable_select('firefox').$$('non-existing-element')
+
+                    await expect(nonExistingElements).not.toBeExisting()
                 })
             })
         })
