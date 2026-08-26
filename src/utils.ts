@@ -11,6 +11,7 @@ import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
 import { DEFAULT_FEATURE_FLAGS } from './constants.js'
 import { isOneOfMatcher, OneOfMatcher } from './matchers/asymmetrics/oneOf.js'
+import { isMultiRemoteValues } from './util/multiRemoteUtils.js'
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
     return isAsymmetricMatcher(expected) && !('toAsymmetricMatcher' in expected) && 'jasmineToString' in expected && typeof expected.jasmineToString === 'function'
@@ -101,6 +102,7 @@ async function executeCommandBe(
         isNot,
         { wait: options.wait, interval: options.interval }
     )
+    if (isMultiRemoteValues(actual)) { throw new Error('actual is a multi-remote value, which is not supported for this command. Please report this issue to the expect-webdriverio maintainers.')}
 
     const message = enhanceErrorBe(subject, actual, { ...this, verb, isSome }, options)
 

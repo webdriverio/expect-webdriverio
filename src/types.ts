@@ -25,4 +25,7 @@ export type RawMatcherFn<Context extends MatcherContext = MatcherContext> = {
 }
 
 export type MaybeArray<T> = T | T[]
+export type MaybeArrayOrMultiRemoteValuesWithArray<T> = MaybeArray<T> | MultiRemoteValuesWithArray<T>
+export type MultiRemoteValuesWithArray<T> = MultiRemoteValues<T | T[]>
+export type MultiRemoteValues<T> = Record<string, T>
 export type MaybeSome<T> = T | SomeElementsWrapper<T>

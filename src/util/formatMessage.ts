@@ -26,16 +26,12 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiR
     let parent: WebdriverIO.ElementArray['parent'] | undefined
 
     if (isMultiRemoteElement(el)) {
-        let instanceNames = el.instances.join(', ')
-        instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
-        const subject = `multi-remote<${instanceNames}>`
+        const subject = formatMultiRemoteInstanceNames(el.instances)
 
         return `${subject}.$(\`${getSelector(el)}\`)`
     } else if (isMultiRemoteElements(el)) {
         const firstElement = el[0]
-        let instanceNames = firstElement.instances.join(', ')
-        instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
-        const subject = `multi-remote<${instanceNames}>`
+        const subject = formatMultiRemoteInstanceNames(firstElement.instances)
 
         return `${subject}.$$(\`${getSelector(firstElement)}\`)`
     } else if (isStrictlyElementArray(el)) {
@@ -78,9 +74,7 @@ export const enhanceError = (
 
     if (isBrowser(subject)) {
         if (subject.isMultiremote) {
-            let instanceNames = subject.instances.join(', ')
-            instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
-            subject = `multi-remote<${instanceNames}>`
+            subject = formatMultiRemoteInstanceNames(subject.instances)
         } else if (subject.isMobile) {
             subject = 'mobile screen'
         } else {
@@ -218,4 +212,10 @@ export const enhanceErrorBe = (
 
 const isSuccess = (isNot: boolean, success: boolean): boolean => {
     return isNot ? !success : success
+}
+
+const formatMultiRemoteInstanceNames = (instances: string[]): string => {
+    let instanceNames = instances.join(', ')
+    instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
+    return `multi-remote<${instanceNames}>`
 }
