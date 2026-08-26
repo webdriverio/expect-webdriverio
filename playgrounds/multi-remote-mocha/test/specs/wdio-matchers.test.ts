@@ -97,7 +97,6 @@ describe('WebdriverIO Custom Matchers', () => {
                     const h1 = multiRemoteBrowser.$('h1')
 
                     await expect(h1).toHaveText({
-                        // @ts-expect-error --- TODO dprevost to fix
                         'firefox': 'WebdriverJS Testpage',
                         'chrome': 'WebdriverJS Testpage'
                     })
@@ -115,7 +114,6 @@ describe('WebdriverIO Custom Matchers', () => {
                     const h1 = multiRemoteBrowser.$$('h1')
 
                     await expect(h1).toHaveText({
-                        // @ts-expect-error --- TODO dprevost to fix
                         'firefox': ['WebdriverJS Testpage', 'Test CSS Attributes'],
                         'chrome': ['WebdriverJS Testpage', 'Test CSS Attributes']
                     })
