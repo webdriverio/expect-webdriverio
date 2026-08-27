@@ -285,10 +285,19 @@ describe('WebdriverIO Custom Matchers', () => {
                 })
 
                 it('should verify element have text with array of expect values', async () => {
+                    // Setting different values to test if the order of the array matters
+                    await multiRemoteBrowser.getInstance('firefox').execute(() => {
+                        const h1 = document.querySelector('h1')
+                        if (h1) h1.textContent = 'WebdriverJS Testpage Firefox'
+                    })
+                    await multiRemoteBrowser.getInstance('chrome').execute(() => {
+                        const h1 = document.querySelector('h1')
+                        if (h1) h1.textContent = 'WebdriverJS Testpage Chrome'
+                    })
                     const h1 = multiRemoteBrowser.$('h1')
 
-                    // TODO dprevost: Instance order is not garantee therefore the below would be unstable. So we remove support?
-                    await expect(h1).toHaveText(['WebdriverJS Testpage', 'WebdriverJS Testpage'])
+                    // TODO dprevost: Is instances order is garanteed?
+                    await expect(h1).toHaveText(['WebdriverJS Testpage Chrome', 'WebdriverJS Testpage Firefox'])
                 })
 
                 it('should verify element have text with multi-remote expect values', async () => {
