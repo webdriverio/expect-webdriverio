@@ -108,6 +108,54 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await expect(nonExistingElement.unstable_select('firefox')).not.toExist()
                 })
+
+                it('should be able to query isDisplayed on element never existed', async () => {
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+                    await multiRemoteBrowser.getInstance('chrome').url('about:blank')
+
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    expect(h1).not.toBeDisplayed()
+                })
+
+                it('should be able to query isDisplayed on element never existed for a specific browser', async () => {
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    expect(h1.unstable_select('firefox')).not.toBeDisplayed()
+                    expect(h1.unstable_select('chrome')).toBeDisplayed()
+                })
+
+                // TODO: Multi-Remote bug, reported to https://github.com/webdriverio/webdriverio/issues/15534
+                it.skip('should be able to query isDisplayed on element no longer existing', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+                    await multiRemoteBrowser.getInstance('chrome').url('about:blank')
+
+                    // Crash here with `WebDriver Bidi command "script.callFunction" failed with error: no such node`
+                    console.log('isDisplayed:', await h1.isDisplayed())
+                    expect(h1).not.toBeDisplayed()
+                })
+
+                it('should be able to query isDisplayed on element no longer existing and one still existing', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+
+                    expect(h1.unstable_select('firefox')).not.toBeDisplayed()
+                    expect(h1.unstable_select('chrome')).toBeDisplayed()
+                })
+
+                it('should be able to filter on existing only', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+
+                    // @ts-expect-error -- TODO: dprevost filter returns Promise<WebdriverIO.MultiRemoteElement>, to fix!
+                    expect(h1.unstable_filter((el) => el.isExisting())).toBeDisplayed()
+                })
             })
             describe('$$', () => {
                 it('should verify elements are displayed', async () => {
@@ -166,6 +214,63 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expects
                     await makeFirefoxElementDisplayable
                 })
+
+                it('should be able to query isDisplayed on elements never existed', async () => {
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+                    await multiRemoteBrowser.getInstance('chrome').url('about:blank')
+
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    expect(h1).not.toBeDisplayed()
+                })
+
+                // TODO: Maybe one day when select exists on $$()
+                // it('should be able to query isDisplayed on elements never existed for a specific browser', async () => {
+                //     await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+
+                //     const h1 = multiRemoteBrowser.$$('h1')
+
+                //     expect(h1.unstable_select('firefox')).not.toBeDisplayed()
+                //     expect(h1.unstable_select('chrome')).toBeDisplayed()
+                // })
+
+                it('should be able to query isDisplayed on elements never existed for a specific browser', async () => {
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+
+                    expect(multiRemoteBrowser.unstable_select('firefox').$$('h1')).not.toBeDisplayed()
+                    expect(multiRemoteBrowser.unstable_select('chrome').$$('h1')).toBeDisplayed()
+                })
+
+                // TODO: Multi-Remote bug, reported to https://github.com/webdriverio/webdriverio/issues/15534
+                it.skip('should be able to query isDisplayed on element no longer existing', async () => {
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+                    await multiRemoteBrowser.getInstance('chrome').url('about:blank')
+
+                    // Crash here with `WebDriver Bidi command "script.callFunction" failed with error: no such node`
+                    console.log('isDisplayed:', await h1[0].isDisplayed())
+                    expect(h1[0]).not.toBeDisplayed()
+                })
+
+                it('should be able to query isDisplayed on element no longer existing and one still existing', async () => {
+                    const h1Firefox = multiRemoteBrowser.unstable_select('firefox').$$('h1')
+                    const h1Chrome = multiRemoteBrowser.unstable_select('chrome').$$('h1')
+
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+
+                    expect(h1Firefox).not.toBeDisplayed()
+                    expect(h1Chrome).toBeDisplayed()
+                })
+
+                it('should be able to filter on existing only', async () => {
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+
+                    // @ts-expect-error -- TODO: dprevost filter returns Promise<WebdriverIO.MultiRemoteElement>, to fix!
+                    expect(h1.unstable_filter((el) => el.isExisting())).toBeDisplayed()
+                })
             })
         })
 
@@ -179,9 +284,10 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(await h1).toHaveText('WebdriverJS Testpage')
                 })
 
-                it('should verify element have text with multiple expect values', async () => {
+                it('should verify element have text with array of expect values', async () => {
                     const h1 = multiRemoteBrowser.$('h1')
 
+                    // TODO dprevost: Instance order is not garantee therefore the below would be unstable. So we remove support?
                     await expect(h1).toHaveText(['WebdriverJS Testpage', 'WebdriverJS Testpage'])
                 })
 
@@ -190,7 +296,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await expect(h1).toHaveText({
                         'firefox': 'WebdriverJS Testpage',
-                        'chrome': 'WebdriverJS Testpage'
+                        'chrome': 'WebdriverJS Testpage',
                     })
                 })
             })
