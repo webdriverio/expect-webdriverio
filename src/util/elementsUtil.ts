@@ -176,11 +176,19 @@ const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | We
 }
 
 export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemoteElement => {
-    return isMultiRemote(obj) && (('selector' in obj) || ('getElement' in obj))
+    return isMultiRemote(obj) && 'getElement' in obj
 }
 
 export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] => {
     return Array.isArray(obj) && obj.length > 0 && obj.every(isMultiRemoteElement)
+}
+
+/**
+ * Fake MultiRemoteElementArray at runtime for v9, should be better typed in v10
+ * Need env variable `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` set to `true`
+ */
+export const isMultiRemoteElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
+    return !!obj && typeof obj === 'object' && 'isMultiremote' in obj && obj.isMultiremote === true && 'parent' in obj && 'foundWith' in obj && 'selector' in obj
 }
 
 export const isMultiRemoteElementLike = (obj: unknown): obj is WdioMultiRemoteElements => {

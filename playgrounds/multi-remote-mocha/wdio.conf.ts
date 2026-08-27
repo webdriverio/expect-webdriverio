@@ -1,6 +1,9 @@
 
 import { setDefaultOptions, setFeatureFlags } from 'expect-webdriverio'
 
+// TODO dprevost to review (should we remove it?)
+process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+
 export const config: WebdriverIO.MultiremoteConfig = {
     //
     // ====================
@@ -73,8 +76,7 @@ export const config: WebdriverIO.MultiremoteConfig = {
     // =====
     //
     before: function () {
-        console.log('Firefox Capabilities:', browser.capabilities);
-        setDefaultOptions({ wait: 250 })
+        setDefaultOptions({ wait: 300, interval: 100 })
         setFeatureFlags({
             useToHaveTextStrictMultiElementsCompareStrategy: true,
         })

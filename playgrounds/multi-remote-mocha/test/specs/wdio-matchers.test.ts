@@ -144,6 +144,21 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await expect(nonExistingElements).not.toBeExisting()
                 })
+
+                it('should verify elements are refetch when not available initially', async () => {
+                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    const expects = expect(h1).toBeDisplayed({ wait: 1000 })
+                    const makeFirefoxElementDisplayable = await new Promise<void>((resolve) => setTimeout( async () =>{
+                        await multiRemoteBrowser.getInstance('firefox').url('https://guinea-pig.webdriver.io/')
+                        resolve()
+                    } , 500))
+
+                    await expects
+                    await makeFirefoxElementDisplayable
+                })
             })
         })
 

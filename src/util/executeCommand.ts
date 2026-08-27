@@ -132,7 +132,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const { selector, other, multiRemoteSelector } = await awaitElementOrArray(unresolvedElements)
 
-    if (iteration > 0 && isStrictlyElementArray(selector)) {
+    if (iteration > 0 && (isStrictlyElementArray(selector) || isMultiRemoteElements(selector))) {
         // TODO dprevost adapt for Multi-remote?
         // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
         await refreshElementArray(selector)
