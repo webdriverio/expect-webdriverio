@@ -10,6 +10,13 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
         })
 
+        // TODO dprevsot, show an mult-remote object in error messages?
+        it.skip('should verify browser title error messages contains mult-remote values', async () => {
+            await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+            await expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
+        })
+
+
         it('should verify browser title contains text', async () => {
             await expect(multiRemoteBrowser).toHaveTitle(expect.stringContaining('WebdriverJS'))
         })
