@@ -16,17 +16,17 @@
   },
   "devDependencies": {
     "expect-webdriverio": "file:..",
-    "@wdio/browser-runner": "^9.31.4",
-    "@wdio/cli": "^9.31.4",
+    "@wdio/browser-runner": "^9.31.5",
+    "@wdio/cli": "^9.31.5",
     "@wdio/globals": "^9.31.3",
-    "@wdio/local-runner": "^9.31.4",
-    "@wdio/runner": "^9.31.4",
+    "@wdio/local-runner": "^9.31.5",
+    "@wdio/runner": "^9.31.5",
     "@wdio/spec-reporter": "^9.31.2",
     "@wdio/visual-service": "^10.1.0",
     "eslint": "^9.39.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "webdriverio": "^9.31.4"
+    "webdriverio": "^9.31.5"
   },
   "overrides": {
     "expect-webdriverio": "$expect-webdriverio"
