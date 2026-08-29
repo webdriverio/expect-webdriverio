@@ -11,7 +11,7 @@
     "checks:all": "npm run typecheck && npm run lint && npm test"
   },
   "devDependencies": {
-    "vite": "^5.4.21",
+    "vite": "^6.4.3",
     "@testing-library/vue": "^8.1.0",
     "@vue/test-utils": "^2.4.11",
     "eslint-plugin-mocha": "^11.3.0",
