@@ -272,7 +272,7 @@ export class CustomMultiRemoteDriver {
 
         this.instances = Object.keys(browsers)
 
-        vi.mocked(this.unstable_select).mockImplementation((instanceNames: string[]) => {
+        vi.mocked(this.unstable_select).mockImplementation((...instanceNames: string[]) => {
             const selectedBrowsers: Record<string, WebdriverIO.Browser> = {}
             for (const name of instanceNames) {
                 selectedBrowsers[name] = this[name] as WebdriverIO.Browser

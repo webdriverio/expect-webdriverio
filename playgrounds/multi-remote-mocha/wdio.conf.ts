@@ -21,7 +21,8 @@ export const config: WebdriverIO.MultiremoteConfig = {
     specs: [
         './test/specs/**/*.test.ts',
         //'./test/specs/**/basic-matchers.test.ts',
-        //'./test/specs/**/network-matchers.test.ts'
+        //'./test/specs/**/network-matchers.test.ts',
+        //'./test/specs/**/options.test.ts',
         //'./test/specs/**/wdio-matchers.test.ts'
     ],
 
