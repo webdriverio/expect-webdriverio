@@ -1,6 +1,7 @@
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { expectTypeOf } from 'vitest'
 import { some } from 'expect-webdriverio/api'
+import { multiRemoteBrowser } from '@wdio/globals'
 
 describe('WebDriverIO Expect Type Assertions under Mocha', () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
@@ -51,6 +52,20 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             it('should have ts errors when actual is not a Browser element', async () => {
                 expectTypeOf(expect(element).toHaveTitle).toBeNever()
                 expectTypeOf(expect(true).toHaveTitle).toBeNever()
+            })
+
+            it('should support multiRemoteBrowser', async () => {
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle('https://example.com')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).not.toHaveTitle('https://example.com')).toEqualTypeOf<Promise<void>>()
+
+                // Asymmetric matchers
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.stringContaining('WebdriverIO'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.any(String))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.anything())).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.oneOf('https://example.com', 'https://webdriver.io'))).toEqualTypeOf<Promise<void>>()
+
+                // Multi-remote element values cannot guarantee order so we can compare with an array
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle).parameter(0).not.toBeArray()
             })
         })
 
@@ -221,7 +236,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(elementsPromise).toHaveText('text')).toEqualTypeOf<Promise<void>>()
             })
 
-            it('should support multi-remote element', async () => {
+            it ('should support multi-remote element', async () => {
                 expectTypeOf(expect(multiRemoteElement).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElement).toHaveText(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElement).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
@@ -250,6 +265,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(multiRemoteElement).toHaveText).parameter(0).extract<number>().toBeNever()
 
                 expectTypeOf(expect(browser).toHaveText).toBeNever()
+            })
+
+            it ('should not support multi-remote element', async () => {
+                // Multi-remote element values cannot garantee order so we can compare with an array
+                expectTypeOf(expect(multiRemoteElement).toHaveText).parameter(0).not.toBeArray()
             })
 
             it('should support multi-remote elements', async () => {
