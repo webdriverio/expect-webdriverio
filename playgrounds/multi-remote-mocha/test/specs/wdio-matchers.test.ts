@@ -65,6 +65,12 @@ describe('WebdriverIO Custom Matchers', () => {
                 await expect(multiRemoteBrowser).not.toHaveLocalStorageItem('key', expect.anything(), { wait: 0 })
             })
         })
+
+        describe('toHaveClipboardText Matcher', () => {
+            it('should verify clipboard text', async () => {
+                await expect(multiRemoteBrowser.unstable_select('chrome')).toHaveClipboardText('')
+            })
+        })
     })
 
     describe('Multi-Remote Elements Matchers', () => {
@@ -159,6 +165,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(h1.unstable_filter((el) => el.isExisting())).toBeDisplayed()
                 })
             })
+
             describe('$$', () => {
                 it('should verify elements are displayed', async () => {
                     const h1 = multiRemoteBrowser.$$('h1')
