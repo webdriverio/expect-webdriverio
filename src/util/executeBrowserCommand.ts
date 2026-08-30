@@ -1,4 +1,4 @@
-import type { CompareResult, StrategyResult } from './executeCommand.js'
+import type { CompareResult, MultiRemoteCompareResult, StrategyResult } from './executeCommand.js'
 import { isMultiRemoteValues } from './multiRemoteUtils.js'
 
 export async function executeBrowserCommand<Actual, Expected>( {
@@ -10,65 +10,77 @@ export async function executeBrowserCommand<Actual, Expected>( {
     expectedValue: MaybeArrayOrMultiRemoteValues<Expected> | Expected | unknown
     compare: (browser: WebdriverIO.Browser, expectedValue: Expected | unknown, index?: number) => Promise<CompareResult<Actual>>
 }
-): Promise<StrategyResult<ArrayOrMultiRemoteValues<Actual> | Actual>> {
+): Promise<StrategyResult<ArrayOrMultiRemoteValues<Actual | undefined> | Actual | undefined>> {
 
-    let results: CompareResult<ArrayOrMultiRemoteValues<Actual>> | CompareResult<Actual>
-    let subject: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser = browser
     let expected: MaybeArrayOrMultiRemoteValues<Expected> | unknown = expectedValue
+    let forceFailure = false
 
     if (browser.isMultiremote) {
-        let multiRemoteExpected: unknown[]
-        let multiRemoteBrowser: WebdriverIO.MultiRemoteBrowser = browser
+        let multiRemoteExpectedValues: unknown[]
 
-        let forceFailure = false
         if (isMultiRemoteValues(expectedValue, browser.instances)) {
             let browserNames = Object.keys(expectedValue)
 
+            if (browserNames.length !== browser.instances.length) {
+                forceFailure = true
+            }
             if (browserNames.some(name => !browser.instances.includes(name))) {
                 // Force failure when expecting a browser that is not part of the multiremote instance
                 forceFailure = true
                 browserNames = browserNames.filter(name => browser.instances.includes(name))
             }
 
-            // TODO should we do strict check and select a subset only when using the expect.objectContaining() matcher?
-            multiRemoteBrowser = browser.unstable_select(...browserNames)
-            multiRemoteExpected = Object.values(expectedValue)
-        } else if (!Array.isArray(expectedValue)) {
-            multiRemoteExpected = Array(browser.instances.length).fill(expectedValue)
+            multiRemoteExpectedValues = Object.values(expectedValue)
+            expected = expectedValue
         } else {
-            multiRemoteExpected = expectedValue
+            if (Array.isArray(expectedValue)) {
+                // Array of expected values is not supported only oneOf
+                forceFailure = true
+            }
+
+            // A single expected value must be replicated for each browser instance
+            multiRemoteExpectedValues = Array(browser.instances.length).fill(expectedValue)
+            expected = browser.instances.reduce((acc, name) => {
+                acc[name] = expectedValue
+                return acc
+            }, {} as Record<string, unknown>)
         }
 
-        // Replace the multiRemoteCompare call with:
         const arrayResults = await Promise.all(
-            multiRemoteBrowser.instances.map((name, index) => {
-                const singleBrowser = multiRemoteBrowser.getInstance(name)
-                return compare(singleBrowser, multiRemoteExpected[index])
+            // Iterating through instance is a must else order of results may not match the order of browser instances
+            browser.instances.map(async (name, index) => {
+                let singleBrowser: WebdriverIO.Browser
+                try {
+                    singleBrowser = browser.getInstance(name)
+                } catch {
+                    // Invalid browser name
+                    return { success: false, actual: undefined, multiRemoteBrowserName: name } satisfies MultiRemoteCompareResult<undefined>
+                }
+
+                const results = await compare(singleBrowser, multiRemoteExpectedValues[index])
+                return { ...results, multiRemoteBrowserName: name } satisfies MultiRemoteCompareResult<Actual>
             })
         )
-        subject = multiRemoteBrowser
-        expected = multiRemoteExpected
 
-        const actuals = arrayResults.map(result => result.actual)
+        const actual = arrayResults.reduce((acc, result) => {
+            acc[result.multiRemoteBrowserName] = result.actual
+            return acc
+        },  {} as Record<string, Actual | undefined>)
 
-        let actual: ArrayOrMultiRemoteValues<Actual> | Actual = actuals
-        if (isMultiRemoteValues(expectedValue, browser.instances) && actual.length === browser.instances.length) {
-            // Build a multi-remote actual value object when the expected value is a multi-remote object, so we have a nicer error message
-            actual = Object.fromEntries(browser.instances.map((name, index) => [name, actuals[index]]))
-            expected = expectedValue
-        } else if (Array.isArray(expectedValue) && actual.length !== expectedValue.length) {
-            // Force failure when the number of actual values does not match the number of expected values for array strict comparison
+        // Force failure if expected and actual multi-remote results do not match in length
+        if (Object.keys(actual).length !== multiRemoteExpectedValues.length) {
             forceFailure = true
         }
 
         const success = !forceFailure && arrayResults.every(result => result.success)
 
-        return { actual, success, subject, expected }
-    } else if (isMultiRemoteValues(expectedValue) || Array.isArray(expectedValue)) {
-        // TODO review if this is accurate!
-        throw new Error('Expected value object or array is not supported for a single browser instance. Use a string, RegExp or asymmetric matcher instead.')
-    } else {
-        results = await compare(browser, expectedValue)
+        return { actual, success, subject: browser, expected }
     }
-    return { ...results, subject, expected }
+
+    if (isMultiRemoteValues(expectedValue) || Array.isArray(expectedValue)) {
+        forceFailure = true
+    }
+    const results = await compare(browser, expectedValue)
+
+    return { ...results, success: forceFailure ? false : results.success, subject: browser, expected }
 }

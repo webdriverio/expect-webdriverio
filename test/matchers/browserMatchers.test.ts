@@ -175,18 +175,6 @@ Received: "Wrong Text"`
                         expect(result.pass).toBe(true)
                     })
 
-                    test('success when passing array of values', async () => {
-                        const result = await thisContext.matcherFn(multiRemoteBrowser, [validText, validText], { trim: false, wait: 0 })
-
-                        expect(result.pass).toBe(true)
-                    })
-
-                    test('success when passing oneOf in array of values', async () => {
-                        const result = await thisContext.matcherFn(multiRemoteBrowser, [wdioExpect.oneOf(validText, wrongText), validText], { trim: false, wait: 0 })
-
-                        expect(result.pass).toBe(true)
-                    })
-
                     test('success when passing multi remote expected values', async () => {
                         const result = await thisContext.matcherFn(multiRemoteBrowser, { chrome: validText, firefox: validText }, { trim: false, wait: 0 })
 
@@ -213,61 +201,35 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 1
 + Received  + 1
 
-  Array [
--   " Valid Text ",
-+   " Wrong Text ",
-    " Valid Text ",
-  ]`
+  Object {
+-   "chrome": " Valid Text ",
++   "chrome": " Wrong Text ",
+    "firefox": " Valid Text ",
+  }`
                         )
                     })
 
-                    test('failure when passing array of values', async () => {
-                        const result = await thisContext.matcherFn(multiRemoteBrowser, [validText, wrongText], { trim: false, wait: 0 })
+                    test('failure when passing unsupported array type', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, [validText, validText], { trim: false, wait: 0 })
                         expect(result.pass).toBe(false)
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
 
-- Expected  - 1
-+ Received  + 1
+- Expected  - 8
++ Received  + 2
 
-  Array [
-    " Valid Text ",
--   " Wrong Text ",
-+   " Valid Text ",
-  ]`
-                        )
-                    })
-
-                    test('failure when passing array of values with too much values', async () => {
-                        const result = await thisContext.matcherFn(multiRemoteBrowser, [validText, validText, validText], { trim: false, wait: 0 })
-                        expect(result.pass).toBe(false)
-                        expect(stripAnsi(result.message())).toEqual(`\
-Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
-
-- Expected  - 1
-+ Received  + 0
-
-  Array [
-    " Valid Text ",
-    " Valid Text ",
--   " Valid Text ",
-  ]`
-                        )
-                    })
-
-                    test('failure when passing array of values with missing values', async () => {
-                        const result = await thisContext.matcherFn(multiRemoteBrowser, [validText], { trim: false, wait: 0 })
-                        expect(result.pass).toBe(false)
-                        expect(stripAnsi(result.message())).toEqual(`\
-Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
-
-- Expected  - 0
-+ Received  + 1
-
-  Array [
-    " Valid Text ",
-+   " Valid Text ",
-  ]`
+  Object {
+-   "chrome": Array [
+-     " Valid Text ",
+-     " Valid Text ",
+-   ],
+-   "firefox": Array [
+-     " Valid Text ",
+-     " Valid Text ",
+-   ],
++   "chrome": " Valid Text ",
++   "firefox": " Valid Text ",
+  }`
                         )
                     })
 
@@ -282,12 +244,12 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 2
 + Received  + 2
 
-  Array [
--   oneOf<" Wrong Text ", " Wrong Text ">,
--   oneOf<" Wrong Text ", " Wrong Text ">,
-+   " Valid Text ",
-+   " Valid Text ",
-  ]`
+  Object {
+-   "chrome": oneOf<" Wrong Text ", " Wrong Text ">,
+-   "firefox": oneOf<" Wrong Text ", " Wrong Text ">,
++   "chrome": " Valid Text ",
++   "firefox": " Valid Text ",
+  }`
                         )
                     })
 
@@ -327,6 +289,26 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
     "chrome": " Valid Text ",
     "firefox": " Valid Text ",
 -   "wrong": " Wrong Text ",
+  }`
+                        )
+                    })
+
+                    test('failure when missing multi remote values', async () => {
+                        const expected = {
+                            chrome: validText,
+                        }
+
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
+                        expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 0
++ Received  + 1
+
+  Object {
+    "chrome": " Valid Text ",
++   "firefox": " Valid Text ",
   }`
                         )
                     })

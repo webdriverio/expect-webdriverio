@@ -175,69 +175,6 @@ interface WdioBrowserMatchers<_R, ActualT>{
     /**
      * `WebdriverIO.Browser` -> `execute`
      */
-    toHaveLocalStorageItem: FnWhenBrowser<ActualT, {
-        /**
-        * `WebdriverIO.Browser` -> `getUrl`
-        */
-        (
-            url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) => Promise<void>,
-
-        /**
-        * `WebdriverIO.MultiRemoteBrowser` -> `getUrl`
-        */
-        (
-            url: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) => Promise<void>
-    >
-
-    /**
-     * Browser`s title
-     */
-    toHaveTitle: FnWhenBrowserOrMultiRemote<ActualT,
-        /**
-        * `WebdriverIO.Browser` -> `getTitle`
-        */
-        (
-            title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) => Promise<void>,
-
-        /**
-        * `WebdriverIO.MultiRemoteBrowser` -> `getTitle`
-        */
-        (
-            title: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) => Promise<void>
-    >
-
-    /**
-     * `WebdriverIO.Browser` -> `execute`
-     */
-    toHaveClipboardText: FnWhenBrowserOrMultiRemote<ActualT,
-        /**
-        * `WebdriverIO.Browser` -> `getClipboard`
-        */
-        (
-            clipboardText: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) => Promise<void>,
-
-        /**
-        * `WebdriverIO.MultiRemoteBrowser` -> `getClipboard`
-        */
-        (
-            clipboardText: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) => Promise<void>
-    >
-
-    /**
-     * `WebdriverIO.Browser` -> `execute`
-     */
     toHaveLocalStorageItem: FnWhenBrowserOrMultiRemote<ActualT,
         /**
         * `WebdriverIO.Browser` -> `getLocalStorageItem`
@@ -264,7 +201,7 @@ interface WdioBrowserMatchers<_R, ActualT>{
         */
         (
             key: string,
-            expectedValue?: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+            expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>
     >

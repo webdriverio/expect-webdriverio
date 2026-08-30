@@ -3,7 +3,6 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import { expect } from 'expect'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
-import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
 /**
  * @deprecated since v6.0.0, use expect.anything() instead of undefined as expected value, will be removed in v8.0.0
@@ -60,15 +59,11 @@ export async function toHaveLocalStorageItem(
         expected = expectedValue
     }
 
-    // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
-    const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expected, options)
-
     const { actual, success: pass, subject, expected: expectedValues } = await waitUntil(
         async () => {
             return await executeBrowserCommand({
                 browser,
-                isNot,
-                expectedValue: expectedWithOptions,
+                expectedValue: expected,
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | undefined
                 ) => compareStorageItem(browser, key, expectedValue, options),

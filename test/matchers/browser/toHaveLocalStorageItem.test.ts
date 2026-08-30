@@ -72,7 +72,7 @@ describe(toHaveLocalStorageItem, () => {
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(stripAnsi(result.message())).toContain(`\
-Expect browser not to have localStorage item someKey
+Expect browser's window not to have localStorage item someKey
 
 Expected [not]: "someLocalStorageValue"
 Received      : "someLocalStorageValue"`
@@ -92,7 +92,7 @@ Received      : "someLocalStorageValue"`
                 'nonExistentKey'
             )
             expect(stripAnsi(result.message())).toEqual(`\
-Expect browser to have localStorage item nonExistentKey
+Expect browser's window to have localStorage item nonExistentKey
 
 Expected: "someValue"
 Received: null`
@@ -118,7 +118,7 @@ Received: null`
 
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
-Expect browser to have localStorage item existingKey
+Expect browser's window to have localStorage item existingKey
 
 Expected: Anything
 Received: null`
@@ -194,7 +194,7 @@ Received: null`
 
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toContain(`\
-Expect browser to have localStorage item userId
+Expect browser's window to have localStorage item userId
 
 Expected: /^user_\\d+$/
 Received: "user_abc"`
@@ -206,10 +206,9 @@ Received: "user_abc"`
         const firefoxBrowser = multiRemoteBrowser.getInstance('firefox')
 
         beforeEach(() => {
-            vi.mocked(chromeBrowser!.execute).mockResolvedValue('multiValue')
-            vi.mocked(firefoxBrowser!.execute).mockResolvedValue('multiValue')
+            vi.mocked(chromeBrowser.execute).mockResolvedValue('multiValue')
+            vi.mocked(firefoxBrowser.execute).mockResolvedValue('multiValue')
         })
-
         it('passes when localStorage value matches expected value in multi-remote', async () => {
             const result = await thisContext.toHaveLocalStorageItem(multiRemoteBrowser, 'multiKey', 'multiValue')
 
