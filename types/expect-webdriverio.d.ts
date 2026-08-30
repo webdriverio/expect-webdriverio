@@ -160,7 +160,23 @@ interface WdioBrowserMatchers<_R, ActualT>{
     /**
      * `WebdriverIO.Browser` -> `execute`
      */
-    toHaveClipboardText: FnWhenBrowser<ActualT, (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
+    toHaveClipboardText: FnWhenBrowserOrMultiRemote<ActualT,
+        /**
+        * `WebdriverIO.Browser` -> `getClipboard`
+        */
+        (
+            clipboardText: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getClipboard`
+        */
+        (
+            clipboardText: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
 
     /**
      * `WebdriverIO.Browser` -> `execute`
