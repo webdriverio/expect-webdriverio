@@ -11,7 +11,6 @@ import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
 import { DEFAULT_FEATURE_FLAGS } from './constants.js'
 import { isOneOfMatcher, OneOfMatcher } from './matchers/asymmetrics/oneOf.js'
-import { isMultiRemoteValues } from './util/multiRemoteUtils.js'
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
     return isAsymmetricMatcher(expected) && !('toAsymmetricMatcher' in expected) && 'jasmineToString' in expected && typeof expected.jasmineToString === 'function'
