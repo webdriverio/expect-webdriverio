@@ -63,7 +63,7 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean | undefined, useNotInLabel?: boolean, isSome?: boolean },
+    context: { isNot: boolean | undefined, useNotInLabel?: boolean, isSome?: boolean, browserTargetType?: 'browser' | 'window' },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
@@ -76,10 +76,10 @@ export const enhanceError = (
         if (subject.isMultiremote) {
             subject = formatMultiRemoteInstanceNames(subject.instances)
         } else if (subject.isMobile) {
-            subject = 'mobile screen'
+            subject = context.browserTargetType === 'window' ? 'mobile screen' : 'mobile'
         } else {
             const prefix = subject.requestedCapabilities?.browserName ?? 'browser'
-            subject = `${prefix}'s window`
+            subject = context.browserTargetType === 'window' ? `${prefix}'s window` : prefix
         }
     }
 
