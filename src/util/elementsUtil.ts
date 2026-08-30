@@ -41,12 +41,15 @@ const isSelector = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO
 export const isElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
     return isSelector(obj)
     && 'foundWith' in obj
+    && !isMultiRemote(obj) // Ensure multi-remote elements are excluded
+
 }
 
 export const isStrictlyElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
     return isElementArray(obj)
     && Array.isArray(obj)
     && 'getElements' in obj // specific to ElementArray
+    && !isMultiRemote(obj) // Ensure multi-remote elements are excluded
 }
 
 export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
@@ -54,6 +57,7 @@ export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
     return isSelector(obj)
     && !Array.isArray(obj)
     && 'getElement' in obj // specific to Element
+    && !isMultiRemote(obj) // Ensure multi-remote elements are excluded
 }
 
 /**
@@ -172,7 +176,7 @@ export const awaitElementArray = async (received: WdioElementsMaybePromise | und
 }
 
 const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] => {
-    return !!obj && typeof obj === 'object' && 'isMultiremote' in obj && obj.isMultiremote === true
+    return !!obj && typeof obj === 'object' && ('isMultiremote' in obj && obj.isMultiremote === true || 'isMultiRemote' in obj && obj.isMultiRemote === true)
 }
 
 export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemoteElement => {
@@ -180,7 +184,7 @@ export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemo
 }
 
 export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] => {
-    return Array.isArray(obj) && obj.length > 0
+    return Array.isArray(obj) && obj.length > 0 && !isMultiRemoteElementArray(obj)
         // Using Array.prototype to bypass asynchronous iterator of ElementArray
         && Array.prototype.every.call(obj, isMultiRemoteElement)
 }

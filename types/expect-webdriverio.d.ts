@@ -131,7 +131,7 @@ interface WdioBrowserMatchers<_R, ActualT>{
         * `WebdriverIO.MultiRemoteBrowser` -> `getUrl`
         */
         (
-            url: MaybeArrayOrMultiRemoteValues<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            url: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>
     >
