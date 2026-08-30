@@ -1,7 +1,7 @@
 import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXPECTED_COLOR, INVERTED_COLOR, stringify } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements } from '../types.js'
-import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementLike, isMultiRemoteElements, isStrictlyElementArray } from './elementsUtil.js'
+import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
 import { isBrowser } from './multiRemoteUtils.js'
@@ -29,11 +29,12 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiR
         const subject = formatMultiRemoteInstanceNames(el.instances)
 
         return `${subject}.$(\`${getSelector(el)}\`)`
-    } else if (isMultiRemoteElements(el)) {
-        const firstElement = el[0]
-        const subject = formatMultiRemoteInstanceNames(firstElement.instances)
+    } else if (isMultiRemoteElementsLike(el)) {
+        const instances = isMultiRemoteElementArray(el) ? (el.parent as WebdriverIO.MultiRemoteBrowser).instances : el[0].instances ?? []
+        const selector = isMultiRemoteElementArray(el) ? getSelector(el) : el[0] ? getSelector(el[0]) : ''
+        const subject = formatMultiRemoteInstanceNames(instances)
 
-        return `${subject}.$$(\`${getSelector(firstElement)}\`)`
+        return `${subject}.$$(\`${selector}\`)`
     } else if (isStrictlyElementArray(el)) {
         // Type ElementArray
         selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)
