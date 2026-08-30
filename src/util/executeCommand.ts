@@ -2,7 +2,7 @@ import { equals } from '../jasmineUtils.js'
 import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
-import { awaitElementOrArray, isElement, isMultiRemoteElementLike, isMultiRemoteElements, isStrictlyElementArray } from './elementsUtil.js'
+import { awaitElementOrArray, isElement, isMultiRemoteElementLike, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { isMultiRemoteValues } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
@@ -253,10 +253,12 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
                 return result
             })
         )
-    } else if (isMultiRemoteElements(selector)) { // TODO dprevost we need to support MultiRemoteElementArray
+    } else if (isMultiRemoteElementsLike(selector)) { // TODO dprevost we need to support MultiRemoteElementArray
         // --- Multi-remote $$() multiple elements case ---
         multiRemoteActual = {}
-        for (const [index, element] of Array.from(selector.entries())) {
+        // Await is required of the asynchronous forEach of MultiRemoteElementArray
+        await selector.forEach(async (element, index) => {
+            element = element as WebdriverIO.MultiRemoteElement
             const instanceResults = await Promise.all(
                 element.instances.map(async (instance) => {
                     if (!multiRemoteActual) { throw new Error('multiRemoteActual is undefined') }
@@ -285,7 +287,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
                 })
             )
             results.push(...instanceResults)
-        }
+        })
     } else {
         // --- Multiple elements $$() case ---
         const settled = await Promise.allSettled(
