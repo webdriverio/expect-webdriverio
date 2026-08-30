@@ -3,6 +3,7 @@ import { setDefaultOptions, setFeatureFlags } from 'expect-webdriverio'
 
 // TODO dprevost to review (should we remove it?)
 process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+process.env.WDIO_ENABLE_MULTI_REMOTE_SELECT = 'true'
 
 export const config: WebdriverIO.MultiremoteConfig = {
     //
