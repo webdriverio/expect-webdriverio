@@ -3,6 +3,9 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type {  CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 
+/**
+ * Browser
+ */
 export async function toHaveTitle(
     this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.Browser,
@@ -10,17 +13,20 @@ export async function toHaveTitle(
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
+/**
+ * Multi-Remote Browser
+ */
 export async function toHaveTitle(
     this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.MultiRemoteBrowser,
-    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveTitle(
     this: ExpectWebdriverIO.MatcherContext,
     browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
-    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'title', verb = 'have', isNot, matcherName = 'toHaveTitle' } = this

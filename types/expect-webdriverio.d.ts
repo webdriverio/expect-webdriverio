@@ -165,22 +165,35 @@ interface WdioBrowserMatchers<_R, ActualT>{
     /**
      * `WebdriverIO.Browser` -> `execute`
      */
-    toHaveLocalStorageItem: FnWhenBrowser<ActualT, {
+    toHaveLocalStorageItem: FnWhenBrowserOrMultiRemote<ActualT,
         /**
-         * @deprecated since v6.0.0, removed in v8.0.0. Use `expect.anything()` instead of `undefined` as expected value.
-         */
-        (
-            key: string,
-            expectedValue: undefined,
-            options?: ExpectWebdriverIO.StringOptions
-        ): Promise<void>,
+        * `WebdriverIO.Browser` -> `getLocalStorageItem`
+        */
+        {
+            /**
+            * @deprecated since v6.0.0, removed in v8.0.0. Use `expect.anything()` instead of `undefined` as expected value.
+            */
+            (
+                key: string,
+                expectedValue: undefined,
+                options?: ExpectWebdriverIO.StringOptions
+            ): Promise<void>,
 
+            (
+                key: string,
+                expectedValue?: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+                options?: ExpectWebdriverIO.StringOptions
+            ) : Promise<void>
+        },
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getLocalStorageItem`
+        */
         (
             key: string,
-            expectedValue?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
+            expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
             options?: ExpectWebdriverIO.StringOptions
-        ) : Promise<void>
-    }
+        ) => Promise<void>
     >
 }
 

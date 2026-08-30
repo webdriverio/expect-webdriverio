@@ -6,57 +6,64 @@ describe('WebdriverIO Custom Matchers', () => {
     })
 
     describe('Multi-Remote Browser Matchers', () => {
-        it('should verify browser title', async () => {
-            await expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
-        })
 
-        // TODO dprevsot, show an mult-remote object in error messages?
-        it.skip('should verify browser title error messages contains mult-remote values', async () => {
-            await multiRemoteBrowser.getInstance('firefox').url('about:blank')
-            await expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
-        })
+        describe('toHaveTitle Matcher', () => {
+            it('should verify browser title', async () => {
+                await expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
+            })
+
+            // TODO dprevsot, show an mult-remote object in error messages?
+            it.skip('should verify browser title error messages contains mult-remote values', async () => {
+                await multiRemoteBrowser.getInstance('firefox').url('about:blank')
+                await expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
+            })
 
 
-        it('should verify browser title contains text', async () => {
-            await expect(multiRemoteBrowser).toHaveTitle(expect.stringContaining('WebdriverJS'))
-        })
+            it('should verify browser title contains text', async () => {
+                await expect(multiRemoteBrowser).toHaveTitle(expect.stringContaining('WebdriverJS'))
+            })
 
-        it('should verify browser title contains text for each browser by map', async () => {
-            await expect(multiRemoteBrowser).toHaveTitle({
-                chrome: expect.stringContaining('WebdriverJS'),
-                firefox: expect.stringContaining('WebdriverJS')
+            it('should verify browser title contains text for each browser by map', async () => {
+                await expect(multiRemoteBrowser).toHaveTitle({
+                    chrome: expect.stringContaining('WebdriverJS'),
+                    firefox: expect.stringContaining('WebdriverJS')
+                })
+            })
+
+            it('should verify browser title contains text for one browser with unstable_select', async () => {
+                await expect(multiRemoteBrowser.unstable_select('firefox')).toHaveTitle({
+                    firefox: expect.stringContaining('WebdriverJS')
+                })
             })
         })
 
-        it('should verify browser title contains text for one browser', async () => {
-            await expect(multiRemoteBrowser).toHaveTitle({
-                firefox: expect.stringContaining('WebdriverJS')
+        describe('toHaveUrl Matcher', () => {
+
+            it('should verify browser URL', async () => {
+                await expect(multiRemoteBrowser).toHaveUrl('https://guinea-pig.webdriver.io/')
             })
-        })
 
-        it('should verify browser URL', async () => {
-            await expect(multiRemoteBrowser).toHaveUrl('https://guinea-pig.webdriver.io/')
-        })
-
-        it('should verify URL contains path', async () => {
-            await expect(multiRemoteBrowser).toHaveUrl(expect.stringContaining('guinea-pig.webdriver.io'))
-        })
-
-        it('should verify URL contains path for multi-remote values', async () => {
-            await expect(multiRemoteBrowser).toHaveUrl({
-                chrome: expect.stringContaining('guinea-pig.webdriver.io'),
-                firefox: expect.stringContaining('guinea-pig.webdriver.io')
+            it('should verify URL contains path', async () => {
+                await expect(multiRemoteBrowser).toHaveUrl(expect.stringContaining('guinea-pig.webdriver.io'))
             })
+
+            it('should verify URL contains path for multi-remote values', async () => {
+                await expect(multiRemoteBrowser).toHaveUrl({
+                    chrome: expect.stringContaining('guinea-pig.webdriver.io'),
+                    firefox: expect.stringContaining('guinea-pig.webdriver.io')
+                })
+            })
+
         })
 
-        it('should verify not localStorage item', async () => {
-            await expect(browser).not.toHaveLocalStorageItem('key', 'value')
-        })
+        describe('toHaveLocalStorageItem Matcher', () => {
+            it('should verify not localStorage item', async () => {
+                await expect(multiRemoteBrowser).not.toHaveLocalStorageItem('key', 'value')
+            })
 
-        it('should verify not localStorage item with options', async () => {
-            await expect(browser).not.toHaveLocalStorageItem('key', expect.anything(), { wait: 0 })
-            await expect(browser).not.toHaveLocalStorageItem('key', undefined, { wait: 0 })
-            await expect(browser).not.toHaveLocalStorageItem('key', undefined)
+            it('should verify not localStorage item with options', async () => {
+                await expect(multiRemoteBrowser).not.toHaveLocalStorageItem('key', expect.anything(), { wait: 0 })
+            })
         })
     })
 

@@ -6,6 +6,7 @@ import { refreshElementArray } from './refetchElements.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
 export type CompareResult<Actual> = { success: boolean; actual: Actual }
+export type MultiRemoteCompareResult<Actual> = { success: boolean; actual: Actual, multiRemoteBrowserName: string }
 export type StrategyResult<Actual, Subject = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown, Expected = unknown> = {
     subject: Subject;
     expected?: Expected;
@@ -216,7 +217,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
                 return result
             })
         )
-    } else if (isMultiRemoteElements(selector)) {
+    } else if (isMultiRemoteElements(selector)) { // TODO dprevost we need to support MultiRemoteElementArray
         // --- Multi-remote $$() multiple elements case ---
         multiRemoteActual = {}
         for (const [index, element] of Array.from(selector.entries())) {

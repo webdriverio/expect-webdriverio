@@ -1,4 +1,4 @@
-import type { MaybeSomeWdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../types.js'
 
 /**
  * Wraps the expected value in an array if both the target element (`el`) and the `actual` value are arrays.
@@ -193,10 +193,20 @@ export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRem
  * Fake MultiRemoteElementArray at runtime for v9, should be better typed in v10
  * Need env variable `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` set to `true`
  */
-export const isMultiRemoteElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
+export const isMultiRemoteElementArray = (obj: unknown): obj is WdioMultiRemoteElementArray => {
     return !!obj && typeof obj === 'object' && 'isMultiremote' in obj && obj.isMultiremote === true && 'parent' in obj && 'foundWith' in obj && 'selector' in obj
 }
 
+/**
+ * Checks if the object is like a MultiRemoteElement, array or not.
+ */
 export const isMultiRemoteElementLike = (obj: unknown): obj is WdioMultiRemoteElements => {
     return isMultiRemoteElement(obj) || isMultiRemoteElements(obj)
+}
+
+/**
+ * Checks if the object is like a MultiRemoteElement array
+ */
+export const isMultiRemoteElementsLike = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray => {
+    return isMultiRemoteElementArray(obj) || isMultiRemoteElements(obj)
 }

@@ -20,6 +20,8 @@ export type MaybeSomeWdioElementOrArrayMaybePromise =
 
 export type WdioMultiRemoteElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]
 
+export type WdioMultiRemoteElementArray = WebdriverIO.ElementArray & { isMultiremote: true }
+
 export type RawMatcherFn<Context extends MatcherContext = MatcherContext> = {
     (this: Context, actual: unknown, ...expected: unknown[]): ExpectationResult;
 }
