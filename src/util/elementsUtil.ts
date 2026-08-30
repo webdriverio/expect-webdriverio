@@ -180,7 +180,13 @@ export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemo
 }
 
 export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] => {
-    return Array.isArray(obj) && obj.length > 0 && obj.every(isMultiRemoteElement)
+    return Array.isArray(obj) && obj.length > 0
+    && (isMultiRemote(obj)
+    || (
+        !('getElements' in obj)
+        // Filtering out ElementArray with the above, else the every is asynchronous and return thrutty because of promises
+        && obj.every(isMultiRemoteElement)
+    ))
 }
 
 /**
