@@ -250,12 +250,13 @@ interface WdioNetworkMatchers<_R, ActualT> {
 }
 
 /**
- * Matchers dedicated to WebdriverIO Element or ElementArray (or chainable).
+ * Matchers dedicated to WebdriverIO Element or ElementArray (or chainable) on Browser
+ * For Multi-Remote Browser, MultiRemoteElement or MultiRemoteElement[]
  * When asserting on an element or element array's properties requiring to be awaited, the return type is a Promise.
  * When actual is neither of WebdriverIO.Element, WebdriverIO.ElementArray, ChainableElement, ChainableElementArray, the return type is never, so the function cannot be used.
  */
 interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
-    // ===== $ or $$ =====
+    // ===== $ or $$ with Browser or Multi-Remote Browser=====
     /**
      * `WebdriverIO.Element` -> `isDisplayed`
      */
