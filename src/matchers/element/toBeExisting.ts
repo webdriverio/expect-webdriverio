@@ -1,9 +1,9 @@
 import { executeCommandBe } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromise, WdioMultiRemoteElements } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements } from '../../types.js'
 
 export async function toExist(
-    received: MaybeSomeWdioElementOrArrayMaybePromise | WdioMultiRemoteElements,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'exist'
@@ -26,13 +26,13 @@ export async function toExist(
     return result
 }
 
-export function toBeExisting(el: MaybeSomeWdioElementOrArrayMaybePromise | WdioMultiRemoteElements, options?: ExpectWebdriverIO.CommandOptions) {
+export function toBeExisting(el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, options?: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'existing'
     this.verb = 'be'
 
     return toExist.call(this, el, options)
 }
-export function toBePresent(el: MaybeSomeWdioElementOrArrayMaybePromise | WdioMultiRemoteElements, options?: ExpectWebdriverIO.CommandOptions) {
+export function toBePresent(el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, options?: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'present'
     this.verb = 'be'
 

@@ -15,8 +15,8 @@ export type WdioElementsMaybePromise =
 export type WdioElementOrArrayMaybePromise =
     WdioElementMaybePromise | WdioElementsMaybePromise
 
-export type MaybeSomeWdioElementOrArrayMaybePromise =
-    MaybeSome<WdioElementMaybePromise | WdioElementsMaybePromise>
+export type MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements =
+    MaybeSome<WdioElementMaybePromise | WdioElementsMaybePromise | WdioMultiRemoteElements>
 
 export type WdioMultiRemoteElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray
 
