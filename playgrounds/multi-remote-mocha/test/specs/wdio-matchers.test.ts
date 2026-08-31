@@ -133,8 +133,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(h1.unstable_select('chrome')).toBeDisplayed()
                 })
 
-                // TODO: Multi-Remote bug, reported to https://github.com/webdriverio/webdriverio/issues/15534
-                it.skip('should be able to query isDisplayed on element no longer existing', async () => {
+                it('should be able to query isDisplayed on element no longer existing', async () => {
                     const h1 = multiRemoteBrowser.$('h1')
 
                     await multiRemoteBrowser.getInstance('firefox').url('about:blank')
@@ -143,16 +142,18 @@ describe('WebdriverIO Custom Matchers', () => {
                     // Crash here with `WebDriver Bidi command "script.callFunction" failed with error: no such node`
                     console.log('isDisplayed:', await h1.isDisplayed())
                     await expect(h1).not.toBeDisplayed()
+                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\(`h1`\) to be displayed/)
                 })
 
-                // TODO: Multi-Remote bug, reported to https://github.com/webdriverio/webdriverio/issues/15534
-                it.skip('should be able to query isDisplayed on element no longer existing and one still existing', async () => {
+                it('should be able to query isDisplayed on element no longer existing and one still existing', async () => {
                     const h1 = multiRemoteBrowser.$('h1')
 
                     await multiRemoteBrowser.getInstance('firefox').url('about:blank')
 
                     await expect(h1.unstable_select('firefox')).not.toBeDisplayed()
                     await expect(h1.unstable_select('chrome')).toBeDisplayed()
+                    await expect(expect(h1).not.toBeDisplayed()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\(`h1`\) not to be displayed/)
+                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\(`h1`\) to be displayed/)
                 })
 
                 // TODO dprevost to fix `TypeError: Cannot read properties of undefined (reading 'beforeCommand')` at elementsUtil.js:54
