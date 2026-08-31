@@ -86,7 +86,7 @@ export const config: WebdriverIO.MultiremoteConfig = {
     // =====
     //
     before: function () {
-        setDefaultOptions({ wait: 300, interval: 100 })
+        setDefaultOptions({ wait: 1000, interval: 100 })
         setFeatureFlags({
             useToHaveTextStrictMultiElementsCompareStrategy: true,
         })

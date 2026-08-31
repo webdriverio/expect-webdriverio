@@ -15,7 +15,7 @@ describe('WebdriverIO Custom Matchers', () => {
             it('should verify browser title error messages contains mult-remote values', async () => {
                 await multiRemoteBrowser.getInstance('firefox').url('about:blank')
                 const assertion = expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
-                await expect(assertion).rejects.toThrow(/Expect multi-remote<chrome, firefox> to have title/)
+                await expect(assertion).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)> to have title/)
                 await expect(assertion).rejects.toThrow(/"firefox": "WebdriverJS Testpage"/)
             })
 
@@ -142,7 +142,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     // Crash here with `WebDriver Bidi command "script.callFunction" failed with error: no such node`
                     console.log('isDisplayed:', await h1.isDisplayed())
                     await expect(h1).not.toBeDisplayed()
-                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\(`h1`\) to be displayed/)
+                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\(`h1`\) to be displayed/)
                 })
 
                 it('should be able to query isDisplayed on element no longer existing and one still existing', async () => {
@@ -152,8 +152,8 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await expect(h1.unstable_select('firefox')).not.toBeDisplayed()
                     await expect(h1.unstable_select('chrome')).toBeDisplayed()
-                    await expect(expect(h1).not.toBeDisplayed()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\(`h1`\) not to be displayed/)
-                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\(`h1`\) to be displayed/)
+                    await expect(expect(h1).not.toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\(`h1`\) not to be displayed/)
+                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\(`h1`\) to be displayed/)
                 })
             })
 
@@ -281,7 +281,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await multiRemoteBrowser.getInstance('chrome').url('about:blank')
 
-                    await expect(expect(h1MultiRemote).toExist()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\$\(`h1`\) to exist/)
+                    await expect(expect(h1MultiRemote).toExist()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\$\(`h1`\) to exist/)
                 })
 
                 it('should be able to query not isExisting on element no longer existing and one still existing', async () => {
@@ -289,7 +289,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await multiRemoteBrowser.getInstance('chrome').url('about:blank')
 
-                    await expect(expect(h1MultiRemote).not.toExist()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\$\(`h1`\) not to exist/)
+                    await expect(expect(h1MultiRemote).not.toExist()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\$\(`h1`\) not to exist/)
                 })
 
                 // TODO to fix, crahsing with `Index out of bounds! $$(h1) returned only 0 elements.`
@@ -300,7 +300,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     await multiRemoteBrowser.getInstance('chrome').url('about:blank')
 
                     await expect(h1).not.toBeDisplayed()
-                     await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\$\(`h1`\) not to be displayed/)
+                     await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\$\(`h1`\) not to be displayed/)
                 })
             })
         })
