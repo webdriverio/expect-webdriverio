@@ -39,7 +39,15 @@ export const config: WebdriverIO.MultiremoteConfig = {
                 capabilities: {
                     browserName: 'chrome',
                     'goog:chromeOptions': {
-                        args: ['headless', 'disable-gpu']
+                        args: ['headless', 'disable-gpu'],
+
+                        // Required to allow clipboard access in headless mode
+                        prefs: {
+                            'profile.content_settings.exceptions.clipboard': {
+                                '[*.]localhost,*': { setting: 1 },
+                                'https://*:*': { setting: 1 }
+                            }
+                        }
                     }
                 }
             },
