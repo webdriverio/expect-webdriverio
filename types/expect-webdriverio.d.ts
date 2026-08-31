@@ -472,9 +472,11 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * `WebdriverIO.Element` -> `getProperty` value
      */
     toHaveValue: FnWhenElementOrArrayLike<ActualT,
+        /**
+         * Element(s) API
+         */
         /** Element $() API */
         (
-
             value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>,
@@ -483,6 +485,22 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         (
 
             value: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /**
+         * Multi-Remote Elements API
+         */
+        /** $() API */
+        (
+            value: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /** $$() API */
+        (
+
+            value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>
     >
