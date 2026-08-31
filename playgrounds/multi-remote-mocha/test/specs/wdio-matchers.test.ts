@@ -12,12 +12,12 @@ describe('WebdriverIO Custom Matchers', () => {
                 await expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
             })
 
-            // TODO dprevsot, show an mult-remote object in error messages?
-            it.skip('should verify browser title error messages contains mult-remote values', async () => {
+            it('should verify browser title error messages contains mult-remote values', async () => {
                 await multiRemoteBrowser.getInstance('firefox').url('about:blank')
-                await expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
+                const assertion = expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
+                await expect(assertion).rejects.toThrow(/Expect multi-remote<chrome, firefox> to have title/)
+                await expect(assertion).rejects.toThrow(/"firefox": "WebdriverJS Testpage"/)
             })
-
 
             it('should verify browser title contains text', async () => {
                 await expect(multiRemoteBrowser).toHaveTitle(expect.stringContaining('WebdriverJS'))
@@ -154,16 +154,6 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(h1.unstable_select('chrome')).toBeDisplayed()
                     await expect(expect(h1).not.toBeDisplayed()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\(`h1`\) not to be displayed/)
                     await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<chrome, firefox>\.\$\(`h1`\) to be displayed/)
-                })
-
-                // TODO dprevost to fix `TypeError: Cannot read properties of undefined (reading 'beforeCommand')` at elementsUtil.js:54
-                it.skip('should be able to filter on existing only', async () => {
-                    const h1 = multiRemoteBrowser.$('h1')
-
-                    await multiRemoteBrowser.getInstance('firefox').url('about:blank')
-
-                    // @ts-expect-error -- TODO: dprevost filter returns Promise<WebdriverIO.MultiRemoteElement>, to fix!
-                    await expect(h1.unstable_filter((el) => el.isExisting())).toBeDisplayed()
                 })
             })
 
