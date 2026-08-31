@@ -1,5 +1,5 @@
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
 import { awaitElementOrArray, isElement, isMultiRemoteElementLike, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { isMultiRemoteValues } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
@@ -33,7 +33,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     strategy = 'NewStrictMultipleElements',
     strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
 } :{
-    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | WdioMultiRemoteElements | unknown
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements | unknown
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
     context: { isNot: boolean, iteration: number },
@@ -70,7 +70,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
  * Kept for backward compatibility, to not be breaking but still be able to rollout the below new strategy.
  */
 export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
-    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown,
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | unknown,
     expectedValues: MaybeArray<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     _isNot?: boolean,
@@ -125,7 +125,7 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
  * `allowEmptyElements` to let an empty element set pass the assertion instead of failing.
  */
 export const multipleElementResultsStrategy = async <Actual, Expected>(
-    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | WdioMultiRemoteElements | unknown,
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements | unknown,
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
