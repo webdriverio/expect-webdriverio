@@ -247,7 +247,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(multiRemoteBrowser.unstable_select('chrome').$$('h1')).toBeDisplayed()
                 })
 
-                // TODO to fix crashing with `Index out of bounds! $$(h1) returned only 0 elements` instead of showing an assertion failure message
+                // TODO waiting fix, see https://github.com/webdriverio/webdriverio/issues/15550
                 it.skip('should show error message when querying isDisplayed on an element that no longer exist on a specific browser', async () => {
                     const h1Firefox = multiRemoteBrowser.unstable_select('firefox').$$('h1')
 
@@ -292,7 +292,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(expect(h1MultiRemote).not.toExist()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\$\(`h1`\) not to exist/)
                 })
 
-                // TODO to fix, crahsing with `Index out of bounds! $$(h1) returned only 0 elements.`
+                // TODO waiting fix, see https://github.com/webdriverio/webdriverio/issues/15550
                 it.skip('should be able to query isDisplayed on element no longer existing', async () => {
                     const h1 = multiRemoteBrowser.$$('h1')
 
