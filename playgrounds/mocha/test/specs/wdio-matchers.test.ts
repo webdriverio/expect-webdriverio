@@ -488,7 +488,7 @@ describe('WebdriverIO Custom Matchers', () => {
             await browser.url('https://guinea-pig.webdriver.io/')
         })
 
-        it.only('should verify element has specific HTML', async () => {
+        it('should verify element has specific HTML', async () => {
             const element = await $('h1')
             await expect(element).toHaveHTML('<h1>WebdriverJS Testpage</h1>', {
                 includeSelectorTag: true,
