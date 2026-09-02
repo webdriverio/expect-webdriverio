@@ -154,6 +154,18 @@ Received      : "<div>foo</div>"`
             expect(result.pass).toBe(true)
         })
 
+        test('should return true and be able to include all GetHTMLOptions', async () => {
+            const result = await thisContext.toHaveHTML(element, '<div>foo</div>', {
+                wait: 1,
+                includeSelectorTag: true,
+                pierceShadowRoot: true,
+                removeCommentNodes: true,
+                prettify: true,
+                excludeElements: ['.ignore-this'],
+            })
+            expect(result.pass).toBe(true)
+        })
+
         test('message', async () => {
             vi.mocked(element.getHTML).mockResolvedValue('')
             const result = await thisContext.toHaveHTML(element, '<div>foo</div>')
