@@ -1,17 +1,14 @@
-import { $ } from '@wdio/globals'
-import { setOptions, getConfig, getDefaultOptions, setDefaultOptions } from 'expect-webdriverio'
+import { multiRemoteBrowser } from '@wdio/globals'
+import { getDefaultOptions, setDefaultOptions } from 'expect-webdriverio'
 
 describe('Global Options', () => {
     const defaultWait = getDefaultOptions().wait
 
     before(() => {
-        setOptions({ wait: 1 })
         setDefaultOptions({ wait: 1 })
     })
 
     it('should set global wait option', () => {
-        expect(getConfig().wait).toBe(1)
-        expect(getConfig().wait).not.toBe(defaultWait)
         expect(getDefaultOptions().wait).toBe(1)
         expect(getDefaultOptions().wait).not.toBe(defaultWait)
         expect(defaultWait).toBe(10000)
@@ -20,8 +17,7 @@ describe('Global Options', () => {
     it('should allow setting and using global wait option', async () => {
         const start = Date.now()
 
-        // Should fail immediately (wait: 1ms) TODO swap for multiRemoteBrowser.$() one day
-        await expect(expect($('non-existent-element-' + Date.now())).toBeDisplayed()).rejects.toThrow()
+        await expect(expect(multiRemoteBrowser.$('non-existent-element-' + Date.now())).toBeDisplayed()).rejects.toThrow()
         const duration = Date.now() - start
 
         // Ensure failure was fast (< 500ms) compared to default timeout

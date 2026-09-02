@@ -1,15 +1,18 @@
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
-import { awaitElementOrArray, isElement, isStrictlyElementArray } from './elementsUtil.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
+import { awaitElementOrArray, isElement, isMultiRemoteElementLike, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
+import { isMultiRemoteValues } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
-export type CompareResult<T> = { success: boolean; actual: T }
-export type StrategyResult<T, E = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown> = {
-    subject: E;
+export type CompareResult<Actual> = { success: boolean; actual: Actual }
+export type MultiRemoteCompareResult<Actual> = { success: boolean; actual: Actual, multiRemoteBrowserName: string }
+export type StrategyResult<Actual, Subject = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown, Expected = unknown> = {
+    subject: Subject;
+    expected?: Expected;
     abort?: boolean;
     context?: { isSome: boolean };
-} & CompareResult<T | undefined>
+} & CompareResult<Actual | MultiRemoteValues<Actual> | undefined>
 
 /**
  * Fetch element(s) and route them to the appropriate comparison strategy.
@@ -30,19 +33,21 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     strategy = 'NewStrictMultipleElements',
     strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
 } :{
-    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown
-    expectedValues: MaybeArray<Expected> | unknown
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements | unknown
+    expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
     context: { isNot: boolean, iteration: number },
     strategy?: StrategyType,
     strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean }
 }
-): Promise<StrategyResult<MaybeArray<Actual>>> {
+): Promise<StrategyResult<MaybeArrayOrMultiRemoteValuesWithArray<Actual>>> {
     const isSome = isSomeWrapper(unresolvedElements)
 
     if (strategy === 'LegacyLooseMultipleElements') {
         if (isSome) {
             throw new Error('some(elements) works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
+        } else if (isMultiRemoteElements(unresolvedElements)) {
+            throw new Error('Multi-remote elements works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
         }
         return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot)
     }
@@ -65,15 +70,15 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
  * Kept for backward compatibility, to not be breaking but still be able to rollout the below new strategy.
  */
 export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
-    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown,
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | unknown,
     expectedValues: MaybeArray<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     _isNot?: boolean,
 
-): Promise<StrategyResult<MaybeArray<Actual>>> => {
+): Promise<StrategyResult<MaybeArrayOrMultiRemoteValuesWithArray<Actual>>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
     const subject = selector ?? other
-    if (!selector || isEmptyElements) {
+    if (!selector || isEmptyElements || isMultiRemoteElementLike(selector)) {
         return {
             subject: subject,
             success: false,
@@ -120,20 +125,20 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
  * `allowEmptyElements` to let an empty element set pass the assertion instead of failing.
  */
 export const multipleElementResultsStrategy = async <Actual, Expected>(
-    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown,
-    expectedValues: MaybeArray<Expected> | undefined,
+    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements | unknown,
+    expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
     { allowEmptyElements = false, allowArrayWithSingleElement = false } = {}
-): Promise<StrategyResult<MaybeArray<Actual>>> => {
-    const { selector, other } = await awaitElementOrArray(unresolvedElements)
+): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
+    const { selector, other, multiRemoteSelector } = await awaitElementOrArray(unresolvedElements)
 
-    if (iteration > 0 && isStrictlyElementArray(selector)) {
+    if (iteration > 0 && (isStrictlyElementArray(selector) || isMultiRemoteElementsLike(selector))) {
         // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
         await refreshElementArray(selector)
     }
 
-    const subject = selector ?? other
+    const subject = multiRemoteSelector ?? selector ?? other
 
     // --- Empty / no element case ---
     if (!selector || (Array.isArray(selector) && selector.length === 0)) {
@@ -154,38 +159,121 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     // --- Single element case ---
     if (isElement(selector)) {
+
         // Array of expected values is unsupported for a single element in the new strict strategy.
         const forceFailure = !allowArrayWithSingleElement && Array.isArray(expectedValues)
 
-        const compareResult = await singleElementCompare(selector, forceFailure ? undefined : expectedValues)
+        const compareResult = await singleElementCompare(selector, forceFailure ? undefined : expectedValues as MaybeArray<Expected>)
         const success = forceFailure ? !!isNot : compareResult.success
 
         return { subject, success, actual: compareResult.actual, abort: forceFailure, context: { isSome } }
     }
 
-    // --- Multiple elements case ---
+    // --- Multiple elements & Multi-remote element(s) case ---
     const lengthMismatch = Array.isArray(expectedValues) && expectedValues.length !== selector.length
 
-    const settled = await Promise.allSettled(
-        Array.from(selector).map(async (element: WebdriverIO.Element, index: number) => {
-            const indexedExpected = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
-            /**
+    let results: CompareResult<Actual>[] = []
+
+    let multiRemoteActual: MultiRemoteValuesWithArray<Actual> | undefined
+    let multiRemoteExpected: MultiRemoteValues<Expected> | undefined
+    // --- Multi-remote $() single element case ---
+    if (multiRemoteSelector && !Array.isArray(expectedValues)) {
+        multiRemoteActual = {}
+
+        // eslint-disable-next-line unicorn/prefer-ternary
+        if (isMultiRemoteValues(expectedValues, multiRemoteSelector.instances)) {
+            multiRemoteExpected = expectedValues
+        } else {
+            multiRemoteExpected = multiRemoteSelector.instances.reduce((acc, instance) => {
+                acc[instance] = expectedValues as Expected
+                return acc
+            }, {} as MultiRemoteValues<Expected>)
+        }
+
+        results = await Promise.all(
+            Object.keys(multiRemoteExpected).map(async (instance) => {
+                if (!multiRemoteExpected)  {throw new Error('multiRemoteExpected is undefined')}
+
+                const expectValue = multiRemoteExpected[instance]
+
+                // TODO: non-existing multi-remote element should probably be a element with error and not to throw??
+                let element: WebdriverIO.Element
+                try {
+                    element = multiRemoteSelector.getInstance(instance)
+                } catch (error) {
+                    if (error instanceof Error && error.message.includes('Multiremote object has no instance named')) {
+                        if (!multiRemoteActual) {throw new Error('multiRemoteActual is undefined')}
+                        multiRemoteActual[instance] = undefined as Actual
+
+                        return { success: false, actual: undefined as Actual }
+                    }
+                    throw error
+                }
+
+                const result = await singleElementCompare(element, expectValue as Expected)
+                if (!multiRemoteActual) {throw new Error('multiRemoteActual is undefined')}
+                multiRemoteActual[instance] = result.actual
+                return result
+            })
+        )
+    } else if (isMultiRemoteElementsLike(selector)) { // TODO dprevost we need to support MultiRemoteElementArray
+        // --- Multi-remote $$() multiple elements case ---
+        multiRemoteActual = {}
+        // Await is required of the asynchronous forEach of MultiRemoteElementArray
+        await selector.forEach(async (element, index) => {
+            element = element as WebdriverIO.MultiRemoteElement
+            const instanceResults = await Promise.all(
+                element.instances.map(async (instance) => {
+                    if (!multiRemoteActual) { throw new Error('multiRemoteActual is undefined') }
+                    if (!multiRemoteActual[instance])  { multiRemoteActual[instance] = [] }
+                    const typedActual = multiRemoteActual[instance] as Actual[]
+
+                    let elementInstance: WebdriverIO.Element
+                    try {
+                        elementInstance = element.getInstance(instance)
+                    } catch (error) {
+                        if (error instanceof Error && error.message.includes('Multiremote object has no instance named')) {
+                            if (!multiRemoteActual) {throw new Error('multiRemoteActual is undefined')}
+                            typedActual.push(undefined as Actual)
+
+                            return { success: false, actual: undefined as Actual }
+                        }
+                        throw error
+                    }
+
+                    const instanceValue = isMultiRemoteValues(expectedValues, element.instances) ? expectedValues[instance] : expectedValues
+                    const indexedExpected = Array.isArray(instanceValue) ? instanceValue[index] : instanceValue
+
+                    const result = await singleElementCompare(elementInstance, indexedExpected, index)
+                    typedActual.push(result.actual)
+                    return  result
+                })
+            )
+            results.push(...instanceResults)
+        })
+    } else {
+        // --- Multiple elements $$() case ---
+        const settled = await Promise.allSettled(
+            Array.from(selector).map(async (element: WebdriverIO.Element, index: number) => {
+                const indexedExpected = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
+                /**
              * Force per-element failure when: expected is a nested array (unsupported) or this index
              * is beyond the expected array bounds. Still call compare to get the actual value for the
              * error message, but ignore its success.
              */
-            const forceElementFailure = Array.isArray(indexedExpected)
+                const forceElementFailure = Array.isArray(indexedExpected)
                 || (lengthMismatch && Array.isArray(expectedValues) && index >= expectedValues.length)
 
-            const compareResult = await singleElementCompare(element, forceElementFailure ? undefined : indexedExpected, index)
-            return forceElementFailure ? { success: false, actual: compareResult.actual } : compareResult
-        })
-    )
+                const compareResult = await singleElementCompare(element, forceElementFailure ? undefined : indexedExpected as MaybeArray<Expected>, index)
+                return forceElementFailure ? { success: false, actual: compareResult.actual } : compareResult
+            })
+        )
 
-    const firstRejection = settled.find((r): r is PromiseRejectedResult => r.status === 'rejected')
-    if (firstRejection) {throw firstRejection.reason}
+        const firstRejection = settled.find((r): r is PromiseRejectedResult => r.status === 'rejected')
+        if (firstRejection) {throw firstRejection.reason}
 
-    const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<Actual>>).value)
+        results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<Actual>>).value)
+    }
 
     // Pad actuals for display when expected has more entries than actual elements.
     if (Array.isArray(expectedValues) && expectedValues.length > selector.length) {
@@ -208,10 +296,11 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         ? !(isNotEmpty && checkNotFn(results))
         : isNotEmpty && checkFn(results)
 
-    return { subject, success, actual: results.map(({ actual }) => actual), context: { isSome } }
+    return { subject, success, actual: multiRemoteActual ?? results.map(({ actual }) => actual), context: { isSome }, expected: multiRemoteExpected }
 }
 
 const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === true)
 const isAllFalse = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === false)
 const isAtLeastOneTrue = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.success === true)
 const isAtLeastOneFalse = (results: CompareResult<unknown>[]): boolean => results.some((res) => res.success === false)
+

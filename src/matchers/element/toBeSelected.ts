@@ -1,9 +1,9 @@
 import { executeCommandBe } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements } from '../../types.js'
 
 export async function toBeSelected(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'selected'
@@ -25,7 +25,7 @@ export async function toBeSelected(
     return result
 }
 
-export async function toBeChecked (received: MaybeSomeWdioElementOrArrayMaybePromise, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
+export async function toBeChecked (received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
     this.expectation = 'checked'
     this.matcherName = 'toBeChecked'
 

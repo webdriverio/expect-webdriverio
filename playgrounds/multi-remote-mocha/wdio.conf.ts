@@ -1,6 +1,10 @@
 
 import { setDefaultOptions, setFeatureFlags } from 'expect-webdriverio'
 
+// TODO dprevost to review (should we remove it?)
+process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+process.env.WDIO_ENABLE_MULTI_REMOTE_SELECT = 'true'
+
 export const config: WebdriverIO.MultiremoteConfig = {
     //
     // ====================
@@ -18,7 +22,9 @@ export const config: WebdriverIO.MultiremoteConfig = {
     specs: [
         './test/specs/**/*.test.ts',
         //'./test/specs/**/basic-matchers.test.ts',
-        //'./test/specs/**/network-matchers.test.ts'
+        //'./test/specs/**/network-matchers.test.ts',
+        //'./test/specs/**/options.test.ts',
+        //'./test/specs/**/wdio-matchers.test.ts'
     ],
 
     maxInstances: 10,
@@ -33,13 +39,22 @@ export const config: WebdriverIO.MultiremoteConfig = {
                 capabilities: {
                     browserName: 'chrome',
                     'goog:chromeOptions': {
-                        args: ['headless', 'disable-gpu']
+                        args: ['headless', 'disable-gpu'],
+
+                        // Required to allow clipboard access in headless mode
+                        prefs: {
+                            'profile.content_settings.exceptions.clipboard': {
+                                '[*.]localhost,*': { setting: 1 },
+                                'https://*:*': { setting: 1 }
+                            }
+                        }
                     }
                 }
             },
             firefox: {
                 capabilities: {
                     browserName: 'firefox',
+                    browserVersion: 'stable', // Required locally to force downloading!
                     'moz:firefoxOptions': {
                         args: ['-headless', 'disable-gpu']
                     }
@@ -71,7 +86,7 @@ export const config: WebdriverIO.MultiremoteConfig = {
     // =====
     //
     before: function () {
-        setDefaultOptions({ wait: 250 })
+        setDefaultOptions({ wait: 1000, interval: 100 })
         setFeatureFlags({
             useToHaveTextStrictMultiElementsCompareStrategy: true,
         })

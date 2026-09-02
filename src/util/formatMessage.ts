@@ -1,13 +1,14 @@
 import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXPECTED_COLOR, INVERTED_COLOR, stringify } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
-import type { WdioElements } from '../types.js'
-import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray } from './elementsUtil.js'
+import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements } from '../types.js'
+import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
+import { isBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
-export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) => {
+export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElement) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
     if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
         // TODO handle custom$ selector
@@ -16,7 +17,7 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray) 
     return result
 }
 
-export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => {
+export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiRemoteElements): string => {
     if (!el || typeof el !== 'object') {
         return ''
     }
@@ -24,7 +25,17 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
     const selectors = []
     let parent: WebdriverIO.ElementArray['parent'] | undefined
 
-    if (isStrictlyElementArray(el)) {
+    if (isMultiRemoteElement(el)) {
+        const subject = formatMultiRemoteInstanceNames(el.instances)
+
+        return `${subject}.$(\`${getSelector(el)}\`)`
+    } else if (isMultiRemoteElementsLike(el)) {
+        const instances = isMultiRemoteElementArray(el) ? (el.parent as WebdriverIO.MultiRemoteBrowser).instances : el[0].instances ?? []
+        const selector = isMultiRemoteElementArray(el) ? getSelector(el) : el[0] ? getSelector(el[0]) : ''
+        const subject = formatMultiRemoteInstanceNames(instances)
+
+        return `${subject}.$$(\`${selector}\`)`
+    } else if (isStrictlyElementArray(el)) {
         // Type ElementArray
         selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)
         parent = el.parent
@@ -47,13 +58,13 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
     return selectors.reverse().join('.')
 }
 
-const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
+const not = (isNot: boolean | undefined): string => `${isNot ? 'not ' : ''}`
 
 export const enhanceError = (
-    subject: string | WebdriverIO.Element | WdioElements | unknown,
+    subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean, useNotInLabel?: boolean, isSome?: boolean },
+    context: { isNot: boolean | undefined, useNotInLabel?: boolean, isSome?: boolean, browserTargetType?: 'browser' | 'window' },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
@@ -62,7 +73,18 @@ export const enhanceError = (
     } = {}): string => {
     const { isNot, useNotInLabel = true } = context
 
-    let subjectStr = (isElementOrArrayLike(subject) ? getSelectors(subject) : toJsonString(subject))
+    if (isBrowser(subject)) {
+        if (subject.isMultiremote) {
+            subject = formatMultiRemoteInstanceNames(subject.instances)
+        } else if (subject.isMobile) {
+            subject = context.browserTargetType === 'window' ? 'mobile screen' : 'mobile'
+        } else {
+            const prefix = subject.requestedCapabilities?.browserName ?? 'browser'
+            subject = context.browserTargetType === 'window' ? `${prefix}'s window` : prefix
+        }
+    }
+
+    let subjectStr = (isElementOrArrayOrMultiRemoteElementLike(subject) ? getSelectors(subject) : toJsonString(subject))
     if (subjectStr.length > 100) {
         subjectStr = `${subjectStr.substring(0, 100)}...`
     }
@@ -167,7 +189,7 @@ const printArrayWithMatchingItemInRed = (
 
 export const enhanceErrorBe = (
     subject: WebdriverIO.Element | WdioElements | unknown,
-    results: boolean[] | boolean | undefined,
+    actuals: boolean[] | boolean | MultiRemoteValuesWithArray<boolean> | undefined,
     context: { isNot: boolean, isSome: boolean, verb: string, expectation: string },
     options: ExpectWebdriverIO.CommandOptions
 ) => {
@@ -178,9 +200,34 @@ export const enhanceErrorBe = (
     const expectedValue = `${not(isNot)}${expectation}`
     const actualValue = `${not(!isNot)}${expectation}`
 
-    if (isElementArrayLike(subject)) {
+    if (isMultiRemoteElementLike(subject)) {
+        if (isMultiRemoteElement(subject)) {
+            const typedActuals = actuals as MultiRemoteValues<boolean>
+            actual = Object.entries(subject.instances).reduce((acc, [index, instance]) => {
+                acc[instance] = isSuccess(isNot, typedActuals[index]) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`
+                return acc
+            }, {} as MultiRemoteValues<string>)
+            expected = subject.instances.reduce((acc, instance) => {
+                acc[instance] = expectedValue
+                return acc
+            }, {} as MultiRemoteValues<string>)
+        } else if (isMultiRemoteElements(subject)) {
+            const typedActuals = actuals as MultiRemoteValues<boolean[]>
+            actual = subject[0].instances.reduce((acc, instance) => {
+                acc[instance] = typedActuals[instance].map(actual => isSuccess(isNot, actual) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
+                return acc
+            }, {} as MultiRemoteValues<string[]>)
+            expected = subject[0].instances.reduce((acc, instance) => {
+                acc[instance] = Array(typedActuals[instance].length).fill(expectedValue)
+                return acc
+            }, {} as MultiRemoteValues<string[]>)
+        } else {
+            throw new Error('Unsupported Multi-remote object type for enhanceErrorBe')
+        }
+    } else if (isElementArrayLike(subject)) {
         expected = subject.length === 0 ? 'at least one result' : Array(subject.length).fill(expectedValue)
-        actual = toArray(results).map(result => isSuccess(isNot, result) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
+        // @ts-expect-error TODO dprevost fix typing
+        actual = toArray(actuals).map(actual => isSuccess(isNot, actual) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
     } else {
         expected = expectedValue
         actual = actualValue
@@ -191,4 +238,10 @@ export const enhanceErrorBe = (
 
 const isSuccess = (isNot: boolean, success: boolean): boolean => {
     return isNot ? !success : success
+}
+
+const formatMultiRemoteInstanceNames = (instances: string[]): string => {
+    let instanceNames = instances.join(', ')
+    instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
+    return `multi-remote<${instanceNames}>`
 }

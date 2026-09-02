@@ -3,7 +3,7 @@ import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
 
-import type { MaybeSomeWdioElementOrArrayMaybePromise } from './types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MultiRemoteValuesWithArray } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
@@ -78,7 +78,7 @@ export function getAsymmetricMatcherValue<T>(
 }
 
 async function executeCommandBe(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions = {}
 ): ExpectWebdriverIO.AsyncAssertionResult {
@@ -102,7 +102,8 @@ async function executeCommandBe(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceErrorBe(subject, actual, { ...this, verb, isSome }, options)
+    // TODO dprevost fix typing?
+    const message = enhanceErrorBe(subject, actual as boolean[] | boolean | MultiRemoteValuesWithArray<boolean> | undefined, { ...this, verb, isSome }, options)
 
     return {
         pass,
@@ -139,7 +140,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
-export const compareTextOrArray = (
+export const compareTextOrOneOf = (
     actualText: string,
     expectedTexts: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
@@ -167,11 +168,8 @@ export const compareTextOrArray = (
         return { success: expectedTexts.asymmetricMatch(actualText), actual: actualText }
     }
 
-    // TODO one day consolidate typing and internal of oneOf so we do not need the below casting!
-    const compareResults = compareText(actualText, expectedTexts as string | RegExp, options)
-
-    return { success: compareResults.success, actual: actualText }
-
+    const compareResults = compareText(actualText, expectedTexts, options)
+    return  { ... compareResults }
 }
 
 // TODO one day turn this into at least a asymetrics class to better report in failure messages the string case we are in (containing, atStart, atEnd, atIndex, etc) and the expected value(s)
