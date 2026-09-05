@@ -41,19 +41,27 @@ export async function toHaveText(
     const { success: pass, actual: actualText, subject: subject, context: { isSome } = {} } = await waitUntil(
         async (iteration) => {
             if (arrayContaining) {
-                const { elements } = await awaitElementOrArray(received)
+                const { elements, selector, other } = await awaitElementOrArray(received)
                 if (!elements) {
-                    throw new Error('toHaveText with arrayContaining requires an array of elements')
+                    return { subject: selector ?? other, actual: undefined, success: !!isNot, abort: true }
                 }
                 if (iteration > 0 && isStrictlyElementArray(elements)) {
                     await refreshElementArray(elements)
                 }
 
-                const actual = []
-                for (const element of elements) {
-                    actual.push(await element.getText())
+                const settled = await Promise.allSettled(Array.from(elements).map(async (element) => element.getText()))
+                const actual = settled.map((result) => {
+                    if (result.status === 'rejected') {
+                        throw result.reason
+                    }
+                    return result.value
+                })
+                return {
+                    subject: elements,
+                    actual,
+                    success: arrayContaining.asymmetricMatch(actual),
+                    abort: elements.length === 0 && !isStrictlyElementArray(elements),
                 }
-                return { subject: elements, actual, success: arrayContaining.asymmetricMatch(actual) }
             }
 
             return await executeCommandWithStrategy( {
@@ -70,6 +78,10 @@ export async function toHaveText(
         isNot,
         { wait: options.wait, interval: options.interval }
     )
+
+    if (arrayContaining && actualText === undefined) {
+        throw new Error('toHaveText with arrayContaining requires an array of elements')
+    }
 
     const expected = arrayContaining ?? fillSingleExpectedForElementArray(subject, expectedValue)
     const message = enhanceError(subject, expected, actualText, { isNot, isSome }, verb, expectation, '', options)

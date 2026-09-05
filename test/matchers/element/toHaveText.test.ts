@@ -1,5 +1,5 @@
 import { $, $$ } from '@wdio/globals'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray } from 'webdriverio'
 import { $Factory, browserFactory, chainableElementArrayFactory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
@@ -32,6 +32,10 @@ describe(toHaveText, async () => {
             for (const [index, text] of ['Username', 'Password', 'Remember me'].entries()) {
                 vi.mocked(elements[index].getText).mockResolvedValue(text)
             }
+        })
+
+        afterEach(() => {
+            vi.useRealTimers()
         })
 
         test.each([
@@ -73,17 +77,53 @@ describe(toHaveText, async () => {
             await wdioExpect(elements[0]).toHaveText(matcher, options)
         })
 
-        test('uses arrayContaining rules for empty element arrays', async () => {
-            await wdioExpect([]).toHaveText(wdioExpect.arrayContaining([]), options)
-            await wdioExpect([]).not.toHaveText(wdioExpect.arrayContaining(['Username']), options)
-            await wdioExpect(wdioExpect([]).toHaveText(wdioExpect.arrayContaining(['Username']), options)).rejects.toThrow('Username')
+        test.each([undefined, 0, 2000])('finishes static empty arrays without waiting (wait: %s)', async (wait) => {
+            vi.useFakeTimers()
+            const start = Date.now()
+            for (const context of [thisContext, thisNotContext]) {
+                for (const { matcher, pass } of [
+                    { matcher: wdioExpect.arrayContaining([]), pass: true },
+                    { matcher: wdioExpect.arrayContaining(['Username']), pass: false },
+                    { matcher: wdioExpect.not.arrayContaining([]), pass: false },
+                    { matcher: wdioExpect.not.arrayContaining(['Username']), pass: true },
+                ]) {
+                    const beforeAssertion = vi.fn()
+                    const afterAssertion = vi.fn()
+                    const assertionOptions = { ...options, wait, beforeAssertion, afterAssertion }
+                    const pending = context.toHaveText([], matcher, assertionOptions)
+                    await vi.runAllTimersAsync()
+                    const result = await pending
+
+                    expect(result.pass).toBe(pass)
+                    expect(Date.now()).toBe(start)
+                    expect(beforeAssertion).toHaveBeenCalledExactlyOnceWith({ matcherName: 'toHaveText', expectedValue: matcher, options: assertionOptions })
+                    expect(afterAssertion).toHaveBeenCalledExactlyOnceWith({ matcherName: 'toHaveText', expectedValue: matcher, options: assertionOptions, result })
+                }
+            }
         })
 
-        test('rejects a single element, even with negation', async () => {
-            await expect(thisContext.toHaveText(elements[0], wdioExpect.arrayContaining(['Username']), options))
-                .rejects.toThrow('requires an array of elements')
-            await expect(thisNotContext.toHaveText(elements[0], wdioExpect.arrayContaining([]), options))
-                .rejects.toThrow('requires an array of elements')
+        test.each([undefined, 0, 2000])('rejects invalid subjects without waiting (wait: %s)', async (wait) => {
+            vi.useFakeTimers()
+            const start = Date.now()
+            for (const received of [elements[0], $Factory(elements[0]), Promise.resolve(elements[0]), undefined, null, 42, 'Username', {}, ['Username']]) {
+                for (const isNot of [false, true]) {
+                    const beforeAssertion = vi.fn()
+                    const afterAssertion = vi.fn()
+                    const expectation = isNot ? wdioExpect(received).not : wdioExpect(received)
+                    await Promise.all([
+                        // @ts-expect-error Invalid subjects must also be rejected at runtime.
+                        expect(expectation.toHaveText(wdioExpect.arrayContaining([]), {
+                            ...options, wait, beforeAssertion, afterAssertion,
+                        })).rejects.toThrow('toHaveText with arrayContaining requires an array of elements'),
+                        vi.runAllTimersAsync(),
+                    ])
+
+                    expect(Date.now()).toBe(start)
+                    expect(beforeAssertion).toHaveBeenCalledTimes(1)
+                    expect(afterAssertion).not.toHaveBeenCalled()
+                    expect(elements[0].getText).not.toHaveBeenCalled()
+                }
+            }
         })
 
         test('prints one array matcher and the actual texts on failure', async () => {
@@ -103,15 +143,84 @@ describe(toHaveText, async () => {
             expect(afterAssertion).toHaveBeenCalledWith({ matcherName: 'toHaveText', expectedValue: matcher, options: assertionOptions, result })
         })
 
-        test.each([false, true])('refetches an initially empty list (awaited: %s)', async (awaited) => {
+        test.each([
+            { awaited: false, negated: false },
+            { awaited: true, negated: false },
+            { awaited: false, negated: true },
+            { awaited: true, negated: true },
+        ])('refetches an initially empty list (awaited: $awaited, negated: $negated)', async ({ awaited, negated }) => {
             const browser = browserFactory()
             const empty = chainableElementArrayFactory('label', 0, browser)
             vi.mocked(browser.$$).mockReturnValue(chainableElements)
             const received = awaited ? await empty : empty
+            const expectation = negated ? wdioExpect(received).not : wdioExpect(received)
+            const expected = negated ? wdioExpect.not.arrayContaining(['Username', 'Password']) : wdioExpect.arrayContaining(['Username', 'Password'])
 
-            await wdioExpect(received).toHaveText(wdioExpect.arrayContaining(['Username', 'Password']), {
-                ...options, wait: 100, interval: 1,
+            await expectation.toHaveText(expected, { ...options, wait: 100, interval: 1 })
+        })
+
+        test('retries element resolution errors', async () => {
+            vi.mocked(elements.getElements).mockRejectedValueOnce(new Error('cannot find labels'))
+
+            await wdioExpect(elements).toHaveText(wdioExpect.arrayContaining(['Password']), { ...options, wait: 100, interval: 1 })
+        })
+
+        test('reads an ordered snapshot concurrently', async () => {
+            vi.useFakeTimers()
+            const originalSecond = elements[1]
+            let finishFirst: (text: string) => void
+            const firstText = new Promise<string>((resolve) => { finishFirst = resolve })
+            vi.mocked(elements[0].getText).mockImplementationOnce(() => {
+                elements[1] = elements[2]
+                return firstText
             })
+
+            const pending = thisContext.toHaveText(elements, wdioExpect.arrayContaining(['Missing']), options)
+            await vi.advanceTimersByTimeAsync(0)
+            expect(originalSecond.getText).toHaveBeenCalledTimes(1)
+            expect(elements[2].getText).toHaveBeenCalledTimes(1)
+
+            finishFirst!('Username')
+            const result = await pending
+            const message = stripAnsi(result.message())
+            expect(result.pass).toBe(false)
+            expect(message).toContain('["Username", "Password", "Remember me"]')
+        })
+
+        test('settles every read before retrying a rejection', async () => {
+            vi.useFakeTimers()
+            let finishSlow: (text: string) => void
+            const slowText = new Promise<string>((resolve) => { finishSlow = resolve })
+            vi.mocked(elements[0].getText).mockRejectedValueOnce(new Error('stale element'))
+            vi.mocked(elements[1].getText).mockReturnValueOnce(slowText)
+
+            const pending = thisContext.toHaveText(elements, wdioExpect.arrayContaining(['Password']), {
+                ...options, wait: 1000, interval: 10,
+            })
+            await vi.advanceTimersByTimeAsync(100)
+            expect(elements[0].getText).toHaveBeenCalledTimes(1)
+            expect(elements[1].getText).toHaveBeenCalledTimes(1)
+            expect(elements[2].getText).toHaveBeenCalledTimes(1)
+            expect(refreshElementArray).not.toHaveBeenCalled()
+
+            finishSlow!('Password')
+            await vi.runAllTimersAsync()
+            expect((await pending).pass).toBe(true)
+            expect(elements[0].getText).toHaveBeenCalledTimes(2)
+        })
+
+        test('surfaces the first read error after all reads settle', async () => {
+            vi.useFakeTimers()
+            let failFirst: (reason: Error) => void
+            const firstText = new Promise<string>((_resolve, reject) => { failFirst = reject })
+            vi.mocked(elements[0].getText).mockReturnValueOnce(firstText)
+            vi.mocked(elements[1].getText).mockRejectedValueOnce(new Error('second label error'))
+
+            const pending = thisContext.toHaveText(elements, wdioExpect.arrayContaining(['Password']), options)
+            await vi.advanceTimersByTimeAsync(0)
+            expect(elements[2].getText).toHaveBeenCalledTimes(1)
+            failFirst!(new Error('first label error'))
+            await expect(pending).rejects.toThrow('first label error')
         })
 
         test('waits for changing text and for a negated match', async () => {
