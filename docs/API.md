@@ -616,6 +616,14 @@ You can assert all of them at once using an array:
 await expect($$('ul > li')).toHaveText(['Coffee', 'Tea', 'Milk'])
 ```
 
+Use `expect.arrayContaining()` to check for a subset of texts in any order. Extra elements are allowed. This compares the full list of `getText()` values using the normal `arrayContaining` rules, including nested matchers and `.not`, and retries until the assertion passes. String options such as `trim` and `ignoreCase` do not change these rules.
+
+```js
+await expect($$('ul > li')).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
+await expect($$('ul > li')).toHaveText(expect.arrayContaining([expect.stringContaining('Coff')]))
+await expect($$('ul > li')).not.toHaveText(expect.arrayContaining(['Juice']))
+```
+
 **Note:** Since v6.0.0, to enable strict assertion matching, configure the `useToHaveTextStrictMultiElementsCompareStrategy` flag in your command options or globally via `setFeatureFlags`.
 
 ### toHaveHTML

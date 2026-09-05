@@ -21,6 +21,135 @@ describe(toHaveText, async () => {
         thisNotContext = { toHaveText, isNot: true }
     })
 
+    describe.for([false, true])('arrayContaining with strict strategy %s', (strict) => {
+        const options = { wait: 0, featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy: strict } }
+        let elements: WebdriverIO.ElementArray
+        let chainableElements: ChainablePromiseArray
+
+        beforeEach(async () => {
+            chainableElements = chainableElementArrayFactory('label', 3)
+            elements = await chainableElements.getElements()
+            for (const [index, text] of ['Username', 'Password', 'Remember me'].entries()) {
+                vi.mocked(elements[index].getText).mockResolvedValue(text)
+            }
+        })
+
+        test.each([
+            { texts: ['Username', 'Password'], pass: true },
+            { texts: ['Password', 'Username'], pass: true },
+            { texts: ['Username', 'Missing'], pass: false },
+            { texts: ['Missing'], pass: false },
+            { texts: [], pass: true },
+            { texts: ['Username', 'Username'], pass: true },
+            { texts: ['Username', 'Password', 'Remember me', 'Missing'], pass: false },
+        ])('matches the whole list: $texts', async ({ texts, pass }) => {
+            const matcher = wdioExpect.arrayContaining(texts)
+            const result = await thisContext.toHaveText(elements, matcher, options)
+            const negated = await thisNotContext.toHaveText(elements, matcher, options)
+            const inverse = await thisContext.toHaveText(elements, wdioExpect.not.arrayContaining(texts), options)
+
+            expect(result.pass).toBe(pass)
+            expect(negated.pass).toBe(pass)
+            expect(inverse.pass).toBe(!pass)
+        })
+
+        test('accepts nested matchers and promised plain element arrays', async () => {
+            const result = await thisContext.toHaveText(Promise.resolve(Array.from(elements)), wdioExpect.arrayContaining([
+                wdioExpect.stringContaining('User'),
+                wdioExpect.stringMatching(/^Pass/),
+            ]), options)
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('preserves custom string matchers without a constructor', async () => {
+            const matcher = {
+                sample: 'Username',
+                asymmetricMatch: (actual: unknown) => actual === 'Username',
+                toString: () => 'Username',
+            }
+            Object.setPrototypeOf(matcher, null)
+
+            await wdioExpect(elements[0]).toHaveText(matcher, options)
+        })
+
+        test('uses arrayContaining rules for empty element arrays', async () => {
+            await wdioExpect([]).toHaveText(wdioExpect.arrayContaining([]), options)
+            await wdioExpect([]).not.toHaveText(wdioExpect.arrayContaining(['Username']), options)
+            await wdioExpect(wdioExpect([]).toHaveText(wdioExpect.arrayContaining(['Username']), options)).rejects.toThrow('Username')
+        })
+
+        test('rejects a single element, even with negation', async () => {
+            await expect(thisContext.toHaveText(elements[0], wdioExpect.arrayContaining(['Username']), options))
+                .rejects.toThrow('requires an array of elements')
+            await expect(thisNotContext.toHaveText(elements[0], wdioExpect.arrayContaining([]), options))
+                .rejects.toThrow('requires an array of elements')
+        })
+
+        test('prints one array matcher and the actual texts on failure', async () => {
+            const matcher = wdioExpect.arrayContaining(['Username', 'Missing'])
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+            const assertionOptions = { ...options, message: 'Login labels', beforeAssertion, afterAssertion }
+            const result = await thisContext.toHaveText(elements, matcher, assertionOptions)
+            const message = stripAnsi(result.message())
+
+            expect(result.pass).toBe(false)
+            expect(message).toContain('Login labels')
+            expect(message.match(/ArrayContaining/g)).toHaveLength(1)
+            expect(message).toContain('Missing')
+            expect(message).toContain('Remember me')
+            expect(beforeAssertion).toHaveBeenCalledWith({ matcherName: 'toHaveText', expectedValue: matcher, options: assertionOptions })
+            expect(afterAssertion).toHaveBeenCalledWith({ matcherName: 'toHaveText', expectedValue: matcher, options: assertionOptions, result })
+        })
+
+        test.each([false, true])('refetches an initially empty list (awaited: %s)', async (awaited) => {
+            const browser = browserFactory()
+            const empty = chainableElementArrayFactory('label', 0, browser)
+            vi.mocked(browser.$$).mockReturnValue(chainableElements)
+            const received = awaited ? await empty : empty
+
+            await wdioExpect(received).toHaveText(wdioExpect.arrayContaining(['Username', 'Password']), {
+                ...options, wait: 100, interval: 1,
+            })
+        })
+
+        test('waits for changing text and for a negated match', async () => {
+            vi.mocked(elements[1].getText).mockResolvedValueOnce('Loading').mockResolvedValue('Password')
+            await wdioExpect(elements).toHaveText(wdioExpect.arrayContaining(['Password']), { ...options, wait: 100, interval: 1 })
+
+            vi.mocked(elements[1].getText).mockResolvedValueOnce('Password').mockResolvedValue('Removed')
+            await wdioExpect(elements).not.toHaveText(wdioExpect.arrayContaining(['Password']), { ...options, wait: 100, interval: 1 })
+        })
+
+        test('retries read errors but surfaces persistent errors', async () => {
+            vi.mocked(elements[1].getText).mockRejectedValueOnce(new Error('stale element'))
+            await wdioExpect(elements).toHaveText(wdioExpect.arrayContaining(['Password']), { ...options, wait: 100, interval: 1 })
+
+            vi.mocked(elements[1].getText).mockRejectedValue(new Error('cannot read label'))
+            await expect(thisContext.toHaveText(elements, wdioExpect.arrayContaining(['Password']), { ...options, wait: 20, interval: 1 }))
+                .rejects.toThrow('cannot read label')
+        })
+
+        test('times out with the missing text in the error', async () => {
+            await wdioExpect(wdioExpect(elements).toHaveText(wdioExpect.arrayContaining(['Missing']), { ...options, wait: 20, interval: 1 }))
+                .rejects.toThrow('Missing')
+        })
+
+        test('can reuse the same matcher in concurrent assertions', async () => {
+            const sample = ['Username', wdioExpect.stringContaining('Pass')]
+            const matcher = wdioExpect.arrayContaining(sample)
+            const [matching, missing] = await Promise.all([
+                thisContext.toHaveText(elements, matcher, options),
+                thisContext.toHaveText([elements[0]], matcher, options),
+            ])
+
+            expect(matching.pass).toBe(true)
+            expect(missing.pass).toBe(false)
+            expect(sample).toEqual(['Username', wdioExpect.stringContaining('Pass')])
+        })
+    })
+
     describe.for([
         { element: await $('sel'), title: 'awaited ChainablePromiseElement' },
         { element: await $('sel').getElement(), title: 'awaited getElement of ChainablePromiseElement (e.g. WebdriverIO.Element)' },

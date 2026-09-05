@@ -550,6 +550,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * // Check if an element array contains the specified text
      * const elem = await $$('ul > li')
      * await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
+     * await expect(elem).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
      * ```
      */
     toHaveText: FnWhenElementOrArrayLike<ActualT, {
