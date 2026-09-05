@@ -1,11 +1,51 @@
 import { describe, it, expect, vi } from 'vitest'
-import { multipleElementResultsStrategy } from '../../src/util/executeCommand'
+import { executeCommandWithStrategy, multipleElementResultsStrategy } from '../../src/util/executeCommand'
 import { chainableElementArrayFactory } from '../__mocks__/@wdio/globals'
 import { $ } from '@wdio/globals'
+import { some } from '../../src/api/index.js'
 
 vi.mock('@wdio/globals')
 
 describe('executeCommand', () => {
+    describe('arrayContaining collection opt-in', () => {
+        it.each([false, true])('compares the snapshot once without applying negation (isNot: %s)', async (isNot) => {
+            const elements = await chainableElementArrayFactory('selector', 2)
+            const expected = expect.arrayContaining(['Second'])
+            const asymmetricMatch = vi.spyOn(expected, 'asymmetricMatch')
+            const result = await executeCommandWithStrategy({
+                unresolvedElements: elements,
+                expectedValues: expected,
+                supportsArrayContaining: true,
+                singleElementCompare: async (_element, _expected, index) => ({ success: false, actual: index === 0 ? 'First' : 'Second' }),
+                context: { isNot, iteration: 0 },
+            })
+            expect(result.success).toBe(true)
+            expect(result.actual).toEqual(['First', 'Second'])
+            expect(asymmetricMatch).toHaveBeenCalledExactlyOnceWith(['First', 'Second'], expect.any(Object))
+        })
+
+        it('keeps non-opted-in matchers on their per-element strategy', async () => {
+            const result = await executeCommandWithStrategy({
+                unresolvedElements: chainableElementArrayFactory('selector', 2),
+                expectedValues: expect.arrayContaining(['First']),
+                singleElementCompare: async () => ({ success: false, actual: 'First' }),
+                context: { isNot: false, iteration: 0 },
+            })
+            expect(result.success).toBe(false)
+        })
+
+        it('keeps some() matching per-element array values', async () => {
+            const result = await executeCommandWithStrategy({
+                unresolvedElements: some(chainableElementArrayFactory('selector', 2)),
+                expectedValues: expect.arrayContaining(['First']),
+                supportsArrayContaining: true,
+                singleElementCompare: async (_element, _expected, index) => ({ success: index === 0, actual: index === 0 ? ['First'] : ['Other'] }),
+                context: { isNot: false, iteration: 0 },
+            })
+            expect(result.success).toBe(true)
+            expect(result.context).toEqual({ isSome: true })
+        })
+    })
 
     describe('multipleElementResultsStrategy', () => {
 

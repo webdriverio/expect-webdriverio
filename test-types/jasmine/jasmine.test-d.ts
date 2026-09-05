@@ -13,6 +13,21 @@ describe('Jasmine type agumentations', () => {
 
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
 
+    it('supports collection asymmetric expectations across value matchers', () => {
+        expectTypeOf(expectAsync(elementArray).toHaveHTML(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveElementClass(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveComputedLabel(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveComputedRole(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveValue(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveId(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveHref(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveLink(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveAttribute('data-label', jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveElementProperty('value', jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(chainableArray).not.toHaveHTML(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(chainableArray).toHaveValue(wdioExpect.not.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+    })
+
     describe('Augment expectAsync properly', () => {
 
         describe('Browser', () => {
@@ -132,6 +147,11 @@ describe('Jasmine type agumentations', () => {
                     expectTypeOf(expectAsync(elementArray).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(elementArray).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(elementArray).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(elementArray).toHaveText(wdioExpect.arrayContaining(['text1', 'text2']))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(elementArray).not.toHaveText(wdioExpect.arrayContaining(['text1']))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(elementArray).toHaveText(wdioExpect.not.arrayContaining(['text1']))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(elementArray).toHaveText(jasmine.arrayContaining(['text1', 'text2']))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(elementArray).not.toHaveText(jasmine.arrayContaining(['text1']))).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(elementArray).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(elementArray).toHaveText([jasmine.stringContaining('text1'), jasmine.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(elementArray).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
@@ -143,6 +163,8 @@ describe('Jasmine type agumentations', () => {
                     expectTypeOf(expectAsync(chainableArray).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(chainableArray).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(chainableArray).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(chainableArray).toHaveText(wdioExpect.arrayContaining([wdioExpect.stringContaining('text1')]))).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(chainableArray).toHaveText(jasmine.arrayContaining([jasmine.stringContaining('text1')]))).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(chainableArray).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(chainableArray).toHaveText([jasmine.stringContaining('text1'), jasmine.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(chainableArray).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()

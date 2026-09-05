@@ -550,6 +550,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * // Check if an element array contains the specified text
      * const elem = await $$('ul > li')
      * await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
+     * await expect(elem).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
      * ```
      */
     toHaveText: FnWhenElementOrArrayLike<ActualT, {
@@ -853,7 +854,7 @@ type WdioOneOfAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
 }
 
 type JasmineBaseAsymmetricMatcher = {
-    jasmineToString(): string;
+    jasmineToString(pp?: (value: unknown) => string): string;
     asymmetricMatch(other: unknown): boolean;
 }
 

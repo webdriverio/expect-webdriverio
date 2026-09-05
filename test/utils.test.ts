@@ -1,11 +1,12 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest'
-import { compareObject, compareText, compareTextWithArray, executeCommandBe, getAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
+import { compareObject, compareText, compareTextWithArray, executeCommandBe, getAsymmetricMatcherValue, isArrayContainingMatcher, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
 import { jasmine } from './__mocks__/jasmine'
 import type { CommandOptions } from 'expect-webdriverio'
 import { $, $$ } from '@wdio/globals'
 import stripAnsi from 'strip-ansi'
 import { executeCommandWithStrategy } from '../src/util/executeCommand'
 import { enhanceErrorBe } from '../src/util/formatMessage'
+import { expect as wdioExpect } from '../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -32,6 +33,29 @@ vi.mock('../src/util/elementsUtil.js', async (importOriginal) => {
 })
 
 describe('utils', () => {
+    describe('isArrayContainingMatcher', () => {
+        test.each([
+            expect.arrayContaining(['value']),
+            expect.not.arrayContaining(['value']),
+            jasmine.arrayContaining(['value']),
+        ])('recognizes array-containing protocols: %s', (matcher) => {
+            expect(isArrayContainingMatcher(matcher)).toBe(true)
+        })
+
+        test.each([
+            undefined, null, false, [],
+            { sample: ['value'] },
+            { asymmetricMatch: true, toString: () => 'ArrayContaining' },
+            { asymmetricMatch: () => true, toString: () => 'CustomMatcher', sample: ['value'] },
+            expect.objectContaining({ value: 'value' }),
+            wdioExpect.arrayOf(wdioExpect.any(String)),
+            wdioExpect.oneOf('value', 'other'),
+            jasmine.objectContaining({ value: 'value' }),
+        ])('does not mistake other expected values for collection matchers: %s', (matcher) => {
+            expect(isArrayContainingMatcher(matcher)).toBe(false)
+        })
+    })
+
     describe(compareText, () => {
         test('should pass when strings match', () => {
             expect(compareText('foo', 'foo', {}).success).toBe(true)

@@ -12,6 +12,21 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
     const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
 
+    it('supports collection asymmetric expectations across value matchers', () => {
+        expectTypeOf(expect(elementArray).toHaveHTML(expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(elementArray).toHaveElementClass(expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(elementArray).toHaveComputedLabel(expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(elementArray).toHaveComputedRole(expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(elementArray).toHaveValue(expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(elementArray).toHaveId(expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(elementArray).toHaveHref(expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(elementArray).toHaveLink(expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(elementArray).toHaveAttribute('data-label', expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(elementArray).toHaveElementProperty('value', expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(chainableArray).not.toHaveHTML(expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expect(chainableArray).toHaveValue(expect.not.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+    })
+
     describe('Browser', () => {
         describe('toHaveUrl', () => {
             it('should return Promise<void>', async () => {
@@ -128,6 +143,9 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
                 expectTypeOf(expect(elementArray).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveText(expect.arrayContaining(['text1', 'text2']))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).not.toHaveText(expect.arrayContaining(['text1']))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveText(expect.not.arrayContaining(['text1']))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
@@ -139,6 +157,7 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
                 expectTypeOf(expect(chainableArray).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableArray).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableArray).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toHaveText(expect.arrayContaining([expect.stringContaining('text1')]))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableArray).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableArray).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableArray).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()

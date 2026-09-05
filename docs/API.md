@@ -284,6 +284,23 @@ await expect(browser).toHaveLocalStorageItem('userId', /^user_\d+$/)
 
 ## Element Matchers
 
+### Matching a subset of element values
+
+Use `expect.arrayContaining()` to match values from an element collection in any order, allowing extra elements. This works with `toHaveText`, `toHaveHTML`, `toHaveAttribute`, `toHaveElementProperty`, `toHaveValue`, `toHaveElementClass`, `toHaveComputedLabel`, `toHaveComputedRole`, `toHaveId`, and `toHaveHref` (including their aliases).
+
+```js
+await expect($$('ul > li')).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
+await expect($$('input')).toHaveValue(expect.arrayContaining(['admin']))
+await expect($$('a')).toHaveAttribute('href', expect.arrayContaining([expect.stringContaining('/docs')]))
+await expect($$('button')).not.toHaveComputedLabel(expect.arrayContaining(['Delete']))
+```
+
+Each attempt reads one value per element concurrently and applies the asymmetric matcher once to the complete array. Selector-backed collections are refetched on retries. Nested matchers, `.not`, and `expect.not.arrayContaining()` retain their normal matching rules. An empty collection matches `arrayContaining([])`; static empty arrays cannot be retried into a non-empty result.
+
+String comparison options such as `trim`, `ignoreCase`, and `containing` do not transform the collected values or nested matchers. Getter options still apply, such as `includeSelectorTag` for HTML and `asString` for properties. Class matching collects each element's complete class attribute, not individual class tokens.
+
+This collection comparison does not change boolean assertions, style or size assertions, or `some()`'s per-element matching. A single element's array-valued property can still be matched directly with `toHaveElementProperty`.
+
 ### toBeDisplayed
 
 Calls [`isDisplayed`](https://webdriver.io/docs/api/element/isDisplayed/) on given element.
@@ -614,6 +631,14 @@ You can assert all of them at once using an array:
 ```js
 // Order does not matter by default unless strict strategy flag is enabled (since v6.0.0)
 await expect($$('ul > li')).toHaveText(['Coffee', 'Tea', 'Milk'])
+```
+
+Use `expect.arrayContaining()` to check for a subset of texts in any order. Extra elements are allowed. See [Matching a subset of element values](#matching-a-subset-of-element-values) for retry behavior, options, and other supported matchers.
+
+```js
+await expect($$('ul > li')).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
+await expect($$('ul > li')).toHaveText(expect.arrayContaining([expect.stringContaining('Coff')]))
+await expect($$('ul > li')).not.toHaveText(expect.arrayContaining(['Juice']))
 ```
 
 **Note:** Since v6.0.0, to enable strict assertion matching, configure the `useToHaveTextStrictMultiElementsCompareStrategy` flag in your command options or globally via `setFeatureFlags`.
@@ -1200,4 +1225,4 @@ await expect(mock).toBeRequestedWith({
 })
 ```
 
-**Note:** Known limitations still exist with `jasmine.arrayContaining` and `jasmine.objectContaining`.
+`jasmine.arrayContaining()` is also supported for [element collection values](#matching-a-subset-of-element-values), including nested Jasmine matchers. Limitations with Jasmine collection and object matchers may still apply in other assertion contexts.

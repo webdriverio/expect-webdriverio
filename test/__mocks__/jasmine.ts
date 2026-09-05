@@ -168,11 +168,34 @@ class ObjectContaining implements AsymmetricTester {
     }
 }
 
+/**
+ * Jasmine's array-containing protocol requires both the matching utility and a pretty printer.
+ * @see https://github.com/jasmine/jasmine/blob/v5.13.0/src/core/asymmetric_equality/ArrayContaining.js
+ */
+class ArrayContaining {
+    constructor(public sample: unknown[]) {}
+
+    asymmetricMatch(other: unknown, matchersUtil?: { contains(haystack: unknown, needle: unknown): boolean }): boolean {
+        if (!Array.isArray(other) && this.sample.length > 0) {
+            return false
+        }
+        if (!matchersUtil) {
+            throw new Error('Jasmine arrayContaining requires matchersUtil')
+        }
+        return this.sample.every((item) => matchersUtil.contains(other, item))
+    }
+
+    jasmineToString(pp: (value: unknown) => string): string {
+        return '<jasmine.arrayContaining(' + pp(this.sample) + ')>'
+    }
+}
+
 // Expose them via a namespace factory matching Jasmine's API syntax
 export const jasmine = {
     anything: () => new Anything(),
     any: (expectedObject: any) => new Any(expectedObject),
     stringMatching: (expected: string | RegExp) => new StringMatching(expected),
     stringContaining: (expected: string) => new StringContaining(expected),
-    objectContaining: (sample: Record<string | symbol, any>) => new ObjectContaining(sample)
+    objectContaining: (sample: Record<string | symbol, any>) => new ObjectContaining(sample),
+    arrayContaining: (sample: unknown[]) => new ArrayContaining(sample),
 }
