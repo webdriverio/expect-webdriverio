@@ -854,7 +854,7 @@ type WdioOneOfAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
 }
 
 type JasmineBaseAsymmetricMatcher = {
-    jasmineToString(): string;
+    jasmineToString(pp?: (value: unknown) => string): string;
     asymmetricMatch(other: unknown): boolean;
 }
 

@@ -13,6 +13,21 @@ describe('Jasmine type agumentations', () => {
 
     const networkMock: WebdriverIO.Mock = {} as unknown as WebdriverIO.Mock
 
+    it('supports collection asymmetric expectations across value matchers', () => {
+        expectTypeOf(expectAsync(elementArray).toHaveHTML(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveElementClass(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveComputedLabel(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveComputedRole(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveValue(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveId(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveHref(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveLink(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveAttribute('data-label', jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveElementProperty('value', jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(chainableArray).not.toHaveHTML(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(chainableArray).toHaveValue(wdioExpect.not.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+    })
+
     describe('Augment expectAsync properly', () => {
 
         describe('Browser', () => {

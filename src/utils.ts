@@ -25,6 +25,22 @@ export function isAsymmetricMatcher<T>(expected: unknown): expected is WdioAsymm
     )
 }
 
+/** Identify collection subset matchers by their public Jest/Jasmine display protocol. */
+export function isArrayContainingMatcher(expected: unknown): expected is AsymmetricMatcher<unknown[]> {
+    if (!isAsymmetricMatcher(expected) || typeof expected.asymmetricMatch !== 'function') {
+        return false
+    }
+    if (typeof expected.toString === 'function' && /^Array(Not)?Containing$/.test(expected.toString())) {
+        return true
+    }
+    if ('jasmineToString' in expected && typeof expected.jasmineToString === 'function') {
+        // Jasmine's formatter accepts a pretty-printer argument; its contents are irrelevant here.
+        const description = expected.jasmineToString(() => '')
+        return description === '<jasmine.arrayContaining()>'
+    }
+    return false
+}
+
 export function isStringContainingMatcherLike(expected: unknown): expected is WdioAsymmetricMatcher<string> | JasmineStringAsymmetricMatcher<string> {
     return !!expected && expected.constructor.name === 'StringContaining'
 }

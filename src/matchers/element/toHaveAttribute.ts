@@ -39,6 +39,7 @@ export async function toHaveAttributeAndValue(received: MaybeSomeWdioElementOrAr
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
+                supportsArrayContaining: true,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, values: string | RegExp | AsymmetricMatcher<string> | undefined) => {
                     return conditionAttributeValueMatchWithExpected(element, attribute, values, options)
