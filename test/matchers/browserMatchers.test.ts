@@ -176,13 +176,30 @@ Received: "Wrong Text"`
                     })
 
                     test('success when passing multi remote expected values', async () => {
-                        const result = await thisContext.matcherFn(multiRemoteBrowser, { chrome: validText, firefox: validText }, { trim: false, wait: 0 })
+                        const result = await thisContext.matcherFn(multiRemoteBrowser,
+                            {
+                                chrome: validText,
+                                firefox: validText
+                            }, { trim: false, wait: 0 })
 
                         expect(result.pass).toBe(true)
                     })
 
                     test('success when passing multi remote expected values with oneOf & asymmetric matcher', async () => {
-                        const result = await thisContext.matcherFn(multiRemoteBrowser, { chrome: wdioExpect.oneOf(validText, wrongText), firefox: wdioExpect.stringContaining('Valid') }, { trim: false, wait: 0 })
+                        const result = await thisContext.matcherFn(multiRemoteBrowser,
+                            {
+                                chrome: wdioExpect.oneOf(validText, wrongText),
+                                firefox: wdioExpect.stringContaining('Valid')
+                            }, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('success when selecting multi remote expected values', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser.unstable_select('firefox'),
+                            {
+                                firefox: wdioExpect.stringContaining('Valid')
+                            }, { trim: false, wait: 0 })
 
                         expect(result.pass).toBe(true)
                     })
@@ -237,7 +254,6 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
                         const result = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.oneOf(wrongText, wrongText), { trim: false, wait: 0 })
 
                         expect(result.pass).toBe(false)
-                        // TODO is the error message is correct?
                         expect(stripAnsi(result.message())).toEqual(`\
 Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
 

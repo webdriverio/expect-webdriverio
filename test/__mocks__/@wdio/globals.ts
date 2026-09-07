@@ -318,20 +318,13 @@ export const multiRemoteBrowserFactory = (
 
 export const multiRemoteBrowser = multiRemoteBrowserFactory()
 
-interface MockBrowser {
-    $: ReturnType<typeof vi.fn>
-    $$: ReturnType<typeof vi.fn>
-    [key: string]: any
-}
-
 export function createMultiRemoteElementMock(
-    browsers: Record<string, MockBrowser>,
+    browsers: Record<string, WebdriverIO.Browser>,
     selector: string
 ): WebdriverIO.MultiRemoteElement {
     const instanceNames = Object.keys(browsers)
 
     // 1. Fetch element instance from each browser mock
-    // @ts-expect-error: TODO to fix
     const instances = instanceNames.map((name) => browsers[name].$(selector))
 
     // 2. Base wrapper object
@@ -352,14 +345,12 @@ export function createMultiRemoteElementMock(
 
         // Delegate $() on multiremote element across all browser instances
         $: vi.fn().mockImplementation((subSelector: string) => {
-            const childBrowsers: Record<string, MockBrowser> = {}
+            const childBrowsers: Record<string, WebdriverIO.Browser> = {}
             instanceNames.forEach((name, index) => {
                 childBrowsers[name] = {
-                    // @ts-expect-error: TODO to fix
                     $: () => instances[index].$(subSelector),
-                    // @ts-expect-error: TODO to fix
                     $$: () => instances[index].$$(subSelector),
-                }
+                } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
             })
             return createMultiRemoteElementMock(childBrowsers, subSelector)
         }),
@@ -398,7 +389,7 @@ export function createMultiRemoteElementMock(
  * Mock wrapper for multiremote global $() lookup (Patterned after line 290)
  */
 export function createMultiRemote$Mock(
-    browsers: Record<string, MockBrowser>
+    browsers: Record<string, WebdriverIO.Browser>
 ) {
     return vi.fn().mockImplementation((selector: string) => {
         return createMultiRemoteElementMock(browsers, selector)
@@ -409,11 +400,10 @@ export function createMultiRemote$Mock(
  * Mock wrapper for multiremote global $$() lookup (Patterned after line 294)
  */
 export function createMultiRemote$$zMock(
-    browsers: Record<string, MockBrowser>
+    browsers: Record<string, WebdriverIO.Browser>
 ) {
     return vi.fn().mockImplementation((selector: string) => {
         return Promise.all(
-            // @ts-ignore TODO: to fix
             Object.values(browsers).map((browser) => browser.$$(selector))
         )
     })
