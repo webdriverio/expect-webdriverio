@@ -196,7 +196,7 @@ Received: "Wrong Text"`
                     })
 
                     test('success when selecting multi remote expected values', async () => {
-                        const result = await thisContext.matcherFn(multiRemoteBrowser.unstable_select('firefox'),
+                        const result = await thisContext.matcherFn(multiRemoteBrowser.select('firefox'),
                             {
                                 firefox: wdioExpect.stringContaining('Valid')
                             }, { trim: false, wait: 0 })

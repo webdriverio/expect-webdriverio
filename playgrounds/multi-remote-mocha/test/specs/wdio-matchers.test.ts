@@ -30,8 +30,8 @@ describe('WebdriverIO Custom Matchers', () => {
                 })
             })
 
-            it('should verify browser title contains text for one browser with unstable_select', async () => {
-                await expect(multiRemoteBrowser.unstable_select('firefox')).toHaveTitle({
+            it('should verify browser title contains text for one browser with select', async () => {
+                await expect(multiRemoteBrowser.select('firefox')).toHaveTitle({
                     firefox: expect.stringContaining('WebdriverJS')
                 })
             })
@@ -68,7 +68,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
         describe('toHaveClipboardText Matcher', () => {
             it('should verify clipboard text', async () => {
-                await expect(multiRemoteBrowser.unstable_select('chrome')).toHaveClipboardText('')
+                await expect(multiRemoteBrowser.select('chrome')).toHaveClipboardText('')
             })
         })
     })
@@ -86,7 +86,7 @@ describe('WebdriverIO Custom Matchers', () => {
                 it('should verify element is displayed for specific browser', async () => {
                     const h1 = multiRemoteBrowser.$('h1')
 
-                    await expect(h1.unstable_select('firefox')).toBeDisplayed()
+                    await expect(h1.select('firefox')).toBeDisplayed()
                 })
 
                 it('should verify element exists', async () => {
@@ -99,7 +99,7 @@ describe('WebdriverIO Custom Matchers', () => {
                 it('should verify element exists for specific browser', async () => {
                     const h1 = multiRemoteBrowser.$('h1')
 
-                    await expect(h1.unstable_select('firefox')).toExist()
+                    await expect(h1.select('firefox')).toExist()
                 })
 
                 it('should verify element does not exists', async () => {
@@ -112,7 +112,7 @@ describe('WebdriverIO Custom Matchers', () => {
                 it('should verify element does not exist for specific browser', async () => {
                     const nonExistingElement = multiRemoteBrowser.$('non-existing-element')
 
-                    await expect(nonExistingElement.unstable_select('firefox')).not.toExist()
+                    await expect(nonExistingElement.select('firefox')).not.toExist()
                 })
 
                 it('should be able to query isDisplayed on element never existed', async () => {
@@ -129,8 +129,8 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     const h1 = multiRemoteBrowser.$('h1')
 
-                    await expect(h1.unstable_select('firefox')).not.toBeDisplayed()
-                    await expect(h1.unstable_select('chrome')).toBeDisplayed()
+                    await expect(h1.select('firefox')).not.toBeDisplayed()
+                    await expect(h1.select('chrome')).toBeDisplayed()
                 })
 
                 it('should be able to query isDisplayed on element no longer existing', async () => {
@@ -150,8 +150,8 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await multiRemoteBrowser.getInstance('firefox').url('about:blank')
 
-                    await expect(h1.unstable_select('firefox')).not.toBeDisplayed()
-                    await expect(h1.unstable_select('chrome')).toBeDisplayed()
+                    await expect(h1.select('firefox')).not.toBeDisplayed()
+                    await expect(h1.select('chrome')).toBeDisplayed()
                     await expect(expect(h1).not.toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\(`h1`\) not to be displayed/)
                     await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\(`h1`\) to be displayed/)
                 })
@@ -167,7 +167,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should verify elements are displayed for selected remote', async () => {
                     // TODO one day we should have select on MultiRemoteElement[]
-                    const h1 = multiRemoteBrowser.unstable_select('firefox').$$('h1')
+                    const h1 = multiRemoteBrowser.select('firefox').$$('h1')
 
                     await expect(h1).toBeDisplayed()
                 })
@@ -181,7 +181,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should verify elements are existing for selected remote', async () => {
                     // TODO one day we should have select on MultiRemoteElement[]
-                    const h1 = multiRemoteBrowser.unstable_select('firefox').$$('h1')
+                    const h1 = multiRemoteBrowser.select('firefox').$$('h1')
 
                     await expect(h1).toBeExisting()
                 })
@@ -201,7 +201,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should verify elements are not existing for selected remote', async () => {
                     // TODO one day we should have select on MultiRemoteElement[]
-                    const nonExistingElements = multiRemoteBrowser.unstable_select('firefox').$$('non-existing-element')
+                    const nonExistingElements = multiRemoteBrowser.select('firefox').$$('non-existing-element')
 
                     await expect(nonExistingElements).not.toBeExisting()
                 })
@@ -236,20 +236,20 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 //     const h1 = multiRemoteBrowser.$$('h1')
 
-                //     await expect(h1.unstable_select('firefox')).not.toBeDisplayed()
-                //     await expect(h1.unstable_select('chrome')).toBeDisplayed()
+                //     await expect(h1.select('firefox')).not.toBeDisplayed()
+                //     await expect(h1.select('chrome')).toBeDisplayed()
                 // })
 
                 it('should be able to query isDisplayed on elements never existed for a specific browser', async () => {
                     await multiRemoteBrowser.getInstance('firefox').url('about:blank')
 
-                    await expect(multiRemoteBrowser.unstable_select('firefox').$$('h1')).not.toExist()
-                    await expect(multiRemoteBrowser.unstable_select('chrome').$$('h1')).toBeDisplayed()
+                    await expect(multiRemoteBrowser.select('firefox').$$('h1')).not.toExist()
+                    await expect(multiRemoteBrowser.select('chrome').$$('h1')).toBeDisplayed()
                 })
 
                 // TODO waiting fix, see https://github.com/webdriverio/webdriverio/issues/15550
                 it.skip('should show error message when querying isDisplayed on an element that no longer exist on a specific browser', async () => {
-                    const h1Firefox = multiRemoteBrowser.unstable_select('firefox').$$('h1')
+                    const h1Firefox = multiRemoteBrowser.select('firefox').$$('h1')
 
                     await multiRemoteBrowser.getInstance('firefox').url('about:blank')
 
@@ -257,8 +257,8 @@ describe('WebdriverIO Custom Matchers', () => {
                 })
 
                 it('should be able to query isExisting on elements no longer existing', async () => {
-                    const h1Firefox = multiRemoteBrowser.unstable_select('firefox').$$('h1')
-                    const h1Chrome = multiRemoteBrowser.unstable_select('chrome').$$('h1')
+                    const h1Firefox = multiRemoteBrowser.select('firefox').$$('h1')
+                    const h1Chrome = multiRemoteBrowser.select('chrome').$$('h1')
                     const h1MultiRemote = multiRemoteBrowser.$$('h1')
 
                     await multiRemoteBrowser.getInstance('firefox').url('about:blank')
