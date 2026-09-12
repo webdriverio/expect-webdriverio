@@ -1,9 +1,9 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
-import { compareText, compareTextOrArray, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import { compareText, compareTextOrOneOf, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const actualClass = await el.getAttribute(attribute)
@@ -26,7 +26,7 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
 
     const classes = actualClass.split(' ')
     const isValueInClasses = classes.some((clazz) => {
-        return compareTextOrArray(clazz, value, options).success
+        return compareTextOrOneOf(clazz, value, options).success
     })
 
     return {
@@ -43,7 +43,7 @@ export function toHaveClass(...args: unknown[]) {
 }
 
 export async function toHaveElementClass(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArray<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
@@ -57,7 +57,7 @@ export async function toHaveElementClass(
 
     const attribute = 'class'
 
-    const { success: pass, actual: attr, subject: el, context: { isSome } = {} } = await waitUntil(
+    const { success: pass, actual: attr, subject: el, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -73,7 +73,7 @@ export async function toHaveElementClass(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, wrapExpectedWithArray(el, attr, expectedValue), attr, { isNot, isSome }, verb, expectation, '', options)
+    const message = enhanceError(el, expected ?? wrapExpectedWithArray(el, attr, expectedValue), attr, { isNot, isSome }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

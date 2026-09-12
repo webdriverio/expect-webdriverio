@@ -308,7 +308,7 @@ Received: "not selected"`)
 Expect $(\`selector\`) to have text
 
 Expected: "Some other text"
-Received: " Valid Text "`)
+Received: "Valid Text"`)
 
             await expect(() => expectLib(el).toHaveHTML('<SomeOtherHtml/>')).rejects.toThrow(`\
 Expect $(\`selector\`) to have HTML

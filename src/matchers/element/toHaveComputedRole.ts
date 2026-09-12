@@ -1,8 +1,8 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
-    compareTextOrArray,
+    compareTextOrOneOf,
     enhanceError,
     waitUntil,
     wrapExpectedWithArray
@@ -15,11 +15,11 @@ async function singleElementCompare(
     options: ExpectWebdriverIO.StringOptions
 ) {
     const actualRole = await element.getComputedRole()
-    return compareTextOrArray(actualRole, role, options)
+    return compareTextOrOneOf(actualRole, role, options)
 }
 
 export async function toHaveComputedRole(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -33,7 +33,7 @@ export async function toHaveComputedRole(
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: actualRole, subject: el, context: { isSome } = {} } = await waitUntil(
+    const { success: pass, actual: actualRole, subject: el, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -51,7 +51,7 @@ export async function toHaveComputedRole(
 
     const message = enhanceError(
         el,
-        wrapExpectedWithArray(el, actualRole, expectedValue),
+        expected ?? wrapExpectedWithArray(el, actualRole, expectedValue),
         actualRole,
         { isNot, isSome },
         verb,
