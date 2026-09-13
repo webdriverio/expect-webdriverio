@@ -1,6 +1,6 @@
 import { waitUntil, enhanceError, compareText } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import { expect } from '../../index.js'
+import { expect } from 'expect'
 
 /**
  * @deprecated since v6.0.0, use expect.anything() instead of undefined as expected value, will be removed in v8.0.0

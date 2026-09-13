@@ -86,7 +86,7 @@
     "playgrounds:snapshots:update": "cd playgrounds && npm run snapshots:update"
   },
   "dependencies": {
-    "@vitest/snapshot": "^4.1.10",
+    "@vitest/snapshot": "^4.1.11",
     "deep-eql": "^5.0.2",
     "expect": "^30.4.1",
     "jest-matcher-utils": "^30.4.1"
@@ -111,7 +111,7 @@
     "strip-ansi": "^7.2.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.11",
-    "webdriverio": "^9.31.5"
+    "webdriverio": "^9.31.9"
   },
   "peerDependencies": {
     "@wdio/globals": "^9.0.0",
