@@ -3,7 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
-import { expect as wdioExpect } from 'expect'
+import { expect } from 'expect'
 import {
     compareText,
     enhanceError,
@@ -96,7 +96,7 @@ export async function toHaveElementProperty(
             // User have passed an explicit undefined or null value, which is deprecated. We will log a warning to inform the user about this deprecation.
             console.warn('Using undefined or null as value for toHaveElementProperty is deprecated and will be removed in v6.0.0. Please omit the third argument entirely or use toHaveElementProperty(el, property, object.anything(), options).')
         }
-        value = wdioExpect.anything()
+        value = expect.anything()
     }
 
     await options.beforeAssertion?.({
