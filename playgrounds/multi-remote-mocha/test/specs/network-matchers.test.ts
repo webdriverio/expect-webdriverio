@@ -8,7 +8,7 @@ describe('Network Matchers', () => {
             this.timeout(120000)
         }
 
-        mocks = await multiRemoteBrowser.mock('https://webdriver.io/api/foo', {
+        mocks = await multiRemoteBrowser.mock('https://guinea-pig.webdriver.io/api/foo', {
             method: 'POST'
         })
         mocks[0].respond({ success: true }, {
@@ -16,10 +16,10 @@ describe('Network Matchers', () => {
             headers: { Authorization: 'bar' }
         })
 
-        await multiRemoteBrowser.url('https://webdriver.io/')
+        await multiRemoteBrowser.url('https://guinea-pig.webdriver.io/')
 
         await multiRemoteBrowser.execute(async () => {
-            await fetch('https://webdriver.io/api/foo', {
+            await fetch('https://guinea-pig.webdriver.io/api/foo', {
                 method: 'POST',
                 headers: { Authorization: 'foo' },
                 body: JSON.stringify({ title: 'foo', description: 'bar' })
@@ -29,7 +29,7 @@ describe('Network Matchers', () => {
 
     it('should assert on network calls', async () => {
         await expect(mocks[0]).toBeRequestedWith({
-            url: 'https://webdriver.io/api/foo',
+            url: 'https://guinea-pig.webdriver.io/api/foo',
             method: 'POST'
         })
     })
@@ -59,7 +59,7 @@ describe('Network Matchers', () => {
 //   Object {
 //     "method": "POST",
 // -   "url": "StringContaining \\\"/api/foo\\\"",
-// +   "url": "https://webdriver.io/api/foo",
+// +   "url": "https://guinea-pig.webdriver.io/api/foo",
 //   }`
 //                 }
             )
