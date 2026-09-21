@@ -8,6 +8,10 @@ on:
   pull_request:
   workflow_dispatch: # Allows manual trigger from the GitHub UI or CLI
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   # 1. Run typecheck and lint across all workspaces on Linux
   playgrounds-tsc-and-lint:
