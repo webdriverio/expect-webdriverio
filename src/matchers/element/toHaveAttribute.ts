@@ -10,7 +10,7 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
-import { expect as wdioExpect } from '../../index.js'
+import { expect } from 'expect'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 
@@ -120,7 +120,7 @@ export async function toHaveAttribute(
             // User have passed an explicit undefined or null value, which is deprecated. We will log a warning to inform the user about this deprecation.
             console.warn('Using undefined or null as value for toHaveAttribute is deprecated and will be removed in v6.0.0. Please omit the third argument entirely or use toHaveAttribute(el, attribute, wdioExpect.anything(), options).')
         }
-        expectedValue = wdioExpect.anything()
+        expectedValue = expect.anything()
     } else {
         expectedValue = value
     }
