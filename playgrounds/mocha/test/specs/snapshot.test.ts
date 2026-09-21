@@ -1,6 +1,6 @@
 describe('Snapshot Testing', () => {
     beforeEach(async () => {
-        await browser.url('https://webdriver.io')
+        await browser.url('https://guinea-pig.webdriver.io/')
     })
 
     describe('Object snapshots', () => {
@@ -26,13 +26,13 @@ describe('Snapshot Testing', () => {
 
     describe('DOM snapshots', () => {
         it('should match element outerHTML snapshot (ChainablePromiseElement)', async () => {
-            const logo = await $('.navbar__logo')
-            await expect(logo).toMatchSnapshot()
+            const link = await $('#githubRepo')
+            await expect(link).toMatchSnapshot()
         })
 
         it('should match element outerHTML snapshot (Element)', async () => {
-            const logo = await $('.navbar__logo').getElement()
-            await expect(logo).toMatchSnapshot()
+            const link = await $('#githubRepo').getElement()
+            await expect(link).toMatchSnapshot()
         })
 
         it('should match command result snapshot', async () => {
@@ -44,7 +44,7 @@ describe('Snapshot Testing', () => {
 
     describe('Multiple element snapshots', () => {
         it('should snapshot navigation links', async () => {
-            const navLinks = await $$('nav a')
+            const navLinks = await $$('a')
             const hrefs = []
             for (let i = 0; i < Math.min(5, await navLinks.length); i++) {
                 hrefs.push(await navLinks[i].getAttribute('href'))
