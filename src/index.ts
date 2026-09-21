@@ -6,6 +6,81 @@ import { DEFAULT_OPTIONS, defaultOptionsList } from './constants.js'
 import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
 import { oneOf } from './matchers/asymmetrics/oneOf.js'
+import { getGlobalSingleton } from './util/globalSingleton.js'
+
+interface SharedExpectSetup {
+    wdioExpect: ExpectWebdriverIO.Expect
+    wdioCustomMatchers: MatchersObject
+    matchers: Map<string, RawMatcherFn>
+}
+
+// Builds the fully configured wdio `expect` exactly once, no matter how many module
+// instances of this file end up loaded in the same process (see util/globalSingleton.ts).
+// Running this more than once against the same underlying `expect` object would either
+// throw (Object.defineProperty on an already-defined, non-configurable property) or
+// silently double-wrap expectLib.extend - so every instance after the first just reuses
+// the shared result instead of redoing this setup with its own local `expectLib`.
+function createSharedExpectSetup(): SharedExpectSetup {
+    const wdioCustomMatchers: MatchersObject = {}
+    const matchers = new Map<string, RawMatcherFn>()
+
+    const extend = expectLib.extend
+    expectLib.extend = (extendedMatchers) => {
+        if (!extendedMatchers || typeof extendedMatchers !== 'object') {
+            return
+        }
+
+        Object.entries(extendedMatchers).forEach(([name, matcher]) => {
+            wdioCustomMatchers[name] = matcher
+            matchers.set(name, matcher)
+        })
+        return extend(extendedMatchers)
+    }
+
+    const filteredWdioMatchers: MatchersObject = {}
+    // Filter out matchers that aren't a function
+    Object.entries(wdioMatchers).forEach(([matcher, value]) => {
+        if (typeof value === 'function') {
+            filteredWdioMatchers[matcher] = value as RawMatcherFn
+        }
+    })
+
+    const wdioExpect = expectLib as unknown as ExpectWebdriverIO.Expect
+
+    // Register normal matchers like `expect(element).toBeDisplayed()`
+    wdioExpect.extend(filteredWdioMatchers)
+    // Register asymmetric matchers like `expect.oneOf(...)`
+    wdioExpect.oneOf = oneOf
+
+    // Register soft assertions. `configurable: true` isn't for redefinition by us (this
+    // function only ever runs once per process) - it guards against a rare mixed
+    // CJS/ESM double-load of the `expect` package itself still resolving to the same
+    // object, in which case a second, un-deduped setup pass would otherwise throw.
+    Object.defineProperty(wdioExpect, 'soft', {
+        configurable: true,
+        value: <T = unknown>(actual: T) => createSoftExpect(actual)
+    })
+
+    // Add soft assertions utility methods
+    Object.defineProperty(wdioExpect, 'getSoftFailures', {
+        configurable: true,
+        value: (testId?: string) => SoftAssertService.getInstance().getFailures(testId)
+    })
+
+    Object.defineProperty(wdioExpect, 'assertSoftFailures', {
+        configurable: true,
+        value: (testId?: string) => SoftAssertService.getInstance().assertNoFailures(testId)
+    })
+
+    Object.defineProperty(wdioExpect, 'clearSoftFailures', {
+        configurable: true,
+        value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId)
+    })
+
+    return { wdioExpect, wdioCustomMatchers, matchers }
+}
+
+const sharedExpectSetup = getGlobalSingleton('expect', createSharedExpectSetup)
 
 /**
  * Contains the custom WDIO matchers, registered through `expect.extend()`.
@@ -14,61 +89,15 @@ import { oneOf } from './matchers/asymmetrics/oneOf.js'
  *
  * Does NOT include the default matchers from the `expect` library, like `toBe`, `toEqual`, or wdio asymmetrics like `expect.oneOf()`
  */
-export const wdioCustomMatchers: MatchersObject = {}
+export const wdioCustomMatchers = sharedExpectSetup.wdioCustomMatchers
 
 /**
  * @deprecated use `wdioCustomMatchers` instead. To remove in v6
  */
-export const matchers = new Map<string, RawMatcherFn>()
-
-const extend = expectLib.extend
-expectLib.extend = (extendedMatchers) => {
-    if (!extendedMatchers || typeof extendedMatchers !== 'object') {
-        return
-    }
-
-    Object.entries(extendedMatchers).forEach(([name, matcher]) => {
-        wdioCustomMatchers[name] = matcher
-        matchers.set(name, matcher)
-    })
-    return extend(extendedMatchers)
-}
-
-const filteredWdioMatchers: MatchersObject = {}
-// Filter out matchers that aren't a function
-Object.entries(wdioMatchers).forEach(([matcher, value]) => {
-    if (typeof value === 'function') {
-        filteredWdioMatchers[matcher] = value as RawMatcherFn
-    }
-})
-
-const wdioExpect = expectLib as unknown as ExpectWebdriverIO.Expect
-
-// Register normal matchers like `expect(element).toBeDisplayed()`
-wdioExpect.extend(filteredWdioMatchers)
-// Register asymmetric matchers like `expect.oneOf(...)`
-wdioExpect.oneOf = oneOf
-
-// Register soft assertions
-Object.defineProperty(wdioExpect, 'soft', {
-    value: <T = unknown>(actual: T) => createSoftExpect(actual)
-})
-
-// Add soft assertions utility methods
-Object.defineProperty(wdioExpect, 'getSoftFailures', {
-    value: (testId?: string) => SoftAssertService.getInstance().getFailures(testId)
-})
-
-Object.defineProperty(wdioExpect, 'assertSoftFailures', {
-    value: (testId?: string) => SoftAssertService.getInstance().assertNoFailures(testId)
-})
-
-Object.defineProperty(wdioExpect, 'clearSoftFailures', {
-    value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId)
-})
+export const matchers = sharedExpectSetup.matchers
 
 // Fully configured global expect instance with all the custom WDIO matchers, asymmetric matchers, and soft assertions
-export const expect = wdioExpect
+export const expect = sharedExpectSetup.wdioExpect
 
 // Default options for the expect-webdriverio library
 export const getDefaultOptions = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
