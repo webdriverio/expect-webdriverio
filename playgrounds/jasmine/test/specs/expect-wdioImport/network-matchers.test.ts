@@ -5,7 +5,7 @@ describe('Network Matchers', () => {
     let mock: WebdriverIO.Mock
 
     beforeAll(async () => {
-        mock = await browser.mock('https://webdriver.io/api/foo', {
+        mock = await browser.mock('https://guinea-pig.webdriver.io/api/foo', {
             method: 'POST'
         })
         mock.respond({ success: true }, {
@@ -13,10 +13,10 @@ describe('Network Matchers', () => {
             headers: { Authorization: 'bar' }
         })
 
-        await browser.url('https://webdriver.io/')
+        await browser.url('https://guinea-pig.webdriver.io/')
 
         await browser.execute(async () => {
-            await fetch('https://webdriver.io/api/foo', {
+            await fetch('https://guinea-pig.webdriver.io/api/foo', {
                 method: 'POST',
                 headers: { Authorization: 'foo' },
                 body: JSON.stringify({ title: 'foo', description: 'bar' })
@@ -30,7 +30,7 @@ describe('Network Matchers', () => {
 
         // Detailed check (simplified to match available Bidi fields)
         await expect(mock).toBeRequestedWith({
-            url: 'https://webdriver.io/api/foo',
+            url: 'https://guinea-pig.webdriver.io/api/foo',
             method: 'POST'
         })
     })
