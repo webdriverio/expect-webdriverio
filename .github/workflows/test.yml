@@ -8,15 +8,21 @@ on:
       - main
   pull_request:
 
+concurrency:
+  # Cancel superseded PR runs only; push runs never cancel each other, even when queued
+  # for the same commit (event type is part of the group key).
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x, 22.x, 24.x, 26.x]
+        node-version: ${{ github.event_name == 'pull_request' && fromJSON('["24.x"]') || fromJSON('["20.x", "22.x", "24.x", "26.x"]') }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install Dependencies
