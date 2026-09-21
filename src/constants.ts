@@ -1,3 +1,5 @@
+import { createRequire } from 'node:module'
+
 interface SharedConstants {
     DEFAULT_FEATURE_FLAGS: ExpectWebdriverIO.FeatureFlags
     DEFAULT_OPTIONS: Required<ExpectWebdriverIO.DefaultOptions>
@@ -39,8 +41,12 @@ function createSharedConstants(): SharedConstants {
 // separate from one loaded via import()). Keeping the mutable defaults on
 // `globalThis`, keyed by a registered symbol, ensures setFeatureFlags() and
 // setDefaultOptions() stay visible to every instance instead of only the one
-// that happened to run them.
-const GLOBAL_CONSTANTS_KEY = Symbol.for('expect-webdriverio.constants')
+// that happened to run them. The key is namespaced by major version so two
+// incompatible releases loaded in the same process (e.g. a transitive
+// dependency pinned to an older major) don't share state.
+const { version: packageVersion } = createRequire(import.meta.url)('../package.json') as { version: string }
+const packageMajorVersion = packageVersion.split('.')[0]
+const GLOBAL_CONSTANTS_KEY = Symbol.for(`expect-webdriverio.constants@${packageMajorVersion}`)
 const globalScope = globalThis as unknown as Record<symbol, SharedConstants>
 const shared = (globalScope[GLOBAL_CONSTANTS_KEY] ??= createSharedConstants())
 
