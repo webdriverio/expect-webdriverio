@@ -9,9 +9,9 @@ on:
   workflow_dispatch: # Allows manual trigger from the GitHub UI or CLI
 
 concurrency:
-  # Cancel superseded PR runs only; push/workflow_dispatch never cancel each other, even
-  # when queued for the same commit (event type is part of the group key).
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
+  # Cancel superseded PR runs only. workflow_dispatch is keyed by run_id (always unique)
+  # so manual runs never dedupe against each other or against push.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || (github.event_name == 'workflow_dispatch' && github.run_id || github.sha) }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
