@@ -29,7 +29,6 @@
     "webdriverio": "^9.32.0"
   },
   "overrides": {
-    "expect-webdriverio": "$expect-webdriverio",
-    "mocha": "^11.8.0"
+    "expect-webdriverio": "$expect-webdriverio"
   }
 }
