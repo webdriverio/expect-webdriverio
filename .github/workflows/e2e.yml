@@ -9,8 +9,10 @@ on:
   workflow_dispatch: # Allows manual trigger from the GitHub UI or CLI
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Cancel superseded runs within the same PR, but never cancel push/workflow_dispatch
+  # runs (e.g. main) against each other, so the main pipeline always runs to completion.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # 1. Run typecheck and lint across all workspaces on Linux
