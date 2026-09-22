@@ -31,7 +31,7 @@ env:
 jobs:
   authorize:
     name: Authorize Actor
-    uses: ./.github/workflows/authorize_tsc_pc.yml
+    uses: ./.github/workflows/authorize-publisher.yml
     secrets: inherit
   release:
     needs: [authorize]
