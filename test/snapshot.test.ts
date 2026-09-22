@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { test, expect } from 'vitest'
+import { test, expect, vi } from 'vitest'
 import type { Frameworks } from '@wdio/types'
 
 import { expect as expectExport, SnapshotService } from '../src/index.js'
@@ -61,4 +61,19 @@ test('supports cucumber snapshot testing', async () => {
     const expectedSnapfileExist = await fs.access(path.resolve(__dirname, 'file.feature.snap'))
         .then(() => true, () => false)
     expect(expectedSnapfileExist).toBe(true)
+})
+
+test('SnapshotService.initiate() returns the same instance across separately re-evaluated module instances', async () => {
+    const first = await import('../src/snapshot.js')
+    const firstInstance = first.SnapshotService.initiate()
+
+    // Forces a fresh, separate evaluation of snapshot.ts's top-level code, simulating
+    // the dual module instantiation this guards against: the matcher's own
+    // SnapshotService.initiate() call and the one @wdio/runner uses to set
+    // currentFilePath/currentTestName must resolve to the exact same instance.
+    vi.resetModules()
+    const second = await import('../src/snapshot.js')
+    const secondInstance = second.SnapshotService.initiate()
+
+    expect(secondInstance).toBe(firstInstance)
 })
