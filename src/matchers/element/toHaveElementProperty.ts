@@ -1,4 +1,5 @@
 import type { AssertionResult } from 'expect-webdriverio'
+import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
@@ -26,7 +27,7 @@ async function condition(
 
     if (propertyValue === null || propertyValue === undefined || (!(expectedValue instanceof RegExp) && typeof propertyValue !== 'string' && !asString)) {
         if (isAsymmetricMatcher(expectedValue)) {
-            return { success: expectedValue.asymmetricMatch(propertyValue), actual: propertyValue }
+            return { success: equals(propertyValue, expectedValue), actual: propertyValue }
         }
         return { success: propertyValue === expectedValue, actual: propertyValue }
     } else if (isOneOfMatcher(expectedValue)) {
@@ -111,6 +112,7 @@ export async function toHaveElementProperty(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
+                supportsArrayContaining: true,
                 expectedValues: value,
                 singleElementCompare: (element, expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined) => {
                     return condition(element, property, expectedValue, options)

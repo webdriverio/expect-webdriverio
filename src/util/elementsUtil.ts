@@ -1,3 +1,4 @@
+import { isArrayContainingMatcher } from '../utils.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise } from '../types.js'
 
 /**
@@ -9,14 +10,14 @@ import type { MaybeSomeWdioElementOrArrayMaybePromise, WdioElements, WdioElement
  * @returns An array containing the expected result if conditions are met, otherwise returns the expected result as-is.
  */
 export const wrapExpectedWithArray = (elements: WebdriverIO.Element | WdioElements | unknown, actual: unknown, expected: unknown) => {
-    if (Array.isArray(elements) && Array.isArray(actual) && !Array.isArray(expected)) {
+    if (Array.isArray(elements) && Array.isArray(actual) && !Array.isArray(expected) && !isArrayContainingMatcher(expected)) {
         expected = Array(actual.length).fill(expected)
     }
     return expected
 }
 
 export const fillSingleExpectedForElementArray = (subject: WebdriverIO.Element | WdioElements | unknown, value: unknown): unknown[] | unknown => {
-    if (isElementArrayLike(subject) && !Array.isArray(value)) {
+    if (isElementArrayLike(subject) && !Array.isArray(value) && !isArrayContainingMatcher(value)) {
         // When subject has no elements, we should at least represent one for proper failure message!
         const fillerlength = subject.length > 0 ? subject.length : 1
         return Array(fillerlength).fill(value)

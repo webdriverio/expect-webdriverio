@@ -86,9 +86,9 @@ export const enhanceError = (
 
     if (isJasmineStringAsymmetricMatcher(expected)) {
         // With Jest's expect asymetric matcher, it uses a pretty-format plugin for asymetric matcher, but Jasmine's asymmetric matcher doesn't have that!
-        expected = expected.jasmineToString()
+        expected = expected.jasmineToString(stringify)
     } else if (isElementOrArrayLike(subject) && Array.isArray(expected)) {
-        expected = expected.map(item => isJasmineStringAsymmetricMatcher(item) ? item.jasmineToString() : item)
+        expected = expected.map(item => isJasmineStringAsymmetricMatcher(item) ? item.jasmineToString(stringify) : item)
     }
 
     // Special formatting for .not with arrays to highlight what matched

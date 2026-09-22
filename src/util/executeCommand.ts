@@ -1,3 +1,5 @@
+import { equals } from '../jasmineUtils.js'
+import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise, MaybeArray } from '../types.js'
 import { awaitElementOrArray, isElement, isStrictlyElementArray } from './elementsUtil.js'
@@ -28,26 +30,60 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     singleElementCompare,
     context: { isNot, iteration },
     strategy = 'NewStrictMultipleElements',
+    supportsArrayContaining = false,
     strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
 } :{
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromise | unknown
     expectedValues: MaybeArray<Expected> | unknown
-    singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected>, index?: number) => Promise<CompareResult<Actual>>
+    singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>
     context: { isNot: boolean, iteration: number },
     strategy?: StrategyType,
+    /** Compare collection snapshots using singleElementCompare(element, undefined). 'arrayOnly' rejects scalar subjects. */
+    supportsArrayContaining?: boolean | 'arrayOnly',
     strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean }
 }
 ): Promise<StrategyResult<MaybeArray<Actual>>> {
     const isSome = isSomeWrapper(unresolvedElements)
+    const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
+
+    if (supportsArrayContaining && !isSome && isArrayContainingMatcher(expectedValues)) {
+        const { selector, elements, other } = await awaitElementOrArray(unresolvedElements)
+        if (elements) {
+            if (iteration > 0 && isStrictlyElementArray(elements)) {
+                await refreshElementArray(elements)
+            }
+
+            // Reuse each matcher's value extraction, including command-specific options.
+            const settled = await Promise.allSettled(Array.from(elements).map(async (element, index) => {
+                return singleElementCompare(element, undefined, index)
+            }))
+            const actual = settled.map((result) => {
+                if (result.status === 'rejected') {
+                    throw result.reason
+                }
+                return result.value.actual
+            })
+            return {
+                subject: elements,
+                actual,
+                success: equals(actual, expectedValues),
+                abort: elements.length === 0 && !isStrictlyElementArray(elements),
+            }
+        }
+        if (!isElement(selector) || supportsArrayContaining === 'arrayOnly') {
+            return { subject: selector ?? other, actual: undefined, success: !!isNot, abort: true }
+        }
+        // A scalar element may itself have an array-valued property.
+        // SAFETY: Opted-in matchers accept asymmetric expectations; only the collection's sample type differs from Expected.
+        return { subject: selector, ...await singleElementCompare(selector, expectedValues as MaybeArray<Expected>) }
+    }
 
     if (strategy === 'LegacyLooseMultipleElements') {
         if (isSome) {
             throw new Error('some(elements) works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
         }
-        return legacyMultipleElementResultsStrategy(unresolvedElements, expectedValues, singleElementCompare, isNot)
+        return legacyMultipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, isNot)
     }
-
-    const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
 
     // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
     return multipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)

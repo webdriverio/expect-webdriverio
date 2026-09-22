@@ -57,7 +57,10 @@ function asymmetricMatch(a: any, b: any) {
 
     // Jasmine asymmetric matchers (e.g. objectContaining) expect a matchersUtil
     // with an `equals` method as the second argument to asymmetricMatch.
-    const matchersUtil = { equals, contains: equals };
+    const matchersUtil = {
+        equals,
+        contains: (actual: unknown[], expected: unknown) => actual.some(value => equals(value, expected)),
+    };
 
     if (asymmetricA) {
         return a.asymmetricMatch(b, matchersUtil);

@@ -3,6 +3,7 @@ import {
     compareTextOrArray,
     enhanceError,
     getFeatureFlagValue,
+    isArrayContainingMatcher,
     waitUntil,
 } from '../../utils.js'
 import type { MaybeArray, MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
@@ -38,6 +39,7 @@ export async function toHaveText(
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedValue,
+                supportsArrayContaining: 'arrayOnly',
                 singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string> | undefined) => {
                     return compareElement(element, values, options)
                 },
@@ -49,6 +51,10 @@ export async function toHaveText(
         isNot,
         { wait: options.wait, interval: options.interval }
     )
+
+    if (isArrayContainingMatcher(expectedValue) && actualText === undefined) {
+        throw new Error('toHaveText with arrayContaining requires an array of elements')
+    }
 
     const expected = fillSingleExpectedForElementArray(subject, expectedValue)
     const message = enhanceError(subject, expected, actualText, { isNot, isSome }, verb, expectation, '', options)
