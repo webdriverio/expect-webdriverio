@@ -1,4 +1,4 @@
-import { createRequire } from 'node:module'
+import { getGlobalSingleton } from './util/globalSingleton.js'
 
 interface SharedConstants {
     DEFAULT_FEATURE_FLAGS: ExpectWebdriverIO.FeatureFlags
@@ -36,19 +36,10 @@ function createSharedConstants(): SharedConstants {
     }
 }
 
-// The same file can end up loaded as more than one module instance in the same
-// process (e.g. Node's require() of an ES module creates a synthetic instance
-// separate from one loaded via import()). Keeping the mutable defaults on
-// `globalThis`, keyed by a registered symbol, ensures setFeatureFlags() and
-// setDefaultOptions() stay visible to every instance instead of only the one
-// that happened to run them. The key is namespaced by major version so two
-// incompatible releases loaded in the same process (e.g. a transitive
-// dependency pinned to an older major) don't share state.
-const { version: packageVersion } = createRequire(import.meta.url)('../package.json') as { version: string }
-const packageMajorVersion = packageVersion.split('.')[0]
-const GLOBAL_CONSTANTS_KEY = Symbol.for(`expect-webdriverio.constants@${packageMajorVersion}`)
-const globalScope = globalThis as unknown as Record<symbol, SharedConstants>
-const shared = (globalScope[GLOBAL_CONSTANTS_KEY] ??= createSharedConstants())
+// See util/globalSingleton.ts for why this is shared on `globalThis` rather than
+// declared as plain module-level constants: setFeatureFlags()/setDefaultOptions()
+// need to stay visible to every module instance, not just the one that ran them.
+const shared = getGlobalSingleton('constants', createSharedConstants)
 
 export const DEFAULT_FEATURE_FLAGS = shared.DEFAULT_FEATURE_FLAGS
 export const DEFAULT_OPTIONS = shared.DEFAULT_OPTIONS

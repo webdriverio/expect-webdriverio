@@ -1,4 +1,5 @@
 import type { AssertionError } from 'node:assert'
+import { getGlobalSingleton } from './util/globalSingleton.js'
 
 interface SoftFailure {
     error: AssertionError | Error;
@@ -16,7 +17,6 @@ interface TestIdentifier {
  * Soft assertion service to collect failures without stopping test execution
  */
 export class SoftAssertService {
-    private static instance: SoftAssertService
     /**
      * Fallback test ID used when no test context is set (e.g., in Cucumber steps).
      *
@@ -31,13 +31,11 @@ export class SoftAssertService {
     private constructor() { }
 
     /**
-     * Get singleton instance
+     * Get singleton instance, shared across every module instance of this package
+     * loaded in the same process (see util/globalSingleton.ts).
      */
     public static getInstance(): SoftAssertService {
-        if (!SoftAssertService.instance) {
-            SoftAssertService.instance = new SoftAssertService()
-        }
-        return SoftAssertService.instance
+        return getGlobalSingleton('softAssertService', () => new SoftAssertService())
     }
 
     /**

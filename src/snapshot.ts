@@ -3,11 +3,7 @@ import { SnapshotClient, type SnapshotResult, type SnapshotStateOptions, type Sn
 import { NodeSnapshotEnvironment } from '@vitest/snapshot/environment'
 
 import type { Services, Frameworks } from '@wdio/types'
-
-/**
- * only create instance once to avoid memory leak
- */
-let service: SnapshotService
+import { getGlobalSingleton } from './util/globalSingleton.js'
 
 export type SnapshotFormat = SnapshotStateOptions['snapshotFormat']
 type ResolveSnapshotPathFunction = (path: string, extension: string) => string
@@ -124,10 +120,12 @@ export class SnapshotService implements Services.ServiceInstance {
     }
 
     static initiate (options?: SnapshotServiceArgs) {
-        if (!service) {
-            service = new SnapshotService(options)
-        }
-        return service
+        // Shared across every module instance of this package loaded in the same
+        // process (see util/globalSingleton.ts) - otherwise the matcher's own
+        // SnapshotService.initiate() call and the one @wdio/runner uses to set
+        // currentFilePath/currentTestName via beforeTest()/beforeStep() can end up
+        // on two different instances, leaving the matcher's copy uninitialized.
+        return getGlobalSingleton('snapshotService', () => new SnapshotService(options))
     }
 }
 
