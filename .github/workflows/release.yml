@@ -32,7 +32,8 @@ jobs:
   authorize:
     name: Authorize Actor
     uses: ./.github/workflows/authorize-publisher.yml
-    secrets: inherit
+    secrets:
+      WDIO_BOT_GITHUB_TOKEN: ${{ secrets.WDIO_BOT_GITHUB_TOKEN }}
   release:
     needs: [authorize]
     runs-on: ubuntu-latest
