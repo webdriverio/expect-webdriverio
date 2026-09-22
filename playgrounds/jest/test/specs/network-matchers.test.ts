@@ -1,6 +1,6 @@
 describe('Network Matchers', () => {
     it('should assert on network calls', async () => {
-        const mock = await standalone.mock('https://webdriver.io/api/foo', {
+        const mock = await standalone.mock('https://guinea-pig.webdriver.io/api/foo', {
             method: 'POST'
         })
         mock.respond({ success: true }, {
@@ -8,10 +8,10 @@ describe('Network Matchers', () => {
             headers: { Authorization: 'bar' }
         })
 
-        await standalone.url('https://webdriver.io/')
+        await standalone.url('https://guinea-pig.webdriver.io/')
 
         await standalone.execute(async () => {
-            await fetch('https://webdriver.io/api/foo', {
+            await fetch('https://guinea-pig.webdriver.io/api/foo', {
                 method: 'POST',
                 headers: { Authorization: 'foo' },
                 body: JSON.stringify({ title: 'foo', description: 'bar' })
@@ -23,7 +23,7 @@ describe('Network Matchers', () => {
 
         // Detailed check (simplified to match available Bidi fields)
         await expect(mock).toBeRequestedWith({
-            url: 'https://webdriver.io/api/foo',
+            url: 'https://guinea-pig.webdriver.io/api/foo',
             method: 'POST'
         })
 

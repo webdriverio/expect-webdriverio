@@ -2,7 +2,7 @@ import { browser, $, $$ } from '@wdio/globals'
 
 describe('Jasmine-Specific Features', () => {
     beforeEach(async () => {
-        await browser.url('https://webdriver.io')
+        await browser.url('https://guinea-pig.webdriver.io/')
     })
 
     describe('Asymmetric matchers', () => {
@@ -12,14 +12,14 @@ describe('Jasmine-Specific Features', () => {
         })
 
         it('should work with jasmine.anything()', async () => {
-            const element = await $('.navbar')
+            const element = await $('header')
             const text = await element.getText()
             await expect(text).toEqual(jasmine.anything())
         })
 
         it('should work with jasmine.stringContaining()', async () => {
             const title = await browser.getTitle()
-            await expect(title).toEqual(jasmine.stringContaining('WebdriverIO'))
+            await expect(title).toEqual(jasmine.stringContaining('WebdriverJS'))
         })
 
         it('should work with jasmine.stringMatching()', async () => {
@@ -35,63 +35,63 @@ describe('Jasmine-Specific Features', () => {
         })
 
         it('should work with jasmine.arrayContaining()', async () => {
-            const navLinks = await $$('nav a')
+            const navLinks = await $$('a')
             const hrefs: string[] = []
             for (const link of navLinks) {
                 const href = await link.getAttribute('href')
                 if(href !== null) hrefs.push(href)
             }
-            await expect(hrefs).toEqual(jasmine.arrayContaining(['/docs/gettingstarted']))
+            await expect(hrefs).toEqual(jasmine.arrayContaining(['./two.html']))
         })
     })
 
     describe('Custom matchers with WebdriverIO', () => {
         it('should combine jasmine matchers with wdio matchers', async () => {
-            const searchButton = await $('.DocSearch-Button')
+            const button = await $('.btn1')
 
             // WebdriverIO matcher
-            await expect(searchButton).toExist()
+            await expect(button).toExist()
 
             // Jasmine matcher on element property
-            const tagName = await searchButton.getTagName()
+            const tagName = await button.getTagName()
             await expect(tagName).toEqual(jasmine.any(String))
             await expect(tagName).toBe('button')
         })
 
         it('should use withContext on WDIO matcher', async () => {
-            const searchButton = await $('.DocSearch-Button')
+            const button = await $('.btn1')
 
-            await expect(searchButton).withContext('Search button should be visible on the homepage').toBeDisplayed()
-            await expect(searchButton).withContext('Search button should exist on the homepage').toExist()
+            await expect(button).withContext('Button should be visible on the page').toBeDisplayed()
+            await expect(button).withContext('Button should exist on the page').toExist()
         })
 
         it('should use asymmetric matchers in toHaveAttribute', async () => {
-            const docsLink = await $('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).toHaveAttribute('href', jasmine.stringContaining('docs'))
+            const secondPageLink = await $('#secondPageLink')
+            await expect(secondPageLink).toHaveAttribute('href', jasmine.stringContaining('two'))
         })
 
         it('should use asymmetric matchers in toHaveText', async () => {
             const heading = await $$('h1')[1]
-            await expect(heading).toHaveText(jasmine.stringContaining('Open'))
+            await expect(heading).toHaveText(jasmine.stringContaining('Test'))
         })
     })
 
     describe('Spy and mock validation', () => {
         it('should validate element interactions', async () => {
-            const searchButton = await $('.DocSearch-Button')
+            const sendButton = await $('.sendBtn')
 
             // Validate button exists and has expected properties
-            await expect(searchButton).toExist()
-            await expect(searchButton).toBeClickable()
+            await expect(sendButton).toExist()
+            await expect(sendButton).toBeClickable()
 
-            const buttonType = await searchButton.getAttribute('type')
+            const buttonType = await sendButton.getAttribute('type')
             await expect(buttonType).toEqual(jasmine.any(String))
         })
     })
 
     describe('Array and collection validation', () => {
         it('should validate collections with jasmine matchers', async () => {
-            const navLinks = await $$('nav a')
+            const navLinks = await $$('a')
             const count = navLinks.length
 
             // Standard Jasmine matchers
@@ -104,7 +104,7 @@ describe('Jasmine-Specific Features', () => {
         })
 
         it('should validate array content with jasmine.arrayContaining', async () => {
-            const navLinks = await $$('nav a')
+            const navLinks = await $$('a')
             const texts: string[] = []
             const count = await navLinks.length
             for (let i = 0; i < Math.min(3, count); i++) {
@@ -120,14 +120,14 @@ describe('Jasmine-Specific Features', () => {
             const title = await browser.getTitle()
             const url = await browser.getUrl()
 
-            await expect(title).toEqual(jasmine.stringMatching(/WebdriverIO/i))
+            await expect(title).toEqual(jasmine.stringMatching(/WebdriverJS/i))
             await expect(url).toEqual(jasmine.stringContaining('webdriver.io'))
 
             // Combined with WebdriverIO matchers
             await expect(browser).toHaveUrl(jasmine.stringContaining('webdriver.io'))
-            await expect(browser).toHaveTitle(jasmine.stringContaining('WebdriverIO'))
+            await expect(browser).toHaveTitle(jasmine.stringContaining('WebdriverJS'))
             await expect(browser).toHaveUrl(jasmine.stringContaining('WEBDRIVER.io'),{ignoreCase: true})
-            await expect(browser).toHaveTitle(jasmine.stringContaining('WEBDRIVERIO'), {ignoreCase: true})
+            await expect(browser).toHaveTitle(jasmine.stringContaining('WEBDRIVERJS'), {ignoreCase: true})
             await expect(browser).toHaveTitle(jasmine.any(String))
             await expect(browser).toHaveTitle(jasmine.anything())
         })
@@ -148,11 +148,11 @@ describe('Jasmine-Specific Features', () => {
         })
 
         it('should validate element attributes', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            const classList = await searchButton.getAttribute('class')
+            const button = await $('.btn1')
+            const classList = await button.getAttribute('class')
 
-            await expect(classList).toEqual(jasmine.stringContaining('DocSearch'))
-            await expect(searchButton).toHaveElementClass(jasmine.stringContaining('DocSearch'))
+            await expect(classList).toEqual(jasmine.stringContaining('btn1'))
+            await expect(button).toHaveElementClass(jasmine.stringContaining('btn1'))
         })
     })
 
@@ -172,16 +172,16 @@ describe('Jasmine-Specific Features', () => {
 
 
         it('should combine not.toHaveText with WebdriverIO matchers', async () => {
-            const searchButton = await $('.DocSearch-Button')
+            const button = await $('.btn1')
 
-            await expect(searchButton).not.toHaveText('test')
+            await expect(button).not.toHaveText('test')
         })
     })
 
     describe('Jasmine core matcher use cases with expect', () => {
         it('should use all core Jasmine matchers with expect', async () => {
             const title = await browser.getTitle()
-            const navLinks = await $$('nav a')
+            const navLinks = await $$('a')
             const count = navLinks.length
             const firstLink = navLinks[0]
             const tagName = await firstLink.getTagName()
@@ -189,13 +189,13 @@ describe('Jasmine-Specific Features', () => {
             const obj = { foo: 'bar', num: 42 }
 
             // withContext with various matchers
-            await expect(title).toMatch(/WebdriverIO/)
-            await expect(title).withContext('Title should contain WebdriverIO').not.toMatch(/NOT WebdriverIO/)
+            await expect(title).toMatch(/WebdriverJS/)
+            await expect(title).withContext('Title should contain WebdriverJS').not.toMatch(/NOT WebdriverJS/)
             await expect(arr).withContext('Array should contain 2').toContain(3)
             await expect(obj).withContext('Object should have foo').toEqual(jasmine.objectContaining({ foo: 'bar' }))
 
             // Equality
-            await expect(title).toEqual('WebdriverIO · Next-gen browser and mobile automation test framework for Node.js | WebdriverIO')
+            await expect(title).toEqual('WebdriverJS Testpage')
             await expect(count).toBeGreaterThan(0)
             await expect(count).toBeLessThan(100)
             await expect(count).toBeGreaterThanOrEqual(1)
@@ -210,8 +210,8 @@ describe('Jasmine-Specific Features', () => {
             await expect(arr).not.toContain(99)
             await expect(obj).toEqual(jasmine.objectContaining({ foo: 'bar' }))
             await expect(arr).toEqual(jasmine.arrayContaining([1, 2]))
-            await expect(title).toMatch(/WebdriverIO/)
-            await expect(title).toEqual(jasmine.stringContaining('WebdriverIO'))
+            await expect(title).toMatch(/WebdriverJS/)
+            await expect(title).toEqual(jasmine.stringContaining('WebdriverJS'))
             await expect(obj).toBeInstanceOf(Object)
 
             await expect(Promise.resolve(1)).toBeResolved()

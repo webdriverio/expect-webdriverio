@@ -1,27 +1,27 @@
 describe('Visual Snapshot Testing', () => {
     beforeEach(async () => {
-        await browser.url('https://webdriver.io/docs/gettingstarted')
+        await browser.url('https://guinea-pig.webdriver.io/')
     })
 
     describe('Element Visual Snapshots', () => {
         it('should match element visual snapshot with auto-generated name', async () => {
-            const logo = await $('.navbar__logo')
-            await expect(logo).toMatchElementSnapshot('logo')
+            const box = await $('#purplebox')
+            await expect(box).toMatchElementSnapshot('purplebox')
         })
 
         it('should match element visual snapshot with custom name', async () => {
-            const logo = await $('.navbar__logo')
-            await expect(logo).toMatchElementSnapshot('wdioLogo')
+            const box = await $('#purplebox')
+            await expect(box).toMatchElementSnapshot('purpleBoxNamed')
         })
 
         it('should match element visual snapshot with zero mismatch', async () => {
-            const logo = await $('.navbar__logo')
-            await expect(logo).toMatchElementSnapshot('wdioLogo', 0)
+            const box = await $('#purplebox')
+            await expect(box).toMatchElementSnapshot('purpleBoxNamed', 0)
         })
 
         it('should match element visual snapshot with options', async () => {
-            const logo = await $('.navbar__logo')
-            await expect(logo).toMatchElementSnapshot('wdioLogo', {
+            const box = await $('#purplebox')
+            await expect(box).toMatchElementSnapshot('purpleBoxNamed', {
                 // Visual comparison options
                 blockOutStatusBar: true,
                 blockOutToolBar: true,

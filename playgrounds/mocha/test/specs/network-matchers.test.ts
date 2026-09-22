@@ -8,7 +8,7 @@ describe('Network Matchers', () => {
             this.timeout(60000)
         }
 
-        mock = await browser.mock('https://webdriver.io/api/foo', {
+        mock = await browser.mock('https://guinea-pig.webdriver.io/api/foo', {
             method: 'POST'
         })
         mock.respond({ success: true }, {
@@ -16,10 +16,10 @@ describe('Network Matchers', () => {
             headers: { Authorization: 'bar' }
         })
 
-        await browser.url('https://webdriver.io/')
+        await browser.url('https://guinea-pig.webdriver.io/')
 
         await browser.execute(async () => {
-            await fetch('https://webdriver.io/api/foo', {
+            await fetch('https://guinea-pig.webdriver.io/api/foo', {
                 method: 'POST',
                 headers: { Authorization: 'foo' },
                 body: JSON.stringify({ title: 'foo', description: 'bar' })
@@ -29,7 +29,7 @@ describe('Network Matchers', () => {
 
     it('should assert on network calls', async () => {
         await expect(mock).toBeRequestedWith({
-            url: 'https://webdriver.io/api/foo',
+            url: 'https://guinea-pig.webdriver.io/api/foo',
             method: 'POST'
         })
     })
@@ -59,7 +59,7 @@ describe('Network Matchers', () => {
 //   Object {
 //     "method": "POST",
 // -   "url": "StringContaining \\\"/api/foo\\\"",
-// +   "url": "https://webdriver.io/api/foo",
+// +   "url": "https://guinea-pig.webdriver.io/api/foo",
 //   }`
 //                 }
             )
@@ -132,8 +132,8 @@ describe('Network Matchers', () => {
     })
 
     it('should FAIL when postData is expected but the request had none', async () => {
-        const getMock = await browser.mock('https://webdriver.io/**', { method: 'GET' })
-        await browser.url('https://webdriver.io/')
+        const getMock = await browser.mock('https://guinea-pig.webdriver.io/**', { method: 'GET' })
+        await browser.url('https://guinea-pig.webdriver.io/')
         await expect(
             expect(getMock).toBeRequestedWith({ postData: { any: 'thing' } })
         ).rejects.toThrow()

@@ -2,7 +2,7 @@ import { browser, $, $$ } from '@wdio/globals'
 
 describe('Basic Expect Matchers', () => {
     beforeEach(async () => {
-        await browser.url('https://webdriver.io')
+        await browser.url('https://guinea-pig.webdriver.io/')
     })
 
    describe('Expect matchers', () => {
@@ -65,7 +65,7 @@ describe('Basic Expect Matchers', () => {
 
     describe('Boolean matchers', () => {
         it('should verify truthy values', async () => {
-            const element = await $('.navbar')
+            const element = await $('header')
             const isDisplayed = await element.isDisplayed()
             expect(isDisplayed).toBe(true)
             expect(isDisplayed).toBeTruthy()
@@ -82,18 +82,18 @@ describe('Basic Expect Matchers', () => {
     describe('String matchers', () => {
         it('should match exact text', async () => {
             const title = await browser.getTitle()
-            expect(title).toContain('WebdriverIO')
+            expect(title).toContain('WebdriverJS')
         })
 
         it('should match with regex', async () => {
             const url = await browser.getUrl()
-            expect(url).toMatch(/^https:\/\/webdriver\.io/)
+            expect(url).toMatch(/^https:\/\/guinea-pig\.webdriver\.io/)
         })
     })
 
     describe('Number matchers', () => {
         it('should compare numbers', async () => {
-            const navLinks = await $$('nav a')
+            const navLinks = await $$('a')
             const count = navLinks.length
 
             expect(count).toBeGreaterThan(5)
@@ -105,7 +105,7 @@ describe('Basic Expect Matchers', () => {
 
     describe('Array matchers', () => {
         it('should verify array contents', async () => {
-            const navLinks = await $$('nav a')
+            const navLinks = await $$('a')
             const hrefs: string[] = []
             for (const link of navLinks) {
                 const href = await link.getAttribute('href')
@@ -114,7 +114,7 @@ describe('Basic Expect Matchers', () => {
 
             expect(hrefs).toBeInstanceOf(Array)
             expect(hrefs.length).toBeGreaterThan(0)
-            expect(hrefs).toEqual(expect.arrayContaining(['/docs/gettingstarted']))
+            expect(hrefs).toEqual(expect.arrayContaining(['./two.html']))
         })
     })
 
@@ -142,7 +142,7 @@ describe('Basic Expect Matchers', () => {
         it('should handle promises', async () => {
             const titlePromise = browser.getTitle()
 
-            await expect(titlePromise).resolves.toContain('WebdriverIO')
+            await expect(titlePromise).resolves.toContain('WebdriverJS')
         })
 
         it('should not reject', async () => {

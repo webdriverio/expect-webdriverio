@@ -4,7 +4,7 @@ describe('Basic Expect Matchers', () => {
     beforeEach(async function() {
         // When running all project it timeout here!
         this.timeout(process.env.CI ? 60000 : 10000);
-        await multiRemoteBrowser.url('https://webdriver.io')
+        await multiRemoteBrowser.url('https://guinea-pig.webdriver.io/')
     })
 
    describe('Expect matchers', () => {
@@ -67,7 +67,7 @@ describe('Basic Expect Matchers', () => {
 
     describe('Boolean matchers', () => {
         it('should verify truthy values', async () => {
-            const element = await multiRemoteBrowser.$('.navbar')
+            const element = await multiRemoteBrowser.$('header')
             const isDisplayed = await element.isDisplayed()
 
             expect(isDisplayed).toEqual([true, true])
@@ -86,23 +86,23 @@ describe('Basic Expect Matchers', () => {
             const title = await multiRemoteBrowser.getTitle()
 
             expect(title).toEqual([
-                expect.stringContaining('WebdriverIO'),
-                expect.stringContaining('WebdriverIO')
+                expect.stringContaining('WebdriverJS'),
+                expect.stringContaining('WebdriverJS')
             ])
         })
 
         it('should match with regex', async () => {
             const url = await multiRemoteBrowser.getUrl()
             expect(url).toEqual([
-                expect.stringMatching(/^https:\/\/webdriver\.io/),
-                expect.stringMatching(/^https:\/\/webdriver\.io/)
+                expect.stringMatching(/^https:\/\/guinea-pig\.webdriver\.io/),
+                expect.stringMatching(/^https:\/\/guinea-pig\.webdriver\.io/)
             ])
         })
     })
 
     describe('Number matchers', () => {
         it('should compare numbers', async () => {
-            const navLinks = await multiRemoteBrowser.$$('nav a')
+            const navLinks = await multiRemoteBrowser.$$('a')
             const count = navLinks.length
 
             expect(count).toBeGreaterThan(5)
@@ -115,7 +115,7 @@ describe('Basic Expect Matchers', () => {
     // TODO: Fix me
     describe.skip('Array matchers', () => {
         it('should verify array contents', async () => {
-            const navLinks = await multiRemoteBrowser.$$('nav a')
+            const navLinks = await multiRemoteBrowser.$$('a')
             const hrefs: string[][] = []
             for (const link of navLinks) {
                 // Firefox crash and MultiRemoteElement for firefox is undefined, find why....
@@ -125,7 +125,7 @@ describe('Basic Expect Matchers', () => {
 
             expect(hrefs).toBeInstanceOf(Array)
             expect(hrefs.length).toBeGreaterThan(0)
-            expect(hrefs).toEqual(expect.arrayContaining(['/docs/gettingstarted']))
+            expect(hrefs).toEqual(expect.arrayContaining(['./two.html']))
         })
     })
 
@@ -156,7 +156,7 @@ describe('Basic Expect Matchers', () => {
         it('should handle promises', async () => {
             const titlePromise = multiRemoteBrowser.getTitle()
 
-            await expect(titlePromise).resolves.toEqual(expect.arrayContaining([expect.stringContaining('WebdriverIO')]))
+            await expect(titlePromise).resolves.toEqual(expect.arrayContaining([expect.stringContaining('WebdriverJS')]))
         })
 
         it('should not reject', async () => {

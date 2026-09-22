@@ -1,19 +1,19 @@
 describe('WebdriverIO Custom Matchers', () => {
     beforeEach(async () => {
-        await standalone.url('https://webdriver.io')
+        await standalone.url('https://guinea-pig.webdriver.io/')
     })
 
     describe('Browser matchers', () => {
         it('should verify browser title', async () => {
-            await expect(standalone).toHaveTitle(/WebdriverIO.*/)
+            await expect(standalone).toHaveTitle(/WebdriverJS.*/)
         })
 
         it('should verify browser title contains text', async () => {
-            await expect(standalone).toHaveTitle(expect.stringContaining('WebdriverIO'))
+            await expect(standalone).toHaveTitle(expect.stringContaining('WebdriverJS'))
         })
 
         it('should verify browser URL', async () => {
-            await expect(standalone).toHaveUrl('https://webdriver.io/')
+            await expect(standalone).toHaveUrl('https://guinea-pig.webdriver.io/')
         })
 
         it('should verify URL contains path', async () => {
@@ -23,9 +23,9 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('Element existence matchers', () => {
         it('should verify element exists', async () => {
-            const searchButton = await standalone.$('.DocSearch-Button')
-            await expect(searchButton).toExist()
-            await expect(searchButton).toBeExisting()
+            const githubLink = await standalone.$('#githubRepo')
+            await expect(githubLink).toExist()
+            await expect(githubLink).toBeExisting()
         })
 
         it('should verify element does not exist', async () => {
@@ -36,121 +36,113 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('Element visibility matchers', () => {
         it('should verify element is displayed', async () => {
-            const nav = await standalone.$('nav')
-            await expect(nav).toBeDisplayed()
+            const header = await standalone.$('header')
+            await expect(header).toBeDisplayed()
         })
 
         it('should verify element is displayed in viewport', async () => {
-            const searchButton = await standalone.$('.DocSearch-Button')
-            await expect(searchButton).toBeDisplayedInViewport()
+            const githubLink = await standalone.$('#githubRepo')
+            await expect(githubLink).toBeDisplayedInViewport()
         })
     })
 
     describe('Element state matchers', () => {
         it('should verify element is clickable', async () => {
-            const searchButton = await standalone.$('.DocSearch-Button')
-            await expect(searchButton).toBeClickable()
+            const button = await standalone.$('.btn1')
+            await expect(button).toBeClickable()
         })
 
         it('should verify element is enabled', async () => {
-            const searchButton = await standalone.$('.DocSearch-Button')
-            await expect(searchButton).toBeEnabled()
+            const button = await standalone.$('.btn1')
+            await expect(button).toBeEnabled()
         })
 
         it('should verify button is not disabled', async () => {
-            const searchButton = await standalone.$('.DocSearch-Button')
-            await expect(searchButton).not.toBeDisabled()
+            const button = await standalone.$('.btn1')
+            await expect(button).not.toBeDisabled()
         })
     })
 
     describe('Element text matchers', () => {
         it('should verify element text', async () => {
-            const docsLink = await standalone.$('=Docs')
-            await expect(docsLink).toBeDisplayed()
-            await expect(docsLink).toHaveText('Docs')
+            const secondPageLink = await standalone.$('#secondPageLink')
+            await expect(secondPageLink).toBeDisplayed()
+            await expect(secondPageLink).toHaveText('two')
         })
 
         it('should verify element contains text', async () => {
             const heading = await standalone.$$('h1')[1]  // Second h1 has text
-            await expect(heading).toHaveText(expect.stringContaining('Open Source'))
+            await expect(heading).toHaveText(expect.stringContaining('Test CSS'))
         })
 
         it('should verify text with options', async () => {
             const heading = await standalone.$$('h1')[1]  // Second h1 has text
-            await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+            await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
         })
     })
 
     describe('Element attribute matchers', () => {
         it('should verify element has attribute', async () => {
-            const docsLink = await standalone.$('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).toHaveAttribute('href', '/docs/gettingstarted')
+            const secondPageLink = await standalone.$('#secondPageLink')
+            await expect(secondPageLink).toHaveAttribute('href', './two.html')
         })
 
         it('should verify attribute contains value', async () => {
-            const docsLink = await standalone.$('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).toHaveAttribute('href', expect.stringContaining('docs'))
+            const secondPageLink = await standalone.$('#secondPageLink')
+            await expect(secondPageLink).toHaveAttribute('href', expect.stringContaining('two'))
         })
 
         it('should verify element has class', async () => {
-            const searchButton = await standalone.$('.DocSearch-Button')
-            await expect(searchButton).toHaveElementClass('DocSearch-Button')
+            const button = await standalone.$('.btn1')
+            await expect(button).toHaveElementClass('btn1')
         })
 
         it('should verify element has multiple classes', async () => {
-            const searchButton = await standalone.$('.DocSearch-Button')
-            await expect(searchButton).toHaveElementClass(expect.stringContaining('DocSearch'))
+            const button = await standalone.$('.btn1')
+            await expect(button).toHaveElementClass(expect.stringContaining('btn'))
         })
     })
 
     describe('Element property matchers', () => {
         it('should verify element property', async () => {
-            const searchButton = await standalone.$('.DocSearch-Button')
-            await expect(searchButton).toHaveElementProperty('type', 'button')
+            const button = await standalone.$('.btn1')
+            await expect(button).toHaveElementProperty('type', 'submit')
         })
     })
 
     describe('Element value matchers', () => {
         it('should verify input value', async () => {
-            // Navigate to a page with inputs
-            await standalone.url('https://the-internet.herokuapp.com/login')
-            const username = await standalone.$('#username')
-            await username.setValue('testuser')
-            await expect(username).toHaveValue('testuser')
+            const searchInput = await standalone.$('.searchinput')
+            await searchInput.setValue('testuser')
+            await expect(searchInput).toHaveValue('testuser')
         })
 
         it('should verify value contains text', async () => {
-            await standalone.url('https://the-internet.herokuapp.com/login')
-            const username = await standalone.$('#username')
-            await username.setValue('testuser123')
-            await expect(username).toHaveValue(expect.stringContaining('testuser'))
+            const searchInput = await standalone.$('.searchinput')
+            await searchInput.setValue('testuser123')
+            await expect(searchInput).toHaveValue(expect.stringContaining('testuser'))
         })
     })
 
     describe('Elements array matchers', () => {
         it('should verify elements array size', async () => {
-            const navLinks = await standalone.$$('nav a')
-            await expect(navLinks).toBeElementsArrayOfSize(49)
+            const links = await standalone.$$('a')
+            await expect(links).toBeElementsArrayOfSize(7)
         })
 
         it('should verify elements array size with comparison', async () => {
-            const navLinks = await standalone.$$('nav a')
-            await expect(navLinks).toBeElementsArrayOfSize({ gte: 40 })
-            await expect(navLinks).toBeElementsArrayOfSize({ lte: 50 })
+            const links = await standalone.$$('a')
+            await expect(links).toBeElementsArrayOfSize({ gte: 5 })
+            await expect(links).toBeElementsArrayOfSize({ lte: 10 })
         })
     })
 
     describe('Focus matchers', () => {
         it('should verify element is focused', async () => {
-            const searchButton = await standalone.$('.DocSearch-Button')
-            await searchButton.click()
+            const searchInput = await standalone.$('.searchinput')
+            await searchInput.click()
 
-            // The search modal input should be focused after clicking
-            await standalone.pause(500) // Wait for modal to open
-            const searchInput = await standalone.$('.DocSearch-Input')
-            if (await searchInput.isExisting()) {
-                await expect(searchInput).toBeFocused()
-            }
+            await expect(searchInput).toBeFocused()
         })
     })
 
@@ -161,8 +153,8 @@ describe('WebdriverIO Custom Matchers', () => {
         })
 
         it('should use custom interval', async () => {
-            const nav = await standalone.$('nav')
-            await expect(nav).toExist({ wait: 3000, interval: 100 })
+            const header = await standalone.$('header')
+            await expect(header).toExist({ wait: 3000, interval: 100 })
         })
     })
 

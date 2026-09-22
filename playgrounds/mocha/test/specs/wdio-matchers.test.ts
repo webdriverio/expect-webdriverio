@@ -4,20 +4,20 @@ import { some } from 'expect-webdriverio/api'
 
 describe('WebdriverIO Custom Matchers', () => {
     beforeEach(async () => {
-        await browser.url('https://webdriver.io')
+        await browser.url('https://guinea-pig.webdriver.io/')
     })
 
     describe('Browser matchers', () => {
         it('should verify browser title', async () => {
-            await expect(browser).toHaveTitle(/WebdriverIO.*/)
+            await expect(browser).toHaveTitle(/WebdriverJS.*/)
         })
 
         it('should verify browser title contains text', async () => {
-            await expect(browser).toHaveTitle(expect.stringContaining('WebdriverIO'))
+            await expect(browser).toHaveTitle(expect.stringContaining('WebdriverJS'))
         })
 
         it('should verify browser URL', async () => {
-            await expect(browser).toHaveUrl('https://webdriver.io/')
+            await expect(browser).toHaveUrl('https://guinea-pig.webdriver.io/')
         })
 
         it('should verify URL contains path', async () => {
@@ -37,19 +37,19 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('Element existence matchers', () => {
         it('should verify element exists', async () => {
-            const searchButton = $('.DocSearch-Button')
+            const githubLink = $('#githubRepo')
 
-            await expect(searchButton).toExist()
-            await expect(await searchButton).toExist()
-            await expect(await searchButton).toBeExisting()
+            await expect(githubLink).toExist()
+            await expect(await githubLink).toExist()
+            await expect(await githubLink).toBeExisting()
         })
 
         it('should verify all elements are existing', async () => {
-            const searchButton = $$('.DocSearch-Button')
+            const githubLink = $$('#githubRepo')
 
-            await expect(searchButton).toExist()
-            await expect(await searchButton).toExist()
-            await expect(await searchButton).toBeExisting()
+            await expect(githubLink).toExist()
+            await expect(await githubLink).toExist()
+            await expect(await githubLink).toBeExisting()
         })
 
         it('should verify element does not exist', async () => {
@@ -70,113 +70,113 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('Element visibility matchers', () => {
         it('should verify element is displayed', async () => {
-            const nav = $('nav')
+            const header = $('header')
 
-            await expect(nav).toBeDisplayed()
-            await expect(await nav).toBeDisplayed()
+            await expect(header).toBeDisplayed()
+            await expect(await header).toBeDisplayed()
         })
 
         it('should verify element is displayed in viewport', async () => {
-            const searchButton = await $('.DocSearch-Button')
+            const githubLink = await $('#githubRepo')
 
-            await expect(searchButton).toBeDisplayedInViewport()
+            await expect(githubLink).toBeDisplayedInViewport()
         })
 
         it('should verify elements are displayed', async () => {
-            const nav = $$('nav')
+            const header = $$('header')
 
-            await expect(nav).toBeDisplayed()
-            await expect(await nav).toBeDisplayed()
-            await expect(await nav.filter(n => n.isExisting())).toBeDisplayedInViewport()
+            await expect(header).toBeDisplayed()
+            await expect(await header).toBeDisplayed()
+            await expect(await header.filter(n => n.isExisting())).toBeDisplayedInViewport()
         })
 
         it('should verify that some elements are displayed', async () => {
-            const nav = $$('nav')
+            const header = $$('header')
 
-            await expect(some(nav)).toBeDisplayed()
-            await expect(some(await nav)).toBeDisplayed()
-            await expect(some(await nav.filter(n => n.isExisting()))).toBeDisplayedInViewport()
+            await expect(some(header)).toBeDisplayed()
+            await expect(some(await header)).toBeDisplayed()
+            await expect(some(await header.filter(n => n.isExisting()))).toBeDisplayedInViewport()
         })
     })
 
     describe('Element state matchers', () => {
         it('should verify element is clickable', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).toBeClickable()
+            const button = await $('.btn1')
+            await expect(button).toBeClickable()
         })
 
         it('should verify element is enabled', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).toBeEnabled()
+            const button = await $('.btn1')
+            await expect(button).toBeEnabled()
         })
 
         it('should verify button is not disabled', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).not.toBeDisabled()
+            const button = await $('.btn1')
+            await expect(button).not.toBeDisabled()
         })
     })
 
     describe('Legacy element text matchers', () => {
         it('should verify element text', async () => {
-            const docsLink = await $('=Docs')
-            await expect(docsLink).toBeDisplayed()
-            await expect(docsLink).toHaveText('Docs')
+            const secondPageLink = await $('#secondPageLink')
+            await expect(secondPageLink).toBeDisplayed()
+            await expect(secondPageLink).toHaveText('two')
         })
 
         it('should verify element text with expected array (deprecated) or oneOf', async () => {
-            const docsLink = await $('=Docs')
-            await expect(docsLink).toHaveText(['Docs', 'Doc'])
-            await expect(docsLink).toHaveText(expect.oneOf('Docs', 'Doc'))
+            const secondPageLink = await $('#secondPageLink')
+            await expect(secondPageLink).toHaveText(['two', 'Two'])
+            await expect(secondPageLink).toHaveText(expect.oneOf('two', 'Two'))
         })
 
         it('should verify element contains text', async () => {
             const heading = await $$('h1')[1]  // Second h1 has text
-            await expect(heading).toHaveText(expect.stringContaining('Open Source'))
+            await expect(heading).toHaveText(expect.stringContaining('Test CSS'))
         })
 
         it('should verify text with options', async () => {
             const heading = await $$('h1')[1]  // Second h1 has text
-            await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+            await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
         })
 
         describe('Multiple Elements', () => {
             describe('Awaited', () => {
                 it('should verify text with array of text & with options with awaited ChainablePromiseArray', async () => {
                     const heading = await $$('h1')
-                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test css'], { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with array of text with oneOf', async () => {
                     const heading = await $$('h1')
 
-                    await expect(heading).toHaveText(expect.oneOf('','Open source'), { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText(expect.oneOf('WebdriverJS Testpage', 'Test css'), { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with array of text without exact array match', async () => {
                     const heading = await $$('h1')
-                    await expect(heading).toHaveText(['Open Source and Open Governed', '', 'no match'])
+                    await expect(heading).toHaveText(['Test CSS Attributes', 'WebdriverJS Testpage', 'no match'])
                 })
 
                 it('should fails verify a single text found in only one element', async () => {
                     const heading = await $$('h1')
-                    await expect(expect(heading).toHaveText('Open Source and Open Governed', { ignoreCase: true, containing: true, wait: 500 })).rejects.toThrow()
+                    await expect(expect(heading).toHaveText('Test CSS Attributes', { ignoreCase: true, containing: true, wait: 500 })).rejects.toThrow()
                 })
 
                 it('should verify text with options with awaited filtered ChainablePromiseArray', async () => {
-                    const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('Open Source'))
+                    const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('Test CSS'))
                     expect(heading.length).toBe(1)
-                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with options with awaited getElements ChainablePromiseArray', async () => {
                     const heading = await $$('h1').getElements()
-                    await expect(heading).toHaveText(['','Open Source and Open Governed'], { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test CSS Attributes'], { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with options with filetered awaited getElements ChainablePromiseArray', async () => {
-                    const heading = (await $$('h1').getElements()).filter(async (el) => (await el.getText()).includes('Open Source'))
+                    const heading = (await $$('h1').getElements()).filter(async (el) => (await el.getText()).includes('Test CSS'))
 
-                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
                 })
 
                 describe('Empty elemetns', () => {
@@ -184,14 +184,14 @@ describe('WebdriverIO Custom Matchers', () => {
                         const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('test'))
 
                         expect(heading.length).toBe(0)
-                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
                     })
 
                     it('should fails if there is no elements with ElementArray', async () => {
                         const heading = await $$('h10')
 
                         expect(heading.length).toBe(0)
-                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
                     })
                 })
             })
@@ -201,32 +201,32 @@ describe('WebdriverIO Custom Matchers', () => {
                 it('should verify text with options with non-awaited ChainablePromiseArray', async () => {
                     const heading = $$('h1')
 
-                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test css'], { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with options with non-awaited filtered ChainablePromiseArray', async () => {
-                    const heading = $$('h1').filter(async (el) => (await el.getText()).includes('Open Source'))
+                    const heading = $$('h1').filter(async (el) => (await el.getText()).includes('Test CSS'))
 
-                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with options with non-awaited getElements ChainablePromiseArray', async () => {
                     const heading = $$('h1').getElements()
 
-                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test css'], { ignoreCase: true, containing: true })
                 })
 
                 describe('Empty elements', () => {
                     it('should fails if there is no elements with Element[]', async () => {
                         const heading = $$('h1').filter(async (el) => (await el.getText()).includes('test'))
 
-                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
                     })
 
                     it('should fails if there is no elements with ElementArray', async () => {
                         const heading = $$('h10')
 
-                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
                     })
                 })
             })
@@ -239,62 +239,62 @@ describe('WebdriverIO Custom Matchers', () => {
         })
 
         it('should verify element text', async () => {
-            const docsLink = await $('=Docs')
-            await expect(docsLink).toBeDisplayed()
-            await expect(docsLink).toHaveText('Docs')
+            const secondPageLink = await $('#secondPageLink')
+            await expect(secondPageLink).toBeDisplayed()
+            await expect(secondPageLink).toHaveText('two')
         })
 
         it('should verify element contains text', async () => {
             const heading = await $$('h1')[1]  // Second h1 has text
-            await expect(heading).toHaveText(expect.stringContaining('Open Source'))
+            await expect(heading).toHaveText(expect.stringContaining('Test CSS'))
         })
 
         it('should verify text with options', async () => {
             const heading = await $$('h1')[1]  // Second h1 has text
-            await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+            await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
         })
 
         describe('Multiple Elements', () => {
             describe('Awaited', () => {
                 it('should verify text with array of text & with options with awaited ChainablePromiseArray', async () => {
                     const heading = await $$('h1')
-                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test css'], { ignoreCase: true, containing: true })
                 })
 
                 it('should verify some text with array of text', async () => {
                     const heading = await $$('h1')
 
-                    await expect(some(heading)).toHaveText(['DoesNotMatch','Open Source and Open Governed'])
-                    await expect(some(heading)).toHaveText('Open Source and Open Governed')
-                    await expect(some(heading)).toHaveText('open source', { ignoreCase: true, containing: true })
+                    await expect(some(heading)).toHaveText(['DoesNotMatch', 'Test CSS Attributes'])
+                    await expect(some(heading)).toHaveText('Test CSS Attributes')
+                    await expect(some(heading)).toHaveText('test css', { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with array of text without exact array match', async () => {
                     const heading = await $$('h1')
-                    await expect(heading).toHaveText(['', 'Open Source and Open Governed'])
+                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test CSS Attributes'])
                 })
 
                 it('should fails verify a single text found in only one element', async () => {
                     const heading = await $$('h1')
-                    await expect(expect(heading).toHaveText('Open Source and Open Governed', { ignoreCase: true, containing: true, wait: 500 })).rejects.toThrow()
+                    await expect(expect(heading).toHaveText('Test CSS Attributes', { ignoreCase: true, containing: true, wait: 500 })).rejects.toThrow()
                 })
 
                 it('should verify text with options with awaited filtered ChainablePromiseArray', async () => {
-                    const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('Open Source'))
+                    const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('Test CSS'))
                     expect(heading.length).toBe(1)
-                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with options with awaited getElements ChainablePromiseArray', async () => {
                     const heading = await $$('h1').getElements()
 
-                    await expect(heading).toHaveText(['','Open Source and Open Governed'], { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test CSS Attributes'], { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with options with filetered awaited getElements ChainablePromiseArray', async () => {
-                    const heading = (await $$('h1').getElements()).filter(async (el) => (await el.getText()).includes('Open Source'))
+                    const heading = (await $$('h1').getElements()).filter(async (el) => (await el.getText()).includes('Test CSS'))
 
-                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
                 })
 
 
@@ -303,31 +303,31 @@ describe('WebdriverIO Custom Matchers', () => {
                         const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('test'))
 
                         expect(heading.length).toBe(0)
-                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
                     })
 
                     it('should fails if there is no elements with ElementArray', async () => {
                         const heading = await $$('h10')
 
                         expect(heading.length).toBe(0)
-                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
                     })
 
                     it('should fails if there is not enough expected values', async () => {
                         const heading = await $$('h1')
 
                         expect(heading.length).toBe(2)
-                        await expect(heading[0]).toHaveText([''])
-                        await expect(expect(heading).toHaveText([''])).rejects.toThrow()
+                        await expect(heading[0]).toHaveText(['WebdriverJS Testpage'])
+                        await expect(expect(heading).toHaveText(['WebdriverJS Testpage'])).rejects.toThrow()
                     })
 
                     it('should fails if there is too many expected values', async () => {
                         const heading = await $$('h1')
 
                         expect(heading.length).toBe(2)
-                        await expect(heading[0]).toHaveText([''])
-                        await expect(heading[1]).toHaveText(['Open Source and Open Governed'])
-                        await expect(expect(heading).toHaveText(['', 'Open Source and Open Governed', 'tooMuchValue!'])).rejects.toThrow()
+                        await expect(heading[0]).toHaveText(['WebdriverJS Testpage'])
+                        await expect(heading[1]).toHaveText(['Test CSS Attributes'])
+                        await expect(expect(heading).toHaveText(['WebdriverJS Testpage', 'Test CSS Attributes', 'tooMuchValue!'])).rejects.toThrow()
                     })
                 })
             })
@@ -337,32 +337,32 @@ describe('WebdriverIO Custom Matchers', () => {
                 it('should verify text with options with non-awaited ChainablePromiseArray', async () => {
                     const heading = $$('h1')
 
-                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test css'], { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with options with non-awaited filtered ChainablePromiseArray', async () => {
-                    const heading = $$('h1').filter(async (el) => (await el.getText()).includes('Open Source'))
+                    const heading = $$('h1').filter(async (el) => (await el.getText()).includes('Test CSS'))
 
-                    await expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
                 })
 
                 it('should verify text with options with non-awaited getElements ChainablePromiseArray', async () => {
                     const heading = $$('h1').getElements()
 
-                    await expect(heading).toHaveText(['','Open source'], { ignoreCase: true, containing: true })
+                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test css'], { ignoreCase: true, containing: true })
                 })
 
                 describe('Empty elements', () => {
                     it('should fails if there is no elements with Element[]', async () => {
                         const heading = $$('h1').filter(async (el) => (await el.getText()).includes('test'))
 
-                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
                     })
 
                     it('should fails if there is no elements with ElementArray', async () => {
                         const heading = $$('h10')
 
-                        await expect(expect(heading).toHaveText('OPEN SOURCE', { ignoreCase: true, containing: true })).rejects.toThrow()
+                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
                     })
                 })
             })
@@ -371,123 +371,116 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('Element attribute matchers', () => {
         it('should verify element exists', async () => {
-            const docsLink = await $('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).toHaveAttribute('href')
+            const secondPageLink = await $('#secondPageLink')
+            await expect(secondPageLink).toHaveAttribute('href')
         })
 
         it('should verify element exists immediately', async () => {
-            const docsLink = await $('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).toHaveAttribute('href', expect.anything(), { wait: 0 })
+            const secondPageLink = await $('#secondPageLink')
+            await expect(secondPageLink).toHaveAttribute('href', expect.anything(), { wait: 0 })
         })
 
         it('should verify element has attribute', async () => {
-            const docsLink = await $('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).toHaveAttribute('href', '/docs/gettingstarted')
+            const secondPageLink = await $('#secondPageLink')
+            await expect(secondPageLink).toHaveAttribute('href', './two.html')
         })
 
         it('should verify element does not exist', async () => {
-            const docsLink = await $('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).not.toHaveAttribute('non-existent-attribute')
+            const secondPageLink = await $('#secondPageLink')
+            await expect(secondPageLink).not.toHaveAttribute('non-existent-attribute')
         })
 
         it('should verify element does not exist immediately', async () => {
-            const docsLink = await $('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).not.toHaveAttribute('non-existent-attribute', expect.anything(), { wait: 0 })
+            const secondPageLink = await $('#secondPageLink')
+            await expect(secondPageLink).not.toHaveAttribute('non-existent-attribute', expect.anything(), { wait: 0 })
         })
 
         it('should verify attribute contains value', async () => {
-            const docsLink = await $('a[href="/docs/gettingstarted"]')
-            await expect(docsLink).toHaveAttribute('href', expect.stringContaining('docs'))
+            const secondPageLink = await $('#secondPageLink')
+            await expect(secondPageLink).toHaveAttribute('href', expect.stringContaining('two'))
         })
 
         it('should verify element has class', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).toHaveElementClass('DocSearch-Button')
+            const button = await $('.btn1')
+            await expect(button).toHaveElementClass('btn1')
         })
 
         it('should verify element has multiple classes', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).toHaveElementClass(expect.stringContaining('DocSearch'))
+            const button = await $('.btn1')
+            await expect(button).toHaveElementClass(expect.stringContaining('btn'))
         })
     })
 
     describe('Element property matchers', () => {
         it('should verify element property value', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).toHaveElementProperty('type', 'button')
+            const button = await $('.btn1')
+            await expect(button).toHaveElementProperty('type', 'submit')
         })
 
         it('should verify element property value with asymmetric matcher', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).toHaveElementProperty('type', expect.stringContaining('button'))
+            const button = await $('.btn1')
+            await expect(button).toHaveElementProperty('type', expect.stringContaining('submit'))
         })
 
         it('should verify that element property exists', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).toHaveElementProperty('type')
+            const button = await $('.btn1')
+            await expect(button).toHaveElementProperty('type')
         })
 
         it('should verify that element property exists immediately', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).toHaveElementProperty('type', expect.anything(), { wait: 0 })
+            const button = await $('.btn1')
+            await expect(button).toHaveElementProperty('type', expect.anything(), { wait: 0 })
         })
 
         it('should verify that element property does not exist', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).not.toHaveElementProperty('doesNNotExist')
+            const button = await $('.btn1')
+            await expect(button).not.toHaveElementProperty('doesNNotExist')
         })
 
         it('should verify that element property does not exist immediately', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await expect(searchButton).not.toHaveElementProperty('doesNNotExist', expect.anything(), { wait: 0 })
+            const button = await $('.btn1')
+            await expect(button).not.toHaveElementProperty('doesNNotExist', expect.anything(), { wait: 0 })
         })
     })
 
     describe('Element value matchers', () => {
         it('should verify input value', async () => {
-            // Navigate to a page with inputs
-            await browser.url('https://the-internet.herokuapp.com/login')
-            const username = await $('#username')
-            await username.setValue('testuser')
-            await expect(username).toHaveValue('testuser')
+            const searchInput = await $('.searchinput')
+            await searchInput.setValue('testuser')
+            await expect(searchInput).toHaveValue('testuser')
         })
 
         it('should verify value contains text', async () => {
-            await browser.url('https://the-internet.herokuapp.com/login')
-            const username = await $('#username')
-            await username.setValue('testuser123')
-            await expect(username).toHaveValue(expect.stringContaining('testuser'))
+            const searchInput = await $('.searchinput')
+            await searchInput.setValue('testuser123')
+            await expect(searchInput).toHaveValue(expect.stringContaining('testuser'))
         })
     })
 
     describe('Elements array matchers', () => {
         it('should verify elements array size', async () => {
-            const navLinks = await $$('nav a')
-            await expect(navLinks).toBeElementsArrayOfSize(49)
+            const links = await $$('a')
+            await expect(links).toBeElementsArrayOfSize(7)
         })
 
         it('should verify elements array size with comparison', async () => {
-            const navLinks = await $$('nav a')
-            await expect(navLinks).toBeElementsArrayOfSize({ gte: 40 })
-            await expect(navLinks).toBeElementsArrayOfSize({ lte: 50 })
+            const links = await $$('a')
+            await expect(links).toBeElementsArrayOfSize({ gte: 5 })
+            await expect(links).toBeElementsArrayOfSize({ lte: 10 })
         })
 
         it('should works with non-awaited elements', async () => {
-            await expect($$('nav a')).toBeElementsArrayOfSize({ gte: 40 })
-            await expect($$('nav a')).toBeElementsArrayOfSize({ lte: 50 })
+            await expect($$('a')).toBeElementsArrayOfSize({ gte: 5 })
+            await expect($$('a')).toBeElementsArrayOfSize({ lte: 10 })
         })
 
         it('should works with filtered elements', async () => {
-            await expect($$('nav a').filter(el => el.isDisplayed())).toBeElementsArrayOfSize({ gte: 1 })
+            await expect($$('a').filter(el => el.isDisplayed())).toBeElementsArrayOfSize({ gte: 1 })
         })
 
     })
 
     describe('HTML matchers', () => {
-        beforeEach(async () => {
-            await browser.url('https://guinea-pig.webdriver.io/')
-        })
-
         it('should verify element has specific HTML', async () => {
             const element = await $('h1')
             await expect(element).toHaveHTML('<h1>WebdriverJS Testpage</h1>', {
@@ -502,15 +495,10 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('Focus matchers', () => {
         it('should verify element is focused', async () => {
-            const searchButton = await $('.DocSearch-Button')
-            await searchButton.click()
+            const searchInput = await $('.searchinput')
+            await searchInput.click()
 
-            // The search modal input should be focused after clicking
-            await browser.pause(500) // Wait for modal to open
-            const searchInput = await $('.DocSearch-Input')
-            if (await searchInput.isExisting()) {
-                await expect(searchInput).toBeFocused()
-            }
+            await expect(searchInput).toBeFocused()
         })
     })
 
@@ -521,8 +509,8 @@ describe('WebdriverIO Custom Matchers', () => {
         })
 
         it('should use custom interval', async () => {
-            const nav = await $('nav')
-            await expect(nav).toExist({ wait: 3000, interval: 100 })
+            const header = await $('header')
+            await expect(header).toExist({ wait: 3000, interval: 100 })
         })
     })
 
