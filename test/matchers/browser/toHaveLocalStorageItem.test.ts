@@ -206,8 +206,8 @@ Received: "user_abc"`
         const firefoxBrowser = multiRemoteBrowser.getInstance('firefox')
 
         beforeEach(() => {
-            vi.mocked(chromeBrowser.execute).mockResolvedValue('multiValue')
-            vi.mocked(firefoxBrowser.execute).mockResolvedValue('multiValue')
+            vi.mocked(chromeBrowser!.execute).mockResolvedValue('multiValue')
+            vi.mocked(firefoxBrowser!.execute).mockResolvedValue('multiValue')
         })
 
         it('passes when localStorage value matches expected value in multi-remote', async () => {

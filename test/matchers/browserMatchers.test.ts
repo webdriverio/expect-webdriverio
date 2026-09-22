@@ -150,8 +150,8 @@ Received: "Wrong Text"`
                 const firefoxBrowser = multiRemoteBrowser.getInstance('firefox')
 
                 beforeEach(async () => {
-                    vi.mocked(chromeBrowser[browserFnName]).mockResolvedValue(validText)
-                    vi.mocked(firefoxBrowser[browserFnName]).mockResolvedValue(validText)
+                    vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(validText)
+                    vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(validText)
                 })
 
                 describe('when success', () => {
@@ -159,8 +159,8 @@ Received: "Wrong Text"`
                         const result = await thisContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 0 })
 
                         expect(result.pass).toBe(true)
-                        expect(chromeBrowser[browserFnName]).toHaveBeenCalledTimes(1)
-                        expect(firefoxBrowser[browserFnName]).toHaveBeenCalledTimes(1)
+                        expect(chromeBrowser![browserFnName]).toHaveBeenCalledTimes(1)
+                        expect(firefoxBrowser![browserFnName]).toHaveBeenCalledTimes(1)
                     })
 
                     test('success when passing one single asymmetric expected value', async () => {
@@ -207,8 +207,8 @@ Received: "Wrong Text"`
 
                 describe('when failure', () => {
                     test('failure when passing one single expected value', async () => {
-                        vi.mocked(chromeBrowser[browserFnName]).mockResolvedValue(wrongText)
-                        vi.mocked(firefoxBrowser[browserFnName]).mockResolvedValue(validText)
+                        vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(wrongText)
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(validText)
 
                         const result = await thisContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 0 })
                         expect(result.pass).toBe(false)

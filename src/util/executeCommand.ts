@@ -51,7 +51,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
 
     if (supportsArrayContaining && !isSome && isArrayContainingMatcher(expectedValues)) {
         const { selector, elements, other } = await awaitElementOrArray(unresolvedElements)
-        if (elements) {
+        if (elements && !isMultiRemoteElements(elements)) {
             if (iteration > 0 && isStrictlyElementArray(elements)) {
                 await refreshElementArray(elements)
             }

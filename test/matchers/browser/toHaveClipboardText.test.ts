@@ -97,8 +97,8 @@ Received      : "actual text"`
         const firefoxBrowser = multiRemoteBrowser.getInstance('firefox')
 
         beforeEach(() => {
-            vi.mocked(chromeBrowser.execute).mockResolvedValue('some clipboard text')
-            vi.mocked(firefoxBrowser.execute).mockResolvedValue('some clipboard text')
+            vi.mocked(chromeBrowser!.execute).mockResolvedValue('some clipboard text')
+            vi.mocked(firefoxBrowser!.execute).mockResolvedValue('some clipboard text')
         })
 
         test('success', async () => {
@@ -119,8 +119,8 @@ Received      : "actual text"`
         })
 
         test('failure check with message', async () => {
-            vi.mocked(chromeBrowser.execute).mockResolvedValue('actual text')
-            vi.mocked(firefoxBrowser.execute).mockResolvedValue('actual text')
+            vi.mocked(chromeBrowser!.execute).mockResolvedValue('actual text')
+            vi.mocked(firefoxBrowser!.execute).mockResolvedValue('actual text')
 
             const result = await thisContext.toHaveClipboardText(multiRemoteBrowser, 'expected text')
 

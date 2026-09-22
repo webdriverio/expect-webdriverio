@@ -51,7 +51,7 @@ export async function executeBrowserCommand<Actual, Expected>( {
             browser.instances.map(async (name, index) => {
                 let singleBrowser: WebdriverIO.Browser
                 try {
-                    singleBrowser = browser.getInstance(name)
+                    singleBrowser = browser.getInstance(name)!
                 } catch {
                     // Invalid browser name
                     return { success: false, actual: undefined, multiRemoteBrowserName: name } satisfies MultiRemoteCompareResult<undefined>
