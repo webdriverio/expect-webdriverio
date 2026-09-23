@@ -248,10 +248,22 @@ describe('executeCommand', () => {
                     { isNot: false, isSome: false, iteration: 0 }
                 )
 
-                // Only chrome exists: safari is compared without ever calling `compare` for it.
-                expect(compare).toHaveBeenCalledTimes(1)
+                // Strict: firefox is still compared (for its actual) but not expected, safari does not exist.
+                expect(compare).toHaveBeenCalledTimes(2)
+                expect(compare).toHaveBeenCalledWith(expect.anything(), undefined)
                 expect(result.success).toBe(false)
-                expect(result.actual).toEqual({ chrome: 'ignored', safari: undefined })
+                expect(result.actual).toEqual({ chrome: 'ignored', firefox: 'ignored', safari: undefined })
+            })
+
+            it('fails when the expected value omits an instance, even if every named instance matches', async () => {
+                const element = createMultiRemoteElementMock(browsers(), 'sel')
+                const compare = vi.fn(async () => ({ success: true, actual: 'Match' }))
+
+                const result = await multipleElementResultsStrategy(element, { chrome: 'Match' }, compare, { isNot: false, isSome: false, iteration: 0 })
+
+                expect(compare).toHaveBeenCalledTimes(2)
+                expect(result.success).toBe(false)
+                expect(result.actual).toEqual({ chrome: 'Match', firefox: 'Match' })
             })
         })
 
@@ -314,6 +326,97 @@ describe('executeCommand', () => {
                 )
 
                 expect(result.success).toBe(false)
+            })
+
+            it('keeps actuals in element order even when comparisons resolve out of order', async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+                const compare = vi.fn(async (_el: WebdriverIO.Element, _expected: unknown, index?: number) => {
+                    // First element resolves last
+                    await new Promise((resolve) => setTimeout(resolve, index === 0 ? 10 : 0))
+                    return { success: true, actual: `el${index}` }
+                })
+
+                const result = await multipleElementResultsStrategy(elements, 'Match', compare, { isNot: false, isSome: false, iteration: 0 })
+
+                expect(result.actual).toEqual({ chrome: ['el0', 'el1'], firefox: ['el0', 'el1'] })
+            })
+
+            it('fails strictly when an instance expects more values than there are elements, still reporting actuals', async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+                const compare = vi.fn(async () => ({ success: true, actual: 'a' }))
+
+                const result = await multipleElementResultsStrategy(
+                    elements,
+                    { chrome: ['a', 'a', 'c'], firefox: ['a', 'a'] },
+                    compare,
+                    { isNot: false, isSome: false, iteration: 0 }
+                )
+
+                expect(compare).toHaveBeenCalledTimes(4)
+                expect(result.success).toBe(false)
+                expect(result.actual).toEqual({ chrome: ['a', 'a', undefined], firefox: ['a', 'a'] })
+            })
+
+            it('fails strictly when an instance expects fewer values than there are elements', async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+                const compare = vi.fn(async () => ({ success: true, actual: 'a' }))
+
+                const result = await multipleElementResultsStrategy(
+                    elements,
+                    { chrome: ['a'], firefox: ['a', 'a'] },
+                    compare,
+                    { isNot: false, isSome: false, iteration: 0 }
+                )
+
+                expect(result.success).toBe(false)
+            })
+
+            it('fails strictly when the expected value omits an instance, still comparing every instance', async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+                const compare = vi.fn(async () => ({ success: true, actual: 'a' }))
+
+                const result = await multipleElementResultsStrategy(elements, { chrome: ['a', 'a'] }, compare, { isNot: false, isSome: false, iteration: 0 })
+
+                expect(compare).toHaveBeenCalledTimes(4)
+                expect(result.success).toBe(false)
+                expect(result.actual).toEqual({ chrome: ['a', 'a'], firefox: ['a', 'a'] })
+            })
+
+            it('fails strictly when the expected value names an unknown instance', async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+                const compare = vi.fn(async () => ({ success: true, actual: 'a' }))
+
+                const result = await multipleElementResultsStrategy(
+                    elements,
+                    { chrome: ['a', 'a'], firefox: ['a', 'a'], safari: ['a', 'a'] },
+                    compare,
+                    { isNot: false, isSome: false, iteration: 0 }
+                )
+
+                expect(result.success).toBe(false)
+            })
+
+            it('passes when per-instance expected arrays match every element', async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+                const compare = vi.fn(async () => ({ success: true, actual: 'a' }))
+
+                const result = await multipleElementResultsStrategy(
+                    elements,
+                    { chrome: ['a', 'a'], firefox: ['a', 'a'] },
+                    compare,
+                    { isNot: false, isSome: false, iteration: 0 }
+                )
+
+                expect(result.success).toBe(true)
+            })
+
+            it(`${flag ? 'retries (no abort)' : 'aborts'} when empty since only the MultiRemoteElementArray shape can be refetched`, async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 0)
+
+                const result = await multipleElementResultsStrategy(elements, 'Match', vi.fn(), { isNot: false, isSome: false, iteration: 0 })
+
+                expect(result.success).toBe(false)
+                expect(result.abort).toBe(!flag)
             })
 
             it('fails gracefully with undefined actual when an instance is not found for an element', async () => {

@@ -42,6 +42,7 @@ export async function toHaveClipboardText(
         async () => {
             return await executeBrowserCommand({
                 browser,
+                isNot,
                 expectedValue,
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined

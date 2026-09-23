@@ -1,7 +1,7 @@
 import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXPECTED_COLOR, INVERTED_COLOR, stringify } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements } from '../types.js'
-import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
+import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
 import { isBrowser } from './multiRemoteUtils.js'
@@ -211,13 +211,19 @@ export const enhanceErrorBe = (
                 acc[instance] = expectedValue
                 return acc
             }, {} as MultiRemoteValues<string>)
-        } else if (isMultiRemoteElements(subject)) {
+        } else if (isMultiRemoteElementsLike(subject) && subject.length === 0) {
+            // Empty `MultiRemoteElementArray` (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY): no instance names to report per browser
+            expected = 'at least one result'
+            actual = actualValue
+        } else if (isMultiRemoteElementsLike(subject)) {
+            // Plain `MultiRemoteElement[]` or `MultiRemoteElementArray`, items are `MultiRemoteElement` at runtime in both cases
+            const { instances } = subject[0] as unknown as WebdriverIO.MultiRemoteElement
             const typedActuals = actuals as MultiRemoteValues<boolean[]>
-            actual = subject[0].instances.reduce((acc, instance) => {
+            actual = instances.reduce((acc, instance) => {
                 acc[instance] = typedActuals[instance].map(actual => isSuccess(isNot, actual) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
                 return acc
             }, {} as MultiRemoteValues<string[]>)
-            expected = subject[0].instances.reduce((acc, instance) => {
+            expected = instances.reduce((acc, instance) => {
                 acc[instance] = Array(typedActuals[instance].length).fill(expectedValue)
                 return acc
             }, {} as MultiRemoteValues<string[]>)

@@ -816,6 +816,7 @@ Expect multi-remote<chrome, firefox>.$(\`button\`) to be displayed
 
         describe.for([
             { flag: undefined, shape: 'MultiRemoteElement[] (default)' },
+            { flag: 'true', shape: 'WdioMultiRemoteElementArray (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true)' },
         ])('given a multi-remote element array - $shape', ({ flag }) => {
             withMultiRemoteElementArrayFlag(flag)
 
@@ -848,11 +849,12 @@ Expect multi-remote<chrome, firefox>.$$(\`button\`) to be displayed
         describe('given the WdioMultiRemoteElementArray shape (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true)', () => {
             withMultiRemoteElementArrayFlag('true')
 
-            test('is not yet supported and throws explicitly rather than formatting incorrectly', () => {
-                const subject = createMultiRemoteElementArrayMock(multiRemoteBrowsers(), 'button', 2)
+            test('reports "at least one result" when the array is empty', () => {
+                const subject = createMultiRemoteElementArrayMock(multiRemoteBrowsers(), 'button', 0)
 
-                expect(() => enhanceErrorBe(subject, { chrome: [true, false], firefox: [false, true] }, { isNot: false, verb, expectation, isSome: false }, options))
-                    .toThrow('Unsupported Multi-remote object type for enhanceErrorBe')
+                const message = stripAnsi(enhanceErrorBe(subject, undefined, { isNot: false, verb, expectation, isSome: false }, options))
+
+                expect(message).toContain('Expected: "at least one result"')
             })
         })
     })

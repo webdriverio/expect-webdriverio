@@ -41,6 +41,7 @@ export async function toHaveUrl(
         async () => {
             return await executeBrowserCommand({
                 browser,
+                isNot,
                 expectedValue,
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined

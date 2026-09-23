@@ -41,6 +41,7 @@ export async function toHaveTitle(
         async () => {
             return await executeBrowserCommand({
                 browser,
+                isNot,
                 expectedValue,
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined

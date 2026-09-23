@@ -5,10 +5,13 @@ export async function executeBrowserCommand<Actual, Expected>( {
     browser,
     expectedValue,
     compare,
+    isNot = false,
 } :{
     browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser
     expectedValue: MaybeArrayOrMultiRemoteValues<Expected> | Expected | unknown
     compare: (browser: WebdriverIO.Browser, expectedValue: Expected | unknown, index?: number) => Promise<CompareResult<Actual>>
+    /** Needed so a forced (structural) failure also fails under `.not`, since Jest inverts `success` afterwards */
+    isNot?: boolean
 }
 ): Promise<StrategyResult<ArrayOrMultiRemoteValues<Actual | undefined> | Actual | undefined>> {
 
@@ -30,7 +33,8 @@ export async function executeBrowserCommand<Actual, Expected>( {
                 browserNames = browserNames.filter(name => browser.instances.includes(name))
             }
 
-            multiRemoteExpectedValues = Object.values(expectedValue)
+            // Look up by name: the user's key order may differ from `browser.instances` order
+            multiRemoteExpectedValues = browser.instances.map((name) => expectedValue[name])
             expected = expectedValue
         } else {
             if (Array.isArray(expectedValue)) {
@@ -67,12 +71,10 @@ export async function executeBrowserCommand<Actual, Expected>( {
             return acc
         },  {} as Record<string, Actual | undefined>)
 
-        // Force failure if expected and actual multi-remote results do not match in length
-        if (Object.keys(actual).length !== multiRemoteExpectedValues.length) {
-            forceFailure = true
+        if (forceFailure) {
+            return { actual, success: isNot, abort: true, subject: browser, expected }
         }
-
-        const success = !forceFailure && arrayResults.every(result => result.success)
+        const success = arrayResults.every(result => result.success)
 
         return { actual, success, subject: browser, expected }
     }
@@ -82,5 +84,8 @@ export async function executeBrowserCommand<Actual, Expected>( {
     }
     const results = await compare(browser, expectedValue)
 
-    return { ...results, success: forceFailure ? false : results.success, subject: browser, expected }
+    if (forceFailure) {
+        return { ...results, success: isNot, abort: true, subject: browser, expected }
+    }
+    return { ...results, subject: browser, expected }
 }

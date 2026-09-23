@@ -63,6 +63,7 @@ export async function toHaveLocalStorageItem(
         async () => {
             return await executeBrowserCommand({
                 browser,
+                isNot,
                 expectedValue: expected,
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | undefined

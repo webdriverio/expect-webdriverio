@@ -102,6 +102,15 @@ Received      : " Valid Text "`
                     )
                 })
 
+                test('not - unsupported array expected value - pass should be true and abort without retrying', async () => {
+                    vi.mocked(browserFn).mockResolvedValue(wrongText)
+
+                    const result = await thisNotContext.matcherFn(browser, [validText, validText], { wait: 500, interval: 10, trim: false })
+
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    expect(browserFn).toHaveBeenCalledTimes(1)
+                })
+
                 test('not - success - pass should be false', async () => {
                     vi.mocked(browserFn).mockResolvedValue(wrongText)
 
@@ -180,6 +189,19 @@ Received: "Wrong Text"`
                             {
                                 chrome: validText,
                                 firefox: validText
+                            }, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('success when multi remote expected values are given in a different order than the instances', async () => {
+                        vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(validText)
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(wrongText)
+
+                        const result = await thisContext.matcherFn(multiRemoteBrowser,
+                            {
+                                firefox: wrongText,
+                                chrome: validText,
                             }, { trim: false, wait: 0 })
 
                         expect(result.pass).toBe(true)
@@ -352,6 +374,25 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
                         )
                     })
 
+                })
+
+                describe('when the expected value is structurally invalid, with .not', () => {
+                    test.each([
+                        { name: 'an unknown instance', expected: { chrome: wrongText, firefox: wrongText, safari: wrongText } },
+                        { name: 'a missing instance', expected: { chrome: wrongText } },
+                        { name: 'an unsupported array', expected: [wrongText, wrongText] },
+                    ])('fails with $name instead of passing - pass should be true', async ({ expected }) => {
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    })
+
+                    test('aborts instead of retrying until timeout', async () => {
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, { chrome: wrongText }, { trim: false, wait: 500, interval: 10 })
+
+                        expect(result.pass).toBe(true)
+                        expect(chromeBrowser![browserFnName]).toHaveBeenCalledTimes(1)
+                    })
                 })
             })
         })
