@@ -18,13 +18,31 @@ export const refetchElements = async <T extends WdioElements | WebdriverIO.Multi
         const $$ = browser[elements.foundWith as keyof typeof browser] as Function
         return await $$.call(browser, elements.selector, ...elements.props)
     } else if (isMultiRemoteElements(elements)) {
-        // Fallback if WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY need to be disabled. If array is not empty we have a selector! To remove once env Flag is removed.
+        // Fallback when WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY is disabled. If array is not empty we have a selector! To remove once env Flag is removed.
         const selector = elements.find((element) => !!element.selector)?.selector
         if (selector) {
+            warnMultiRemoteRefetchFallbackOnce()
+            // Without injected globals there is nothing to refetch from, so keep comparing the current elements.
+            if (typeof multiRemoteBrowser === 'undefined') {
+                return elements
+            }
             return await multiRemoteBrowser.$$(selector) as T
         }
     }
     return elements
+}
+
+let hasWarnedMultiRemoteRefetchFallback = false
+/**
+ * A plain `MultiRemoteElement[]` keeps no reference to its parent (browser, element or `select()` subset), so the
+ * best we can do is to re-query the selector from the global `multiRemoteBrowser`, which can target the wrong scope.
+ */
+const warnMultiRemoteRefetchFallbackOnce = () => {
+    if (hasWarnedMultiRemoteRefetchFallback) {
+        return
+    }
+    hasWarnedMultiRemoteRefetchFallback = true
+    console.warn('expect-webdriverio: refetching multi-remote elements between retries is best effort: they are re-queried from the global `multiRemoteBrowser`, ignoring any parent element or `select()` scope. Set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true` for reliable retries.')
 }
 
 export const syncronizeElements = async (subject: WebdriverIO.ElementArray | ChainablePromiseArray | Promise<unknown>, refetchedElements: WebdriverIO.ElementArray) => {

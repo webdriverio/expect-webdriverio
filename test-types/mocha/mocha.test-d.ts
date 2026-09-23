@@ -713,6 +713,18 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10, wait: 1000 })).toExtend<Promise<void>>()
             })
 
+            it('should support multi-remote elements with a single size or one size per instance', async () => {
+                expectTypeOf(expect(multiRemoteElements).toBeElementsArrayOfSize(2)).toExtend<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toBeElementsArrayOfSize({ gte: 1 })).toExtend<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toBeElementsArrayOfSize({ chrome: 2, firefox: { gte: 1 } })).toExtend<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).not.toBeElementsArrayOfSize({ chrome: 2, firefox: 3 }, { wait: 1000 })).toExtend<Promise<void>>()
+            })
+
+            it('should not support one size per instance on non multi-remote elements', async () => {
+                // @ts-expect-error
+                expectTypeOf(expect(elementArray).toBeElementsArrayOfSize({ chrome: 2, firefox: 2 })).toExtend<Promise<void>>()
+            })
+
             it('should not support array as expected', async () => {
                 // @ts-expect-error
                 expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize([1, 2])).toExtend<Promise<void>>()

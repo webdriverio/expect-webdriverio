@@ -777,6 +777,16 @@ await expect(listItems).toBeElementsArrayOfSize({ gte: 5 })
 await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
 ```
 
+With multi-remote, the size is checked per browser instance. Pass a single size that every instance must match, or one size per instance (every instance must be listed):
+
+```js
+const listItems = await multiRemoteBrowser.$$('ul>li')
+await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in every browser
+await expect(listItems).toBeElementsArrayOfSize({ chrome: 5, firefox: { gte: 3 } })
+```
+
+**Note:** To reliably re-fetch multi-remote elements between retries, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`. Without it, elements are re-fetched on a best-effort basis from the global `multiRemoteBrowser`, ignoring any parent element or `select()` scope.
+
 ### Multiple Elements Support
 
 All element matchers support arrays of elements returned from `$$()`:

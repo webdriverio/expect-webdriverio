@@ -3,7 +3,7 @@ import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
 import { awaitElementOrArray, isElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
-import { isMultiRemoteValues } from './multiRemoteUtils.js'
+import { hasSameInstanceNames, isMultiRemoteValues } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
@@ -371,12 +371,6 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         : isNotEmpty && checkFn(results)
 
     return { subject, success, actual: multiRemoteActual ?? results.map(({ actual }) => actual), context: { isSome }, expected: multiRemoteExpected }
-}
-
-/** Strict multi-remote check: the per-instance expected values must name exactly the instances, no more, no less. */
-const hasSameInstanceNames = (expected: MultiRemoteValues<unknown>, instances: string[]): boolean => {
-    const names = Object.keys(expected)
-    return names.length === instances.length && instances.every((name) => names.includes(name))
 }
 
 const isAllTrue = (results: CompareResult<unknown>[]): boolean => results.every((res) => res.success === true)

@@ -99,7 +99,7 @@ type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT ext
  * Fix: If type inference issues arise, split the implementation into separate interfaces
  */
 type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement, FnMultiRemoteElement = FnElement, FnMultiRemoteElements = FnElement> = ActualT extends WebdriverIO.MultiRemoteElement[] ? FnMultiRemoteElements : ActualT extends WebdriverIO.MultiRemoteElement ? FnMultiRemoteElement : ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement : never
-type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends MaybeSomeElementArrayLike ? Fn : never
+type FnWhenElementArrayLike<ActualT, Fn, FnMultiRemoteElements = Fn> = ActualT extends WebdriverIO.MultiRemoteElement[] ? FnMultiRemoteElements : ActualT extends MaybeSomeElementArrayLike ? Fn : never
 
 /**
  * Same as the other but because of Jasmine and it's expectAsync typing which does not force T to be a promise, then we need to account for `WebdriverIO.Mock
@@ -874,6 +874,15 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
          */
         (
             size: ExpectWebdriverIO.NumberOptions,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>,
+    }, {
+        /**
+         * Elements MultiRemoteBrowser.$$() API: the size is checked per browser instance.
+         * A single size applies to every instance, or pass one size per instance, e.g. `{ chrome: 2, firefox: { gte: 1 } }`.
+         */
+        (
+            size: number | ExpectWebdriverIO.NumberMatcher | MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>,
     }>
