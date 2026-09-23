@@ -16,14 +16,26 @@ export const hasSameInstanceNames = (expected: MultiRemoteValues<unknown>, insta
     return names.length === instances.length && instances.every((name) => names.includes(name))
 }
 
+/** Brand of `expect.multiRemote()`, through the global symbol registry to be recognized across module instances */
+export const MULTI_REMOTE_MATCHER_SYMBOL = Symbol.for('expect-webdriverio.multiRemote')
+
+/** Whether the value is an `expect.multiRemote()` matcher, holding one expected value per instance in its `sample` */
+export const isMultiRemoteMatcher = (value: unknown): value is { sample: MultiRemoteValues<unknown> } => {
+    return !!value && typeof value === 'object' && (value as Record<symbol, unknown>)[MULTI_REMOTE_MATCHER_SYMBOL] === true
+}
+
 /**
- * Whether the expected value holds one value per multi-remote instance.
- * By default any plain object is per-instance values since no literal expected value can be a plain object, so unknown
- * or misspelled instance names are caught by `hasSameInstanceNames`. For matchers whose expected value can itself be a
- * plain object (e.g. `toHaveStyle`, `toHaveSize`), at least one key must be an instance name to be per-instance values.
+ * The expected values per multi-remote instance, or `undefined` for a single expected value shared by every instance.
+ * - `expect.multiRemote({ chrome: ..., firefox: ... })` always holds per-instance values.
+ * - A plain object is the per-instance shorthand, except for matchers whose expected value can itself be a plain object
+ *   (e.g. `toHaveStyle`, `toHaveSize`): for them it is always a literal, and `expect.multiRemote()` must be used.
+ * Instance names are not used to tell them apart, so unknown or misspelled ones are caught by `hasSameInstanceNames`.
  */
-export const isPerInstanceValues = (value: unknown, instances: string[], { allowObjectExpectedValue = false } = {}): value is MultiRemoteValues<unknown> => {
-    return isMultiRemoteValues(value, allowObjectExpectedValue ? instances : undefined)
+export const getPerInstanceValues = (value: unknown, { allowObjectExpectedValue = false } = {}): MultiRemoteValues<unknown> | undefined => {
+    if (isMultiRemoteMatcher(value)) {
+        return value.sample
+    }
+    return !allowObjectExpectedValue && isMultiRemoteValues(value) ? value : undefined
 }
 
 /**

@@ -1,6 +1,6 @@
 import type { RectReturn } from '@wdio/protocols'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
@@ -35,9 +35,19 @@ export async function toHaveSize(
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
+/**
+ * Multi-remote $() or $$(): one size for every instance, or one size per instance with `expect.multiRemote()`
+ * (a plain object is always a literal size)
+ */
+export async function toHaveSize(
+    received: WdioMultiRemoteElements,
+    expectedValue: MaybeArray<Size> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<Size>>,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
 export async function toHaveSize(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArray<Size>,
+    expectedValue: MaybeArray<Size> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<Size>>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'size', verb = 'have', isNot, matcherName = 'toHaveSize' } = this

@@ -807,7 +807,7 @@ With [multi-remote](MultiRemote.md), the size is checked per browser instance. P
 ```js
 const listItems = await multiRemoteBrowser.$$('ul>li')
 await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in every browser
-await expect(listItems).toBeElementsArrayOfSize({ chrome: 5, firefox: { gte: 3 } })
+await expect(listItems).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 5, firefox: { gte: 3 } }))
 ```
 
 **Note:** To reliably re-fetch multi-remote elements between retries, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`. Without it, elements are re-fetched on a best-effort basis from the global `multiRemoteBrowser`, ignoring any parent element or `select()` scope. See [Retries](MultiRemote.md#retries--re-fetching-elements).
@@ -1239,6 +1239,7 @@ With [multi-remote](MultiRemote.md), passes one expected value per browser insta
 
 ```ts
 await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: expect.stringContaining('Titre') }))
+await expect(multiRemoteBrowser.$('h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
 ```
 
 See [Expected Values](MultiRemote.md#expected-values) for the plain object shorthand.

@@ -5,6 +5,7 @@ import { toBeElementsArrayOfSize } from '../../../src/matchers/elements/toBeElem
 import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, elementArrayFactory, elementFactory, multiRemoteBrowserFactory } from '../../__mocks__/@wdio/globals.js'
 import { refetchElements } from '../../../src/util/refetchElements.js'
 import stripAnsi from 'strip-ansi'
+import { multiRemote } from '../../../src/api/index.js'
 import { waitUntil } from '../../../src/util/waitUntil.js'
 
 vi.mock('@wdio/globals')
@@ -479,6 +480,40 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(refetchElements).not.toHaveBeenCalled()
             })
+        })
+
+        test('has the same failure message with expect.multiRemote() as with the plain object shorthand', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+
+            const withPlainObject = await thisContext.toBeElementsArrayOfSize(elements, { chrome: 2, firefox: 3 }, { wait: 0 })
+            const withMatcher = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 2, firefox: 3 }), { wait: 0 })
+
+            expect(withMatcher.pass).toBe(false)
+            expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))
+            expect(stripAnsi(withMatcher.message())).toEqual(`\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "chrome": 2,
+-   "firefox": 3,
++   "firefox": 2,
+  }`
+            )
+        })
+
+        test('checks one size per instance with expect.multiRemote()', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+
+            const pass = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 2, firefox: { gte: 1 } }), { wait: 0 })
+            const fail = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 2, firefox: 3 }), { wait: 0 })
+            const unknown = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 2, safari: 2 }), { wait: 0 })
+
+            expect(pass.pass).toBe(true)
+            expect(fail.pass).toBe(false)
+            expect(unknown.pass).toBe(false)
         })
 
         test('fails, instead of throwing, on misspelled instance names', async () => {

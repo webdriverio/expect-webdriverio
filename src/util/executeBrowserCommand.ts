@@ -1,5 +1,5 @@
 import type { CompareResult, MultiRemoteCompareResult, StrategyResult } from './executeCommand.js'
-import { hasSameInstanceNames, isMultiRemoteValues, isPerInstanceValues } from './multiRemoteUtils.js'
+import { getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 
 export async function executeBrowserCommand<Actual, Expected>( {
     browser,
@@ -18,13 +18,13 @@ export async function executeBrowserCommand<Actual, Expected>( {
     if (browser.isMultiremote) {
         const { instances } = browser
 
-        // Browser expected values are never plain objects, so any plain object holds one value per instance
-        const isPerInstance = isPerInstanceValues(expectedValue, instances)
+        // `expect.multiRemote()` or, since browser expected values are never plain objects, any plain object holds one value per instance
+        const perInstanceValues = getPerInstanceValues(expectedValue)
         // Otherwise a single expected value is replicated for each browser instance
-        const expected: MultiRemoteValues<unknown> = isPerInstance ? expectedValue : Object.fromEntries(instances.map((name) => [name, expectedValue]))
+        const expected: MultiRemoteValues<unknown> = perInstanceValues ?? Object.fromEntries(instances.map((name) => [name, expectedValue]))
 
         // Structural failures: per-instance values not naming exactly the instances, or an array (unsupported, use `expect.oneOf()`)
-        const forceFailure = (isPerInstance && !hasSameInstanceNames(expectedValue, instances))
+        const forceFailure = (!!perInstanceValues && !hasSameInstanceNames(perInstanceValues, instances))
             || Object.values(expected).some(Array.isArray)
 
         const arrayResults = await Promise.all(
@@ -60,7 +60,7 @@ export async function executeBrowserCommand<Actual, Expected>( {
     }
 
     // Per-instance values or an array (unsupported, use `expect.oneOf()`) can never match a single browser
-    const forceFailure = isMultiRemoteValues(expectedValue) || Array.isArray(expectedValue)
+    const forceFailure = getPerInstanceValues(expectedValue) !== undefined || Array.isArray(expectedValue)
     const results = await compare(browser, forceFailure ? undefined : expectedValue)
 
     if (forceFailure) {

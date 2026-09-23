@@ -111,6 +111,12 @@ Received      : " Valid Text "`
                     expect(browserFn).toHaveBeenCalledTimes(1)
                 })
 
+                test('fails expect.multiRemote() on a single browser', async () => {
+                    const result = await thisNotContext.matcherFn(browser, wdioExpect.multiRemote({ chrome: wrongText }), { wait: 0 })
+
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                })
+
                 test('applies string options to expect.oneOf()', async () => {
                     const result = await thisContext.matcherFn(browser, wdioExpect.oneOf(' valid text '), { ignoreCase: true, trim: false, wait: 0 })
 
@@ -380,6 +386,73 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
                         )
                     })
 
+                })
+
+                describe('when using expect.multiRemote()', () => {
+                    test('fails with the same per-instance message as the plain object shorthand', async () => {
+                        const expected = { chrome: validText, firefox: wrongText }
+
+                        const withPlainObject = await thisContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
+                        const withMatcher = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.multiRemote(expected), { trim: false, wait: 0 })
+
+                        expect(withMatcher.pass).toBe(false)
+                        expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))
+                        expect(stripAnsi(withMatcher.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "chrome": " Valid Text ",
+-   "firefox": " Wrong Text ",
++   "firefox": " Valid Text ",
+  }`
+                        )
+                    })
+
+                    test('fails with the same message as the plain object shorthand on an unknown instance', async () => {
+                        const expected = { chrome: validText, safari: validText }
+
+                        const withPlainObject = await thisContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
+                        const withMatcher = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.multiRemote(expected), { trim: false, wait: 0 })
+
+                        expect(withMatcher.pass).toBe(false)
+                        expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))
+                        expect(stripAnsi(withMatcher.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "chrome": " Valid Text ",
+-   "safari": " Valid Text ",
++   "firefox": " Valid Text ",
+  }`
+                        )
+                    })
+
+                    test('compares each instance against its own expected value', async () => {
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(wrongText)
+
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.multiRemote({ firefox: wrongText, chrome: validText }), { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('fails strictly on unknown instance names, also with .not', async () => {
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, wdioExpect.multiRemote({ chrome: wrongText, safari: wrongText }), { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    })
+
+                    test('applies the string options to nested expect.oneOf()', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser,
+                            wdioExpect.multiRemote({ chrome: wdioExpect.oneOf('VALID'), firefox: wdioExpect.oneOf('valid') }), { ignoreCase: true, containing: true, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
                 })
 
                 describe('when using expect.oneOf() with string options', () => {

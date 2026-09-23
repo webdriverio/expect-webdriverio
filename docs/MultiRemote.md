@@ -60,7 +60,7 @@ export const config: WebdriverIO.MultiremoteConfig = {
 Assertions are strict: every browser instance must pass.
 
 - **A single expected value** applies to every instance (and to every element of every instance with `$$()`).
-- **One expected value per instance** is passed as an object keyed by instance name, in any order. It must name **exactly** the instances: a missing, unknown or misspelled instance name fails the assertion, also with `.not`, without retrying.
+- **One expected value per instance** is passed with `expect.multiRemote()`, keyed by instance name, in any order. It must name **exactly** the instances: a missing, unknown or misspelled instance name fails the assertion, also with `.not`, without retrying.
 - Matcher options (e.g. `ignoreCase`, `containing`) apply to every instance, including `expect.oneOf()` nested in per-instance values.
 
 ```ts
@@ -68,22 +68,33 @@ Assertions are strict: every browser instance must pass.
 await expect(multiRemoteBrowser).toHaveTitle('WebdriverIO')
 
 // One title per browser
-await expect(multiRemoteBrowser).toHaveTitle({ chrome: 'WebdriverIO', firefox: expect.stringContaining('WebdriverIO') })
+await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'WebdriverIO', firefox: expect.stringContaining('WebdriverIO') }))
 
 // ❌ Fails: `firefox` is missing
-await expect(multiRemoteBrowser).toHaveTitle({ chrome: 'WebdriverIO' })
+await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'WebdriverIO' }))
 
 // To assert only some instances, select them
 await expect(multiRemoteBrowser.select('chrome')).toHaveTitle('WebdriverIO')
 ```
 
-**Note:** There is no default value for the instances not listed, and an array of expected values is not one value per instance in configuration order: use per-instance values instead.
+`expect.multiRemote()` is also exported as `multiRemote` from `expect-webdriverio/api`, e.g. for the Browser Runner where `expect.*` helpers are not available.
 
-**Note:** `toHaveStyle`, `toHaveSize` and `toHaveElementProperty` accept an object as expected value (e.g. `{ color: 'red' }`). For them, an object is only considered as per-instance values when at least one key is an instance name.
+**Note:** There is no default value for the instances not listed, and an array of expected values is not one value per instance in configuration order: use `expect.multiRemote()` instead.
+
+### Plain Object Shorthand
+
+Except for the matchers below, a plain object is a shorthand for `expect.multiRemote()`, since it can't be a valid expected value:
+
+```ts
+await expect(multiRemoteBrowser).toHaveTitle({ chrome: 'WebdriverIO', firefox: 'WebdriverIO' })
+await expect(multiRemoteBrowser.$('h1')).toHaveWidth({ chrome: 100, firefox: { gte: 90 } })
+```
+
+`toHaveStyle`, `toHaveSize` and `toHaveElementProperty` accept an object as expected value (e.g. `{ color: 'red' }`): for them, a plain object is always that value, and per-instance values require `expect.multiRemote()`.
 
 ```ts
 await expect(multiRemoteBrowser.$('h1')).toHaveStyle({ color: 'red' }) // same style on every browser
-await expect(multiRemoteBrowser.$('h1')).toHaveStyle({ chrome: { color: 'red' }, firefox: { color: 'blue' } })
+await expect(multiRemoteBrowser.$('h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
 ```
 
 Per-instance values are only allowed on multi-remote subjects: on a regular element they fail the assertion (and are rejected by TypeScript).
@@ -95,7 +106,7 @@ Per-instance values are only allowed on multi-remote subjects: on a regular elem
 ```ts
 await expect(multiRemoteBrowser).toHaveUrl('https://webdriver.io/')
 await expect(multiRemoteBrowser.select('firefox')).toHaveTitle('WebdriverIO')
-await expect(multiRemoteBrowser).toHaveLocalStorageItem('token', { chrome: 'abc', firefox: 'def' })
+await expect(multiRemoteBrowser).toHaveLocalStorageItem('token', expect.multiRemote({ chrome: 'abc', firefox: 'def' }))
 ```
 
 An array expected value is not supported: use `expect.oneOf()` instead.
@@ -110,8 +121,8 @@ Each instance's element is compared against its expected value.
 const title = multiRemoteBrowser.$('h1')
 
 await expect(title).toBeDisplayed()
-await expect(title).toHaveText({ chrome: 'Welcome', firefox: 'Bienvenue' })
-await expect(title).toHaveWidth({ chrome: 100, firefox: { gte: 90 } })
+await expect(title).toHaveText(expect.multiRemote({ chrome: 'Welcome', firefox: 'Bienvenue' }))
+await expect(title).toHaveWidth(expect.multiRemote({ chrome: 100, firefox: { gte: 90 } }))
 ```
 
 An array expected value is only supported by the matchers accepting one for a single element (e.g. `toHaveElementClass(['btn', 'btn-large'])`); otherwise it fails the assertion.
@@ -135,7 +146,7 @@ const items = multiRemoteBrowser.$$('li')
 
 await expect(items).toHaveText('Item') // every element of every browser
 await expect(items).toHaveText(['Coffee', 'Tea']) // index-based, on every browser
-await expect(items).toHaveText({ chrome: ['Coffee', 'Tea'], firefox: ['Coffee', 'Tea', 'Milk'] })
+await expect(items).toHaveText(expect.multiRemote({ chrome: ['Coffee', 'Tea'], firefox: ['Coffee', 'Tea', 'Milk'] }))
 await expect(some(items)).toHaveText('Tea') // at least one match in every browser
 await expect(items).toHaveText(expect.arrayContaining(['Tea'])) // in every browser's collection
 ```
@@ -144,7 +155,7 @@ await expect(items).toHaveText(expect.arrayContaining(['Tea'])) // in every brow
 
 ```ts
 await expect(items).toBeElementsArrayOfSize(3)
-await expect(items).toBeElementsArrayOfSize({ chrome: 3, firefox: { gte: 2 } })
+await expect(items).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 3, firefox: { gte: 2 } }))
 ```
 
 ## Retries & Re-fetching Elements

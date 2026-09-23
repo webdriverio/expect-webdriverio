@@ -79,13 +79,13 @@ export async function toHaveChildren(
  */
 export async function toHaveChildren(
     received: WdioMultiRemoteElements,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<AssertionResult>
 
 export async function toHaveChildren(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValueOrOptions?: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
+    expectedValueOrOptions?: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'children', verb = 'have', isNot, matcherName = 'toHaveChildren' } = this

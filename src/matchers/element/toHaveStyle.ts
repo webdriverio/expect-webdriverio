@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeArray, WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise } from '../../types.js'
+import type { MaybeArray, WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
@@ -35,9 +35,19 @@ export async function toHaveStyle(
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
+/**
+ * Multi-remote $() or $$(): one style for every instance, or one style per instance with `expect.multiRemote()`
+ * (a plain object is always a literal style)
+ */
+export async function toHaveStyle(
+    received: WdioMultiRemoteElements,
+    expectedValue: MaybeArray<{ [key: string]: string; }> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<{ [key: string]: string; }>>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
 export async function toHaveStyle(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArray<{ [key: string]: string; }>,
+    expectedValue: MaybeArray<{ [key: string]: string; }> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<{ [key: string]: string; }>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<ExpectWebdriverIO.AssertionResult> {
     const { expectation = 'style', verb = 'have', isNot, matcherName = 'toHaveStyle' } = this

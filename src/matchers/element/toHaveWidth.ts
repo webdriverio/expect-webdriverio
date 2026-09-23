@@ -49,13 +49,13 @@ export async function toHaveWidth(
  */
 export async function toHaveWidth(
     received: WdioMultiRemoteElements,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
     options?: ExpectWebdriverIO.CommandOptions
 ):Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveWidth(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.NumberOptions,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ):Promise<ExpectWebdriverIO.AssertionResult> {
     const { expectation = 'width', verb = 'have', isNot, matcherName = 'toHaveWidth' } = this

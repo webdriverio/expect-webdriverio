@@ -4,6 +4,7 @@ import { $, $$ } from '@wdio/globals'
 import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren'
 import { chainableElementArrayFactory, browserFactory, createMultiRemoteElementMock, createMultiRemoteElementArrayMock } from '../../__mocks__/@wdio/globals'
 import stripAnsi from 'strip-ansi'
+import { multiRemote } from '../../../src/api/index.js'
 import { waitUntil } from '../../../src/util/waitUntil.js'
 
 vi.mock('@wdio/globals')
@@ -605,6 +606,20 @@ Received      : [2, 2, undefined]`
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
+        })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
+        ])('checks one NumberMatcher per instance with expect.multiRemote() on $name', async ({ subject }) => {
+            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+            const pass = await toHaveChildren.call({}, subject(), multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }), { wait: 0 })
+            const fail = await toHaveChildren.call({}, subject(), multiRemote({ chrome: { gte: 1 }, firefox: { lte: 0 } }), { wait: 0 })
+
+            expect(pass.pass).toBe(true)
+            expect(fail.pass).toBe(false)
+            expect(warn).not.toHaveBeenCalled()
         })
 
         test('fails per-instance values on a non multi-remote element instead of misreading them', async () => {

@@ -687,13 +687,30 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(multiRemoteElement).toHaveHTML({ chrome: '<a/>', firefox: expect.stringContaining('a') })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElement).toHaveWidth({ chrome: 100, firefox: { gte: 50 } })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElements).toHaveChildren({ chrome: [1, 2], firefox: 2 })).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(multiRemoteElement).toHaveStyle({ chrome: { color: 'red' }, firefox: { color: 'blue' } })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveSize(expect.multiRemote({ chrome: { width: 1, height: 1 }, firefox: [{ width: 1, height: 1 }] }))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveTitle).toBeNever()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'a', firefox: expect.stringContaining('b') }))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveWidth(expect.multiRemote({ chrome: 100, firefox: { gte: 50 } }))).toEqualTypeOf<Promise<void>>()
             })
 
             it('should support $$() array forms on multi-remote elements', async () => {
                 expectTypeOf(expect(multiRemoteElements).toHaveWidth([100, 200])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElements).toHaveId(['a', 'b'])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElements).toHaveHref(['a', 'b'])).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should require expect.multiRemote() for per-instance values of object matchers', async () => {
+                // @ts-expect-error a plain object is a literal style, not per-instance values
+                expectTypeOf(expect(multiRemoteElement).toHaveStyle({ chrome: { color: 'red' }, firefox: { color: 'blue' } })).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error a plain object is a literal size, not per-instance values
+                expectTypeOf(expect(multiRemoteElement).toHaveSize({ chrome: { width: 1, height: 1 }, firefox: { width: 1, height: 1 } })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveSize({ width: 1, height: 1 })).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should not support expect.not.multiRemote()', async () => {
+                // @ts-expect-error
+                expect.not.multiRemote({ chrome: 'a' })
             })
 
             it('should not support per-instance values on non multi-remote elements', async () => {
@@ -743,6 +760,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(multiRemoteElements).toBeElementsArrayOfSize(2)).toExtend<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElements).toBeElementsArrayOfSize({ gte: 1 })).toExtend<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElements).toBeElementsArrayOfSize({ chrome: 2, firefox: { gte: 1 } })).toExtend<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 2, firefox: { gte: 1 } }))).toExtend<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElements).not.toBeElementsArrayOfSize({ chrome: 2, firefox: 3 }, { wait: 1000 })).toExtend<Promise<void>>()
             })
 

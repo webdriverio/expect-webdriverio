@@ -3,7 +3,7 @@ import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, WdioMultiRemoteElementArray, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
 import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
-import { getElementsPerInstance, hasSameInstanceNames, isPerInstanceValues } from './multiRemoteUtils.js'
+import { getElementsPerInstance, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
 export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
@@ -46,8 +46,8 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     /**
      * - allowEmptyElements: an empty element set passes instead of failing (e.g. `.not.toExist()`)
      * - allowArrayWithSingleElement: a single element is compared against an array (e.g. classes)
-     * - allowObjectExpectedValue: the expected value itself can be a plain object (e.g. styles), so for multi-remote it is
-     *   only considered as per-instance values when at least one key is an instance name
+     * - allowObjectExpectedValue: the expected value itself can be a plain object (e.g. styles), so for multi-remote a plain
+     *   object is always a literal and per-instance values require `expect.multiRemote()`
      */
     strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean, allowObjectExpectedValue?: boolean }
 }
@@ -242,7 +242,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     // Multi-remote per-instance values can never match a non multi-remote element(s)
     const isUnexpectedPerInstanceValues = !multiRemoteSelector && !isMultiRemoteElementsLike(selector)
-        && isPerInstanceValues(expectedValues, [], { allowObjectExpectedValue })
+        && getPerInstanceValues(expectedValues, { allowObjectExpectedValue }) !== undefined
 
     // --- Single element case ---
     if (isElement(selector)) {
@@ -341,14 +341,10 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     const { instances } = multiRemoteElements[0]
     const elementsPerInstance = getElementsPerInstance(multiRemoteElements, instances)
 
-    let expectedPerInstance: MultiRemoteValues<unknown>
-    let instanceNamesMismatch = false
-    if (isPerInstanceValues(expectedValues, instances, { allowObjectExpectedValue })) {
-        expectedPerInstance = expectedValues
-        instanceNamesMismatch = !hasSameInstanceNames(expectedValues, instances)
-    } else {
-        expectedPerInstance = Object.fromEntries(instances.map((name) => [name, expectedValues]))
-    }
+    const perInstanceValues = getPerInstanceValues(expectedValues, { allowObjectExpectedValue })
+    // A single expected value is shared by every instance
+    const expectedPerInstance: MultiRemoteValues<unknown> = perInstanceValues ?? Object.fromEntries(instances.map((name) => [name, expectedValues]))
+    const instanceNamesMismatch = !!perInstanceValues && !hasSameInstanceNames(perInstanceValues, instances)
 
     // For $(), an array is only supported by matchers comparing a single element against an array (e.g. classes)
     const unsupportedArray = isSingleElement && !allowArrayWithSingleElement && Object.values(expectedPerInstance).some(Array.isArray)

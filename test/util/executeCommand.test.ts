@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
 import { executeCommandWithStrategy, multipleElementResultsStrategy } from '../../src/util/executeCommand'
 import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../__mocks__/@wdio/globals'
 import { $ } from '@wdio/globals'
-import { some } from '../../src/api/index.js'
+import { multiRemote, some } from '../../src/api/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -484,6 +484,55 @@ describe('executeCommand', () => {
 
                 expect(result.success).toBe(true)
                 expect(compare).toHaveBeenCalledWith(expect.anything(), { color: 'red' })
+            })
+        })
+
+        describe('given expect.multiRemote()', () => {
+            it('keeps a plain object as a literal when the matcher allows objects, even when its keys are instance names', async () => {
+                // Instances named like the size properties, see `toHaveSize({ width, height })`
+                const element = createMultiRemoteElementMock({ width: browserFactory(), height: browserFactory() }, 'sel')
+                const compare = vi.fn(async (_el: WebdriverIO.Element, expected: unknown) => ({ success: equalsSize(expected), actual: { width: 10, height: 20 } }))
+                const equalsSize = (expected: unknown) => JSON.stringify(expected) === JSON.stringify({ width: 10, height: 20 })
+
+                const result = await multipleElementResultsStrategy(element, { width: 10, height: 20 }, compare, context, { allowObjectExpectedValue: true })
+
+                expect(result.success).toBe(true)
+                expect(compare).toHaveBeenCalledTimes(2)
+                expect(compare).toHaveBeenCalledWith(expect.anything(), { width: 10, height: 20 })
+            })
+
+            it('compares each instance against its own object value when the matcher allows objects', async () => {
+                const compare = vi.fn(async (_el: WebdriverIO.Element, expected: unknown) => ({ success: !!expected, actual: expected }))
+
+                const result = await multipleElementResultsStrategy(createMultiRemoteElementMock(browsers(), 'sel'),
+                    multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }), compare, context, { allowObjectExpectedValue: true })
+
+                expect(result.success).toBe(true)
+                expect(compare).toHaveBeenCalledWith(expect.anything(), { color: 'red' })
+                expect(compare).toHaveBeenCalledWith(expect.anything(), { color: 'blue' })
+                expect(result.expected).toEqual({ chrome: { color: 'red' }, firefox: { color: 'blue' } })
+            })
+
+            it('compares per-instance index-based arrays on $$()', async () => {
+                const result = await multipleElementResultsStrategy(createMultiRemoteElementArrayMock(browsers(), 'sel', 2),
+                    multiRemote({ chrome: ['a', 'a'], firefox: 'a' }), compareEquals, context)
+
+                expect(result.success).toBe(true)
+                expect(result.expected).toEqual({ chrome: ['a', 'a'], firefox: ['a', 'a'] })
+            })
+
+            it('fails strictly and aborts on unknown instance names, also with .not', async () => {
+                const result = await multipleElementResultsStrategy(createMultiRemoteElementMock(browsers(), 'sel'), multiRemote({ chrome: 'a', safari: 'a' }), compareEquals, context)
+                const notResult = await multipleElementResultsStrategy(createMultiRemoteElementMock(browsers(), 'sel'), multiRemote({ chrome: 'a', safari: 'a' }), compareEquals, notContext)
+
+                expect(result).toEqual(expect.objectContaining({ success: false, abort: true }))
+                expect(notResult).toEqual(expect.objectContaining({ success: true, abort: true })) // failure, inverted later by `.not`
+            })
+
+            it('fails strictly and aborts on a non multi-remote element, even when the matcher allows objects', async () => {
+                const result = await multipleElementResultsStrategy($('sel'), multiRemote({ chrome: { color: 'red' } }), compareEquals, notContext, { allowObjectExpectedValue: true })
+
+                expect(result).toEqual(expect.objectContaining({ success: true, abort: true })) // failure, inverted later by `.not`
             })
         })
 

@@ -55,15 +55,19 @@ type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclu
 type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>
 
 type MultiRemoteValues<T> = Record<string, T>
-type MultiRemoteValuesOrOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<T> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
+type MultiRemoteValuesOrOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<T> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.MultiRemotePartialMatcher<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>
 type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
 type MaybeArrayOrMultiRemoteValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
-type MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
+type MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>> | ExpectWebdriverIO.OneOfPartialMatcher<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>>
 type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
-/** Multi-remote $(): one expected value for every instance, or one expected value per instance */
-type SingleOrMultiRemoteValues<T> = T | MultiRemoteValues<T>
-/** Multi-remote $$(): one expected value (or one per element) for every instance, or the same per instance */
-type MaybeArrayOrMultiRemoteArrayValues<T> = MaybeArray<T> | MultiRemoteValues<MaybeArray<T>>
+/** Multi-remote $(): one expected value for every instance, or one expected value per instance (plain object shorthand or `expect.multiRemote()`) */
+type SingleOrMultiRemoteValues<T> = T | MultiRemoteValues<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<T>
+/** Multi-remote $$(): one expected value (or one per element) for every instance, or the same per instance (plain object shorthand or `expect.multiRemote()`) */
+type MaybeArrayOrMultiRemoteArrayValues<T> = MaybeArray<T> | MultiRemoteValues<MaybeArray<T>> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T>>
+/** Multi-remote $() when the expected value is itself an object (e.g. styles): per-instance values require `expect.multiRemote()` */
+type SingleOrMultiRemoteMatcher<T> = T | ExpectWebdriverIO.MultiRemotePartialMatcher<T>
+/** Multi-remote $$() when the expected value is itself an object (e.g. styles): per-instance values require `expect.multiRemote()` */
+type MaybeArrayOrMultiRemoteMatcher<T> = MaybeArray<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T>>
 
 /**
  * Real Promise and wdio chainable promise types.
@@ -115,10 +119,12 @@ interface WdioCustomAsymmetricMatchers {
 
     /**
      * One expected value per multi-remote instance, keyed by instance name. Every instance must be listed.
-     * Explicit form of the plain object shorthand of the multi-remote browser matchers.
+     * Required for per-instance values of matchers whose expected value is itself an object (`toHaveStyle`, `toHaveSize`,
+     * `toHaveElementProperty`), and the explicit form of the plain object shorthand for the other matchers.
      *
      * @example
      * await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: 'Titre' }))
+     * await expect(multiRemoteBrowser.$('h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
      */
     multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
 }
@@ -519,7 +525,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>
         (
             property: string,
-            value: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything> | SingleOrMultiRemoteValues<number>,
+            value: SingleOrMultiRemoteMatcher<MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything> | number>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>
     }, {
@@ -529,7 +535,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>
         (
             property: string,
-            value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>,
+            value: MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>
     }>
@@ -1000,13 +1006,13 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Element MultiRemoteBrowser.$() API */
         (
-            size: SingleOrMultiRemoteValues<{ height: number; width: number }>,
+            size: SingleOrMultiRemoteMatcher<{ height: number; width: number }>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>
     }, {
         /** Elements MultiRemoteBrowser.$$() API */
         (
-            size: MaybeArrayOrMultiRemoteArrayValues<{ height: number; width: number }>,
+            size: MaybeArrayOrMultiRemoteMatcher<{ height: number; width: number }>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>
     }>
@@ -1029,13 +1035,13 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Element MultiRemoteBrowser.$() API */
         (
-            style: SingleOrMultiRemoteValues<{ [key: string]: string }>,
+            style: SingleOrMultiRemoteMatcher<{ [key: string]: string }>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>
     }, {
         /** Elements MultiRemoteBrowser.$$() API */
         (
-            style: MaybeArrayOrMultiRemoteArrayValues<{ [key: string]: string }>,
+            style: MaybeArrayOrMultiRemoteMatcher<{ [key: string]: string }>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>
     }>
@@ -1069,10 +1075,10 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
     }, {
         /**
          * Elements MultiRemoteBrowser.$$() API: the size is checked per browser instance.
-         * A single size applies to every instance, or pass one size per instance, e.g. `{ chrome: 2, firefox: { gte: 1 } }`.
+         * A single size applies to every instance, or pass one size per instance, e.g. `expect.multiRemote({ chrome: 2, firefox: { gte: 1 } })` or its plain object shorthand.
          */
         (
-            size: number | ExpectWebdriverIO.NumberMatcher | MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher>,
+            size: SingleOrMultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>,
     }>
@@ -1624,7 +1630,7 @@ declare module 'expect-webdriverio/api' {
      * One expected value per multi-remote instance, keyed by instance name. Same as `expect.multiRemote()`.
      *
      * @example
-     * await expect(multiRemoteBrowser).toHaveTitle(multiRemote({ chrome: 'Title', firefox: 'Titre' }))
+     * await expect(multiRemoteBrowser.$('h1')).toHaveStyle(multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
      */
     export function multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
 }
