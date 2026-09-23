@@ -1386,11 +1386,12 @@ declare namespace ExpectWebdriverIO {
 
     interface FeatureFlags {
         /**
-             * Feature flag to enable the new multi-elements comparison for `toHaveText` matcher, allowing to keep the current behavior without breaking changes.
-             * When enabled, the matcher will compare the text of multiple elements in an indexed exact match manner, rather than using the array as a possible match for any of the elements.
-             *
-             * Will be removed in v6.0.0, as the new behavior will become the default and only behavior for `toHaveText` matcher.
-             */
+         * Feature flag to enable the new multi-elements comparison for `toHaveText` matcher, allowing to keep the current behavior without breaking changes.
+         * When enabled, the matcher will compare the text of multiple elements in an indexed exact match manner, rather than using the array as a possible match for any of the elements.
+         * Also required for `some()`, `expect.oneOf()` in an expected array, and multi-remote elements with `toHaveText`.
+         *
+         * The new behavior is planned to become the default in the next major version.
+         */
         useToHaveTextStrictMultiElementsCompareStrategy?: boolean
     }
 

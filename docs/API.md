@@ -138,12 +138,12 @@ If you like to pick different timeouts and intervals, set these options like thi
 
 ```js
 // wdio.conf.js
-import { setOptions } from 'expect-webdriverio'
+import { setDefaultOptions } from 'expect-webdriverio'
 
 export const config = {
     // ...
     before () {
-        setOptions({ wait: 5000 })
+        setDefaultOptions({ wait: 5000 })
     },
     // ...
 }
@@ -157,7 +157,7 @@ Every matcher can take several options that allows you to modify the assertion:
 
 | Name | Type | Details |
 | ---- | ---- | ------- |
-| <code><var>wait</var></code> | number | time in ms to wait for expectation to succeed. Default: `3000` |
+| <code><var>wait</var></code> | number | time in ms to wait for expectation to succeed. Default: `2000` |
 | <code><var>interval</var></code> | number | interval between attempts. Default: `100` |
 | <code><var>beforeAssertion</var></code> | function | function to be called before assertion is made |
 | <code><var>afterAssertion</var></code> | function | function to be called after assertion is made containing assertion results |
