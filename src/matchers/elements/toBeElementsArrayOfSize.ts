@@ -5,7 +5,7 @@ import type { WdioElementsMaybePromise, WdioMultiRemoteElementArray } from '../.
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { isPerInstanceNumbers, validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import { awaitElementArray, isMultiRemoteElementArray, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from '../../util/elementsUtil.js'
-import { getElementsPerInstance, hasSameInstanceNames } from '../../util/multiRemoteUtils.js'
+import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, hasSameInstanceNames } from '../../util/multiRemoteUtils.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -114,7 +114,11 @@ const multiRemoteElementsArrayOfSize = async (
 ): Promise<ExpectWebdriverIO.AssertionResult> => {
     const { isNot } = context
     const isPerInstance = isPerInstanceSizes(expectedValue)
-    const instances = getMultiRemoteInstanceNames(received) ?? (isPerInstance ? Object.keys(expectedValue) : [])
+    // An empty plain `MultiRemoteElement[]` holds no instance names: take them from the global multi-remote browser so that
+    // per-instance sizes are still strictly checked, else (without injected globals) we can only trust the expected ones.
+    const instances = getMultiRemoteInstanceNames(received)
+        ?? getGlobalMultiRemoteInstanceNames()
+        ?? (isPerInstance ? Object.keys(expectedValue) : [])
 
     let commandOptions = options
     let expected: MultiRemoteValues<NumberMatcher>

@@ -53,6 +53,19 @@ const getInstanceOrUndefined = (element: WebdriverIO.MultiRemoteElement, name: s
     }
 }
 
+/**
+ * Best effort: the instance names of the global `multiRemoteBrowser` injected by the testrunner, ignoring any `select()` subset.
+ * `undefined` without injected globals, or when the `@wdio/globals` proxy has no registered browser (it then throws).
+ */
+export const getGlobalMultiRemoteInstanceNames = (): string[] | undefined => {
+    try {
+        const instances = typeof multiRemoteBrowser === 'undefined' ? undefined : multiRemoteBrowser.instances
+        return Array.isArray(instances) ? instances : undefined
+    } catch {
+        return undefined
+    }
+}
+
 export const isBrowser = (obj: unknown): obj is WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser => {
     // The `@wdio/globals` proxies bind every function they return, `constructor` included, so its name is prefixed with `bound `
     const name = (obj as { constructor?: { name?: string } } | undefined)?.constructor?.name?.replace(/^bound /, '')

@@ -563,6 +563,41 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             expect(fail.pass).toBe(false)
         })
 
+        describe('MultiRemoteElement[]: an empty array checks per-instance sizes against the global multiRemoteBrowser instances', () => {
+            const emptyElements = () => [] as unknown as WebdriverIO.MultiRemoteElement[]
+
+            beforeEach(() => {
+                delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+                vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory(browsers()))
+            })
+
+            test('passes when naming exactly the instances', async () => {
+                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), { firefox: 0, chrome: 0 }, { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test.each<{ name: string, expected: MultiRemoteValues<number> }>([
+                { name: 'a missing instance', expected: { chrome: 0 } },
+                { name: 'misspelled instances', expected: { Chrome: 0, Firefox: 0 } },
+                { name: 'an unknown instance', expected: { chrome: 0, firefox: 0, safari: 0 } },
+            ])('fails with $name, also with .not', async ({ expected }) => {
+                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), expected, { wait: 0 })
+                const notResult = await thisNotContext.toBeElementsArrayOfSize(emptyElements(), expected, { wait: 0 })
+
+                expect(result.pass).toBe(false)
+                expect(notResult.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            })
+
+            test('falls back on the expected instance names when the global multiRemoteBrowser has no registered browser', async () => {
+                vi.stubGlobal('multiRemoteBrowser', new Proxy({}, { get: () => { throw new Error('No browser instance registered') } }))
+
+                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), { chrome: 0 }, { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+        })
+
         test('MultiRemoteElement[]: keeps refetching from the received elements when a best-effort refetch is empty', async () => {
             delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
             const globalMultiRemoteBrowser = { $$: vi.fn()

@@ -152,7 +152,7 @@ await expect(items).toBeElementsArrayOfSize({ chrome: 3, firefox: { gte: 2 } })
 As with regular elements, failing assertions are retried until they pass or time out, re-fetching `$$()` elements in between.
 
 - **With `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`** (recommended), elements are re-fetched from their real scope (parent element, `select()` subset) with their original selector, even when the first result is empty.
-- **Without it**, `$$()` returns a plain `MultiRemoteElement[]` that knows nothing about how it was fetched. Elements are then re-fetched on a best-effort basis from the global `multiRemoteBrowser` using the elements' selector, ignoring any parent element or `select()` scope, and a one-time warning is logged. An initially empty result cannot be re-fetched at all.
+- **Without it**, `$$()` returns a plain `MultiRemoteElement[]` that knows nothing about how it was fetched. Elements are then re-fetched on a best-effort basis from the global `multiRemoteBrowser` using the elements' selector, ignoring any parent element or `select()` scope, and a one-time warning is logged. An initially empty result cannot be re-fetched at all. For such an empty result, `toBeElementsArrayOfSize` checks per-instance sizes against the instances of the global `multiRemoteBrowser`.
 
 ## Error Messages
 

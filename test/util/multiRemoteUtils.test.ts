@@ -1,6 +1,6 @@
-import { vi, test, describe, expect } from 'vitest'
+import { vi, test, describe, expect, afterEach } from 'vitest'
 
-import { getElementsPerInstance, hasSameInstanceNames, isBrowser, isPerInstanceValues } from '../../src/util/multiRemoteUtils.js'
+import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, hasSameInstanceNames, isBrowser, isPerInstanceValues } from '../../src/util/multiRemoteUtils.js'
 import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
 import { isElementArrayLike } from '../../src/util/elementsUtil.js'
 
@@ -44,6 +44,28 @@ describe('multiRemoteUtils', () => {
 
         test.each(['a', ['a'], /a/, expect.stringContaining('a'), undefined])('is false for %s', (value) => {
             expect(isPerInstanceValues(value, instances)).toBe(false)
+        })
+    })
+
+    describe(getGlobalMultiRemoteInstanceNames, () => {
+        afterEach(() => {
+            vi.unstubAllGlobals()
+        })
+
+        test('returns the instances of the global multiRemoteBrowser', () => {
+            vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory())
+
+            expect(getGlobalMultiRemoteInstanceNames()).toEqual(['chrome', 'firefox'])
+        })
+
+        test('returns undefined without the global multiRemoteBrowser', () => {
+            expect(getGlobalMultiRemoteInstanceNames()).toBeUndefined()
+        })
+
+        test('returns undefined when the @wdio/globals proxy has no registered browser', () => {
+            vi.stubGlobal('multiRemoteBrowser', new Proxy({}, { get: () => { throw new Error('No browser instance registered') } }))
+
+            expect(getGlobalMultiRemoteInstanceNames()).toBeUndefined()
         })
     })
 
