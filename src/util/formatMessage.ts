@@ -203,8 +203,8 @@ export const enhanceErrorBe = (
     if (isMultiRemoteElementLike(subject)) {
         if (isMultiRemoteElement(subject)) {
             const typedActuals = actuals as MultiRemoteValues<boolean>
-            actual = Object.entries(subject.instances).reduce((acc, [index, instance]) => {
-                acc[instance] = isSuccess(isNot, typedActuals[index]) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`
+            actual = subject.instances.reduce((acc, instance) => {
+                acc[instance] = isSuccess(isNot, typedActuals[instance]) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`
                 return acc
             }, {} as MultiRemoteValues<string>)
             expected = subject.instances.reduce((acc, instance) => {

@@ -1,8 +1,8 @@
 import { equals } from '../jasmineUtils.js'
 import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
-import { awaitElementOrArray, isElement, isMultiRemoteElementLike, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
+import { awaitElementOrArray, isElement, isMultiRemoteElementLike, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { isMultiRemoteValues } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
@@ -51,7 +51,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
 
     if (supportsArrayContaining && !isSome && isArrayContainingMatcher(expectedValues)) {
         const { selector, elements, other } = await awaitElementOrArray(unresolvedElements)
-        if (elements && !isMultiRemoteElements(elements)) {
+        if (elements && !isMultiRemoteElementsLike(elements)) {
             if (iteration > 0 && isStrictlyElementArray(elements)) {
                 await refreshElementArray(elements)
             }
@@ -84,7 +84,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     if (strategy === 'LegacyLooseMultipleElements') {
         if (isSome) {
             throw new Error('some(elements) works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
-        } else if (isMultiRemoteElements(unresolvedElements)) {
+        } else if (isMultiRemoteElementsLike(unresolvedElements)) {
             throw new Error('Multi-remote elements works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
         }
         return legacyMultipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, isNot)
@@ -206,7 +206,9 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
 
     // --- Multiple elements & Multi-remote element(s) case ---
-    const lengthMismatch = Array.isArray(expectedValues) && expectedValues.length !== selector.length
+    // `selector` here excludes a bare `WebdriverIO.MultiRemoteElement` in practice (handled by the
+    // `multiRemoteSelector` branch below), but TypeScript can't correlate the two destructured variables.
+    const lengthMismatch = Array.isArray(expectedValues) && Array.isArray(selector) && expectedValues.length !== selector.length
 
     let results: CompareResult<Actual>[] = []
 
@@ -252,45 +254,55 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
                 return result
             })
         )
-    } else if (isMultiRemoteElementsLike(selector)) { // TODO dprevost we need to support MultiRemoteElementArray
+    } else if (isMultiRemoteElementsLike(selector)) {
         // --- Multi-remote $$() multiple elements case ---
+        // `selector` may be a plain `MultiRemoteElement[]` (default) or the same array decorated with
+        // ElementArray-like properties when WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY is enabled; in both
+        // cases the items are real `MultiRemoteElement` objects at runtime. `WdioMultiRemoteElementArray`
+        // only types them as `WebdriverIO.Element` because the upstream types aren't precise for this case yet.
+        const multiRemoteElements = selector as unknown as WebdriverIO.MultiRemoteElement[]
         multiRemoteActual = {}
-        // Await is required of the asynchronous forEach of MultiRemoteElementArray
-        await selector.forEach(async (element, index) => {
-            element = element as WebdriverIO.MultiRemoteElement
-            const instanceResults = await Promise.all(
-                element.instances.map(async (instance) => {
-                    if (!multiRemoteActual) { throw new Error('multiRemoteActual is undefined') }
-                    if (!multiRemoteActual[instance])  { multiRemoteActual[instance] = [] }
-                    const typedActual = multiRemoteActual[instance] as Actual[]
+        const perElementResults = await Promise.all(
+            Array.from(multiRemoteElements).map(async (element, index) => {
+                return await Promise.all(
+                    element.instances.map(async (instance) => {
+                        if (!multiRemoteActual) { throw new Error('multiRemoteActual is undefined') }
+                        if (!multiRemoteActual[instance])  { multiRemoteActual[instance] = [] }
+                        const typedActual = multiRemoteActual[instance] as Actual[]
 
-                    let elementInstance: WebdriverIO.Element
-                    try {
-                        elementInstance = element.getInstance(instance)
-                    } catch (error) {
-                        if (error instanceof Error && error.message.includes('Multiremote object has no instance named')) {
-                            if (!multiRemoteActual) {throw new Error('multiRemoteActual is undefined')}
-                            typedActual.push(undefined as Actual)
+                        let elementInstance: WebdriverIO.Element
+                        try {
+                            elementInstance = element.getInstance(instance)
+                        } catch (error) {
+                            if (error instanceof Error && error.message.includes('Multiremote object has no instance named')) {
+                                if (!multiRemoteActual) {throw new Error('multiRemoteActual is undefined')}
+                                typedActual[index] = undefined as Actual
 
-                            return { success: false, actual: undefined as Actual }
+                                return { success: false, actual: undefined as Actual }
+                            }
+                            throw error
                         }
-                        throw error
-                    }
 
-                    const instanceValue = isMultiRemoteValues(expectedValues, element.instances) ? expectedValues[instance] : expectedValues
-                    const indexedExpected = Array.isArray(instanceValue) ? instanceValue[index] : instanceValue
+                        const instanceValue = isMultiRemoteValues(expectedValues, element.instances) ? expectedValues[instance] : expectedValues
+                        const indexedExpected = Array.isArray(instanceValue) ? instanceValue[index] : instanceValue
 
-                    const result = await singleElementCompare(elementInstance, indexedExpected, index)
-                    typedActual.push(result.actual)
-                    return  result
-                })
-            )
+                        const result = await singleElementCompare(elementInstance, indexedExpected, index)
+                        typedActual[index] = result.actual
+                        return  result
+                    })
+                )
+            })
+        )
+        for (const instanceResults of perElementResults) {
             results.push(...instanceResults)
-        })
+        }
     } else {
         // --- Multiple elements $$() case ---
+        // `selector` is a plain element array here: the multi-remote cases above already handled
+        // both a bare `MultiRemoteElement` (via `multiRemoteSelector`) and `isMultiRemoteElementsLike`.
+        const elementsSelector = selector as WdioElements
         const settled = await Promise.allSettled(
-            Array.from(selector).map(async (element: WebdriverIO.Element, index: number) => {
+            Array.from(elementsSelector).map(async (element: WebdriverIO.Element, index: number) => {
                 const indexedExpected = Array.isArray(expectedValues) ? expectedValues[index] : expectedValues
                 /**
              * Force per-element failure when: expected is a nested array (unsupported) or this index
@@ -312,7 +324,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
 
     // Pad actuals for display when expected has more entries than actual elements.
-    if (Array.isArray(expectedValues) && expectedValues.length > selector.length) {
+    if (Array.isArray(selector) && Array.isArray(expectedValues) && expectedValues.length > selector.length) {
         results.push(...Array(expectedValues.length - selector.length).fill({ success: false, actual: undefined }))
     }
 
