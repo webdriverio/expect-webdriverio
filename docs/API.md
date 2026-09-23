@@ -226,11 +226,11 @@ await expect($$('li')).toHaveText(['Coffee', 'Tea'], { featureFlags: { useToHave
 | ------------ | ------- | ------- |
 | `useToHaveTextStrictMultiElementsCompareStrategy` | `false` | `toHaveText` compares multiple elements index by index, as every other matcher does, see [Multiple Elements Support](MultipleElements.md). Required for `some()`, for `expect.oneOf()` inside an expected array, and for [multi-remote](MultiRemote.md) elements with `toHaveText`. |
 
-The following WebdriverIO environment variables are relevant with [multi-remote](MultiRemote.md). Set them before the session starts, e.g. at the top of your `wdio.conf` file:
+The following opt-in WebdriverIO environment variables, not enabled by default, are relevant with [multi-remote](MultiRemote.md). Set them before the session starts, e.g. at the top of your `wdio.conf` file:
 
 | Environment variable | Details |
 | -------------------- | ------- |
-| `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true` | Recommended. Multi-remote `$$()` elements are reliably re-fetched between retries, from their real scope and even when initially empty. Without it, re-fetching is best effort and a warning is logged. |
+| `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true` | Recommended. Multi-remote `$$()` elements are reliably re-fetched between retries, from their real scope and even when initially empty. Without it, multi-remote `$$()` assertions are best effort, see [its limitations](MultiRemote.md#without-wdio_enable_multi_remote_element_array). |
 | `WDIO_ENABLE_MULTI_REMOTE_SELECT=true` | Recommended when using `select()`: elements queried from a selected multi-remote browser or element stay scoped to the selected instances. |
 
 ## Browser Matchers
@@ -810,7 +810,7 @@ await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in every browser
 await expect(listItems).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 5, firefox: { gte: 3 } }))
 ```
 
-**Note:** To reliably re-fetch multi-remote elements between retries, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`. Without it, elements are re-fetched on a best-effort basis from the global `multiRemoteBrowser`, ignoring any parent element or `select()` scope. See [Retries](MultiRemote.md#retries--re-fetching-elements).
+**Note:** To reliably re-fetch multi-remote elements between retries, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`. Without it, elements are re-fetched on a best-effort basis from the global `multiRemoteBrowser`, ignoring any parent element or `select()` scope. See [its limitations](MultiRemote.md#without-wdio_enable_multi_remote_element_array).
 
 ### Multiple Elements Support
 
