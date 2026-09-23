@@ -1,14 +1,14 @@
 # Multi-remote Support
 
-With [multi-remote](https://webdriver.io/docs/multiremote), a single assertion checks every browser instance of the multi-remote browser (`multiRemoteBrowser`).
+With [multi-remote](https://webdriver.io/docs/multiremote), a single assertion checks every browser instance: the multi-remote browser (`multiRemoteBrowser`), its elements `$()` (`MultiRemoteElement`) and element arrays `$$()` (`MultiRemoteElement[]`).
 
 ```ts
 import { multiRemoteBrowser } from '@wdio/globals'
 
 await expect(multiRemoteBrowser).toHaveTitle('WebdriverIO')
+await expect(multiRemoteBrowser.$('h1')).toHaveText('Welcome')
+await expect(multiRemoteBrowser.$$('li')).toBeDisplayed()
 ```
-
-**Note:** Only browser matchers support multi-remote for now. Element matchers on multi-remote elements (`$()` and `$$()`) are not yet supported.
 
 **Note:** `multiremotebrowser` from `@wdio/globals` is deprecated in favor of `multiRemoteBrowser`.
 
@@ -30,17 +30,37 @@ export const config: WebdriverIO.MultiremoteConfig = {
 }
 ```
 
-## Requirements
+## Requirements & Configuration
 
 WebdriverIO `v9.31.5` or higher is required.
+
+| Flag | Kind | Default | Details |
+| ---- | ---- | ------- | ------- |
+| `useToHaveTextStrictMultiElementsCompareStrategy` | expect-webdriverio [feature flag](API.md#feature-flags--environment-variables) | `false` | **Required** for `toHaveText` on multi-remote elements, see [Limitations](#limitations). |
+| `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` | WebdriverIO environment variable | unset | **Recommended.** `$$()` returns an array knowing how it was fetched (parent, selector), so it is reliably re-fetched between retries, even when initially empty. See [Retries](#retries--re-fetching-elements). |
+| `WDIO_ENABLE_MULTI_REMOTE_SELECT` | WebdriverIO environment variable | unset | **Recommended** when using `select()`: elements queried from a selected multi-remote browser or element stay scoped to the selected instances. It is read when the multi-remote browser is created, so set it before the session starts. |
+
+```ts
+// wdio.conf.ts
+import { setFeatureFlags } from 'expect-webdriverio'
+
+process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+process.env.WDIO_ENABLE_MULTI_REMOTE_SELECT = 'true'
+
+export const config: WebdriverIO.MultiremoteConfig = {
+    // ...
+    before() {
+        setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy: true })
+    },
+}
+```
 
 ## Expected Values
 
 Assertions are strict: every browser instance must pass.
 
-- **A single expected value** applies to every instance.
-- **`.not`** is strict too: no instance may match, e.g. `.not.toHaveTitle('WebdriverIO')` fails if any browser has that title.
-- **One expected value per instance** is passed with `expect.multiRemote()`, keyed by instance name, in any order. It must name **exactly** the instances: a missing, unknown or misspelled instance name fails the assertion, also with `.not`, without retrying.
+- **A single expected value** applies to every instance (and to every element of every instance with `$$()`).
+- **One expected value per instance** is passed as an object keyed by instance name, in any order. It must name **exactly** the instances: a missing, unknown or misspelled instance name fails the assertion, also with `.not`, without retrying.
 - Matcher options (e.g. `ignoreCase`, `containing`) apply to every instance, including `expect.oneOf()` nested in per-instance values.
 
 ```ts
@@ -48,28 +68,25 @@ Assertions are strict: every browser instance must pass.
 await expect(multiRemoteBrowser).toHaveTitle('WebdriverIO')
 
 // One title per browser
-await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'WebdriverIO', firefox: expect.stringContaining('WebdriverIO') }))
+await expect(multiRemoteBrowser).toHaveTitle({ chrome: 'WebdriverIO', firefox: expect.stringContaining('WebdriverIO') })
 
 // ❌ Fails: `firefox` is missing
-await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'WebdriverIO' }))
+await expect(multiRemoteBrowser).toHaveTitle({ chrome: 'WebdriverIO' })
 
 // To assert only some instances, select them
 await expect(multiRemoteBrowser.select('chrome')).toHaveTitle('WebdriverIO')
 ```
 
-`expect.multiRemote()` is also exported as `multiRemote` from `expect-webdriverio/api`, e.g. for the Browser Runner where `expect.*` helpers are not available.
+**Note:** There is no default value for the instances not listed, and an array of expected values is not one value per instance in configuration order: use per-instance values instead.
 
-**Note:** There is no default value for the instances not listed, and an array of expected values is not one value per instance in configuration order: use `expect.multiRemote()` instead.
-
-### Plain Object Shorthand
-
-A plain object is a shorthand for `expect.multiRemote()`, since it can't be a valid expected value of a browser matcher:
+**Note:** `toHaveStyle`, `toHaveSize` and `toHaveElementProperty` accept an object as expected value (e.g. `{ color: 'red' }`). For them, an object is only considered as per-instance values when at least one key is an instance name.
 
 ```ts
-await expect(multiRemoteBrowser).toHaveTitle({ chrome: 'WebdriverIO', firefox: 'WebdriverIO' })
+await expect(multiRemoteBrowser.$('h1')).toHaveStyle({ color: 'red' }) // same style on every browser
+await expect(multiRemoteBrowser.$('h1')).toHaveStyle({ chrome: { color: 'red' }, firefox: { color: 'blue' } })
 ```
 
-Per-instance values are only allowed on the multi-remote browser: on a regular browser they fail the assertion (and are rejected by TypeScript).
+Per-instance values are only allowed on multi-remote subjects: on a regular element they fail the assertion (and are rejected by TypeScript).
 
 ## Browser Matchers
 
@@ -78,32 +95,87 @@ Per-instance values are only allowed on the multi-remote browser: on a regular b
 ```ts
 await expect(multiRemoteBrowser).toHaveUrl('https://webdriver.io/')
 await expect(multiRemoteBrowser.select('firefox')).toHaveTitle('WebdriverIO')
-await expect(multiRemoteBrowser).toHaveLocalStorageItem('token', expect.multiRemote({ chrome: 'abc', firefox: 'def' }))
+await expect(multiRemoteBrowser).toHaveLocalStorageItem('token', { chrome: 'abc', firefox: 'def' })
 ```
 
 An array expected value is not supported: use `expect.oneOf()` instead.
+
+## Element Matchers
+
+### Single Element `$()`
+
+Each instance's element is compared against its expected value.
+
+```ts
+const title = multiRemoteBrowser.$('h1')
+
+await expect(title).toBeDisplayed()
+await expect(title).toHaveText({ chrome: 'Welcome', firefox: 'Bienvenue' })
+await expect(title).toHaveWidth({ chrome: 100, firefox: { gte: 90 } })
+```
+
+An array expected value is only supported by the matchers accepting one for a single element (e.g. `toHaveElementClass(['btn', 'btn-large'])`); otherwise it fails the assertion.
+
+### Multiple Elements `$$()`
+
+Every instance is compared on **its own** elements: browsers may find a different number of elements. The [multiple elements](MultipleElements.md) rules apply per instance:
+
+- A single expected value: every element of every instance must match it.
+- An array of expected values: index-based, per instance. Its length must equal the element count of each instance.
+- Per-instance values, each being a single value or an index-based array.
+- `.not`: every element of every instance must **not** match.
+- `some()`: at least one element must match in **every** instance.
+- `expect.arrayContaining()`: each instance's collection of values must satisfy it.
+- An instance without any element fails the assertion. When no instance has any element, the regular empty rules apply (e.g. `.not.toExist()` passes).
+
+```ts
+import { some } from 'expect-webdriverio/api'
+
+const items = multiRemoteBrowser.$$('li')
+
+await expect(items).toHaveText('Item') // every element of every browser
+await expect(items).toHaveText(['Coffee', 'Tea']) // index-based, on every browser
+await expect(items).toHaveText({ chrome: ['Coffee', 'Tea'], firefox: ['Coffee', 'Tea', 'Milk'] })
+await expect(some(items)).toHaveText('Tea') // at least one match in every browser
+await expect(items).toHaveText(expect.arrayContaining(['Tea'])) // in every browser's collection
+```
+
+`toBeElementsArrayOfSize` counts the elements per instance, against a single size shared by every instance or one size per instance:
+
+```ts
+await expect(items).toBeElementsArrayOfSize(3)
+await expect(items).toBeElementsArrayOfSize({ chrome: 3, firefox: { gte: 2 } })
+```
+
+## Retries & Re-fetching Elements
+
+As with regular elements, failing assertions are retried until they pass or time out, re-fetching `$$()` elements in between.
+
+- **With `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`** (recommended), elements are re-fetched from their real scope (parent element, `select()` subset) with their original selector, even when the first result is empty.
+- **Without it**, `$$()` returns a plain `MultiRemoteElement[]` that knows nothing about how it was fetched. Elements are then re-fetched on a best-effort basis from the global `multiRemoteBrowser` using the elements' selector, ignoring any parent element or `select()` scope, and a one-time warning is logged. An initially empty result cannot be re-fetched at all.
 
 ## Error Messages
 
 Failure messages show the actual and expected values per instance:
 
 ```
-Expect multi-remote<chrome, firefox> to have title
+Expect multi-remote<chrome, firefox>.$(`h1`) to have text
 
 - Expected  - 1
 + Received  + 1
 
   Object {
-    "chrome": "WebdriverIO",
--   "firefox": "WebdriverIO",
+    "chrome": "Welcome",
+-   "firefox": "Welcome",
 +   "firefox": "Error",
   }
 ```
 
 ## Limitations
 
-- Element matchers on multi-remote elements are not yet supported.
+- `toHaveText` requires the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag: its legacy strategy does not support multi-remote elements and fails the assertion.
 - Network (mock) and snapshot matchers are not multi-remote aware.
+- Without `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY`, re-fetching `$$()` elements is best effort, see [Retries](#retries--re-fetching-elements).
 
 ## Alternatives
 

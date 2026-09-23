@@ -2,7 +2,7 @@
 
 When you're writing tests, you often need to check that values meet certain conditions. `expect` gives you access to a number of "matchers" that let you validate different things on the `browser`, an `element` or `mock` object.
 
-**Note**: Browser matchers support [multi-remote](MultiRemote.md), checking every browser instance with a single expected value or one per instance. Multi-remote elements are not yet supported: any working scenario is coincidental and may break or change without notice until fully supported.
+**Note**: Browser and element matchers also support [multi-remote](MultiRemote.md), checking every browser instance with a single expected value or one per instance.
 
 ## Soft Assertions
 
@@ -207,6 +207,31 @@ await expect(myElem).toHaveText('Some\u00a0Text')
 You can find all unicode references in the [HTML spec](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references).
 
 **Note:** unicode is case-insensitive hence both `\u00a0` and `\u00A0` works. To find element in browser inspect, remove `u` from unicode e.g.: `div[data="Some\00a0Value"]`
+
+## Feature Flags & Environment Variables
+
+Feature flags let you opt in to behaviors that will become the default in a future major version. Set them on a matcher, or globally (e.g. in a `before` hook of your `wdio.conf` file) with `setFeatureFlags`:
+
+```js
+import { setFeatureFlags } from 'expect-webdriverio'
+
+// Globally
+setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy: true })
+
+// On a matcher
+await expect($$('li')).toHaveText(['Coffee', 'Tea'], { featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy: true } })
+```
+
+| Feature flag | Default | Details |
+| ------------ | ------- | ------- |
+| `useToHaveTextStrictMultiElementsCompareStrategy` | `false` | `toHaveText` compares multiple elements index by index, as every other matcher does, see [Multiple Elements Support](MultipleElements.md). Required for `some()`, for `expect.oneOf()` inside an expected array, and for [multi-remote](MultiRemote.md) elements with `toHaveText`. |
+
+The following WebdriverIO environment variables are relevant with [multi-remote](MultiRemote.md). Set them before the session starts, e.g. at the top of your `wdio.conf` file:
+
+| Environment variable | Details |
+| -------------------- | ------- |
+| `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true` | Recommended. Multi-remote `$$()` elements are reliably re-fetched between retries, from their real scope and even when initially empty. Without it, re-fetching is best effort and a warning is logged. |
+| `WDIO_ENABLE_MULTI_REMOTE_SELECT=true` | Recommended when using `select()`: elements queried from a selected multi-remote browser or element stay scoped to the selected instances. |
 
 ## Browser Matchers
 
@@ -777,7 +802,7 @@ await expect(listItems).toBeElementsArrayOfSize({ gte: 5 })
 await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
 ```
 
-With multi-remote, the size is checked per browser instance. Pass a single size that every instance must match, or one size per instance (every instance must be listed):
+With [multi-remote](MultiRemote.md), the size is checked per browser instance. Pass a single size that every instance must match, or one size per instance (every instance must be listed):
 
 ```js
 const listItems = await multiRemoteBrowser.$$('ul>li')
@@ -785,7 +810,7 @@ await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in every browser
 await expect(listItems).toBeElementsArrayOfSize({ chrome: 5, firefox: { gte: 3 } })
 ```
 
-**Note:** To reliably re-fetch multi-remote elements between retries, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`. Without it, elements are re-fetched on a best-effort basis from the global `multiRemoteBrowser`, ignoring any parent element or `select()` scope.
+**Note:** To reliably re-fetch multi-remote elements between retries, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`. Without it, elements are re-fetched on a best-effort basis from the global `multiRemoteBrowser`, ignoring any parent element or `select()` scope. See [Retries](MultiRemote.md#retries--re-fetching-elements).
 
 ### Multiple Elements Support
 
@@ -796,6 +821,7 @@ All element matchers support arrays of elements returned from `$$()`:
   - *Note:* Only the `toExist`, `toBeExisting`, and `toBePresent` matchers succeed when using `.not` on an empty element array.
 - **Retry / Array Refresh:** On failure or stale references, the element array is automatically re-fetched until the matcher passes or times out.
 - **Legacy Behavior:** `toHaveText` retains its legacy behavior unless the `useToHaveTextStrictMultiElementsCompareStrategy` flag is enabled.
+- **Multi-remote:** The same rules apply per browser instance, each on its own elements, see [Multi-remote Support](MultiRemote.md#multiple-elements-).
 - See [MultipleElements.md](MultipleElements.md) for more details.
 
 #### Usage
@@ -1189,7 +1215,9 @@ await expect(some($$('elements'))).not.toHaveText(/forbiddenTextA|forbiddenTextB
 await expect(some($$('elements'))).toHaveText(['valueForIndex0', 'valueForIndex1']);
 ```
 
-**Note**: On `toHaveText`, the feature flag `useToHaveTextStrictMultiElementsCompareStrategy` must be enable to have `some()` working.
+**Note**: On `toHaveText`, the feature flag `useToHaveTextStrictMultiElementsCompareStrategy` must be enabled to have `some()` working.
+
+**Note**: With [multi-remote](MultiRemote.md), `some()` requires at least one matching element in **every** browser instance.
 
 ## Asymmetric Matchers
 
