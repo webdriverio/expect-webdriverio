@@ -41,11 +41,11 @@ export const config: WebdriverIO.MultiremoteConfig = {
                     'goog:chromeOptions': {
                         args: ['headless', 'disable-gpu'],
 
-                        // Required to allow clipboard access in headless mode
+                        // Required to allow clipboard access in headless mode, scoped to the origins used by the tests
                         prefs: {
                             'profile.content_settings.exceptions.clipboard': {
                                 '[*.]localhost,*': { setting: 1 },
-                                'https://*:*': { setting: 1 }
+                                'https://guinea-pig.webdriver.io:443,*': { setting: 1 }
                             }
                         }
                     }
