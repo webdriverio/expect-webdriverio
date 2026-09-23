@@ -3,9 +3,9 @@ import { refetchElements, synchronizeElementArray, syncronizeElements } from '..
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementsMaybePromise, WdioMultiRemoteElementArray } from '../../types.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
-import { awaitElementArray, isMultiRemoteElementArray, isMultiRemoteElementsLike, isStrictlyElementArray } from '../../util/elementsUtil.js'
-import { hasSameInstanceNames, isMultiRemoteValues } from '../../util/multiRemoteUtils.js'
+import { isPerInstanceNumbers, validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { awaitElementArray, isMultiRemoteElementArray, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from '../../util/elementsUtil.js'
+import { getElementsPerInstance, hasSameInstanceNames } from '../../util/multiRemoteUtils.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -48,7 +48,9 @@ export async function toBeElementsArrayOfSize(
     let { elements, other } = await awaitElementArray(received as WdioElementsMaybePromise)
 
     const awaitedMultiRemote = other ?? elements
-    if (isMultiRemoteElementsLike(awaitedMultiRemote)) {
+    // An empty plain `MultiRemoteElement[]` (without WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY) looks like an empty `Element[]`, but per-instance sizes tell them apart
+    const isEmptyWithPerInstanceSizes = Array.isArray(awaitedMultiRemote) && awaitedMultiRemote.length === 0 && isPerInstanceSizes(expectedValue)
+    if (isMultiRemoteElementsLike(awaitedMultiRemote) || isEmptyWithPerInstanceSizes) {
         const result = await multiRemoteElementsArrayOfSize(awaitedMultiRemote, expectedValue, options, { context: this, verb, expectation })
         await options.afterAssertion?.({ matcherName, expectedValue, options, result })
         return result
@@ -111,12 +113,13 @@ const multiRemoteElementsArrayOfSize = async (
     { context, verb, expectation }: { context: ExpectWebdriverIO.MatcherContext, verb: string, expectation: string }
 ): Promise<ExpectWebdriverIO.AssertionResult> => {
     const { isNot } = context
-    const instances = getMultiRemoteInstanceNames(received)
+    const isPerInstance = isPerInstanceSizes(expectedValue)
+    const instances = getMultiRemoteInstanceNames(received) ?? (isPerInstance ? Object.keys(expectedValue) : [])
 
     let commandOptions = options
     let expected: MultiRemoteValues<NumberMatcher>
     let instanceMismatch = false
-    if (isMultiRemoteValues(expectedValue, instances)) {
+    if (isPerInstance) {
         instanceMismatch = !hasSameInstanceNames(expectedValue, instances)
         expected = Object.fromEntries(Object.entries(expectedValue).map(([name, value]) =>
             [name, validateNumberAndExtractOptions(value as number | ExpectWebdriverIO.NumberMatcher, options).numberMatcher]
@@ -127,23 +130,29 @@ const multiRemoteElementsArrayOfSize = async (
         expected = Object.fromEntries(instances.map((name) => [name, validated.numberMatcher]))
     }
 
+    // The best-effort refetch of a plain `MultiRemoteElement[]` needs its elements' selector, so an empty refetch is
+    // compared but not kept as the source of the next refetch.
+    let refetchSource = received
     let elements = received
     let actual = countElementsPerInstance(elements, instances)
 
     const { success: pass } = await waitUntil(
         async (iteration) => {
             if (iteration > 0) {
-                elements = await refetchElements(elements)
+                elements = await refetchElements(refetchSource)
+                if (elements.length > 0 || !isMultiRemoteElements(refetchSource)) {
+                    refetchSource = elements
+                }
                 actual = countElementsPerInstance(elements, instances)
             }
 
             if (instanceMismatch) {
                 // Structural failure: fails with and without `.not`, no point retrying
-                return { success: !!isNot, subject: elements, actual, abort: true }
+                return { success: !!isNot, subject: refetchSource, actual, abort: true }
             }
 
             const success = instances.every((name) => expected[name].asymmetricMatch(actual[name]))
-            return { success, subject: elements, actual }
+            return { success, subject: refetchSource, actual }
         },
         isNot,
         { wait: commandOptions.wait, interval: commandOptions.interval }
@@ -154,39 +163,25 @@ const multiRemoteElementsArrayOfSize = async (
         synchronizeElementArray(received, elements)
     }
 
-    const message = enhanceError(elements, expected, actual, { isNot }, verb, expectation, '', commandOptions)
+    const message = enhanceError(refetchSource, expected, actual, { isNot }, verb, expectation, '', commandOptions)
     return { pass, message: () => message }
 }
 
-const getMultiRemoteInstanceNames = (elements: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray): string[] => {
+/** One size per instance, as opposed to a single size shared by every instance */
+const isPerInstanceSizes = (value: unknown): value is MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> => isPerInstanceNumbers(value)
+
+/** `undefined` for an empty plain `MultiRemoteElement[]`, which holds no reference to its instances */
+const getMultiRemoteInstanceNames = (elements: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray): string[] | undefined => {
     const first = (elements as WebdriverIO.MultiRemoteElement[])[0] as WebdriverIO.MultiRemoteElement | undefined
     if (first) {
         return first.instances
     }
     // Empty `MultiRemoteElementArray`: its parent (multi-remote browser or element) still knows the instances
     const parent = isMultiRemoteElementArray(elements) ? elements.parent as unknown as { instances?: string[] } : undefined
-    return parent?.instances ?? []
+    return parent?.instances
 }
 
 const countElementsPerInstance = (elements: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray, instances: string[]): MultiRemoteValues<number> => {
-    // Plain loop to bypass the asynchronous iterators of `MultiRemoteElementArray`
-    const multiRemoteElements = elements as WebdriverIO.MultiRemoteElement[]
-    return Object.fromEntries(instances.map((name) => {
-        let count = 0
-        for (let index = 0; index < multiRemoteElements.length; index++) {
-            if (hasInstance(multiRemoteElements[index], name)) {
-                count++
-            }
-        }
-        return [name, count]
-    }))
-}
-
-/** Zipped `$$()` results hold no element for an instance that returned fewer elements, and `getInstance` then throws */
-const hasInstance = (element: WebdriverIO.MultiRemoteElement, name: string): boolean => {
-    try {
-        return !!element.getInstance(name)
-    } catch {
-        return false
-    }
+    const elementsPerInstance = getElementsPerInstance(elements as WebdriverIO.MultiRemoteElement[], instances)
+    return Object.fromEntries(instances.map((name) => [name, elementsPerInstance[name].length]))
 }

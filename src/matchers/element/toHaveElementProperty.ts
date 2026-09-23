@@ -119,7 +119,7 @@ export async function toHaveElementProperty(
                 },
                 context: { isNot, iteration },
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: false }
+                strictConfiguration: { allowArrayWithSingleElement: false, allowObjectExpectedValue: true }
             })
         },
         isNot,

@@ -15,7 +15,7 @@ describe('WebdriverIO Custom Matchers', () => {
             it('should verify browser title error messages contains mult-remote values', async () => {
                 await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
                 const assertion = expect(multiRemoteBrowser).toHaveTitle('WebdriverJS Testpage')
-                await expect(assertion).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)> to have title/)
+                await expect(assertion).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)> to have title/)
                 await expect(assertion).rejects.toThrow(/"firefox": "WebdriverJS Testpage"/)
             })
 
@@ -142,7 +142,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     // Crash here with `WebDriver Bidi command "script.callFunction" failed with error: no such node`
                     console.log('isDisplayed:', await h1.isDisplayed())
                     await expect(h1).not.toBeDisplayed()
-                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\(`h1`\) to be displayed/)
+                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`h1`\) to be displayed/)
                 })
 
                 it('should be able to query isDisplayed on element no longer existing and one still existing', async () => {
@@ -152,8 +152,8 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await expect(h1.select('firefox')).not.toBeDisplayed()
                     await expect(h1.select('chrome')).toBeDisplayed()
-                    await expect(expect(h1).not.toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\(`h1`\) not to be displayed/)
-                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\(`h1`\) to be displayed/)
+                    await expect(expect(h1).not.toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`h1`\) not to be displayed/)
+                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`h1`\) to be displayed/)
                 })
             })
 
@@ -211,14 +211,13 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     const h1 = multiRemoteBrowser.$$('h1')
 
-                    const expects = expect(h1).toBeDisplayed({ wait: 1000 })
-                    const makeFirefoxElementDisplayable = await new Promise<void>((resolve) => setTimeout( async () =>{
-                        await multiRemoteBrowser.getInstance('firefox')!.url('https://guinea-pig.webdriver.io/')
-                        resolve()
-                    } , 500))
+                    // Navigate while the assertion is retrying, so it only passes thanks to the refetch
+                    const expects = expect(h1).toBeDisplayed({ wait: 5000 })
+                    const makeFirefoxElementDisplayable = new Promise<void>((resolve, reject) => setTimeout(() => {
+                        multiRemoteBrowser.getInstance('firefox')!.url('https://guinea-pig.webdriver.io/').then(() => resolve(), reject)
+                    }, 500))
 
-                    await expects
-                    await makeFirefoxElementDisplayable
+                    await Promise.all([expects, makeFirefoxElementDisplayable])
                 })
 
                 it('should be able to query isExisting on elements never existed', async () => {
@@ -281,7 +280,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await multiRemoteBrowser.getInstance('chrome')!.url('about:blank')
 
-                    await expect(expect(h1MultiRemote).toExist()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\$\(`h1`\) to exist/)
+                    await expect(expect(h1MultiRemote).toExist()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\$\(`h1`\) to exist/)
                 })
 
                 it('should be able to query not isExisting on element no longer existing and one still existing', async () => {
@@ -289,7 +288,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                     await multiRemoteBrowser.getInstance('chrome')!.url('about:blank')
 
-                    await expect(expect(h1MultiRemote).not.toExist()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\$\(`h1`\) not to exist/)
+                    await expect(expect(h1MultiRemote).not.toExist()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\$\(`h1`\) not to exist/)
                 })
 
                 // TODO waiting fix, see https://github.com/webdriverio/webdriverio/issues/15550
@@ -300,7 +299,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     await multiRemoteBrowser.getInstance('chrome')!.url('about:blank')
 
                     await expect(h1).not.toBeDisplayed()
-                     await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(chrome, firefox)|(firefox, chrome)>\.\$\$\(`h1`\) not to be displayed/)
+                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\$\(`h1`\) to be displayed/)
                 })
             })
         })

@@ -67,7 +67,16 @@ export const synchronizeElementArray = (subject: WebdriverIO.ElementArray | Webd
     }
 }
 
-export const refreshElementArray = async (subject: WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElement[]) => {
+/**
+ * Refetch and synchronize `subject` with the latest elements, returning them.
+ * Best-effort fallback exception: a plain `MultiRemoteElement[]` only knows its selector through its elements, so when
+ * the refetch is empty it is not synchronized (else it could never be refetched again) and the empty result is returned.
+ */
+export const refreshElementArray = async <T extends WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElement[]>(subject: T): Promise<T> => {
     const refetchedElements = await refetchElements(subject)
+    if (refetchedElements.length === 0 && isMultiRemoteElements(subject)) {
+        return refetchedElements
+    }
     synchronizeElementArray(subject, refetchedElements)
+    return subject
 }

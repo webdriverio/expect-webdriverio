@@ -31,13 +31,12 @@ export default defineConfig({
                 'vitest.config.ts',
                 'types-checks-filter-out-node_modules.js',
             ],
-            // TODO dprevost: Review coverage thresholds
-            // thresholds: {
-            //     lines: 92.3,
-            //     functions: 91.7,
-            //     statements: 92.2,
-            //     branches: 86.8,
-            // }
+            thresholds: {
+                lines: 92.3,
+                functions: 91.7,
+                statements: 92.2,
+                branches: 86.8,
+            }
         }
     }
 })

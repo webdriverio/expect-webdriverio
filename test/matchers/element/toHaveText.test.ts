@@ -2,7 +2,7 @@ import { $, $$ } from '@wdio/globals'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray } from 'webdriverio'
-import { $Factory, browserFactory, chainableElementArrayFactory, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { $Factory, browserFactory, chainableElementArrayFactory, createMultiRemoteElementMock, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
 import { setFeatureFlags } from '../../../src/index.js'
@@ -1914,6 +1914,16 @@ Received: "Invalid Text"`)
 
                     expect(result.pass).toBe(true)
                 })
+            })
+        })
+
+        describe('given multi-remote elements', () => {
+            test('applies the string options to expect.oneOf() nested in per-instance values', async () => {
+                const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel')
+
+                const result = await toHaveText.call({}, element, { chrome: wdioExpect.oneOf('valid text'), firefox: wdioExpect.oneOf('VALID TEXT') }, { ignoreCase: true, trim: true, wait: 0 })
+
+                expect(result.pass).toBe(true)
             })
         })
     })

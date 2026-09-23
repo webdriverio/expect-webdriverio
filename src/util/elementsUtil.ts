@@ -76,7 +76,7 @@ export const isElementArrayLike = (obj: unknown): obj is WebdriverIO.ElementArra
  * Warning: empty array is considered as Element[] and will return true.
  */
 export const isArrayOfElement = (obj: unknown): obj is WebdriverIO.Element[] => {
-    return Array.isArray(obj) && !isMultiRemote(obj) && obj.every(isElement)
+    return Array.isArray(obj) && !isMultiRemote(obj) && Array.prototype.every.call(obj, isElement)
 }
 
 /**

@@ -680,7 +680,33 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
         })
 
-        describe('multi-remote browser matchers', async () => {
+        describe('multi-remote element matchers', async () => {
+            it('should support per-instance values on $() and $$()', async () => {
+                expectTypeOf(expect(multiRemoteElement).toHaveAttribute('class', { chrome: 'a', firefox: 'b' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveAttribute('class', { chrome: ['a', 'b'], firefox: 'c' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveHTML({ chrome: '<a/>', firefox: expect.stringContaining('a') })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveWidth({ chrome: 100, firefox: { gte: 50 } })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveChildren({ chrome: [1, 2], firefox: 2 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElement).toHaveStyle({ chrome: { color: 'red' }, firefox: { color: 'blue' } })).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should support $$() array forms on multi-remote elements', async () => {
+                expectTypeOf(expect(multiRemoteElements).toHaveWidth([100, 200])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveId(['a', 'b'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toHaveHref(['a', 'b'])).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should not support per-instance values on non multi-remote elements', async () => {
+                // @ts-expect-error
+                expectTypeOf(expect(element).toHaveAttribute('class', { chrome: 'a', firefox: 'b' })).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error
+                expectTypeOf(expect(elementArray).toHaveWidth({ chrome: 100, firefox: 100 })).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should not support array-only matchers on a single multi-remote element', async () => {
+                expectTypeOf(expect(multiRemoteElement).toBeElementsArrayOfSize).toBeNever()
+            })
+
             it('should support toHaveLocalStorageItem without value on multiRemoteBrowser', async () => {
                 expectTypeOf(expect(multiRemoteBrowser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()
             })

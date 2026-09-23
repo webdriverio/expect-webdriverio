@@ -481,6 +481,14 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             })
         })
 
+        test('fails, instead of throwing, on misspelled instance names', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+
+            const result = await thisContext.toBeElementsArrayOfSize(elements, { Chrome: 2, Firefox: 2 }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+        })
+
         test('throws on an invalid NumberMatcher', async () => {
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
 
@@ -543,6 +551,32 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             expect(globalMultiRemoteBrowser.$$).toHaveBeenCalledWith('sel')
             expect(elements).toHaveLength(2)
             expect(warn.mock.calls.flat().join()).toMatch(/best effort.*WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true/s)
+        })
+
+        test('MultiRemoteElement[]: an empty (unknown instances) array accepts per-instance sizes instead of throwing', async () => {
+            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+
+            const pass = await thisContext.toBeElementsArrayOfSize([] as unknown as WebdriverIO.MultiRemoteElement[], { chrome: 0, firefox: 0 }, { wait: 0 })
+            const fail = await thisContext.toBeElementsArrayOfSize([] as unknown as WebdriverIO.MultiRemoteElement[], { chrome: 2, firefox: 2 }, { wait: 0 })
+
+            expect(pass.pass).toBe(true)
+            expect(fail.pass).toBe(false)
+        })
+
+        test('MultiRemoteElement[]: keeps refetching from the received elements when a best-effort refetch is empty', async () => {
+            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+            const globalMultiRemoteBrowser = { $$: vi.fn()
+                .mockResolvedValueOnce([])
+                .mockResolvedValue(createMultiRemoteElementArrayMock(browsers(), 'sel', 2)) }
+            vi.stubGlobal('multiRemoteBrowser', globalMultiRemoteBrowser)
+            vi.spyOn(console, 'warn').mockImplementation(() => {})
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 1)
+
+            const result = await thisContext.toBeElementsArrayOfSize(elements, 2, { wait: 500, interval: 10 })
+
+            expect(result.pass).toBe(true)
+            expect(globalMultiRemoteBrowser.$$).toHaveBeenCalledTimes(2)
+            expect(elements).toHaveLength(2)
         })
 
         test('MultiRemoteElement[]: without the global multiRemoteBrowser, keeps comparing the same elements instead of throwing', async () => {

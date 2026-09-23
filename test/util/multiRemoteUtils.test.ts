@@ -1,8 +1,8 @@
-import { vi, test, describe, expect, afterEach } from 'vitest'
+import { vi, test, describe, expect } from 'vitest'
 
-import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, hasSameInstanceNames, isBrowser, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
-import { multiRemote } from '../../src/api/index.js'
+import { getElementsPerInstance, hasSameInstanceNames, isBrowser, isPerInstanceValues } from '../../src/util/multiRemoteUtils.js'
 import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
+import { isElementArrayLike } from '../../src/util/elementsUtil.js'
 
 vi.mock('@wdio/globals')
 
@@ -30,68 +30,20 @@ describe('multiRemoteUtils', () => {
         })
     })
 
-    describe(getPerInstanceValues, () => {
+    describe(isPerInstanceValues, () => {
+        const instances = ['chrome', 'firefox']
+
         test('treats any plain object as per-instance values by default, even with only unknown names', () => {
-            expect(getPerInstanceValues({ safari: 'a' })).toEqual({ safari: 'a' })
+            expect(isPerInstanceValues({ safari: 'a' }, instances)).toBe(true)
         })
 
-        test('always unwraps expect.multiRemote()', () => {
-            expect(getPerInstanceValues(multiRemote({ chrome: 'a', firefox: 'b' }))).toEqual({ chrome: 'a', firefox: 'b' })
-            expect(getPerInstanceValues(multiRemote({ chrome: { color: 'red' } }), { allowObjectExpectedValue: true })).toEqual({ chrome: { color: 'red' } })
+        test('requires an instance name when the expected value itself can be an object', () => {
+            expect(isPerInstanceValues({ color: 'red' }, instances, { allowObjectExpectedValue: true })).toBe(false)
+            expect(isPerInstanceValues({ chrome: { color: 'red' } }, instances, { allowObjectExpectedValue: true })).toBe(true)
         })
 
-        test('keeps a plain object as a literal when the expected value itself can be an object, whatever its keys', () => {
-            expect(getPerInstanceValues({ color: 'red' }, { allowObjectExpectedValue: true })).toBeUndefined()
-            // e.g. instances named `width` and `height` with `toHaveSize({ width, height })`
-            expect(getPerInstanceValues({ width: 10, height: 20 }, { allowObjectExpectedValue: true })).toBeUndefined()
-        })
-
-        test.each(['a', ['a'], /a/, expect.stringContaining('a'), undefined])('is undefined for %s', (value) => {
-            expect(getPerInstanceValues(value)).toBeUndefined()
-        })
-    })
-
-    test(isMultiRemoteMatcher, () => {
-        expect(isMultiRemoteMatcher(multiRemote({ chrome: 'a' }))).toBe(true)
-        expect(isMultiRemoteMatcher({ chrome: 'a' })).toBe(false)
-        expect(isMultiRemoteMatcher(expect.anything())).toBe(false)
-        expect(isMultiRemoteMatcher(undefined)).toBe(false)
-    })
-
-    describe(getGlobalMultiRemoteInstanceNames, () => {
-        afterEach(() => {
-            vi.unstubAllGlobals()
-        })
-
-        test('returns the instances of the global multiRemoteBrowser', () => {
-            vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory())
-
-            expect(getGlobalMultiRemoteInstanceNames()).toEqual(['chrome', 'firefox'])
-        })
-
-        test('returns undefined without the global multiRemoteBrowser', () => {
-            expect(getGlobalMultiRemoteInstanceNames()).toBeUndefined()
-        })
-
-        test('returns undefined when the @wdio/globals proxy has no registered browser', () => {
-            vi.stubGlobal('multiRemoteBrowser', new Proxy({}, { get: () => { throw new Error('No browser instance registered') } }))
-
-            expect(getGlobalMultiRemoteInstanceNames()).toBeUndefined()
-        })
-    })
-
-    describe(isMultiRemoteValues, () => {
-        test('is true for a non-empty plain object', () => {
-            expect(isMultiRemoteValues({ chrome: 'a', firefox: 'b' })).toBe(true)
-        })
-
-        test('requires one of the instance names when given', () => {
-            expect(isMultiRemoteValues({ chrome: 'a' }, ['chrome', 'firefox'])).toBe(true)
-            expect(isMultiRemoteValues({ safari: 'a' }, ['chrome', 'firefox'])).toBe(false)
-        })
-
-        test.each(['a', 1, ['a'], {}, /a/, expect.stringContaining('a'), null, undefined])('is false for %s', (value) => {
-            expect(isMultiRemoteValues(value)).toBe(false)
+        test.each(['a', ['a'], /a/, expect.stringContaining('a'), undefined])('is false for %s', (value) => {
+            expect(isPerInstanceValues(value, instances)).toBe(false)
         })
     })
 
@@ -120,4 +72,16 @@ describe('multiRemoteUtils', () => {
         })
     })
 
+    test('isElementArrayLike is false for a MultiRemoteElementArray whose `every` is asynchronous', () => {
+        process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+        try {
+            const elements = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2) as unknown as { every: unknown }
+            // Like WebdriverIO's `enhanceElementsArray()`, returning a (truthy) Promise
+            elements.every = async () => false
+
+            expect(isElementArrayLike(elements)).toBe(false)
+        } finally {
+            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+        }
+    })
 })

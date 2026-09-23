@@ -4,6 +4,7 @@ import { waitUntil, enhanceError, compareTextOrOneOf } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
+import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
 const log = logger('expect-webdriverio')
 
@@ -38,12 +39,15 @@ export async function toHaveClipboardText(
         options,
     })
 
+    // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
+    const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
+
     const { actual, success: pass, subject, expected } = await waitUntil(
         async () => {
             return await executeBrowserCommand({
                 browser,
                 isNot,
-                expectedValue,
+                expectedValue: expectedWithOptions,
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
                 ) => compareClipboardText(browser, expectedValue, options),

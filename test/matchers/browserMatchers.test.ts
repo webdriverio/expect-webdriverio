@@ -111,6 +111,12 @@ Received      : " Valid Text "`
                     expect(browserFn).toHaveBeenCalledTimes(1)
                 })
 
+                test('applies string options to expect.oneOf()', async () => {
+                    const result = await thisContext.matcherFn(browser, wdioExpect.oneOf(' valid text '), { ignoreCase: true, trim: false, wait: 0 })
+
+                    expect(result.pass).toBe(true)
+                })
+
                 test('not - success - pass should be false', async () => {
                     vi.mocked(browserFn).mockResolvedValue(wrongText)
 
@@ -376,8 +382,25 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 
                 })
 
+                describe('when using expect.oneOf() with string options', () => {
+                    test('applies the options to a top-level oneOf', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.oneOf(' valid text '), { ignoreCase: true, trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('applies the options to a oneOf nested in per-instance values', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser,
+                            { chrome: wdioExpect.oneOf('valid'), firefox: wdioExpect.oneOf('VALID') }, { ignoreCase: true, containing: true, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+                })
+
                 describe('when the expected value is structurally invalid, with .not', () => {
                     test.each([
+                        { name: 'only unknown instances', expected: { safari: wrongText } },
+                        { name: 'misspelled instances', expected: { Chrome: wrongText, Firefox: wrongText } },
                         { name: 'an unknown instance', expected: { chrome: wrongText, firefox: wrongText, safari: wrongText } },
                         { name: 'a missing instance', expected: { chrome: wrongText } },
                         { name: 'an unsupported array', expected: [wrongText, wrongText] },
@@ -385,6 +408,15 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
                         const result = await thisNotContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
 
                         expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    })
+
+                    test('does not compare against the unsupported array, so no misleading deprecation warning nor error', async () => {
+                        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, [validText, wdioExpect.oneOf(validText)], { trim: false, wait: 500, interval: 10 })
+
+                        expect(result.pass).toBe(false)
+                        expect(warn).not.toHaveBeenCalled()
                     })
 
                     test('aborts instead of retrying until timeout', async () => {

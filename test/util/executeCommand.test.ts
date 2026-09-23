@@ -419,7 +419,7 @@ describe('executeCommand', () => {
                 expect(result.abort).toBe(!flag)
             })
 
-            it('fails gracefully with undefined actual when an instance is not found for an element', async () => {
+            it('fails when an instance found no element, reporting its own (empty) elements', async () => {
                 const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 1)
                 const firstElement = elements[0] as unknown as WebdriverIO.MultiRemoteElement
                 const originalGetInstance = firstElement.getInstance.bind(firstElement)
@@ -439,7 +439,204 @@ describe('executeCommand', () => {
                 )
 
                 expect(compare).toHaveBeenCalledTimes(1)
-                expect(result.actual).toEqual({ chrome: [' Valid Text '], firefox: [undefined] })
+                expect(result.success).toBe(false)
+                expect(result.actual).toEqual({ chrome: [' Valid Text '], firefox: [] })
+            })
+        })
+    })
+
+    describe('multi-remote strict strategy', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+        const context = { isNot: false, isSome: false, iteration: 0 }
+        const notContext = { isNot: true, isSome: false, iteration: 0 }
+        const compareEquals = vi.fn(async (_el: WebdriverIO.Element, expected: unknown) => ({ success: expected === 'a', actual: 'a' }))
+
+        /** chrome finds 3 elements, firefox only 2: WebdriverIO zips them into 3 wrappers, the last one without firefox */
+        const unevenElements = () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 3)
+            const last = elements[2] as unknown as WebdriverIO.MultiRemoteElement
+            const getInstance = last.getInstance.bind(last)
+            last.getInstance = ((name: string) => {
+                if (name === 'firefox') {
+                    throw new Error('Multiremote object has no instance named "firefox"')
+                }
+                return getInstance(name)
+            }) as WebdriverIO.MultiRemoteElement['getInstance']
+            return elements
+        }
+
+        describe('given per-instance values whose names are all unknown', () => {
+            it.each([
+                { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
+                { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
+            ])('fails strictly on $name, also with .not, and aborts', async ({ subject }) => {
+                const result = await multipleElementResultsStrategy(subject(), { safari: 'a' }, compareEquals, context)
+                const notResult = await multipleElementResultsStrategy(subject(), { safari: 'a' }, compareEquals, notContext)
+
+                expect(result).toEqual(expect.objectContaining({ success: false, abort: true }))
+                expect(notResult).toEqual(expect.objectContaining({ success: true, abort: true })) // failure, inverted later by `.not`
+            })
+
+            it('keeps an object as a literal expected value when the matcher allows it (e.g. styles)', async () => {
+                const compare = vi.fn(async (_el: WebdriverIO.Element, expected: unknown) => ({ success: (expected as { color: string }).color === 'red', actual: 'red' }))
+
+                const result = await multipleElementResultsStrategy(createMultiRemoteElementMock(browsers(), 'sel'), { color: 'red' }, compare, context, { allowObjectExpectedValue: true })
+
+                expect(result.success).toBe(true)
+                expect(compare).toHaveBeenCalledWith(expect.anything(), { color: 'red' })
+            })
+        })
+
+        it('aborts on a missing instance for $() instead of retrying', async () => {
+            const result = await multipleElementResultsStrategy(createMultiRemoteElementMock(browsers(), 'sel'), { chrome: 'a' }, compareEquals, context)
+
+            expect(result).toEqual(expect.objectContaining({ success: false, abort: true, actual: { chrome: 'a', firefox: 'a' } }))
+        })
+
+        describe('given an array expected value on $()', () => {
+            it('compares every instance against the array when the matcher supports it (e.g. classes)', async () => {
+                const compare = vi.fn(async (_el: WebdriverIO.Element, expected: unknown) => ({ success: Array.isArray(expected), actual: 'a b' }))
+
+                const result = await multipleElementResultsStrategy(createMultiRemoteElementMock(browsers(), 'sel'), ['a', 'b'], compare, context, { allowArrayWithSingleElement: true })
+
+                expect(result.success).toBe(true)
+                expect(compare).toHaveBeenCalledTimes(2)
+                expect(compare).toHaveBeenCalledWith(expect.anything(), ['a', 'b'])
+            })
+
+            it('fails strictly and aborts when the matcher does not support it', async () => {
+                const result = await multipleElementResultsStrategy(createMultiRemoteElementMock(browsers(), 'sel'), ['a', 'b'], compareEquals, context)
+
+                expect(result).toEqual(expect.objectContaining({ success: false, abort: true, actual: { chrome: 'a', firefox: 'a' } }))
+                expect(compareEquals).toHaveBeenCalledWith(expect.anything(), undefined)
+            })
+        })
+
+        describe('given instances with a different number of elements', () => {
+            it('compares per-instance arrays against each instance own elements', async () => {
+                const result = await multipleElementResultsStrategy(unevenElements(), { chrome: ['a', 'a', 'a'], firefox: ['a', 'a'] }, compareEquals, context)
+
+                expect(result.success).toBe(true)
+                expect(result.actual).toEqual({ chrome: ['a', 'a', 'a'], firefox: ['a', 'a'] })
+            })
+
+            it('passes a single expected value when every element of every instance matches', async () => {
+                const result = await multipleElementResultsStrategy(unevenElements(), 'a', compareEquals, context)
+
+                expect(result.success).toBe(true)
+                expect(result.expected).toEqual({ chrome: ['a', 'a', 'a'], firefox: ['a', 'a'] })
+            })
+
+            it('fails when an expected array does not match the instance own element count, without aborting', async () => {
+                const result = await multipleElementResultsStrategy(unevenElements(), { chrome: ['a', 'a'], firefox: ['a', 'a'] }, compareEquals, context)
+
+                expect(result.success).toBe(false)
+                expect(result.abort).toBeUndefined()
+            })
+        })
+
+        it('returns the expected value per instance and per element for $$() failure messages', async () => {
+            const result = await multipleElementResultsStrategy(createMultiRemoteElementArrayMock(browsers(), 'sel', 2), 'b', compareEquals, context)
+
+            expect(result.success).toBe(false)
+            expect(result.expected).toEqual({ chrome: ['b', 'b'], firefox: ['b', 'b'] })
+        })
+
+        describe('given some()', () => {
+            it('requires at least one matching element in every instance', async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+                // Only chrome's first element matches
+                const compare = vi.fn(async (el: WebdriverIO.Element) => ({ success: el === (elements[0] as unknown as WebdriverIO.MultiRemoteElement).getInstance('chrome'), actual: '' }))
+
+                const result = await multipleElementResultsStrategy(elements, 'a', compare, { isNot: false, isSome: true, iteration: 0 })
+
+                expect(result.success).toBe(false)
+            })
+
+            it('passes when every instance has at least one matching element', async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+                const firstElements = ['chrome', 'firefox'].map((name) => (elements[0] as unknown as WebdriverIO.MultiRemoteElement).getInstance(name))
+                const compare = vi.fn(async (el: WebdriverIO.Element) => ({ success: firstElements.includes(el), actual: '' }))
+
+                const result = await multipleElementResultsStrategy(elements, 'a', compare, { isNot: false, isSome: true, iteration: 0 })
+
+                expect(result.success).toBe(true)
+            })
+        })
+
+        it.each([
+            { name: 'a single element', subject: () => $('sel') },
+            { name: 'an element array', subject: () => chainableElementArrayFactory('sel', 2) },
+        ])('fails strictly and aborts on per-instance values for $name', async ({ subject }) => {
+            const result = await multipleElementResultsStrategy(subject(), { chrome: 'a', firefox: 'a' }, compareEquals, notContext)
+
+            expect(result).toEqual(expect.objectContaining({ success: true, abort: true })) // failure, inverted later by `.not`
+            // Still compared for the actual value, but never against the per-instance values
+            expect(compareEquals.mock.calls.every(([, expected]) => expected === undefined)).toBe(true)
+        })
+
+        describe('given arrayContaining', () => {
+            it('requires every instance own collection to satisfy it', async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+                const compare = vi.fn(async (_el: WebdriverIO.Element, _expected: unknown, index?: number) => ({ success: false, actual: `item${index}` }))
+
+                const result = await executeCommandWithStrategy({
+                    unresolvedElements: elements,
+                    expectedValues: expect.arrayContaining(['item1']),
+                    supportsArrayContaining: 'arrayOnly',
+                    singleElementCompare: compare,
+                    context: { isNot: false, iteration: 0 },
+                })
+
+                expect(result.success).toBe(true)
+                expect(result.actual).toEqual({ chrome: ['item0', 'item1'], firefox: ['item0', 'item1'] })
+            })
+
+            it('fails when one instance collection does not satisfy it', async () => {
+                const result = await executeCommandWithStrategy({
+                    unresolvedElements: unevenElements(),
+                    expectedValues: expect.arrayContaining(['item2']),
+                    supportsArrayContaining: 'arrayOnly',
+                    singleElementCompare: async (_el, _expected, index) => ({ success: false, actual: `item${index}` }),
+                    context: { isNot: false, iteration: 0 },
+                })
+
+                expect(result.success).toBe(false)
+                expect(result.actual).toEqual({ chrome: ['item0', 'item1', 'item2'], firefox: ['item0', 'item1'] })
+            })
+        })
+
+        describe('given a best-effort refetch (MultiRemoteElement[] without WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY)', () => {
+            let originalEnv: string | undefined
+
+            beforeEach(() => {
+                originalEnv = process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+                delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+                vi.spyOn(console, 'warn').mockImplementation(() => {})
+            })
+
+            afterEach(() => {
+                if (originalEnv !== undefined) {
+                    process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = originalEnv
+                }
+                vi.unstubAllGlobals()
+            })
+
+            it('keeps the received elements, and so the selector, when a refetch is empty and keeps retrying', async () => {
+                const globalMultiRemoteBrowser = { $$: vi.fn()
+                    .mockResolvedValueOnce([])
+                    .mockResolvedValueOnce(createMultiRemoteElementArrayMock(browsers(), 'sel', 2)) }
+                vi.stubGlobal('multiRemoteBrowser', globalMultiRemoteBrowser)
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 1)
+
+                const first = await multipleElementResultsStrategy(elements, 'a', compareEquals, { ...context, iteration: 1 })
+                expect(first).toEqual(expect.objectContaining({ success: false, abort: false }))
+                expect(elements).toHaveLength(1)
+
+                const second = await multipleElementResultsStrategy(elements, 'a', compareEquals, { ...context, iteration: 2 })
+                expect(second.success).toBe(true)
+                expect(elements).toHaveLength(2)
+                expect(globalMultiRemoteBrowser.$$).toHaveBeenCalledTimes(2)
             })
         })
     })

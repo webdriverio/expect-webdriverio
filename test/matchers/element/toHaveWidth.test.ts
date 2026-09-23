@@ -3,6 +3,7 @@ import { $, $$ } from '@wdio/globals'
 import { toHaveWidth } from '../../../src/matchers/element/toHaveWidth.js'
 import type { Size } from '../../../src/matchers/element/toHaveSize.js'
 import stripAnsi from 'strip-ansi'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -280,6 +281,28 @@ Expect $$(\`sel\`) to have width
 +   0,
 +   0,
   ]`)
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
+        ])('checks one NumberMatcher per instance on $name', async ({ subject }) => {
+            const pass = await toHaveWidth.call({}, subject(), { chrome: { gte: 1 }, firefox: { gte: 1 } }, { wait: 0 })
+            const fail = await toHaveWidth.call({}, subject(), { chrome: { gte: 1 }, firefox: { lte: 0 } }, { wait: 0 })
+
+            expect(pass.pass).toBe(true)
+            expect(fail.pass).toBe(false)
+        })
+
+        test('fails per-instance values on a non multi-remote element instead of throwing', async () => {
+            // @ts-expect-error per-instance values are only typed for multi-remote elements
+            const result = await toHaveWidth.call({}, await $('sel'), { chrome: { gte: 1 }, firefox: { gte: 1 } }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
         })
     })
 })

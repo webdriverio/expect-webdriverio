@@ -2,6 +2,7 @@ import { waitUntil, enhanceError, compareTextOrOneOf } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type {  CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
+import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
 /**
  * Browser
@@ -37,12 +38,15 @@ export async function toHaveTitle(
         options,
     })
 
+    // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
+    const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
+
     const { actual, success, subject, expected } = await waitUntil(
         async () => {
             return await executeBrowserCommand({
                 browser,
                 isNot,
-                expectedValue,
+                expectedValue: expectedWithOptions,
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
                 ) => compareTitle(browser, expectedValue, options),

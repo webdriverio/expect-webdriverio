@@ -1,5 +1,5 @@
 import type { CompareResult, MultiRemoteCompareResult, StrategyResult } from './executeCommand.js'
-import { isMultiRemoteValues } from './multiRemoteUtils.js'
+import { hasSameInstanceNames, isMultiRemoteValues, isPerInstanceValues } from './multiRemoteUtils.js'
 
 export async function executeBrowserCommand<Actual, Expected>( {
     browser,
@@ -15,44 +15,21 @@ export async function executeBrowserCommand<Actual, Expected>( {
 }
 ): Promise<StrategyResult<ArrayOrMultiRemoteValues<Actual | undefined> | Actual | undefined>> {
 
-    let expected: MaybeArrayOrMultiRemoteValues<Expected> | unknown = expectedValue
-    let forceFailure = false
-
     if (browser.isMultiremote) {
-        let multiRemoteExpectedValues: unknown[]
+        const { instances } = browser
 
-        if (isMultiRemoteValues(expectedValue, browser.instances)) {
-            let browserNames = Object.keys(expectedValue)
+        // Browser expected values are never plain objects, so any plain object holds one value per instance
+        const isPerInstance = isPerInstanceValues(expectedValue, instances)
+        // Otherwise a single expected value is replicated for each browser instance
+        const expected: MultiRemoteValues<unknown> = isPerInstance ? expectedValue : Object.fromEntries(instances.map((name) => [name, expectedValue]))
 
-            if (browserNames.length !== browser.instances.length) {
-                forceFailure = true
-            }
-            if (browserNames.some(name => !browser.instances.includes(name))) {
-                // Force failure when expecting a browser that is not part of the multiremote instance
-                forceFailure = true
-                browserNames = browserNames.filter(name => browser.instances.includes(name))
-            }
-
-            // Look up by name: the user's key order may differ from `browser.instances` order
-            multiRemoteExpectedValues = browser.instances.map((name) => expectedValue[name])
-            expected = expectedValue
-        } else {
-            if (Array.isArray(expectedValue)) {
-                // Array of expected values is not supported only oneOf
-                forceFailure = true
-            }
-
-            // A single expected value must be replicated for each browser instance
-            multiRemoteExpectedValues = Array(browser.instances.length).fill(expectedValue)
-            expected = browser.instances.reduce((acc, name) => {
-                acc[name] = expectedValue
-                return acc
-            }, {} as Record<string, unknown>)
-        }
+        // Structural failures: per-instance values not naming exactly the instances, or an array (unsupported, use `expect.oneOf()`)
+        const forceFailure = (isPerInstance && !hasSameInstanceNames(expectedValue, instances))
+            || Object.values(expected).some(Array.isArray)
 
         const arrayResults = await Promise.all(
             // Iterating through instance is a must else order of results may not match the order of browser instances
-            browser.instances.map(async (name, index) => {
+            instances.map(async (name) => {
                 let singleBrowser: WebdriverIO.Browser
                 try {
                     singleBrowser = browser.getInstance(name)!
@@ -61,7 +38,10 @@ export async function executeBrowserCommand<Actual, Expected>( {
                     return { success: false, actual: undefined, multiRemoteBrowserName: name } satisfies MultiRemoteCompareResult<undefined>
                 }
 
-                const results = await compare(singleBrowser, multiRemoteExpectedValues[index])
+                // Look up by name: the user's key order may differ from `browser.instances` order.
+                // On structural failure, still compare with `undefined` to get the actual value for the failure message.
+                const isExpected = name in expected
+                const results = await compare(singleBrowser, forceFailure || !isExpected ? undefined : expected[name])
                 return { ...results, multiRemoteBrowserName: name } satisfies MultiRemoteCompareResult<Actual>
             })
         )
@@ -79,13 +59,12 @@ export async function executeBrowserCommand<Actual, Expected>( {
         return { actual, success, subject: browser, expected }
     }
 
-    if (isMultiRemoteValues(expectedValue) || Array.isArray(expectedValue)) {
-        forceFailure = true
-    }
-    const results = await compare(browser, expectedValue)
+    // Per-instance values or an array (unsupported, use `expect.oneOf()`) can never match a single browser
+    const forceFailure = isMultiRemoteValues(expectedValue) || Array.isArray(expectedValue)
+    const results = await compare(browser, forceFailure ? undefined : expectedValue)
 
     if (forceFailure) {
-        return { ...results, success: isNot, abort: true, subject: browser, expected }
+        return { ...results, success: isNot, abort: true, subject: browser, expected: expectedValue }
     }
-    return { ...results, subject: browser, expected }
+    return { ...results, subject: browser, expected: expectedValue }
 }

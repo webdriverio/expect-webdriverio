@@ -45,11 +45,30 @@ export function validateNumberAndExtractOptions(
     }
 }
 
+/** Legacy `NumberOptions` keys, see `validateNumberAndExtractOptions` */
+const NUMBER_OPTIONS_KEYS = ['eq', 'gte', 'lte', 'wait', 'interval', 'message', 'beforeAssertion', 'afterAssertion']
+
+/**
+ * Multi-remote: one number (or NumberMatcher, or array of them for `$$()`) per instance, e.g. `{ chrome: 2, firefox: { gte: 1 } }`,
+ * as opposed to a `NumberMatcher` or legacy `NumberOptions`.
+ * Not relying on the instance names so that unknown or misspelled ones fail strictly instead of being misread as options.
+ */
+export const isPerInstanceNumbers = (value: unknown): value is MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> => {
+    return isDefinedPlainObject(value) && !(value instanceof AsymmetricMatcher) && !Array.isArray(value)
+        && Object.keys(value).length > 0 && !Object.keys(value).some((key) => NUMBER_OPTIONS_KEYS.includes(key))
+}
+
 export function validateNumberArrayAndExtractOptions(
-    expectedValues: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | undefined | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
+    expectedValues: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | undefined | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
     commandOptions: ExpectWebdriverIO.CommandOptions,
     { supportDefaultAsGteThen1 }: { supportDefaultAsGteThen1?: boolean } = {}
-): { numberMatcher: MaybeArray<NumberMatcher>; commandOptions: ExpectWebdriverIO.CommandOptions } {
+): { numberMatcher: MaybeArray<NumberMatcher> | MultiRemoteValues<MaybeArray<NumberMatcher>>; commandOptions: ExpectWebdriverIO.CommandOptions } {
+    if (isPerInstanceNumbers(expectedValues)) {
+        const numberMatcher = Object.fromEntries(Object.entries(expectedValues).map(([instance, value]) =>
+            [instance, validateNumberArrayAndExtractOptions(value, commandOptions).numberMatcher as MaybeArray<NumberMatcher>]
+        ))
+        return { numberMatcher, commandOptions }
+    }
     if (Array.isArray(expectedValues)) {
         const allNumbers = expectedValues.map((value) => validateNumberAndExtractOptions(value, commandOptions, { supportDefaultAsGteThen1 }))
         return { numberMatcher: allNumbers.map( ({ numberMatcher }) =>  numberMatcher), commandOptions }

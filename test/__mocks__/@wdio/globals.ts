@@ -221,8 +221,8 @@ export class Browser {
     $$ = vi.fn()
     execute = vi.fn()
     setPermissions = vi.spyOn({ setPermissions: async () => {} }, 'setPermissions')
-    getUrl = vi.fn().mockResolvedValue('  Valid text  ')
-    getTitle = vi.fn().mockResolvedValue('Example Domain')
+    getUrl = vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl')
+    getTitle = vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle')
 
     constructor(elementArrayLength = 2) {
         vi.mocked(this.$$).mockImplementation((selector: string) => {
@@ -288,8 +288,10 @@ export class CustomMultiRemoteDriver {
         /**
          * Common browser methods
          */
-        vi.mocked(this.$).mockImplementation((selector: string) => {
-            return Promise.all(availableBrowsers.map((browser) => browser.$(selector)))
+        // Like `MultiRemote.elementWrapper()` at runtime: one `MultiRemoteElement` wrapping each instance's resolved element
+        vi.mocked(this.$).mockImplementation(async (selector: string) => {
+            const instanceElements = await Promise.all(availableBrowsers.map((browser) => browser.$(selector))) as unknown as WebdriverIO.Element[]
+            return buildMultiRemoteElementWrapper(this.instances, instanceElements, selector)
         })
 
         vi.mocked(this.$$).mockImplementation((selector: string) => {
