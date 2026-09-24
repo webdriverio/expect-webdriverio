@@ -408,22 +408,18 @@ describe('elementsUtil', () => {
 
     describe('multi-remote guards', () => {
         const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
-        let originalEnv: string | undefined
 
         beforeEach(() => {
-            originalEnv = process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+            vi.stubEnv('WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY', undefined)
         })
 
         afterEach(() => {
-            if (originalEnv !== undefined) {
-                process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = originalEnv
-            }
+            vi.unstubAllEnvs()
         })
 
         /** `$$()` result with WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY enabled, decorated like an ElementArray */
         const multiRemoteElementArray = () => {
-            process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+            vi.stubEnv('WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY', 'true')
             return createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
         }
 
@@ -445,10 +441,10 @@ describe('elementsUtil', () => {
 
         test(isMultiRemoteElementArray, () => {
             expect(isMultiRemoteElementArray(multiRemoteElementArray())).toBe(true)
-            process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+            vi.stubEnv('WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY', 'true')
             expect(isMultiRemoteElementArray(createMultiRemoteElementArrayMock(browsers(), 'sel', 0))).toBe(true)
 
-            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+            vi.stubEnv('WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY', undefined)
             expect(isMultiRemoteElementArray(createMultiRemoteElementArrayMock(browsers(), 'sel', 2))).toBe(false)
             expect(isMultiRemoteElementArray(elementArrayFactory('sel', 2))).toBe(false)
         })
