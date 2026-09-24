@@ -21,7 +21,7 @@
    - **Cucumber**: `npm install @wdio/cucumber-framework`
    - **Jest**: No adapter needed — see [Jest Framework section](docs/Framework.md#jest)
 
-**Note:** [WebdriverIO](https://github.com/webdriverio/webdriverio) `v9.0.0` or higher is required!
+**Note:** [WebdriverIO](https://github.com/webdriverio/webdriverio) `v9.31.5` or higher is required!
 
 ## Usage
 

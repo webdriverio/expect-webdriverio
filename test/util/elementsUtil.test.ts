@@ -1,8 +1,8 @@
-import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 
-import { awaitElementOrArray, isArray, isElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
-import { elementFactory, elementArrayFactory, chainableElementArrayFactory, notFoundElementFactory, elementWithoutSelectorFactory } from '../__mocks__/@wdio/globals.js'
+import { awaitElementOrArray, isArray, isArrayOfElement, isElement, isElementArray, isElementArrayLike, isElementOrArrayLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
+import { elementFactory, elementArrayFactory, chainableElementArrayFactory, notFoundElementFactory, elementWithoutSelectorFactory, browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -403,6 +403,87 @@ describe('elementsUtil', () => {
             const result = isElementOrArrayLike(element)
 
             expect(result).toBe(false)
+        })
+    })
+
+    describe('multi-remote guards', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+        let originalEnv: string | undefined
+
+        beforeEach(() => {
+            originalEnv = process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+        })
+
+        afterEach(() => {
+            if (originalEnv !== undefined) {
+                process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = originalEnv
+            }
+        })
+
+        /** `$$()` result with WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY enabled, decorated like an ElementArray */
+        const multiRemoteElementArray = () => {
+            process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+            return createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+        }
+
+        test(isMultiRemoteElement, () => {
+            expect(isMultiRemoteElement(createMultiRemoteElementMock(browsers(), 'sel'))).toBe(true)
+
+            expect(isMultiRemoteElement(elementFactory('sel'))).toBe(false)
+            expect(isMultiRemoteElement(multiRemoteBrowserFactory())).toBe(false)
+            expect(isMultiRemoteElement(createMultiRemoteElementArrayMock(browsers(), 'sel', 2))).toBe(false)
+        })
+
+        test(isMultiRemoteElements, () => {
+            expect(isMultiRemoteElements(createMultiRemoteElementArrayMock(browsers(), 'sel', 2))).toBe(true)
+
+            expect(isMultiRemoteElements([])).toBe(false)
+            expect(isMultiRemoteElements(elementArrayFactory('sel', 2))).toBe(false)
+            expect(isMultiRemoteElements(multiRemoteElementArray())).toBe(false)
+        })
+
+        test(isMultiRemoteElementArray, () => {
+            expect(isMultiRemoteElementArray(multiRemoteElementArray())).toBe(true)
+            process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+            expect(isMultiRemoteElementArray(createMultiRemoteElementArrayMock(browsers(), 'sel', 0))).toBe(true)
+
+            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
+            expect(isMultiRemoteElementArray(createMultiRemoteElementArrayMock(browsers(), 'sel', 2))).toBe(false)
+            expect(isMultiRemoteElementArray(elementArrayFactory('sel', 2))).toBe(false)
+        })
+
+        test(isMultiRemoteElementsLike, () => {
+            expect(isMultiRemoteElementsLike(createMultiRemoteElementArrayMock(browsers(), 'sel', 2))).toBe(true)
+            expect(isMultiRemoteElementsLike(multiRemoteElementArray())).toBe(true)
+
+            expect(isMultiRemoteElementsLike(createMultiRemoteElementMock(browsers(), 'sel'))).toBe(false)
+        })
+
+        test(isMultiRemoteElementLike, () => {
+            expect(isMultiRemoteElementLike(createMultiRemoteElementMock(browsers(), 'sel'))).toBe(true)
+            expect(isMultiRemoteElementLike(createMultiRemoteElementArrayMock(browsers(), 'sel', 2))).toBe(true)
+
+            expect(isMultiRemoteElementLike(elementFactory('sel'))).toBe(false)
+        })
+
+        test('regular element guards exclude multi-remote elements', () => {
+            expect(isElement(createMultiRemoteElementMock(browsers(), 'sel'))).toBe(false)
+            expect(isArrayOfElement(createMultiRemoteElementArrayMock(browsers(), 'sel', 2))).toBe(false)
+            expect(isElementArrayLike(createMultiRemoteElementArrayMock(browsers(), 'sel', 2))).toBe(false)
+
+            const elementArray = multiRemoteElementArray()
+            expect(isElementArray(elementArray)).toBe(false)
+            expect(isStrictlyElementArray(elementArray)).toBe(false)
+            expect(isElementArrayLike(elementArray)).toBe(false)
+        })
+
+        test('isElementArrayLike is false for a MultiRemoteElementArray whose `every` is asynchronous', () => {
+            const elements = multiRemoteElementArray() as unknown as { every: unknown }
+            // Like WebdriverIO's `enhanceElementsArray()`, returning a (truthy) Promise
+            elements.every = async () => false
+
+            expect(isElementArrayLike(elements)).toBe(false)
         })
     })
 })
