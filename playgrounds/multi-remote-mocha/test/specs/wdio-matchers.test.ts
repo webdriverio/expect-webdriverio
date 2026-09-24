@@ -1,4 +1,5 @@
 import { multiRemoteBrowser  } from '@wdio/globals'
+import { some } from 'expect-webdriverio/api'
 
 describe('WebdriverIO Custom Matchers', () => {
     beforeEach(async () => {
@@ -69,6 +70,40 @@ describe('WebdriverIO Custom Matchers', () => {
         describe('toHaveClipboardText Matcher', () => {
             it('should verify clipboard text', async () => {
                 await expect(multiRemoteBrowser.select('chrome')).toHaveClipboardText('')
+            })
+        })
+
+        describe('Per-browser expected values', () => {
+            it('should verify a different title per browser with expect.multiRemote() or its plain object shorthand', async () => {
+                await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
+
+                await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ firefox: '', chrome: 'WebdriverJS Testpage' }))
+                await expect(multiRemoteBrowser).toHaveTitle({ firefox: '', chrome: 'WebdriverJS Testpage' })
+            })
+
+            it('should fail with the per-browser values in the error message', async () => {
+                await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
+
+                const assertion = expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'WebdriverJS Testpage', firefox: 'WebdriverJS Testpage' }))
+
+                await expect(assertion).rejects.toThrow(/-   "firefox": "WebdriverJS Testpage",\n\+   "firefox": "",/)
+            })
+
+            it('should fail strictly, also with .not, when a browser is missing or unknown', async () => {
+                await expect(expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'WebdriverJS Testpage' })))
+                    .rejects.toThrow(/to have title/)
+                await expect(expect(multiRemoteBrowser).not.toHaveTitle(expect.multiRemote({ chrome: 'Other', firefox: 'Other', safari: 'Other' })))
+                    .rejects.toThrow(/not to have title/)
+                await expect(expect(multiRemoteBrowser).not.toHaveTitle({ Chrome: 'Other', Firefox: 'Other' }))
+                    .rejects.toThrow(/not to have title/)
+            })
+
+            it('should apply the string options to expect.oneOf(), also nested per browser', async () => {
+                await expect(multiRemoteBrowser).toHaveTitle(expect.oneOf('webdriverjs testpage', 'other'), { ignoreCase: true })
+                await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({
+                    chrome: expect.oneOf('WEBDRIVERJS'),
+                    firefox: expect.oneOf('testpage'),
+                }), { ignoreCase: true, containing: true })
             })
         })
     })
@@ -339,7 +374,62 @@ describe('WebdriverIO Custom Matchers', () => {
                         'chrome': ['WebdriverJS Testpage', 'Test CSS Attributes']
                     })
                 })
-              })
+
+                it('should verify elements have texts with expect.multiRemote()', async () => {
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    await expect(h1).toHaveText(expect.multiRemote({
+                        chrome: ['WebdriverJS Testpage', 'Test CSS Attributes'],
+                        firefox: expect.stringContaining('T'),
+                    }))
+                })
+
+                it('should verify at least one element matches in every browser with some()', async () => {
+                    await expect(some(multiRemoteBrowser.$$('h1'))).toHaveText('Test CSS Attributes')
+                })
+
+                it('should fail some() when a browser has no matching element', async () => {
+                    await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
+
+                    await expect(expect(some(multiRemoteBrowser.$$('h1'))).toHaveText('Test CSS Attributes', { wait: 0 }))
+                        .rejects.toThrow(/to have text/)
+                })
+
+                it('should verify each browser collection contains a value with expect.arrayContaining()', async () => {
+                    await expect(multiRemoteBrowser.$$('h1')).toHaveText(expect.arrayContaining(['Test CSS Attributes']))
+                })
+            })
+
+            describe('Per-browser sizes and objects', () => {
+                it('should verify the elements count of every browser', async () => {
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    await expect(h1).toBeElementsArrayOfSize(2)
+                    await expect(h1).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 2, firefox: { gte: 1 } }))
+                })
+
+                it('should count the elements of each browser when browsers find a different number of elements', async () => {
+                    await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    await expect(h1).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 2, firefox: 0 }))
+                    await expect(expect(h1).toBeElementsArrayOfSize(2, { wait: 0 })).rejects.toThrow(/\+   "firefox": 0,/)
+                })
+
+                it('should verify one NumberMatcher per browser', async () => {
+                    await expect(multiRemoteBrowser.$('h1')).toHaveWidth(expect.multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }))
+                    await expect(multiRemoteBrowser.$('h1')).toHaveHeight({ chrome: { gte: 1 }, firefox: { gte: 1 } })
+                })
+
+                it('should treat a plain object as a literal style, and per-browser styles with expect.multiRemote()', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    await expect(h1).toHaveStyle({ display: 'block' })
+                    await expect(h1).toHaveStyle(expect.multiRemote({ chrome: { display: 'block' }, firefox: { display: 'block' } }))
+                    // @ts-expect-error per-browser styles require expect.multiRemote()
+                    await expect(expect(h1).toHaveStyle({ chrome: { display: 'block' }, firefox: { display: 'block' } }, { wait: 0 })).rejects.toThrow(/to have style/)
+                })
+            })
         })
     })
 })
