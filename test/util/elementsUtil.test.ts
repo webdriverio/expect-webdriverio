@@ -474,6 +474,12 @@ describe('elementsUtil', () => {
             expect(isElementArrayLike(elementArray)).toBe(false)
         })
 
+        test('empty array is Element[] and not MultiRemoteElement[]', () => {
+            expect(isElementArrayLike([])).toBe(true)
+            expect(isMultiRemoteElementsLike([])).toBe(false)
+            expect(isMultiRemoteElementLike([])).toBe(false)
+        })
+
         test('isElementArrayLike is false for a MultiRemoteElementArray whose `every` is asynchronous', () => {
             const elements = multiRemoteElementArray() as unknown as { every: unknown }
             // Like WebdriverIO's `enhanceElementsArray()`, returning a (truthy) Promise

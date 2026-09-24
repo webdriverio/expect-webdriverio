@@ -173,6 +173,11 @@ export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemo
     return isMultiRemote(obj) && !Array.isArray(obj) && 'selector' in obj
 }
 
+/**
+ * MultiRemoteElement[]
+ * Warning: empty array returns false and is treated as Element[] (see `isElementArrayLike`),
+ * so both guards never match the same value.
+ */
 export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] => {
     return Array.isArray(obj) && obj.length > 0 && !isMultiRemoteElementArray(obj)
         // Using Array.prototype to bypass asynchronous iterator of ElementArray
