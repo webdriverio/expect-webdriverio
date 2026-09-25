@@ -2,7 +2,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
-    compareTextOrArray,
+    compareTextOrOneOf,
     enhanceError,
     waitUntil,
     wrapExpectedWithArray
@@ -15,7 +15,7 @@ async function singleElementCompare(
     options: ExpectWebdriverIO.StringOptions
 ) {
     const actualRole = await element.getComputedRole()
-    return compareTextOrArray(actualRole, role, options)
+    return compareTextOrOneOf(actualRole, role, options)
 }
 
 export async function toHaveComputedRole(

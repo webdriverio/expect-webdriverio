@@ -4,6 +4,7 @@ import type { WdioElements } from '../types.js'
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
+import { isBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
@@ -47,13 +48,13 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements): string => 
     return selectors.reverse().join('.')
 }
 
-const not = (isNot: boolean): string => `${isNot ? 'not ' : ''}`
+const not = (isNot: boolean | undefined): string => `${isNot ? 'not ' : ''}`
 
 export const enhanceError = (
-    subject: string | WebdriverIO.Element | WdioElements | unknown,
+    subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean, useNotInLabel?: boolean, isSome?: boolean },
+    context: { isNot: boolean | undefined, useNotInLabel?: boolean, isSome?: boolean, browserTargetType?: 'browser' | 'window' },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
@@ -61,6 +62,17 @@ export const enhanceError = (
         containing = false
     } = {}): string => {
     const { isNot, useNotInLabel = true } = context
+
+    if (isBrowser(subject)) {
+        if (subject.isMultiremote) {
+            subject = formatMultiRemoteInstanceNames(subject.instances)
+        } else if (subject.isMobile) {
+            subject = context.browserTargetType === 'window' ? 'mobile screen' : 'mobile'
+        } else {
+            const prefix = subject.requestedCapabilities?.browserName ?? 'browser'
+            subject = context.browserTargetType === 'window' ? `${prefix}'s window` : prefix
+        }
+    }
 
     let subjectStr = (isElementOrArrayLike(subject) ? getSelectors(subject) : toJsonString(subject))
     if (subjectStr.length > 100) {
@@ -191,4 +203,10 @@ export const enhanceErrorBe = (
 
 const isSuccess = (isNot: boolean, success: boolean): boolean => {
     return isNot ? !success : success
+}
+
+const formatMultiRemoteInstanceNames = (instances: string[]): string => {
+    let instanceNames = instances.join(', ')
+    instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
+    return `multi-remote<${instanceNames}>`
 }

@@ -1,6 +1,7 @@
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { expectTypeOf } from 'vitest'
 import { some } from 'expect-webdriverio/api'
+import { multiRemoteBrowser } from '@wdio/globals'
 
 describe('WebDriverIO Expect Type Assertions under Mocha', () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
@@ -63,6 +64,34 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             it('should have ts errors when actual is not a Browser element', async () => {
                 expectTypeOf(expect(element).toHaveTitle).toBeNever()
                 expectTypeOf(expect(true).toHaveTitle).toBeNever()
+            })
+
+            it('should support multiRemoteBrowser', async () => {
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle('https://example.com')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).not.toHaveTitle('https://example.com')).toEqualTypeOf<Promise<void>>()
+
+                // Asymmetric matchers
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.stringContaining('WebdriverIO'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.any(String))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.anything())).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.oneOf('https://example.com', 'https://webdriver.io'))).toEqualTypeOf<Promise<void>>()
+
+                // Per-instance values
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle({ chrome: 'a', firefox: expect.stringContaining('b') })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'a', firefox: expect.stringContaining('b') }))).toEqualTypeOf<Promise<void>>()
+
+                // Multi-remote element values cannot guarantee order so we can compare with an array
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle).parameter(0).not.toBeArray()
+            })
+
+            it('should not support per-instance values on a single browser', async () => {
+                // @ts-expect-error
+                expectTypeOf(expect(browser).toHaveTitle({ chrome: 'a', firefox: 'b' })).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should not support expect.not.multiRemote()', async () => {
+                // @ts-expect-error
+                expect.not.multiRemote({ chrome: 'a' })
             })
         })
 
@@ -587,6 +616,12 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             it('should not support array as snapshot', async () => {
                 // @ts-expect-error -- array of elements is not supported for snapshot testing
                 expectTypeOf(expect(chainableElement.getCSSProperty('test')).toMatchInlineSnapshot(['test snapshot'])).toEqualTypeOf<Promise<void>>()
+            })
+        })
+
+        describe('multi-remote browser matchers', async () => {
+            it('should support toHaveLocalStorageItem without value on multiRemoteBrowser', async () => {
+                expectTypeOf(expect(multiRemoteBrowser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()
             })
         })
 

@@ -6,6 +6,7 @@ import { DEFAULT_OPTIONS, defaultOptionsList } from './constants.js'
 import createSoftExpect from './softExpect.js'
 import { SoftAssertService } from './softAssert.js'
 import { oneOf } from './matchers/asymmetrics/oneOf.js'
+import { multiRemote } from './matchers/asymmetrics/multiRemote.js'
 import { getGlobalSingleton } from './util/globalSingleton.js'
 
 interface SharedExpectSetup {
@@ -51,6 +52,7 @@ function createSharedExpectSetup(): SharedExpectSetup {
     wdioExpect.extend(filteredWdioMatchers)
     // Register asymmetric matchers like `expect.oneOf(...)`
     wdioExpect.oneOf = oneOf
+    wdioExpect.multiRemote = multiRemote
 
     // Register soft assertions. `configurable: true` isn't for redefinition by us (this
     // function only ever runs once per process) - it guards against a rare mixed

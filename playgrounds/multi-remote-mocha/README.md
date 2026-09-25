@@ -4,4 +4,4 @@ This playground project is the equivalent of the mocha playgrounds but specifica
 
 ## Notes
 
-Multi-remote is not supported yet, this is the first step!
+See [Multi-remote Support](../../docs/MultiRemote.md) for the supported behaviors.
