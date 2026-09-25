@@ -503,7 +503,7 @@ Received: undefined`)
         test('keeps a plain object as a literal size, even with instances named `width` and `height`', async () => {
             const element = createMultiRemoteElementMock({ width: browserFactory(), height: browserFactory() }, 'sel')
 
-            const result = await toHaveSize.call({}, element, size, { wait: 0 })
+            const result = await thisContext.toHaveSize(element, size, { wait: 0 })
 
             expect(result.pass).toBe(true)
         })
@@ -512,8 +512,8 @@ Received: undefined`)
             { name: '$()', subject: () => createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel') },
             { name: '$$()', subject: () => createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2) },
         ])('checks one size per instance with expect.multiRemote() on $name', async ({ subject }) => {
-            const pass = await toHaveSize.call({}, subject(), multiRemote({ chrome: size, firefox: size }), { wait: 0 })
-            const fail = await toHaveSize.call({}, subject(), multiRemote({ chrome: size, firefox: { width: 1, height: 1 } }), { wait: 0 })
+            const pass = await thisContext.toHaveSize(subject(), multiRemote({ chrome: size, firefox: size }), { wait: 0 })
+            const fail = await thisContext.toHaveSize(subject(), multiRemote({ chrome: size, firefox: { width: 1, height: 1 } }), { wait: 0 })
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
@@ -523,7 +523,7 @@ Received: undefined`)
             const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel')
 
             // @ts-expect-error per-instance sizes require expect.multiRemote()
-            const result = await toHaveSize.call({}, element, { chrome: size, firefox: size }, { wait: 0 })
+            const result = await thisContext.toHaveSize(element, { chrome: size, firefox: size }, { wait: 0 })
 
             expect(result.pass).toBe(false)
         })

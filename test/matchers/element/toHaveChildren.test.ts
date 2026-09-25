@@ -601,8 +601,8 @@ Received      : [2, 2, undefined]`
             { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
             { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
         ])('checks one NumberMatcher per instance on $name', async ({ subject }) => {
-            const pass = await toHaveChildren.call({}, subject(), { chrome: { gte: 1 }, firefox: { gte: 1 } }, { wait: 0 })
-            const fail = await toHaveChildren.call({}, subject(), { chrome: { gte: 1 }, firefox: { lte: 0 } }, { wait: 0 })
+            const pass = await thisContext.toHaveChildren(subject(), { chrome: { gte: 1 }, firefox: { gte: 1 } }, { wait: 0 })
+            const fail = await thisContext.toHaveChildren(subject(), { chrome: { gte: 1 }, firefox: { lte: 0 } }, { wait: 0 })
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
@@ -614,8 +614,8 @@ Received      : [2, 2, undefined]`
         ])('checks one NumberMatcher per instance with expect.multiRemote() on $name', async ({ subject }) => {
             const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
-            const pass = await toHaveChildren.call({}, subject(), multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }), { wait: 0 })
-            const fail = await toHaveChildren.call({}, subject(), multiRemote({ chrome: { gte: 1 }, firefox: { lte: 0 } }), { wait: 0 })
+            const pass = await thisContext.toHaveChildren(subject(), multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }), { wait: 0 })
+            const fail = await thisContext.toHaveChildren(subject(), multiRemote({ chrome: { gte: 1 }, firefox: { lte: 0 } }), { wait: 0 })
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
@@ -624,7 +624,7 @@ Received      : [2, 2, undefined]`
 
         test('fails per-instance values on a non multi-remote element instead of misreading them', async () => {
             // @ts-expect-error per-instance values are only typed for multi-remote elements
-            const result = await toHaveChildren.call({}, await $('sel'), { chrome: { gte: 1 }, firefox: { gte: 1 } }, { wait: 0 })
+            const result = await thisContext.toHaveChildren(await $('sel'), { chrome: { gte: 1 }, firefox: { gte: 1 } }, { wait: 0 })
 
             expect(result.pass).toBe(false)
         })

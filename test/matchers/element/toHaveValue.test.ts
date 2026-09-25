@@ -109,6 +109,8 @@ Received: "This is an example value"`
 })
 
 describe('toHaveValue on multi-remote elements', () => {
+    const thisContext = { toHaveValue, toHaveElementProperty }
+
     const multiRemoteElement = () => {
         const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'input')
         vi.mocked(element.getInstance('chrome').getProperty).mockResolvedValue('A')
@@ -117,21 +119,22 @@ describe('toHaveValue on multi-remote elements', () => {
     }
 
     test('passes with one value per instance, as the plain object shorthand or expect.multiRemote()', async () => {
-        const withPlainObject = await toHaveValue.call({}, multiRemoteElement(), { chrome: 'A', firefox: 'B' }, { wait: 0 })
-        const withMatcher = await toHaveValue.call({}, multiRemoteElement(), multiRemote({ chrome: 'A', firefox: 'B' }), { wait: 0 })
+        const withPlainObject = await thisContext.toHaveValue(multiRemoteElement(), { chrome: 'A', firefox: 'B' }, { wait: 0 })
+        const withMatcher = await thisContext.toHaveValue(multiRemoteElement(), multiRemote({ chrome: 'A', firefox: 'B' }), { wait: 0 })
 
         expect(withPlainObject.pass).toBe(true)
         expect(withMatcher.pass).toBe(true)
     })
 
     test('fails when an instance has another value', async () => {
-        const result = await toHaveValue.call({}, multiRemoteElement(), { chrome: 'A', firefox: 'A' }, { wait: 0 })
+        const result = await thisContext.toHaveValue(multiRemoteElement(), { chrome: 'A', firefox: 'A' }, { wait: 0 })
 
         expect(result.pass).toBe(false)
     })
 
     test('does not change toHaveElementProperty, where a plain object stays a literal property value', async () => {
-        const result = await toHaveElementProperty.call({}, multiRemoteElement() as unknown as WebdriverIO.Element, 'value', { chrome: 'A', firefox: 'B' } as unknown as string, { wait: 0 })
+        // @ts-expect-error a plain object is a literal property value, per-instance values require expect.multiRemote()
+        const result = await thisContext.toHaveElementProperty(multiRemoteElement(), 'value', { chrome: 'A', firefox: 'B' }, { wait: 0 })
 
         expect(result.pass).toBe(false)
     })

@@ -688,7 +688,7 @@ Received: "was not called"`
         const mock: any = new TestMock()
         mock.calls.push({ ...mockPost })
 
-        const result = await toBeRequestedWith.call({}, mock, {
+        const result = await thisContext.toBeRequestedWith(mock, {
             url: jasmine.stringContaining('/API/'),
         })
 
@@ -709,7 +709,7 @@ Expect mock to be called with
         const mock: any = new TestMock()
         mock.calls.push({ ...mockPost })
 
-        const result = await toBeRequestedWith.call({}, mock, {
+        const result = await thisContext.toBeRequestedWith(mock, {
             requestHeaders: jasmine.objectContaining({
                 Authorization: 'test',
             }),

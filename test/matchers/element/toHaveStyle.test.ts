@@ -495,9 +495,9 @@ Expect $$(\`elements\`) to have style
             { name: '$()', subject: () => createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel') },
             { name: '$$()', subject: () => createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2) },
         ])('checks the same style or one style per instance with expect.multiRemote() on $name', async ({ subject }) => {
-            const same = await toHaveStyle.call({}, subject(), style, { wait: 0 })
-            const perInstance = await toHaveStyle.call({}, subject(), multiRemote({ chrome: style, firefox: style }), { wait: 0 })
-            const fail = await toHaveStyle.call({}, subject(), multiRemote({ chrome: style, firefox: { color: 'other' } }), { wait: 0 })
+            const same = await thisContext.toHaveStyle(subject(), style, { wait: 0 })
+            const perInstance = await thisContext.toHaveStyle(subject(), multiRemote({ chrome: style, firefox: style }), { wait: 0 })
+            const fail = await thisContext.toHaveStyle(subject(), multiRemote({ chrome: style, firefox: { color: 'other' } }), { wait: 0 })
 
             expect(same.pass).toBe(true)
             expect(perInstance.pass).toBe(true)
@@ -508,7 +508,7 @@ Expect $$(\`elements\`) to have style
             const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel')
 
             // @ts-expect-error per-instance styles require expect.multiRemote()
-            const result = await toHaveStyle.call({}, element, { chrome: style, firefox: style }, { wait: 0 })
+            const result = await thisContext.toHaveStyle(element, { chrome: style, firefox: style }, { wait: 0 })
 
             expect(result.pass).toBe(false)
         })
