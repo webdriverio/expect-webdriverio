@@ -39,6 +39,7 @@ WebdriverIO `v9.31.5` or higher is required.
 Assertions are strict: every browser instance must pass.
 
 - **A single expected value** applies to every instance.
+- **`.not`** is strict too: no instance may match, e.g. `.not.toHaveTitle('WebdriverIO')` fails if any browser has that title.
 - **One expected value per instance** is passed with `expect.multiRemote()`, keyed by instance name, in any order. It must name **exactly** the instances: a missing, unknown or misspelled instance name fails the assertion, also with `.not`, without retrying.
 - Matcher options (e.g. `ignoreCase`, `containing`) apply to every instance, including `expect.oneOf()` nested in per-instance values.
 

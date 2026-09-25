@@ -54,7 +54,9 @@ export async function executeBrowserCommand<Actual, Expected>( {
         if (forceFailure) {
             return { actual, success: isNot, abort: true, subject: browser, expected }
         }
-        const success = arrayResults.every(result => result.success)
+        // Strict on every instance: with `.not`, no instance may match. `success` is inverted by `waitUntil` for `.not`,
+        // so it must stay true while at least one instance still matches.
+        const success = isNot ? arrayResults.some(result => result.success) : arrayResults.every(result => result.success)
 
         return { actual, success, subject: browser, expected }
     }
