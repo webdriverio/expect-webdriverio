@@ -10,8 +10,6 @@ await expect(multiRemoteBrowser.$('h1')).toHaveText('Welcome')
 await expect(multiRemoteBrowser.$$('li')).toBeDisplayed()
 ```
 
-**Note:** Multi-remote elements are not yet supported by the number, size and object matchers (`toHaveWidth`, `toHaveHeight`, `toHaveSize`, `toHaveStyle`, `toHaveElementProperty`, `toHaveChildren`) nor by `toBeElementsArrayOfSize`.
-
 **Note:** `multiremotebrowser` from `@wdio/globals` is deprecated in favor of `multiRemoteBrowser`.
 
 ## Instance Names
@@ -86,11 +84,19 @@ await expect(multiRemoteBrowser.select('chrome')).toHaveTitle('WebdriverIO')
 
 ### Plain Object Shorthand
 
-A plain object is a shorthand for `expect.multiRemote()`, since it can't be a valid expected value:
+Except for the matchers below, a plain object is a shorthand for `expect.multiRemote()`, since it can't be a valid expected value:
 
 ```ts
 await expect(multiRemoteBrowser).toHaveTitle({ chrome: 'WebdriverIO', firefox: 'WebdriverIO' })
 await expect(multiRemoteBrowser.$('h1')).toHaveText({ chrome: 'Welcome', firefox: 'Bienvenue' })
+await expect(multiRemoteBrowser.$('h1')).toHaveWidth({ chrome: 100, firefox: { gte: 90 } })
+```
+
+`toHaveStyle`, `toHaveSize` and `toHaveElementProperty` accept an object as expected value (e.g. `{ color: 'red' }`): for them, a plain object is always that value, and per-instance values require `expect.multiRemote()`.
+
+```ts
+await expect(multiRemoteBrowser.$('h1')).toHaveStyle({ color: 'red' }) // same style on every browser
+await expect(multiRemoteBrowser.$('h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
 ```
 
 Per-instance values are only allowed on multi-remote subjects: on a regular element they fail the assertion (and are rejected by TypeScript).
@@ -119,6 +125,7 @@ const title = multiRemoteBrowser.$('h1')
 await expect(title).toBeDisplayed()
 await expect(title).toHaveText(expect.multiRemote({ chrome: 'Welcome', firefox: 'Bienvenue' }))
 await expect(title).toHaveAttribute('data-locale', expect.multiRemote({ chrome: 'en', firefox: 'fr' }))
+await expect(title).toHaveWidth(expect.multiRemote({ chrome: 100, firefox: { gte: 90 } }))
 ```
 
 An array expected value is only supported by the matchers accepting one for a single element (e.g. `toHaveElementClass(['btn', 'btn-large'])`); otherwise it fails the assertion.
@@ -147,6 +154,13 @@ await expect(some(items)).toHaveText('Tea') // at least one match in every brows
 await expect(items).toHaveText(expect.arrayContaining(['Tea'])) // in every browser's collection
 ```
 
+`toBeElementsArrayOfSize` counts the elements per instance, against a single size shared by every instance or one size per instance:
+
+```ts
+await expect(items).toBeElementsArrayOfSize(3)
+await expect(items).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 3, firefox: { gte: 2 } }))
+```
+
 ## Retries & Re-fetching Elements
 
 As with regular elements, failing assertions are retried until they pass or time out, re-fetching `$$()` elements in between.
@@ -161,6 +175,10 @@ Both `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELE
 - **Re-fetching uses the global `multiRemoteBrowser`** with the elements' selector, ignoring any parent element or `select()` subset, and a one-time warning is logged. A retry may therefore assert on elements outside the original scope, e.g. `multiRemoteBrowser.select('firefox').$$('li')` is re-fetched on every instance, and `multiRemoteBrowser.$('form').$$('input')` from the whole page.
 - **Without injected WebdriverIO globals** (e.g. `injectGlobals: false` or standalone mode), elements are not re-fetched: every retry compares the same elements.
 - **An initially empty result cannot be re-fetched**, having no element to get the selector from: the assertion fails immediately instead of waiting for elements to appear, and the failure message shows `[]` instead of the selector.
+- **`toBeElementsArrayOfSize` with per-instance sizes on an empty result** cannot know the queried instances:
+  - They are taken from the global `multiRemoteBrowser`, ignoring any `select()` subset, so `expect(multiRemoteBrowser.select('firefox').$$('li')).toBeElementsArrayOfSize({ firefox: 0 })` fails since every instance is expected.
+  - Without injected globals, per-instance sizes are only checked against their own instance names, so a missing or misspelled instance name is not detected.
+  - A single size shared by every instance, e.g. `toBeElementsArrayOfSize(0)`, is not affected.
 
 Browser matchers, single elements `$()`, and `$$()` assertions passing on the first attempt are not affected.
 
@@ -184,7 +202,6 @@ Expect multi-remote<chrome, firefox>.$(`h1`) to have text
 ## Limitations
 
 - `toHaveText` requires the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag: its legacy strategy does not support multi-remote elements and fails the assertion.
-- Number, size and object matchers (`toHaveWidth`, `toHaveHeight`, `toHaveSize`, `toHaveStyle`, `toHaveElementProperty`, `toHaveChildren`) and `toBeElementsArrayOfSize` do not support multi-remote elements yet.
 - Network (mock) and snapshot matchers are not multi-remote aware.
 - Without `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY`, multi-remote `$$()` assertions are best effort, see [its limitations](#without-wdio_enable_multi_remote_element_array).
 
