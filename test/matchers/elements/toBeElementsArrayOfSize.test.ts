@@ -606,6 +606,25 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             expect(warn.mock.calls.flat().join()).toMatch(/best effort.*WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true/s)
         })
 
+        describe('an empty array outside multi-remote rejects per-instance sizes, like a non-empty one, instead of passing', () => {
+            test('an empty regular ElementArray', async () => {
+                const elements = await chainableElementArrayFactory('sel', 0)
+
+                // @ts-expect-error per-instance sizes are only typed for multi-remote elements
+                await expect(thisContext.toBeElementsArrayOfSize(elements, { chrome: 0, firefox: 0 }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
+                // @ts-expect-error per-instance sizes are only typed for multi-remote elements
+                await expect(thisNotContext.toBeElementsArrayOfSize(elements, { chrome: 1, firefox: 1 }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
+            })
+
+            test('an empty plain array with a single (non multi-remote) global browser', async () => {
+                vi.stubGlobal('browser', browserFactory())
+                const elements = [] as unknown as WebdriverIO.MultiRemoteElement[]
+
+                await expect(thisContext.toBeElementsArrayOfSize(elements, { chrome: 0, firefox: 0 }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
+                await expect(thisNotContext.toBeElementsArrayOfSize(elements, { chrome: 1, firefox: 1 }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
+            })
+        })
+
         test('MultiRemoteElement[]: an empty (unknown instances) array accepts per-instance sizes instead of throwing', async () => {
             delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
 

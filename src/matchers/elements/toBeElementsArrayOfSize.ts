@@ -5,7 +5,7 @@ import type { WdioElementsMaybePromise, WdioMultiRemoteElementArray } from '../.
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { isPerInstanceNumbers, validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import { awaitElementArray, isMultiRemoteElementArray, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from '../../util/elementsUtil.js'
-import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, hasSameInstanceNames, isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
+import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, hasSameInstanceNames, isGlobalBrowserSingleRemote, isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -48,8 +48,11 @@ export async function toBeElementsArrayOfSize(
     let { elements, other } = await awaitElementArray(received as WdioElementsMaybePromise)
 
     const awaitedMultiRemote = other ?? elements
-    // An empty plain `MultiRemoteElement[]` (without WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY) looks like an empty `Element[]`, but per-instance sizes tell them apart
-    const isEmptyWithPerInstanceSizes = Array.isArray(awaitedMultiRemote) && awaitedMultiRemote.length === 0 && getPerInstanceSizes(expectedValue) !== undefined
+    // An empty plain `MultiRemoteElement[]` (without WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY) looks like an empty `Element[]`, but per-instance sizes tell them apart,
+    // unless it is a regular `ElementArray` or a regular (non multi-remote) session, where per-instance sizes can never match
+    const isEmptyWithPerInstanceSizes = Array.isArray(awaitedMultiRemote) && awaitedMultiRemote.length === 0
+        && !isStrictlyElementArray(awaitedMultiRemote) && !isGlobalBrowserSingleRemote()
+        && getPerInstanceSizes(expectedValue) !== undefined
     if (isMultiRemoteElementsLike(awaitedMultiRemote) || isEmptyWithPerInstanceSizes) {
         const result = await multiRemoteElementsArrayOfSize(awaitedMultiRemote, expectedValue, options, { context: this, verb, expectation })
         await options.afterAssertion?.({ matcherName, expectedValue, options, result })
