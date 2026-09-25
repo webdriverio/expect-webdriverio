@@ -93,8 +93,6 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     if (strategy === 'LegacyLooseMultipleElements') {
         if (isSome) {
             throw new Error('some(elements) works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
-        } else if (isMultiRemoteElementsLike(unresolvedElements)) {
-            throw new Error('Multi-remote elements works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
         }
         return legacyMultipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, isNot)
     }
@@ -155,8 +153,12 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
 
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValuesWithArray<Actual>>> => {
     const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
+    // Checked once awaited to also catch a non-awaited `$()`/`$$()`. Throwing, since failing with `success: false` would pass under `.not`
+    if (isMultiRemoteElementLike(selector)) {
+        throw new Error('Multi-remote elements works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
+    }
     const subject = selector ?? other
-    if (!selector || isEmptyElements || isMultiRemoteElementLike(selector)) {
+    if (!selector || isEmptyElements) {
         return {
             subject: subject,
             success: false,
