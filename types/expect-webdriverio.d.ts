@@ -108,12 +108,10 @@ interface WdioCustomAsymmetricMatchers {
 
     /**
      * One expected value per multi-remote instance, keyed by instance name. Every instance must be listed.
-     * Required for per-instance values of matchers whose expected value is itself an object (`toHaveStyle`, `toHaveSize`,
-     * `toHaveElementProperty`), and the explicit form of the plain object shorthand for the other matchers.
+     * Explicit form of the plain object shorthand of the multi-remote browser matchers.
      *
      * @example
      * await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: 'Titre' }))
-     * await expect(multiRemoteBrowser.$('h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
      */
     multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
 }
@@ -1391,7 +1389,7 @@ declare module 'expect-webdriverio/api' {
      * One expected value per multi-remote instance, keyed by instance name. Same as `expect.multiRemote()`.
      *
      * @example
-     * await expect(multiRemoteBrowser.$('h1')).toHaveStyle(multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
+     * await expect(multiRemoteBrowser).toHaveTitle(multiRemote({ chrome: 'Title', firefox: 'Titre' }))
      */
     export function multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
 }
