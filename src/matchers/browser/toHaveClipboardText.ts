@@ -1,15 +1,36 @@
 import logger from '@wdio/logger'
 
-import { waitUntil, enhanceError, compareText } from '../../utils.js'
+import { waitUntil, enhanceError, compareTextOrOneOf } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import type { CompareResult } from '../../util/executeCommand.js'
+import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
+import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
 const log = logger('expect-webdriverio')
 
+/**
+ * Browser
+ */
 export async function toHaveClipboardText(
     browser: WebdriverIO.Browser,
-    expectedValue: string | RegExp | AsymmetricMatcher<string>,
+    expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * Multi-Remote Browser
+ */
+export async function toHaveClipboardText(
+    browser: WebdriverIO.MultiRemoteBrowser,
+    expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveClipboardText(
+    browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
+    expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-) {
+): Promise<ExpectWebdriverIO.AssertionResult> {
     const { expectation = 'clipboard text', verb = 'have', isNot, matcherName = 'toHaveClipboardText' } = this
 
     await options.beforeAssertion?.({
@@ -18,21 +39,25 @@ export async function toHaveClipboardText(
         options,
     })
 
-    const { actual, success: pass } = await waitUntil(
-        async () => {
-            await browser.setPermissions({ name: 'clipboard-read' }, 'granted')
-                // chances are that some browsers don't support the clipboard API yet
-                .catch((err) => log.warn(`Couldn't set clipboard permissions: ${err}`))
-            const actual = await browser.execute(() => window.navigator.clipboard.readText())
+    // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
+    const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-            const compareResult = compareText(actual, expectedValue, options)
-            return  { actual, success: compareResult.success, subject: browser }
+    const { actual, success: pass, subject, expected } = await waitUntil(
+        async () => {
+            return await executeBrowserCommand({
+                browser,
+                isNot,
+                expectedValue: expectedWithOptions,
+                compare: (
+                    browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
+                ) => compareClipboardText(browser, expectedValue, options),
+            })
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError('browser', expectedValue, actual, this, verb, expectation, '', options)
+    const message = enhanceError(subject, expected, actual, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: () => message
@@ -46,4 +71,18 @@ export async function toHaveClipboardText(
     })
 
     return result
+}
+
+const compareClipboardText = async (
+    browser: WebdriverIO.Browser,
+    expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
+    options: ExpectWebdriverIO.StringOptions
+): Promise<CompareResult<string>> => {
+    await browser.setPermissions({ name: 'clipboard-read' }, 'granted')
+        // chances are that some browsers don't support the clipboard API yet
+        .catch((err) => log.warn(`Couldn't set clipboard permissions: ${err}`))
+
+    const actual = await browser.execute(() => window.navigator.clipboard.readText())
+
+    return compareTextOrOneOf(actual, expectedValue, options)
 }

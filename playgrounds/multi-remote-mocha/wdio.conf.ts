@@ -18,7 +18,9 @@ export const config: WebdriverIO.MultiremoteConfig = {
     specs: [
         './test/specs/**/*.test.ts',
         //'./test/specs/**/basic-matchers.test.ts',
-        //'./test/specs/**/network-matchers.test.ts'
+        //'./test/specs/**/network-matchers.test.ts',
+        //'./test/specs/**/options.test.ts',
+        //'./test/specs/**/wdio-matchers.test.ts'
     ],
 
     maxInstances: 10,
@@ -33,13 +35,22 @@ export const config: WebdriverIO.MultiremoteConfig = {
                 capabilities: {
                     browserName: 'chrome',
                     'goog:chromeOptions': {
-                        args: ['headless', 'disable-gpu']
+                        args: ['headless', 'disable-gpu'],
+
+                        // Required to allow clipboard access in headless mode, scoped to the origins used by the tests
+                        prefs: {
+                            'profile.content_settings.exceptions.clipboard': {
+                                '[*.]localhost,*': { setting: 1 },
+                                'https://guinea-pig.webdriver.io:443,*': { setting: 1 }
+                            }
+                        }
                     }
                 }
             },
             firefox: {
                 capabilities: {
                     browserName: 'firefox',
+                    browserVersion: 'stable', // Required locally to force downloading!
                     'moz:firefoxOptions': {
                         args: ['-headless', 'disable-gpu']
                     }
@@ -71,7 +82,7 @@ export const config: WebdriverIO.MultiremoteConfig = {
     // =====
     //
     before: function () {
-        setDefaultOptions({ wait: 250 })
+        setDefaultOptions({ wait: 1000, interval: 100 })
         setFeatureFlags({
             useToHaveTextStrictMultiElementsCompareStrategy: true,
         })

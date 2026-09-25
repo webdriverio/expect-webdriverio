@@ -155,7 +155,7 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
     return false
 }
 
-export const compareTextOrArray = (
+export const compareTextOrOneOf = (
     actualText: string,
     expectedTexts: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
@@ -183,11 +183,8 @@ export const compareTextOrArray = (
         return { success: expectedTexts.asymmetricMatch(actualText), actual: actualText }
     }
 
-    // TODO one day consolidate typing and internal of oneOf so we do not need the below casting!
-    const compareResults = compareText(actualText, expectedTexts as string | RegExp, options)
-
-    return { success: compareResults.success, actual: actualText }
-
+    const compareResults = compareText(actualText, expectedTexts, options)
+    return  { ... compareResults }
 }
 
 // TODO one day turn this into at least a asymetrics class to better report in failure messages the string case we are in (containing, atStart, atEnd, atIndex, etc) and the expected value(s)

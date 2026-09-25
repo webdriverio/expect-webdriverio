@@ -1,6 +1,7 @@
 import { vi, test, describe, expect, afterEach } from 'vitest'
 
-import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, hasSameInstanceNames, isBrowser, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
+import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, hasSameInstanceNames, isBrowser, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
+import { multiRemote } from '../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
@@ -27,6 +28,34 @@ describe('multiRemoteUtils', () => {
         test.each([undefined, null, {}, 'browser', Object.create(null)])('does not recognize %s', (value) => {
             expect(isBrowser(value)).toBe(false)
         })
+    })
+
+    describe(getPerInstanceValues, () => {
+        test('treats any plain object as per-instance values by default, even with only unknown names', () => {
+            expect(getPerInstanceValues({ safari: 'a' })).toEqual({ safari: 'a' })
+        })
+
+        test('always unwraps expect.multiRemote()', () => {
+            expect(getPerInstanceValues(multiRemote({ chrome: 'a', firefox: 'b' }))).toEqual({ chrome: 'a', firefox: 'b' })
+            expect(getPerInstanceValues(multiRemote({ chrome: { color: 'red' } }), { allowObjectExpectedValue: true })).toEqual({ chrome: { color: 'red' } })
+        })
+
+        test('keeps a plain object as a literal when the expected value itself can be an object, whatever its keys', () => {
+            expect(getPerInstanceValues({ color: 'red' }, { allowObjectExpectedValue: true })).toBeUndefined()
+            // e.g. instances named `width` and `height` with `toHaveSize({ width, height })`
+            expect(getPerInstanceValues({ width: 10, height: 20 }, { allowObjectExpectedValue: true })).toBeUndefined()
+        })
+
+        test.each(['a', ['a'], /a/, expect.stringContaining('a'), undefined])('is undefined for %s', (value) => {
+            expect(getPerInstanceValues(value)).toBeUndefined()
+        })
+    })
+
+    test(isMultiRemoteMatcher, () => {
+        expect(isMultiRemoteMatcher(multiRemote({ chrome: 'a' }))).toBe(true)
+        expect(isMultiRemoteMatcher({ chrome: 'a' })).toBe(false)
+        expect(isMultiRemoteMatcher(expect.anything())).toBe(false)
+        expect(isMultiRemoteMatcher(undefined)).toBe(false)
     })
 
     describe(getGlobalMultiRemoteInstanceNames, () => {
@@ -90,4 +119,5 @@ describe('multiRemoteUtils', () => {
             expect(perInstance.firefox).toEqual([elements[0].getInstance('firefox')])
         })
     })
+
 })

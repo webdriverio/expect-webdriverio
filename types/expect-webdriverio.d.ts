@@ -55,6 +55,9 @@ type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclu
 type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>
 
 type MultiRemoteValues<T> = Record<string, T>
+type MultiRemoteValuesOrOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<T> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.MultiRemotePartialMatcher<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>
+type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
+type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
 
 /**
  * Real Promise and wdio chainable promise types.
@@ -83,6 +86,7 @@ type MockPromise = Promise<WebdriverIO.Mock>
  * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
  */
 type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser ? Fn : never
+type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT extends WebdriverIO.Browser ? FnBrowser : ActualT extends WebdriverIO.MultiRemoteBrowser ? FnMultiRemote : never
 /**
  * Enables distinct function signatures for single elements versus arrays of elements.
  *
@@ -101,48 +105,118 @@ type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise | WebdriverIO.Mock ? 
 
 interface WdioCustomAsymmetricMatchers {
     oneOf(...values: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>): ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>
+
+    /**
+     * One expected value per multi-remote instance, keyed by instance name. Every instance must be listed.
+     * Explicit form of the plain object shorthand of the multi-remote browser matchers.
+     *
+     * @example
+     * await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: 'Titre' }))
+     */
+    multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
 }
 
 /**
- * Matchers dedicated to Wdio Browser.
+ * Matchers dedicated to Wdio Browser or multi-remote Browser.
  * When asserting on a browser's properties requiring to be awaited, the return type is a Promise.
  * When actual is not a browser, the return type is never, so the function cannot be used.
  */
 interface WdioBrowserMatchers<_R, ActualT>{
     /**
-     * `WebdriverIO.Browser` -> `getUrl`
+     * Browser`s url
      */
-    toHaveUrl: FnWhenBrowser<ActualT, (url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Browser` -> `getTitle`
-     */
-    toHaveTitle: FnWhenBrowser<ActualT, (title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Browser` -> `execute`
-     */
-    toHaveClipboardText: FnWhenBrowser<ActualT, (clipboardText: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.StringOptions) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Browser` -> `execute`
-     */
-    toHaveLocalStorageItem: FnWhenBrowser<ActualT, {
+    toHaveUrl: FnWhenBrowserOrMultiRemote<ActualT,
         /**
-         * @deprecated since v6.0.0, removed in v8.0.0. Use `expect.anything()` instead of `undefined` as expected value.
-         */
+        * `WebdriverIO.Browser` -> `getUrl`
+        */
         (
-            key: string,
-            expectedValue: undefined,
+            url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
             options?: ExpectWebdriverIO.StringOptions
-        ): Promise<void>,
+        ) => Promise<void>,
 
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getUrl`
+        */
+        (
+            url: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
+
+    /**
+     * Browser`s title
+     */
+    toHaveTitle: FnWhenBrowserOrMultiRemote<ActualT,
+        /**
+        * `WebdriverIO.Browser` -> `getTitle`
+        */
+        (
+            title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getTitle`
+        */
+        (
+            title: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
+
+    /**
+     * `WebdriverIO.Browser` -> `execute`
+     */
+    toHaveClipboardText: FnWhenBrowserOrMultiRemote<ActualT,
+        /**
+        * `WebdriverIO.Browser` -> `getClipboard`
+        */
+        (
+            clipboardText: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getClipboard`
+        */
+        (
+            clipboardText: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
+
+    /**
+     * `WebdriverIO.Browser` -> `execute`
+     */
+    toHaveLocalStorageItem: FnWhenBrowserOrMultiRemote<ActualT,
+        /**
+        * `WebdriverIO.Browser` -> `getLocalStorageItem`
+        */
+        {
+            /**
+            * @deprecated since v6.0.0, removed in v8.0.0. Use `expect.anything()` instead of `undefined` as expected value.
+            */
+            (
+                key: string,
+                expectedValue: undefined,
+                options?: ExpectWebdriverIO.StringOptions
+            ): Promise<void>,
+
+            (
+                key: string,
+                expectedValue?: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+                options?: ExpectWebdriverIO.StringOptions
+            ) : Promise<void>
+        },
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getLocalStorageItem`
+        */
         (
             key: string,
-            expectedValue?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
+            expectedValue?: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
             options?: ExpectWebdriverIO.StringOptions
-        ) : Promise<void>
-    }
+        ) => Promise<void>
     >
 }
 
@@ -919,6 +993,17 @@ declare namespace ExpectWebdriverIO {
     function getConfig(): DefaultOptions
 
     /**
+     * The this context available inside each matcher function.
+     */
+    interface MatcherContext /* extends ExpectLibMatcherContext */ {
+        verb?: string
+        expectation?: string
+        isNot?: boolean
+        isMultiRemote?: boolean
+        matcherName?: keyof Matchers<void, unknown>
+    }
+
+    /**
      * The below block are overloaded types from the expect library.
      * They are required to show "everything" under the `ExpectWebdriverIO` namespace.
      * They are also required to be be able to declare custom asymmetric/normal matchers under the `ExpectWebdriverIO` namespace.
@@ -956,7 +1041,7 @@ declare namespace ExpectWebdriverIO {
 
     interface AsymmetricMatchers extends WdioAsymmetricMatchers, WdioCustomAsymmetricMatchers {}
 
-    interface InverseAsymmetricMatchers extends Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any' | 'oneOf'> {}
+    interface InverseAsymmetricMatchers extends Omit<ExpectWebdriverIO.AsymmetricMatchers, 'anything' | 'any' | 'oneOf' | 'multiRemote'> {}
 
     /**
      * End of block overloading types from the expect library.
@@ -1271,6 +1356,11 @@ declare namespace ExpectWebdriverIO {
      * Allow to match one of the specified value.
      */
     type OneOfPartialMatcher<T> = ExpectWebdriverIO.PartialMatcher<T[]>
+
+    /**
+     * One expected value per multi-remote instance, see `expect.multiRemote()`.
+     */
+    type MultiRemotePartialMatcher<T> = ExpectWebdriverIO.PartialMatcher<MultiRemoteValues<T>>
 }
 
 declare module 'expect-webdriverio' {
@@ -1294,4 +1384,12 @@ declare module 'expect-webdriverio/api' {
     export function some<T extends ElementArrayLike>(
         elements: T
     ): WdioSome<T>
+
+    /**
+     * One expected value per multi-remote instance, keyed by instance name. Same as `expect.multiRemote()`.
+     *
+     * @example
+     * await expect(multiRemoteBrowser).toHaveTitle(multiRemote({ chrome: 'Title', firefox: 'Titre' }))
+     */
+    export function multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
 }

@@ -4,125 +4,537 @@ import { toHaveUrl } from '../../src/matchers/browser/toHaveUrl.js'
 import { toHaveTitle } from '../../src/matchers/browser/toHaveTitle.js'
 import { matcherNameLastWords } from '../__fixtures__/utils'
 import stripAnsi from 'strip-ansi'
+import { multiRemoteBrowser } from '../__mocks__/@wdio/globals.js'
+import { expect as wdioExpect } from '../../src/index.js'
 
 vi.mock('@wdio/globals')
 
-const browserMatchers = new Map([
-    [toHaveUrl, browser.getUrl],
-    [toHaveTitle, browser.getTitle],
+const browserMatchers = new Map<Function, keyof WebdriverIO.Browser>([
+    [toHaveUrl, 'getUrl'],
+    [toHaveTitle, 'getTitle'],
 ])
 
 const validText = ' Valid Text '
 const wrongText = ' Wrong Text '
 
-describe('browser matchers', () => {
-    browserMatchers.forEach((browserFn, matcherFn) => {
+describe('Browser Matchers', () => {
+    browserMatchers.forEach((browserFnName, matcherFn) => {
 
-        let thisContext: { matcherFn: typeof matcherFn }
-        let thisNotContext: { isNot: true,  matcherFn: typeof matcherFn }
+        let thisContext: ExpectWebdriverIO.MatcherContext & { matcherFn: typeof matcherFn }
+        let thisNotContext: ExpectWebdriverIO.MatcherContext & { isNot: true,  matcherFn: typeof matcherFn }
 
         beforeEach(() => {
             thisContext = { matcherFn }
             thisNotContext = { isNot: true,  matcherFn }
         })
 
-        describe(matcherFn, () => {
-            test('wait for success', async () => {
-                vi.mocked(browserFn).mockResolvedValueOnce(wrongText).mockResolvedValueOnce(wrongText).mockResolvedValueOnce(validText)
+        describe(`Matchers: ${matcherFn.name}`, () => {
 
-                const result = await thisContext.matcherFn(browser, validText, { trim: false, wait: 500 })
-                expect(result.pass).toBe(true)
+            describe('Single Remote', () => {
+                let browserFn: ReturnType<WebdriverIO.Browser[keyof WebdriverIO.Browser]>
 
-                expect(browserFn).toHaveBeenCalledTimes(3)
-            })
+                beforeEach(() => {
+                    browserFn = browser[browserFnName]
+                    vi.mocked(browserFn).mockResolvedValue(validText)
+                })
 
-            test('wait but error', async () => {
-                vi.mocked(browserFn).mockRejectedValue(new Error('some error'))
+                test('wait for success', async () => {
+                    vi.mocked(browserFn).mockResolvedValueOnce(wrongText).mockResolvedValueOnce(wrongText).mockResolvedValueOnce(validText)
 
-                await expect(() => thisContext.matcherFn(browser, validText, { trim: false, wait: 1 }))
-                    .rejects.toThrow('some error')
-            })
+                    const result = await thisContext.matcherFn(browser, validText, { trim: false, wait: 500 })
+                    expect(result.pass).toBe(true)
 
-            test('success on the first attempt', async () => {
-                vi.mocked(browserFn).mockResolvedValue(validText)
+                    expect(browserFn).toHaveBeenCalledTimes(3)
+                })
 
-                const result = await thisContext.matcherFn(browser, validText, { trim: false, wait: 1 })
-                expect(result.pass).toBe(true)
-                expect(browserFn).toHaveBeenCalledTimes(1)
-            })
+                test('wait but error', async () => {
+                    vi.mocked(browserFn).mockRejectedValue(new Error('some error'))
 
-            test('no wait - failure', async () => {
-                vi.mocked(browserFn).mockResolvedValue(wrongText)
+                    await expect(() => thisContext.matcherFn(browser, validText, { trim: false, wait: 1 }))
+                        .rejects.toThrow('some error')
+                })
 
-                const result = await thisContext.matcherFn(browser, validText, { wait: 0, trim: false })
+                test('success on the first attempt', async () => {
+                    const result = await thisContext.matcherFn(browser, validText, { trim: false, wait: 1 })
 
-                expect(result.pass).toBe(false)
-                expect(browserFn).toHaveBeenCalledTimes(1)
-            })
+                    expect(result.pass).toBe(true)
+                    expect(browserFn).toHaveBeenCalledTimes(1)
+                })
 
-            test('no wait - success', async () => {
-                vi.mocked(browserFn).mockResolvedValue(validText)
+                test('success with oneOf', async () => {
+                    const result = await thisContext.matcherFn(browser, wdioExpect.oneOf(validText, wrongText), { trim: false, wait: 1 })
 
-                const result = await thisContext.matcherFn(browser, validText, { wait: 0, trim: false })
+                    expect(result.pass).toBe(true)
+                    expect(browserFn).toHaveBeenCalledTimes(1)
+                })
 
-                expect(result.pass).toBe(true)
-                expect(browserFn).toHaveBeenCalledTimes(1)
-            })
+                test('success when passing one single asymmetric expected value', async () => {
+                    const result = await thisContext.matcherFn(browser, wdioExpect.stringContaining('Valid'), { trim: false, wait: 0 })
 
-            test('not - failure - pass should be true', async () => {
-                vi.mocked(browserFn).mockResolvedValue(validText)
-                const result = await thisNotContext.matcherFn(browser, validText, { wait: 0, trim: false })
+                    expect(result.pass).toBe(true)
+                })
 
-                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(stripAnsi(result.message())).toEqual(`\
-Expect window not to have ${matcherNameLastWords(matcherFn.name)}
+                test('no wait - failure', async () => {
+                    vi.mocked(browserFn).mockResolvedValue(wrongText)
 
-Expected [not]: " Valid Text "
-Received      : " Valid Text "`
-                )
-            })
+                    const result = await thisContext.matcherFn(browser, validText, { wait: 0, trim: false })
 
-            test('not - success - pass should be false', async () => {
-                vi.mocked(browserFn).mockResolvedValue(wrongText)
+                    expect(result.pass).toBe(false)
+                    expect(browserFn).toHaveBeenCalledTimes(1)
+                })
 
-                const result = await thisNotContext.matcherFn(browser, validText)
+                test('no wait - success', async () => {
+                    const result = await thisContext.matcherFn(browser, validText, { wait: 0, trim: false })
 
-                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-            })
+                    expect(result.pass).toBe(true)
+                    expect(browserFn).toHaveBeenCalledTimes(1)
+                })
 
-            test('not - failure (with wait) - pass should be true', async () => {
-                vi.mocked(browserFn).mockResolvedValue(validText)
+                test('not - failure - pass should be true', async () => {
+                    const result = await thisNotContext.matcherFn(browser, validText, { wait: 0, trim: false })
 
-                const result = await thisNotContext.matcherFn(browser, validText, { wait: 1, trim: false })
-
-                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                expect(stripAnsi(result.message())).toEqual(`\
-Expect window not to have ${matcherNameLastWords(matcherFn.name)}
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect browser's window not to have ${matcherNameLastWords(matcherFn.name)}
 
 Expected [not]: " Valid Text "
 Received      : " Valid Text "`
-                )
-            })
+                    )
+                })
 
-            test('not - success (with wait) - pass should be false', async () => {
-                vi.mocked(browserFn).mockResolvedValue(wrongText)
+                test('not - unsupported array expected value - pass should be true and abort without retrying', async () => {
+                    vi.mocked(browserFn).mockResolvedValue(wrongText)
 
-                const result = await thisNotContext.matcherFn(browser, validText)
+                    const result = await thisNotContext.matcherFn(browser, [validText, validText], { wait: 500, interval: 10, trim: false })
 
-                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-            })
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    expect(browserFn).toHaveBeenCalledTimes(1)
+                })
 
-            test('message', async () => {
-                vi.mocked(browserFn).mockResolvedValue(wrongText)
-                const result = await thisContext.matcherFn(browser, validText)
+                test('fails expect.multiRemote() on a single browser', async () => {
+                    const result = await thisNotContext.matcherFn(browser, wdioExpect.multiRemote({ chrome: wrongText }), { wait: 0 })
 
-                expect(result.pass).toBe(false)
-                expect(stripAnsi(result.message())).toEqual(`\
-Expect window to have ${matcherNameLastWords(matcherFn.name)}
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                })
+
+                test('applies string options to expect.oneOf()', async () => {
+                    const result = await thisContext.matcherFn(browser, wdioExpect.oneOf(' valid text '), { ignoreCase: true, trim: false, wait: 0 })
+
+                    expect(result.pass).toBe(true)
+                })
+
+                test('not - success - pass should be false', async () => {
+                    vi.mocked(browserFn).mockResolvedValue(wrongText)
+
+                    const result = await thisNotContext.matcherFn(browser, validText)
+
+                    expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                })
+
+                test('not - failure (with wait) - pass should be true', async () => {
+                    const result = await thisNotContext.matcherFn(browser, validText, { wait: 1, trim: false })
+
+                    expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect browser's window not to have ${matcherNameLastWords(matcherFn.name)}
+
+Expected [not]: " Valid Text "
+Received      : " Valid Text "`
+                    )
+                })
+
+                test('not - success (with wait) - pass should be false', async () => {
+                    vi.mocked(browserFn).mockResolvedValue(wrongText)
+
+                    const result = await thisNotContext.matcherFn(browser, validText)
+
+                    expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                })
+
+                test('message', async () => {
+                    vi.mocked(browserFn).mockResolvedValue(wrongText)
+
+                    const result = await thisContext.matcherFn(browser, validText)
+
+                    expect(result.pass).toBe(false)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect browser's window to have ${matcherNameLastWords(matcherFn.name)}
 
 Expected: " Valid Text "
-Received: " Wrong Text "`
-                )
+Received: "Wrong Text"`
+                    )
+                })
+            })
+
+            describe('Multi-Remote', () => {
+                const chromeBrowser = multiRemoteBrowser.getInstance('chrome')
+                const firefoxBrowser = multiRemoteBrowser.getInstance('firefox')
+
+                beforeEach(async () => {
+                    vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(validText)
+                    vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(validText)
+                })
+
+                describe('when success', () => {
+                    test('success when passing one single expected value', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                        expect(chromeBrowser![browserFnName]).toHaveBeenCalledTimes(1)
+                        expect(firefoxBrowser![browserFnName]).toHaveBeenCalledTimes(1)
+                    })
+
+                    test('success when passing one single asymmetric expected value', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.stringContaining('Valid'), { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('success when passing oneOf expected value', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.oneOf(validText, wrongText), { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('success when passing multi remote expected values', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser,
+                            {
+                                chrome: validText,
+                                firefox: validText
+                            }, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('success when multi remote expected values are given in a different order than the instances', async () => {
+                        vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(validText)
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(wrongText)
+
+                        const result = await thisContext.matcherFn(multiRemoteBrowser,
+                            {
+                                firefox: wrongText,
+                                chrome: validText,
+                            }, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('success when passing multi remote expected values with oneOf & asymmetric matcher', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser,
+                            {
+                                chrome: wdioExpect.oneOf(validText, wrongText),
+                                firefox: wdioExpect.stringContaining('Valid')
+                            }, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('success when selecting multi remote expected values', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser.select('firefox'),
+                            {
+                                firefox: wdioExpect.stringContaining('Valid')
+                            }, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+                })
+
+                describe('with .not', () => {
+                    test('success when no instance matches', async () => {
+                        vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(wrongText)
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(wrongText)
+
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                    })
+
+                    test('failure when only some instances do not match', async () => {
+                        vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(validText)
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(wrongText)
+
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    })
+
+                    test('failure when only some instances do not match, with multi remote expected values', async () => {
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, { chrome: validText, firefox: wrongText }, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    })
+
+                    test('wait until no instance matches', async () => {
+                        vi.mocked(chromeBrowser![browserFnName]).mockResolvedValueOnce(validText).mockResolvedValue(wrongText)
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(wrongText)
+
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 500, interval: 10 })
+
+                        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                        expect(chromeBrowser![browserFnName]).toHaveBeenCalledTimes(2)
+                    })
+                })
+
+                describe('when failure', () => {
+                    test('failure when passing one single expected value', async () => {
+                        vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(wrongText)
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(validText)
+
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 0 })
+                        expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+-   "chrome": " Valid Text ",
++   "chrome": " Wrong Text ",
+    "firefox": " Valid Text ",
+  }`
+                        )
+                    })
+
+                    test('failure when passing unsupported array type', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, [validText, validText], { trim: false, wait: 0 })
+                        expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 8
++ Received  + 2
+
+  Object {
+-   "chrome": Array [
+-     " Valid Text ",
+-     " Valid Text ",
+-   ],
+-   "firefox": Array [
+-     " Valid Text ",
+-     " Valid Text ",
+-   ],
++   "chrome": " Valid Text ",
++   "firefox": " Valid Text ",
+  }`
+                        )
+                    })
+
+                    test('failure when passing oneOf expected value', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.oneOf(wrongText, wrongText), { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 2
++ Received  + 2
+
+  Object {
+-   "chrome": oneOf<" Wrong Text ", " Wrong Text ">,
+-   "firefox": oneOf<" Wrong Text ", " Wrong Text ">,
++   "chrome": " Valid Text ",
++   "firefox": " Valid Text ",
+  }`
+                        )
+                    })
+
+                    test('failure when passing multi remote expected values', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, { chrome: wrongText, firefox: validText }, { trim: false, wait: 0 })
+                        expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+-   "chrome": " Wrong Text ",
++   "chrome": " Valid Text ",
+    "firefox": " Valid Text ",
+  }`
+                        )
+                    })
+
+                    test('failure when passing one inexisting multi remote expected values', async () => {
+                        const expected = {
+                            chrome: validText,
+                            firefox: validText,
+                            wrong: wrongText
+                        }
+
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
+                        expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 1
++ Received  + 0
+
+  Object {
+    "chrome": " Valid Text ",
+    "firefox": " Valid Text ",
+-   "wrong": " Wrong Text ",
+  }`
+                        )
+                    })
+
+                    test('failure when missing multi remote values', async () => {
+                        const expected = {
+                            chrome: validText,
+                        }
+
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
+                        expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 0
++ Received  + 1
+
+  Object {
+    "chrome": " Valid Text ",
++   "firefox": " Valid Text ",
+  }`
+                        )
+                    })
+
+                    test('failure when passing multi remote expected values with oneOf & asymmetric matcher', async () => {
+                        const expected = {
+                            chrome: wdioExpect.oneOf(wrongText, wrongText),
+                            firefox: wdioExpect.stringContaining(wrongText)
+                        }
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 2
++ Received  + 2
+
+  Object {
+-   "chrome": oneOf<" Wrong Text ", " Wrong Text ">,
+-   "firefox": StringContaining " Wrong Text ",
++   "chrome": " Valid Text ",
++   "firefox": " Valid Text ",
+  }`
+                        )
+                    })
+
+                })
+
+                describe('when using expect.multiRemote()', () => {
+                    test('fails with the same per-instance message as the plain object shorthand', async () => {
+                        const expected = { chrome: validText, firefox: wrongText }
+
+                        const withPlainObject = await thisContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
+                        const withMatcher = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.multiRemote(expected), { trim: false, wait: 0 })
+
+                        expect(withMatcher.pass).toBe(false)
+                        expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))
+                        expect(stripAnsi(withMatcher.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "chrome": " Valid Text ",
+-   "firefox": " Wrong Text ",
++   "firefox": " Valid Text ",
+  }`
+                        )
+                    })
+
+                    test('fails with the same message as the plain object shorthand on an unknown instance', async () => {
+                        const expected = { chrome: validText, safari: validText }
+
+                        const withPlainObject = await thisContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
+                        const withMatcher = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.multiRemote(expected), { trim: false, wait: 0 })
+
+                        expect(withMatcher.pass).toBe(false)
+                        expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))
+                        expect(stripAnsi(withMatcher.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "chrome": " Valid Text ",
+-   "safari": " Valid Text ",
++   "firefox": " Valid Text ",
+  }`
+                        )
+                    })
+
+                    test('compares each instance against its own expected value', async () => {
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(wrongText)
+
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.multiRemote({ firefox: wrongText, chrome: validText }), { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('fails strictly on unknown instance names, also with .not', async () => {
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, wdioExpect.multiRemote({ chrome: wrongText, safari: wrongText }), { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    })
+
+                    test('applies the string options to nested expect.oneOf()', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser,
+                            wdioExpect.multiRemote({ chrome: wdioExpect.oneOf('VALID'), firefox: wdioExpect.oneOf('valid') }), { ignoreCase: true, containing: true, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+                })
+
+                describe('when using expect.oneOf() with string options', () => {
+                    test('applies the options to a top-level oneOf', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, wdioExpect.oneOf(' valid text '), { ignoreCase: true, trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+
+                    test('applies the options to a oneOf nested in per-instance values', async () => {
+                        const result = await thisContext.matcherFn(multiRemoteBrowser,
+                            { chrome: wdioExpect.oneOf('valid'), firefox: wdioExpect.oneOf('VALID') }, { ignoreCase: true, containing: true, wait: 0 })
+
+                        expect(result.pass).toBe(true)
+                    })
+                })
+
+                describe('when the expected value is structurally invalid, with .not', () => {
+                    test.each([
+                        { name: 'only unknown instances', expected: { safari: wrongText } },
+                        { name: 'misspelled instances', expected: { Chrome: wrongText, Firefox: wrongText } },
+                        { name: 'an unknown instance', expected: { chrome: wrongText, firefox: wrongText, safari: wrongText } },
+                        { name: 'a missing instance', expected: { chrome: wrongText } },
+                        { name: 'an unsupported array', expected: [wrongText, wrongText] },
+                    ])('fails with $name instead of passing - pass should be true', async ({ expected }) => {
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, expected, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    })
+
+                    test('does not compare against the unsupported array, so no misleading deprecation warning nor error', async () => {
+                        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+                        const result = await thisContext.matcherFn(multiRemoteBrowser, [validText, wdioExpect.oneOf(validText)], { trim: false, wait: 500, interval: 10 })
+
+                        expect(result.pass).toBe(false)
+                        expect(warn).not.toHaveBeenCalled()
+                    })
+
+                    test('aborts instead of retrying until timeout', async () => {
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, { chrome: wrongText }, { trim: false, wait: 500, interval: 10 })
+
+                        expect(result.pass).toBe(true)
+                        expect(chromeBrowser![browserFnName]).toHaveBeenCalledTimes(1)
+                    })
+                })
             })
         })
     })

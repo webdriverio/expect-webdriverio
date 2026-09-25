@@ -2,7 +2,7 @@
 
 When you're writing tests, you often need to check that values meet certain conditions. `expect` gives you access to a number of "matchers" that let you validate different things on the `browser`, an `element` or `mock` object.
 
-**Note**: Multi-remote is not yet supported. Any working scenario is coincidental and may break or change without notice until fully supported.
+**Note**: Browser matchers support [multi-remote](MultiRemote.md), checking every browser instance with a single expected value or one per instance. Multi-remote elements are not yet supported: any working scenario is coincidental and may break or change without notice until fully supported.
 
 ## Soft Assertions
 
@@ -209,6 +209,8 @@ You can find all unicode references in the [HTML spec](https://html.spec.whatwg.
 **Note:** unicode is case-insensitive hence both `\u00a0` and `\u00A0` works. To find element in browser inspect, remove `u` from unicode e.g.: `div[data="Some\00a0Value"]`
 
 ## Browser Matchers
+
+Browser matchers support the multi-remote browser, with a single expected value or one per instance, see [Multi-remote Support](MultiRemote.md#browser-matchers).
 
 ### toHaveUrl
 
@@ -1192,6 +1194,16 @@ or
 ```ts
 await expect(browser).toHaveTitle(expect.not.stringContaining('some title'))
 ```
+
+### expect.multiRemote()
+
+With [multi-remote](MultiRemote.md), passes one expected value per browser instance, keyed by instance name. Every instance must be listed.
+
+```ts
+await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: expect.stringContaining('Titre') }))
+```
+
+See [Expected Values](MultiRemote.md#expected-values) for the plain object shorthand.
 
 ### Jasmine
 

@@ -1,6 +1,6 @@
 # expect-webdriverio [![Test](https://github.com/webdriverio/expect-webdriverio/actions/workflows/test.yml/badge.svg)](https://github.com/webdriverio/expect-webdriverio/actions/workflows/test.yml)
 
-###### [API](docs/API.md) | [TypeScript / JS Autocomplete](docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](docs/CustomMatchers.md)
+###### [API](docs/API.md) | [Multi-remote](docs/MultiRemote.md) | [TypeScript / JS Autocomplete](docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](docs/CustomMatchers.md)
 
 > [WebdriverIO](https://webdriver.io/) assertion library inspired by [expect](https://www.npmjs.com/package/expect)
 
@@ -8,6 +8,7 @@
 
 - [Waits](#default-options) for expectations to succeed
 - Supports single element `$()` & multiple elements `$$()`
+- Supports [multi-remote](docs/MultiRemote.md) browsers, with one expected value per browser instance
 - Detailed [error messages](#error-messages)
 - Works in Mocha, Cucumber, Jest, and Jasmine
 - Built-in [types](docs/Types.md) for TypeScript and JS autocompletion
@@ -86,4 +87,4 @@ First of all, **feel free to raise an issue with your suggestions or help with P
 ### Planned
 
 - Cookie matchers
-- Multiremote support (in progress)
+- Multi-remote elements support (in progress)

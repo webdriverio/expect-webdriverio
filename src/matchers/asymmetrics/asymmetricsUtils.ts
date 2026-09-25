@@ -10,9 +10,22 @@ export const buildWdioAsymmetricMatchersWithOptions = <T>(expectedValue: T, opti
         if (Array.isArray(expectedValue)) {
             return expectedValue.map((value) => buildOneAsymmetricMatcherWithOptions(value, options)) as unknown as T
         }
+        // Multi-remote per-instance values, e.g. `{ chrome: expect.oneOf(...), firefox: [expect.oneOf(...)] }`
+        if (isPlainObject(expectedValue)) {
+            return Object.fromEntries(Object.entries(expectedValue).map(([key, value]) => [key, buildWdioAsymmetricMatchersWithOptions(value, options)])) as T
+        }
         return buildOneAsymmetricMatcherWithOptions(expectedValue, options)
     }
     return expectedValue
+}
+
+/** Only rebuild plain objects: class instances (e.g. `Date`) and asymmetric matchers must be kept as is */
+const isPlainObject = (value: unknown): value is Record<string, unknown> => {
+    if (typeof value !== 'object' || value === null || isAsymmetricMatcher(value)) {
+        return false
+    }
+    const prototype = Object.getPrototypeOf(value)
+    return prototype === Object.prototype || prototype === null
 }
 
 const buildOneAsymmetricMatcherWithOptions = <T>(expectedValue: T, options: ExpectWebdriverIO.StringOptions | undefined): T => {
