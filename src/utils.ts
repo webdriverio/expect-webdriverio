@@ -3,7 +3,7 @@ import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
 
-import type { MaybeSomeWdioElementOrArrayMaybePromise } from './types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MultiRemoteValuesWithArray } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
@@ -94,7 +94,7 @@ export function getAsymmetricMatcherValue<T>(
 }
 
 async function executeCommandBe(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions = {}
 ): ExpectWebdriverIO.AsyncAssertionResult {
@@ -118,7 +118,8 @@ async function executeCommandBe(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceErrorBe(subject, actual, { ...this, verb, isSome }, options)
+    // TODO dprevost fix typing?
+    const message = enhanceErrorBe(subject, actual as boolean[] | boolean | MultiRemoteValuesWithArray<boolean> | undefined, { ...this, verb, isSome }, options)
 
     return {
         pass,
@@ -429,6 +430,13 @@ export const compareStyle = async (
 
         let actualVal: string = String(css.value || '')
         let expectedVal: string = style[key]
+
+        // e.g. per-instance styles passed as a plain object instead of `expect.multiRemote()`: a mismatch, not a crash
+        if (typeof expectedVal !== 'string') {
+            actual[key] = css.value
+            success = false
+            continue
+        }
 
         if (trim) {
             actualVal = actualVal.trim()

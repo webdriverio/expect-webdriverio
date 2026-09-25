@@ -1,9 +1,9 @@
 import { executeCommandBe } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements } from '../../types.js'
 
 export async function toExist(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'exist'
@@ -11,7 +11,7 @@ export async function toExist(
     this.allowEmptyElements = true
 
     await options.beforeAssertion?.({
-        matcherName: 'toExist', // TODO use this.matcher =  this.matcher || toExist in v6.0.0 to fix matcherName issue with toBeExisting and toBePresent
+        matcherName: 'toExist', // TODO use this.matcher =  this.matcher || toExist in v10.0.0 to fix matcherName issue with toBeExisting and toBePresent
         options,
     })
 
@@ -26,13 +26,13 @@ export async function toExist(
     return result
 }
 
-export function toBeExisting(el: MaybeSomeWdioElementOrArrayMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
+export function toBeExisting(el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, options?: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'existing'
     this.verb = 'be'
 
     return toExist.call(this, el, options)
 }
-export function toBePresent(el: MaybeSomeWdioElementOrArrayMaybePromise, options?: ExpectWebdriverIO.CommandOptions) {
+export function toBePresent(el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, options?: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'present'
     this.verb = 'be'
 

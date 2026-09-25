@@ -1,14 +1,14 @@
 # expect-webdriverio [![Test](https://github.com/webdriverio/expect-webdriverio/actions/workflows/test.yml/badge.svg)](https://github.com/webdriverio/expect-webdriverio/actions/workflows/test.yml)
 
-###### [API](docs/API.md) | [Multi-remote](docs/MultiRemote.md) | [TypeScript / JS Autocomplete](docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](docs/CustomMatchers.md)
+###### [API](docs/API.md) | [Multiple Elements](docs/MultipleElements.md) | [Multi-remote](docs/MultiRemote.md) | [TypeScript / JS Autocomplete](docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](docs/CustomMatchers.md)
 
 > [WebdriverIO](https://webdriver.io/) assertion library inspired by [expect](https://www.npmjs.com/package/expect)
 
 ## Key Features
 
-- [Waits](#default-options) for expectations to succeed
-- Supports single element `$()` & multiple elements `$$()`
-- Supports [multi-remote](docs/MultiRemote.md) browsers, with one expected value per browser instance
+- [Waits](docs/API.md#default-options) for expectations to succeed
+- Supports single element `$()` & [multiple elements](docs/MultipleElements.md) `$$()`
+- Supports [multi-remote](docs/MultiRemote.md) browsers & elements, with one expected value per browser instance
 - Detailed [error messages](#error-messages)
 - Works in Mocha, Cucumber, Jest, and Jasmine
 - Built-in [types](docs/Types.md) for TypeScript and JS autocompletion
@@ -36,6 +36,17 @@ await expect($$('buttons')).toBeDisplayed()
 ```
 
 See more [Examples](docs/Examples.md).
+
+#### Multi-remote
+
+With [multi-remote](https://webdriver.io/docs/multiremote), assertions check every browser instance, with a single expected value or one per instance:
+
+```js
+await expect(multiRemoteBrowser).toHaveTitle('WebdriverIO')
+await expect(multiRemoteBrowser.$('h1')).toHaveText(expect.multiRemote({ chrome: 'Welcome', firefox: 'Bienvenue' }))
+```
+
+Some feature flags and WebdriverIO environment variables are required or recommended, see [Multi-remote Support](docs/MultiRemote.md#requirements--configuration).
 
 #### Local & Browser Runners
 - **Local Runner**: Fully compatible. You can leverage your test framework adapter as mentioned above.
@@ -87,4 +98,3 @@ First of all, **feel free to raise an issue with your suggestions or help with P
 ### Planned
 
 - Cookie matchers
-- Multi-remote elements support (in progress)

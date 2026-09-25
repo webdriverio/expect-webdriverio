@@ -1,7 +1,7 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { expect } from 'expect'
@@ -56,7 +56,7 @@ export async function toHaveElementProperty(
  * Same as `toHaveElementProperty(el, property, expect.anything())`.
  */
 export async function toHaveElementProperty(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     property: string,
 ): Promise<AssertionResult>
 
@@ -84,7 +84,7 @@ export async function toHaveElementProperty(
 
 // Implementation signature broadened to accept union types safely
 export async function toHaveElementProperty(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     property: string,
     value?: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>  | undefined,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
@@ -108,7 +108,7 @@ export async function toHaveElementProperty(
 
     value = buildWdioAsymmetricMatchersWithOptions(value, options)
 
-    const { success: pass, actual: actualProppertyValue, subject: elements, context: { isSome } = {} } = await waitUntil(
+    const { success: pass, actual: actualProppertyValue, subject: elements, context: { isSome } = {}, expected: expectedValues } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -119,14 +119,14 @@ export async function toHaveElementProperty(
                 },
                 context: { isNot, iteration },
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: false }
+                strictConfiguration: { allowArrayWithSingleElement: false, allowObjectExpectedValue: true }
             })
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
 
-    const expected = wrapExpectedWithArray(elements, actualProppertyValue, value)
+    const expected = expectedValues ?? wrapExpectedWithArray(elements, actualProppertyValue, value)
     const message = enhanceError(elements, expected, actualProppertyValue, { isNot, isSome }, verb, expectation, property, options)
 
     const result: ExpectWebdriverIO.AssertionResult = {

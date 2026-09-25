@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeArray, WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { MaybeArray, WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
@@ -35,9 +35,19 @@ export async function toHaveStyle(
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
+/**
+ * Multi-remote $() or $$(): one style for every instance, or one style per instance with `expect.multiRemote()`
+ * (a plain object is always a literal style)
+ */
 export async function toHaveStyle(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<{ [key: string]: string; }>,
+    received: WdioMultiRemoteElements,
+    expectedValue: MaybeArray<{ [key: string]: string; }> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<{ [key: string]: string; }>>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveStyle(
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
+    expectedValue: MaybeArray<{ [key: string]: string; }> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<{ [key: string]: string; }>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<ExpectWebdriverIO.AssertionResult> {
     const { expectation = 'style', verb = 'have', isNot, matcherName = 'toHaveStyle' } = this
@@ -48,7 +58,7 @@ export async function toHaveStyle(
         options,
     })
 
-    const { success: pass, actual: actualStyle, subject: el, context: { isSome } = {} } = await waitUntil(
+    const { success: pass, actual: actualStyle, subject: el, context: { isSome } = {}, expected: expectedValues } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -57,14 +67,14 @@ export async function toHaveStyle(
                 singleElementCompare: (element, expectedValues) => condition(element, expectedValues as { [key: string]: string; } | undefined, options),
                 context: { isNot, iteration },
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: false }
+                strictConfiguration: { allowArrayWithSingleElement: false, allowObjectExpectedValue: true }
             })
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
 
-    const expected = wrapExpectedWithArray(el, actualStyle, expectedValue)
+    const expected = expectedValues ?? wrapExpectedWithArray(el, actualStyle, expectedValue)
     const message = enhanceError(el, expected, actualStyle, { isNot, isSome }, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {

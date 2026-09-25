@@ -45,6 +45,7 @@ You can pass any of these element types to `expect`:
 - `ChainablePromiseArray` (the non-awaited case)
 - `ElementArray` (the awaited case)
 - `Element[]` (the filtered case)
+- `MultiRemoteElement[]` (multi-remote `$$()`), where these rules apply per browser instance, see [Multi-remote Support](MultiRemote.md#multiple-elements-)
 
 ## Alternative
 
@@ -110,7 +111,3 @@ await expect(some(elements)).not.toHaveText(/forbiddenTextA|forbiddenTextB/);
 // Succeeds if the first element matches 'valueForIndex0' OR the second matches 'valueForIndex1'
 await expect(some(elements)).toHaveText(['valueForIndex0', 'valueForIndex1']);
 ```
-
-## COMING SOON
-
-- Refresh ElementArrays automatically on failures for more robust assertions

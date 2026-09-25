@@ -118,7 +118,8 @@ export async function toBeRequestedWith(
     const message = enhanceError(
         'mock',
         minifyRequestedWith(expectedValue),
-        minifyRequestMock(actual, expectedValue, parseCache) || 'was not called',
+        // TODO support multi-remote values or fix the generic typging to remove casting?
+        minifyRequestMock(actual as RequestMock | undefined, expectedValue, parseCache) || 'was not called',
         this,
         verb,
         expectation,

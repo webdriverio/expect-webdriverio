@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { validateNumberArrayAndExtractOptions, type NumberMatcher } from '../../util/numberOptionsUtil.js'
@@ -44,9 +44,18 @@ export async function toHaveWidth(
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
+/**
+ * Multi-remote $() or $$(): one expected value for every instance, or one per instance
+ */
 export async function toHaveWidth(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions,
+    received: WdioMultiRemoteElements,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
+    options?: ExpectWebdriverIO.CommandOptions
+):Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toHaveWidth(
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.NumberOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ):Promise<ExpectWebdriverIO.AssertionResult> {
     const { expectation = 'width', verb = 'have', isNot, matcherName = 'toHaveWidth' } = this
@@ -59,7 +68,7 @@ export async function toHaveWidth(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
 
-    const { success: pass, actual: actualWidth, subject: elements, context: { isSome } = {} } = await waitUntil(
+    const { success: pass, actual: actualWidth, subject: elements, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -74,7 +83,7 @@ export async function toHaveWidth(
         { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
-    const expectedValues = wrapExpectedWithArray(elements, actualWidth, expectedNumber)
+    const expectedValues = expected ?? wrapExpectedWithArray(elements, actualWidth, expectedNumber)
     const message = enhanceError(
         elements,
         expectedValues,
