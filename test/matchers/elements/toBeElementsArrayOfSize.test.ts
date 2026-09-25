@@ -437,6 +437,13 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
+        test('rejects sizes mixing NumberOptions keys and instance names, instead of misreading them as options', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+
+            // e.g. with instances named `eq` and `firefox`
+            await expect(thisContext.toBeElementsArrayOfSize(elements, { eq: 2, firefox: 3 } as never, { wait: 0 })).rejects.toThrow(/Ambiguous expected value.*expect\.multiRemote\(\)/)
+        })
+
         test('passes with one size per instance, whatever the key order', async () => {
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
 

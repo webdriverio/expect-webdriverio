@@ -47,16 +47,30 @@ export function validateNumberAndExtractOptions(
 }
 
 /** Legacy `NumberOptions` keys, see `validateNumberAndExtractOptions` */
-const NUMBER_OPTIONS_KEYS = ['eq', 'gte', 'lte', 'wait', 'interval', 'message', 'beforeAssertion', 'afterAssertion']
+const NUMBER_OPTIONS_KEYS = ['eq', 'gte', 'lte', 'wait', 'interval', 'message', 'beforeAssertion', 'afterAssertion', 'featureFlags']
 
 /**
  * Multi-remote: one number (or NumberMatcher, or array of them for `$$()`) per instance, as opposed to a `NumberMatcher` or
  * legacy `NumberOptions`. Either `expect.multiRemote({ chrome: 2, firefox: { gte: 1 } })` or its plain object shorthand.
  * Not relying on the instance names so that unknown or misspelled ones fail strictly instead of being misread as options.
+ *
+ * A plain object with only option keys is a `NumberOptions`, even if instances are named like them (e.g. `eq`): such instances
+ * require `expect.multiRemote()`. An object mixing option keys and other keys is neither, so it throws instead of silently
+ * dropping the other keys (e.g. `{ eq: 2, firefox: 3 }` with instances `eq` and `firefox`).
  */
 export const isPerInstanceNumbers = (value: unknown): value is MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | MultiRemoteMatcherLike => {
-    return isMultiRemoteMatcher(value) || (isDefinedPlainObject(value) && !(value instanceof AsymmetricMatcher) && !Array.isArray(value)
-        && Object.keys(value).length > 0 && !Object.keys(value).some((key) => NUMBER_OPTIONS_KEYS.includes(key)))
+    if (isMultiRemoteMatcher(value)) {
+        return true
+    }
+    if (!isDefinedPlainObject(value) || value instanceof AsymmetricMatcher || Array.isArray(value)) {
+        return false
+    }
+    const keys = Object.keys(value)
+    const optionKeys = keys.filter((key) => NUMBER_OPTIONS_KEYS.includes(key))
+    if (optionKeys.length > 0 && optionKeys.length < keys.length) {
+        throw new Error(`Ambiguous expected value ${JSON.stringify(value)}: it mixes NumberOptions keys (${optionKeys.join(', ')}) with other keys. For one value per multi-remote instance, use expect.multiRemote().`)
+    }
+    return keys.length > 0 && optionKeys.length === 0
 }
 
 type MultiRemoteMatcherLike = { sample: MultiRemoteValues<unknown> }

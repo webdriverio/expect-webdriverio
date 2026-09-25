@@ -92,6 +92,8 @@ await expect(multiRemoteBrowser.$('h1')).toHaveText({ chrome: 'Welcome', firefox
 await expect(multiRemoteBrowser.$('h1')).toHaveWidth({ chrome: 100, firefox: { gte: 90 } })
 ```
 
+For number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren` and `toBeElementsArrayOfSize`), an object with only `NumberOptions` keys (`eq`, `gte`, `lte`, `wait`, ...) is a number matcher shared by every instance: if an instance is named like one of these keys, use `expect.multiRemote()`. An object mixing these keys with instance names is rejected.
+
 `toHaveStyle`, `toHaveSize` and `toHaveElementProperty` accept an object as expected value (e.g. `{ color: 'red' }`): for them, a plain object is always that value, and per-instance values require `expect.multiRemote()`.
 
 ```ts
