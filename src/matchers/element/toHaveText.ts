@@ -6,7 +6,7 @@ import {
     isArrayContainingMatcher,
     waitUntil,
 } from '../../utils.js'
-import type { MaybeArray, MaybeSomeWdioElementOrArrayMaybePromise } from '../../types.js'
+import type { MaybeArray, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
@@ -19,8 +19,9 @@ async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<
 }
 
 export async function toHaveText(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
-    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
+    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>
+        | MultiRemoteValues<MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'text', verb = 'have', isNot, matcherName = 'toHaveText' } = this
@@ -34,7 +35,7 @@ export async function toHaveText(
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
     const isNewStrictCompare = getFeatureFlagValue(options, 'useToHaveTextStrictMultiElementsCompareStrategy')
-    const { success: pass, actual: actualText, subject: subject, context: { isSome } = {} } = await waitUntil(
+    const { success: pass, actual: actualText, subject: subject, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -56,8 +57,8 @@ export async function toHaveText(
         throw new Error('toHaveText with arrayContaining requires an array of elements')
     }
 
-    const expected = fillSingleExpectedForElementArray(subject, expectedValue)
-    const message = enhanceError(subject, expected, actualText, { isNot, isSome }, verb, expectation, '', options)
+    const finalExpected = expected ?? fillSingleExpectedForElementArray(subject, expectedValue)
+    const message = enhanceError(subject, finalExpected, actualText, { isNot, isSome }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message
