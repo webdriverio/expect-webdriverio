@@ -79,8 +79,17 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.anything())).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.oneOf('https://example.com', 'https://webdriver.io'))).toEqualTypeOf<Promise<void>>()
 
+                // Per-instance values
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle({ chrome: 'a', firefox: expect.stringContaining('b') })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'a', firefox: expect.stringContaining('b') }))).toEqualTypeOf<Promise<void>>()
+
                 // Multi-remote element values cannot guarantee order so we can compare with an array
                 expectTypeOf(expect(multiRemoteBrowser).toHaveTitle).parameter(0).not.toBeArray()
+            })
+
+            it('should not support per-instance values on a single browser', async () => {
+                // @ts-expect-error
+                expectTypeOf(expect(browser).toHaveTitle({ chrome: 'a', firefox: 'b' })).toEqualTypeOf<Promise<void>>()
             })
         })
 

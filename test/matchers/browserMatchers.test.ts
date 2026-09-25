@@ -239,6 +239,42 @@ Received: "Wrong Text"`
                     })
                 })
 
+                describe('with .not', () => {
+                    test('success when no instance matches', async () => {
+                        vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(wrongText)
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(wrongText)
+
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                    })
+
+                    test('failure when only some instances do not match', async () => {
+                        vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(validText)
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(wrongText)
+
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    })
+
+                    test('failure when only some instances do not match, with multi remote expected values', async () => {
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, { chrome: validText, firefox: wrongText }, { trim: false, wait: 0 })
+
+                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+                    })
+
+                    test('wait until no instance matches', async () => {
+                        vi.mocked(chromeBrowser![browserFnName]).mockResolvedValueOnce(validText).mockResolvedValue(wrongText)
+                        vi.mocked(firefoxBrowser![browserFnName]).mockResolvedValue(wrongText)
+
+                        const result = await thisNotContext.matcherFn(multiRemoteBrowser, validText, { trim: false, wait: 500, interval: 10 })
+
+                        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+                        expect(chromeBrowser![browserFnName]).toHaveBeenCalledTimes(2)
+                    })
+                })
+
                 describe('when failure', () => {
                     test('failure when passing one single expected value', async () => {
                         vi.mocked(chromeBrowser![browserFnName]).mockResolvedValue(wrongText)
