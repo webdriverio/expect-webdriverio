@@ -174,8 +174,6 @@ describe('WebdriverIO Custom Matchers', () => {
                     await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
                     await multiRemoteBrowser.getInstance('chrome')!.url('about:blank')
 
-                    // Crash here with `WebDriver Bidi command "script.callFunction" failed with error: no such node`
-                    console.log('isDisplayed:', await h1.isDisplayed())
                     await expect(h1).not.toBeDisplayed()
                     await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`h1`\) to be displayed/)
                 })
