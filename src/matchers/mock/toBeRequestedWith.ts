@@ -118,7 +118,8 @@ export async function toBeRequestedWith(
     const message = enhanceError(
         'mock',
         minifyRequestedWith(expectedValue),
-        minifyRequestMock(actual, expectedValue, parseCache) || 'was not called',
+        // Mocks are never multi-remote: the shared strategy result type also allows per-instance values
+        minifyRequestMock(actual as RequestMock | undefined, expectedValue, parseCache) || 'was not called',
         this,
         verb,
         expectation,

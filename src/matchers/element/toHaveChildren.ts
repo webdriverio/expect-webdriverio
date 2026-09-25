@@ -1,6 +1,6 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
@@ -29,7 +29,7 @@ async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher |
  * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
  */
 export async function toHaveChildren(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
 ): Promise<AssertionResult>
 
 /**
@@ -75,7 +75,7 @@ export async function toHaveChildren(
 ): Promise<AssertionResult>
 
 export async function toHaveChildren(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValueOrOptions?: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {

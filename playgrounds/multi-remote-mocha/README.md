@@ -4,4 +4,4 @@ This playground project is the equivalent of the mocha playgrounds but specifica
 
 ## Notes
 
-See [Multi-remote Support](../../docs/MultiRemote.md) for the supported behaviors.
+See [Multi-remote Support](../../docs/MultiRemote.md) for the supported behaviors. The `wdio.conf.ts` enables the recommended feature flag and WebdriverIO environment variables.

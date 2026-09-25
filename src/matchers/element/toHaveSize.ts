@@ -1,6 +1,6 @@
 import type { RectReturn } from '@wdio/protocols'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromise, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
@@ -36,7 +36,7 @@ export async function toHaveSize(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveSize(
-    received: MaybeSomeWdioElementOrArrayMaybePromise,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArray<Size>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
@@ -56,7 +56,7 @@ export async function toHaveSize(
                 singleElementCompare: (element, expectedSize: Size | undefined) => condition(element, expectedSize),
                 context: { isNot, iteration },
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: false }
+                strictConfiguration: { allowArrayWithSingleElement: false, allowObjectExpectedValue: true }
             })
         },
         isNot,

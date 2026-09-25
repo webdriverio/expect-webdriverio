@@ -1,6 +1,10 @@
 
 import { setDefaultOptions, setFeatureFlags } from 'expect-webdriverio'
 
+// Recommended with multi-remote, see docs/MultiRemote.md#requirements--configuration
+process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+process.env.WDIO_ENABLE_MULTI_REMOTE_SELECT = 'true'
+
 export const config: WebdriverIO.MultiremoteConfig = {
     //
     // ====================

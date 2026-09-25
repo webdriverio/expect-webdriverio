@@ -57,6 +57,8 @@ type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, Expect
 type MultiRemoteValues<T> = Record<string, T>
 type MultiRemoteValuesOrOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<T> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.MultiRemotePartialMatcher<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>
 type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
+type MaybeArrayOrMultiRemoteValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
+type MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>> | ExpectWebdriverIO.OneOfPartialMatcher<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>>
 type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
 
 /**
@@ -78,8 +80,9 @@ type ArrayOfElementsPromise = Promise<WebdriverIO.Element[]>
  */
 type ElementOrMaybeSomeArrayLike = ElementLike | MaybeSomeElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
-type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise
-type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise>
+type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[]
+type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[]>
+type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]
 type MockPromise = Promise<WebdriverIO.Mock>
 
 /**
@@ -95,8 +98,8 @@ type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT ext
  *
  * Fix: If type inference issues arise, split the implementation into separate interfaces
  */
-type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement> = ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement: never
-type FnWhenElementArrayLike<ActualT, Fn> = ActualT extends MaybeSomeElementArrayLike ? Fn : never
+type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement, FnMultiRemoteElement = FnElement, FnMultiRemoteElements = FnArray> = ActualT extends WebdriverIO.MultiRemoteElement[] ? FnMultiRemoteElements : ActualT extends WebdriverIO.MultiRemoteElement ? FnMultiRemoteElement : ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement : never
+type FnWhenElementArrayLike<ActualT, Fn, FnMultiRemoteElements = Fn> = ActualT extends WebdriverIO.MultiRemoteElement[] ? FnMultiRemoteElements : ActualT extends MaybeSomeElementArrayLike ? Fn : never
 
 /**
  * Same as the other but because of Jasmine and it's expectAsync typing which does not force T to be a promise, then we need to account for `WebdriverIO.Mock
@@ -108,10 +111,11 @@ interface WdioCustomAsymmetricMatchers {
 
     /**
      * One expected value per multi-remote instance, keyed by instance name. Every instance must be listed.
-     * Explicit form of the plain object shorthand of the multi-remote browser matchers.
+     * Explicit form of the plain object shorthand of the multi-remote browser and element matchers.
      *
      * @example
      * await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: 'Titre' }))
+     * await expect(multiRemoteBrowser.$('h1')).toHaveText(expect.multiRemote({ chrome: 'Welcome', firefox: 'Bienvenue' }))
      */
     multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
 }
@@ -257,12 +261,13 @@ interface WdioNetworkMatchers<_R, ActualT> {
 }
 
 /**
- * Matchers dedicated to WebdriverIO Element or ElementArray (or chainable).
+ * Matchers dedicated to WebdriverIO Element or ElementArray (or chainable) on Browser
+ * For Multi-Remote Browser, MultiRemoteElement or MultiRemoteElement[]
  * When asserting on an element or element array's properties requiring to be awaited, the return type is a Promise.
  * When actual is neither of WebdriverIO.Element, WebdriverIO.ElementArray, ChainableElement, ChainableElementArray, the return type is never, so the function cannot be used.
  */
 interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
-    // ===== $ or $$ =====
+    // ===== $ or $$ with Browser or Multi-Remote Browser=====
     /**
      * `WebdriverIO.Element` -> `isDisplayed`
      */
@@ -362,6 +367,26 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             value: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            attribute: string
+        ): Promise<void>
+        (
+            attribute: string,
+            value: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            attribute: string
+        ): Promise<void>
+        (
+            attribute: string,
+            value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
     }
     >
 
@@ -417,6 +442,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             className: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) :Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            className: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            className: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
     }>
 
     toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, {
@@ -489,6 +526,22 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         (
 
             value: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /**
+         * Multi-Remote Elements API
+         */
+        /** $() API */
+        (
+            value: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /** $$() API */
+        (
+
+            value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>
     >
@@ -573,6 +626,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             href: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            href: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            href: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
     }>
 
     /**
@@ -590,6 +655,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             href: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            href: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            href: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
     }>
 
     /**
@@ -605,6 +682,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Elements $$() API */
         (
             id: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            id: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            id: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>
     >
@@ -630,7 +719,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * ```
      */
     toHaveText: FnWhenElementOrArrayLike<ActualT, {
-        /** Element $() API */
+        /** Element browser.$() API */
         (
             text: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
@@ -641,12 +730,25 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }, {
-        /** Elements $$() API */
+        /** Elements browser.$$() API */
         (
             text: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
-    }>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            text: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) : Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            text: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) : Promise<void>
+    }
+    >
 
     /**
      * `WebdriverIO.Element` -> `getHTML`
@@ -667,6 +769,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Elements $$() API */
         (
             text: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>>,
+            options?: ExpectWebdriverIO.HTMLOptions
+        ): Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            text: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.HTMLOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            text: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.HTMLOptions
         ): Promise<void>
     }>
@@ -693,6 +807,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             computedLabel: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            computedLabel: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            computedLabel: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
     }>
 
     /**
@@ -717,6 +843,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             computedRole: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            computedRole: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            computedRole: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
     }>
 
     /**
@@ -1152,11 +1290,12 @@ declare namespace ExpectWebdriverIO {
 
     interface FeatureFlags {
         /**
-             * Feature flag to enable the new multi-elements comparison for `toHaveText` matcher, allowing to keep the current behavior without breaking changes.
-             * When enabled, the matcher will compare the text of multiple elements in an indexed exact match manner, rather than using the array as a possible match for any of the elements.
-             *
-             * Will be removed in v6.0.0, as the new behavior will become the default and only behavior for `toHaveText` matcher.
-             */
+         * Feature flag to enable the new multi-elements comparison for `toHaveText` matcher, allowing to keep the current behavior without breaking changes.
+         * When enabled, the matcher will compare the text of multiple elements in an indexed exact match manner, rather than using the array as a possible match for any of the elements.
+         * Also required for `some()`, `expect.oneOf()` in an expected array, and multi-remote elements with `toHaveText`.
+         *
+         * The new behavior is planned to become the default in the next major version.
+         */
         useToHaveTextStrictMultiElementsCompareStrategy?: boolean
     }
 
@@ -1389,7 +1528,7 @@ declare module 'expect-webdriverio/api' {
      * One expected value per multi-remote instance, keyed by instance name. Same as `expect.multiRemote()`.
      *
      * @example
-     * await expect(multiRemoteBrowser).toHaveTitle(multiRemote({ chrome: 'Title', firefox: 'Titre' }))
+     * await expect(multiRemoteBrowser.$('h1')).toHaveText(multiRemote({ chrome: 'Welcome', firefox: 'Bienvenue' }))
      */
     export function multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
 }
