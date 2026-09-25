@@ -1,5 +1,5 @@
 import { isArrayContainingMatcher } from '../utils.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise } from '../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromise, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../types.js'
 
 /**
  * Wraps the expected value in an array if both the target element (`el`) and the `actual` value are arrays.
@@ -42,12 +42,14 @@ const isSelector = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO
 export const isElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
     return isSelector(obj)
     && 'foundWith' in obj
+    && !isMultiRemote(obj) // Ensure multi-remote elements are excluded
 }
 
 export const isStrictlyElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
     return isElementArray(obj)
     && Array.isArray(obj)
     && 'getElements' in obj // specific to ElementArray
+    && !isMultiRemote(obj) // Ensure multi-remote elements are excluded
 }
 
 export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
@@ -55,6 +57,7 @@ export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
     return isSelector(obj)
     && !Array.isArray(obj)
     && 'getElement' in obj // specific to Element
+    && !isMultiRemote(obj) // Ensure multi-remote elements are excluded
 }
 
 /**
@@ -63,7 +66,8 @@ export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
  *
  */
 export const isElementArrayLike = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element[] => {
-    return !!obj && (isStrictlyElementArray(obj) || (Array.isArray(obj) && obj.every(isElement)))
+    // Using Array.prototype to bypass the asynchronous iterators of a `MultiRemoteElementArray` (its `every` returns a truthy Promise)
+    return !!obj && (isStrictlyElementArray(obj) || (Array.isArray(obj) && Array.prototype.every.call(obj, isElement)))
 }
 
 /**
@@ -71,7 +75,7 @@ export const isElementArrayLike = (obj: unknown): obj is WebdriverIO.ElementArra
  * Warning: empty array is considered as Element[] and will return true.
  */
 export const isArrayOfElement = (obj: unknown): obj is WebdriverIO.Element[] => {
-    return Array.isArray(obj) && obj.every(isElement)
+    return Array.isArray(obj) && !isMultiRemote(obj) && Array.prototype.every.call(obj, isElement)
 }
 
 /**
@@ -157,4 +161,47 @@ export const awaitElementArray = async(received: WdioElementsMaybePromise | unde
 
     // for `WebdriverIO.Element[]` or any other object
     return { elements: awaitedElements }
+}
+
+const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] => {
+    return !!obj && typeof obj === 'object' && ('isMultiremote' in obj && obj.isMultiremote === true || 'isMultiRemote' in obj && obj.isMultiRemote === true)
+}
+
+export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemoteElement => {
+    // `selector` distinguishes a MultiRemoteElement from a MultiRemoteBrowser (both share `isMultiremote`/`getInstance`,
+    // only the element has a `selector`); the array check excludes MultiRemoteElement[] and WdioMultiRemoteElementArray.
+    return isMultiRemote(obj) && !Array.isArray(obj) && 'selector' in obj
+}
+
+/**
+ * MultiRemoteElement[]
+ * Warning: empty array returns false and is treated as Element[] (see `isElementArrayLike`),
+ * so both guards never match the same value.
+ */
+export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] => {
+    return Array.isArray(obj) && obj.length > 0 && !isMultiRemoteElementArray(obj)
+        // Using Array.prototype to bypass asynchronous iterator of ElementArray
+        && Array.prototype.every.call(obj, isMultiRemoteElement)
+}
+
+/**
+ * Fake MultiRemoteElementArray at runtime for v9, should be better typed in v10
+ * Need env variable `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` set to `true`
+ */
+export const isMultiRemoteElementArray = (obj: unknown): obj is WdioMultiRemoteElementArray => {
+    return !!obj && typeof obj === 'object' && 'isMultiremote' in obj && obj.isMultiremote === true && 'parent' in obj && 'foundWith' in obj && 'selector' in obj
+}
+
+/**
+ * Checks if the object is like a MultiRemoteElement, array or not.
+ */
+export const isMultiRemoteElementLike = (obj: unknown): obj is WdioMultiRemoteElements => {
+    return isMultiRemoteElement(obj) || isMultiRemoteElementsLike(obj)
+}
+
+/**
+ * Checks if the object is like a MultiRemoteElement array
+ */
+export const isMultiRemoteElementsLike = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray => {
+    return isMultiRemoteElementArray(obj) || isMultiRemoteElements(obj)
 }

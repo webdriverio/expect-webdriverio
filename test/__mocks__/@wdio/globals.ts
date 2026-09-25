@@ -5,6 +5,7 @@
 import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
 import { Size } from '../../../src/matchers/element/toHaveSize'
+import type { WdioMultiRemoteElementArray } from '../../../src/types'
 
 const getElementMethods = () => ({
     isDisplayed: vi.spyOn({ isDisplayed: async () => true }, 'isDisplayed'),
@@ -212,27 +213,237 @@ export function chainableElementArrayFactory(selector: string, length: number, p
 
     return runtimeChainablePromiseArray
 }
+export class Browser {
+    $ = vi.fn((selector: string) => {
+        const element = elementFactory(selector)
+        return $Factory(element)
+    })
+    $$ = vi.fn()
+    execute = vi.fn()
+    setPermissions = vi.spyOn({ setPermissions: async () => {} }, 'setPermissions')
+    getUrl = vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl')
+    getTitle = vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle')
+
+    constructor(elementArrayLength = 2) {
+        vi.mocked(this.$$).mockImplementation((selector: string) => {
+            return chainableElementArrayFactory(selector, elementArrayLength, this as unknown as WebdriverIO.Browser)
+        })
+    }
+
+    call(fn: Function) {
+        return fn()
+    }
+}
 
 export const browserFactory = (elementArrayLength = 2): WebdriverIO.Browser => {
-    const browser = {
-        $: vi.fn((_selector: string) => {
-            const element = elementFactory(_selector)
-
-            return $Factory(element)
-        }),
-        $$: vi.fn(),
-        execute: vi.fn(),
-        setPermissions: vi.spyOn({ setPermissions: async () => {} }, 'setPermissions'),
-        getUrl: vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl'),
-        getTitle: vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle'),
-        call(fn: Function) { return fn() },
-    } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
-
-    browser.$$ = vi.fn((selector: string) => {
-        return chainableElementArrayFactory(selector, elementArrayLength, browser)
-    })
-
-    return browser
+    return new Browser(elementArrayLength) as unknown as WebdriverIO.Browser
 }
 
 export const browser = browserFactory()
+
+export class CustomMultiRemoteDriver {
+    // Multi remote properties
+    [key: string]: unknown
+    instances: string[]
+    isMultiremote = true
+    select = vi.fn()
+    getInstance = vi.fn()
+
+    // Common Browser methods
+    $ = vi.fn()
+    $$ = vi.fn()
+    execute = vi.fn()
+    setPermissions = vi.fn()
+    getUrl = vi.fn()
+    getTitle = vi.fn()
+
+    constructor(
+        browsers: Record<string, WebdriverIO.Browser> = {
+            chrome: browserFactory(),
+            firefox: browserFactory(),
+        }
+    ) {
+        /**
+         * Multi-remote properties
+         */
+        // Attach browser instances (e.g., this.chrome, this.firefox)
+        Object.assign(this, browsers)
+
+        const availableBrowsers = Object.values(browsers)
+
+        this.instances = Object.keys(browsers)
+
+        vi.mocked(this.select).mockImplementation((...instanceNames: string[]) => {
+            const selectedBrowsers: Record<string, WebdriverIO.Browser> = {}
+            for (const name of instanceNames) {
+                selectedBrowsers[name] = this[name] as WebdriverIO.Browser
+            }
+            return multiRemoteBrowserFactory(selectedBrowsers)
+        })
+
+        vi.mocked(this.getInstance).mockImplementation((instanceName: string) => {
+            return this[instanceName] as WebdriverIO.Browser
+        })
+
+        /**
+         * Common browser methods
+         */
+        // Like `MultiRemote.elementWrapper()` at runtime: one `MultiRemoteElement` wrapping each instance's resolved element
+        vi.mocked(this.$).mockImplementation(async (selector: string) => {
+            const instanceElements = await Promise.all(availableBrowsers.map((browser) => browser.$(selector))) as unknown as WebdriverIO.Element[]
+            return buildMultiRemoteElementWrapper(this.instances, instanceElements, selector)
+        })
+
+        vi.mocked(this.$$).mockImplementation((selector: string) => {
+            return Promise.resolve(createMultiRemoteElementArrayMock(browsers, selector, 2, this as unknown as WebdriverIO.MultiRemoteBrowser))
+        })
+
+        vi.mocked(this.setPermissions).mockImplementation((descriptor: object, state: string, oneRealm?: boolean) => {
+            return Promise.all(availableBrowsers.map((browser) => browser.setPermissions(descriptor, state, oneRealm)))
+        })
+
+        vi.mocked(this.getUrl).mockImplementation(() => {
+            return Promise.all(availableBrowsers.map((browser) => browser.getUrl()))
+        })
+
+        vi.mocked(this.getTitle).mockImplementation(() => {
+            return Promise.all(availableBrowsers.map((browser) => browser.getTitle()))
+        })
+    }
+}
+
+export const multiRemoteBrowserFactory = (
+    browsers?: Record<string, WebdriverIO.Browser>
+): WebdriverIO.MultiRemoteBrowser => {
+    return new CustomMultiRemoteDriver(browsers) as unknown as WebdriverIO.MultiRemoteBrowser
+}
+
+export const multiRemoteBrowser = multiRemoteBrowserFactory()
+
+/**
+ * Wraps one already-fetched element per instance into a `WebdriverIO.MultiRemoteElement`, mirroring
+ * `MultiRemote.elementWrapper()` at runtime. Shared by `createMultiRemoteElementMock` (single element,
+ * via `$()`) and `createMultiRemoteElementArrayMock` (one wrapper per index, via `$$()`).
+ */
+const buildMultiRemoteElementWrapper = (
+    instances: string[],
+    instanceElements: WebdriverIO.Element[],
+    selector: string
+): WebdriverIO.MultiRemoteElement => {
+    const multiRemoteElement = {
+        isMultiremote: true,
+        selector,
+        instances: instances,
+
+        // Returns specific element instance by session name
+        getInstance(name: string) {
+            const idx = instances.indexOf(name)
+            if (idx === -1) {
+                throw new Error(`Multiremote object has no instance named "${name}"`)
+            }
+            return instanceElements[idx] as unknown as WebdriverIO.Element
+        },
+
+        // Delegate $() on multiremote element across all browser instances
+        $: vi.fn().mockImplementation((subSelector: string) => {
+            const childBrowsers: Record<string, WebdriverIO.Browser> = {}
+            instances.forEach((name, index) => {
+                childBrowsers[name] = {
+                    $: () => instanceElements[index].$(subSelector),
+                    $$: () => instanceElements[index].$$(subSelector),
+                } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+            })
+            return createMultiRemoteElementMock(childBrowsers, subSelector)
+        }),
+
+        // Delegate $$() across all browser instances
+        $$: vi.fn().mockImplementation((subSelector: string) => {
+            const childBrowsers: Record<string, WebdriverIO.Browser> = {}
+            instances.forEach((name, index) => {
+                childBrowsers[name] = {
+                    $: () => instanceElements[index].$(subSelector),
+                    $$: () => instanceElements[index].$$(subSelector),
+                } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
+            })
+            return createMultiRemoteElementArrayMock(childBrowsers, subSelector)
+        }),
+
+        // Common element method proxies returning Promise.all array of results
+        click: vi.fn().mockImplementation(() =>
+            Promise.all(instanceElements.map((el) => el.click()))
+        ),
+        getText: vi.fn().mockImplementation(() =>
+            Promise.all(instanceElements.map((el) => el.getText()))
+        ),
+        setValue: vi.fn().mockImplementation((val: string) =>
+            Promise.all(instanceElements.map((el) => el.setValue(val)))
+        ),
+        isDisplayed: vi.fn().mockImplementation(() =>
+            Promise.all(instanceElements.map((el) => el.isDisplayed()))
+        ),
+    } satisfies Partial<WebdriverIO.MultiRemoteElement> as unknown as WebdriverIO.MultiRemoteElement
+
+    // Attach named instance shortcuts (e.g. multiElement.chrome, multiElement.firefox)
+    instances.forEach((name, idx) => {
+        // @ts-expect-error TypeScript doesn't know about the dynamic element per instance name
+        multiRemoteElement[name] = instanceElements[idx]
+    })
+
+    return multiRemoteElement as WebdriverIO.MultiRemoteElement
+}
+
+export function createMultiRemoteElementMock(
+    browsers: Record<string, WebdriverIO.Browser>,
+    selector: string
+): WebdriverIO.MultiRemoteElement {
+    const instances = Object.keys(browsers)
+
+    // TODO can we remove `as unknown` here?
+    const instanceElements = instances.map((name) => browsers[name].$(selector)) as unknown as WebdriverIO.Element[]
+
+    return buildMultiRemoteElementWrapper(instances, instanceElements, selector)
+}
+
+/**
+ * Mocks `multiRemoteBrowser.$$()` / `multiRemoteElement.$$()`, mirroring WebdriverIO's real behavior:
+ * results are zipped by index across instances into `WebdriverIO.MultiRemoteElement[]` (the default,
+ * "official" shape). When `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`, the same array of wrappers is
+ * additionally decorated with ElementArray-like properties (`.parent`, `.foundWith`, `.getElements()`,
+ * an async-aware `.forEach()`) and `isMultiremote: true`, matching `enhanceElementsArray()` at runtime.
+ */
+export function createMultiRemoteElementArrayMock(
+    browsers: Record<string, WebdriverIO.Browser>,
+    selector: string,
+    length = 2,
+    parent: WebdriverIO.MultiRemoteBrowser = multiRemoteBrowserFactory(browsers)
+): WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray {
+    const instances = Object.keys(browsers)
+
+    // Per-instance element arrays, e.g. { chrome: [el0, el1], firefox: [el0, el1] }
+    const instanceElementArrays = instances.map((name) => elementArrayFactory(selector, length, browsers[name]))
+
+    // Zip by index across instances into MultiRemoteElement wrappers, mirroring `zip(...result)` at runtime.
+    const wrapped: WebdriverIO.MultiRemoteElement[] = Array(length).fill(null).map((_, index) =>
+        buildMultiRemoteElementWrapper(instances, instanceElementArrays.map((elements) => elements[index]), selector)
+    )
+
+    if (process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY !== 'true') {
+        return wrapped
+    }
+
+    const elementArray = wrapped as unknown as WdioMultiRemoteElementArray
+    elementArray.isMultiremote = true
+    elementArray.selector = selector
+    elementArray.foundWith = '$$'
+    elementArray.props = []
+    elementArray.parent = parent as unknown as WdioMultiRemoteElementArray['parent']
+    elementArray.getElements = vi.fn().mockResolvedValue(elementArray)
+    // WebdriverIO's `enhanceElementsArray()` binds real async iterators here (running callbacks
+    // concurrently and awaiting them, unlike `Array.prototype.forEach`); only `forEach` is mocked
+    // since it's the only one this codebase currently relies on.
+    elementArray.forEach = (async (callback: (element: WebdriverIO.MultiRemoteElement, index: number, array: WebdriverIO.MultiRemoteElement[]) => unknown) => {
+        await Promise.all(wrapped.map((element, index) => callback(element, index, wrapped)))
+    }) as unknown as WdioMultiRemoteElementArray['forEach']
+
+    return elementArray
+}
