@@ -2,9 +2,12 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $ } from '@wdio/globals'
 
 import { toHaveValue } from '../../../src/matchers/element/toHaveValue.js'
+import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty.js'
 import type { AssertionResult } from 'expect-webdriverio'
 import stripAnsi from 'strip-ansi'
 import { waitUntil } from '../../../src/utils.js'
+import { browserFactory, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { multiRemote } from '../../../src/api/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -102,5 +105,34 @@ Received: "This is an example value"`
                 )
             })
         })
+    })
+})
+
+describe('toHaveValue on multi-remote elements', () => {
+    const multiRemoteElement = () => {
+        const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'input')
+        vi.mocked(element.getInstance('chrome').getProperty).mockResolvedValue('A')
+        vi.mocked(element.getInstance('firefox').getProperty).mockResolvedValue('B')
+        return element
+    }
+
+    test('passes with one value per instance, as the plain object shorthand or expect.multiRemote()', async () => {
+        const withPlainObject = await toHaveValue.call({}, multiRemoteElement(), { chrome: 'A', firefox: 'B' }, { wait: 0 })
+        const withMatcher = await toHaveValue.call({}, multiRemoteElement(), multiRemote({ chrome: 'A', firefox: 'B' }), { wait: 0 })
+
+        expect(withPlainObject.pass).toBe(true)
+        expect(withMatcher.pass).toBe(true)
+    })
+
+    test('fails when an instance has another value', async () => {
+        const result = await toHaveValue.call({}, multiRemoteElement(), { chrome: 'A', firefox: 'A' }, { wait: 0 })
+
+        expect(result.pass).toBe(false)
+    })
+
+    test('does not change toHaveElementProperty, where a plain object stays a literal property value', async () => {
+        const result = await toHaveElementProperty.call({}, multiRemoteElement() as unknown as WebdriverIO.Element, 'value', { chrome: 'A', firefox: 'B' } as unknown as string, { wait: 0 })
+
+        expect(result.pass).toBe(false)
     })
 })

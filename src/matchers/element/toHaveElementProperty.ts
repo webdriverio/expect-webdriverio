@@ -89,7 +89,8 @@ export async function toHaveElementProperty(
     value?: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>  | undefined,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
-    const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty' } = this
+    // A property value can itself be an object, so a plain object is a literal unless the caller knows better (e.g. `toHaveValue`)
+    const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty', allowObjectExpectedValue = true } = this
     const paramsCount = arguments.length
 
     if (value === undefined || value === null) {
@@ -119,7 +120,7 @@ export async function toHaveElementProperty(
                 },
                 context: { isNot, iteration },
                 strategy: 'NewStrictMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: false, allowObjectExpectedValue: true }
+                strictConfiguration: { allowArrayWithSingleElement: false, allowObjectExpectedValue }
             })
         },
         isNot,
