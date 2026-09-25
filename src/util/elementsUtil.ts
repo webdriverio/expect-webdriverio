@@ -43,7 +43,6 @@ export const isElementArray = (obj: unknown): obj is WebdriverIO.ElementArray =>
     return isSelector(obj)
     && 'foundWith' in obj
     && !isMultiRemote(obj) // Ensure multi-remote elements are excluded
-
 }
 
 export const isStrictlyElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
@@ -156,7 +155,7 @@ export const awaitElementOrArray = async(
     return { selector: awaitedElements, elements: awaitedElements, isEmptyElements: awaitedElements.length === 0 }
 }
 
-export const awaitElementArray = async (received: WdioElementsMaybePromise | undefined): Promise<{ elements?: WdioElements, other?: unknown }> => {
+export const awaitElementArray = async(received: WdioElementsMaybePromise | undefined): Promise<{ elements?: WdioElements, other?: unknown }> => {
     let awaitedElements = received
     // For non-awaited `$$()`, so ChainablePromiseElement | ChainablePromiseArray.
     // At some extend it also process non-awaited `$$().getElements()` or `$$().filter()` (e.g. Promise<WebdriverIO.Element[]>), but typings does not allow it
@@ -188,6 +187,11 @@ export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemo
     return isMultiRemote(obj) && !Array.isArray(obj) && 'selector' in obj
 }
 
+/**
+ * MultiRemoteElement[]
+ * Warning: empty array returns false and is treated as Element[] (see `isElementArrayLike`),
+ * so both guards never match the same value.
+ */
 export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] => {
     return Array.isArray(obj) && obj.length > 0 && !isMultiRemoteElementArray(obj)
         // Using Array.prototype to bypass asynchronous iterator of ElementArray

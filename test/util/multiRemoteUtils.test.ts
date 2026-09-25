@@ -1,9 +1,8 @@
 import { vi, test, describe, expect, afterEach } from 'vitest'
 
-import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, hasSameInstanceNames, isBrowser, isMultiRemoteMatcher } from '../../src/util/multiRemoteUtils.js'
+import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, hasSameInstanceNames, isBrowser, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
 import { multiRemote } from '../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
-import { isElementArrayLike } from '../../src/util/elementsUtil.js'
 
 vi.mock('@wdio/globals')
 
@@ -81,6 +80,21 @@ describe('multiRemoteUtils', () => {
         })
     })
 
+    describe(isMultiRemoteValues, () => {
+        test('is true for a non-empty plain object', () => {
+            expect(isMultiRemoteValues({ chrome: 'a', firefox: 'b' })).toBe(true)
+        })
+
+        test('requires one of the instance names when given', () => {
+            expect(isMultiRemoteValues({ chrome: 'a' }, ['chrome', 'firefox'])).toBe(true)
+            expect(isMultiRemoteValues({ safari: 'a' }, ['chrome', 'firefox'])).toBe(false)
+        })
+
+        test.each(['a', 1, ['a'], {}, /a/, expect.stringContaining('a'), null, undefined])('is false for %s', (value) => {
+            expect(isMultiRemoteValues(value)).toBe(false)
+        })
+    })
+
     test(hasSameInstanceNames, () => {
         expect(hasSameInstanceNames({ firefox: 1, chrome: 1 }, ['chrome', 'firefox'])).toBe(true)
         expect(hasSameInstanceNames({ chrome: 1 }, ['chrome', 'firefox'])).toBe(false)
@@ -106,16 +120,4 @@ describe('multiRemoteUtils', () => {
         })
     })
 
-    test('isElementArrayLike is false for a MultiRemoteElementArray whose `every` is asynchronous', () => {
-        process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
-        try {
-            const elements = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2) as unknown as { every: unknown }
-            // Like WebdriverIO's `enhanceElementsArray()`, returning a (truthy) Promise
-            elements.every = async () => false
-
-            expect(isElementArrayLike(elements)).toBe(false)
-        } finally {
-            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-        }
-    })
 })
