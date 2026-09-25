@@ -458,6 +458,24 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
                 expect(result.pass).toBe(false)
                 expect(stripAnsi(result.message())).toContain('+   "firefox": 2,')
             })
+
+            test('fails with .not when only some instances differ from a single size', async () => {
+                const result = await thisNotContext.toBeElementsArrayOfSize(unevenElements(), 3, { wait: 0 })
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            })
+
+            test('fails with .not when only some instances differ from their own size', async () => {
+                const result = await thisNotContext.toBeElementsArrayOfSize(unevenElements(), { chrome: 3, firefox: 5 }, { wait: 0 })
+
+                expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+            })
+
+            test('passes with .not when every instance differs', async () => {
+                const result = await thisNotContext.toBeElementsArrayOfSize(unevenElements(), { chrome: 4, firefox: 5 }, { wait: 0 })
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+            })
         })
 
         describe('when the per-instance sizes do not name exactly the instances', () => {

@@ -155,7 +155,10 @@ const multiRemoteElementsArrayOfSize = async (
                 return { success: !!isNot, subject: refetchSource, actual, abort: true }
             }
 
-            const success = instances.every((name) => expected[name].asymmetricMatch(actual[name]))
+            // Strict on every instance: with `.not`, no instance may match. `success` is inverted by `waitUntil` for `.not`,
+            // so it must stay true while at least one instance still matches.
+            const matches = (name: string) => expected[name].asymmetricMatch(actual[name])
+            const success = isNot ? instances.some(matches) : instances.every(matches)
             return { success, subject: refetchSource, actual }
         },
         isNot,
