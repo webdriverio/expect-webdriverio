@@ -3,9 +3,11 @@ import {
     isEmptyOrLegacyNumberOptions,
     isNumber,
     NumberMatcher,
-    validateNumberAndExtractOptions
+    validateNumberAndExtractOptions,
+    validateNumberArrayAndExtractOptions
 } from '../../src/util/numberOptionsUtil.js'
 import { DEFAULT_OPTIONS } from '../../src/constants.js'
+import { multiRemote } from '../../src/api/index.js'
 
 /**
  * Restore real values for those tests.
@@ -246,6 +248,18 @@ describe('numberOptionsUtil', () => {
             expect(result.commandOptions?.afterAssertion?.({} as any)).toBe(2)
             expect(beforeAssertion).toHaveBeenCalledTimes(1)
             expect(afterAssertion).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe(validateNumberArrayAndExtractOptions, () => {
+        test('validates one value per instance with expect.multiRemote(), whatever the instance names', () => {
+            const { numberMatcher } = validateNumberArrayAndExtractOptions(multiRemote({ eq: 2, firefox: [1, { gte: 1 }] }), DEFAULT_OPTIONS)
+
+            expect(numberMatcher).toEqual({ eq: new NumberMatcher({ eq: 2 }), firefox: [new NumberMatcher({ eq: 1 }), new NumberMatcher({ gte: 1 })] })
+        })
+
+        test('reads a plain object as a legacy NumberOptions, not as per-instance values', () => {
+            expect(() => validateNumberArrayAndExtractOptions({ chrome: 2, firefox: 3 } as never, DEFAULT_OPTIONS)).toThrow('Invalid NumberMatcher')
         })
     })
 

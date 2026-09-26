@@ -3,6 +3,8 @@ import { $, $$ } from '@wdio/globals'
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle.js'
 import type { ParsedCSSValue } from 'webdriverio'
 import stripAnsi from 'strip-ansi'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { multiRemote } from '../../../src/api/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -481,6 +483,32 @@ Expect $$(\`elements\`) to have style
 
             // @ts-expect-error testing invalid input
             const result = await thisContext.toHaveStyle(elements, [[]])
+
+            expect(result.pass).toBe(false)
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const style = { color: 'colorValue' }
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel') },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2) },
+        ])('checks the same style or one style per instance with expect.multiRemote() on $name', async ({ subject }) => {
+            const same = await thisContext.toHaveStyle(subject(), style, { wait: 0 })
+            const perInstance = await thisContext.toHaveStyle(subject(), multiRemote({ chrome: style, firefox: style }), { wait: 0 })
+            const fail = await thisContext.toHaveStyle(subject(), multiRemote({ chrome: style, firefox: { color: 'other' } }), { wait: 0 })
+
+            expect(same.pass).toBe(true)
+            expect(perInstance.pass).toBe(true)
+            expect(fail.pass).toBe(false)
+        })
+
+        test('does not treat a plain object as per-instance styles', async () => {
+            const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel')
+
+            // @ts-expect-error per-instance styles require expect.multiRemote()
+            const result = await thisContext.toHaveStyle(element, { chrome: style, firefox: style }, { wait: 0 })
 
             expect(result.pass).toBe(false)
         })

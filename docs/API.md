@@ -2,7 +2,7 @@
 
 When you're writing tests, you often need to check that values meet certain conditions. `expect` gives you access to a number of "matchers" that let you validate different things on the `browser`, an `element` or `mock` object.
 
-**Note**: Browser and element matchers also support [multi-remote](MultiRemote.md), checking every browser instance with a single expected value or one per instance. Number, size and object matchers and `toBeElementsArrayOfSize` do not support multi-remote elements yet.
+**Note**: Browser and element matchers also support [multi-remote](MultiRemote.md), checking every browser instance with a single expected value or one per instance.
 
 ## Soft Assertions
 
@@ -802,6 +802,16 @@ await expect(listItems).toBeElementsArrayOfSize({ gte: 5 })
 await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
 ```
 
+With [multi-remote](MultiRemote.md), the size is checked per browser instance. Pass a single size that every instance must match, or one size per instance (every instance must be listed):
+
+```js
+const listItems = await multiRemoteBrowser.$$('ul>li')
+await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in every browser
+await expect(listItems).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 5, firefox: { gte: 3 } }))
+```
+
+**Note:** To reliably re-fetch multi-remote elements between retries, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`. Without it, elements are re-fetched on a best-effort basis from the global `multiRemoteBrowser`, ignoring any parent element or `select()` scope. See [its limitations](MultiRemote.md#without-wdio_enable_multi_remote_element_array).
+
 ### Multiple Elements Support
 
 All element matchers support arrays of elements returned from `$$()`:
@@ -1229,7 +1239,7 @@ With [multi-remote](MultiRemote.md), passes one expected value per browser insta
 
 ```ts
 await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: expect.stringContaining('Titre') }))
-await expect(multiRemoteBrowser.$('h1')).toHaveText(expect.multiRemote({ chrome: 'Welcome', firefox: 'Bienvenue' }))
+await expect(multiRemoteBrowser.$('h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
 ```
 
 See [Expected Values](MultiRemote.md#expected-values) for the plain object shorthand.

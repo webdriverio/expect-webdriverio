@@ -2,8 +2,9 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 
 import { toHaveChildren } from '../../../src/matchers/element/toHaveChildren'
-import { chainableElementArrayFactory } from '../../__mocks__/@wdio/globals'
+import { chainableElementArrayFactory, browserFactory, createMultiRemoteElementMock, createMultiRemoteElementArrayMock } from '../../__mocks__/@wdio/globals'
 import stripAnsi from 'strip-ansi'
+import { multiRemote } from '../../../src/api/index.js'
 import { waitUntil } from '../../../src/util/waitUntil.js'
 
 vi.mock('@wdio/globals')
@@ -590,6 +591,45 @@ Expected [not]: [2, 2, 2]
 Received      : [2, 2, undefined]`
                 )
             })
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
+        ])('reads a plain object as legacy NumberOptions, defaulting to { gte: 1 } with a deprecation warning, on $name', async ({ subject }) => {
+            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+            // @ts-expect-error a plain object is a legacy NumberOptions, per-instance values require expect.multiRemote()
+            const result = await thisContext.toHaveChildren(subject(), { chrome: { gte: 1 }, firefox: { lte: 0 } }, { wait: 0 })
+
+            // `firefox: { lte: 0 }` is ignored: only `expect.multiRemote()` checks one value per instance
+            expect(result.pass).toBe(true)
+            expect(warn).toHaveBeenCalledWith(expect.stringContaining('deprecated'))
+        })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
+        ])('checks one NumberMatcher per instance with expect.multiRemote() on $name', async ({ subject }) => {
+            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+            const pass = await thisContext.toHaveChildren(subject(), multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }), { wait: 0 })
+            const fail = await thisContext.toHaveChildren(subject(), multiRemote({ chrome: { gte: 1 }, firefox: { lte: 0 } }), { wait: 0 })
+
+            expect(pass.pass).toBe(true)
+            expect(fail.pass).toBe(false)
+            expect(warn).not.toHaveBeenCalled()
+        })
+
+        test('fails expect.multiRemote() on a non multi-remote element', async () => {
+            // @ts-expect-error per-instance values are only typed for multi-remote elements
+            const result = await thisContext.toHaveChildren(await $('sel'), multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }), { wait: 0 })
+
+            expect(result.pass).toBe(false)
         })
     })
 })

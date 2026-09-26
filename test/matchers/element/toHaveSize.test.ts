@@ -4,6 +4,8 @@ import { $, $$ } from '@wdio/globals'
 import type { Size } from '../../../src/matchers/element/toHaveSize.js'
 import { toHaveSize } from '../../../src/matchers/element/toHaveSize.js'
 import stripAnsi from 'strip-ansi'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { multiRemote } from '../../../src/api/index.js'
 import { waitUntil } from '../../../src/utils.js'
 
 vi.mock('@wdio/globals')
@@ -492,6 +494,38 @@ Expect [] to have size
 
 Expected: {"height": 32, "width": 32}
 Received: undefined`)
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const size = { width: 100, height: 50 }
+
+        test('keeps a plain object as a literal size, even with instances named `width` and `height`', async () => {
+            const element = createMultiRemoteElementMock({ width: browserFactory(), height: browserFactory() }, 'sel')
+
+            const result = await thisContext.toHaveSize(element, size, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel') },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2) },
+        ])('checks one size per instance with expect.multiRemote() on $name', async ({ subject }) => {
+            const pass = await thisContext.toHaveSize(subject(), multiRemote({ chrome: size, firefox: size }), { wait: 0 })
+            const fail = await thisContext.toHaveSize(subject(), multiRemote({ chrome: size, firefox: { width: 1, height: 1 } }), { wait: 0 })
+
+            expect(pass.pass).toBe(true)
+            expect(fail.pass).toBe(false)
+        })
+
+        test('does not treat a plain object as per-instance sizes', async () => {
+            const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel')
+
+            // @ts-expect-error per-instance sizes require expect.multiRemote()
+            const result = await thisContext.toHaveSize(element, { chrome: size, firefox: size }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
         })
     })
 })

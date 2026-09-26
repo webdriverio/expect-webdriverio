@@ -397,6 +397,37 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(multiRemoteBrowser.$$('h1')).toHaveText(expect.arrayContaining(['Test CSS Attributes']))
                 })
             })
+
+            describe('Per-browser sizes and objects', () => {
+                it('should verify the elements count of every browser', async () => {
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    await expect(h1).toBeElementsArrayOfSize(2)
+                    await expect(h1).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 2, firefox: { gte: 1 } }))
+                })
+
+                it('should count the elements of each browser when browsers find a different number of elements', async () => {
+                    await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
+                    const h1 = multiRemoteBrowser.$$('h1')
+
+                    await expect(h1).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 2, firefox: 0 }))
+                    await expect(expect(h1).toBeElementsArrayOfSize(2, { wait: 0 })).rejects.toThrow(/\+   "firefox": 0,/)
+                })
+
+                it('should verify one NumberMatcher per browser', async () => {
+                    await expect(multiRemoteBrowser.$('h1')).toHaveWidth(expect.multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }))
+                    await expect(multiRemoteBrowser.$('h1')).toHaveHeight(expect.multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }))
+                })
+
+                it('should treat a plain object as a literal style, and per-browser styles with expect.multiRemote()', async () => {
+                    const h1 = multiRemoteBrowser.$('h1')
+
+                    await expect(h1).toHaveStyle({ display: 'block' })
+                    await expect(h1).toHaveStyle(expect.multiRemote({ chrome: { display: 'block' }, firefox: { display: 'block' } }))
+                    // @ts-expect-error per-browser styles require expect.multiRemote()
+                    await expect(expect(h1).toHaveStyle({ chrome: { display: 'block' }, firefox: { display: 'block' } }, { wait: 0 })).rejects.toThrow(/to have style/)
+                })
+            })
         })
     })
 })
