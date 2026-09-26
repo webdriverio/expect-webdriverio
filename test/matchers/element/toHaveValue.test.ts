@@ -130,6 +130,17 @@ describe('toHaveValue on multi-remote elements', () => {
         const result = await thisContext.toHaveValue(multiRemoteElement(), { chrome: 'A', firefox: 'A' }, { wait: 0 })
 
         expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox>.$(\`input\`) to have property value
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "chrome": "A",
+-   "firefox": "A",
++   "firefox": "B",
+  }`)
     })
 
     test('does not change toHaveElementProperty, where a plain object stays a literal property value', async () => {
@@ -137,5 +148,21 @@ describe('toHaveValue on multi-remote elements', () => {
         const result = await thisContext.toHaveElementProperty(multiRemoteElement(), 'value', { chrome: 'A', firefox: 'B' }, { wait: 0 })
 
         expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox>.$(\`input\`) to have property value
+
+- Expected  - 6
++ Received  + 0
+
+  Object {
+-   "chrome": Object {
+-     "chrome": "A",
+-     "firefox": "B",
+-   },
+-   "firefox": Object {
+    "chrome": "A",
+    "firefox": "B",
+-   },
+  }`)
     })
 })

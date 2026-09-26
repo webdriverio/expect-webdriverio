@@ -80,6 +80,11 @@ describe('Browser Matchers', () => {
                     const result = await thisContext.matcherFn(browser, validText, { wait: 0, trim: false })
 
                     expect(result.pass).toBe(false)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect browser's window to have ${matcherNameLastWords(matcherFn.name)}
+
+Expected: " Valid Text "
+Received: " Wrong Text "`)
                     expect(browserFn).toHaveBeenCalledTimes(1)
                 })
 
@@ -525,6 +530,24 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
                         const result = await thisContext.matcherFn(multiRemoteBrowser, [validText, wdioExpect.oneOf(validText)], { trim: false, wait: 500, interval: 10 })
 
                         expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 8
++ Received  + 2
+
+  Object {
+-   "chrome": Array [
+-     " Valid Text ",
+-     oneOf<" Valid Text ">,
+-   ],
+-   "firefox": Array [
+-     " Valid Text ",
+-     oneOf<" Valid Text ">,
+-   ],
++   "chrome": " Valid Text ",
++   "firefox": " Valid Text ",
+  }`)
                         expect(warn).not.toHaveBeenCalled()
                     })
 

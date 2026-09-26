@@ -57,6 +57,11 @@ describe(toHaveLocalStorageItem, () => {
             const result = await thisContext.toHaveLocalStorageItem(browser, 'someKey', 'expectedValue')
 
             expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect browser to have localStorage item someKey
+
+Expected: "expectedValue"
+Received: "actualValue"`)
         })
 
         it('not - succeeds (pass is false) when localStorage item has different value', async () => {

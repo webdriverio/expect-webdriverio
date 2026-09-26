@@ -612,9 +612,36 @@ Received      : [2, 2, undefined]`
         })
 
         test.each([
-            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
-            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
-        ])('checks one NumberMatcher per instance with expect.multiRemote() on $name', async ({ subject }) => {
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have children
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "chrome": >= 1,
+-   "firefox": <= 0,
++   "firefox": 2,
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have children
+
+- Expected  - 2
++ Received  + 2
+
+  Object {
+    "chrome": Array [
+      >= 1,
+      >= 1,
+    ],
+    "firefox": Array [
+-     <= 0,
+-     <= 0,
++     2,
++     2,
+    ],
+  }` },
+        ])('checks one NumberMatcher per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
             const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
             const pass = await thisContext.toHaveChildren(subject(), multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }), { wait: 0 })
@@ -622,6 +649,7 @@ Received      : [2, 2, undefined]`
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
+            expect(stripAnsi(fail.message())).toEqual(message)
             expect(warn).not.toHaveBeenCalled()
         })
 
@@ -630,6 +658,11 @@ Received      : [2, 2, undefined]`
             const result = await thisContext.toHaveChildren(await $('sel'), multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }), { wait: 0 })
 
             expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have children
+
+Expected: {"chrome": >= 1, "firefox": >= 1}
+Received: 2`)
         })
     })
 })

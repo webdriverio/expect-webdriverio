@@ -445,6 +445,17 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
+            expect(stripAnsi(fail.message())).toEqual(`\
+Expect multi-remote<eq, firefox>.$$(\`sel\`) to be elements array of size
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "eq": 2,
+-   "firefox": 3,
++   "firefox": 2,
+  }`)
         })
 
         test('passes with one size per instance, whatever the key order', async () => {
@@ -489,15 +500,35 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
         })
 
         describe('when the per-instance sizes do not name exactly the instances', () => {
-            test.each<{ name: string, expected: MultiRemoteValues<number> }>([
-                { name: 'a missing instance', expected: { chrome: 2 } },
-                { name: 'an unknown instance', expected: { chrome: 2, firefox: 2, safari: 2 } },
-            ])('fails with $name', async ({ expected }) => {
+            test.each<{ name: string, expected: MultiRemoteValues<number>, message: string }>([
+                { name: 'a missing instance', expected: { chrome: 2 }, message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
+
+- Expected  - 0
++ Received  + 1
+
+  Object {
+    "chrome": 2,
++   "firefox": 2,
+  }` },
+                { name: 'an unknown instance', expected: { chrome: 2, firefox: 2, safari: 2 }, message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
+
+- Expected  - 1
++ Received  + 0
+
+  Object {
+    "chrome": 2,
+    "firefox": 2,
+-   "safari": 2,
+  }` },
+            ])('fails with $name', async ({ expected, message }) => {
                 const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
 
                 const result = await thisContext.toBeElementsArrayOfSize(elements, multiRemote(expected), { wait: 0 })
 
                 expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(message)
             })
 
             test('fails with .not too, without retrying', async () => {
@@ -546,6 +577,17 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
+            expect(stripAnsi(fail.message())).toEqual(`\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "chrome": 2,
+-   "firefox": 3,
++   "firefox": 2,
+  }`)
             expect(unknown.pass).toBe(false)
         })
 
@@ -555,6 +597,18 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             const result = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ Chrome: 2, Firefox: 2 }), { wait: 0 })
 
             expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
+
+- Expected  - 2
++ Received  + 2
+
+  Object {
+-   "Chrome": 2,
+-   "Firefox": 2,
++   "chrome": 2,
++   "firefox": 2,
+  }`)
         })
 
         test('throws on an invalid NumberMatcher', async () => {
@@ -648,6 +702,18 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
+            expect(stripAnsi(fail.message())).toEqual(`\
+Expect [] to be elements array of size
+
+- Expected  - 2
++ Received  + 2
+
+  Object {
+-   "chrome": 2,
+-   "firefox": 2,
++   "chrome": 0,
++   "firefox": 0,
+  }`)
         })
 
         describe('MultiRemoteElement[]: an empty array checks per-instance sizes against the global multiRemoteBrowser instances', () => {
@@ -664,15 +730,46 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
                 expect(result.pass).toBe(true)
             })
 
-            test.each<{ name: string, expected: MultiRemoteValues<number> }>([
-                { name: 'a missing instance', expected: { chrome: 0 } },
-                { name: 'misspelled instances', expected: { Chrome: 0, Firefox: 0 } },
-                { name: 'an unknown instance', expected: { chrome: 0, firefox: 0, safari: 0 } },
-            ])('fails with $name, also with .not', async ({ expected }) => {
+            test.each<{ name: string, expected: MultiRemoteValues<number>, message: string }>([
+                { name: 'a missing instance', expected: { chrome: 0 }, message: `\
+Expect [] to be elements array of size
+
+- Expected  - 0
++ Received  + 1
+
+  Object {
+    "chrome": 0,
++   "firefox": 0,
+  }` },
+                { name: 'misspelled instances', expected: { Chrome: 0, Firefox: 0 }, message: `\
+Expect [] to be elements array of size
+
+- Expected  - 2
++ Received  + 2
+
+  Object {
+-   "Chrome": 0,
+-   "Firefox": 0,
++   "chrome": 0,
++   "firefox": 0,
+  }` },
+                { name: 'an unknown instance', expected: { chrome: 0, firefox: 0, safari: 0 }, message: `\
+Expect [] to be elements array of size
+
+- Expected  - 1
++ Received  + 0
+
+  Object {
+    "chrome": 0,
+    "firefox": 0,
+-   "safari": 0,
+  }` },
+            ])('fails with $name, also with .not', async ({ expected, message }) => {
                 const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), multiRemote(expected), { wait: 0 })
                 const notResult = await thisNotContext.toBeElementsArrayOfSize(emptyElements(), multiRemote(expected), { wait: 0 })
 
                 expect(result.pass).toBe(false)
+                expect(stripAnsi(result.message())).toEqual(message)
                 expect(notResult.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             })
 
@@ -709,6 +806,18 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             const result = await thisContext.toBeElementsArrayOfSize(elements, 2, { wait: 50, interval: 10 })
 
             expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
+
+- Expected  - 2
++ Received  + 2
+
+  Object {
+-   "chrome": 2,
+-   "firefox": 2,
++   "chrome": 1,
++   "firefox": 1,
+  }`)
             expect(elements).toHaveLength(1)
         })
     })

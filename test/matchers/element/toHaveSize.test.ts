@@ -509,14 +509,63 @@ Received: undefined`)
         })
 
         test.each([
-            { name: '$()', subject: () => createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel') },
-            { name: '$$()', subject: () => createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2) },
-        ])('checks one size per instance with expect.multiRemote() on $name', async ({ subject }) => {
+            { name: '$()', subject: () => createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have size
+
+- Expected  - 2
++ Received  + 2
+
+  Object {
+    "chrome": Object {
+      "height": 50,
+      "width": 100,
+    },
+    "firefox": Object {
+-     "height": 1,
+-     "width": 1,
++     "height": 50,
++     "width": 100,
+    },
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have size
+
+- Expected  - 4
++ Received  + 4
+
+  Object {
+    "chrome": Array [
+      Object {
+        "height": 50,
+        "width": 100,
+      },
+      Object {
+        "height": 50,
+        "width": 100,
+      },
+    ],
+    "firefox": Array [
+      Object {
+-       "height": 1,
+-       "width": 1,
++       "height": 50,
++       "width": 100,
+      },
+      Object {
+-       "height": 1,
+-       "width": 1,
++       "height": 50,
++       "width": 100,
+      },
+    ],
+  }` },
+        ])('checks one size per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
             const pass = await thisContext.toHaveSize(subject(), multiRemote({ chrome: size, firefox: size }), { wait: 0 })
             const fail = await thisContext.toHaveSize(subject(), multiRemote({ chrome: size, firefox: { width: 1, height: 1 } }), { wait: 0 })
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
+            expect(stripAnsi(fail.message())).toEqual(message)
         })
 
         test('does not treat a plain object as per-instance sizes', async () => {
@@ -526,6 +575,34 @@ Received: undefined`)
             const result = await thisContext.toHaveSize(element, { chrome: size, firefox: size }, { wait: 0 })
 
             expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have size
+
+- Expected  - 12
++ Received  +  0
+
+  Object {
+    "chrome": Object {
+-     "chrome": Object {
+-       "height": 50,
+-       "width": 100,
+-     },
+-     "firefox": Object {
+-       "height": 50,
+-       "width": 100,
+-     },
+-   },
+-   "firefox": Object {
+-     "chrome": Object {
+      "height": 50,
+      "width": 100,
+    },
+    "firefox": Object {
+      "height": 50,
+      "width": 100,
+-     },
+    },
+  }`)
         })
     })
 })
