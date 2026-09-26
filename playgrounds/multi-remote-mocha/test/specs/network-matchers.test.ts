@@ -97,3 +97,30 @@ describe('Network Matchers', () => {
         await expect(expect(mocks[0]).not.toBeRequested()).rejects.toThrow()
     })
 })
+
+describe('Multi-remote Network Matchers', () => {
+    // Not calling `respond()`, which hangs on Firefox, see https://github.com/webdriverio/expect-webdriverio/pull/2229
+    let mocks: WebdriverIO.Mock[]
+
+    before(async () => {
+        mocks = await multiRemoteBrowser.mock('https://guinea-pig.webdriver.io/')
+        await multiRemoteBrowser.url('https://guinea-pig.webdriver.io/')
+    })
+
+    after(async () => {
+        await Promise.all(mocks.map((mock) => mock.restore()))
+    })
+
+    it('should assert that every browser requested the page', async () => {
+        await expect(mocks).toBeRequested()
+        await expect(mocks).toBeRequestedTimes({ gte: 1 })
+        await expect(mocks).toBeRequestedWith({ method: 'GET', url: 'https://guinea-pig.webdriver.io/' })
+    })
+
+    it('should fail with the value of each browser', async () => {
+        await expect(expect(mocks).toBeRequestedTimes(0, { wait: 0 }))
+            .rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)> mocks to be called 0 times/)
+        await expect(expect(mocks).not.toBeRequested({ wait: 0 }))
+            .rejects.toThrow(/not to be called/)
+    })
+})

@@ -985,6 +985,25 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10, wait: 0 })).toEqualTypeOf<Promise<void>>()
         })
 
+        it('should support multi-remote mocks', async () => {
+            const multiRemoteMocks = await multiRemoteBrowser.mock('**/api/**')
+            const promiseMultiRemoteMocks = multiRemoteBrowser.mock('**/api/**')
+
+            expectTypeOf(expect(multiRemoteMocks).toBeRequested()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(multiRemoteMocks).toBeRequestedTimes(2)).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(multiRemoteMocks).not.toBeRequestedTimes({ gte: 1 }, { wait: 0 })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(multiRemoteMocks).toBeRequestedWith({ method: 'GET' })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseMultiRemoteMocks).toBeRequested()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseMultiRemoteMocks).toBeRequestedWith({ method: 'GET' })).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should not support per-instance values on multi-remote mocks', async () => {
+            const multiRemoteMocks = await multiRemoteBrowser.mock('**/api/**')
+
+            // @ts-expect-error the browser of each mock is unknown, so there is one expected value for every instance
+            expectTypeOf(expect(multiRemoteMocks).toBeRequestedTimes(expect.multiRemote({ chrome: 1, firefox: 2 }))).toEqualTypeOf<Promise<void>>()
+        })
+
         it('should not support array as expected', async () => {
             // @ts-expect-error
             expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes([])).toEqualTypeOf<Promise<void>>()
