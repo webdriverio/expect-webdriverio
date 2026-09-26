@@ -1,9 +1,10 @@
-import { vi, test, describe, expect, beforeEach } from 'vitest'
+import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 // @ts-ignore TODO fix me
 import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
 import stripAnsi from 'strip-ansi'
+import { multiRemoteBrowserFactory } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 class TestMock implements Mock {
@@ -105,5 +106,54 @@ Expect mock not to be called
 Expected [not]: >= 1
 Received      : 1`
         )
+    })
+})
+
+describe('toBeRequested on multi-remote mocks', () => {
+    const thisContext = { toBeRequested }
+    const thisNotContext = { isNot: true, toBeRequested }
+
+    /** One mock per instance, like `multiRemoteBrowser.mock()`, each called the given number of times */
+    const mocksCalled = (...counts: number[]): Mock[] => counts.map((count) => {
+        const mock = new TestMock()
+        mock.calls.push(...Array(count).fill(mockMatch))
+        return mock
+    })
+
+    beforeEach(() => {
+        vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory())
+    })
+
+    afterEach(() => {
+        vi.unstubAllGlobals()
+    })
+
+    test('passes when every instance\'s mock is called', async () => {
+        const result = await thisContext.toBeRequested(mocksCalled(1, 2), { wait: 0 })
+
+        expect(result.pass).toBe(true)
+    })
+
+    test('fails with a per-instance message when an instance\'s mock is not called', async () => {
+        const result = await thisContext.toBeRequested(mocksCalled(1, 0), { wait: 0 })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> mocks to be called
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": >= 1,
+-   "firefox": >= 1,
++   "firefox": 0,
+  }`)
+    })
+
+    test('fails with .not when only some instances\' mocks are called', async () => {
+        const result = await thisNotContext.toBeRequested(mocksCalled(1, 0), { wait: 0 })
+
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
     })
 })

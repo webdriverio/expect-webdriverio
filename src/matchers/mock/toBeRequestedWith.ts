@@ -3,6 +3,8 @@ import type { local } from 'webdriver'
 import { waitUntil, enhanceError, isAsymmetricMatcher, getAsymmetricMatcherValue } from '../../utils.js'
 import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
+import { getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
+import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
 
 const STR_LIMIT = 80
 const KEY_LIMIT = 12
@@ -28,6 +30,21 @@ function reduceHeaders(headers: local.NetworkHeader[]) {
 
 export async function toBeRequestedWith(
     received: WebdriverIO.Mock,
+    expectedValue?: ExpectWebdriverIO.RequestedWith,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
+ * Multi-remote mocks (`multiRemoteBrowser.mock()`): every instance's mock must have a matching call
+ */
+export async function toBeRequestedWith(
+    received: WebdriverIO.Mock[] | Promise<WebdriverIO.Mock[]>,
+    expectedValue?: ExpectWebdriverIO.RequestedWith,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+export async function toBeRequestedWith(
+    received: WebdriverIO.Mock | WebdriverIO.Mock[] | Promise<WebdriverIO.Mock[]>,
     expectedValue: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
@@ -39,6 +56,70 @@ export async function toBeRequestedWith(
         options,
     })
 
+    // shared across every `waitUntil` iteration and the later message-building step, so a given
+    // postData/body string is JSON.parsed at most once per assertion instead of once per read
+    const parseCache: Map<string, ParsedJson> = new Map()
+
+    // Not awaiting a single mock, which may be an unawaited `mock()` promise: kept as is for backward compatibility
+    const mocks = received instanceof Promise ? await received : received
+    let pass: boolean
+    let message: string
+
+    if (isMockArray(mocks)) {
+        const instanceNames = getMockInstanceNames(mocks)
+        const { names } = instanceNames
+        // Mocks named by index may not be multi-remote ones, so they keep the plain `Object` label
+        const label = (value: unknown) => instanceNames.isNamedByInstance ? labelMultiRemoteValues(value) : value
+        const results = await Promise.all(mocks.map((mock) => checkRequestedWith(mock, expectedValue, options, !!isNot, parseCache)))
+        // `pass` means "a matching call was found", `.not` being inverted downstream: strict on every instance,
+        // so with `.not` no instance may have a matching call
+        pass = isNot ? results.some((result) => result.pass) : results.every((result) => result.pass)
+        const expected = Object.fromEntries(names.map((name) => [name, minifyRequestedWith(expectedValue)]))
+        const actual = Object.fromEntries(results.map((result, index) => [names[index], result.actual]))
+        const payloadNeverCollected = results.some((result) => !result.pass && result.payloadNeverCollected)
+        message = enhanceError(formatMultiRemoteMocks(instanceNames), label(expected), label(actual), this, verb, expectation, '', options)
+            + (!pass && !isNot && payloadNeverCollected ? payloadCollectionHint(expectedValue) : '')
+    } else {
+        const result = await checkRequestedWith(mocks as WebdriverIO.Mock, expectedValue, options, !!isNot, parseCache)
+        pass = result.pass
+        message = enhanceError(
+            'mock',
+            minifyRequestedWith(expectedValue),
+            result.actual,
+            this,
+            verb,
+            expectation,
+            '',
+            options
+        ) + (!pass && !isNot && result.payloadNeverCollected ? payloadCollectionHint(expectedValue) : '')
+    }
+
+    const result: ExpectWebdriverIO.AssertionResult = {
+        pass,
+        message: (): string => message
+    }
+
+    await options.afterAssertion?.({
+        matcherName,
+        expectedValue,
+        options,
+        result
+    })
+
+    return result
+}
+
+/**
+ * Whether the mock has a call matching the expected value, with the (minified) last call for the failure message.
+ * `pass` always means "a matching call was found": `.not` only changes how long to wait for it.
+ */
+const checkRequestedWith = async (
+    received: WebdriverIO.Mock,
+    expectedValue: ExpectWebdriverIO.RequestedWith,
+    options: ExpectWebdriverIO.CommandOptions,
+    isNot: boolean,
+    parseCache: Map<string, ParsedJson>
+): Promise<{ pass: boolean, actual: unknown, payloadNeverCollected: boolean }> => {
     /**
      * `postData`/`body` are populated asynchronously (via a `network.getData` round-trip in
      * WebDriverInterception), so they may not be attached to a call yet at the very first check.
@@ -58,10 +139,6 @@ export async function toBeRequestedWith(
      */
     const hasPayloadExpectation = expectedValue.postData !== undefined || expectedValue.response !== undefined
     const waitForPayloadOnNot = isNot && hasPayloadExpectation
-
-    // shared across every `waitUntil` iteration and the later message-building step, so a given
-    // postData/body string is JSON.parsed at most once per assertion instead of once per read
-    const parseCache: Map<string, ParsedJson> = new Map()
 
     /**
      * a call matched everything except its payload, and that payload never arrived. Kept from the
@@ -115,31 +192,11 @@ export async function toBeRequestedWith(
         { ...options, wait: (isNot && !waitForPayloadOnNot) ? 0 : options.wait }
     )
 
-    const message = enhanceError(
-        'mock',
-        minifyRequestedWith(expectedValue),
-        // Mocks are never multi-remote: the shared strategy result type also allows per-instance values
-        minifyRequestMock(actual as RequestMock | undefined, expectedValue, parseCache) || 'was not called',
-        this,
-        verb,
-        expectation,
-        '',
-        options
-    ) + (!pass && !isNot && payloadNeverCollected ? payloadCollectionHint(expectedValue) : '')
-
-    const result: ExpectWebdriverIO.AssertionResult = {
+    return {
         pass,
-        message: (): string => message
+        actual: minifyRequestMock(actual as RequestMock | undefined, expectedValue, parseCache) || 'was not called',
+        payloadNeverCollected,
     }
-
-    await options.afterAssertion?.({
-        matcherName,
-        expectedValue,
-        options,
-        result
-    })
-
-    return result
 }
 
 /**

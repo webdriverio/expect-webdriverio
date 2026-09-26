@@ -1,6 +1,6 @@
 import { vi, test, describe, expect, afterEach } from 'vitest'
 
-import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, hasSameInstanceNames, isBrowser, isGlobalBrowserSingleRemote, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
+import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, getMockInstanceNames, hasSameInstanceNames, isBrowser, isGlobalBrowserSingleRemote, isMockArray, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
 import { multiRemote } from '../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
 
@@ -105,6 +105,42 @@ describe('multiRemoteUtils', () => {
             vi.stubGlobal('browser', new Proxy({}, { get: () => { throw new Error('No browser instance registered') } }))
 
             expect(isGlobalBrowserSingleRemote()).toBe(false)
+        })
+    })
+
+    describe(isMockArray, () => {
+        const mock = () => ({ calls: [] }) as unknown as WebdriverIO.Mock
+
+        test('is true for a non-empty array of mocks', () => {
+            expect(isMockArray([mock(), mock()])).toBe(true)
+        })
+
+        test.each([[], mock(), [mock(), {}], ['a'], undefined])('is false for %s', (value) => {
+            expect(isMockArray(value)).toBe(false)
+        })
+    })
+
+    describe(getMockInstanceNames, () => {
+        const mocks = (length: number) => Array.from({ length }, () => ({ calls: [] }) as unknown as WebdriverIO.Mock)
+
+        afterEach(() => {
+            vi.unstubAllGlobals()
+        })
+
+        test('names the mocks after the global multiRemoteBrowser instances, in the same order', () => {
+            vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory())
+
+            expect(getMockInstanceNames(mocks(2))).toEqual({ names: ['chrome', 'firefox'], isNamedByInstance: true })
+        })
+
+        test('names the mocks by index when they are not as many as the global instances, e.g. from select()', () => {
+            vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory())
+
+            expect(getMockInstanceNames(mocks(1))).toEqual({ names: ['mocks[0]'], isNamedByInstance: false })
+        })
+
+        test('names the mocks by index without the global multiRemoteBrowser', () => {
+            expect(getMockInstanceNames(mocks(2))).toEqual({ names: ['mocks[0]', 'mocks[1]'], isNamedByInstance: false })
         })
     })
 

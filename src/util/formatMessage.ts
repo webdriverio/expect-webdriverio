@@ -256,9 +256,14 @@ const isSuccess = (isNot: boolean, success: boolean): boolean => {
 class MultiRemoteValuesLabel {}
 Object.defineProperty(MultiRemoteValuesLabel, 'name', { value: 'Multi-remote values' })
 
-const labelMultiRemoteValues = (value: unknown): unknown => {
+export const labelMultiRemoteValues = (value: unknown): unknown => {
     const isPlainObject = typeof value === 'object' && value !== null && Object.getPrototypeOf(value) === Object.prototype
     return isPlainObject ? Object.assign(new MultiRemoteValuesLabel(), value) : value
+}
+
+/** Subject of the failure message of multi-remote mocks, e.g. `multi-remote<chrome, firefox> mocks` */
+export const formatMultiRemoteMocks = ({ names, isNamedByInstance }: { names: string[], isNamedByInstance: boolean }): string => {
+    return isNamedByInstance ? `${formatMultiRemoteInstanceNames(names)} mocks` : 'mocks'
 }
 
 const formatMultiRemoteInstanceNames = (instances: string[]): string => {

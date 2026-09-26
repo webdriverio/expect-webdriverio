@@ -88,6 +88,8 @@ type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | Webdr
 type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[]>
 type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]
 type MockPromise = Promise<WebdriverIO.Mock>
+/** Multi-remote `mock()`, one mock per instance: every instance's mock must satisfy the network matcher */
+type MultiRemoteMocks = WebdriverIO.Mock[] | Promise<WebdriverIO.Mock[]>
 
 /**
  * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
@@ -108,7 +110,7 @@ type FnWhenElementArrayLike<ActualT, Fn, FnMultiRemoteElements = Fn> = ActualT e
 /**
  * Same as the other but because of Jasmine and it's expectAsync typing which does not force T to be a promise, then we need to account for `WebdriverIO.Mock
  */
-type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
+type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise | WebdriverIO.Mock | MultiRemoteMocks ? Fn : never
 
 interface WdioCustomAsymmetricMatchers {
     oneOf(...values: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>): ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>
@@ -237,12 +239,14 @@ interface WdioBrowserMatchers<_R, ActualT>{
  */
 interface WdioNetworkMatchers<_R, ActualT> {
     /**
-     * Check that `WebdriverIO.Mock` was called
+     * Check that `WebdriverIO.Mock` was called.
+     * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must be called.
      */
     toBeRequested: FnWhenMock<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
     /**
-     * Check that `WebdriverIO.Mock` was called N times
+     * Check that `WebdriverIO.Mock` was called N times.
+     * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must be called N times.
      */
     toBeRequestedTimes: FnWhenMock<ActualT, {
         (
@@ -261,7 +265,8 @@ interface WdioNetworkMatchers<_R, ActualT> {
     }>
 
     /**
-     * Check that `WebdriverIO.Mock` was called with the specific parameters
+     * Check that `WebdriverIO.Mock` was called with the specific parameters.
+     * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must have such a call.
      */
     toBeRequestedWith: FnWhenMock<ActualT, (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 }

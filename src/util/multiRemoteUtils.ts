@@ -78,6 +78,31 @@ export const getGlobalMultiRemoteInstanceNames = (): string[] | undefined => {
     }
 }
 
+/** A `WebdriverIO.Mock`, recognized by its log of `calls` */
+export const isMock = (obj: unknown): obj is WebdriverIO.Mock => {
+    return typeof obj === 'object' && obj !== null && Array.isArray((obj as { calls?: unknown }).calls)
+}
+
+/** The mocks returned by a multi-remote `mock()`, one per instance, or any other non-empty array of mocks */
+export const isMockArray = (obj: unknown): obj is WebdriverIO.Mock[] => {
+    return Array.isArray(obj) && obj.length > 0 && obj.every(isMock)
+}
+
+/**
+ * The name of each mock's instance, or `mocks[index]` when unknown.
+ *
+ * WebdriverIO does not expose the browser of a mock, but a multi-remote `mock()` returns one mock per instance, in
+ * `multiRemoteBrowser.instances` order: the global instance names are used when they are as many as the mocks.
+ * Limitation: mocks from `select()` naming every instance but in another order are named in the global order.
+ */
+export const getMockInstanceNames = (mocks: WebdriverIO.Mock[]): { names: string[], isNamedByInstance: boolean } => {
+    const instances = getGlobalMultiRemoteInstanceNames()
+    if (instances && instances.length === mocks.length) {
+        return { names: instances, isNamedByInstance: true }
+    }
+    return { names: mocks.map((_, index) => `mocks[${index}]`), isNamedByInstance: false }
+}
+
 /** Whether the injected global `browser` is a regular (non multi-remote) browser, i.e. not a multi-remote session */
 export const isGlobalBrowserSingleRemote = (): boolean => {
     try {
