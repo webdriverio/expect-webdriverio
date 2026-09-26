@@ -82,12 +82,15 @@ async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, in
     let received: WebdriverIO.Element | unknown = await asyncReceived
 
     if (isMultiRemoteElement(received)) {
-        // One snapshot of every instance's outerHTML, keyed by instance name (sorted by the serializer, whatever the instances order)
         const multiRemoteElement = received
-        received = Object.fromEntries(await Promise.all(multiRemoteElement.instances.map(async (instance) => [
+        const htmlPerInstance = Object.fromEntries(await Promise.all(multiRemoteElement.instances.map(async (instance) => [
             instance,
             await multiRemoteElement.getInstance(instance).getHTML({ includeSelectorTag: true })
         ])))
+        // The outerHTML shared by every instance, like a single element, else one outerHTML per instance, keyed by
+        // instance name (sorted by the serializer, whatever the instances order)
+        const htmls = new Set(Object.values(htmlPerInstance))
+        received = htmls.size === 1 ? [...htmls][0] : htmlPerInstance
     } else if (received && typeof received === 'object' && 'elementId' in received) {
         received = await (received as WebdriverIO.Element).getHTML({
             includeSelectorTag: true

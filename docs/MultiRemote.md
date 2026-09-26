@@ -187,18 +187,25 @@ WebdriverIO does not tell which browser a mock belongs to, so:
 
 ## Snapshot Matchers
 
-`toMatchSnapshot` and `toMatchInlineSnapshot` support a multi-remote element `$()`: its outerHTML is taken on every instance and saved as one snapshot, keyed by instance name, so a difference between browsers shows in the snapshot diff.
+`toMatchSnapshot` and `toMatchInlineSnapshot` support a multi-remote element `$()`, taking its outerHTML on every instance:
+
+- When every instance has the same outerHTML, the snapshot is that outerHTML, as for a single element.
+- Otherwise, the snapshot holds the outerHTML of each instance, keyed by instance name (sorted, whatever their order in the configuration).
 
 ```ts
+// The same on every browser
+await expect(multiRemoteBrowser.$('h1')).toMatchInlineSnapshot(`"<h1>Welcome</h1>"`)
+
+// Different per browser
 await expect(multiRemoteBrowser.$('h1')).toMatchInlineSnapshot(`
   {
     "chrome": "<h1>Welcome</h1>",
-    "firefox": "<h1>Welcome</h1>",
+    "firefox": "<h1>Bienvenue</h1>",
   }
 `)
 ```
 
-Instances are sorted by name in the snapshot, whatever their order in the configuration. With `select()`, only the selected instances are part of the snapshot.
+So a snapshot turns into one outerHTML per instance when browsers start to differ, which the snapshot diff shows, and needs an update when they are the same again. With `select()`, only the selected instances are part of the snapshot.
 
 ## Retries & Re-fetching Elements
 

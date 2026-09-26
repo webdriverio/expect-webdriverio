@@ -44,7 +44,7 @@ test('supports snapshot testing', async () => {
     expect(expectedSnapfileExist).toBe(true)
 })
 
-test('snapshots the outerHTML of every instance of a multi-remote element, keyed by instance name', async () => {
+test('snapshots the outerHTML of every instance of a multi-remote element, keyed by instance name, when it differs', async () => {
     await service.beforeTest({
         title: 'multi-remote element',
         parent: 'parent',
@@ -71,6 +71,22 @@ test('snapshots the outerHTML of every instance of a multi-remote element, keyed
       }
     `)
     expect(element.getInstance('chrome').getHTML).toHaveBeenCalledWith({ includeSelectorTag: true })
+    await service.after()
+})
+
+test('snapshots the outerHTML shared by every instance of a multi-remote element as is', async () => {
+    await service.beforeTest({
+        title: 'multi-remote element with the same outerHTML',
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+
+    const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'h1')
+    vi.mocked(element.getInstance('chrome').getHTML).mockResolvedValue('<h1>Welcome</h1>')
+    vi.mocked(element.getInstance('firefox').getHTML).mockResolvedValue('<h1>Welcome</h1>')
+
+    await expectExport(element).toMatchInlineSnapshot('"<h1>Welcome</h1>"')
     await service.after()
 })
 

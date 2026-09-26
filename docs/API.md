@@ -963,7 +963,7 @@ Checks if any arbitrary object matches a certain value. If you pass in an [`Webd
 expect({ foo: 'bar' }).toMatchSnapshot()
 // snapshot `outerHTML` of WebdriverIO.Element (DOM snapshot, requires "await")
 await expect($('elem')).toMatchSnapshot()
-// snapshot `outerHTML` of every instance of a multi-remote element, keyed by instance name (requires "await")
+// snapshot `outerHTML` of a multi-remote element: shared by every instance, else keyed by instance name (requires "await")
 await expect(multiRemoteBrowser.$('elem')).toMatchSnapshot()
 // snapshot result of element command
 await expect($('elem').getCSSProperty('background-color')).toMatchSnapshot()
