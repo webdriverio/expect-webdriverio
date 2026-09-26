@@ -98,4 +98,3 @@ First of all, **feel free to raise an issue with your suggestions or help with P
 ### Planned
 
 - Cookie matchers
-- Multi-remote support for number, size and object matchers (in progress)

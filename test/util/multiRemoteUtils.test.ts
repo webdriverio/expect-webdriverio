@@ -1,6 +1,6 @@
 import { vi, test, describe, expect, afterEach } from 'vitest'
 
-import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, hasSameInstanceNames, isBrowser, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
+import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, hasSameInstanceNames, isBrowser, isGlobalBrowserSingleRemote, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
 import { multiRemote } from '../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
 
@@ -77,6 +77,34 @@ describe('multiRemoteUtils', () => {
             vi.stubGlobal('multiRemoteBrowser', new Proxy({}, { get: () => { throw new Error('No browser instance registered') } }))
 
             expect(getGlobalMultiRemoteInstanceNames()).toBeUndefined()
+        })
+    })
+
+    describe(isGlobalBrowserSingleRemote, () => {
+        afterEach(() => {
+            vi.unstubAllGlobals()
+        })
+
+        test('is true for a regular global browser', () => {
+            vi.stubGlobal('browser', browserFactory())
+
+            expect(isGlobalBrowserSingleRemote()).toBe(true)
+        })
+
+        test('is false for a multi-remote global browser', () => {
+            vi.stubGlobal('browser', multiRemoteBrowserFactory())
+
+            expect(isGlobalBrowserSingleRemote()).toBe(false)
+        })
+
+        test('is false without the global browser', () => {
+            expect(isGlobalBrowserSingleRemote()).toBe(false)
+        })
+
+        test('is false when the @wdio/globals proxy has no registered browser', () => {
+            vi.stubGlobal('browser', new Proxy({}, { get: () => { throw new Error('No browser instance registered') } }))
+
+            expect(isGlobalBrowserSingleRemote()).toBe(false)
         })
     })
 

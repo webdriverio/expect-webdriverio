@@ -806,7 +806,7 @@ Expect multi-remote<chrome, firefox>.$(\`button\`) to be displayed
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": "displayed",
 -   "firefox": "displayed",
 +   "firefox": "not displayed",
@@ -831,7 +831,7 @@ Expect multi-remote<chrome, firefox>.$$(\`button\`) to be displayed
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
     "chrome": Array [
       "displayed",
 -     "displayed",

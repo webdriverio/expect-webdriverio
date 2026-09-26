@@ -131,7 +131,7 @@ Expect multi-remote<chrome, firefox> to have clipboard text
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
 -   "chrome": "expected text",
 -   "firefox": "expected text",
 +   "chrome": "actual text",

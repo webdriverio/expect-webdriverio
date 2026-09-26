@@ -60,6 +60,10 @@ type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
 type MaybeArrayOrMultiRemoteValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
 type MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>> | ExpectWebdriverIO.OneOfPartialMatcher<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>>
 type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
+/** Multi-remote $(): one expected value for every instance, or one per instance with `expect.multiRemote()` (e.g. numbers, styles) */
+type SingleOrMultiRemoteMatcher<T> = T | ExpectWebdriverIO.MultiRemotePartialMatcher<T>
+/** Multi-remote $$(): one expected value (or one per element) for every instance, or the same per instance with `expect.multiRemote()` (e.g. numbers, styles) */
+type MaybeArrayOrMultiRemoteMatcher<T> = MaybeArray<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T>>
 
 /**
  * Real Promise and wdio chainable promise types.
@@ -111,11 +115,13 @@ interface WdioCustomAsymmetricMatchers {
 
     /**
      * One expected value per multi-remote instance, keyed by instance name. Every instance must be listed.
-     * Explicit form of the plain object shorthand of the multi-remote browser and element matchers.
+     * Required for per-instance values of number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`)
+     * and of matchers whose expected value is itself an object (`toHaveStyle`, `toHaveSize`, `toHaveElementProperty`),
+     * and the explicit form of the plain object shorthand for the other matchers.
      *
      * @example
      * await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: 'Titre' }))
-     * await expect(multiRemoteBrowser.$('h1')).toHaveText(expect.multiRemote({ chrome: 'Welcome', firefox: 'Bienvenue' }))
+     * await expect(multiRemoteBrowser.$('h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
      */
     multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
 }
@@ -509,15 +515,37 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             value: MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            property: string
+        ): Promise<void>
+        (
+            property: string,
+            value: SingleOrMultiRemoteMatcher<MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything> | number>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            property: string
+        ): Promise<void>
+        (
+            property: string,
+            value: MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
     }>
 
     /**
      * `WebdriverIO.Element` -> `getProperty` value
      */
     toHaveValue: FnWhenElementOrArrayLike<ActualT,
+        /**
+         * Element(s) API
+         */
         /** Element $() API */
         (
-
             value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) => Promise<void>,
@@ -609,6 +637,20 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>;
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (): Promise<void>
+        (
+            expectedValue: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (): Promise<void>
+        (
+            expectedValue: MaybeArrayOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
     }>
 
     /**
@@ -881,6 +923,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             width: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            width: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            width: MaybeArrayOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
     }>
 
     /**
@@ -915,6 +969,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             height: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            height: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            height: MaybeArrayOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
     }>
 
     /**
@@ -934,6 +1000,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             size: MaybeArray<{ height: number; width: number }>,
             options?: ExpectWebdriverIO.CommandOptions
         ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            size: SingleOrMultiRemoteMatcher<{ height: number; width: number }>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            size: MaybeArrayOrMultiRemoteMatcher<{ height: number; width: number }>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
     }>
 
     /**
@@ -951,6 +1029,18 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             style: MaybeArray<{ [key: string]: string }>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            style: SingleOrMultiRemoteMatcher<{ [key: string]: string }>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            style: MaybeArrayOrMultiRemoteMatcher<{ [key: string]: string }>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
     }>
 }
 
@@ -977,6 +1067,15 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
          */
         (
             size: ExpectWebdriverIO.NumberOptions,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>,
+    }, {
+        /**
+         * Elements MultiRemoteBrowser.$$() API: the size is checked per browser instance.
+         * A single size applies to every instance, or pass one size per instance, e.g. `expect.multiRemote({ chrome: 2, firefox: { gte: 1 } })`.
+         */
+        (
+            size: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>,
     }>
@@ -1528,7 +1627,7 @@ declare module 'expect-webdriverio/api' {
      * One expected value per multi-remote instance, keyed by instance name. Same as `expect.multiRemote()`.
      *
      * @example
-     * await expect(multiRemoteBrowser.$('h1')).toHaveText(multiRemote({ chrome: 'Welcome', firefox: 'Bienvenue' }))
+     * await expect(multiRemoteBrowser.$('h1')).toHaveStyle(multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
      */
     export function multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
 }

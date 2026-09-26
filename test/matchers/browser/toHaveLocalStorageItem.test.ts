@@ -57,6 +57,11 @@ describe(toHaveLocalStorageItem, () => {
             const result = await thisContext.toHaveLocalStorageItem(browser, 'someKey', 'expectedValue')
 
             expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect browser to have localStorage item someKey
+
+Expected: "expectedValue"
+Received: "actualValue"`)
         })
 
         it('not - succeeds (pass is false) when localStorage item has different value', async () => {
@@ -226,7 +231,7 @@ Expect multi-remote<chrome, firefox> to have localStorage item multiKey
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
 -   "chrome": "differentValue",
 -   "firefox": "differentValue",
 +   "chrome": "multiValue",

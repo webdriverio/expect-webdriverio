@@ -3,6 +3,8 @@ import { $, $$ } from '@wdio/globals'
 import { toHaveStyle } from '../../../src/matchers/element/toHaveStyle.js'
 import type { ParsedCSSValue } from 'webdriverio'
 import stripAnsi from 'strip-ansi'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { multiRemote } from '../../../src/api/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -483,6 +485,100 @@ Expect $$(\`elements\`) to have style
             const result = await thisContext.toHaveStyle(elements, [[]])
 
             expect(result.pass).toBe(false)
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const style = { color: 'colorValue' }
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have style
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": Object {
+      "color": "colorValue",
+    },
+    "firefox": Object {
+-     "color": "other",
++     "color": "colorValue",
+    },
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have style
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+      Object {
+        "color": "colorValue",
+      },
+      Object {
+        "color": "colorValue",
+      },
+    ],
+    "firefox": Array [
+      Object {
+-       "color": "other",
++       "color": "colorValue",
+      },
+      Object {
+-       "color": "other",
++       "color": "colorValue",
+      },
+    ],
+  }` },
+        ])('checks the same style or one style per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
+            const same = await thisContext.toHaveStyle(subject(), style, { wait: 0 })
+            const perInstance = await thisContext.toHaveStyle(subject(), multiRemote({ chrome: style, firefox: style }), { wait: 0 })
+            const fail = await thisContext.toHaveStyle(subject(), multiRemote({ chrome: style, firefox: { color: 'other' } }), { wait: 0 })
+
+            expect(same.pass).toBe(true)
+            expect(perInstance.pass).toBe(true)
+            expect(fail.pass).toBe(false)
+            expect(stripAnsi(fail.message())).toEqual(message)
+        })
+
+        test('does not treat a plain object as per-instance styles', async () => {
+            const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel')
+
+            // @ts-expect-error per-instance styles require expect.multiRemote()
+            const result = await thisContext.toHaveStyle(element, { chrome: style, firefox: style }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have style
+
+- Expected  - 12
++ Received  +  4
+
+  Multi-remote values {
+    "chrome": Object {
+-     "chrome": Object {
+-       "color": "colorValue",
++     "chrome": "colorValue",
++     "firefox": "colorValue",
+    },
+    "firefox": Object {
+-       "color": "colorValue",
+-     },
+-   },
+-   "firefox": Object {
+-     "chrome": Object {
+-       "color": "colorValue",
+-     },
+-     "firefox": Object {
+-       "color": "colorValue",
+-     },
++     "chrome": "colorValue",
++     "firefox": "colorValue",
+    },
+  }`)
         })
     })
 })

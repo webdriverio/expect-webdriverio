@@ -431,6 +431,13 @@ export const compareStyle = async (
         let actualVal: string = String(css.value || '')
         let expectedVal: string = style[key]
 
+        // e.g. per-instance styles passed as a plain object instead of `expect.multiRemote()`: a mismatch, not a crash
+        if (typeof expectedVal !== 'string') {
+            actual[key] = css.value
+            success = false
+            continue
+        }
+
         if (trim) {
             actualVal = actualVal.trim()
             expectedVal = expectedVal.trim()

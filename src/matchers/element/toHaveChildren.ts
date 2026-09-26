@@ -1,10 +1,11 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { isEmptyOrLegacyNumberOptions, validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
 import {
     enhanceError,
     waitUntil,
@@ -74,16 +75,25 @@ export async function toHaveChildren(
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<AssertionResult>
 
+/**
+ * Multi-remote $() or $$(): one expected value for every instance, or one per instance
+ */
+export async function toHaveChildren(
+    received: WdioMultiRemoteElements,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
+    options?: ExpectWebdriverIO.CommandOptions
+): Promise<AssertionResult>
+
 export async function toHaveChildren(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValueOrOptions?: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
+    expectedValueOrOptions?: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'children', verb = 'have', isNot, matcherName = 'toHaveChildren' } = this
 
     const paramsCount = arguments.length
 
-    if (paramsCount > 1 && (expectedValueOrOptions === undefined || isEmptyOrLegacyNumberOptions(expectedValueOrOptions))) {
+    if (paramsCount > 1 && (expectedValueOrOptions === undefined || (isEmptyOrLegacyNumberOptions(expectedValueOrOptions) && !isMultiRemoteMatcher(expectedValueOrOptions)))) {
         console.warn('Passing undefined or NumberOptions as the second argument to toHaveChildren is deprecated. Use a NumberMatcher instead. For example, `expect(el).toHaveChildren({ gte: 1 }, options)`')
     }
 
@@ -95,7 +105,7 @@ export async function toHaveChildren(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValueOrOptions, options, { supportDefaultAsGteThen1: true })
 
-    const { success: pass, actual: children, subject, context: { isSome } = {} } = await waitUntil(
+    const { success: pass, actual: children, subject, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -109,7 +119,7 @@ export async function toHaveChildren(
         { wait: commandOptions.wait, interval: commandOptions.interval }
     )
 
-    const expectedArray = wrapExpectedWithArray(subject, children, expectedNumber)
+    const expectedArray = expected ?? wrapExpectedWithArray(subject, children, expectedNumber)
     const message = enhanceError(subject, expectedArray, children, { isNot, isSome }, verb, expectation, '', commandOptions)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

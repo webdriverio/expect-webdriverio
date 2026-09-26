@@ -80,6 +80,11 @@ describe('Browser Matchers', () => {
                     const result = await thisContext.matcherFn(browser, validText, { wait: 0, trim: false })
 
                     expect(result.pass).toBe(false)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect browser's window to have ${matcherNameLastWords(matcherFn.name)}
+
+Expected: " Valid Text "
+Received: " Wrong Text "`)
                     expect(browserFn).toHaveBeenCalledTimes(1)
                 })
 
@@ -288,7 +293,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
 -   "chrome": " Valid Text ",
 +   "chrome": " Wrong Text ",
     "firefox": " Valid Text ",
@@ -305,7 +310,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 8
 + Received  + 2
 
-  Object {
+  Multi-remote values {
 -   "chrome": Array [
 -     " Valid Text ",
 -     " Valid Text ",
@@ -330,7 +335,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
 -   "chrome": oneOf<" Wrong Text ", " Wrong Text ">,
 -   "firefox": oneOf<" Wrong Text ", " Wrong Text ">,
 +   "chrome": " Valid Text ",
@@ -348,7 +353,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
 -   "chrome": " Wrong Text ",
 +   "chrome": " Valid Text ",
     "firefox": " Valid Text ",
@@ -371,7 +376,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 1
 + Received  + 0
 
-  Object {
+  Multi-remote values {
     "chrome": " Valid Text ",
     "firefox": " Valid Text ",
 -   "wrong": " Wrong Text ",
@@ -392,7 +397,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 0
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": " Valid Text ",
 +   "firefox": " Valid Text ",
   }`
@@ -413,7 +418,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
 -   "chrome": oneOf<" Wrong Text ", " Wrong Text ">,
 -   "firefox": StringContaining " Wrong Text ",
 +   "chrome": " Valid Text ",
@@ -439,7 +444,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": " Valid Text ",
 -   "firefox": " Wrong Text ",
 +   "firefox": " Valid Text ",
@@ -461,7 +466,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": " Valid Text ",
 -   "safari": " Valid Text ",
 +   "firefox": " Valid Text ",
@@ -525,6 +530,24 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
                         const result = await thisContext.matcherFn(multiRemoteBrowser, [validText, wdioExpect.oneOf(validText)], { trim: false, wait: 500, interval: 10 })
 
                         expect(result.pass).toBe(false)
+                        expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.name)}
+
+- Expected  - 8
++ Received  + 2
+
+  Multi-remote values {
+-   "chrome": Array [
+-     " Valid Text ",
+-     oneOf<" Valid Text ">,
+-   ],
+-   "firefox": Array [
+-     " Valid Text ",
+-     oneOf<" Valid Text ">,
+-   ],
++   "chrome": " Valid Text ",
++   "firefox": " Valid Text ",
+  }`)
                         expect(warn).not.toHaveBeenCalled()
                     })
 

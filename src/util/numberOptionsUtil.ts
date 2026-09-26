@@ -1,5 +1,6 @@
 import { AsymmetricMatcher } from 'expect'
 import { isDefinedPlainObject } from './commandOptionsUtils.js'
+import { isMultiRemoteMatcher } from './multiRemoteUtils.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
 export const isDefinedNotNumber = (value: unknown) => value !== undefined && !isNumber(value)
@@ -46,15 +47,25 @@ export function validateNumberAndExtractOptions(
 }
 
 export function validateNumberArrayAndExtractOptions(
-    expectedValues: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | undefined | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
+    expectedValues: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>
+        | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | undefined | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.CommandOptions,
     commandOptions: ExpectWebdriverIO.CommandOptions,
     { supportDefaultAsGteThen1 }: { supportDefaultAsGteThen1?: boolean } = {}
-): { numberMatcher: MaybeArray<NumberMatcher>; commandOptions: ExpectWebdriverIO.CommandOptions } {
+): { numberMatcher: MaybeArray<NumberMatcher> | MultiRemoteValues<MaybeArray<NumberMatcher>>; commandOptions: ExpectWebdriverIO.CommandOptions } {
+    // Per-instance numbers require `expect.multiRemote()`: a plain object is always a legacy `NumberOptions`
+    if (isMultiRemoteMatcher(expectedValues)) {
+        const perInstanceValues = expectedValues.sample as MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>
+        const numberMatcher = Object.fromEntries(Object.entries(perInstanceValues).map(([instance, value]) =>
+            [instance, validateNumberArrayAndExtractOptions(value, commandOptions).numberMatcher as MaybeArray<NumberMatcher>]
+        ))
+        return { numberMatcher, commandOptions }
+    }
     if (Array.isArray(expectedValues)) {
         const allNumbers = expectedValues.map((value) => validateNumberAndExtractOptions(value, commandOptions, { supportDefaultAsGteThen1 }))
         return { numberMatcher: allNumbers.map( ({ numberMatcher }) =>  numberMatcher), commandOptions }
     }
-    return validateNumberAndExtractOptions(expectedValues, commandOptions, { supportDefaultAsGteThen1 })
+    // Per-instance values (`expect.multiRemote()`) are handled above
+    return validateNumberAndExtractOptions(expectedValues as number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher | undefined, commandOptions, { supportDefaultAsGteThen1 })
 }
 
 /**
