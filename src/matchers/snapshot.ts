@@ -4,6 +4,7 @@ import type { AssertionError } from 'node:assert'
 import { expect } from 'expect'
 import { stripSnapshotIndentation } from '@vitest/snapshot'
 import { SnapshotService } from '../snapshot.js'
+import { isMultiRemoteElement } from '../util/elementsUtil.js'
 
 interface InlineSnapshotOptions {
     inlineSnapshot: string
@@ -80,7 +81,14 @@ function toMatchSnapshotAssert (received: unknown, message: string, inlineOption
 async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, inlineOptions?: InlineSnapshotOptions) {
     let received: WebdriverIO.Element | unknown = await asyncReceived
 
-    if (received && typeof received === 'object' && 'elementId' in received) {
+    if (isMultiRemoteElement(received)) {
+        // One snapshot of every instance's outerHTML, keyed by instance name (sorted by the serializer, whatever the instances order)
+        const multiRemoteElement = received
+        received = Object.fromEntries(await Promise.all(multiRemoteElement.instances.map(async (instance) => [
+            instance,
+            await multiRemoteElement.getInstance(instance).getHTML({ includeSelectorTag: true })
+        ])))
+    } else if (received && typeof received === 'object' && 'elementId' in received) {
         received = await (received as WebdriverIO.Element).getHTML({
             includeSelectorTag: true
         })
@@ -108,7 +116,8 @@ function toMatchSnapshotHelper(received: unknown, message: string, inlineOptions
         received && typeof received === 'object' &&
         (
             'elementId' in received ||
-            'then' in received
+            'then' in received ||
+            isMultiRemoteElement(received)
         )
     ) {
         return toMatchSnapshotAsync(received, message, inlineOptions)

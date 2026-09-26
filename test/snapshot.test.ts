@@ -5,6 +5,7 @@ import { test, expect, vi } from 'vitest'
 import type { Frameworks } from '@wdio/types'
 
 import { expect as expectExport, SnapshotService } from '../src/index.js'
+import { browserFactory, createMultiRemoteElementMock } from './__mocks__/@wdio/globals.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const __filename = path.basename(fileURLToPath(import.meta.url))
@@ -41,6 +42,36 @@ test('supports snapshot testing', async () => {
     const expectedSnapfileExist = await fs.access(path.resolve(__dirname, 'snapshot.test.ts.snap'))
         .then(() => true, () => false)
     expect(expectedSnapfileExist).toBe(true)
+})
+
+test('snapshots the outerHTML of every instance of a multi-remote element, keyed by instance name', async () => {
+    await service.beforeTest({
+        title: 'multi-remote element',
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+
+    // Instances in another order than the snapshot: the serializer sorts the keys
+    const element = createMultiRemoteElementMock({ firefox: browserFactory(), chrome: browserFactory() }, 'h1')
+    vi.mocked(element.getInstance('chrome').getHTML).mockResolvedValue('<h1>Welcome</h1>')
+    vi.mocked(element.getInstance('firefox').getHTML).mockResolvedValue('<h1>Bienvenue</h1>')
+
+    await expectExport(element).toMatchInlineSnapshot(`
+      {
+        "chrome": "<h1>Welcome</h1>",
+        "firefox": "<h1>Bienvenue</h1>",
+      }
+    `)
+    // Non-awaited, like `multiRemoteBrowser.$('h1')`
+    await expectExport(Promise.resolve(element)).toMatchInlineSnapshot(`
+      {
+        "chrome": "<h1>Welcome</h1>",
+        "firefox": "<h1>Bienvenue</h1>",
+      }
+    `)
+    expect(element.getInstance('chrome').getHTML).toHaveBeenCalledWith({ includeSelectorTag: true })
+    await service.after()
 })
 
 test('supports cucumber snapshot testing', async () => {
