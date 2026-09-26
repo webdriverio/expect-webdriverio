@@ -2,9 +2,9 @@ import { test, describe, expect, vi } from 'vitest'
 import {
     isEmptyOrLegacyNumberOptions,
     isNumber,
-    isPerInstanceNumbers,
     NumberMatcher,
-    validateNumberAndExtractOptions
+    validateNumberAndExtractOptions,
+    validateNumberArrayAndExtractOptions
 } from '../../src/util/numberOptionsUtil.js'
 import { DEFAULT_OPTIONS } from '../../src/constants.js'
 import { multiRemote } from '../../src/api/index.js'
@@ -251,32 +251,15 @@ describe('numberOptionsUtil', () => {
         })
     })
 
-    describe(isPerInstanceNumbers, () => {
-        test.each([
-            { chrome: 2, firefox: { gte: 1 } },
-            { chrome: [1, 2], firefox: 2 },
-            multiRemote({ chrome: 2, firefox: 3 }),
-            // `expect.multiRemote()` is explicit, so instance names may collide with option keys
-            multiRemote({ eq: 2, firefox: 3 }),
-        ])('is true for per-instance numbers %#', (value) => {
-            expect(isPerInstanceNumbers(value)).toBe(true)
+    describe(validateNumberArrayAndExtractOptions, () => {
+        test('validates one value per instance with expect.multiRemote(), whatever the instance names', () => {
+            const { numberMatcher } = validateNumberArrayAndExtractOptions(multiRemote({ eq: 2, firefox: [1, { gte: 1 }] }), DEFAULT_OPTIONS)
+
+            expect(numberMatcher).toEqual({ eq: new NumberMatcher({ eq: 2 }), firefox: [new NumberMatcher({ eq: 1 }), new NumberMatcher({ gte: 1 })] })
         })
 
-        test.each([
-            2,
-            [1, 2],
-            { eq: 2 },
-            { gte: 1, lte: 3, wait: 0 },
-            { gte: 1, featureFlags: {} },
-            new NumberMatcher({ gte: 1 }),
-            {},
-            undefined,
-        ])('is false for a number, NumberMatcher or legacy NumberOptions %#', (value) => {
-            expect(isPerInstanceNumbers(value)).toBe(false)
-        })
-
-        test('throws on an object mixing option keys and other keys, instead of silently ignoring the other keys', () => {
-            expect(() => isPerInstanceNumbers({ eq: 2, firefox: 3 })).toThrow(/Ambiguous expected value.*expect\.multiRemote\(\)/)
+        test('reads a plain object as a legacy NumberOptions, not as per-instance values', () => {
+            expect(() => validateNumberArrayAndExtractOptions({ chrome: 2, firefox: 3 } as never, DEFAULT_OPTIONS)).toThrow('Invalid NumberMatcher')
         })
     })
 

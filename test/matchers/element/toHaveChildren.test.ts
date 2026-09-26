@@ -600,12 +600,15 @@ Received      : [2, 2, undefined]`
         test.each([
             { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
             { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
-        ])('checks one NumberMatcher per instance on $name', async ({ subject }) => {
-            const pass = await thisContext.toHaveChildren(subject(), { chrome: { gte: 1 }, firefox: { gte: 1 } }, { wait: 0 })
-            const fail = await thisContext.toHaveChildren(subject(), { chrome: { gte: 1 }, firefox: { lte: 0 } }, { wait: 0 })
+        ])('reads a plain object as legacy NumberOptions, defaulting to { gte: 1 } with a deprecation warning, on $name', async ({ subject }) => {
+            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
-            expect(pass.pass).toBe(true)
-            expect(fail.pass).toBe(false)
+            // @ts-expect-error a plain object is a legacy NumberOptions, per-instance values require expect.multiRemote()
+            const result = await thisContext.toHaveChildren(subject(), { chrome: { gte: 1 }, firefox: { lte: 0 } }, { wait: 0 })
+
+            // `firefox: { lte: 0 }` is ignored: only `expect.multiRemote()` checks one value per instance
+            expect(result.pass).toBe(true)
+            expect(warn).toHaveBeenCalledWith(expect.stringContaining('deprecated'))
         })
 
         test.each([
@@ -622,9 +625,9 @@ Received      : [2, 2, undefined]`
             expect(warn).not.toHaveBeenCalled()
         })
 
-        test('fails per-instance values on a non multi-remote element instead of misreading them', async () => {
+        test('fails expect.multiRemote() on a non multi-remote element', async () => {
             // @ts-expect-error per-instance values are only typed for multi-remote elements
-            const result = await thisContext.toHaveChildren(await $('sel'), { chrome: { gte: 1 }, firefox: { gte: 1 } }, { wait: 0 })
+            const result = await thisContext.toHaveChildren(await $('sel'), multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }), { wait: 0 })
 
             expect(result.pass).toBe(false)
         })

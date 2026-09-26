@@ -3,7 +3,7 @@ import { refetchElements, synchronizeElementArray, syncronizeElements } from '..
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementsMaybePromise, WdioMultiRemoteElementArray } from '../../types.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { isPerInstanceNumbers, validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
 import { awaitElementArray, isMultiRemoteElementArray, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from '../../util/elementsUtil.js'
 import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, hasSameInstanceNames, isGlobalBrowserSingleRemote, isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
 
@@ -27,13 +27,13 @@ export async function toBeElementsArrayOfSize(
  */
 export async function toBeElementsArrayOfSize(
     received: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray | Promise<WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray>,
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher | MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+    expectedValue: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise | WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray | Promise<WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray>,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher | MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'elements array of size', verb = 'be', isNot, matcherName = 'toBeElementsArrayOfSize' } = this
@@ -177,12 +177,9 @@ const multiRemoteElementsArrayOfSize = async (
     return { pass, message: () => message }
 }
 
-/** One size per instance (`expect.multiRemote()` or its plain object shorthand), or `undefined` for a single size shared by every instance */
+/** One size per instance with `expect.multiRemote()`, or `undefined` for a single size shared by every instance */
 const getPerInstanceSizes = (value: unknown): MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> | undefined => {
-    if (!isPerInstanceNumbers(value)) {
-        return undefined
-    }
-    return (isMultiRemoteMatcher(value) ? value.sample : value) as MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher>
+    return isMultiRemoteMatcher(value) ? value.sample as MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> : undefined
 }
 
 /** `undefined` for an empty plain `MultiRemoteElement[]`, which holds no reference to its instances */

@@ -437,24 +437,27 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
-        test('rejects sizes mixing NumberOptions keys and instance names, instead of misreading them as options', async () => {
-            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+        test('supports instance names colliding with NumberOptions keys with expect.multiRemote()', async () => {
+            const elements = createMultiRemoteElementArrayMock({ eq: browserFactory(), firefox: browserFactory() }, 'sel', 2)
 
-            // e.g. with instances named `eq` and `firefox`
-            await expect(thisContext.toBeElementsArrayOfSize(elements, { eq: 2, firefox: 3 } as never, { wait: 0 })).rejects.toThrow(/Ambiguous expected value.*expect\.multiRemote\(\)/)
+            const pass = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ eq: 2, firefox: { gte: 1 } }), { wait: 0 })
+            const fail = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ eq: 2, firefox: 3 }), { wait: 0 })
+
+            expect(pass.pass).toBe(true)
+            expect(fail.pass).toBe(false)
         })
 
         test('passes with one size per instance, whatever the key order', async () => {
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, { firefox: { gte: 1 }, chrome: 2 }, { wait: 0 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ firefox: { gte: 1 }, chrome: 2 }), { wait: 0 })
 
             expect(result.pass).toBe(true)
         })
 
         describe('when instances found a different number of elements', () => {
             test('counts elements per instance', async () => {
-                const result = await thisContext.toBeElementsArrayOfSize(unevenElements(), { chrome: 3, firefox: 2 }, { wait: 0 })
+                const result = await thisContext.toBeElementsArrayOfSize(unevenElements(), multiRemote({ chrome: 3, firefox: 2 }), { wait: 0 })
 
                 expect(result.pass).toBe(true)
             })
@@ -473,13 +476,13 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             })
 
             test('fails with .not when only some instances differ from their own size', async () => {
-                const result = await thisNotContext.toBeElementsArrayOfSize(unevenElements(), { chrome: 3, firefox: 5 }, { wait: 0 })
+                const result = await thisNotContext.toBeElementsArrayOfSize(unevenElements(), multiRemote({ chrome: 3, firefox: 5 }), { wait: 0 })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             })
 
             test('passes with .not when every instance differs', async () => {
-                const result = await thisNotContext.toBeElementsArrayOfSize(unevenElements(), { chrome: 4, firefox: 5 }, { wait: 0 })
+                const result = await thisNotContext.toBeElementsArrayOfSize(unevenElements(), multiRemote({ chrome: 4, firefox: 5 }), { wait: 0 })
 
                 expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
@@ -492,7 +495,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             ])('fails with $name', async ({ expected }) => {
                 const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
 
-                const result = await thisContext.toBeElementsArrayOfSize(elements, expected, { wait: 0 })
+                const result = await thisContext.toBeElementsArrayOfSize(elements, multiRemote(expected), { wait: 0 })
 
                 expect(result.pass).toBe(false)
             })
@@ -500,21 +503,26 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             test('fails with .not too, without retrying', async () => {
                 const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
 
-                const result = await thisNotContext.toBeElementsArrayOfSize(elements, { chrome: 3 }, { wait: 500, interval: 10 })
+                const result = await thisNotContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 3 }), { wait: 500, interval: 10 })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(refetchElements).not.toHaveBeenCalled()
             })
         })
 
-        test('has the same failure message with expect.multiRemote() as with the plain object shorthand', async () => {
+        test('rejects a plain object: per-instance sizes require expect.multiRemote()', async () => {
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
 
-            const withPlainObject = await thisContext.toBeElementsArrayOfSize(elements, { chrome: 2, firefox: 3 }, { wait: 0 })
+            // @ts-expect-error a plain object is a legacy NumberOptions, not per-instance sizes
+            await expect(thisContext.toBeElementsArrayOfSize(elements, { chrome: 2, firefox: 3 }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
+        })
+
+        test('fails with a per-instance message with expect.multiRemote()', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+
             const withMatcher = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 2, firefox: 3 }), { wait: 0 })
 
             expect(withMatcher.pass).toBe(false)
-            expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))
             expect(stripAnsi(withMatcher.message())).toEqual(`\
 Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 
@@ -544,7 +552,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
         test('fails, instead of throwing, on misspelled instance names', async () => {
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, { Chrome: 2, Firefox: 2 }, { wait: 0 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ Chrome: 2, Firefox: 2 }), { wait: 0 })
 
             expect(result.pass).toBe(false)
         })
@@ -552,7 +560,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
         test('throws on an invalid NumberMatcher', async () => {
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
 
-            await expect(thisContext.toBeElementsArrayOfSize(elements, { chrome: {}, firefox: 2 }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher. Received: {}')
+            await expect(thisContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: {}, firefox: 2 }), { wait: 0 })).rejects.toThrow('Invalid NumberMatcher. Received: {}')
         })
     })
 
@@ -592,7 +600,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 0, parent)
             vi.mocked(parent.$$).mockResolvedValue(createMultiRemoteElementArrayMock(browsers(), 'sel', 1) as never)
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, { chrome: 1, firefox: 1 }, { wait: 500, interval: 10 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 1, firefox: 1 }), { wait: 500, interval: 10 })
 
             expect(result.pass).toBe(true)
         })
@@ -627,16 +635,16 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
                 vi.stubGlobal('browser', browserFactory())
                 const elements = [] as unknown as WebdriverIO.MultiRemoteElement[]
 
-                await expect(thisContext.toBeElementsArrayOfSize(elements, { chrome: 0, firefox: 0 }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
-                await expect(thisNotContext.toBeElementsArrayOfSize(elements, { chrome: 1, firefox: 1 }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
+                await expect(thisContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 0, firefox: 0 }), { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
+                await expect(thisNotContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 1, firefox: 1 }), { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
             })
         })
 
         test('MultiRemoteElement[]: an empty (unknown instances) array accepts per-instance sizes instead of throwing', async () => {
             delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
 
-            const pass = await thisContext.toBeElementsArrayOfSize([] as unknown as WebdriverIO.MultiRemoteElement[], { chrome: 0, firefox: 0 }, { wait: 0 })
-            const fail = await thisContext.toBeElementsArrayOfSize([] as unknown as WebdriverIO.MultiRemoteElement[], { chrome: 2, firefox: 2 }, { wait: 0 })
+            const pass = await thisContext.toBeElementsArrayOfSize([] as unknown as WebdriverIO.MultiRemoteElement[], multiRemote({ chrome: 0, firefox: 0 }), { wait: 0 })
+            const fail = await thisContext.toBeElementsArrayOfSize([] as unknown as WebdriverIO.MultiRemoteElement[], multiRemote({ chrome: 2, firefox: 2 }), { wait: 0 })
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
@@ -651,7 +659,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             })
 
             test('passes when naming exactly the instances', async () => {
-                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), { firefox: 0, chrome: 0 }, { wait: 0 })
+                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), multiRemote({ firefox: 0, chrome: 0 }), { wait: 0 })
 
                 expect(result.pass).toBe(true)
             })
@@ -661,8 +669,8 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
                 { name: 'misspelled instances', expected: { Chrome: 0, Firefox: 0 } },
                 { name: 'an unknown instance', expected: { chrome: 0, firefox: 0, safari: 0 } },
             ])('fails with $name, also with .not', async ({ expected }) => {
-                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), expected, { wait: 0 })
-                const notResult = await thisNotContext.toBeElementsArrayOfSize(emptyElements(), expected, { wait: 0 })
+                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), multiRemote(expected), { wait: 0 })
+                const notResult = await thisNotContext.toBeElementsArrayOfSize(emptyElements(), multiRemote(expected), { wait: 0 })
 
                 expect(result.pass).toBe(false)
                 expect(notResult.pass).toBe(true) // failure, boolean is inverted later because of `.not`
@@ -671,7 +679,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             test('falls back on the expected instance names when the global multiRemoteBrowser has no registered browser', async () => {
                 vi.stubGlobal('multiRemoteBrowser', new Proxy({}, { get: () => { throw new Error('No browser instance registered') } }))
 
-                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), { chrome: 0 }, { wait: 0 })
+                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), multiRemote({ chrome: 0 }), { wait: 0 })
 
                 expect(result.pass).toBe(true)
             })

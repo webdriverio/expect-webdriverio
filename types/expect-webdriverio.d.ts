@@ -60,13 +60,9 @@ type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
 type MaybeArrayOrMultiRemoteValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
 type MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>> | ExpectWebdriverIO.OneOfPartialMatcher<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>>
 type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
-/** Multi-remote $(): one expected value for every instance, or one expected value per instance (plain object shorthand or `expect.multiRemote()`) */
-type SingleOrMultiRemoteValues<T> = T | MultiRemoteValues<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<T>
-/** Multi-remote $$(): one expected value (or one per element) for every instance, or the same per instance (plain object shorthand or `expect.multiRemote()`) */
-type MaybeArrayOrMultiRemoteArrayValues<T> = MaybeArray<T> | MultiRemoteValues<MaybeArray<T>> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T>>
-/** Multi-remote $() when the expected value is itself an object (e.g. styles): per-instance values require `expect.multiRemote()` */
+/** Multi-remote $(): one expected value for every instance, or one per instance with `expect.multiRemote()` (e.g. numbers, styles) */
 type SingleOrMultiRemoteMatcher<T> = T | ExpectWebdriverIO.MultiRemotePartialMatcher<T>
-/** Multi-remote $$() when the expected value is itself an object (e.g. styles): per-instance values require `expect.multiRemote()` */
+/** Multi-remote $$(): one expected value (or one per element) for every instance, or the same per instance with `expect.multiRemote()` (e.g. numbers, styles) */
 type MaybeArrayOrMultiRemoteMatcher<T> = MaybeArray<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T>>
 
 /**
@@ -119,8 +115,9 @@ interface WdioCustomAsymmetricMatchers {
 
     /**
      * One expected value per multi-remote instance, keyed by instance name. Every instance must be listed.
-     * Required for per-instance values of matchers whose expected value is itself an object (`toHaveStyle`, `toHaveSize`,
-     * `toHaveElementProperty`), and the explicit form of the plain object shorthand for the other matchers.
+     * Required for per-instance values of number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`)
+     * and of matchers whose expected value is itself an object (`toHaveStyle`, `toHaveSize`, `toHaveElementProperty`),
+     * and the explicit form of the plain object shorthand for the other matchers.
      *
      * @example
      * await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: 'Titre' }))
@@ -644,14 +641,14 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Element MultiRemoteBrowser.$() API */
         (): Promise<void>
         (
-            expectedValue: SingleOrMultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher>,
+            expectedValue: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>
     }, {
         /** Elements MultiRemoteBrowser.$$() API */
         (): Promise<void>
         (
-            expectedValue: MaybeArrayOrMultiRemoteArrayValues<number | ExpectWebdriverIO.NumberMatcher>,
+            expectedValue: MaybeArrayOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>
     }>
@@ -929,13 +926,13 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Element MultiRemoteBrowser.$() API */
         (
-            width: SingleOrMultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher>,
+            width: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>
     }, {
         /** Elements MultiRemoteBrowser.$$() API */
         (
-            width: MaybeArrayOrMultiRemoteArrayValues<number | ExpectWebdriverIO.NumberMatcher>,
+            width: MaybeArrayOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>
     }>
@@ -975,13 +972,13 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     }, {
         /** Element MultiRemoteBrowser.$() API */
         (
-            height: SingleOrMultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher>,
+            height: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>
     }, {
         /** Elements MultiRemoteBrowser.$$() API */
         (
-            height: MaybeArrayOrMultiRemoteArrayValues<number | ExpectWebdriverIO.NumberMatcher>,
+            height: MaybeArrayOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>
     }>
@@ -1075,10 +1072,10 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
     }, {
         /**
          * Elements MultiRemoteBrowser.$$() API: the size is checked per browser instance.
-         * A single size applies to every instance, or pass one size per instance, e.g. `expect.multiRemote({ chrome: 2, firefox: { gte: 1 } })` or its plain object shorthand.
+         * A single size applies to every instance, or pass one size per instance, e.g. `expect.multiRemote({ chrome: 2, firefox: { gte: 1 } })`.
          */
         (
-            size: SingleOrMultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher>,
+            size: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>,
     }>

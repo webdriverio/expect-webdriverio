@@ -416,7 +416,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should verify one NumberMatcher per browser', async () => {
                     await expect(multiRemoteBrowser.$('h1')).toHaveWidth(expect.multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }))
-                    await expect(multiRemoteBrowser.$('h1')).toHaveHeight({ chrome: { gte: 1 }, firefox: { gte: 1 } })
+                    await expect(multiRemoteBrowser.$('h1')).toHaveHeight(expect.multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }))
                 })
 
                 it('should treat a plain object as a literal style, and per-browser styles with expect.multiRemote()', async () => {
