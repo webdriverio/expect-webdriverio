@@ -197,7 +197,7 @@ Expect multi-remote<chrome, firefox>.$(`h1`) to have text
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": "Welcome",
 -   "firefox": "Welcome",
 +   "firefox": "Error",

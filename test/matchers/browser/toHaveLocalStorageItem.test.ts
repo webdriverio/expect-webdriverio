@@ -231,7 +231,7 @@ Expect multi-remote<chrome, firefox> to have localStorage item multiKey
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
 -   "chrome": "differentValue",
 -   "firefox": "differentValue",
 +   "chrome": "multiValue",

@@ -498,7 +498,7 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have style
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": Object {
       "color": "colorValue",
     },
@@ -513,7 +513,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have style
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
     "chrome": Array [
       Object {
         "color": "colorValue",
@@ -557,7 +557,7 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have style
 - Expected  - 12
 + Received  +  4
 
-  Object {
+  Multi-remote values {
     "chrome": Object {
 -     "chrome": Object {
 -       "color": "colorValue",

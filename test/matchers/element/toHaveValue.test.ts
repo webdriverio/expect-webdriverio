@@ -136,7 +136,7 @@ Expect multi-remote<chrome, firefox>.$(\`input\`) to have property value
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": "A",
 -   "firefox": "A",
 +   "firefox": "B",
@@ -154,7 +154,7 @@ Expect multi-remote<chrome, firefox>.$(\`input\`) to have property value
 - Expected  - 6
 + Received  + 0
 
-  Object {
+  Multi-remote values {
 -   "chrome": Object {
 -     "chrome": "A",
 -     "firefox": "B",

@@ -1934,7 +1934,7 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have text
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": "Valid Text",
 -   "firefox": "Other",
 +   "firefox": "Valid Text",
@@ -1956,7 +1956,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have text
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": Array [
       "Valid Text",
       "Valid Text",
@@ -1984,7 +1984,7 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have text
 - Expected  - 0
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": "Valid Text",
 +   "firefox": " Valid Text ",
   }`

@@ -421,7 +421,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
 -   "chrome": 3,
 -   "firefox": 3,
 +   "chrome": 2,
@@ -451,7 +451,7 @@ Expect multi-remote<eq, firefox>.$$(\`sel\`) to be elements array of size
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "eq": 2,
 -   "firefox": 3,
 +   "firefox": 2,
@@ -507,7 +507,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 - Expected  - 0
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": 2,
 +   "firefox": 2,
   }` },
@@ -517,7 +517,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 - Expected  - 1
 + Received  + 0
 
-  Object {
+  Multi-remote values {
     "chrome": 2,
     "firefox": 2,
 -   "safari": 2,
@@ -560,7 +560,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": 2,
 -   "firefox": 3,
 +   "firefox": 2,
@@ -583,7 +583,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": 2,
 -   "firefox": 3,
 +   "firefox": 2,
@@ -603,7 +603,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
 -   "Chrome": 2,
 -   "Firefox": 2,
 +   "chrome": 2,
@@ -812,7 +812,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
 -   "chrome": 2,
 -   "firefox": 2,
 +   "chrome": 1,

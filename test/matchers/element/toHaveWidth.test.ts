@@ -303,7 +303,7 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have width
 - Expected  - 1
 + Received  + 1
 
-  Object {
+  Multi-remote values {
     "chrome": >= 1,
 -   "firefox": <= 0,
 +   "firefox": 100,
@@ -314,7 +314,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have width
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
     "chrome": Array [
       >= 1,
       >= 1,

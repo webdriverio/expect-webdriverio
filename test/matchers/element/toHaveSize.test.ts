@@ -515,7 +515,7 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have size
 - Expected  - 2
 + Received  + 2
 
-  Object {
+  Multi-remote values {
     "chrome": Object {
       "height": 50,
       "width": 100,
@@ -533,7 +533,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have size
 - Expected  - 4
 + Received  + 4
 
-  Object {
+  Multi-remote values {
     "chrome": Array [
       Object {
         "height": 50,
@@ -581,7 +581,7 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have size
 - Expected  - 12
 + Received  +  0
 
-  Object {
+  Multi-remote values {
     "chrome": Object {
 -     "chrome": Object {
 -       "height": 50,

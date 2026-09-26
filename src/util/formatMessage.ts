@@ -73,6 +73,12 @@ export const enhanceError = (
     } = {}): string => {
     const { isNot, useNotInLabel = true } = context
 
+    // Label the per-instance values `Multi-remote values {` instead of `Object {` in the printed diff
+    if ((isBrowser(subject) && subject.isMultiremote) || isMultiRemoteElementLike(subject)) {
+        expected = labelMultiRemoteValues(expected)
+        actual = labelMultiRemoteValues(actual)
+    }
+
     if (isBrowser(subject)) {
         if (subject.isMultiremote) {
             subject = formatMultiRemoteInstanceNames(subject.instances)
@@ -244,6 +250,15 @@ export const enhanceErrorBe = (
 
 const isSuccess = (isNot: boolean, success: boolean): boolean => {
     return isNot ? !success : success
+}
+
+/** Only used for its name, printed by `pretty-format` as the header of the per-instance values */
+class MultiRemoteValuesLabel {}
+Object.defineProperty(MultiRemoteValuesLabel, 'name', { value: 'Multi-remote values' })
+
+const labelMultiRemoteValues = (value: unknown): unknown => {
+    const isPlainObject = typeof value === 'object' && value !== null && Object.getPrototypeOf(value) === Object.prototype
+    return isPlainObject ? Object.assign(new MultiRemoteValuesLabel(), value) : value
 }
 
 const formatMultiRemoteInstanceNames = (instances: string[]): string => {
