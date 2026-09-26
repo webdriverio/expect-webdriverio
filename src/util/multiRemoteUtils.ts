@@ -89,6 +89,18 @@ export const isMockArray = (obj: unknown): obj is WebdriverIO.Mock[] => {
 }
 
 /**
+ * The received mock(s) of a network matcher, awaiting an unawaited `mock()`, multi-remote or not.
+ * An empty array is rejected: there is no mock to assert on, and every mock of none would vacuously pass.
+ */
+export const awaitMocks = async <T>(received: T | Promise<WebdriverIO.Mock[]>): Promise<T | WebdriverIO.Mock[]> => {
+    const mocks = received instanceof Promise ? await received : received
+    if (Array.isArray(mocks) && mocks.length === 0) {
+        throw new Error('Expected a mock or a non-empty array of mocks, received an empty array')
+    }
+    return mocks
+}
+
+/**
  * The name of each mock's instance, or `mocks[index]` when unknown.
  *
  * WebdriverIO does not expose the browser of a mock, but a multi-remote `mock()` returns one mock per instance, in

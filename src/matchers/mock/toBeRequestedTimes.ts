@@ -1,7 +1,7 @@
 import { waitUntil, enhanceError } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
-import { getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
+import { awaitMocks, getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
 import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
 
 export async function toBeRequestedTimes(
@@ -46,8 +46,7 @@ export async function toBeRequestedTimes(
 
     const { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
 
-    // Not awaiting a single mock, which may be an unawaited `mock()` promise: kept as is for backward compatibility
-    const mocks = received instanceof Promise ? await received : received
+    const mocks = await awaitMocks(received)
     let message: string
     let pass: boolean
 

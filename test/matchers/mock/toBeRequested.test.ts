@@ -151,6 +151,10 @@ Expect multi-remote<chrome, firefox> mocks to be called
   }`)
     })
 
+    test('rejects an empty array of mocks, which has nothing to assert on', async () => {
+        await expect(thisContext.toBeRequested([], { wait: 0 })).rejects.toThrow('Expected a mock or a non-empty array of mocks, received an empty array')
+    })
+
     test('fails with .not when only some instances\' mocks are called', async () => {
         const result = await thisNotContext.toBeRequested(mocksCalled(1, 0), { wait: 0 })
 

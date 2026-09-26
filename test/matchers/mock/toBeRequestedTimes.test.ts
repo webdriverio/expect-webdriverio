@@ -245,6 +245,19 @@ Expect multi-remote<chrome, firefox> mocks to be called 1 time
         expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
     })
 
+    test('passes with a promise of a single mock, like an unawaited mock()', async () => {
+        const [mock] = mocksCalled(1)
+
+        const result = await thisContext.toBeRequestedTimes(Promise.resolve(mock) as unknown as Mock, 1, { wait: 0 })
+
+        expect(result.pass).toBe(true)
+    })
+
+    test('rejects an empty array of mocks, which has nothing to assert on, also with .not', async () => {
+        await expect(thisContext.toBeRequestedTimes([], 0, { wait: 0 })).rejects.toThrow('Expected a mock or a non-empty array of mocks, received an empty array')
+        await expect(thisNotContext.toBeRequestedTimes([], 1, { wait: 0 })).rejects.toThrow('Expected a mock or a non-empty array of mocks, received an empty array')
+    })
+
     test('names the mocks by index when they do not match the global multiRemoteBrowser instances, e.g. from select()', async () => {
         const result = await thisContext.toBeRequestedTimes(mocksCalled(0), 1, { wait: 0 })
 

@@ -3,7 +3,7 @@ import type { local } from 'webdriver'
 import { waitUntil, enhanceError, isAsymmetricMatcher, getAsymmetricMatcherValue } from '../../utils.js'
 import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import { getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
+import { awaitMocks, getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
 import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
 
 const STR_LIMIT = 80
@@ -60,8 +60,7 @@ export async function toBeRequestedWith(
     // postData/body string is JSON.parsed at most once per assertion instead of once per read
     const parseCache: Map<string, ParsedJson> = new Map()
 
-    // Not awaiting a single mock, which may be an unawaited `mock()` promise: kept as is for backward compatibility
-    const mocks = received instanceof Promise ? await received : received
+    const mocks = await awaitMocks(received)
     let pass: boolean
     let message: string
 
