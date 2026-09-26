@@ -5,7 +5,7 @@ import { test, expect, vi } from 'vitest'
 import type { Frameworks } from '@wdio/types'
 
 import { expect as expectExport, SnapshotService } from '../src/index.js'
-import { browserFactory, createMultiRemoteElementMock } from './__mocks__/@wdio/globals.js'
+import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementMock } from './__mocks__/@wdio/globals.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const __filename = path.basename(fileURLToPath(import.meta.url))
@@ -87,6 +87,57 @@ test('snapshots the outerHTML shared by every instance of a multi-remote element
     vi.mocked(element.getInstance('firefox').getHTML).mockResolvedValue('<h1>Welcome</h1>')
 
     await expectExport(element).toMatchInlineSnapshot('"<h1>Welcome</h1>"')
+    await service.after()
+})
+
+test('snapshots the outerHTML of every element of an element array', async () => {
+    await service.beforeTest({
+        title: 'element array',
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+
+    const chainableElements = chainableElementArrayFactory('li', 2)
+    const elements = await chainableElements.getElements()
+    vi.mocked(elements[0].getHTML).mockResolvedValue('<li>Coffee</li>')
+    vi.mocked(elements[1].getHTML).mockResolvedValue('<li>Tea</li>')
+
+    // Non-awaited `$$()`
+    await expectExport(chainableElements).toMatchInlineSnapshot(`
+      [
+        "<li>Coffee</li>",
+        "<li>Tea</li>",
+      ]
+    `)
+    // Awaited `ElementArray`, and a plain `Element[]`
+    await expectExport(elements).toMatchInlineSnapshot(`
+      [
+        "<li>Coffee</li>",
+        "<li>Tea</li>",
+      ]
+    `)
+    await expectExport([...elements]).toMatchInlineSnapshot(`
+      [
+        "<li>Coffee</li>",
+        "<li>Tea</li>",
+      ]
+    `)
+    expect(elements[0].getHTML).toHaveBeenCalledWith({ includeSelectorTag: true })
+    await service.after()
+})
+
+test('keeps snapshotting an empty plain array synchronously', async () => {
+    await service.beforeTest({
+        title: 'empty array',
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+
+    const result = expectExport([]).toMatchInlineSnapshot('[]')
+
+    expect(result).not.toBeInstanceOf(Promise)
     await service.after()
 })
 
