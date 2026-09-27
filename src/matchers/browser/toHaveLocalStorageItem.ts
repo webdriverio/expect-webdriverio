@@ -6,16 +6,6 @@ import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
 /**
- * @deprecated since v6.0.0, use expect.anything() instead of undefined as expected value, will be removed in v8.0.0
- */
-export async function toHaveLocalStorageItem(
-    browser: WebdriverIO.Browser,
-    key: string,
-    expectedValue: undefined,
-    options?: ExpectWebdriverIO.StringOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
-
-/**
  * Browser
  */
 export async function toHaveLocalStorageItem(
@@ -49,16 +39,7 @@ export async function toHaveLocalStorageItem(
         options,
     })
 
-    const paramsCount = arguments.length
-    let expected: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>
-    if (expectedValue === undefined) {
-        if (paramsCount > 2) {
-            console.warn('[DEPRECATION] Using toHaveLocalStorageItem with undefined is deprecated in favor of expect.anything().')
-        }
-        expected = expect.anything()
-    } else {
-        expected = expectedValue
-    }
+    const expected = expectedValue ?? expect.anything()
 
     // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expected, options)

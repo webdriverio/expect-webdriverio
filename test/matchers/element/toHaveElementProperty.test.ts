@@ -154,16 +154,6 @@ Received      : "iphone"`)
             expect(result.pass).toBe(true)
         })
 
-        test.for([
-            { expectedValue: null },
-            { expectedValue: undefined }
-        ]
-        )('should return true when property does exist by passing an not defined expected value - deprecated', async ( { expectedValue }) => {
-            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', expectedValue)
-
-            expect(result.pass).toBe(true)
-        })
-
         describe('when using any/anything asymmetric matchers', () => {
             test('should return true when property does exist by passing the anything() asymmetric matcher', async () => {
                 const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', wdioExpect.anything(), { wait: 0 })
@@ -240,16 +230,6 @@ Received: "iphone"`)
 
                 expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })
-        })
-
-        test.for([
-            { expectedValue: null },
-            { expectedValue: undefined }
-        ]
-        )('not - should return failure (true) if property exists by passing not defined expected value when isNot is true - deprecated', async ( { expectedValue }) => {
-            const result = await thisIsNotContext.toHaveElementProperty(el, 'myPropertyName', expectedValue)
-
-            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
         })
 
         test('should return true when property does exist', async () => {

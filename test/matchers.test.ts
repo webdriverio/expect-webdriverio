@@ -1,5 +1,5 @@
 import { test, expect, vi, describe } from 'vitest'
-import { matchers, expect as expectLib, wdioCustomMatchers } from '../src/index.js'
+import { expect as expectLib, wdioCustomMatchers } from '../src/index.js'
 import { $, $$ } from '@wdio/globals'
 
 vi.mock('@wdio/globals')
@@ -25,11 +25,9 @@ const ALL_MATCHERS = [
     'toBeChecked',
     'toHaveAttributeAndValue',
     'toHaveAttribute',
-    'toHaveAttr',
     'toHaveChildren',
     'toHaveComputedLabel',
     'toHaveComputedRole',
-    'toHaveClass',
     'toHaveElementClass',
     'toHaveElementProperty',
     'toHaveHeight',
@@ -58,7 +56,6 @@ const ALL_MATCHERS = [
 ]
 
 test('matchers', () => {
-    expect([...matchers.keys()]).toEqual(ALL_MATCHERS)
     expect(Object.keys(wdioCustomMatchers)).toEqual(ALL_MATCHERS)
 })
 
@@ -68,7 +65,6 @@ test('allows to add matcher', () => {
 
     // @ts-expect-error not in types
     expectLib('foo').toBeCustom('foo')
-    expect(matchers.keys()).toContain('toBeCustom')
     expect(Object.keys(wdioCustomMatchers)).toContain('toBeCustom')
 })
 
@@ -101,7 +97,6 @@ describe('Custom Wdio Matchers Integration Tests', async () => {
             await expectLib(el).toHaveWidth(100)
             await expectLib(el).toHaveAttribute('someAttribute', 'some attribute')
             await expectLib(el).toHaveAttribute('someAttribute')
-            await expectLib(el).toHaveAttr('someAttribute', 'some attribute')
             await expectLib(el).toHaveElementProperty('someProperty', '1')
         })
 
@@ -234,12 +229,6 @@ Expected [not]: Anything
 Received      : "some attribute"`
             )
 
-            await expect(() => expectLib(el).not.toHaveAttr('someAttribute', 'some attribute')).rejects.toThrow(`\
-Expect $(\`selector\`) not to have attribute someAttribute
-
-Expected [not]: "some attribute"
-Received      : "some attribute"`
-            )
             await expect(() => expectLib(el).not.toHaveElementProperty('someProperty', '1')).rejects.toThrow(`\
 Expect $(\`selector\`) not to have property someProperty
 
@@ -349,11 +338,6 @@ Expect $(\`selector\`) to have attribute notExistingAttribute
 
 Expected: Anything
 Received: null`)
-            await expect(() => expectLib(el).toHaveAttr('someAttribute', 'some other attribute')).rejects.toThrow(`\
-Expect $(\`selector\`) to have attribute someAttribute
-
-Expected: "some other attribute"
-Received: null`)
         })
 
         test('Ensure toHaveSize, toHaveHeight, toHaveWidth matchers throw and show proper failing message', async () => {
@@ -409,7 +393,6 @@ Received: 100`)
             await expectLib(el).not.toHaveComputedRole('Some Other Computed Role')
             await expectLib(el).not.toHaveElementProperty('someProperty', 'some other value')
             await expectLib(el).not.toHaveAttribute('someAttribute', 'some other attribute')
-            await expectLib(el).not.toHaveAttr('someAttribute', 'some other attribute')
             await expectLib(el).not.toHaveSize({ width: 200, height: 100 })
             await expectLib(el).not.toHaveHeight(100)
             await expectLib(el).not.toHaveWidth(200)
@@ -515,7 +498,6 @@ Received: "not displayed"`)
             await expectLib(elements).toHaveWidth(100)
             await expectLib(elements).toHaveAttribute('someAttribute', 'some attribute')
             await expectLib(elements).toHaveAttribute('someAttribute')
-            await expectLib(elements).toHaveAttr('someAttribute', 'some attribute')
             await expectLib(elements).toHaveElementProperty('someProperty', '1')
             await expectLib(elements).toBeElementsArrayOfSize(2)
         })
@@ -528,7 +510,6 @@ Received: "not displayed"`)
             await expectLib(elements).not.toHaveComputedRole('Some Other Computed Role')
             await expectLib(elements).not.toHaveElementProperty('someProperty', 'some other value')
             await expectLib(elements).not.toHaveAttribute('someAttribute', 'some other attribute')
-            await expectLib(elements).not.toHaveAttr('someAttribute', 'some other attribute')
             await expectLib(elements).not.toHaveSize({ width: 200, height: 100 })
             await expectLib(elements).not.toHaveHeight(100)
             await expectLib(elements).not.toHaveWidth(200)

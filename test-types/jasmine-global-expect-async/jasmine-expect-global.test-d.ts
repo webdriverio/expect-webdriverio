@@ -266,13 +266,6 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
                         expectTypeOf(expect(element).not.toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
                     })
 
-                    it('should be deprecated', async () => {
-                        expectTypeOf(expect(element).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expect(element).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expect(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expect(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
-                    })
-
                     it('should have ts errors but to support one day???', async () => {
                     // @ts-expect-error
                         expectTypeOf(expect(element).toHaveElementProperty('prop', ['test'])).toEqualTypeOf<Promise<void>>()

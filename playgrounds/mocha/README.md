@@ -9,7 +9,7 @@ Because Mocha is the standard framework for `expect-webdriverio`, all features w
 *   **Soft Assertions**: Fully supported using the `SoftAssertionService` plugin in the `wdio.conf.ts` services.
 *   **Snapshots**: Basic text/data snapshot testing works seamlessly.
 *   **Visual Snapshots**: Visual snapshot testing directly integrates via `@wdio/visual-service`.
-*   **Global Options Configuration**: Easily set global wait times and other configurations (e.g., `setOptions({ wait: 250 })` in the `before` hook).
+*   **Global Options Configuration**: Easily set global wait times and other configurations (e.g., `setDefaultOptions({ wait: 250 })` in the `before` hook).
 
 ## Structure
 

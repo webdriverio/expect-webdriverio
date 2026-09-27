@@ -35,92 +35,14 @@ describe(toHaveChildren, () => {
                 expect(result.pass).toBe(true)
             })
 
-            test('no value - success - default to gte 1 with options as NumberOptions  - deprecated', async () => {
-                const beforeAssertion = vi.fn()
-                const afterAssertion = vi.fn()
-
-                const result = await thisContext.toHaveChildren(el, { wait: 0, interval: 5 }, { beforeAssertion, afterAssertion })
-
-                expect(result.pass).toBe(true)
-                expect(beforeAssertion).toHaveBeenCalledWith({
-                    matcherName: 'toHaveChildren',
-                    expectedValue: { wait: 0, interval: 5 },
-                    options: { beforeAssertion, afterAssertion }
-                })
-                expect(afterAssertion).toHaveBeenCalledWith({
-                    matcherName: 'toHaveChildren',
-                    expectedValue: { wait: 0, interval: 5 },
-                    options: { beforeAssertion, afterAssertion },
-                    result
-                })
+            test.for([
+                { expectedValue: {} },
+                { expectedValue: { wait: 0 } },
+                { expectedValue: { eq: 2, wait: 0, interval: 5 } },
+            ])('throws on a legacy NumberOptions: $expectedValue', async ({ expectedValue }) => {
+                // Command options go in the options argument
+                await expect(thisContext.toHaveChildren(el, expectedValue as never, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
             })
-
-            test('no value - success - default to gte 1 (with undefined) and with command options - deprecated', async () => {
-                const beforeAssertion = vi.fn()
-                const afterAssertion = vi.fn()
-
-                const result = await thisContext.toHaveChildren(el, undefined, { wait: 0, interval: 5, beforeAssertion, afterAssertion })
-
-                expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 0, interval: 5 })
-
-                expect(result.pass).toBe(true)
-                expect(beforeAssertion).toHaveBeenCalledWith({
-                    matcherName: 'toHaveChildren',
-                    expectedValue: undefined,
-                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion }
-                })
-                expect(afterAssertion).toHaveBeenCalledWith({
-                    matcherName: 'toHaveChildren',
-                    expectedValue: undefined,
-                    options: { wait: 0, interval: 5, beforeAssertion, afterAssertion },
-                    result
-                })
-            })
-
-            test('no value - success - default to gte 1 (with empty object) -- deprecated officially even if not striked', async () => {
-                const result = await thisContext.toHaveChildren(el, {})
-
-                expect(result.pass).toBe(true)
-            })
-
-            test('no value - success - default to gte 1 (with empty object and separate wait options) -- deprecated officially even if not striked-- TODO add runtime check on next major version', async () => {
-                const result = await thisContext.toHaveChildren(el, {}, { wait: 0 })
-
-                expect(result.pass).toBe(true)
-            })
-
-            test('no value - success - default to gte 1 (with empty object and double wait options) -- deprecated', async () => {
-                const result = await thisContext.toHaveChildren(el, { wait: 0 }, { wait: 0 })
-
-                expect(result.pass).toBe(true)
-            })
-        })
-
-        test('use numberOption wait and internal and command options - deprecated', async () => {
-            const beforeAssertion = vi.fn()
-            const afterAssertion = vi.fn()
-
-            const result = await thisContext.toHaveChildren(el, { eq: 2, wait: 0, interval: 5 }, { beforeAssertion, afterAssertion } )
-
-            expect(result.pass).toBe(true)
-            expect(beforeAssertion).toHaveBeenCalledWith({
-                matcherName: 'toHaveChildren',
-                options: { beforeAssertion, afterAssertion },
-                expectedValue: { eq: 2, wait: 0, interval: 5 }
-
-            })
-            expect(afterAssertion).toHaveBeenCalledWith({
-                matcherName: 'toHaveChildren',
-                options: { beforeAssertion, afterAssertion },
-                result,
-                expectedValue: { eq: 2, wait: 0, interval: 5 }
-            })
-        })
-
-        test('use numberOption wait and internal wait but no command options - deprecated', async () => {
-            const result = await thisContext.toHaveChildren(el, { eq: 2, wait: 0, interval: 5 } )
-
-            expect(result.pass).toBe(true)
         })
 
         test('use numberMatcher and wait and internal', async () => {
@@ -600,15 +522,9 @@ Received      : [2, 2, undefined]`
         test.each([
             { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
             { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
-        ])('reads a plain object as legacy NumberOptions, defaulting to { gte: 1 } with a deprecation warning, on $name', async ({ subject }) => {
-            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-
-            // @ts-expect-error a plain object is a legacy NumberOptions, per-instance values require expect.multiRemote()
-            const result = await thisContext.toHaveChildren(subject(), { chrome: { gte: 1 }, firefox: { lte: 0 } }, { wait: 0 })
-
-            // `firefox: { lte: 0 }` is ignored: only `expect.multiRemote()` checks one value per instance
-            expect(result.pass).toBe(true)
-            expect(warn).toHaveBeenCalledWith(expect.stringContaining('deprecated'))
+        ])('throws on per-instance values in a plain object, which require expect.multiRemote(), on $name', async ({ subject }) => {
+            // @ts-expect-error a plain object is a NumberMatcher, per-instance values require expect.multiRemote()
+            await expect(thisContext.toHaveChildren(subject(), { chrome: { gte: 1 }, firefox: { lte: 0 } }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
         })
 
         test.each([
@@ -642,15 +558,12 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have children
     ],
   }` },
         ])('checks one NumberMatcher per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
-            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-
             const pass = await thisContext.toHaveChildren(subject(), multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }), { wait: 0 })
             const fail = await thisContext.toHaveChildren(subject(), multiRemote({ chrome: { gte: 1 }, firefox: { lte: 0 } }), { wait: 0 })
 
             expect(pass.pass).toBe(true)
             expect(fail.pass).toBe(false)
             expect(stripAnsi(fail.message())).toEqual(message)
-            expect(warn).not.toHaveBeenCalled()
         })
 
         test('fails expect.multiRemote() on a non multi-remote element', async () => {

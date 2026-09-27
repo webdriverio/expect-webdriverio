@@ -126,35 +126,6 @@ async function executeCommandBe(
     }
 }
 
-/**
- * @deprecated not longer used in v6.0.0, replaced by `NumberMatcher.match()`. To remove in v8.0.0
- * @see src/util/numberOptionsUtil.ts#NumberMatcher.match
- */
-/* v8 ignore next */
-const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions = {}): boolean => {
-    // Equals case
-    if (typeof options.eq === 'number') {
-        return actual === options.eq
-    }
-
-    // Greater than or equal AND less than or equal case
-    if (typeof options.gte === 'number' && typeof options.lte === 'number') {
-        return actual >= options.gte && actual <= options.lte
-    }
-
-    // Greater than or equal case
-    if (typeof options.gte === 'number') {
-        return actual >= options.gte
-    }
-
-    // Less than or equal case
-    if (typeof options.lte === 'number') {
-        return actual <= options.lte
-    }
-
-    return false
-}
-
 export const compareTextOrOneOf = (
     actualText: string,
     expectedText: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
@@ -369,7 +340,7 @@ export const compareStyle = async (
 }
 
 export {
-    compareNumbers, enhanceError,
+    enhanceError,
     executeCommandBe, waitUntil, wrapExpectedWithArray
 }
 

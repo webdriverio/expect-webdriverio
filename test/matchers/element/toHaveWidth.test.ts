@@ -292,7 +292,7 @@ Expect $$(\`sel\`) to have width
             { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
             { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
         ])('rejects a plain object, per-instance values require expect.multiRemote(), on $name', async ({ subject }) => {
-            // @ts-expect-error a plain object is a legacy NumberOptions, not per-instance values
+            // @ts-expect-error a plain object is a NumberMatcher, not per-instance values
             await expect(thisContext.toHaveWidth(subject(), { chrome: { gte: 1 }, firefox: { gte: 1 } }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
         })
 

@@ -39,18 +39,6 @@ async function condition(
 }
 
 /**
- * @deprecated since 6.0.0, remove in v8.0.0.
- * Passing explicit `undefined` or `null` as a value is deprecated.
- * Omit the third argument entirely or use `toHaveElementProperty(el, property, object.anything(), options)`.
- */
-export async function toHaveElementProperty(
-    received: WdioElementMaybePromise,
-    property: string,
-    value: undefined | null,
-    options?: ExpectWebdriverIO.StringOptions
-): Promise<AssertionResult>
-
-/**
  * Elements $() or elements $$()
  * When called with an expected property name to verify if the property exists on a collection of elements.
  * Same as `toHaveElementProperty(el, property, expect.anything())`.
@@ -123,13 +111,8 @@ export async function toHaveElementProperty(
 ): Promise<AssertionResult> {
     // A property value can itself be an object, so a plain object is a literal unless the caller knows better (e.g. `toHaveValue`)
     const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty', allowObjectExpectedValue = true } = this
-    const paramsCount = arguments.length
 
     if (value === undefined || value === null) {
-        if (paramsCount > 2) {
-            // User have passed an explicit undefined or null value, which is deprecated. We will log a warning to inform the user about this deprecation.
-            console.warn('Using undefined or null as value for toHaveElementProperty is deprecated and will be removed in v6.0.0. Please omit the third argument entirely or use toHaveElementProperty(el, property, object.anything(), options).')
-        }
         value = expect.anything()
     }
 

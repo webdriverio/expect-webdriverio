@@ -161,16 +161,16 @@ Received      : 2`
             })
 
             test.each([
-                ['gte - equal', { gte: 2 } satisfies ExpectWebdriverIO.NumberOptions, true],
-                ['gte - fail', { gte: 1 } satisfies ExpectWebdriverIO.NumberOptions, true],
-                ['gte', { gte: 3 } satisfies ExpectWebdriverIO.NumberOptions, false],
-                ['lte - equal', { lte: 2 } satisfies ExpectWebdriverIO.NumberOptions, true],
-                ['lte - fail', { lte: 3 } satisfies ExpectWebdriverIO.NumberOptions, true],
-                ['lte', { lte: 1 } satisfies ExpectWebdriverIO.NumberOptions, false],
-                ['gte and lte', { gte: 1, lte: 10 } satisfies ExpectWebdriverIO.NumberOptions, true],
-                ['not gte but is lte', { gte: 10, lte: 10 } satisfies ExpectWebdriverIO.NumberOptions, false],
-                ['not lte but is gte', { gte: 1, lte: 1 } satisfies ExpectWebdriverIO.NumberOptions, false],
-            ])('should handle %s correctly', async (_title, expectedNumberValue: ExpectWebdriverIO.NumberOptions, expectedPass) => {
+                ['gte - equal', { gte: 2 } satisfies ExpectWebdriverIO.NumberMatcher, true],
+                ['gte - fail', { gte: 1 } satisfies ExpectWebdriverIO.NumberMatcher, true],
+                ['gte', { gte: 3 } satisfies ExpectWebdriverIO.NumberMatcher, false],
+                ['lte - equal', { lte: 2 } satisfies ExpectWebdriverIO.NumberMatcher, true],
+                ['lte - fail', { lte: 3 } satisfies ExpectWebdriverIO.NumberMatcher, true],
+                ['lte', { lte: 1 } satisfies ExpectWebdriverIO.NumberMatcher, false],
+                ['gte and lte', { gte: 1, lte: 10 } satisfies ExpectWebdriverIO.NumberMatcher, true],
+                ['not gte but is lte', { gte: 10, lte: 10 } satisfies ExpectWebdriverIO.NumberMatcher, false],
+                ['not lte but is gte', { gte: 1, lte: 1 } satisfies ExpectWebdriverIO.NumberMatcher, false],
+            ])('should handle %s correctly', async (_title, expectedNumberValue: ExpectWebdriverIO.NumberMatcher, expectedPass) => {
                 const result = await thisContext.toBeElementsArrayOfSize(els, expectedNumberValue)
 
                 expect(result.pass).toBe(expectedPass)
@@ -271,12 +271,12 @@ Received      : 2`
             expect(refetchElements).not.toHaveBeenCalled()
         })
 
-        test('refresh once the element array with the NumberOptions wait value', async () => {
+        test('refresh once the element array with the wait option', async () => {
             vi.mocked(browser.$$)
                 .mockReturnValueOnce(elementArrayOf2)
                 .mockReturnValue(elementArrayOf5)
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5, wait: 450, interval: 100 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { wait: 450, interval: 100 })
 
             expect(result.pass).toBe(true)
             expect(elements.length).toBe(5)
@@ -437,7 +437,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
         })
 
-        test('supports instance names colliding with NumberOptions keys with expect.multiRemote()', async () => {
+        test('supports instance names colliding with NumberMatcher keys with expect.multiRemote()', async () => {
             const elements = createMultiRemoteElementArrayMock({ eq: browserFactory(), firefox: browserFactory() }, 'sel', 2)
 
             const pass = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ eq: 2, firefox: { gte: 1 } }), { wait: 0 })
@@ -544,7 +544,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
         test('rejects a plain object: per-instance sizes require expect.multiRemote()', async () => {
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
 
-            // @ts-expect-error a plain object is a legacy NumberOptions, not per-instance sizes
+            // @ts-expect-error a plain object is a NumberMatcher, not per-instance sizes
             await expect(thisContext.toBeElementsArrayOfSize(elements, { chrome: 2, firefox: 3 }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
         })
 

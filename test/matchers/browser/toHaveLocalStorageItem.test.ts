@@ -130,26 +130,6 @@ Received: null`
             )
         })
 
-        it('passes when only checking key existence with undefined - deprecated', async () => {
-            // Mock browser.execute to return any non-null value
-            vi.mocked(browser.execute).mockResolvedValue('anyValue')
-
-            // no expectedValue parameter
-            const result = await thisContext.toHaveLocalStorageItem(browser, 'existingKey', undefined)
-
-            expect(result.pass).toBe(true)
-        })
-
-        it('passes when only checking key existence with undefined and options - deprecated', async () => {
-            // Mock browser.execute to return any non-null value
-            vi.mocked(browser.execute).mockResolvedValue('anyValue')
-
-            // no expectedValue parameter
-            const result = await thisContext.toHaveLocalStorageItem(browser, 'existingKey', undefined, { wait: 0 })
-
-            expect(result.pass).toBe(true)
-        })
-
         it('passes when only checking key existence with anything() and options', async () => {
         // Mock browser.execute to return any non-null value
             vi.mocked(browser.execute).mockResolvedValue('anyValue')

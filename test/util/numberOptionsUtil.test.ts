@@ -1,12 +1,10 @@
 import { test, describe, expect, vi } from 'vitest'
 import {
-    isEmptyOrLegacyNumberOptions,
     isNumber,
     NumberMatcher,
-    validateNumberAndExtractOptions,
-    validateNumberArrayAndExtractOptions
+    validateNumberMatcher,
+    validateNumberMatcherArray
 } from '../../src/util/numberOptionsUtil.js'
-import { DEFAULT_OPTIONS } from '../../src/constants.js'
 import { multiRemote } from '../../src/api/index.js'
 
 /**
@@ -137,143 +135,79 @@ describe('numberOptionsUtil', () => {
         })
     })
 
-    describe(validateNumberAndExtractOptions, () => {
-        test('successfully extracts number literal configurations', () => {
-            const result = validateNumberAndExtractOptions(5, { wait: 1000 })
-            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
-            expect(result.numberMatcher.asymmetricMatch(5)).toBe(true)
-            expect(result.commandOptions).toEqual({ wait: 1000 })
+    describe(validateNumberMatcher, () => {
+        test('turns a number into a NumberMatcher', () => {
+            const numberMatcher = validateNumberMatcher(5)
+            expect(numberMatcher).toBeInstanceOf(NumberMatcher)
+            expect(numberMatcher.asymmetricMatch(5)).toBe(true)
         })
 
-        test('successfully extracts number literal 0', () => {
-            const result = validateNumberAndExtractOptions(0, DEFAULT_OPTIONS)
-            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
-            expect(result.numberMatcher.asymmetricMatch(0)).toBe(true)
-            expect(result.commandOptions).toEqual(DEFAULT_OPTIONS)
+        test('turns 0 into a NumberMatcher', () => {
+            expect(validateNumberMatcher(0).asymmetricMatch(0)).toBe(true)
         })
 
-        test('successfully extracts number literal as gte', () => {
-            const result = validateNumberAndExtractOptions({ gte: 0 }, DEFAULT_OPTIONS)
-            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
-            expect(result.numberMatcher.asymmetricMatch(0)).toBe(true)
-            expect(result.commandOptions).toEqual(DEFAULT_OPTIONS)
+        test('turns gte into a NumberMatcher', () => {
+            expect(validateNumberMatcher({ gte: 0 }).asymmetricMatch(0)).toBe(true)
         })
 
-        test('successfully extracts number literal as lte', () => {
-            const result = validateNumberAndExtractOptions({ lte: 0 }, DEFAULT_OPTIONS)
-            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
-            expect(result.numberMatcher.asymmetricMatch(0)).toBe(true)
-            expect(result.commandOptions).toEqual(DEFAULT_OPTIONS)
+        test('turns lte into a NumberMatcher', () => {
+            expect(validateNumberMatcher({ lte: 0 }).asymmetricMatch(0)).toBe(true)
         })
 
-        test('successfully extracts valid interface configurations and returns remaining command options', () => {
-            const result = validateNumberAndExtractOptions({ gte: 2, lte: 5, wait: 200 }, DEFAULT_OPTIONS)
-            expect(result.numberMatcher.asymmetricMatch(3)).toBe(true)
-            expect(result.commandOptions).toEqual({ wait: 200, interval: 100, afterAssertion : DEFAULT_OPTIONS.afterAssertion, beforeAssertion: DEFAULT_OPTIONS.beforeAssertion })
+        test('turns a range into a NumberMatcher', () => {
+            expect(validateNumberMatcher({ gte: 2, lte: 5 }).asymmetricMatch(3)).toBe(true)
         })
 
         test('throws error for empty or entirely invalid options objects', () => {
-            expect(() => validateNumberAndExtractOptions(null as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberAndExtractOptions({}, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberAndExtractOptions(undefined, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberAndExtractOptions( { invalidkey:'test' } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberAndExtractOptions( { wait: 0 } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher(null as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher({})).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher(undefined)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher( { invalidkey:'test' } as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher( { wait: 0 } as any)).toThrow(/Invalid NumberMatcher/)
 
             // Wrong types for eq, gte, lte
-            expect(() => validateNumberAndExtractOptions({ gte: '5' } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberAndExtractOptions({ lte: '5' } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberAndExtractOptions({ eq: '5' } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberAndExtractOptions({ gte: '5', lte: 10 } as any, DEFAULT_OPTIONS)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher({ gte: '5' } as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher({ lte: '5' } as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher({ eq: '5' } as any)).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher({ gte: '5', lte: 10 } as any)).toThrow(/Invalid NumberMatcher/)
+        })
+
+        test('throws error for a legacy NumberOptions with command options', () => {
+            expect(() => validateNumberMatcher({ gte: 5, wait: 0 } as any)).toThrow('Invalid NumberMatcher. Received: {"gte":5,"wait":0}')
+            expect(() => validateNumberMatcher({ wait: 0 } as any, { supportDefaultAsGteThen1: true })).toThrow(/Invalid NumberMatcher/)
         })
 
         test('throws error when gte option is greater than lte option', () => {
-            expect(() => validateNumberAndExtractOptions({ gte: 10, lte: 5 }, DEFAULT_OPTIONS)).toThrow(
+            expect(() => validateNumberMatcher({ gte: 10, lte: 5 })).toThrow(
                 "Invalid NumberMatcher range: 'gte' (10) cannot be greater than 'lte' (5)."
             )
         })
 
         test('does not throw when gte equals lte', () => {
-            expect(() => validateNumberAndExtractOptions({ gte: 5, lte: 5 }, DEFAULT_OPTIONS)).not.toThrow()
-            const result = validateNumberAndExtractOptions({ gte: 5, lte: 5 }, DEFAULT_OPTIONS)
-            expect(result.numberMatcher.asymmetricMatch(5)).toBe(true)
+            expect(validateNumberMatcher({ gte: 5, lte: 5 }).asymmetricMatch(5)).toBe(true)
         })
 
-        test('return default gte 1 when undefined is passed and supportUndefinedAsGteThen1 is true', () => {
-            const result = validateNumberAndExtractOptions(undefined, {}, { supportDefaultAsGteThen1: true })
-            expect(result.numberMatcher.asymmetricMatch(1)).toBe(true)
-            expect(result.numberMatcher.asymmetricMatch(2)).toBe(true)
-            expect(result.numberMatcher.asymmetricMatch(0)).toBe(false)
+        test('return default gte 1 when undefined is passed and supportDefaultAsGteThen1 is true', () => {
+            const numberMatcher = validateNumberMatcher(undefined, { supportDefaultAsGteThen1: true })
+            expect(numberMatcher.asymmetricMatch(1)).toBe(true)
+            expect(numberMatcher.asymmetricMatch(2)).toBe(true)
+            expect(numberMatcher.asymmetricMatch(0)).toBe(false)
         })
 
-        test('return default gte 1 when {} is passed and supportUndefinedAsGteThen1 is true', () => {
-            const result = validateNumberAndExtractOptions({}, {},  { supportDefaultAsGteThen1: true })
-            expect(result.numberMatcher.asymmetricMatch(1)).toBe(true)
-            expect(result.numberMatcher.asymmetricMatch(2)).toBe(true)
-            expect(result.numberMatcher.asymmetricMatch(0)).toBe(false)
-        })
-
-        test('merge with DEFAULT_OPTIONS and prioritizes number options over command options - wait only', () => {
-            const result = validateNumberAndExtractOptions( { gte: 5, wait: 0 },  DEFAULT_OPTIONS)
-
-            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
-            expect(result.numberMatcher.asymmetricMatch(5)).toBe(true)
-            expect(result.commandOptions).toEqual({ wait: 0, interval: 100, afterAssertion : DEFAULT_OPTIONS.afterAssertion, beforeAssertion: DEFAULT_OPTIONS.beforeAssertion })
-        })
-
-        test('merge with DEFAULT_OPTIONS and prioritizes number options over command options - before/after assertions options', () => {
-            const beforeAssertion = vi.fn().mockReturnValue(1)
-            const afterAssertion = vi.fn().mockReturnValue(2)
-            const result = validateNumberAndExtractOptions( { gte: 5, wait: 0, beforeAssertion, afterAssertion },  DEFAULT_OPTIONS)
-
-            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
-            expect(result.numberMatcher.asymmetricMatch(5)).toBe(true)
-            expect(result.commandOptions).toEqual({ wait: 0, interval: 100, afterAssertion, beforeAssertion })
-
-            expect(result.commandOptions?.beforeAssertion?.({} as any)).toBe(1)
-            expect(result.commandOptions?.afterAssertion?.({} as any)).toBe(2)
-            expect(beforeAssertion).toHaveBeenCalledTimes(1)
-            expect(afterAssertion).toHaveBeenCalledTimes(1)
-        })
-
-        test('merge with DEFAULT_OPTIONS and prioritizes number options over command options - useDefault - before/after assertions options', () => {
-            const beforeAssertion = vi.fn().mockReturnValue(1)
-            const afterAssertion = vi.fn().mockReturnValue(2)
-            const result = validateNumberAndExtractOptions( { wait: 0, beforeAssertion, afterAssertion },  DEFAULT_OPTIONS, { supportDefaultAsGteThen1: true })
-
-            expect(result.numberMatcher).toBeInstanceOf(NumberMatcher)
-            expect(result.numberMatcher.asymmetricMatch(1)).toBe(true)
-            expect(result.commandOptions).toEqual({ wait: 0, interval: 100, afterAssertion, beforeAssertion })
-
-            expect(result.commandOptions?.beforeAssertion?.({} as any)).toBe(1)
-            expect(result.commandOptions?.afterAssertion?.({} as any)).toBe(2)
-            expect(beforeAssertion).toHaveBeenCalledTimes(1)
-            expect(afterAssertion).toHaveBeenCalledTimes(1)
+        test('throws error when {} is passed and supportDefaultAsGteThen1 is true', () => {
+            expect(() => validateNumberMatcher({}, { supportDefaultAsGteThen1: true })).toThrow(/Invalid NumberMatcher/)
         })
     })
 
-    describe(validateNumberArrayAndExtractOptions, () => {
+    describe(validateNumberMatcherArray, () => {
         test('validates one value per instance with expect.multiRemote(), whatever the instance names', () => {
-            const { numberMatcher } = validateNumberArrayAndExtractOptions(multiRemote({ eq: 2, firefox: [1, { gte: 1 }] }), DEFAULT_OPTIONS)
+            const numberMatcher = validateNumberMatcherArray(multiRemote({ eq: 2, firefox: [1, { gte: 1 }] }))
 
             expect(numberMatcher).toEqual({ eq: new NumberMatcher({ eq: 2 }), firefox: [new NumberMatcher({ eq: 1 }), new NumberMatcher({ gte: 1 })] })
         })
 
-        test('reads a plain object as a legacy NumberOptions, not as per-instance values', () => {
-            expect(() => validateNumberArrayAndExtractOptions({ chrome: 2, firefox: 3 } as never, DEFAULT_OPTIONS)).toThrow('Invalid NumberMatcher')
-        })
-    })
-
-    describe(isEmptyOrLegacyNumberOptions, () => {
-        test('should return true for empty or legacy number options', () => {
-            expect(isEmptyOrLegacyNumberOptions({})).toBe(true)
-            expect(isEmptyOrLegacyNumberOptions({ wait: 0 })).toBe(true)
-            expect(isEmptyOrLegacyNumberOptions({ eq: 0, wait: 0 })).toBe(true)
-            expect(isEmptyOrLegacyNumberOptions({ gte: 1, lte: 10, wait: 0 })).toBe(true)
-        })
-
-        test('should return false for non-empty number options', () => {
-            expect(isEmptyOrLegacyNumberOptions({ eq: 5 })).toBe(false)
-            expect(isEmptyOrLegacyNumberOptions({ gte: 1, lte: 10 })).toBe(false)
+        test('reads a plain object as a NumberMatcher, not as per-instance values', () => {
+            expect(() => validateNumberMatcherArray({ chrome: 2, firefox: 3 } as never)).toThrow('Invalid NumberMatcher')
         })
     })
 })

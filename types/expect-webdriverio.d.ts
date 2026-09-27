@@ -204,22 +204,11 @@ interface WdioBrowserMatchers<_R, ActualT>{
         /**
         * `WebdriverIO.Browser` -> `getLocalStorageItem`
         */
-        {
-            /**
-            * @deprecated since v6.0.0, removed in v8.0.0. Use `expect.anything()` instead of `undefined` as expected value.
-            */
-            (
-                key: string,
-                expectedValue: undefined,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>,
-
-            (
-                key: string,
-                expectedValue?: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
-                options?: ExpectWebdriverIO.StringOptions
-            ) : Promise<void>
-        },
+        (
+            key: string,
+            expectedValue?: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
 
         /**
         * `WebdriverIO.MultiRemoteBrowser` -> `getLocalStorageItem`
@@ -248,21 +237,10 @@ interface WdioNetworkMatchers<_R, ActualT> {
      * Check that `WebdriverIO.Mock` was called N times.
      * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must be called N times.
      */
-    toBeRequestedTimes: FnWhenMock<ActualT, {
-        (
-            times: number | ExpectWebdriverIO.NumberMatcher,
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>
-
-        /**
-        * @deprecated since v6.0.0, remove in v8.0.0. Use `NumberMatcher` & `CommandOptions` separately `toBeRequestedTimes(NumberMatcher, options)`.
-        */
-        (
-            times: ExpectWebdriverIO.NumberOptions,
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>;
-
-    }>
+    toBeRequestedTimes: FnWhenMock<ActualT, (
+        times: number | ExpectWebdriverIO.NumberMatcher,
+        options?: ExpectWebdriverIO.CommandOptions
+    ) => Promise<void>>
 
     /**
      * Check that `WebdriverIO.Mock` was called with the specific parameters.
@@ -336,15 +314,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
 
     toHaveAttribute: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
-        /**
-         * @deprecated since v6.0.0, remove in v8.0.0. Passing explicit `undefined` as a value is deprecated. Omit the second argument entirely or pass options instead: `toHaveAttribute(attribute, options)`.
-         */
-        (
-            attribute: string,
-            value: undefined,
-            options?: ExpectWebdriverIO.StringOptions
-        ): Promise<void>;
-
         /** Check ONLY for the presence of the attribute (and optional configuration options) */
         (
             attribute: string,
@@ -358,15 +327,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>;
     }, {
         /** Elements $$() API */
-        /**
-         * @deprecated Not supported
-         */
-        (
-            attribute: string,
-            value: undefined,
-            options?: ExpectWebdriverIO.StringOptions
-        ): Promise<void>;
-
         /** Check ONLY for the presence of the attribute (and optional configuration options) */
         (
             attribute: string,
@@ -400,25 +360,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>
     }
     >
-
-    /**
-     * @deprecated since v6.0.0, removed in v8.0.0. Use `toHaveAttribute` instead.
-     * `WebdriverIO.Element` -> `getAttribute`
-     */
-    toHaveAttr: FnWhenElementOrArrayLike<ActualT, (
-        attribute: string,
-        value?: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-        options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<void>>
-
-    /**
-     * `WebdriverIO.Element` -> `getAttribute` class
-     * @deprecated since v1.3.1 - use `toHaveElementClass` instead.
-     */
-    toHaveClass: FnWhenElementOrArrayLike<ActualT, (
-        className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-        options?: ExpectWebdriverIO.StringOptions
-    ) => Promise<void>>
 
     /**
      * `WebdriverIO.Element` -> `getAttribute` class
@@ -477,16 +418,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             property: string,
         ): Promise<void>;
 
-        /**
-         * @deprecated since v6.0.0, removed in v8.0.0. Passing explicit `undefined` or `null` as a value is deprecated.
-         * Omit the second argument entirely or use expect.anything() with options: `toHaveElementProperty(property, expect.anything(), options)`.
-         */
-        (
-            property: string,
-            value: undefined | null, // Use expect.any(type) or expect.anything() instead of undefined or null
-            options?: ExpectWebdriverIO.StringOptions
-        ): Promise<void>;
-
         /** Assert both property name AND a specific expected value */
         (
             property: string,
@@ -505,12 +436,11 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>;
 
         /**
-         * @deprecated Not supported
-         * Use `expect.anything()` or `[expect.anything()] as value` to check for the presence of the property with options.
+         * Not supported: use `expect.anything()` to check for the presence of the property with options.
          */
         (
             property: string,
-            propertyValue: undefined | null, // Use expect.any(type) or expect.anything() instead of undefined or null
+            propertyValue: undefined | null,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<never>;
 
@@ -590,31 +520,12 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
          * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
          */
         (): Promise<void>;
-        /**
-         * @deprecated since 6.0.0, remove in v8.0.0.
-         * Passing explicit `undefined` or `{ wait : 1 }` (NumberOptions) as a value is deprecated.
-         * Use options with `toHaveChildren({ gte: 1 }, options)`.
-         */
-        (
-            expectedValue: undefined, // {} also deprecated but we cannot use it as a type because it would match any object
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>;
 
         /**
          * When called with an expected child count or number matcher.
          */
         (
             expectedValue: number | ExpectWebdriverIO.NumberMatcher,
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>;
-
-        /**
-         * @deprecated since 6.0.0, remove in v8.0.0.
-         * NumberOptions is no longer supported. Use `expect(el).toHaveChildren(numberMatcher, options)` instead.
-         * Instead of `expect(el).toHaveChildren({ wait: 1 })` use `expect(el).toHaveChildren({ gte: 1 }, { wait: 1 })`.
-         */
-        (
-            expectedValue: ExpectWebdriverIO.NumberOptions,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>;
     }, {
@@ -624,16 +535,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
          * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
          */
         (): Promise<void>;
-
-        /**
-         * @deprecated Not supported
-         * NumberOptions is no longer supported. Use `expect(el).toHaveChildren(numberMatcher, options)` instead.
-         * Instead of `expect(el).toHaveChildren({ wait: 1 })` use `expect(el).toHaveChildren({ gte: 1 }, { wait: 1 })`.
-         */
-        (
-            expectedValue: undefined,
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>;
 
         /**
          * When called with an expected child count or number matcher.
@@ -891,15 +792,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         (
             width: number | ExpectWebdriverIO.NumberMatcher,
             options?: ExpectWebdriverIO.CommandOptions
-        ) : Promise<void>,
-
-        /**
-         * @deprecated since v6.0.0, remove in v8.0.0. Use `toHaveWidth` with number | NumberMatcher instead. This matcher will be removed in version 8.0.0.
-         */
-        (
-            size: ExpectWebdriverIO.NumberOptions,
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>,
+        ) : Promise<void>
     }, {
         /** Elements $$() API */
         (
@@ -938,14 +831,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             height: number | ExpectWebdriverIO.NumberMatcher,
             options?: ExpectWebdriverIO.CommandOptions
         ) : Promise<void>
-
-        /**
-         * @deprecated since v6.0.0, will be removed in version v8.0.0. Use `toHaveHeight` with number | NumberMatcher instead.
-         */
-        (
-            size: ExpectWebdriverIO.NumberOptions,
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>,
     }, {
         /** Elements $$() API */
         (
@@ -1042,14 +927,6 @@ interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
     toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, {
         (
             size: number | ExpectWebdriverIO.NumberMatcher,
-            options?: ExpectWebdriverIO.CommandOptions
-        ): Promise<void>,
-
-        /**
-         * @deprecated since v6.0.0, remove in v8.0.0. Use `toBeElementsArrayOfSize` with number | NumberMatcher instead. This matcher will be removed in version 8.0.0.
-         */
-        (
-            size: ExpectWebdriverIO.NumberOptions,
             options?: ExpectWebdriverIO.CommandOptions
         ): Promise<void>,
     }, {
@@ -1198,15 +1075,11 @@ declare namespace ExpectWebdriverIO {
      * Used by the webdriverio main project to configure the matchers in the runner.
      */
     function setDefaultOptions(options: DefaultOptions): void
-    /** @deprecated since v6.0.0, use setDefaultOptions instead, will be removed in v8.0.0 */
-    function setOptions(options: DefaultOptions): void
 
     /**
      * Get the default options set by the user.
      */
     function getDefaultOptions(): DefaultOptions
-    /** @deprecated since v6.0.0, use getDefaultOptions instead, will be removed in v8.0.0 */
-    function getConfig(): DefaultOptions
 
     /**
      * The this context available inside each matcher function.
@@ -1335,11 +1208,6 @@ declare namespace ExpectWebdriverIO {
      */
     const wdioCustomMatchers: MatchersObject
 
-    /**
-     * @deprecated since 5.6.9 use `wdioCustomMatchers` instead, will be removed in v8.0.0?
-     */
-    const matchers: Map<string, RawMatcherFn>
-
     interface AssertionHookParams {
         /**
          * name of the matcher, e.g. `toHaveText` or `toBeClickable`
@@ -1360,7 +1228,7 @@ declare namespace ExpectWebdriverIO {
         /**
          * Options that the user has passed in, e.g. `expect(el).toHaveText('foo', { ignoreCase: true })` -> `{ ignoreCase: true }`
          */
-        options: CommandOptions | HTMLOptions | StringOptions | NumberOptions
+        options: CommandOptions | HTMLOptions | StringOptions
     }
     interface AfterAssertionHookParams extends AssertionHookParams {
         result: AssertionResult
@@ -1442,29 +1310,6 @@ declare namespace ExpectWebdriverIO {
          * convert element's property value to string
          */
         asString?: boolean
-    }
-
-    /**
-     * @deprecated since v6.0.0, remove in v8.0.0. Use `NumberMatcher` & `CommandOptions` as separate parameters instead.
-     * @see NumberMatcher
-     * @see CommandOptions
-     */
-    interface NumberOptions extends CommandOptions {
-
-        /**
-         * equals
-         */
-        eq?: number
-
-        /**
-         * less than or equals
-         */
-        lte?: number
-
-        /**
-         * greater than or equals
-         */
-        gte?: number
     }
 
     interface ToBeDisplayedOptions extends CommandOptions {

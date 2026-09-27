@@ -264,13 +264,6 @@ describe('Jasmine type agumentations', () => {
                         expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop', 'val')).toEqualTypeOf<Promise<void>>()
                         expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop', jasmine.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
                     })
-
-                    it('should be deprecated', async () => {
-                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
-                    })
                 })
 
                 describe('given elements', () => {
