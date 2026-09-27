@@ -22,6 +22,33 @@ describe('Multi-remote Snapshot Matchers', () => {
         `)
     })
 
+    it('should snapshot the outerHTML of every element shared by every browser as is', async () => {
+        await expect(multiRemoteBrowser.$$('h1')).toMatchInlineSnapshot(`
+          [
+            "<h1>WebdriverJS Testpage</h1>",
+            "<h1 class="findme">Test CSS Attributes</h1>",
+          ]
+        `)
+    })
+
+    it('should snapshot the outerHTML of every element of every browser when they differ', async () => {
+        await multiRemoteBrowser.getInstance('firefox')!.execute(() => {
+            document.querySelector('h1.findme')!.remove()
+        })
+
+        await expect(multiRemoteBrowser.$$('h1')).toMatchInlineSnapshot(`
+          {
+            "chrome": [
+              "<h1>WebdriverJS Testpage</h1>",
+              "<h1 class="findme">Test CSS Attributes</h1>",
+            ],
+            "firefox": [
+              "<h1>WebdriverJS Testpage</h1>",
+            ],
+          }
+        `)
+    })
+
     it('should snapshot the outerHTML of the selected browsers only', async () => {
         await expect(multiRemoteBrowser.select('firefox').$('#githubRepo')).toMatchInlineSnapshot(`"<a href="https://github.com" id="githubRepo" class="clearfix" data-foundby="link text">GitHub Repo</a>"`)
     })

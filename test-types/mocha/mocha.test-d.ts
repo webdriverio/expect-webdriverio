@@ -653,10 +653,13 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableElement).not.toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
             })
 
-            it('should return Promise<void> for a multi-remote element', async () => {
+            it('should return Promise<void> for multi-remote elements', async () => {
                 expectTypeOf(expect(multiRemoteElement).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElement).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteBrowser.$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser.$$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
             })
 
             it('should return Promise<void> for element arrays', async () => {

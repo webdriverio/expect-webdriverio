@@ -4,7 +4,9 @@ import type { AssertionError } from 'node:assert'
 import { expect } from 'expect'
 import { stripSnapshotIndentation } from '@vitest/snapshot'
 import { SnapshotService } from '../snapshot.js'
-import { isElement, isMultiRemoteElement, isStrictlyElementArray } from '../util/elementsUtil.js'
+import { awaitElementOrArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementsLike, isStrictlyElementArray } from '../util/elementsUtil.js'
+import { getElementsPerInstance } from '../util/multiRemoteUtils.js'
+import type { WdioMultiRemoteElementArray } from '../types.js'
 
 interface InlineSnapshotOptions {
     inlineSnapshot: string
@@ -73,11 +75,37 @@ function toMatchSnapshotAssert (received: unknown, message: string, inlineOption
 }
 
 /**
- * Elements to snapshot as an array of outerHTML: an `ElementArray` from `$$()`, even empty, or a non-empty `Element[]`.
- * An empty plain array stays a regular value, so that it keeps being snapshotted synchronously.
+ * Elements to snapshot as their outerHTML, the same ones as element matchers, except an empty plain array: holding no
+ * element to recognize, it stays a regular value, so that it keeps being snapshotted synchronously.
  */
-const isElementsToSnapshot = (received: unknown): received is WebdriverIO.ElementArray | WebdriverIO.Element[] => {
-    return isStrictlyElementArray(received) || (Array.isArray(received) && received.length > 0 && received.every(isElement))
+const isElementsToSnapshot = (received: unknown): boolean => {
+    const isEmptyPlainArray = Array.isArray(received) && received.length === 0 && !isStrictlyElementArray(received) && !isMultiRemoteElementArray(received)
+    return isElementOrArrayOrMultiRemoteElementLike(received) && !isEmptyPlainArray
+}
+
+const getOuterHTML = (element: WebdriverIO.Element) => element.getHTML({ includeSelectorTag: true })
+
+/**
+ * The outerHTML shared by every instance, like without multi-remote, else one outerHTML per instance, keyed by instance
+ * name (sorted, whatever the instances order or the snapshotFormat).
+ */
+const getMultiRemoteOuterHTML = async (multiRemoteElements: WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray) => {
+    const isSingleElement = isMultiRemoteElement(multiRemoteElements)
+    if (!isSingleElement && multiRemoteElements.length === 0) {
+        // An empty `MultiRemoteElementArray`, found on no instance
+        return []
+    }
+    // Every `$$()` wrapper holds all the instances, zipped by index
+    const instances = [...(isSingleElement ? multiRemoteElements : (multiRemoteElements as WebdriverIO.MultiRemoteElement[])[0]).instances].sort()
+    const elementsPerInstance = isSingleElement ? undefined : getElementsPerInstance(multiRemoteElements as WebdriverIO.MultiRemoteElement[], instances)
+    const htmlPerInstance: Record<string, unknown> = Object.fromEntries(await Promise.all(instances.map(async (instance) => [
+        instance,
+        elementsPerInstance
+            ? await Promise.all(elementsPerInstance[instance].map(getOuterHTML))
+            : await getOuterHTML((multiRemoteElements as WebdriverIO.MultiRemoteElement).getInstance(instance))
+    ])))
+    const htmls = Object.values(htmlPerInstance)
+    return htmls.every((html) => JSON.stringify(html) === JSON.stringify(htmls[0])) ? htmls[0] : htmlPerInstance
 }
 
 /**
@@ -87,25 +115,19 @@ const isElementsToSnapshot = (received: unknown): received is WebdriverIO.Elemen
  * @returns matcher results
  */
 async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, inlineOptions?: InlineSnapshotOptions) {
-    let received: WebdriverIO.Element | unknown = await asyncReceived
+    // Awaited first to also support any other thenable, e.g. an element command result
+    const { element, elements, multiRemoteSelector, other } = await awaitElementOrArray(await asyncReceived)
 
-    if (isMultiRemoteElement(received)) {
-        const multiRemoteElement = received
-        const htmlPerInstance = Object.fromEntries(await Promise.all([...multiRemoteElement.instances].sort().map(async (instance) => [
-            instance,
-            await multiRemoteElement.getInstance(instance).getHTML({ includeSelectorTag: true })
-        ])))
-        // The outerHTML shared by every instance, like a single element, else one outerHTML per instance, keyed by
-        // instance name (sorted, whatever the instances order or the snapshotFormat)
-        const htmls = new Set(Object.values(htmlPerInstance))
-        received = htmls.size === 1 ? [...htmls][0] : htmlPerInstance
-    } else if (isElementsToSnapshot(received)) {
+    let received: unknown = other
+    if (multiRemoteSelector) {
+        received = await getMultiRemoteOuterHTML(multiRemoteSelector)
+    } else if (elements && isMultiRemoteElementsLike(elements)) {
+        received = await getMultiRemoteOuterHTML(elements)
+    } else if (elements) {
         // Array.from() to also snapshot an `ElementArray` as a plain array
-        received = await Promise.all(Array.from(received).map((element) => element.getHTML({ includeSelectorTag: true })))
-    } else if (received && typeof received === 'object' && 'elementId' in received) {
-        received = await (received as WebdriverIO.Element).getHTML({
-            includeSelectorTag: true
-        })
+        received = await Promise.all(Array.from(elements as WebdriverIO.Element[]).map(getOuterHTML))
+    } else if (element) {
+        received = await getOuterHTML(element)
     }
     return toMatchSnapshotAssert(received, message, inlineOptions)
 }
@@ -129,9 +151,7 @@ function toMatchSnapshotHelper(received: unknown, message: string, inlineOptions
     if (
         received && typeof received === 'object' &&
         (
-            'elementId' in received ||
             'then' in received ||
-            isMultiRemoteElement(received) ||
             isElementsToSnapshot(received)
         )
     ) {
