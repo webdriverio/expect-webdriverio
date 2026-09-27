@@ -1,6 +1,7 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 import { toHaveHeight } from '../../../src/matchers/element/toHaveHeight.js'
+import type { Size } from '../../../src/matchers/element/toHaveSize.js'
 import stripAnsi from 'strip-ansi'
 
 import { multiRemote } from '../../../src/api/index.js'
@@ -122,6 +123,41 @@ Expect $(\`sel\`) to have height
 Expected: 50
 Received: 1`
             )
+        })
+    })
+
+    describe('given multiple elements', () => {
+        let elements: ChainablePromiseArray
+
+        beforeEach(async () => {
+            elements = await $$('sel')
+        })
+
+        test('checks the same height or one height per element', async () => {
+            const same = await thisContext.toHaveHeight(elements, 50, { wait: 0 })
+            const perElement = await thisContext.toHaveHeight(elements, [50, 50], { wait: 0 })
+
+            expect(same.pass).toBe(true)
+            expect(perElement.pass).toBe(true)
+        })
+
+        test('fails with the height of every element', async () => {
+            vi.mocked(elements[1].getSize).mockResolvedValue(60 as unknown as Size & number) // vitest does not support overloads function well
+
+            const result = await thisContext.toHaveHeight(elements, 50, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have height
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    50,
+-   50,
++   60,
+  ]`)
         })
     })
 

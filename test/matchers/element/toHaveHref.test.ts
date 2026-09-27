@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 
 import { toHaveHref } from '../../../src/matchers/element/toHaveHref.js'
 import type { AssertionResult } from 'expect-webdriverio'
@@ -62,6 +62,41 @@ Expected: "an href"
 Received: "https://www.example.com"`
                 )
             })
+        })
+    })
+
+    describe('given multiple elements', () => {
+        let elements: ChainablePromiseArray
+
+        beforeEach(async () => {
+            elements = await $$('sel')
+        })
+
+        test('checks the same href or one href per element', async () => {
+            const same = await thisContext.toHaveHref(elements, 'some attribute', { wait: 0 })
+            const perElement = await thisContext.toHaveHref(elements, ['some attribute', 'some attribute'], { wait: 0 })
+
+            expect(same.pass).toBe(true)
+            expect(perElement.pass).toBe(true)
+        })
+
+        test('fails with the href of every element', async () => {
+            vi.mocked(elements[1].getAttribute).mockResolvedValue('other')
+
+            const result = await thisContext.toHaveHref(elements, 'some attribute', { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have attribute href
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "some attribute",
+-   "some attribute",
++   "other",
+  ]`)
         })
     })
 

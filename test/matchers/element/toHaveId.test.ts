@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 
 import { toHaveId } from '../../../src/matchers/element/toHaveId.js'
 import type { AssertionResult } from 'expect-webdriverio'
@@ -66,6 +66,41 @@ Expected: "an attribute"
 Received: "test id"`
                 )
             })
+        })
+    })
+
+    describe('given multiple elements', () => {
+        let elements: ChainablePromiseArray
+
+        beforeEach(async () => {
+            elements = await $$('sel')
+        })
+
+        test('checks the same id or one id per element', async () => {
+            const same = await thisContext.toHaveId(elements, 'some attribute', { wait: 0 })
+            const perElement = await thisContext.toHaveId(elements, ['some attribute', 'some attribute'], { wait: 0 })
+
+            expect(same.pass).toBe(true)
+            expect(perElement.pass).toBe(true)
+        })
+
+        test('fails with the id of every element', async () => {
+            vi.mocked(elements[1].getAttribute).mockResolvedValue('other')
+
+            const result = await thisContext.toHaveId(elements, 'some attribute', { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have attribute id
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "some attribute",
+-   "some attribute",
++   "other",
+  ]`)
         })
     })
 

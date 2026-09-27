@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 import { toHaveComputedRole } from '../../../src/matchers/element/toHaveComputedRole.js'
 import stripAnsi from 'strip-ansi'
 
@@ -263,6 +263,41 @@ Expected: ["div", /Webdriver/i]
 Received: "This is example computed role"`
                 )
             })
+        })
+    })
+
+    describe('given multiple elements', () => {
+        let elements: ChainablePromiseArray
+
+        beforeEach(async () => {
+            elements = await $$('sel')
+        })
+
+        test('checks the same computed role or one computed role per element', async () => {
+            const same = await thisContext.toHaveComputedRole(elements, 'Computed Role', { wait: 0 })
+            const perElement = await thisContext.toHaveComputedRole(elements, ['Computed Role', 'Computed Role'], { wait: 0 })
+
+            expect(same.pass).toBe(true)
+            expect(perElement.pass).toBe(true)
+        })
+
+        test('fails with the computed role of every element', async () => {
+            vi.mocked(elements[1].getComputedRole).mockResolvedValue('Other Role')
+
+            const result = await thisContext.toHaveComputedRole(elements, 'Computed Role', { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have computed role
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "Computed Role",
+-   "Computed Role",
++   "Other Role",
+  ]`)
         })
     })
 

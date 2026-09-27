@@ -1,5 +1,5 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 import { toHaveComputedLabel } from '../../../src/matchers/element/toHaveComputedLabel.js'
 import stripAnsi from 'strip-ansi'
 
@@ -273,6 +273,41 @@ Expected: ["div", /Webdriver/i]
 Received: "This is example computed label"`
                 )
             })
+        })
+    })
+
+    describe('given multiple elements', () => {
+        let elements: ChainablePromiseArray
+
+        beforeEach(async () => {
+            elements = await $$('sel')
+        })
+
+        test('checks the same computed label or one computed label per element', async () => {
+            const same = await thisContext.toHaveComputedLabel(elements, 'Computed Label', { wait: 0 })
+            const perElement = await thisContext.toHaveComputedLabel(elements, ['Computed Label', 'Computed Label'], { wait: 0 })
+
+            expect(same.pass).toBe(true)
+            expect(perElement.pass).toBe(true)
+        })
+
+        test('fails with the computed label of every element', async () => {
+            vi.mocked(elements[1].getComputedLabel).mockResolvedValue('Other Label')
+
+            const result = await thisContext.toHaveComputedLabel(elements, 'Computed Label', { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have computed label
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    "Computed Label",
+-   "Computed Label",
++   "Other Label",
+  ]`)
         })
     })
 
