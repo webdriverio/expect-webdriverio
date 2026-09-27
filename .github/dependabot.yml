@@ -20,6 +20,23 @@ updates:
     major-deps-updates:
       update-types:
         - "major"
+# v7 maintenance branch: patch updates only
+- package-ecosystem: npm
+  directory: "/"
+  target-branch: v7
+  schedule:
+    interval: weekly
+    time: "11:00"
+  open-pull-requests-limit: 5
+  versioning-strategy: increase-if-necessary
+  ignore:
+    - dependency-name: "rimraf"
+    - dependency-name: "*"
+      update-types: ["version-update:semver-major", "version-update:semver-minor"]
+  groups:
+    patch-deps-updates:
+      update-types:
+        - "patch"
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
