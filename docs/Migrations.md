@@ -8,6 +8,7 @@ With `$$()`, an array of expected values is index-based: its length must equal t
 
 ```diff
   // <li>Coffee</li><li>Tea</li>
+  // Inverted order
 - await expect($$('li')).toHaveText(['Tea', 'Coffee'])
 + await expect($$('li')).toHaveText(['Coffee', 'Tea'])
 + await expect($$('li')).toHaveText(expect.oneOf('Tea', 'Coffee'))
