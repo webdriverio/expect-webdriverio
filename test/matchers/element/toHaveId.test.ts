@@ -157,5 +157,14 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have attribute id
 
             expect(result.pass).toBe(true)
         })
+
+        test('rejects one array per instance on $()', async () => {
+            const element = createMultiRemoteElementMock(browsers(), 'sel')
+
+            // @ts-expect-error an array per instance is only supported for $$()
+            const result = await thisContext.toHaveId(element, { chrome: ['some attribute'], firefox: ['some attribute'] }, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+        })
     })
 })

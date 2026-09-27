@@ -1,6 +1,6 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
@@ -101,13 +101,34 @@ export async function toHaveAttribute(
 ): Promise<AssertionResult>
 
 /**
+ * Multi-Remote Element $() API
+ * When called with an expected attribute name and value, shared or one per instance.
+ */
+export async function toHaveAttribute(
+    received: WebdriverIO.MultiRemoteElement,
+    attribute: string,
+    value: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AssertionResult>
+
+/**
  * Multi-Remote Elements $$() API
- * When called with an expected attribute name and value.
+ * When called with an expected attribute name and value, shared or one per instance, each maybe one per element.
+ */
+export async function toHaveAttribute(
+    received: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray,
+    attribute: string,
+    value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AssertionResult>
+
+/**
+ * Multi-Remote Element $() or Elements $$()
  */
 export async function toHaveAttribute(
     received: WdioMultiRemoteElements,
     attribute: string,
-    value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
+    value: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
