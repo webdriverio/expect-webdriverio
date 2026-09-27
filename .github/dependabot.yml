@@ -7,9 +7,6 @@ updates:
     time: "11:00"
   open-pull-requests-limit: 10
   versioning-strategy: increase-if-necessary
-  ignore:
-    # doesn't support glob anymore in v4
-    - dependency-name: "rimraf"
   groups:
     patch-deps-updates:
       update-types:
@@ -30,7 +27,6 @@ updates:
   open-pull-requests-limit: 5
   versioning-strategy: increase-if-necessary
   ignore:
-    - dependency-name: "rimraf"
     - dependency-name: "*"
       update-types: ["version-update:semver-major", "version-update:semver-minor"]
   groups:
