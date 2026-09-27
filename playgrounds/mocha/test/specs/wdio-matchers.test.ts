@@ -377,7 +377,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('HTML matchers', () => {
         it('should verify element has specific HTML', async () => {
-            const element = await $('h1')
+            const element = await $('header h1')
             await expect(element).toHaveHTML('<h1>WebdriverJS Testpage</h1>', {
                 includeSelectorTag: true,
                 prettify: true,
@@ -399,7 +399,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('With wait options', () => {
         it('should wait for condition to be met', async () => {
-            const heading = await $('h1')
+            const heading = await $('header h1')
             await expect(heading).toBeDisplayed({ wait: 5000 })
         })
 
