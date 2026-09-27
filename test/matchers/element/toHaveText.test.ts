@@ -1461,8 +1461,8 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have text
             test('$$() fails with the same per-instance message as the plain object shorthand', async () => {
                 const expected = { chrome: 'Valid Text', firefox: ['Valid Text', 'Other'] }
 
-                const withPlainObject = await thisContext.toHaveText(withText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]), expected, { wait: 0 })
-                const withMatcher = await thisContext.toHaveText(withText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]), wdioExpect.multiRemote(expected), { wait: 0 })
+                const withPlainObject = await thisContext.toHaveText(withText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as unknown as WebdriverIO.MultiRemoteElement[]), expected, { wait: 0 })
+                const withMatcher = await thisContext.toHaveText(withText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as unknown as WebdriverIO.MultiRemoteElement[]), wdioExpect.multiRemote(expected), { wait: 0 })
 
                 expect(withMatcher.pass).toBe(false)
                 expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))

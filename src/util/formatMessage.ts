@@ -1,6 +1,6 @@
 import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXPECTED_COLOR, INVERTED_COLOR, stringify } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
-import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements } from '../types.js'
+import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../types.js'
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
@@ -8,7 +8,7 @@ import { isBrowser, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
-export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElement) => {
+export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
     if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
         // TODO handle custom$ selector
@@ -30,8 +30,8 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiR
 
         return `${subject}.$(\`${getSelector(el)}\`)`
     } else if (isMultiRemoteElementsLike(el)) {
-        const instances = isMultiRemoteElementArray(el) ? (el.parent as WebdriverIO.MultiRemoteBrowser).instances : el[0].instances ?? []
-        const selector = isMultiRemoteElementArray(el) ? getSelector(el) : el[0] ? getSelector(el[0]) : ''
+        const instances = isMultiRemoteElementArray(el) ? el.parent.instances : el[0].instances
+        const selector = getSelector(isMultiRemoteElementArray(el) ? el : el[0])
         const subject = formatMultiRemoteInstanceNames(instances)
 
         return `${subject}.$$(\`${selector}\`)`
@@ -218,7 +218,7 @@ export const enhanceErrorBe = (
                 return acc
             }, {} as MultiRemoteValues<string>)
         } else if (isMultiRemoteElementsLike(subject) && subject.length === 0) {
-            // Empty `MultiRemoteElementArray` (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY): no instance names to report per browser
+            // Empty `MultiRemoteElementArray`: found on no instance, same message as for regular elements
             expected = 'at least one result'
             actual = actualValue
         } else if (isMultiRemoteElementsLike(subject)) {

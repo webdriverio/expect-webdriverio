@@ -2,7 +2,7 @@ import { equals } from '../jasmineUtils.js'
 import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, WdioMultiRemoteElementArray, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
-import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
+import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { getElementsPerInstance, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
@@ -102,7 +102,7 @@ const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
     const multiRemoteElements = currentElements as unknown as WebdriverIO.MultiRemoteElement[]
     if (multiRemoteElements.length === 0) {
         // See empty case of `multipleElementResultsStrategy`: a static empty array cannot be refetched
-        return { subject: elements, actual: undefined, success: false, abort: !isMultiRemoteElementArray(elements) && !isMultiRemoteElements(elements) }
+        return { subject: elements, actual: undefined, success: false, abort: !isMultiRemoteElementArray(elements) }
     }
 
     const { instances } = multiRemoteElements[0]
@@ -141,13 +141,12 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const { selector, other, multiRemoteSelector } = await awaitElementOrArray(unresolvedElements)
 
-    // Only these arrays can be refetched: a plain `MultiRemoteElement[]` best effort through its elements' selector
-    const isRefetchable = isStrictlyElementArray(selector) || isMultiRemoteElementArray(selector) || isMultiRemoteElements(selector)
+    // Only these arrays know their parent and can be refetched
+    const isRefetchable = isStrictlyElementArray(selector) || isMultiRemoteElementArray(selector)
 
     let currentElements: unknown = selector
-    if (iteration > 0 && (isStrictlyElementArray(selector) || isMultiRemoteElementsLike(selector))) {
+    if (iteration > 0 && isRefetchable) {
         // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
-        // Except for an empty best-effort refetch, returned without being synchronized to keep refetching.
         currentElements = await refreshElementArray(selector)
     }
 
@@ -248,8 +247,8 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 }
 
 /**
- * Multi-remote strict strategy, for a `$()` single element or a `$$()` array (plain `MultiRemoteElement[]` or
- * `MultiRemoteElementArray`, whose items are `MultiRemoteElement` at runtime in both cases).
+ * Multi-remote strict strategy, for a `$()` single element or a `$$()` array (`MultiRemoteElementArray` or plain
+ * `MultiRemoteElement[]`).
  *
  * Every instance is compared on its own elements (WebdriverIO zips `$$()` results by index, so instances may have
  * found a different number of elements) against either one expected value shared by all instances or one expected

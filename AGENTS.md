@@ -68,7 +68,7 @@ Coverage is on by default, with global thresholds. When you run one file, add
 | One matcher or util | its test file: `npx vitest --run --coverage.enabled=false <test file>` |
 | Public types (`types/`, `jest.d.ts`, `jasmine*.d.ts`) | `npm run test:types` |
 | Failure messages | the unit tests that assert the message, and one playground run |
-| Multi-remote | unit tests with the flag off and on (see below), and `playgrounds/multi-remote-mocha` |
+| Multi-remote | the unit tests, and `playgrounds/multi-remote-mocha` |
 | Snapshot matchers | `test/snapshot.test.ts`, and the Mocha, Jasmine and Browser Runner playgrounds |
 | Docs only (`docs/`, `README.md`) | the multi-remote naming check, and check the links |
 | Before you push | `npm run checks:all` |
@@ -80,14 +80,9 @@ matchers are in `test/matchers/beMatchers.test.ts`, and `toHaveUrl` /
 a matcher: `git grep -l <matcherName> -- test`. Use the mocks in
 `test/__mocks__/`; do not start a browser in unit tests.
 
-Multi-remote element arrays have two runtime shapes. The
-`WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` flag of WebdriverIO v9 selects the
-shape. Run the unit tests both ways:
-
-```sh
-npx vitest --run --coverage.enabled=false
-WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true npx vitest --run --coverage.enabled=false
-```
+The multi-remote mocks model WebdriverIO v10: `$$()` returns a
+`MultiRemoteElementArray`, and instances are only reachable with
+`getInstance()`.
 
 The unit tests are the regression check. They are not proof that a change
 works the way a user runs it. Before you report a feature or bug fix as done,

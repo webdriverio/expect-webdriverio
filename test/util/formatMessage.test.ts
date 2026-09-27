@@ -1,4 +1,4 @@
-import { test, describe, beforeEach, afterEach, expect, vi } from 'vitest'
+import { test, describe, beforeEach, expect, vi } from 'vitest'
 import { INVERTED_COLOR, printDiffOrStringify } from 'jest-matcher-utils'
 import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
 import stripAnsi from 'strip-ansi'
@@ -6,27 +6,6 @@ import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteEle
 import { jasmine } from '../__mocks__/jasmine.js'
 
 const multiRemoteBrowsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
-
-const withMultiRemoteElementArrayFlag = (flag: string | undefined) => {
-    let originalEnv: string | undefined
-
-    beforeEach(() => {
-        originalEnv = process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-        if (flag) {
-            process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = flag
-        } else {
-            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-        }
-    })
-
-    afterEach(() => {
-        if (originalEnv === undefined) {
-            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-        } else {
-            process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = originalEnv
-        }
-    })
-}
 
 vi.mock('jest-matcher-utils', async (importActual) => {
     const actual = await importActual<typeof import('jest-matcher-utils')>()
@@ -568,11 +547,14 @@ Received: "Actual"`)
             })
         })
 
-        describe.for([
-            { flag: undefined, shape: 'MultiRemoteElement[] (default)' },
-            { flag: 'true', shape: 'WdioMultiRemoteElementArray (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true)' },
-        ])('given a multi-remote element array - $shape', ({ flag }) => {
-            withMultiRemoteElementArrayFlag(flag)
+        describe('given a multi-remote element array', () => {
+            test('formats the selector with the instance names of a plain MultiRemoteElement[]', () => {
+                const subject = Array.from(createMultiRemoteElementArrayMock(multiRemoteBrowsers(), 'button', 1))
+
+                const result = stripAnsi(enhanceError(subject, 'Expected', 'Actual', { isNot: false, isSome: false }, 'have', 'text'))
+
+                expect(result).toContain('Expect multi-remote<chrome, firefox>.$$(`button`) to have text')
+            })
 
             test('formats the selector with instance names', () => {
                 const subject = createMultiRemoteElementArrayMock(multiRemoteBrowsers(), 'button', 2)
@@ -814,11 +796,7 @@ Expect multi-remote<chrome, firefox>.$(\`button\`) to be displayed
             })
         })
 
-        describe.for([
-            { flag: undefined, shape: 'MultiRemoteElement[] (default)' },
-            { flag: 'true', shape: 'WdioMultiRemoteElementArray (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true)' },
-        ])('given a multi-remote element array - $shape', ({ flag }) => {
-            withMultiRemoteElementArrayFlag(flag)
+        describe('given a multi-remote element array', () => {
 
             test('labels each instance/index by its own actual result', () => {
                 const subject = createMultiRemoteElementArrayMock(multiRemoteBrowsers(), 'button', 2)
@@ -846,14 +824,13 @@ Expect multi-remote<chrome, firefox>.$$(\`button\`) to be displayed
             })
         })
 
-        describe('given the WdioMultiRemoteElementArray shape (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true)', () => {
-            withMultiRemoteElementArrayFlag('true')
-
-            test('reports "at least one result" when the array is empty', () => {
+        describe('given an empty multi-remote element array', () => {
+            test('reports "at least one result", with the instance names of its parent', () => {
                 const subject = createMultiRemoteElementArrayMock(multiRemoteBrowsers(), 'button', 0)
 
                 const message = stripAnsi(enhanceErrorBe(subject, undefined, { isNot: false, verb, expectation, isSome: false }, options))
 
+                expect(message).toContain('Expect multi-remote<chrome, firefox>.$$(`button`) to be displayed')
                 expect(message).toContain('Expected: "at least one result"')
             })
         })

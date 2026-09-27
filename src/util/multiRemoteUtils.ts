@@ -59,7 +59,7 @@ export const getElementsPerInstance = (multiRemoteElements: WebdriverIO.MultiRem
 
 const getInstanceOrUndefined = (element: WebdriverIO.MultiRemoteElement, name: string): WebdriverIO.Element | undefined => {
     try {
-        return element.getInstance(name) || undefined
+        return element.getInstance(name)
     } catch {
         return undefined
     }
@@ -115,25 +115,14 @@ export const getMockInstanceNames = (mocks: WebdriverIO.Mock[]): { names: string
     return { names: mocks.map((_, index) => `mocks[${index}]`), isNamedByInstance: false }
 }
 
-/** Whether the injected global `browser` is a regular (non multi-remote) browser, i.e. not a multi-remote session */
-export const isGlobalBrowserSingleRemote = (): boolean => {
-    try {
-        return typeof browser !== 'undefined' && isBrowser(browser) && !hasMultiRemoteFlag(browser)
-    } catch {
-        return false
-    }
-}
-
 /**
- * WebdriverIO v10 renamed `isMultiremote` to `isMultiRemote`: read both, so one release supports v9 and v10.
- * Reads the properties without `in`: the `@wdio/globals` browser is a Proxy of a class with only a `get` trap.
+ * Reads the property without `in`: the `@wdio/globals` browser is a Proxy of a class with only a `get` trap.
  */
 export const hasMultiRemoteFlag = (obj: unknown): boolean => {
     if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
         return false
     }
-    const { isMultiRemote, isMultiremote } = obj as { isMultiRemote?: unknown, isMultiremote?: unknown }
-    return isMultiRemote === true || isMultiremote === true
+    return (obj as { isMultiRemote?: unknown }).isMultiRemote === true
 }
 
 export const isMultiRemoteBrowser = (browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser): browser is WebdriverIO.MultiRemoteBrowser =>

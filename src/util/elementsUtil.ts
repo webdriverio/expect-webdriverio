@@ -118,7 +118,7 @@ export const isElementOrArrayOrMultiRemoteElementLike = (obj: unknown): obj is W
  */
 export const awaitElementOrArray = async(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | PromiseLike<WebdriverIO.Element> | WdioMultiRemoteElements | unknown
-): Promise<{ selector?: WdioElements | WebdriverIO.Element | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[], elements?: WdioElements | WebdriverIO.MultiRemoteElement[], element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean, multiRemoteSelector?: WebdriverIO.MultiRemoteElement }> => {
+): Promise<{ selector?: WdioElements | WebdriverIO.Element | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray, elements?: WdioElements | WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray, element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean, multiRemoteSelector?: WebdriverIO.MultiRemoteElement }> => {
     if (!received || typeof received !== 'object') {
         return { other: received }
     }
@@ -189,7 +189,7 @@ export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemo
 }
 
 /**
- * MultiRemoteElement[]
+ * Plain `MultiRemoteElement[]`, e.g. built by the user: unlike `MultiRemoteElementArray`, it cannot be refetched.
  * Warning: empty array returns false and is treated as Element[] (see `isElementArrayLike`),
  * so both guards never match the same value.
  */
@@ -199,12 +199,9 @@ export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRem
         && Array.prototype.every.call(obj, isMultiRemoteElement)
 }
 
-/**
- * Fake MultiRemoteElementArray at runtime for v9, should be better typed in v10
- * Need env variable `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` set to `true`
- */
+/** `MultiRemoteElementArray` returned by multi-remote `$$()`, even when empty */
 export const isMultiRemoteElementArray = (obj: unknown): obj is WdioMultiRemoteElementArray => {
-    return hasMultiRemoteFlag(obj) && 'parent' in (obj as object) && 'foundWith' in (obj as object) && 'selector' in (obj as object)
+    return Array.isArray(obj) && hasMultiRemoteFlag(obj)
 }
 
 /**

@@ -539,7 +539,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have attribute data-test
         })
 
         test('checks one array per instance, as the plain object shorthand, element by element on $$()', async () => {
-            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as unknown as WebdriverIO.MultiRemoteElement[]
             mockMultiRemoteElementsCommand(elements, 'getAttribute', { chrome: ['some attribute', 'second'], firefox: ['other', 'another'] })
 
             const result = await thisContext.toHaveAttribute(elements, 'data-test', { chrome: ['some attribute', 'second'], firefox: ['other', 'another'] }, { wait: 0 })

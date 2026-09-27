@@ -348,7 +348,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have computed role
         })
 
         test('checks one array per instance, as the plain object shorthand, element by element on $$()', async () => {
-            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as unknown as WebdriverIO.MultiRemoteElement[]
             mockMultiRemoteElementsCommand(elements, 'getComputedRole', { chrome: ['Computed Role', 'Second Role'], firefox: ['Other Role', 'Another Role'] })
 
             const result = await thisContext.toHaveComputedRole(elements, { chrome: ['Computed Role', 'Second Role'], firefox: ['Other Role', 'Another Role'] }, { wait: 0 })
