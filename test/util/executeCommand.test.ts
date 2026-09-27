@@ -45,26 +45,6 @@ describe('executeCommand', () => {
             expect(result.success).toBe(true)
             expect(result.context).toEqual({ isSome: true })
         })
-
-        describe.each([
-            { name: '$()', factory: () => createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel') },
-            { name: 'non-awaited $()', factory: () => Promise.resolve(createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel')) },
-            { name: '$$()', factory: () => createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2) },
-            { name: 'non-awaited $$()', factory: () => Promise.resolve(createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 2)) },
-        ])('given multi-remote $name under the legacy strategy', ({ factory }) => {
-            it.each([false, true])('rejects instead of failing, which would pass under .not (isNot: %s)', async (isNot) => {
-                const singleElementCompare = vi.fn(async () => ({ success: true, actual: 'Match' }))
-
-                await expect(executeCommandWithStrategy({
-                    unresolvedElements: factory(),
-                    expectedValues: 'Match',
-                    singleElementCompare,
-                    context: { isNot, iteration: 0 },
-                    strategy: 'LegacyLooseMultipleElements',
-                })).rejects.toThrow('Multi-remote elements works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
-                expect(singleElementCompare).not.toHaveBeenCalled()
-            })
-        })
     })
 
     describe('multipleElementResultsStrategy', () => {

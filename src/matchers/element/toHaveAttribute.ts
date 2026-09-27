@@ -45,7 +45,6 @@ export async function toHaveAttributeAndValue(received: MaybeSomeWdioElementOrAr
                     return conditionAttributeValueMatchWithExpected(element, attribute, values, options)
                 },
                 context: { isNot, iteration },
-                strategy: 'NewStrictMultipleElements',
             })
         },
         isNot,

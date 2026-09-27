@@ -11,29 +11,11 @@ Matchers support an element array returned from `$$()`:
 - Using `.not` means all elements must **not** match.
 - On failures, the element array is automatically re-fetched until the matcher passes or times out, ensuring reliability against dynamic DOM changes.
 
-**Note:** To apply strict index-based matching to the `toHaveText` matcher, `useToHaveTextStrictMultiElementsCompareStrategy` must be enabled. Else legacy behavior applies.
-
-```ts
-// On the matcher directly
-expect($$('elements')).toHaveText(['text1','text2'], { featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy : true } })
-
-// Before hook
-before(() => {
-    setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy : true })
-})
-
-// Globally in wdio.conf file
-before: function (_capabilities, _specs) {
-    setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy : true })
-}
-```
-
 ## Limitations
 
 - Instead of `StringOptions` for a single expected value, use RegExp or asymmetric matchers.
   - For `ignoreCase` use RegEx (`/MyExample/i`) 
   - For `containing` use Asymmetric Matchers (`expect.stringContaining('Example')`)
-- Passing an array of "containing" values is a legacy behavior and only used by default with `toHaveText` when `useToHaveTextStrictMultiElementsCompareStrategy` is disabled.
 
 ### Browser Runner
 
@@ -66,8 +48,6 @@ Example in Mocha:
 
 
 ## Example
-
-`useToHaveTextStrictMultiElementsCompareStrategy` is assumed to be enabled
 
 ```ts
 import { some } from 'expect-webdriverio/api'

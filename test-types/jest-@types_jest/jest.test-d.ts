@@ -114,10 +114,8 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(element).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error an array of expected values is for $$() only, use expect.oneOf()
                 expectTypeOf(expect(element).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
                 await expect(element).toHaveText(
                     'My-Ex-Am-Ple',
                     {
@@ -131,10 +129,8 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
 
                 expectTypeOf(expect(chainableElement).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error an array of expected values is for $$() only, use expect.oneOf()
                 expectTypeOf(expect(chainableElement).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
 
                 expectTypeOf(expect(chainableElement).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 

@@ -181,25 +181,25 @@ Expected: "<div>foo</div>"
 Received: ""`)
         })
 
-        test('success if array matches with html and ignoreCase', async () => {
+        test('success if oneOf matches with html and ignoreCase', async () => {
             vi.mocked(element.getHTML).mockResolvedValue('<div>FOO</div>')
 
-            const result = await thisContext.toHaveHTML(element, ['div', '<div>foo</div>'], { wait: 1, ignoreCase: true })
+            const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('div', '<div>foo</div>'), { wait: 1, ignoreCase: true })
 
             expect(result.pass).toBe(true)
             expect(element.getHTML).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with html and trim', async () => {
+        test('success if oneOf matches with html and trim', async () => {
             vi.mocked(element.getHTML).mockResolvedValue('   <div>foo</div>   ')
 
-            const result = await thisContext.toHaveHTML(element, ['div', '<div>foo</div>', 'toto'], { wait: 1, trim: true })
+            const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('div', '<div>foo</div>', 'toto'), { wait: 1, trim: true })
             expect(result.pass).toBe(true)
             expect(element.getHTML).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with html and replace (string)', async () => {
-            const result = await thisContext.toHaveHTML(element, ['div', '<div>foo</div>', 'toto'], {
+        test('success if oneOf matches with html and replace (string)', async () => {
+            const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('div', '<div>foo</div>', 'toto'), {
                 wait: 1,
                 replace: [['Web', 'Browser']],
             })
@@ -208,8 +208,8 @@ Received: ""`)
             expect(element.getHTML).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with html and replace (regex)', async () => {
-            const result = await thisContext.toHaveHTML(element, ['div', '<div>foo</div>', 'toto'], {
+        test('success if oneOf matches with html and replace (regex)', async () => {
+            const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('div', '<div>foo</div>', 'toto'), {
                 wait: 1,
                 replace: [[/Web/g, 'Browser']],
             })
@@ -218,10 +218,10 @@ Received: ""`)
             expect(element.getHTML).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with html and multiple replacers and one of the replacers is a function', async () => {
+        test('success if oneOf matches with html and multiple replacers and one of the replacers is a function', async () => {
             vi.mocked(element.getHTML).mockResolvedValue('<div>FOO</div>')
 
-            const result = await thisContext.toHaveHTML(element, ['div', '<p>foo</p>', 'toto'], {
+            const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('div', '<p>foo</p>', 'toto'), {
                 wait: 1,
                 replace: [
                     [/div/g, 'p'],
@@ -249,18 +249,18 @@ Received: ""`)
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with RegExp', async () => {
-                const result = await thisContext.toHaveHTML(element, ['div', /ExAmPlE/i])
+            test('success if oneOf matches with RegExp', async () => {
+                const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('div', /ExAmPlE/i))
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with html - deprecated', async () => {
-                const result = await thisContext.toHaveHTML(element, ['This is example HTML', /Webdriver/i])
+            test('success if oneOf matches with html', async () => {
+                const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('This is example HTML', /Webdriver/i))
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with html and ignoreCase', async () => {
-                const result = await thisContext.toHaveHTML(element, ['ThIs Is ExAmPlE HTML', /Webdriver/i], {
+            test('success if oneOf matches with html and ignoreCase', async () => {
+                const result = await thisContext.toHaveHTML(element, wdioExpect.oneOf('ThIs Is ExAmPlE HTML', /Webdriver/i), {
                     wait: 1,
                     ignoreCase: true,
                 })
@@ -544,26 +544,26 @@ Expect $$(\`sel\`) to have HTML
             )
         })
 
-        test('success if array matches with html and ignoreCase', async () => {
+        test('success if oneOf matches with html and ignoreCase', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('<div>FOO</div>'))
 
-            const result = await thisContext.toHaveHTML(elements, ['<div>foo</div>', '<div>foo</div>'], { ignoreCase: true })
+            const result = await thisContext.toHaveHTML(elements, wdioExpect.oneOf('<div>foo</div>', '<div>foo</div>'), { ignoreCase: true })
             expect(result.pass).toBe(true)
             elements.forEach(el => expect(el.getHTML).toHaveBeenCalledTimes(1))
         })
 
-        test('success if array matches with html and trim', async () => {
+        test('success if oneOf matches with html and trim', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('   <div>foo</div>   '))
 
-            const result = await thisContext.toHaveHTML(elements, ['<div>foo</div>', '<div>foo</div>'], { trim: true })
+            const result = await thisContext.toHaveHTML(elements, wdioExpect.oneOf('<div>foo</div>', '<div>foo</div>'), { trim: true })
             expect(result.pass).toBe(true)
             elements.forEach(el => expect(el.getHTML).toHaveBeenCalledTimes(1))
         })
 
-        test('success if array matches with html and multiple replacers and one of the replacers is a function', async () => {
+        test('success if oneOf matches with html and multiple replacers and one of the replacers is a function', async () => {
             elements.forEach(el => vi.mocked(el.getHTML).mockResolvedValue('<div>FOO</div>'))
 
-            const result = await thisContext.toHaveHTML(elements, ['<p>foo</p>', '<p>foo</p>'], {
+            const result = await thisContext.toHaveHTML(elements, wdioExpect.oneOf('<p>foo</p>', '<p>foo</p>'), {
                 replace: [
                     [/div/g, 'p'],
                     [/[A-Z]/g, (match: string) => match.toLowerCase()],
@@ -583,13 +583,13 @@ Expect $$(\`sel\`) to have HTML
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with RegExp', async () => {
-                const result = await thisContext.toHaveHTML(elements, ['This is example HTML', /ExAmPlE/i])
+            test('success if oneOf matches with RegExp', async () => {
+                const result = await thisContext.toHaveHTML(elements, wdioExpect.oneOf('This is example HTML', /ExAmPlE/i))
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with html and ignoreCase', async () => {
-                const result = await thisContext.toHaveHTML(elements, ['ThIs Is ExAmPlE HTML', /ExAmPlE/i], {
+            test('success if oneOf matches with html and ignoreCase', async () => {
+                const result = await thisContext.toHaveHTML(elements, wdioExpect.oneOf('ThIs Is ExAmPlE HTML', /ExAmPlE/i), {
                     ignoreCase: true,
                 })
                 expect(result.pass).toBe(true)

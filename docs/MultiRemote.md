@@ -36,23 +36,13 @@ WebdriverIO `v9.31.5` or higher is required.
 
 | Flag | Kind | Default | Details |
 | ---- | ---- | ------- | ------- |
-| `useToHaveTextStrictMultiElementsCompareStrategy` | expect-webdriverio [feature flag](API.md#feature-flags--environment-variables) | `false` | **Required** for `toHaveText` on multi-remote elements, see [Limitations](#limitations). |
 | `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` | WebdriverIO environment variable | unset | **Recommended.** `$$()` returns an array knowing how it was fetched (parent, selector, selected instances), so it is reliably re-fetched between retries, even when initially empty. Without it, see the [limitations](#without-wdio_enable_multi_remote_element_array). |
 | `WDIO_ENABLE_MULTI_REMOTE_SELECT` | WebdriverIO environment variable | unset | **Recommended** when using `select()`: elements queried from a selected multi-remote browser or element stay scoped to the selected instances. It is read when the multi-remote browser is created, so set it before the session starts. |
 
 ```ts
 // wdio.conf.ts
-import { setFeatureFlags } from 'expect-webdriverio'
-
 process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
 process.env.WDIO_ENABLE_MULTI_REMOTE_SELECT = 'true'
-
-export const config: WebdriverIO.MultiremoteConfig = {
-    // ...
-    before() {
-        setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy: true })
-    },
-}
 ```
 
 ## Expected Values
@@ -268,7 +258,6 @@ Expect multi-remote<chrome, firefox>.$(`h1`) to have text
 
 ## Limitations
 
-- `toHaveText` requires the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag: its legacy strategy does not support multi-remote elements and fails the assertion.
 - Network matchers support one expected value for every instance only, and may name a mock after the wrong instance, see [Network Matchers](#network-matchers).
 - Without `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY`, multi-remote `$$()` assertions are best effort, see [its limitations](#without-wdio_enable_multi_remote_element_array).
 - The Browser Runner (`@wdio/browser-runner`) does not support multi-remote, see [Browser Runner](Framework.md#multiple-elements--multi-remote).

@@ -1,5 +1,4 @@
 import { browser, $, $$ } from '@wdio/globals'
-import { setFeatureFlags } from 'expect-webdriverio'
 import { some } from 'expect-webdriverio/api'
 
 describe('WebdriverIO Custom Matchers', () => {
@@ -134,128 +133,7 @@ describe('WebdriverIO Custom Matchers', () => {
         })
     })
 
-    describe('Legacy element text matchers', () => {
-        it('should verify element text', async () => {
-            const secondPageLink = await $('#secondPageLink')
-            await expect(secondPageLink).toBeDisplayed()
-            await expect(secondPageLink).toHaveText('two')
-        })
-
-        it('should verify element text with expected array (deprecated) or oneOf', async () => {
-            const secondPageLink = await $('#secondPageLink')
-            await expect(secondPageLink).toHaveText(['two', 'Two'])
-            await expect(secondPageLink).toHaveText(expect.oneOf('two', 'Two'))
-        })
-
-        it('should verify element contains text', async () => {
-            const heading = await $$('h1')[1]  // Second h1 has text
-            await expect(heading).toHaveText(expect.stringContaining('Test CSS'))
-        })
-
-        it('should verify text with options', async () => {
-            const heading = await $$('h1')[1]  // Second h1 has text
-            await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
-        })
-
-        describe('Multiple Elements', () => {
-            describe('Awaited', () => {
-                it('should verify text with array of text & with options with awaited ChainablePromiseArray', async () => {
-                    const heading = await $$('h1')
-                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test css'], { ignoreCase: true, containing: true })
-                })
-
-                it('should verify text with array of text with oneOf', async () => {
-                    const heading = await $$('h1')
-
-                    await expect(heading).toHaveText(expect.oneOf('WebdriverJS Testpage', 'Test css'), { ignoreCase: true, containing: true })
-                })
-
-                it('should verify text with array of text without exact array match', async () => {
-                    const heading = await $$('h1')
-                    await expect(heading).toHaveText(['Test CSS Attributes', 'WebdriverJS Testpage', 'no match'])
-                })
-
-                it('should fails verify a single text found in only one element', async () => {
-                    const heading = await $$('h1')
-                    await expect(expect(heading).toHaveText('Test CSS Attributes', { ignoreCase: true, containing: true, wait: 500 })).rejects.toThrow()
-                })
-
-                it('should verify text with options with awaited filtered ChainablePromiseArray', async () => {
-                    const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('Test CSS'))
-                    expect(heading.length).toBe(1)
-                    await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
-                })
-
-                it('should verify text with options with awaited getElements ChainablePromiseArray', async () => {
-                    const heading = await $$('h1').getElements()
-                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test CSS Attributes'], { ignoreCase: true, containing: true })
-                })
-
-                it('should verify text with options with filetered awaited getElements ChainablePromiseArray', async () => {
-                    const heading = (await $$('h1').getElements()).filter(async (el) => (await el.getText()).includes('Test CSS'))
-
-                    await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
-                })
-
-                describe('Empty elemetns', () => {
-                    it('should fails if there is no elements with Element[]', async () => {
-                        const heading = await $$('h1').filter(async (el) => (await el.getText()).includes('test'))
-
-                        expect(heading.length).toBe(0)
-                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
-                    })
-
-                    it('should fails if there is no elements with ElementArray', async () => {
-                        const heading = await $$('h10')
-
-                        expect(heading.length).toBe(0)
-                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
-                    })
-                })
-            })
-
-            describe('Non-awaited', () => {
-
-                it('should verify text with options with non-awaited ChainablePromiseArray', async () => {
-                    const heading = $$('h1')
-
-                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test css'], { ignoreCase: true, containing: true })
-                })
-
-                it('should verify text with options with non-awaited filtered ChainablePromiseArray', async () => {
-                    const heading = $$('h1').filter(async (el) => (await el.getText()).includes('Test CSS'))
-
-                    await expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })
-                })
-
-                it('should verify text with options with non-awaited getElements ChainablePromiseArray', async () => {
-                    const heading = $$('h1').getElements()
-
-                    await expect(heading).toHaveText(['WebdriverJS Testpage', 'Test css'], { ignoreCase: true, containing: true })
-                })
-
-                describe('Empty elements', () => {
-                    it('should fails if there is no elements with Element[]', async () => {
-                        const heading = $$('h1').filter(async (el) => (await el.getText()).includes('test'))
-
-                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
-                    })
-
-                    it('should fails if there is no elements with ElementArray', async () => {
-                        const heading = $$('h10')
-
-                        await expect(expect(heading).toHaveText('TEST CSS ATTRIBUTES', { ignoreCase: true, containing: true })).rejects.toThrow()
-                    })
-                })
-            })
-        })
-    })
-
-    describe('New STRICT element text matchers', () => {
-        beforeEach(() => {
-            setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy: true })
-        })
-
+    describe('Element text matchers', () => {
         it('should verify element text', async () => {
             const secondPageLink = await $('#secondPageLink')
             await expect(secondPageLink).toBeDisplayed()
@@ -335,7 +213,7 @@ describe('WebdriverIO Custom Matchers', () => {
                         const heading = await $$('h1')
 
                         expect(heading.length).toBe(2)
-                        await expect(heading[0]).toHaveText(['WebdriverJS Testpage'])
+                        await expect(heading[0]).toHaveText('WebdriverJS Testpage')
                         await expect(expect(heading).toHaveText(['WebdriverJS Testpage'])).rejects.toThrow()
                     })
 
@@ -343,8 +221,8 @@ describe('WebdriverIO Custom Matchers', () => {
                         const heading = await $$('h1')
 
                         expect(heading.length).toBe(2)
-                        await expect(heading[0]).toHaveText(['WebdriverJS Testpage'])
-                        await expect(heading[1]).toHaveText(['Test CSS Attributes'])
+                        await expect(heading[0]).toHaveText('WebdriverJS Testpage')
+                        await expect(heading[1]).toHaveText('Test CSS Attributes')
                         await expect(expect(heading).toHaveText(['WebdriverJS Testpage', 'Test CSS Attributes', 'tooMuchValue!'])).rejects.toThrow()
                     })
                 })

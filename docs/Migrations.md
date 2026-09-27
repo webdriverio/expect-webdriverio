@@ -1,3 +1,32 @@
+# Migration Guide: v7 to v8
+
+## `toHaveText` on multiple elements
+
+The strict strategy of the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is now the only one. The flag, `setFeatureFlags()` and the `featureFlags` option are removed.
+
+With `$$()`, an array of expected values is index-based: its length must equal the element count, and each element must match the value at its index, as with every other matcher. Before, each element could match any value of the array.
+
+```diff
+  // <li>Coffee</li><li>Tea</li>
+- await expect($$('li')).toHaveText(['Tea', 'Coffee'])
++ await expect($$('li')).toHaveText(['Coffee', 'Tea'])
++ await expect($$('li')).toHaveText(expect.oneOf('Tea', 'Coffee'))
++ await expect($$('li')).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
+```
+
+`some()`, `expect.oneOf()` inside an expected array and multi-remote elements work without the flag. With `.not`, every element must not match.
+
+An array of expected values on a single element fails the assertion with `toHaveText`, `toHaveHTML`, `toHaveComputedLabel` and `toHaveComputedRole`: use `expect.oneOf()`.
+
+```diff
+- await expect($('h1')).toHaveText(['Welcome', 'Bienvenue'])
++ await expect($('h1')).toHaveText(expect.oneOf('Welcome', 'Bienvenue'))
+```
+
+`expect.oneOf()` now trims the actual value by default (`trim: true`), as a single expected value does. Pass `{ trim: false }` to compare the text as is.
+
+---
+
 # Migration Guide: v5 to v6
 
 This document covers all deprecations (no breakings) introduced in **v6.0.0** that will be **removed only in v8.0.0**.
@@ -163,8 +192,6 @@ This document covers all deprecations (no breakings) introduced in **v6.0.0** th
 - await expect(el).toHaveText(['foo', 'bar'])
 + await expect(el).toHaveText(expect.oneOf('foo', 'bar'))
 ```
-
-> **Note:** The `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is required when using `expect.oneOf()` inside an expected array for strict index-based multi-element comparison.
 
 ---
 

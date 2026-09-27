@@ -59,7 +59,6 @@ describe(toBeDisplayed, async () => {
                     afterAssertion: afterAssertion,
                     interval: 1,
                     wait: 500,
-                    featureFlags: expect.any(Object)
                 },
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined,  {
@@ -254,7 +253,6 @@ Received: "not displayed"`)
                     afterAssertion: afterAssertion,
                     interval: 1,
                     wait: 500,
-                    featureFlags: expect.any(Object)
                 },
             )
             expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, {

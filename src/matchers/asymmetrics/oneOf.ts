@@ -1,5 +1,5 @@
 import type { HTMLOptions, StringOptions } from 'expect-webdriverio'
-import { compareTextWithArray } from '../../utils.js'
+import { compareText } from '../../utils.js'
 import { WdioAsymmetricMatchers } from './asymmetricsUtils.js'
 
 const ONE_OF_TAG = 'expect-webdriverio.oneOf'
@@ -31,7 +31,7 @@ export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp |
             return false
         }
 
-        return compareTextWithArray(actual, this.sample.filter(s => s !== null), this.options).success
+        return this.sample.some((expected) => expected !== null && compareText(actual, expected, this.options).success)
     }
 
     public withOptions(options: StringOptions): OneOfMatcher {

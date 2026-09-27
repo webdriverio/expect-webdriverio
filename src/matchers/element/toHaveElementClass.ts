@@ -3,7 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
-import { compareText, compareTextOrOneOf, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import { compareText, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const actualClass = await el.getAttribute(attribute)
@@ -25,9 +25,8 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
     }
 
     const classes = actualClass.split(' ')
-    const isValueInClasses = classes.some((clazz) => {
-        return compareTextOrOneOf(clazz, value, options).success
-    })
+    const values = Array.isArray(value) ? value : [value]
+    const isValueInClasses = classes.some((clazz) => values.some((expected) => compareText(clazz, expected, options).success))
 
     return {
         success: isValueInClasses,
@@ -65,7 +64,6 @@ export async function toHaveElementClass(
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, attribute, expectedValue, options),
                 context: { isNot, iteration },
-                strategy: 'NewStrictMultipleElements',
                 // TODO: Replace (without breaking the API) array by oneOf/anyOf as will we should put in place for multiple elements
                 strictConfiguration: { allowArrayWithSingleElement: true }
             })

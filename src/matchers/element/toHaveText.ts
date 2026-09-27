@@ -2,7 +2,6 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
     compareTextOrOneOf,
     enhanceError,
-    getFeatureFlagValue,
     isArrayContainingMatcher,
     waitUntil,
 } from '../../utils.js'
@@ -34,7 +33,6 @@ export async function toHaveText(
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const isNewStrictCompare = getFeatureFlagValue(options, 'useToHaveTextStrictMultiElementsCompareStrategy')
     const { success: pass, actual: actualText, subject: subject, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
@@ -45,8 +43,6 @@ export async function toHaveText(
                     return compareElement(element, values, options)
                 },
                 context: { isNot, iteration },
-                strategy: isNewStrictCompare ? 'NewStrictMultipleElements' : 'LegacyLooseMultipleElements',
-                strictConfiguration: { allowArrayWithSingleElement: true }
             })
         },
         isNot,

@@ -76,8 +76,6 @@ describe('WebdriverIO Custom Matchers', () => {
     })
 
     describe('Element text matchers', () => {
-        const newStrictStrategy = { featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy: true } }
-
         it('should verify element text', async () => {
             const secondPageLink = await $('#secondPageLink')
             await expect(secondPageLink).toBeDisplayed()
@@ -97,25 +95,24 @@ describe('WebdriverIO Custom Matchers', () => {
         it("should verify multiple elements's texts with options", async () => {
             const headings = await $$('h1')
 
-            await expect(headings).toHaveText(expect.oneOf('WebdriverJS Testpage', 'TEST CSS ATTRIBUTES'), { ignoreCase: true, containing: true, ...newStrictStrategy.featureFlags})
+            await expect(headings).toHaveText(expect.oneOf('WebdriverJS Testpage', 'TEST CSS ATTRIBUTES'), { ignoreCase: true, containing: true })
         })
 
         it("should verify multiple elements's texts exactly", async () => {
             const headings = await $$('h1')
 
-            await expect(headings).toHaveText(['WebdriverJS Testpage', 'Test CSS Attributes'], newStrictStrategy)
+            await expect(headings).toHaveText(['WebdriverJS Testpage', 'Test CSS Attributes'])
         })
 
         it("should verify some elements with oneOf", async () => {
             const headings = await $$('h1')
 
-            await expect(some(headings)).toHaveText(expect.oneOf('Test CSS Attributes'), newStrictStrategy)
+            await expect(some(headings)).toHaveText(expect.oneOf('Test CSS Attributes'))
         })
 
-        it('should verify element text with expected array', async () => {
+        it('should verify element text with oneOf', async () => {
             const secondPageLink = await $('#secondPageLink')
             await expect(secondPageLink).toHaveText('two')
-            await expect(secondPageLink).toHaveText(['two', 'Two'])
             // TODO to support one day expect.oneOf!
             //await expect(secondPageLink).toHaveText(jasmine.oneOf('two', 'Two'))
             await expect(secondPageLink).toHaveText(expect.oneOf('two', 'Two'))

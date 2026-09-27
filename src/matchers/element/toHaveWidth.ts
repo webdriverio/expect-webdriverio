@@ -75,7 +75,6 @@ export async function toHaveWidth(
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
                 context: { isNot, iteration },
-                strategy: 'NewStrictMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: false }
             })
         },

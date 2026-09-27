@@ -66,7 +66,6 @@ export async function toHaveStyle(
                 // TODO try to make the type work without casting expectedValues to { [key: string]: string; } | undefined
                 singleElementCompare: (element, expectedValues) => condition(element, expectedValues as { [key: string]: string; } | undefined, options),
                 context: { isNot, iteration },
-                strategy: 'NewStrictMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: false, allowObjectExpectedValue: true }
             })
         },

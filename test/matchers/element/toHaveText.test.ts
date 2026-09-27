@@ -5,7 +5,6 @@ import type { ChainablePromiseArray } from 'webdriverio'
 import { $Factory, browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
-import { setFeatureFlags } from '../../../src/index.js'
 import { expect as wdioExpect } from '../../../src/index.js'
 import { refreshElementArray } from '../../../src/util/refetchElements.js'
 import { some } from '../../../src/api/index.js'
@@ -37,8 +36,22 @@ Expected: "Other"
 Received: "  Hello World  "`)
     })
 
-    describe.for([false, true])('arrayContaining with strict strategy %s', (strict) => {
-        const options = { wait: 0, featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy: strict } }
+    test('trims by default, for one element and for several elements, also with oneOf', async () => {
+        const el = await $('sel')
+        vi.mocked(el.getText).mockResolvedValue(' Coffee ')
+        const elements = await chainableElementArrayFactory('li', 2).getElements()
+        vi.mocked(elements[0].getText).mockResolvedValue(' Coffee ')
+        vi.mocked(elements[1].getText).mockResolvedValue(' Tea ')
+        const options = { wait: 0 }
+
+        expect((await thisContext.toHaveText(el, 'Coffee', options)).pass).toBe(true)
+        expect((await thisContext.toHaveText(el, wdioExpect.oneOf('Coffee', 'Tea'), options)).pass).toBe(true)
+        expect((await thisContext.toHaveText(elements, ['Coffee', 'Tea'], options)).pass).toBe(true)
+        expect((await thisContext.toHaveText(el, wdioExpect.oneOf('Coffee', 'Tea'), { ...options, trim: false })).pass).toBe(false)
+    })
+
+    describe('arrayContaining', () => {
+        const options = { wait: 0 }
         let elements: WebdriverIO.ElementArray
         let chainableElements: ChainablePromiseArray
 
@@ -442,8 +455,8 @@ Received: ""`
             )
         })
 
-        test('success if one of the values in the array matches with text and ignoreCase', async () => {
-            const result = await thisContext.toHaveText(el, ['WDIO', 'Webdriverio'], { wait: 0, ignoreCase: true })
+        test('success if one of the values of oneOf matches with text and ignoreCase', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'Webdriverio'), { wait: 0, ignoreCase: true })
 
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(1)
@@ -485,33 +498,33 @@ Received      : "WebdriverIO"`
             )
         })
 
-        test('success if one of the values in the array matches with text and trim - deprecated (TODO)', async () => {
+        test('success if one of the values of oneOf matches with text and trim', async () => {
 
             vi.mocked(el.getText).mockResolvedValue('   WebdriverIO   ')
 
-            const result = await thisContext.toHaveText(el, ['WDIO', 'WebdriverIO', 'toto'], { wait: 0, trim: true })
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'WebdriverIO', 'toto'), { wait: 0, trim: true })
 
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(1)
         })
 
-        test('success if one of the values in the array matches with text and replace (string)', async () => {
-            const result = await thisContext.toHaveText(el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [['Web', 'Browser']] })
+        test('success if one of the values of oneOf matches with text and replace (string)', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'BrowserdriverIO', 'toto'), { replace: [['Web', 'Browser']] })
 
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(1)
         })
 
-        test('success if one of the values in the array matches with text and replace (regex)', async () => {
+        test('success if one of the values of oneOf matches with text and replace (regex)', async () => {
 
-            const result = await thisContext.toHaveText(el, ['WDIO', 'BrowserdriverIO', 'toto'], { replace: [[/Web/g, 'Browser']] })
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'BrowserdriverIO', 'toto'), { replace: [[/Web/g, 'Browser']] })
 
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(1)
         })
 
-        test('success if one of the values in the array matches with text and multiple replacers and one of the replacers is a function', async () => {
-            const result = await thisContext.toHaveText(el, ['WDIO', 'browserdriverio', 'toto'], {
+        test('success if one of the values of oneOf matches with text and multiple replacers and one of the replacers is a function', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'browserdriverio', 'toto'), {
                 replace: [
                     [/Web/g, 'Browser'],
                     [/[A-Z]/g, (match: string) => match.toLowerCase()],
@@ -522,11 +535,24 @@ Received      : "WebdriverIO"`
             expect(el.getText).toHaveBeenCalledTimes(1)
         })
 
-        test('failure if one of the values in the array does not match with text', async () => {
-            const result = await thisContext.toHaveText(el, ['WDIO', 'Webdriverio'], { wait: 0 })
+        test('failure if none of the values of oneOf matches with text', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'Webdriverio'), { wait: 0 })
 
             expect(result.pass).toBe(false)
             expect(el.getText).toHaveBeenCalledTimes(1)
+        })
+
+        test.for([false, true])('fails with an array of expected values, even if one matches (isNot: %s)', async (isNot) => {
+            const result = await (isNot ? thisNotContext : thisContext).toHaveText(el, ['WDIO', 'WebdriverIO'], { wait: 1000 })
+
+            expect(result.pass).toBe(isNot) // with `.not`, `true` is a failure
+            expect(el.getText).toHaveBeenCalledTimes(1)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) ${isNot ? 'not ' : ''}to have text
+
+Expected${isNot ? ' [not]' : ''}: ["WDIO", "WebdriverIO"]
+Received${isNot ? '      ' : ''}: "WebdriverIO"`
+            )
         })
 
         test('should return true if actual text contains the expected text', async () => {
@@ -541,14 +567,14 @@ Received      : "WebdriverIO"`
             expect(result.pass).toBe(false)
         })
 
-        test('should return true if actual text contains one of the expected texts', async () => {
-            const result = await thisContext.toHaveText(el, [expect.stringContaining('iverIO'), expect.stringContaining('WDIO')], {})
+        test('should return true if actual text contains one of the oneOf texts', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf(expect.stringContaining('iverIO'), expect.stringContaining('WDIO')), {})
 
             expect(result.pass).toBe(true)
         })
 
-        test('should return false if actual text does not contain the expected texts', async () => {
-            const result = await thisContext.toHaveText(el, [expect.stringContaining('EXAMPLE'), expect.stringContaining('WDIO')], { wait: 0 })
+        test('should return false if actual text does not contain any oneOf text', async () => {
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf(expect.stringContaining('EXAMPLE'), expect.stringContaining('WDIO')), { wait: 0 })
 
             expect(result.pass).toBe(false)
         })
@@ -564,20 +590,20 @@ Received      : "WebdriverIO"`
                 expect(result.pass).toBe(true)
             })
 
-            test('success if one of the values in the array matches with RegExp', async () => {
-                const result = await thisContext.toHaveText(el, ['WDIO', /ExAmPlE/i])
+            test('success if one of the values of oneOf matches with RegExp', async () => {
+                const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', /ExAmPlE/i))
 
                 expect(result.pass).toBe(true)
             })
 
-            test('success if one of the values in the array matches with text', async () => {
-                const result = await thisContext.toHaveText(el, ['This is example text', /Webdriver/i])
+            test('success if one of the values of oneOf matches with text', async () => {
+                const result = await thisContext.toHaveText(el, wdioExpect.oneOf('This is example text', /Webdriver/i))
 
                 expect(result.pass).toBe(true)
             })
 
-            test('success if one of the values in the array matches with text and ignoreCase', async () => {
-                const result = await thisContext.toHaveText(el, ['ThIs Is ExAmPlE tExT', /Webdriver/i], {
+            test('success if one of the values of oneOf matches with text and ignoreCase', async () => {
+                const result = await thisContext.toHaveText(el, wdioExpect.oneOf('ThIs Is ExAmPlE tExT', /Webdriver/i), {
                     ignoreCase: true,
                 })
 
@@ -596,553 +622,21 @@ Received: "This is example text"`
                 )
             })
 
-            test('failure if one of the values in the array does not match with text', async () => {
-                const result = await thisContext.toHaveText(el, ['WDIO', /Webdriver/i], { wait: 0 })
+            test('failure if one of the values of oneOf does not match with text', async () => {
+                const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', /Webdriver/i), { wait: 0 })
 
                 expect(result.pass).toBe(false)
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} to have text
 
-Expected: ["WDIO", /Webdriver/i]
+Expected: oneOf<"WDIO", /Webdriver/i>
 Received: "This is example text"`
                 )
             })
         })
     })
 
-    describe('Legacy multiple elements compare behavior', async () => {
-        describe('given multiple elements', () => {
-            let els: ChainablePromiseArray
-            const selectorName = '$$(`sel`)'
-
-            beforeEach(async () => {
-                els = await $$('sel')
-            })
-
-            describe('given single expected values', () => {
-                beforeEach(async () => {
-                    const awaitedEls = await els
-                    expect(awaitedEls.length).toBe(2)
-
-                    awaitedEls.forEach(el => vi.mocked(el.getText).mockResolvedValue('WebdriverIO'))
-                })
-
-                test('should return true if the received element array matches the expected text array', async () => {
-                    const result = await thisContext.toHaveText(els, 'WebdriverIO', { wait: 0 })
-
-                    expect(result.pass).toBe(true)
-                })
-
-                test('should return true if the received element array matches the expected text array & ignoreCase', async () => {
-                    const result = await thisContext.toHaveText(els, 'webdriverio', { ignoreCase: true, wait: 0 })
-
-                    expect(result.pass).toBe(true)
-                })
-
-                test('should return true if actual texts contains space since we trim by default', async () => {
-                    const awaitedEls = await els
-                    vi.mocked(awaitedEls[0].getText).mockResolvedValue(' WebdriverIO ')
-                    vi.mocked(awaitedEls[1].getText).mockResolvedValue(' WebdriverIO ')
-
-                    const result = await thisContext.toHaveText( els, 'WebdriverIO', { wait: 0 })
-
-                    expect(result.pass).toBe(true)
-                })
-
-                test('should return false if the received element array does not match the expected text array', async () => {
-                    const result = await thisContext.toHaveText(els, 'webdriverio', { wait: 0 })
-
-                    expect(result.pass).toBe(false)
-                })
-
-                test('should return false and show custom failure message correctly', async () => {
-                    const result = await thisContext.toHaveText(els, 'webdriverio', { message: 'Test', wait: 0 })
-
-                    // selectorName is buggy, to be fixed later with $$ support
-                    // Expected vs received is wierd, to be fixed later with $$ support
-                    expect(stripAnsi(result.message())).toEqual(`\
-Test
-Expect ${selectorName} to have text
-
-- Expected  - 2
-+ Received  + 2
-
-  Array [
--   "webdriverio",
--   "webdriverio",
-+   "WebdriverIO",
-+   "WebdriverIO",
-  ]`
-                    )
-                })
-
-                test('should return false and show a correct custom failure message', async () => {
-                    const result = await thisContext.toHaveText( els, 'webdriverio', { message: 'Test', wait: 0 })
-
-                    expect(stripAnsi(result.message())).toMatch(/Test\nExpect .* to have text/)
-                })
-
-                describe('when using .not', () => {
-                    test('should succeed (pass=false) if none of the received elements match the expected text', async () => {
-                        const result = await thisNotContext.toHaveText(els, 'NotHaveThisText')
-
-                        expect(result.pass).toBe(false)
-                    })
-
-                    test('should fails (pass=true) if all the received element in the array matches the expected text array', async () => {
-                        const result = await thisNotContext.toHaveText(els, 'WebdriverIO')
-
-                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                        expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} not to have text
-
-Expected [not]: ["WebdriverIO", "WebdriverIO"]
-Received      : ["WebdriverIO", "WebdriverIO"]`
-                        )
-
-                    })
-
-                    test('should fails (pass=true) if the first received element in the array matches the expected text array', async () => {
-                        const awaitedEls = await els
-                        vi.mocked(awaitedEls[0].getText).mockResolvedValue('WebdriverIO1')
-                        vi.mocked(awaitedEls[1].getText).mockResolvedValue('WebdriverIO2')
-
-                        const result = await thisNotContext.toHaveText(els, 'WebdriverIO1')
-
-                        expect(result.pass).toBe(false) // Incorrect, should be true since the first element matches the expected text, but the second does not. This test needs clarification on expected behavior.
-                    })
-
-                    test('should fails (pass=true) if the second received element in the array matches the expected text array', async () => {
-                        const awaitedEls = await els
-                        vi.mocked(awaitedEls[0].getText).mockResolvedValue('WebdriverIO1')
-                        vi.mocked(awaitedEls[1].getText).mockResolvedValue('WebdriverIO2')
-
-                        const result = await thisNotContext.toHaveText(els, 'WebdriverIO2')
-
-                        expect(result.pass).toBe(false) // Incorrect, should be true since the second element matches the expected text, but the first does not. This test needs clarification on expected behavior.
-                    })
-
-                    test('should fails (pass=true) if all elements match the expected Regex', async () => {
-                        const awaitedEls = await els
-                        vi.mocked(awaitedEls[0].getText).mockResolvedValue('WebdriverIO1')
-                        vi.mocked(awaitedEls[1].getText).mockResolvedValue('WebdriverIO2')
-
-                        const result = await thisNotContext.toHaveText(els, /WebdriverIO.*/i)
-
-                        expect(result.pass).toBe(true)
-                        expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} not to have text
-
-Expected [not]: [/WebdriverIO.*/i, /WebdriverIO.*/i]
-Received      : ["WebdriverIO1", "WebdriverIO2"]`
-                        )
-                    })
-
-                    test('should succeed (pass=false) if none elements match the expected Regex', async () => {
-                        const awaitedEls = await els
-                        vi.mocked(awaitedEls[0].getText).mockResolvedValue('WebdriverIO1')
-                        vi.mocked(awaitedEls[1].getText).mockResolvedValue('WebdriverIO2')
-
-                        const result = await thisNotContext.toHaveText(els, /NotMatching.*/i)
-
-                        expect(result.pass).toBe(false)
-                    })
-
-                    test('should succeed (pass=false) if one elements match the expected Regex', async () => {
-                        const awaitedEls = await els
-                        vi.mocked(awaitedEls[0].getText).mockResolvedValue('WebdriverIO1')
-                        vi.mocked(awaitedEls[1].getText).mockResolvedValue('WebdriverIO2')
-
-                        const result = await thisNotContext.toHaveText(els, /WebdriverIO2.*/i)
-
-                        expect(result.pass).toBe(false) // Incorrect, should be true since the second element matches the expected Regex, but the first does not. This test needs clarification on expected behavior.
-                    })
-                })
-            })
-
-            describe('given multiples expected values', () => {
-                beforeEach(async () => {
-                    const awaitedEls = await els
-                    vi.mocked(awaitedEls[0].getText).mockResolvedValue('WebdriverIO')
-                    vi.mocked(awaitedEls[1].getText).mockResolvedValue('Get Started')
-                })
-
-                test('should return true if the received elements', async () => {
-                    const result = await thisContext.toHaveText(els, ['WebdriverIO', 'Get Started'], { wait: 0 })
-                    expect(result.pass).toBe(true)
-                })
-
-                test('should not support oneOf in array under legacy behavior', async () => {
-                    await expect(
-                        // @ts-expect-error
-                        thisContext.toHaveText(els, [wdioExpect.oneOf('WebdriverIO', 'Get Started'), wdioExpect.oneOf('WebdriverIO', 'Get Started')], { wait: 0 })
-                    ).rejects.toThrow('OneOf is not supported in array under legacy behavior. Please enable `useToHaveTextStrictMultiElementsCompareStrategy` feature flag to use the new strict index based matching strategy with `expect.oneOf()`.')
-                })
-
-                test('should return true if actual texts contains space since we trim by default', async () => {
-                    const awaitedEls = await els
-                    vi.mocked(awaitedEls[0].getText).mockResolvedValue(' WebdriverIO ')
-                    vi.mocked(awaitedEls[1].getText).mockResolvedValue(' Get Started ')
-
-                    const result = await thisContext.toHaveText( els, ['WebdriverIO', 'Get Started'], { wait: 0 })
-
-                    // For single element we trim by default but not for multiple elements, sounds like a bug - Legacy behavior!
-                    expect(result.pass).toBe(false)
-                })
-
-                test('should return true if actual texts contains space since with explicit trim', async () => {
-                    const awaitedEls = await els
-                    vi.mocked(awaitedEls[0].getText).mockResolvedValue(' WebdriverIO ')
-                    vi.mocked(awaitedEls[1].getText).mockResolvedValue(' Get Started ')
-
-                    const result = await thisContext.toHaveText( els, ['WebdriverIO', 'Get Started'], { trim: true })
-
-                    expect(result.pass).toBe(true)
-                })
-
-                test('should return true if the received element array matches the expected text array & ignoreCase', async () => {
-                    const result = await thisContext.toHaveText(els, ['webdriverio', 'get started'], { ignoreCase: true, wait: 0 })
-                    expect(result.pass).toBe(true)
-                })
-
-                test('should return false if the received element array does not match the expected text array', async () => {
-                    const result = await thisContext.toHaveText(els, ['webdriverio', 'get started'], { wait: 0 })
-
-                    expect(result.pass).toBe(false)
-                })
-
-                test('should return false if the second received element array does not match the second expected text in the array', async () => {
-                    const result = await thisContext.toHaveText(els, ['WebdriverIO', 'get started'], { wait: 0 })
-
-                    expect(result.pass).toBe(false)
-                    // Buggy error message to fix later with $$ support
-                    expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} to have text
-
-- Expected  - 1
-+ Received  + 1
-
-  Array [
-    "WebdriverIO",
--   "get started",
-+   "Get Started",
-  ]`
-                    )
-                })
-
-                test('should return false and display proper custom error message', async () => {
-                    const result = await thisContext.toHaveText(els, ['webdriverio', 'get started'], { message: 'Test', wait: 0 })
-
-                    expect(result.pass).toBe(false)
-                    // Buggy error message to fix later with $$ support
-                    expect(stripAnsi(result.message())).toEqual(`\
-Test
-Expect ${selectorName} to have text
-
-- Expected  - 2
-+ Received  + 2
-
-  Array [
--   "webdriverio",
--   "get started",
-+   "WebdriverIO",
-+   "Get Started",
-  ]`
-                    )
-                })
-
-                test('should return false and show a correct custom failure message', async () => {
-                    const result = await thisContext.toHaveText( els, 'webdriverio', { message: 'Test', wait: 0 })
-
-                    expect(result.pass).toBe(false)
-                    expect(stripAnsi(result.message())).toMatch(/Test\nExpect .* to have text/)
-                })
-
-                test('should not support some modifiers', async () => {
-                    await expect(thisContext.toHaveText(some(els), 'webdriverio', { wait: 0 })).rejects.toThrow('some(elements) works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
-                })
-
-                describe('when using .not', () => {
-                    test('should succeed (pass=false) if none of the received elements match the expected text', async () => {
-                        const result = await thisNotContext.toHaveText(els, ['NotHaveThisText1', 'NotHaveThisText2'])
-
-                        expect(result.pass).toBe(false)
-                    })
-
-                    test('should fails (pass=true) if all the received element in the array matches the expected text array', async () => {
-                        const result = await thisNotContext.toHaveText(els, ['WebdriverIO', 'Get Started'])
-
-                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                        expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} not to have text
-
-Expected [not]: ["WebdriverIO", "Get Started"]
-Received      : ["WebdriverIO", "Get Started"]`
-                        )
-
-                    })
-
-                    test('should fails (pass=true) if all the received element in the array matches the expected text array even out of order', async () => {
-                        const result = await thisNotContext.toHaveText(els, ['Get Started', 'WebdriverIO'])
-
-                        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-                        expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} not to have text
-
-Expected [not]: ["Get Started", "WebdriverIO"]
-Received      : ["WebdriverIO", "Get Started"]`
-                        )
-                    })
-
-                    test('should fails (pass=true) if the first received element in the array matches the expected text array', async () => {
-                        const result = await thisNotContext.toHaveText(els, ['WebdriverIO', 'NotMatchingText'])
-
-                        expect(result.pass).toBe(false) // Incorrect, should be true since the first element matches the expected text, but the second does not. This test needs clarification on expected behavior.
-                    })
-
-                    test('should fails (pass=true) if the second received element in the array matches the expected text array', async () => {
-                        const result = await thisNotContext.toHaveText(els, ['NotMatchingText', 'WebdriverIO'])
-
-                        expect(result.pass).toBe(false) // Incorrect, should be true since the second element matches the expected text, but the first does not. This test needs clarification on expected behavior.
-                    })
-
-                    test('should fails (pass=true) if all elements match the expected Regex', async () => {
-                        const result = await thisNotContext.toHaveText(els, [/WebdriverI.*/i, /Get Starte.*/i])
-
-                        expect(result.pass).toBe(true)
-                        expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} not to have text
-
-Expected [not]: [/WebdriverI.*/i, /Get Starte.*/i]
-Received      : ["WebdriverIO", "Get Started"]`
-                        )
-                    })
-
-                    test('should succeed (pass=false) if none elements match the expected Regex', async () => {
-                        const result = await thisNotContext.toHaveText(els, [/NotMatching.*/i, /NotMatching2.*/i])
-
-                        expect(result.pass).toBe(false)
-                    })
-
-                    test('should succeed (pass=false) if one elements match the expected Regex', async () => {
-                        const result = await thisNotContext.toHaveText(els, [/NotMatching.*/i, /WebdriverIO.*/i])
-
-                        expect(result.pass).toBe(false) // Incorrect, should be true since the second element matches the expected Regex, but the first does not. This test needs clarification on expected behavior.
-                    })
-                })
-            })
-        })
-
-        describe('Edge cases', () => {
-
-            test('given exact text but with space in it should work by default', async () => {
-                const element = $('sel')
-
-                const result = await thisContext.toHaveText(element, ' Valid Text ')
-
-                expect(result.pass).toBe(false) // to review in major version to be true
-            })
-
-            test.each([
-                { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
-                { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
-                { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
-            ])('should fail with proper error message when actual is an empty of $name', async ({ elements, selectorName }) => {
-                const result = await thisContext.toHaveText(elements, 'webdriverio')
-
-                expect(result.pass).toBe(false)
-                expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} to have text
-
-Expected: ["webdriverio"]
-Received: undefined`)
-            })
-
-            test.each([
-                { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
-                { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
-                { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
-            ])('not - should succeed when actual is an empty of $name - legacy behavior to deprecate!', async ({ elements }) => {
-                const result = await thisNotContext.toHaveText(elements, 'webdriverio')
-
-                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-            })
-
-            test('given element is not found then it throws error when an element does not exists', async () => {
-                const element: WebdriverIO.Element = notFoundElementFactory('sel')
-
-                await expect(thisContext.toHaveText(element, 'webdriverio')).rejects.toThrow("Can't call getText on element with selector sel because element wasn't found")
-            })
-
-            test('given element from out of bound ChainableArray, then it throws error when an element does not exists', async () => {
-                const element: ChainablePromiseElement = $$('elements')[3]
-
-                await expect(thisContext.toHaveText(element, 'webdriverio')).rejects.toThrow('Index out of bounds! $$(elements) returned only 2 elements.')
-            })
-
-            test.each([
-                { actual: undefined, selectorName: 'undefined' },
-                { actual: null, selectorName: 'null' },
-                { actual: true, selectorName: 'true' },
-                { actual: 5, selectorName: '5' },
-                { actual: 'test', selectorName: 'test' },
-                { actual: Promise.resolve(true), selectorName: 'true' },
-                { actual: {}, selectorName: '{}' },
-                { actual: ['1', '2'], selectorName: '["1","2"]' },
-            ])('should have pass false with proper error message when actual is unsupported type of $actual', async ({ actual, selectorName }) => {
-                const result = await thisContext.toHaveText(actual as any, 'webdriverio')
-
-                expect(result.pass).toBe(false)
-                expect(stripAnsi(result.message())).toEqual(`\
-Expect ${selectorName} to have text
-
-Expected: "webdriverio"
-Received: undefined`)
-            })
-
-            test('given only one element in array when failures', async () => {
-                const elements = chainableElementArrayFactory('elements', 1)
-                vi.mocked((elements)[0].getText).mockResolvedValue('webdriverio')
-
-                const results = await thisContext.toHaveText(elements, 'NotMatchingText')
-
-                expect(results.pass).toBe(false)
-                expect(stripAnsi(results.message())).toEqual(`\
-Expect $$(\`elements\`) to have text
-
-- Expected  - 1
-+ Received  + 1
-
-  Array [
--   "NotMatchingText",
-+   "webdriverio",
-  ]`
-                )
-            })
-
-            test('given the first element getText fails to retrieve', async () => {
-                const elements = $$('elements')
-
-                vi.mocked((elements)[0].getText).mockRejectedValue(new Error('Unable to retrieve text for first element'))
-                vi.mocked((elements)[1].getText).mockResolvedValue('webdriverio')
-
-                await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for first element')
-            })
-
-            test('given the second element getText fails to retrieve', async () => {
-                const elements = $$('elements')
-
-                vi.mocked((elements)[0].getText).mockResolvedValue('webdriverio')
-                vi.mocked((elements)[1].getText).mockRejectedValue(new Error('Unable to retrieve text for second element'))
-
-                await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for second element')
-            })
-
-            test('given all elements getText fails to retrieve', async () => {
-                const elements = $$('elements')
-
-                vi.mocked((elements)[0].getText).mockRejectedValue(new Error('Unable to retrieve text for first element'))
-                vi.mocked((elements)[1].getText).mockRejectedValue(new Error('Unable to retrieve text for second element'))
-
-                await expect(thisContext.toHaveText(elements, 'webdriverio')).rejects.toThrow('Unable to retrieve text for first element')
-            })
-
-            test('given an arrays of array of expected values', async () => {
-                const elements = $$('elements')
-
-                elements.forEach(el => vi.mocked(el.getText).mockResolvedValue('webdriverio'))
-
-                // @ts-expect-error -- array of array of expected values is not supported, but we want to test that it fails gracefully
-                const results = await thisContext.toHaveText(elements, [['webdriverIO'], ['webdriverIO']])
-                expect(results.pass).toBe(false)
-                expect(stripAnsi(results.message())).toEqual(`\
-Expect $$(\`elements\`) to have text
-
-- Expected  - 6
-+ Received  + 2
-
-  Array [
--   Array [
--     "webdriverIO",
--   ],
--   Array [
--     "webdriverIO",
--   ],
-+   " Valid Text ",
-+   " Valid Text ",
-  ]`)
-            })
-
-            describe('Long promises', () => {
-
-                describe("given element's text takes more time then the configured wait to be retrieved", () => {
-
-                    test('given element text takes more time then the configured wait then it should fail', async () => {
-                        const element: ChainablePromiseElement = $('elements')
-                        vi.mocked((await element).getText).mockImplementationOnce(() => new Promise((resolve) => setTimeout(() => resolve('0'), 500)))
-                            .mockImplementationOnce(() => new Promise((resolve) => setTimeout(() => resolve('1'), 500)))
-
-                        const result = await thisContext.toHaveText(element, '1', { wait: 1, interval: 1 })
-
-                        expect(result.pass).toBe(false)
-                        expect(stripAnsi(result.message())).toEqual(`\
-Expect $(\`elements\`) to have text
-
-Expected: "1"
-Received: "0"`)
-                    })
-                })
-
-                describe('given element itself takes more time then the configured wait to be retrieved', () => {
-
-                    test('given element take time to be found, and first getText match then it should work', async () => {
-                        const element: ChainablePromiseElement = $Factory(elementFactory('slowElement'), 500)
-
-                        const result = await thisContext.toHaveText(element, 'Valid Text', { wait: 250, interval: 100 })
-
-                        expect(result.pass).toBe(true)
-                    })
-
-                    test('given element take time to be found, and match only on second getText try then it should fails when using non-awaited version', async () => {
-                        const element = elementFactory('slowElement')
-                        element.getText = vi.fn()
-                            .mockResolvedValueOnce('Invalid Text')
-                            .mockResolvedValueOnce('Valid Text')
-
-                        const nonAwaitedElement: ChainablePromiseElement = $Factory(element, 500)
-
-                        const result = await thisContext.toHaveText(nonAwaitedElement, 'Valid Text', { wait: 250, interval: 100 })
-
-                        expect(result.pass).toBe(false)
-                        expect(stripAnsi(result.message())).toEqual(`\
-Expect $(\`slowElement\`) to have text
-
-Expected: "Valid Text"
-Received: "Invalid Text"`)
-                    })
-
-                    test('given element take time to be found, but match only on second try then it should succeeds when using awaited version', async () => {
-                        const element = elementFactory('slowElement')
-                        element.getText = vi.fn()
-                            .mockResolvedValueOnce('Invalid Text')
-                            .mockResolvedValueOnce('Valid Text')
-
-                        const awaitedElement: ChainablePromiseElement = await $Factory(element, 500)
-
-                        const result = await thisContext.toHaveText(awaitedElement, 'Valid Text', { wait: 250, interval: 100 })
-
-                        expect(result.pass).toBe(true)
-                    })
-                })
-            })
-        })
-    })
-
-    describe('New Strict multiple elements compare behavior', async () => {
-        beforeEach(async () => {
-            setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy: true })
-        })
-
+    describe('multiple elements', async () => {
         describe.for([
             { elements: await $$('sel'), title: 'awaited ChainablePromiseArray' },
             { elements: await $$('sel').getElements(), title: 'awaited getElements of ChainablePromiseArray (e.g. WebdriverIO.ElementArray)' },
@@ -1586,7 +1080,7 @@ Received: undefined`)
                 { elements: [] as unknown as WebdriverIO.Element[], name: 'Element[]', selectorName: '[]' },
                 { elements: Promise.resolve([] as WebdriverIO.Element[]), name: 'Promise of Element[]', selectorName: '[]' },
                 { elements: elementArrayFactory('EmptyElementArray', 0), name: 'ElementArray', selectorName: '$$(`EmptyElementArray`)' },
-            ])('not - should fails (pass=true) when actual is an empty of $name - legacy behavior to deprecate!', async ({ elements, selectorName }) => {
+            ])('not - should fail (pass=true) when actual is an empty $name', async ({ elements, selectorName }) => {
                 const result = await thisNotContext.toHaveText(elements, 'webdriverio')
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
@@ -1762,7 +1256,7 @@ Received      : ["webdriverio", "webdriverio", undefined]`
                 )
             })
 
-            test('should support oneOf in array under strict behavior', async () => {
+            test('should support oneOf in array', async () => {
                 const elements = await $$('elements')
 
                 vi.mocked((elements)[0].getText).mockResolvedValue('WebdriverIO')

@@ -2,11 +2,10 @@ import { equals } from '../jasmineUtils.js'
 import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, WdioMultiRemoteElementArray, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
-import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
+import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { getElementsPerInstance, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
-export type StrategyType = 'LegacyLooseMultipleElements' | 'NewStrictMultipleElements'
 export type CompareResult<Actual> = { success: boolean; actual: Actual }
 export type MultiRemoteCompareResult<Actual> = { success: boolean; actual: Actual, multiRemoteBrowserName: string }
 export type StrategyResult<Actual, Subject = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown, Expected = unknown> = {
@@ -18,12 +17,10 @@ export type StrategyResult<Actual, Subject = WebdriverIO.Element | WebdriverIO.E
 
 /**
  * Fetch element(s) and route them to the appropriate comparison strategy.
- * Acts as a router to dispatch the elements to either the legacy or new comparison strategy.
  *
  * @param unresolvedElements awaited or non-awaited element(s) to be resolved and compared
  * @param singleElementCompare compare a single element with expected value(s)
  * @param isNot indicates if the assertion is inverted (e.g., using `.not`)
- * @param strategy the strategy type to use (defaults to 'NewStrictMultipleElements')
  * @param configuration configuration options for the strategy
  * @returns An object containing the subject, success status, actual values, and results of the comparison
  */
@@ -32,7 +29,6 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     expectedValues,
     singleElementCompare,
     context: { isNot, iteration },
-    strategy = 'NewStrictMultipleElements',
     supportsArrayContaining = false,
     strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
 } :{
@@ -40,7 +36,6 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | unknown
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>
     context: { isNot: boolean, iteration: number },
-    strategy?: StrategyType,
     /** Compare collection snapshots using singleElementCompare(element, undefined). 'arrayOnly' rejects scalar subjects. */
     supportsArrayContaining?: boolean | 'arrayOnly',
     /**
@@ -90,14 +85,6 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
         return { subject: selector, ...await singleElementCompare(selector, expectedValues as MaybeArray<Expected>) }
     }
 
-    if (strategy === 'LegacyLooseMultipleElements') {
-        if (isSome) {
-            throw new Error('some(elements) works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
-        }
-        return legacyMultipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, isNot)
-    }
-
-    // Default new strategy for single & multiple element results, which is more consistent and less ambigious than the legacy strategy.
     return multipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)
 }
 
@@ -135,66 +122,7 @@ const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
 }
 
 /**
- * Legacy multiple element comparison strategy.
- *
- * Previous multi-element compare mechanism that started with `toHaveText` matcher.
- * Flaws:
- * - If there is no element or an empty array, it returns success with `.not` even though there are no elements' value to compare against.
- * - When asserting with `.not` to not have a given text, if at least one element does not have the text, it returns success even though other elements may have the text.
- *
- * @deprecated The above behavior can be confusing, yielding ambiguous results.
- * Kept for backward compatibility, to not be breaking but still be able to rollout the below new strategy.
- */
-export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
-    unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | unknown,
-    expectedValues: MaybeArray<Expected> | undefined,
-    singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
-    _isNot?: boolean,
-
-): Promise<StrategyResult<MaybeArrayOrMultiRemoteValuesWithArray<Actual>>> => {
-    const { selector, other, isEmptyElements } = await awaitElementOrArray(unresolvedElements)
-    // Checked once awaited to also catch a non-awaited `$()`/`$$()`. Throwing, since failing with `success: false` would pass under `.not`
-    if (isMultiRemoteElementLike(selector)) {
-        throw new Error('Multi-remote elements works only when enabling `useToHaveTextStrictMultiElementsCompareStrategy`')
-    }
-    const subject = selector ?? other
-    if (!selector || isEmptyElements) {
-        return {
-            subject: subject,
-            success: false,
-            actual: undefined,
-            abort: true,
-        }
-    }
-
-    if (isElement(selector)) {
-        const compareResult = await singleElementCompare(selector, expectedValues)
-        return {
-            subject,
-            ...compareResult,
-        }
-    }
-
-    const settled = await Promise.allSettled(
-        // Former `toHaveText` mechanism was to pass all the expected values (when an array) to each element and not an index-based expected value like the new strategy. This is kept for backward compatibility with the legacy strategy.
-        Array.from(selector).map((element: WebdriverIO.Element, index: number) => singleElementCompare(element, expectedValues, index))
-    )
-    // Re-throw the first rejection so waitUntil surfaces the real error message
-    const firstRejection = settled.find((r): r is PromiseRejectedResult => r.status === 'rejected')
-    if (firstRejection) {
-        throw firstRejection.reason
-    }
-    const results = settled.map((r) => (r as PromiseFulfilledResult<CompareResult<Actual>>).value)
-
-    return {
-        subject,
-        success: results.length > 0 && results.every((res) => res.success === true),
-        actual: results.map(({ actual: value }) => value),
-    }
-}
-
-/**
- * Modern multiple element comparison strategy.
+ * Multiple element comparison strategy.
  *
  * Handles element arrays consistently:
  * - By default, if there is no element or an empty array, it returns a failure result.
@@ -249,7 +177,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     // --- Single element case ---
     if (isElement(selector)) {
 
-        // Array of expected values is unsupported for a single element in the new strict strategy.
+        // Array of expected values is unsupported for a single element, unless allowed.
         const forceFailure = (!allowArrayWithSingleElement && Array.isArray(expectedValues)) || isUnexpectedPerInstanceValues
 
         const compareResult = await singleElementCompare(selector, forceFailure ? undefined : expectedValues as MaybeArray<Expected>)

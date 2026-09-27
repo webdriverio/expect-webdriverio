@@ -170,7 +170,7 @@ This option can be applied in addition to the command options when strings are b
 | Name | Type | Details |
 | ---- | ---- | ------- |
 | <code><var>ignoreCase</var></code> | boolean | apply `toLowerCase` to both actual and expected values. A RegExp expected value is matched case-insensitively instead (the `i` flag is applied), since a pattern cannot be lowercased safely. |
-| <code><var>trim</var></code> | boolean | apply `trim` to actual value |
+| <code><var>trim</var></code> | boolean | apply `trim` to actual value. Default: `true` |
 | <code><var>replace</var></code> | Replacer \| Replacer[] | replace parts of the actual value that match the string/RegExp. The replacer can be a string or a function.
 | <code><var>containing</var></code> | boolean | expect actual value to contain expected value, otherwise strict equal. |
 | <code><var>asString</var></code> | boolean | might be helpful to force converting property value to string |
@@ -208,23 +208,7 @@ You can find all unicode references in the [HTML spec](https://html.spec.whatwg.
 
 **Note:** unicode is case-insensitive hence both `\u00a0` and `\u00A0` works. To find element in browser inspect, remove `u` from unicode e.g.: `div[data="Some\00a0Value"]`
 
-## Feature Flags & Environment Variables
-
-Feature flags let you opt in to behaviors that will become the default in a future major version. Set them on a matcher, or globally (e.g. in a `before` hook of your `wdio.conf` file) with `setFeatureFlags`:
-
-```js
-import { setFeatureFlags } from 'expect-webdriverio'
-
-// Globally
-setFeatureFlags({ useToHaveTextStrictMultiElementsCompareStrategy: true })
-
-// On a matcher
-await expect($$('li')).toHaveText(['Coffee', 'Tea'], { featureFlags: { useToHaveTextStrictMultiElementsCompareStrategy: true } })
-```
-
-| Feature flag | Default | Details |
-| ------------ | ------- | ------- |
-| `useToHaveTextStrictMultiElementsCompareStrategy` | `false` | `toHaveText` compares multiple elements index by index, as every other matcher does, see [Multiple Elements Support](MultipleElements.md). Required for `some()`, for `expect.oneOf()` inside an expected array, and for [multi-remote](MultiRemote.md) elements with `toHaveText`. |
+## Environment Variables
 
 The following opt-in WebdriverIO environment variables, not enabled by default, are relevant with [multi-remote](MultiRemote.md). Set them before the session starts, e.g. at the top of your `wdio.conf` file:
 
@@ -525,7 +509,7 @@ await expect($('#elem')).toBeChecked()
 
 ### toHaveComputedLabel
 
-Checks if element has a specific computed WAI-ARIA label. Can also be called with an array as parameter in the case where the element can have different labels.
+Checks if element has a specific computed WAI-ARIA label. Use `expect.oneOf()` when the element can have different labels.
 
 ##### Usage
 
@@ -541,13 +525,13 @@ await expect(elem).toHaveComputedLabel(expect.stringContaining('repository'))
 ```js
 await browser.url('https://webdriver.io/')
 const elem = await $('a[href="https://github.com/webdriverio/webdriverio"]')
-await expect(elem).toHaveComputedLabel(['GitHub repository', 'Private repository'])
-await expect(elem).toHaveComputedLabel([expect.stringContaining('GitHub'), expect.stringContaining('Private')])
+await expect(elem).toHaveComputedLabel(expect.oneOf('GitHub repository', 'Private repository'))
+await expect(elem).toHaveComputedLabel(expect.oneOf(expect.stringContaining('GitHub'), expect.stringContaining('Private')))
 ```
 
 ### toHaveComputedRole
 
-Checks if element has a specific computed WAI-ARIA role. Can also be called with an array as parameter in the case where the element can have different labels.
+Checks if element has a specific computed WAI-ARIA role. Use `expect.oneOf()` when the element can have different roles.
 
 ##### Usage
 
@@ -563,8 +547,8 @@ await expect(elem).toHaveComputedRole(expect.stringContaining('ion'))
 ```js
 await browser.url('https://webdriver.io/')
 const elem = await $('[aria-label="Skip to main content"]')
-await expect(elem).toHaveComputedRole(['region', 'section'])
-await expect(elem).toHaveComputedRole([expect.stringContaining('reg'), expect.stringContaining('sec')])
+await expect(elem).toHaveComputedRole(expect.oneOf('region', 'section'))
+await expect(elem).toHaveComputedRole(expect.oneOf(expect.stringContaining('reg'), expect.stringContaining('sec')))
 ```
 
 ### toHaveHref
@@ -619,9 +603,7 @@ await expect($('#elem')).toHaveStyle({
 
 Checks if an element matches a specific text exactly. You can also pass an asymmetric matcher like `expect.stringContaining()` for partial matches, or use `expect.oneOf()` if the element can have different possible texts.
 
-**Note:** Passing a raw array for matching multiple possible texts is deprecated since v6.0.0 and must be replaced by `expect.oneOf()`.
-
-##### Usage
+**Note:** An array of expected values is for multiple elements `$$()` only, one value per element. On a single element, it fails the assertion: use `expect.oneOf()`.
 
 ##### Usage
 
@@ -638,9 +620,6 @@ await expect(elem).toHaveText(expect.stringContaining('test framework for Node.j
 // Succeeds if one of the text options matches (v6.0.0+)
 await expect(elem).toHaveText(expect.oneOf('Next-gen browser and mobile automation test framework for Node.js', 'Get Started'))
 await expect(elem).toHaveText(expect.oneOf(expect.stringContaining('test framework for Node.js'), expect.stringContaining('Started')))
-
-// DEPRECATED: Do not pass arrays directly since v6.0.0
-await expect(elem).toHaveText(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'])
 ```
 
 If you have a list of elements like the HTML structure below:
@@ -656,7 +635,7 @@ If you have a list of elements like the HTML structure below:
 You can assert all of them at once using an array:
 
 ```js
-// Order does not matter by default unless strict strategy flag is enabled (since v6.0.0)
+// Index-based: each element must match the value at its index
 await expect($$('ul > li')).toHaveText(['Coffee', 'Tea', 'Milk'])
 ```
 
@@ -668,14 +647,11 @@ await expect($$('ul > li')).toHaveText(expect.arrayContaining([expect.stringCont
 await expect($$('ul > li')).not.toHaveText(expect.arrayContaining(['Juice']))
 ```
 
-**Note:** Since v6.0.0, to enable strict assertion matching, configure the `useToHaveTextStrictMultiElementsCompareStrategy` flag in your command options or globally via `setFeatureFlags`.
-
 ### toHaveHTML
 
 Checks if an element matches a specific text exactly. You can also pass an asymmetric matcher like `expect.stringContaining()` for partial matches, or use `expect.oneOf()` if the element can have different possible texts.
 
-**Note:** Passing a raw array for matching multiple possible texts is deprecated since v6.0.0 and must be replaced by `expect.oneOf()`.
-
+**Note:** An array of expected values is for multiple elements `$$()` only, one value per element. On a single element, it fails the assertion: use `expect.oneOf()`.
 
 ##### Usage
 
@@ -696,10 +672,6 @@ const elem = await $('.hero__subtitle')
 
 await expect(elem).toHaveHTML(expect.oneof('Next-gen browser and mobile automation test framework for Node.js', 'Get Started'), { includeSelectorTag: false })
 await expect(elem).toHaveHTML(expect.oneof(expect.stringContaining('automation test framework for Node.js'), expect.stringContaining('Started')), { includeSelectorTag: false })
-
-// DEPRECATED: Do not pass arrays directly since v6.0.0
-await expect(elem).toHaveHTML(['Next-gen browser and mobile automation test framework for Node.js', 'Get Started'], { includeSelectorTag: false })
-await expect(elem).toHaveHTML([expect.stringContaining('automation test framework for Node.js'), expect.stringContaining('Started')], { includeSelectorTag: false })
 ```
 
 ### toBeDisplayedInViewport
@@ -820,7 +792,6 @@ All element matchers support arrays of elements returned from `$$()`:
 - **Empty Arrays:** Empty element arrays will fail the assertion by default. 
   - *Note:* Only the `toExist`, `toBeExisting`, and `toBePresent` matchers succeed when using `.not` on an empty element array.
 - **Retry / Array Refresh:** On failure or stale references, the element array is automatically re-fetched until the matcher passes or times out.
-- **Legacy Behavior:** `toHaveText` retains its legacy behavior unless the `useToHaveTextStrictMultiElementsCompareStrategy` flag is enabled.
 - **Multi-remote:** The same rules apply per browser instance, each on its own elements, see [Multi-remote Support](MultiRemote.md#multiple-elements-).
 - See [MultipleElements.md](MultipleElements.md) for more details.
 
@@ -1232,8 +1203,6 @@ await expect(some($$('elements'))).not.toHaveText(/forbiddenTextA|forbiddenTextB
 // Succeeds if the first element matches 'valueForIndex0' OR the second matches 'valueForIndex1'
 await expect(some($$('elements'))).toHaveText(['valueForIndex0', 'valueForIndex1']);
 ```
-
-**Note**: On `toHaveText`, the feature flag `useToHaveTextStrictMultiElementsCompareStrategy` must be enabled to have `some()` working.
 
 **Note**: With [multi-remote](MultiRemote.md), `some()` requires at least one matching element in **every** browser instance.
 

@@ -88,10 +88,9 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(heading).toHaveText(expect.oneOf(/TEST CSS ATTRIBUTES/i))
         })
 
-        it('should verify element text with expected array', async () => {
+        it('should verify element text with oneOf', async () => {
             const secondPageLink = await $('#secondPageLink')
             await expect(secondPageLink).toHaveText('two')
-            await expect(secondPageLink).toHaveText(['two', 'Two'])
             await expect(secondPageLink).toHaveText(expect.oneOf('two', 'Two'))
         })
     })
