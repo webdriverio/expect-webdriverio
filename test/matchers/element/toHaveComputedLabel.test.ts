@@ -5,7 +5,7 @@ import stripAnsi from 'strip-ansi'
 
 import { multiRemote } from '../../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
-import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
+import { mockMultiRemoteElementsCommand, mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
 
 describe(toHaveComputedLabel, () => {
@@ -354,6 +354,17 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have computed label
             expect(same.pass).toBe(false)
             expect(stripAnsi(same.message())).toEqual(message)
             expect(perInstance.pass).toBe(true)
+        })
+
+        test('checks one array per instance, as the plain object shorthand, element by element on $$()', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]
+            mockMultiRemoteElementsCommand(elements, 'getComputedLabel', { chrome: ['Computed Label', 'Second Label'], firefox: ['Other Label', 'Another Label'] })
+
+            const result = await thisContext.toHaveComputedLabel(elements, { chrome: ['Computed Label', 'Second Label'], firefox: ['Other Label', 'Another Label'] }, { wait: 0 })
+            const swapped = await thisContext.toHaveComputedLabel(elements, { chrome: ['Second Label', 'Computed Label'], firefox: ['Another Label', 'Other Label'] }, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+            expect(swapped.pass).toBe(false)
         })
     })
 })

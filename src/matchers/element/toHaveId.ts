@@ -1,6 +1,6 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../../types.js'
 import type { AssertionResult } from 'expect-webdriverio'
 
 /**
@@ -22,17 +22,35 @@ export async function toHaveId(
 ): Promise<AssertionResult>
 
 /**
- * Multi-Remote Elements $() and $$() API
+ * Multi-Remote Element $() API: shared or one per instance
+ */
+export async function toHaveId(
+    el: WebdriverIO.MultiRemoteElement,
+    expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AssertionResult>
+
+/**
+ * Multi-Remote Elements $$() API: shared or one per instance, each maybe one per element
+ */
+export async function toHaveId(
+    el: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray,
+    expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AssertionResult>
+
+/**
+ * Multi-Remote Element $() or Elements $$()
  */
 export async function toHaveId(
     el: WdioMultiRemoteElements,
-    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveId(
     el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
 

@@ -6,7 +6,7 @@ import stripAnsi from 'strip-ansi'
 
 import { multiRemote } from '../../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
-import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
+import { mockMultiRemoteElementsCommand, mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
 
 describe(toHaveElementClass, () => {
@@ -452,6 +452,17 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have class
             expect(same.pass).toBe(false)
             expect(stripAnsi(same.message())).toEqual(message)
             expect(perInstance.pass).toBe(true)
+        })
+
+        test('checks one array per instance, as the plain object shorthand, element by element on $$()', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]
+            mockMultiRemoteElementsCommand(elements, 'getAttribute', { chrome: ['some attribute', 'second'], firefox: ['other', 'another'] })
+
+            const result = await thisContext.toHaveElementClass(elements, { chrome: ['some', 'second'], firefox: ['other', 'another'] }, { wait: 0 })
+            const swapped = await thisContext.toHaveElementClass(elements, { chrome: ['second', 'some'], firefox: ['another', 'other'] }, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+            expect(swapped.pass).toBe(false)
         })
     })
 })

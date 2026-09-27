@@ -5,7 +5,7 @@ import stripAnsi from 'strip-ansi'
 
 import { multiRemote } from '../../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
-import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
+import { mockMultiRemoteElementsCommand, mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
 
 describe(toHaveComputedRole, () => {
@@ -344,6 +344,17 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have computed role
             expect(same.pass).toBe(false)
             expect(stripAnsi(same.message())).toEqual(message)
             expect(perInstance.pass).toBe(true)
+        })
+
+        test('checks one array per instance, as the plain object shorthand, element by element on $$()', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]
+            mockMultiRemoteElementsCommand(elements, 'getComputedRole', { chrome: ['Computed Role', 'Second Role'], firefox: ['Other Role', 'Another Role'] })
+
+            const result = await thisContext.toHaveComputedRole(elements, { chrome: ['Computed Role', 'Second Role'], firefox: ['Other Role', 'Another Role'] }, { wait: 0 })
+            const swapped = await thisContext.toHaveComputedRole(elements, { chrome: ['Second Role', 'Computed Role'], firefox: ['Another Role', 'Other Role'] }, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+            expect(swapped.pass).toBe(false)
         })
     })
 })

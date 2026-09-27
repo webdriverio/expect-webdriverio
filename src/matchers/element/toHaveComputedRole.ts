@@ -20,7 +20,7 @@ async function singleElementCompare(
 
 export async function toHaveComputedRole(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'computed role', verb = 'have', isNot, matcherName = 'toHaveComputedRole' } = this
