@@ -29,6 +29,18 @@ You can pass any of these element types to `expect`:
 - `Element[]` (the filtered case)
 - `MultiRemoteElement[]` (multi-remote `$$()`), where these rules apply per browser instance, see [Multi-remote Support](MultiRemote.md#multiple-elements-)
 
+## Choosing the expected value
+
+Results of `toHaveText` on `$$('li')` for three lists:
+
+| Expected value | Passes when | `Coffee`, `Tea` | `Tea`, `Tea` | `Coffee`, `Tea`, `Milk` |
+| --- | --- | --- | --- | --- |
+| `'Tea'` | every element has this text | fails | passes | fails |
+| `['Coffee', 'Tea']` | same count, each element has the text at its index | passes | fails | fails |
+| `expect.oneOf('Tea', 'Coffee')` | each element has one of the texts; a text can be missing | passes | passes | fails |
+| `expect.arrayContaining(['Tea', 'Coffee'])` | each text is on at least one element; elements with other texts are allowed | passes | fails | passes |
+| `some(elements)` with `'Tea'` | at least one element has the text | passes | passes | passes |
+
 ## Alternative
 
 For more granular or explicit per-element validation, use a parameterized test of your framework.

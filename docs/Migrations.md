@@ -12,11 +12,13 @@ With `$$()`, an array of expected values is index-based: its length must equal t
 - await expect($$('li')).toHaveText(['Tea', 'Coffee'])
   // Same order as the elements
 + await expect($$('li')).toHaveText(['Coffee', 'Tea'])
-  // Each element has one of the texts, as before
+  // Each element has one of the texts; a text can be missing (as before)
 + await expect($$('li')).toHaveText(expect.oneOf('Tea', 'Coffee'))
-  // Each text is on an element, and other elements are allowed
+  // Each text is on at least one element; elements with other texts are allowed
 + await expect($$('li')).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
 ```
+
+See [Choosing the expected value](MultipleElements.md#choosing-the-expected-value) for the difference between the options.
 
 `some()`, `expect.oneOf()` inside an expected array and multi-remote elements work without the flag. With `.not`, every element must not match.
 

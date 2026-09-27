@@ -297,7 +297,7 @@ await expect(browser).toHaveLocalStorageItem('userId', /^user_\d+$/)
 
 ### Matching a subset of element values
 
-Use `expect.arrayContaining()` to match values from an element collection in any order, allowing extra elements. This works with `toHaveText`, `toHaveHTML`, `toHaveAttribute`, `toHaveElementProperty`, `toHaveValue`, `toHaveElementClass`, `toHaveComputedLabel`, `toHaveComputedRole`, `toHaveId`, and `toHaveHref` (including their aliases).
+Use `expect.arrayContaining()` to match values from an element collection in any order, allowing extra elements. This works with `toHaveText`, `toHaveHTML`, `toHaveAttribute`, `toHaveElementProperty`, `toHaveValue`, `toHaveElementClass`, `toHaveComputedLabel`, `toHaveComputedRole`, `toHaveId`, and `toHaveHref` (including their aliases). To compare with `expect.oneOf()`, see [Choosing the expected value](MultipleElements.md#choosing-the-expected-value).
 
 ```js
 await expect($$('ul > li')).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
