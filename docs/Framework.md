@@ -327,7 +327,7 @@ it('some elements are displayed', async () => {
 
 Elements are sent from the browser to the testrunner, where the assertion runs:
 - `$$()` is supported, non-awaited, awaited (`ElementArray`) or filtered (`Element[]`): the testrunner re-fetches the elements, an `ElementArray` from its selector and an `Element[]` element by element. This includes the snapshot matchers, which snapshot the outerHTML of every element.
-- [Multi-remote](MultiRemote.md) is not supported. The Browser Runner drives a single browser session: the test page is loaded, and in-page commands and assertions run, through the worker's `browser`.
+- [Multi-remote](MultiRemote.md) is not supported. The Browser Runner drives a single browser session: the test page is loaded, and in-page commands and assertions run, through the worker's `browser`. With multi-remote capabilities, the run stops right away with `No "browserName" defined in capability object`.
   - Elements are sent as a reference that belongs to one browser session, so there are no multi-remote elements, `multiRemoteBrowser`, `getInstance()` or `select()` in the browser.
   - `expect.multiRemote()` is not available on the Browser Runner `expect`, and the testrunner only rebuilds its supported asymmetric matchers (e.g. `expect.oneOf()`, `expect.stringContaining()`).
 
