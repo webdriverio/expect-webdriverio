@@ -3,7 +3,7 @@ import { equals } from '../jasmineUtils.js'
 import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements } from '../types.js'
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
-import { compareTextOrOneOf, isAsymmetricMatcher, isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
+import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
 import { isBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
@@ -67,11 +67,11 @@ export const enhanceError = (
     context: { isNot: boolean | undefined, useNotInLabel?: boolean, isSome?: boolean, browserTargetType?: 'browser' | 'window' },
     verb: string,
     expectation: string,
-    expectedValueArgument2 = '',
-    options: ExpectWebdriverIO.StringOptions = {}): string => {
+    expectedValueArgument2 = '', {
+        message = '',
+        containing = false
+    } = {}): string => {
     const { isNot, useNotInLabel = true } = context
-    let { message = '' } = options
-    const { containing = false } = options
 
     // Label the per-instance values `Multi-remote values {` instead of `Object {` in the printed diff
     if ((isBrowser(subject) && subject.isMultiremote) || isMultiRemoteElementLike(subject)) {
@@ -123,7 +123,7 @@ export const enhanceError = (
     if (isNotInLabel && isElementOrArrayLike(subject) && Array.isArray(expected) && Array.isArray(actual) && expected.length === actual.length) {
         // With multiple elements + `.not`, since `printDiffOrStringify` shows only diff and we need to highlight what matched, we do custom formatting
         // Using FORCE_COLOR=1 npx vitest + console.log() can show colors in the test output console
-        const { expectedFormatted, receivedFormatted } = printArrayWithMatchingItemInRed(expected, actual, options)
+        const { expectedFormatted, receivedFormatted } = printArrayWithMatchingItemInRed(expected, actual)
         diffString = `\
 ${label.expected}: ${expectedFormatted}
 ${label.received}: ${receivedFormatted}`
@@ -155,25 +155,16 @@ ${diffString}`
     return msg
 }
 
-// Received texts are shown as is, so a text item is compared with the string options (`trim`, `ignoreCase`, `replace`, ...) as the matcher did
-const isMatchingItem = (expected: unknown, actual: unknown, options: ExpectWebdriverIO.StringOptions): boolean => {
-    if (typeof actual === 'string' && (typeof expected === 'string' || expected instanceof RegExp || isAsymmetricMatcher(expected))) {
-        return compareTextOrOneOf(actual, expected as string | RegExp | WdioAsymmetricMatcher<string>, options).success
-    }
-    return equals(expected, actual)
-}
-
 // Inspired by Jest's printReceivedArrayContainExpectedItem
 // Highlights matching elements when using .not to show what shouldn't have matched
 const printArrayWithMatchingItemInRed = (
     expectedArray: unknown[],
     actualArray: unknown[],
-    options: ExpectWebdriverIO.StringOptions,
 ): { expectedFormatted: string, receivedFormatted: string } => {
     // Find matching indices
     const matchingIndices: number[] = []
     for (let i = 0; i < expectedArray.length; i++) {
-        if (isMatchingItem(expectedArray[i], actualArray[i], options)) {
+        if (equals(expectedArray[i], actualArray[i])) {
             matchingIndices.push(i)
         }
     }
