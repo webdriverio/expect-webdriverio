@@ -99,7 +99,7 @@ const multiRemoteElementArrayCases = [
     { name: 'MultiRemoteElementArray', isMultiRemoteElementArray: 'true' },
 ]
 
-test.each(multiRemoteElementArrayCases)('snapshots the outerHTML of every element of every instance of a multi-remote $$(), keyed by instance name, when it differs, as $name', async ({ name, isMultiRemoteElementArray }) => {
+test.each(multiRemoteElementArrayCases)('snapshots the outerHTML of every element of every instance of a multi-remote element array, keyed by instance name, when it differs, as $name', async ({ name, isMultiRemoteElementArray }) => {
     await service.beforeTest({
         title: `multi-remote element array as ${name}`,
         parent: 'parent',
@@ -144,7 +144,7 @@ test.each(multiRemoteElementArrayCases)('snapshots the outerHTML of every elemen
     await service.after()
 })
 
-test.each(multiRemoteElementArrayCases)('snapshots the outerHTML of every element shared by every instance of a multi-remote $$() as is, as $name', async ({ name, isMultiRemoteElementArray }) => {
+test.each(multiRemoteElementArrayCases)('snapshots the outerHTML of every element shared by every instance of a multi-remote element array as is, as $name', async ({ name, isMultiRemoteElementArray }) => {
     await service.beforeTest({
         title: `multi-remote element array with the same outerHTML as ${name}`,
         parent: 'parent',
