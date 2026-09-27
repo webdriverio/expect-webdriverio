@@ -58,9 +58,11 @@ jobs:
         id: tag
         run: |
           BRANCH_MAJOR=$(node -p "require('./package.json').version.split('.')[0]")
-          LATEST_MAJOR=$(npm view expect-webdriverio dist-tags.latest | cut -d. -f1)
+          LATEST=$(npm view expect-webdriverio dist-tags.latest)
+          if [[ ! "$LATEST" =~ ^[0-9]+\. ]]; then echo "::error::Cannot read the npm latest version: '$LATEST'"; exit 1; fi
+          LATEST_MAJOR=${LATEST%%.*}
           if [ "$LATEST_MAJOR" -gt "$BRANCH_MAJOR" ]; then TAG="v${BRANCH_MAJOR}-latest"; else TAG=latest; fi
-          echo "Publishing on $TAG (npm latest is v$LATEST_MAJOR)"
+          echo "Publishing on $TAG (npm latest is $LATEST)"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
       - name: Release
         run: npx release-it ${{github.event.inputs.releaseType}} --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=${{ steps.tag.outputs.tag }} --github.makeLatest=${{ steps.tag.outputs.tag == 'latest' }}
