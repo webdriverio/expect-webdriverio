@@ -3,6 +3,9 @@ import { $ } from '@wdio/globals'
 import { toHaveHeight } from '../../../src/matchers/element/toHaveHeight.js'
 import stripAnsi from 'strip-ansi'
 
+import { multiRemote } from '../../../src/api/index.js'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
 
 describe(toHaveHeight, () => {
@@ -119,6 +122,52 @@ Expect $(\`sel\`) to have height
 Expected: 50
 Received: 1`
             )
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have height
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": 50,
+-   "firefox": 50,
++   "firefox": 60,
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have height
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+      50,
+      50,
+    ],
+    "firefox": Array [
+-     50,
+-     50,
++     60,
++     60,
+    ],
+  }` },
+        ])('checks the same height or one height per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
+            const element = subject()
+            mockMultiRemoteInstanceCommand(element, 'firefox', 'getSize', 60)
+
+            const same = await thisContext.toHaveHeight(element, 50, { wait: 0 })
+            const perInstance = await thisContext.toHaveHeight(element, multiRemote({ chrome: 50, firefox: 60 }), { wait: 0 })
+
+            expect(same.pass).toBe(false)
+            expect(stripAnsi(same.message())).toEqual(message)
+            expect(perInstance.pass).toBe(true)
         })
     })
 })

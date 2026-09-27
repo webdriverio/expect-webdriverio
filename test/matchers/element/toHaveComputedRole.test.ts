@@ -3,6 +3,9 @@ import { $ } from '@wdio/globals'
 import { toHaveComputedRole } from '../../../src/matchers/element/toHaveComputedRole.js'
 import stripAnsi from 'strip-ansi'
 
+import { multiRemote } from '../../../src/api/index.js'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
 
 describe(toHaveComputedRole, () => {
@@ -260,6 +263,52 @@ Expected: ["div", /Webdriver/i]
 Received: "This is example computed role"`
                 )
             })
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have computed role
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": "Computed Role",
+-   "firefox": "Computed Role",
++   "firefox": "Other Role",
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have computed role
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+      "Computed Role",
+      "Computed Role",
+    ],
+    "firefox": Array [
+-     "Computed Role",
+-     "Computed Role",
++     "Other Role",
++     "Other Role",
+    ],
+  }` },
+        ])('checks the same computed role or one computed role per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
+            const element = subject()
+            mockMultiRemoteInstanceCommand(element, 'firefox', 'getComputedRole', 'Other Role')
+
+            const same = await thisContext.toHaveComputedRole(element, 'Computed Role', { wait: 0 })
+            const perInstance = await thisContext.toHaveComputedRole(element, multiRemote({ chrome: 'Computed Role', firefox: 'Other Role' }), { wait: 0 })
+
+            expect(same.pass).toBe(false)
+            expect(stripAnsi(same.message())).toEqual(message)
+            expect(perInstance.pass).toBe(true)
         })
     })
 })

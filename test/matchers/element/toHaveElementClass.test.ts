@@ -4,6 +4,9 @@ import { toHaveElementClass } from '../../../src/matchers/element/toHaveElementC
 import type { AssertionResult } from 'expect-webdriverio'
 import stripAnsi from 'strip-ansi'
 
+import { multiRemote } from '../../../src/api/index.js'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
 
 describe(toHaveElementClass, () => {
@@ -400,6 +403,55 @@ Expect ${selectorName} to have class
 +   "some-class another-class yet-another-class",
   ]` )
             })
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have class
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+-   "chrome": "some",
+-   "firefox": "some",
++   "chrome": "some attribute",
++   "firefox": "other",
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have class
+
+- Expected  - 4
++ Received  + 4
+
+  Multi-remote values {
+    "chrome": Array [
+-     "some",
+-     "some",
++     "some attribute",
++     "some attribute",
+    ],
+    "firefox": Array [
+-     "some",
+-     "some",
++     "other",
++     "other",
+    ],
+  }` },
+        ])('checks the same class or one class per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
+            const element = subject()
+            mockMultiRemoteInstanceCommand(element, 'firefox', 'getAttribute', 'other')
+
+            const same = await thisContext.toHaveElementClass(element, 'some', { wait: 0 })
+            const perInstance = await thisContext.toHaveElementClass(element, multiRemote({ chrome: 'some', firefox: 'other' }), { wait: 0 })
+
+            expect(same.pass).toBe(false)
+            expect(stripAnsi(same.message())).toEqual(message)
+            expect(perInstance.pass).toBe(true)
         })
     })
 })

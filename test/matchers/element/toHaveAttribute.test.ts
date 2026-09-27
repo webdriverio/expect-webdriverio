@@ -6,6 +6,9 @@ import stripAnsi from 'strip-ansi'
 import { waitUntil } from '../../../src/util/waitUntil.js'
 import { expect as wdioExpect } from '../../../src/index.js'
 
+import { multiRemote } from '../../../src/api/index.js'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
 
 describe(toHaveAttribute, () => {
@@ -523,6 +526,52 @@ Expect [] to have attribute attribute_name
 
 Expected: "some value"
 Received: undefined`)
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have attribute data-test
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": "some attribute",
+-   "firefox": "some attribute",
++   "firefox": "other",
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have attribute data-test
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+      "some attribute",
+      "some attribute",
+    ],
+    "firefox": Array [
+-     "some attribute",
+-     "some attribute",
++     "other",
++     "other",
+    ],
+  }` },
+        ])('checks the same attribute or one attribute per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
+            const element = subject()
+            mockMultiRemoteInstanceCommand(element, 'firefox', 'getAttribute', 'other')
+
+            const same = await thisContext.toHaveAttribute(element, 'data-test', 'some attribute', { wait: 0 })
+            const perInstance = await thisContext.toHaveAttribute(element, 'data-test', multiRemote({ chrome: 'some attribute', firefox: 'other' }), { wait: 0 })
+
+            expect(same.pass).toBe(false)
+            expect(stripAnsi(same.message())).toEqual(message)
+            expect(perInstance.pass).toBe(true)
         })
     })
 })
