@@ -2,7 +2,7 @@
 
 When you're writing tests, you often need to check that values meet certain conditions. `expect` gives you access to a number of "matchers" that let you validate different things on the `browser`, an `element` or `mock` object.
 
-**Note**: Browser, element and network matchers also support [multi-remote](MultiRemote.md), checking every browser instance with a single expected value or, except for network matchers, one per instance.
+**Note**: Browser, element, network and snapshot matchers also support [multi-remote](MultiRemote.md), checking every browser instance with a single expected value or, for browser and element matchers, one per instance.
 
 ## Soft Assertions
 
