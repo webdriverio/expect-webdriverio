@@ -3,7 +3,7 @@ name: E2e Tests
 on:
   push:
     branches:
-      - main
+      - v7
   # Uncomment the following line to run e2e tests on PRs
   pull_request:
   workflow_dispatch: # Allows manual trigger from the GitHub UI or CLI
