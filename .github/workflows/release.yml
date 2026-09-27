@@ -20,7 +20,7 @@ on:
           - "yes"
           - "no"
 
-# v7 is a maintenance branch: `latest` belongs to the newest major on main.
+# v7 is a maintenance branch: it keeps `latest` only until v8.0.0 is released.
 env:
   NPM_CONFIG_PROVENANCE: true
 
@@ -54,8 +54,16 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+      - name: Pick Dist-Tag
+        id: tag
+        run: |
+          BRANCH_MAJOR=$(node -p "require('./package.json').version.split('.')[0]")
+          LATEST_MAJOR=$(npm view expect-webdriverio dist-tags.latest | cut -d. -f1)
+          if [ "$LATEST_MAJOR" -gt "$BRANCH_MAJOR" ]; then TAG="v${BRANCH_MAJOR}-latest"; else TAG=latest; fi
+          echo "Publishing on $TAG (npm latest is v$LATEST_MAJOR)"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
       - name: Release
-        run: npx release-it ${{github.event.inputs.releaseType}} --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=v7-latest --github.makeLatest=false
+        run: npx release-it ${{github.event.inputs.releaseType}} --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=${{ steps.tag.outputs.tag }} --github.makeLatest=${{ steps.tag.outputs.tag == 'latest' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ github.event.inputs.preRelease == 'no' }}
