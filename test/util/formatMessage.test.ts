@@ -445,6 +445,55 @@ Received      : ["Test Actual Value 1", "Test Expected Value 2"]`
                     expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '"Test Expected Value 2"')
                     expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '"Test Expected Value 2"')
                 })
+
+                describe('with string options, the received texts are shown as is and the matching item is highlighted', () => {
+                    test('trim', () => {
+                        const actualFailureMessage = stripAnsi(enhanceError(
+                            elements,
+                            ['foo', 'bar'],
+                            [' foo ', 'other'],
+                            { isNot, isSome: false },
+                            'have',
+                            'text',
+                            '',
+                            { trim: true }
+                        ))
+
+                        expect(actualFailureMessage).toEqual(`\
+Expect ${elementName} not to have text
+
+Expected [not]: ["foo", "bar"]
+Received      : [" foo ", "other"]`
+                        )
+                        expect(INVERTED_COLOR).toHaveBeenCalledTimes(2)
+                        expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '"foo"')
+                        expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '" foo "')
+                    })
+
+                    test('ignoreCase', () => {
+                        enhanceError(elements, ['foo', 'bar'], ['other', 'BAR'], { isNot, isSome: false }, 'have', 'text', '', { ignoreCase: true })
+
+                        expect(INVERTED_COLOR).toHaveBeenCalledTimes(2)
+                        expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '"bar"')
+                        expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '"BAR"')
+                    })
+
+                    test('replace does not highlight an item equal to its expected value only before the replacement', () => {
+                        enhanceError(elements, ['a', 'x'], ['a', 'y'], { isNot, isSome: false }, 'have', 'text', '', { replace: [['a', 'b'], ['y', 'x']] })
+
+                        expect(INVERTED_COLOR).toHaveBeenCalledTimes(2)
+                        expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '"x"')
+                        expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '"y"')
+                    })
+
+                    test('non-text items are still compared as is', () => {
+                        enhanceError(elements, [1, 2], [1, 3], { isNot, isSome: false }, 'have', 'property', '', { ignoreCase: true })
+
+                        expect(INVERTED_COLOR).toHaveBeenCalledTimes(2)
+                        expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '1')
+                        expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '1')
+                    })
+                })
             })
         })
 
