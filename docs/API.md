@@ -985,6 +985,17 @@ Instead of creating a snapshot file, WebdriverIO will modify the test file direc
 await expect($('img')).toMatchInlineSnapshot(`"<img src="/public/apple-touch-icon-precomposed.png">"`)
 ```
 
+With `$$()`, the snapshot is the `outerHTML` of every element as an array:
+
+```js
+await expect($$('li')).toMatchInlineSnapshot(`
+  [
+    "<li>Coffee</li>",
+    "<li>Tea</li>",
+  ]
+`)
+```
+
 ## Visual Snapshot Matchers
 
 <!--
