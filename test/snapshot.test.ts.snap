@@ -1,5 +1,12 @@
 // Snapshot v1
 
+exports[`parent > element array 1`] = `
+[
+  "<li>Coffee</li>",
+  "<li>Tea</li>",
+]
+`;
+
 exports[`parent > test 1`] = `
 {
   "a": "a",

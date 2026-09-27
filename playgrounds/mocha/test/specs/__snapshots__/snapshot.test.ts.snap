@@ -17,6 +17,13 @@ exports[`DOM snapshots > should match element outerHTML snapshot (ChainablePromi
 
 exports[`DOM snapshots > should match element outerHTML snapshot (Element) 1`] = `"<a href="https://github.com" id="githubRepo" class="clearfix" data-foundby="link text">GitHub Repo</a>"`;
 
+exports[`DOM snapshots > should match the outerHTML of every element of an element array snapshot 1`] = `
+[
+  "<h1>WebdriverJS Testpage</h1>",
+  "<h1 class="findme">Test CSS Attributes</h1>",
+]
+`;
+
 exports[`Multiple element snapshots > should snapshot navigation links 1`] = `
 [
   "pointer.html",

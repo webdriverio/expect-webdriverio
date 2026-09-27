@@ -659,6 +659,18 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(multiRemoteBrowser.$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
             })
 
+            it('should return Promise<void> for element arrays', async () => {
+                expectTypeOf(expect(chainableArray).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should return Promise<void> or void for a plain Element[], snapshotted synchronously when empty', async () => {
+                expectTypeOf(expect([] as WebdriverIO.Element[]).toMatchSnapshot()).toEqualTypeOf<Promise<void> | void>()
+                expectTypeOf(expect([] as WebdriverIO.Element[]).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void> | void>()
+            })
+
             it('should not support array as snapshot', async () => {
                 // @ts-expect-error -- array of elements is not supported for snapshot testing
                 expectTypeOf(expect(chainableElement).toMatchSnapshot(['test label'])).toEqualTypeOf<Promise<void>>()

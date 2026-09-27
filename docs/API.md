@@ -965,6 +965,8 @@ expect({ foo: 'bar' }).toMatchSnapshot()
 await expect($('elem')).toMatchSnapshot()
 // snapshot `outerHTML` of a multi-remote element: shared by every instance, else keyed by instance name (requires "await")
 await expect(multiRemoteBrowser.$('elem')).toMatchSnapshot()
+// snapshot `outerHTML` of every element of $$() as an array (requires "await")
+await expect($$('li')).toMatchSnapshot()
 // snapshot result of element command
 await expect($('elem').getCSSProperty('background-color')).toMatchSnapshot()
 ```
@@ -981,6 +983,17 @@ Instead of creating a snapshot file, WebdriverIO will modify the test file direc
 
 ```js
 await expect($('img')).toMatchInlineSnapshot(`"<img src="/public/apple-touch-icon-precomposed.png">"`)
+```
+
+With `$$()`, the snapshot is the `outerHTML` of every element as an array:
+
+```js
+await expect($$('li')).toMatchInlineSnapshot(`
+  [
+    "<li>Coffee</li>",
+    "<li>Tea</li>",
+  ]
+`)
 ```
 
 ## Visual Snapshot Matchers

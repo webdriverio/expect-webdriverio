@@ -35,6 +35,19 @@ describe('Snapshot Testing', () => {
             await expect(link).toMatchSnapshot()
         })
 
+        it('should match the outerHTML of every element of an element array snapshot', async () => {
+            await expect($$('h1')).toMatchSnapshot()
+        })
+
+        it('should match the outerHTML of every element of an element array', async () => {
+            await expect($$('h1')).toMatchInlineSnapshot(`
+              [
+                "<h1>WebdriverJS Testpage</h1>",
+                "<h1 class="findme">Test CSS Attributes</h1>",
+              ]
+            `)
+        })
+
         it('should match command result snapshot', async () => {
             const heading = await $$('h1')[1]
             const cssProperty = await heading.getCSSProperty('font-weight')

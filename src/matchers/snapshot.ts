@@ -4,7 +4,7 @@ import type { AssertionError } from 'node:assert'
 import { expect } from 'expect'
 import { stripSnapshotIndentation } from '@vitest/snapshot'
 import { SnapshotService } from '../snapshot.js'
-import { isMultiRemoteElement } from '../util/elementsUtil.js'
+import { isElement, isMultiRemoteElement, isStrictlyElementArray } from '../util/elementsUtil.js'
 
 interface InlineSnapshotOptions {
     inlineSnapshot: string
@@ -73,6 +73,14 @@ function toMatchSnapshotAssert (received: unknown, message: string, inlineOption
 }
 
 /**
+ * Elements to snapshot as an array of outerHTML: an `ElementArray` from `$$()`, even empty, or a non-empty `Element[]`.
+ * An empty plain array stays a regular value, so that it keeps being snapshotted synchronously.
+ */
+const isElementsToSnapshot = (received: unknown): received is WebdriverIO.ElementArray | WebdriverIO.Element[] => {
+    return isStrictlyElementArray(received) || (Array.isArray(received) && received.length > 0 && received.every(isElement))
+}
+
+/**
  * Asynchronous version of `toMatchSnapshot` that works with WebdriverIO elements.
  * @param elem    a WebdriverIO element
  * @param message optional message on failure
@@ -91,6 +99,9 @@ async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, in
         // instance name (sorted, whatever the instances order or the snapshotFormat)
         const htmls = new Set(Object.values(htmlPerInstance))
         received = htmls.size === 1 ? [...htmls][0] : htmlPerInstance
+    } else if (isElementsToSnapshot(received)) {
+        // Array.from() to also snapshot an `ElementArray` as a plain array
+        received = await Promise.all(Array.from(received).map((element) => element.getHTML({ includeSelectorTag: true })))
     } else if (received && typeof received === 'object' && 'elementId' in received) {
         received = await (received as WebdriverIO.Element).getHTML({
             includeSelectorTag: true
@@ -120,7 +131,8 @@ function toMatchSnapshotHelper(received: unknown, message: string, inlineOptions
         (
             'elementId' in received ||
             'then' in received ||
-            isMultiRemoteElement(received)
+            isMultiRemoteElement(received) ||
+            isElementsToSnapshot(received)
         )
     ) {
         return toMatchSnapshotAsync(received, message, inlineOptions)
