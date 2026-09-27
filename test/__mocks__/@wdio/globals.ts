@@ -432,7 +432,7 @@ export function createMultiRemoteElementArrayMock(
         return wrapped
     }
 
-    const elementArray = wrapped as unknown as WdioMultiRemoteElementArray
+    const elementArray = wrapped as unknown as WdioMultiRemoteElementArray & { isMultiRemote: true }
     elementArray.isMultiRemote = true
     elementArray.selector = selector
     elementArray.foundWith = '$$'
