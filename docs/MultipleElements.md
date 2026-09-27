@@ -37,7 +37,7 @@ before: function (_capabilities, _specs) {
 
 ### Browser Runner
 
-Since the Browser Runner uses standard `expect` by only extending the `expect-webdriverio` matchers, `expect.oneOf` and `some` are not currently supported.
+The Browser Runner uses standard `expect`, only extended with the `expect-webdriverio` matchers: use `expect.oneOf` and `expect.some` there, see [Browser Runner](Framework.md#oneof--some). Multi-remote is not supported, see [Multiple Elements & Multi-remote](Framework.md#multiple-elements--multi-remote).
 
 ## Supported types
 

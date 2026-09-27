@@ -78,7 +78,7 @@ await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Webdr
 await expect(multiRemoteBrowser.select('chrome')).toHaveTitle('WebdriverIO')
 ```
 
-`expect.multiRemote()` is also exported as `multiRemote` from `expect-webdriverio/api`, e.g. for the Browser Runner where `expect.*` helpers are not available.
+`expect.multiRemote()` is also exported as `multiRemote` from `expect-webdriverio/api`, e.g. when using another `expect` than the one from `expect-webdriverio`.
 
 **Note:** There is no default value for the instances not listed, and an array of expected values is not one value per instance in configuration order: use `expect.multiRemote()` instead.
 
@@ -271,6 +271,7 @@ Expect multi-remote<chrome, firefox>.$(`h1`) to have text
 - `toHaveText` requires the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag: its legacy strategy does not support multi-remote elements and fails the assertion.
 - Network matchers support one expected value for every instance only, and may name a mock after the wrong instance, see [Network Matchers](#network-matchers).
 - Without `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY`, multi-remote `$$()` assertions are best effort, see [its limitations](#without-wdio_enable_multi_remote_element_array).
+- The Browser Runner (`@wdio/browser-runner`) does not support multi-remote, see [Browser Runner](Framework.md#multiple-elements--multi-remote).
 
 ## Alternatives
 
