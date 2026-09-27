@@ -65,7 +65,6 @@ export async function toHaveSize(
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedSize: Size | undefined) => condition(element, expectedSize),
                 context: { isNot, iteration },
-                strategy: 'NewStrictMultipleElements',
                 strictConfiguration: { allowArrayWithSingleElement: false, allowObjectExpectedValue: true }
             })
         },

@@ -1,7 +1,7 @@
 
 import { join } from 'node:path'
 import type { VisualServiceOptions } from '@wdio/visual-service'
-import { SoftAssertionService, setDefaultOptions, setFeatureFlags, setOptions } from 'expect-webdriverio'
+import { SoftAssertionService, setDefaultOptions, setOptions } from 'expect-webdriverio'
 
 export const config: WebdriverIO.Config = {
     //
@@ -88,6 +88,5 @@ export const config: WebdriverIO.Config = {
     before: function (_capabilities, _specs) {
         setOptions({ wait: 250 })
         setDefaultOptions({ wait: 250 })
-        setFeatureFlags({})
     },
 }

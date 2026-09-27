@@ -117,11 +117,7 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
                 it('should return Promise<void>', async () => {
                     expectTypeOf(expect(element).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveText([jasmine.stringContaining('text1'), jasmine.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveText(['text1', /text1/, wdioExpect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveText).parameter(0).extract<unknown[]>().toBeNever()
                     expectTypeOf(expect(element).toHaveText(
                         'My-Ex-Am-Ple',
                         {
@@ -134,11 +130,7 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
 
                     expectTypeOf(expect(chainableElement).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(chainableElement).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(chainableElement).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(chainableElement).toHaveText([wdioExpect.stringContaining('text1'), wdioExpect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(chainableElement).toHaveText([jasmine.stringContaining('text1'), jasmine.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(chainableElement).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(chainableElement).toHaveText(['text1', /text1/, wdioExpect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(chainableElement).toHaveText).parameter(0).extract<unknown[]>().toBeNever()
 
                     expectTypeOf(expect(chainableElement).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(chainableElement).toHaveText).parameter(0).extract<number>().toBeNever()

@@ -4,6 +4,7 @@ import { toHaveComputedLabel } from '../../../src/matchers/element/toHaveCompute
 import stripAnsi from 'strip-ansi'
 
 import { multiRemote } from '../../../src/api/index.js'
+import { oneOf } from '../../../src/matchers/asymmetrics/oneOf.js'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
 import { mockMultiRemoteElementsCommand, mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
@@ -157,17 +158,17 @@ Expected: "WebdriverIO"
 Received: ""`)
         })
 
-        test('success if array matches with computed label and ignoreCase', async () => {
-            const result = await thisContext.toHaveComputedLabel(el, ['div', 'WebdriverIO'], { ignoreCase: true, wait: 1 })
+        test('success if oneOf matches with computed label and ignoreCase', async () => {
+            const result = await thisContext.toHaveComputedLabel(el, oneOf('div', 'WebdriverIO'), { ignoreCase: true, wait: 1 })
 
             expect(result.pass).toBe(true)
             expect(el.getComputedLabel).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with computed label and trim', async () => {
+        test('success if oneOf matches with computed label and trim', async () => {
             vi.mocked(el.getComputedLabel).mockResolvedValue('   WebdriverIO   ')
 
-            const result = await thisContext.toHaveComputedLabel(el, ['div', 'WebdriverIO', 'toto'], {
+            const result = await thisContext.toHaveComputedLabel(el, oneOf('div', 'WebdriverIO', 'toto'), {
                 trim: true,
                 wait: 1,
             })
@@ -176,8 +177,8 @@ Received: ""`)
             expect(el.getComputedLabel).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with computed label and replace (string)', async () => {
-            const result = await thisContext.toHaveComputedLabel(el, ['div', 'BrowserdriverIO', 'toto'], {
+        test('success if oneOf matches with computed label and replace (string)', async () => {
+            const result = await thisContext.toHaveComputedLabel(el, oneOf('div', 'BrowserdriverIO', 'toto'), {
                 replace: [['Web', 'Browser']],
                 wait: 1,
             })
@@ -185,8 +186,8 @@ Received: ""`)
             expect(el.getComputedLabel).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with computed label and replace (regex)', async () => {
-            const result = await thisContext.toHaveComputedLabel(el, ['div', 'BrowserdriverIO', 'toto'], {
+        test('success if oneOf matches with computed label and replace (regex)', async () => {
+            const result = await thisContext.toHaveComputedLabel(el, oneOf('div', 'BrowserdriverIO', 'toto'), {
                 replace: [[/Web/g, 'Browser']],
                 wait: 1,
             })
@@ -195,8 +196,8 @@ Received: ""`)
             expect(el.getComputedLabel).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with computed label and multiple replacers and one of the replacers is a function', async () => {
-            const result = await thisContext.toHaveComputedLabel(el, ['div', 'browserdriverio', 'toto'], {
+        test('success if oneOf matches with computed label and multiple replacers and one of the replacers is a function', async () => {
+            const result = await thisContext.toHaveComputedLabel(el, oneOf('div', 'browserdriverio', 'toto'), {
                 replace: [
                     [/Web/g, 'Browser'],
                     [/[A-Z]/g, (match: string) => match.toLowerCase()],
@@ -225,23 +226,23 @@ Received: ""`)
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with RegExp', async () => {
-                const result = await thisContext.toHaveComputedLabel(el, ['div', /ExAmPlE/i])
+            test('success if oneOf matches with RegExp', async () => {
+                const result = await thisContext.toHaveComputedLabel(el, oneOf('div', /ExAmPlE/i))
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with computed label', async () => {
-                const result = await thisContext.toHaveComputedLabel(el, [
+            test('success if oneOf matches with computed label', async () => {
+                const result = await thisContext.toHaveComputedLabel(el, oneOf(
                     'This is example computed label',
                     /Webdriver/i,
-                ])
+                ))
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with computed label and ignoreCase', async () => {
+            test('success if oneOf matches with computed label and ignoreCase', async () => {
                 const result = await thisContext.toHaveComputedLabel(
                     el,
-                    ['ThIs Is ExAmPlE computed label', /Webdriver/i],
+                    oneOf('ThIs Is ExAmPlE computed label', /Webdriver/i),
                     {
                         ignoreCase: true,
                         wait: 1,

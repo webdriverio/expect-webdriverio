@@ -1,5 +1,5 @@
 
-import { setDefaultOptions, setFeatureFlags } from 'expect-webdriverio'
+import { setDefaultOptions } from 'expect-webdriverio'
 
 // Recommended with multi-remote, see docs/MultiRemote.md#requirements--configuration
 process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
@@ -87,8 +87,5 @@ export const config: WebdriverIO.MultiremoteConfig = {
     //
     before: function () {
         setDefaultOptions({ wait: 1000, interval: 100 })
-        setFeatureFlags({
-            useToHaveTextStrictMultiElementsCompareStrategy: true,
-        })
     },
 }

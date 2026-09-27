@@ -95,17 +95,17 @@ describe('Vue Component Testing', () => {
 
             it('to have text', async () => {
                 await expect($$('p=Times clicked: 1')).toHaveText('Times clicked: 1')
-                await expect(await $$('p=Times clicked: 1')).toHaveText(['Times clicked: 1', 'Times clicked: 0'])
+                await expect(await $$('p=Times clicked: 1')).toHaveText(expect.oneOf('Times clicked: 1', 'Times clicked: 0'))
             })
 
             it('to have some text', async () => {
                 // @ts-expect-error: Browser runner is not using the expect-webdriverio types per see, it needs to defined it's own types on top of Jest's `expect` augmented with it's own types!
-                await expect(expect.some($$('p=Times clicked: 1'))).toHaveText('Times clicked: 1',  { featureFlags: { 'useToHaveTextStrictMultiElementsCompareStrategy': true } })
+                await expect(expect.some($$('p=Times clicked: 1'))).toHaveText('Times clicked: 1')
                 await expect(await $('p=Times clicked: 1')).toHaveText(expect.oneOf('Times clicked: 1', 'Times clicked: 0'))
             })
 
             it('to have any text', async () => {
-                await expect($$('p=Times clicked: 1')).toHaveText(expect.anything(),  { featureFlags: { 'useToHaveTextStrictMultiElementsCompareStrategy': true } })
+                await expect($$('p=Times clicked: 1')).toHaveText(expect.anything())
             })
 
             it.skip('to have attribute', async () => {

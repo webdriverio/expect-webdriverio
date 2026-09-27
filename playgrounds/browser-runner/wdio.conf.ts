@@ -51,7 +51,6 @@ export const config: WebdriverIO.Config = {
         // Fail on loading expect-webdriverio, TODO fix this???
         // setOptions({ wait: 250 })
         // setDefaultOptions({ wait: 250 })
-        // setFeatureFlags({})
     },
     afterTest: async function (test, context, { passed, error }) {
         if (!passed) {

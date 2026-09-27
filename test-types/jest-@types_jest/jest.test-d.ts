@@ -114,10 +114,7 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(element).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveText).parameter(0).extract<unknown[]>().toBeNever()
                 await expect(element).toHaveText(
                     'My-Ex-Am-Ple',
                     {
@@ -131,10 +128,7 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
 
                 expectTypeOf(expect(chainableElement).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText(['text1', 'text2'])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText([expect.stringContaining('text1'), expect.stringContaining('text2')])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText([/text1/, /text2/])).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(chainableElement).toHaveText(['text1', /text1/, expect.stringContaining('text3')])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableElement).toHaveText).parameter(0).extract<unknown[]>().toBeNever()
 
                 expectTypeOf(expect(chainableElement).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 

@@ -4,6 +4,7 @@ import { toHaveComputedRole } from '../../../src/matchers/element/toHaveComputed
 import stripAnsi from 'strip-ansi'
 
 import { multiRemote } from '../../../src/api/index.js'
+import { oneOf } from '../../../src/matchers/asymmetrics/oneOf.js'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
 import { mockMultiRemoteElementsCommand, mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
@@ -143,17 +144,17 @@ Expected: "WebdriverIO"
 Received: ""`)
         })
 
-        test('success if array matches with computed role and ignoreCase', async () => {
-            const result = await thisContext.toHaveComputedRole(el, ['div', 'WebdriverIO'], { ignoreCase: true })
+        test('success if oneOf matches with computed role and ignoreCase', async () => {
+            const result = await thisContext.toHaveComputedRole(el, oneOf('div', 'WebdriverIO'), { ignoreCase: true })
 
             expect(result.pass).toBe(true)
             expect(el.getComputedRole).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with computed role and trim', async () => {
+        test('success if oneOf matches with computed role and trim', async () => {
             vi.mocked(el.getComputedRole).mockResolvedValue('   WebdriverIO   ')
 
-            const result = await thisContext.toHaveComputedRole(el, ['div', 'WebdriverIO', 'toto'], {
+            const result = await thisContext.toHaveComputedRole(el, oneOf('div', 'WebdriverIO', 'toto'), {
                 trim: true,
 
             })
@@ -162,8 +163,8 @@ Received: ""`)
             expect(el.getComputedRole).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with computed role and replace (string)', async () => {
-            const result = await thisContext.toHaveComputedRole(el, ['div', 'BrowserdriverIO', 'toto'], {
+        test('success if oneOf matches with computed role and replace (string)', async () => {
+            const result = await thisContext.toHaveComputedRole(el, oneOf('div', 'BrowserdriverIO', 'toto'), {
                 replace: [['Web', 'Browser']],
             })
 
@@ -171,8 +172,8 @@ Received: ""`)
             expect(el.getComputedRole).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with computed role and replace (regex)', async () => {
-            const result = await thisContext.toHaveComputedRole(el, ['div', 'BrowserdriverIO', 'toto'], {
+        test('success if oneOf matches with computed role and replace (regex)', async () => {
+            const result = await thisContext.toHaveComputedRole(el, oneOf('div', 'BrowserdriverIO', 'toto'), {
                 replace: [[/Web/g, 'Browser']],
             })
 
@@ -180,8 +181,8 @@ Received: ""`)
             expect(el.getComputedRole).toHaveBeenCalledTimes(1)
         })
 
-        test('success if array matches with computed role and multiple replacers and one of the replacers is a function', async () => {
-            const result = await thisContext.toHaveComputedRole(el, ['div', 'browserdriverio', 'toto'], {
+        test('success if oneOf matches with computed role and multiple replacers and one of the replacers is a function', async () => {
+            const result = await thisContext.toHaveComputedRole(el, oneOf('div', 'browserdriverio', 'toto'), {
                 replace: [
                     [/Web/g, 'Browser'],
                     [/[A-Z]/g, (match: string) => match.toLowerCase()],
@@ -212,25 +213,25 @@ Received: ""`)
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with RegExp', async () => {
-                const result = await thisContext.toHaveComputedRole(el, ['div', /ExAmPlE/i])
+            test('success if oneOf matches with RegExp', async () => {
+                const result = await thisContext.toHaveComputedRole(el, oneOf('div', /ExAmPlE/i))
 
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with computed role', async () => {
-                const result = await thisContext.toHaveComputedRole(el, [
+            test('success if oneOf matches with computed role', async () => {
+                const result = await thisContext.toHaveComputedRole(el, oneOf(
                     'This is example computed role',
                     /Webdriver/i,
-                ])
+                ))
 
                 expect(result.pass).toBe(true)
             })
 
-            test('success if array matches with computed role and ignoreCase', async () => {
+            test('success if oneOf matches with computed role and ignoreCase', async () => {
                 const result = await thisContext.toHaveComputedRole(
                     el,
-                    ['ThIs Is ExAmPlE computed role', /Webdriver/i],
+                    oneOf('ThIs Is ExAmPlE computed role', /Webdriver/i),
                     {
                         wait: 1,
                         ignoreCase: true,

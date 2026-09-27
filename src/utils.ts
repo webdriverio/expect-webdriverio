@@ -9,8 +9,7 @@ import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
-import { DEFAULT_FEATURE_FLAGS } from './constants.js'
-import { isOneOfMatcher, OneOfMatcher } from './matchers/asymmetrics/oneOf.js'
+import { isOneOfMatcher } from './matchers/asymmetrics/oneOf.js'
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {
     return isAsymmetricMatcher(expected) && !('toAsymmetricMatcher' in expected) && 'jasmineToString' in expected && typeof expected.jasmineToString === 'function'
@@ -158,33 +157,19 @@ const compareNumbers = (actual: number, options: ExpectWebdriverIO.NumberOptions
 
 export const compareTextOrOneOf = (
     actualText: string,
-    expectedTexts: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
+    expectedText: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): CompareResult<string> => {
-    if (expectedTexts === undefined) {
+    // An array is an index-based expected value of `$$()`, never one value
+    if (expectedText === undefined || Array.isArray(expectedText)) {
         return { actual: actualText, success: false }
     }
 
-    /**
-     * @deprecated path
-     * Since the strict-index based matching, comparing array is deprecated and will be removed in v8.0.0.
-     * Instead the `expect.oneOf()` asymmetric matcher should be used to compare against multiple expected values.
-     */
-    if (Array.isArray(expectedTexts)) {
-        if (expectedTexts.some((expected): expected is OneOfMatcher => isOneOfMatcher(expected))) {
-            throw new Error('OneOf is not supported in array under legacy behavior. Please enable `useToHaveTextStrictMultiElementsCompareStrategy` feature flag to use the new strict index based matching strategy with `expect.oneOf()`.')
-        } else {
-            console.warn('Array of expected values is deprecated. Please use `expect.oneOf()` asymmetric matcher to compare against multiple expected values. This will be removed in v8.0.0.')
-            // TODO one day consolidate typing and internal of oneOf so we do not need the below casting!
-            expectedTexts = new OneOfMatcher(...expectedTexts as Array<string | RegExp | AsymmetricMatcher<string>>).withOptions(options)
-        }
+    if (isOneOfMatcher(expectedText)) {
+        return { success: expectedText.asymmetricMatch(actualText), actual: actualText }
     }
 
-    if (isOneOfMatcher(expectedTexts)) {
-        return { success: expectedTexts.asymmetricMatch(actualText), actual: actualText }
-    }
-
-    const compareResults = compareText(actualText, expectedTexts, options)
+    const compareResults = compareText(actualText, expectedText, options)
     // Failure messages show the actual text as is, not trimmed, lowercased or replaced by the string options
     return { ...compareResults, actual: actualText }
 }
@@ -294,105 +279,6 @@ export const compareText = (
     return {
         actual,
         success: actual === expected,
-    }
-}
-
-/**
- * Compare actual text with array of expected texts in a non-strict way
- * if the actual text matches with any of the expected texts, it returns true
- *
- * @param actual
- * @param expectedArray
- * @param param2
- * @returns
- */
-export const compareTextWithArray = (
-    actual: string,
-    expectedArray: Array<string | RegExp | AsymmetricMatcher<string>>,
-    {
-        ignoreCase = false,
-        trim = false, // TODO for single element we trim by default, but for array we don't trim by default. To review in v6.0.0 and make it consistent for both single and array of elements
-        containing = false,
-        atStart = false,
-        atEnd = false,
-        atIndex,
-        replace,
-    }: ExpectWebdriverIO.StringOptions
-): CompareResult<string> => {
-    if (typeof actual !== 'string') {
-        return {
-            actual,
-            success: false,
-        }
-    }
-
-    if (trim) {
-        actual = actual.trim()
-    }
-    if (Array.isArray(replace)) {
-        actual = replaceActual(replace, actual)
-    }
-
-    // Entries that carry their own RegExp - a bare RegExp, or one wrapped in stringMatching - carry
-    // their own case-insensitivity via the `i` flag (added below), so they are matched against
-    // `actualOriginalCase` instead of the lowercased `actual` - lowercasing it first can corrupt
-    // characters with special casing (e.g. Turkish İ), silently breaking otherwise-valid matches.
-    const actualOriginalCase = actual
-    if (ignoreCase) {
-        actual = actual.toLowerCase()
-        expectedArray = expectedArray.map((item) => {
-            if (typeof item === 'string') {
-                return item.toLowerCase()
-            }
-            if (item instanceof RegExp) {
-                return withIgnoreCaseFlag(item)
-            }
-            if (isStringContainingMatcherLike(item)) {
-                const sample = getStringAsymmetricMatcherValue(item).toString().toLocaleLowerCase()
-                return (isInversedStringContainingMatcher(item)
-                    ? expect.not.stringContaining(sample)
-                    : expect.stringContaining(sample)) as WdioAsymmetricMatcher<string>
-            }
-            if (isStringMatchingMatcherLike(item)) {
-                // see the equivalent branch in compareText for why the sample is turned into a
-                // RegExp rather than lowercased as literal text
-                const sample = getStringAsymmetricMatcherValue(item as WdioAsymmetricMatcher<string> | JasmineStringAsymmetricMatcher<string>)
-                const caseInsensitiveSample = withIgnoreCaseFlag(sample instanceof RegExp ? sample : new RegExp(sample))
-                return (isInversedStringMatchingMatcher(item)
-                    ? expect.not.stringMatching(caseInsensitiveSample)
-                    : expect.stringMatching(caseInsensitiveSample)) as WdioAsymmetricMatcher<string>
-            }
-            return item
-        })
-    }
-
-    const hasFoundTextInArray = expectedArray.some((expected) => {
-        if (expected instanceof RegExp) {
-            return !!actualOriginalCase.match(expected)
-        }
-        if (isStringMatchingMatcherLike(expected) && getStringAsymmetricMatcherValue(expected as WdioAsymmetricMatcher<string> | JasmineStringAsymmetricMatcher<string>) instanceof RegExp) {
-            return expected.asymmetricMatch(actualOriginalCase)
-        }
-        if (isAsymmetricMatcher(expected)) {
-            return expected.asymmetricMatch(actual)
-        }
-        if (containing) {
-            return actual.includes(expected)
-        }
-        if (atStart) {
-            return actual.startsWith(expected)
-        }
-        if (atEnd) {
-            return actual.endsWith(expected)
-        }
-        if (atIndex !== undefined) {
-            return actual.substring(atIndex, actual.length).startsWith(expected)
-        }
-        return actual === expected
-    })
-    return {
-        actual: actualOriginalCase,
-        success: hasFoundTextInArray,
     }
 }
 
@@ -529,14 +415,6 @@ function replaceActual(
     }
 
     return actual
-}
-
-export const getFeatureFlagValue = ({ featureFlags }: ExpectWebdriverIO.StringOptions, featureFlag: keyof ExpectWebdriverIO.FeatureFlags): boolean => {
-    const providedFeatureFlagValue = featureFlags?.[featureFlag]
-    if (providedFeatureFlagValue !== undefined) {
-        return providedFeatureFlagValue
-    }
-    return DEFAULT_FEATURE_FLAGS[featureFlag] ?? false
 }
 
 export const toArray = <T>(value: T | T[] | undefined): T[] => value === undefined ? [] : Array.isArray(value) ? value : [value]

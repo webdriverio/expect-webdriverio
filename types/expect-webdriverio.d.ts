@@ -442,7 +442,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
             options?: ExpectWebdriverIO.StringOptions
         ) :Promise<void>
-        /** @deprecated use `expect.oneOf()` instead of an array */
+        /** @deprecated an array means "has any of these classes", to review in https://github.com/webdriverio/expect-webdriverio/issues/2266 (`expect.oneOf()` compares the full class attribute) */
         (
             className: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
@@ -771,11 +771,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             text: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
-        /** @deprecated Use `expect.oneOf()` instead. */
-        (
-            text: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) : Promise<void>
     }, {
         /** Elements browser.$$() API */
         (
@@ -805,11 +800,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Element $() API */
         (
             text: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
-            options?: ExpectWebdriverIO.HTMLOptions
-        ) : Promise<void>
-        /** @deprecated to replace by oneOf() or anyOf() when available */
-        (
-            text: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.HTMLOptions
         ) : Promise<void>
     }, {
@@ -842,12 +832,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             computedLabel: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
-
-        /** @deprecated use `expect.oneOf()` instead of an array */
-        (
-            computedLabel: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) : Promise<void>
     }, {
         /** Elements $$() API */
         (
@@ -876,12 +860,6 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         /** Element $() API */
         (
             computedRole: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) : Promise<void>
-
-        /** @deprecated use `expect.oneOf()` instead of an array */
-        (
-            computedRole: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) : Promise<void>
     }, {
@@ -1224,12 +1202,6 @@ declare namespace ExpectWebdriverIO {
     function setOptions(options: DefaultOptions): void
 
     /**
-     * Allow to enable some new features in the expect-webdriverio library.
-     * @param flags
-     */
-    function setFeatureFlags(flags: FeatureFlags): void
-
-    /**
      * Get the default options set by the user.
      */
     function getDefaultOptions(): DefaultOptions
@@ -1394,17 +1366,6 @@ declare namespace ExpectWebdriverIO {
         result: AssertionResult
     }
 
-    interface FeatureFlags {
-        /**
-         * Feature flag to enable the new multi-elements comparison for `toHaveText` matcher, allowing to keep the current behavior without breaking changes.
-         * When enabled, the matcher will compare the text of multiple elements in an indexed exact match manner, rather than using the array as a possible match for any of the elements.
-         * Also required for `some()`, `expect.oneOf()` in an expected array, and multi-remote elements with `toHaveText`.
-         *
-         * The new behavior is planned to become the default in the next major version.
-         */
-        useToHaveTextStrictMultiElementsCompareStrategy?: boolean
-    }
-
     interface DefaultOptions {
         /**
          * time in ms to wait for expectation to succeed. Default: 3000
@@ -1425,8 +1386,6 @@ declare namespace ExpectWebdriverIO {
          * hook that gets executed after each assertion, it contains the result of the assertion
          */
         afterAssertion?: (params: AfterAssertionHookParams) => Promise<void>
-
-        featureFlags?: FeatureFlags
     }
 
     interface CommandOptions extends DefaultOptions {
