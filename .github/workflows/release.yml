@@ -43,7 +43,9 @@ jobs:
           CURRENT=$(node -p "require('./package.json').version")
           # From a stable version (7.0.0) start 8.0.0-alpha.0, else bump the alpha
           if [[ "$CURRENT" == *-* ]]; then INCREMENT=""; else INCREMENT="major"; fi
-          NEXT=$(npx release-it $INCREMENT --preRelease=alpha --release-version --ci --npm.skipChecks --no-git.requireCleanWorkingDir | tail -1)
+          OUTPUT=$(npx release-it $INCREMENT --preRelease=alpha --release-version --ci --npm.skipChecks --no-git.requireCleanWorkingDir)
+          NEXT=$(echo "$OUTPUT" | tail -1)
+          if [[ ! "$NEXT" =~ ^[0-9]+\. ]]; then echo "::error::Cannot compute the next version: '$NEXT'"; exit 1; fi
           if [ "${NEXT%%.*}" -lt 8 ]; then echo "::error::Next version $NEXT is lower than 8: release v7.x from the v7 branch"; exit 1; fi
           echo "Releasing $NEXT"
           echo "increment=$INCREMENT" >> "$GITHUB_OUTPUT"
