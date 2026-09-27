@@ -57,10 +57,11 @@ function asymmetricMatch(a: any, b: any) {
 
     // Jasmine asymmetric matchers (e.g. objectContaining) expect a matchersUtil
     // with an `equals` method as the second argument to asymmetricMatch.
-    const matchersUtil = {
+    // Vitest 5 asymmetric matchers expect an array of custom testers there, so it is also an empty array.
+    const matchersUtil = Object.assign([], {
         equals,
         contains: (actual: unknown[], expected: unknown) => actual.some(value => equals(value, expected)),
-    };
+    });
 
     if (asymmetricA) {
         return a.asymmetricMatch(b, matchersUtil);
