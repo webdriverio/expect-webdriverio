@@ -72,7 +72,7 @@ Coverage is on by default, with global thresholds. When you run one file, add
 | One matcher or util | its test file: `pnpm exec vitest --run --coverage.enabled=false <test file>` |
 | Public types (`types/`, `jest.d.ts`, `jasmine*.d.ts`) | `pnpm run build && pnpm run test:types` (`ts:package` installs the packed build) |
 | Failure messages | the unit tests that assert the message, and one playground run |
-| Multi-remote | unit tests with the flag off and on (see below), and `playgrounds/multi-remote-mocha` |
+| Multi-remote | the unit tests, and `playgrounds/multi-remote-mocha` |
 | Snapshot matchers | `test/snapshot.test.ts`, and the Mocha, Jasmine and Browser Runner playgrounds |
 | Docs only (`docs/`, `README.md`) | the multi-remote naming check, and check the links |
 | Before you push | `pnpm run checks:all` |
@@ -83,6 +83,10 @@ matchers are in `test/matchers/beMatchers.test.ts`, and `toHaveUrl` /
 `toHaveTitle` in `test/matchers/browserMatchers.test.ts`. To find the tests of
 a matcher: `git grep -l <matcherName> -- test`. Use the mocks in
 `test/__mocks__/`; do not start a browser in unit tests.
+
+The multi-remote mocks model WebdriverIO v10: `$$()` returns a
+`MultiRemoteElementArray`, and instances are only reachable with
+`getInstance()`.
 
 The unit tests are the regression check. They are not proof that a change
 works the way a user runs it. Before you report a feature or bug fix as done,
@@ -96,13 +100,13 @@ follow [verify-expect-webdriverio](.agents/skills/verify-expect-webdriverio/SKIL
 - Never write `multiremote` or `Multiremote` in new names.
 - Exceptions: WebdriverIO v9 names that this repo cannot rename
   (`isMultiremote`, `WebdriverIO.MultiremoteConfig`, `multiremotebrowser`),
-  the `/docs/multiremote` links, and WebdriverIO error text copied in mocks.
+  and the `/docs/multiremote` links.
 
 Must print nothing before committing:
 
 ```sh
 git grep --untracked -nE "[Mm]ultiremote" -- ':!AGENTS.md' \
-  | grep -vE "isMultiremote|MultiremoteConfig|multiremotebrowser|/docs/multiremote|Multiremote object has no instance"
+  | grep -vE "isMultiremote|MultiremoteConfig|multiremotebrowser|/docs/multiremote"
 ```
 
 ## Working agreement
