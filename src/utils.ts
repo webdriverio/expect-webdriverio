@@ -185,7 +185,8 @@ export const compareTextOrOneOf = (
     }
 
     const compareResults = compareText(actualText, expectedTexts, options)
-    return  { ... compareResults }
+    // Failure messages show the actual text as is, not trimmed, lowercased or replaced by the string options
+    return { ...compareResults, actual: actualText }
 }
 
 // TODO one day turn this into at least a asymetrics class to better report in failure messages the string case we are in (containing, atStart, atEnd, atIndex, etc) and the expected value(s)

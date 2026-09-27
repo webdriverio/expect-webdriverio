@@ -10,6 +10,8 @@ import { expect as wdioExpect } from '../../../src/index.js'
 import { refreshElementArray } from '../../../src/util/refetchElements.js'
 import { some } from '../../../src/api/index.js'
 
+import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
+
 vi.mock('@wdio/globals')
 
 describe(toHaveText, async () => {
@@ -19,6 +21,20 @@ describe(toHaveText, async () => {
     beforeEach(() => {
         thisContext = { toHaveText }
         thisNotContext = { toHaveText, isNot: true }
+    })
+
+    test('shows the actual text as is in the failure message, not modified by the string options', async () => {
+        const el = await $('sel')
+        vi.mocked(el.getText).mockResolvedValue('  Hello World  ')
+
+        const result = await thisContext.toHaveText(el, 'Other', { ignoreCase: true, replace: ['World', 'There'], wait: 0 })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have text
+
+Expected: "Other"
+Received: "  Hello World  "`)
     })
 
     describe.for([false, true])('arrayContaining with strict strategy %s', (strict) => {
@@ -1919,12 +1935,18 @@ Received: "Invalid Text"`)
 
         describe('given multi-remote elements', () => {
             const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+            // Exact text on every instance, so that the diff only shows the failing instance
+            const withText = <T extends WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]>(subject: T): T => {
+                mockMultiRemoteInstanceCommand(subject, 'chrome', 'getText', 'Valid Text')
+                mockMultiRemoteInstanceCommand(subject, 'firefox', 'getText', 'Valid Text')
+                return subject
+            }
 
             test('$() fails with the same per-instance message as the plain object shorthand', async () => {
                 const expected = { chrome: 'Valid Text', firefox: 'Other' }
 
-                const withPlainObject = await thisContext.toHaveText(createMultiRemoteElementMock(browsers(), 'sel'), expected, { wait: 0 })
-                const withMatcher = await thisContext.toHaveText(createMultiRemoteElementMock(browsers(), 'sel'), wdioExpect.multiRemote(expected), { wait: 0 })
+                const withPlainObject = await thisContext.toHaveText(withText(createMultiRemoteElementMock(browsers(), 'sel')), expected, { wait: 0 })
+                const withMatcher = await thisContext.toHaveText(withText(createMultiRemoteElementMock(browsers(), 'sel')), wdioExpect.multiRemote(expected), { wait: 0 })
 
                 expect(withMatcher.pass).toBe(false)
                 expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))
@@ -1945,8 +1967,8 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have text
             test('$$() fails with the same per-instance message as the plain object shorthand', async () => {
                 const expected = { chrome: 'Valid Text', firefox: ['Valid Text', 'Other'] }
 
-                const withPlainObject = await thisContext.toHaveText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2), expected, { wait: 0 })
-                const withMatcher = await thisContext.toHaveText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2), wdioExpect.multiRemote(expected), { wait: 0 })
+                const withPlainObject = await thisContext.toHaveText(withText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]), expected, { wait: 0 })
+                const withMatcher = await thisContext.toHaveText(withText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]), wdioExpect.multiRemote(expected), { wait: 0 })
 
                 expect(withMatcher.pass).toBe(false)
                 expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))
@@ -1973,8 +1995,8 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have text
             test('$() fails with the same message as the plain object shorthand on a missing instance', async () => {
                 const expected = { chrome: 'Valid Text' }
 
-                const withPlainObject = await thisContext.toHaveText(createMultiRemoteElementMock(browsers(), 'sel'), expected, { wait: 0 })
-                const withMatcher = await thisContext.toHaveText(createMultiRemoteElementMock(browsers(), 'sel'), wdioExpect.multiRemote(expected), { wait: 0 })
+                const withPlainObject = await thisContext.toHaveText(withText(createMultiRemoteElementMock(browsers(), 'sel')), expected, { wait: 0 })
+                const withMatcher = await thisContext.toHaveText(withText(createMultiRemoteElementMock(browsers(), 'sel')), wdioExpect.multiRemote(expected), { wait: 0 })
 
                 expect(withMatcher.pass).toBe(false)
                 expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))
@@ -1986,7 +2008,7 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have text
 
   Multi-remote values {
     "chrome": "Valid Text",
-+   "firefox": " Valid Text ",
++   "firefox": "Valid Text",
   }`
                 )
             })
