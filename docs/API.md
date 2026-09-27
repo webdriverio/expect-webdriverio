@@ -178,9 +178,9 @@ This option can be applied in addition to the command options when strings are b
 | <code><var>atEnd</var></code> | boolean | expect actual value to end with the expected value |
 | <code><var>atIndex</var></code> | number | expect actual value to have the expected value at the given index |
 
-##### Number Options
+##### Number Matcher
 
-This option can be applied in addition to the command options when numbers are being asserted.
+Number matchers take a number or a `NumberMatcher` as the expected value, and the command options as the next argument, e.g. `toHaveWidth({ gte: 32 }, { wait: 0 })`.
 
 | Name | Type | Details |
 | ---- | ---- | ------- |

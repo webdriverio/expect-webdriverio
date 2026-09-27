@@ -7,7 +7,6 @@ If you are using the [WDIO Testrunner](https://webdriver.io/docs/clioptions) eve
 - `"expect-webdriverio/jasmine"` for [Jasmine](https://jasmine.github.io/)
 - `"expect-webdriverio/jest"` for [Jest](https://jestjs.io/)
 - `"expect-webdriverio/expect-global"` // Optional, if you wish to use expect of `expect-webdriverio` globally without explicit import
-  - Note: Same as the former `"expect-webdriverio/types"`, now deprecated!
 
 ### JavaScript (VSCode)
 

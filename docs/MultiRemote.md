@@ -10,8 +10,6 @@ await expect(multiRemoteBrowser.$('h1')).toHaveText('Welcome')
 await expect(multiRemoteBrowser.$$('li')).toBeDisplayed()
 ```
 
-**Note:** `multiremotebrowser` from `@wdio/globals` is deprecated in favor of `multiRemoteBrowser`.
-
 ## Instance Names
 
 The instance names are the keys of the `capabilities` object of your [multi-remote configuration](https://webdriver.io/docs/multiremote). The examples below assume the following configuration, with the `chrome` and `firefox` instances:
@@ -81,7 +79,7 @@ await expect(multiRemoteBrowser).toHaveTitle({ chrome: 'WebdriverIO', firefox: '
 await expect(multiRemoteBrowser.$('h1')).toHaveText({ chrome: 'Welcome', firefox: 'Bienvenue' })
 ```
 
-Number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren` and `toBeElementsArrayOfSize`) have no shorthand, since a plain object is a legacy `NumberOptions` (e.g. `{ gte: 1 }`): per-instance values require `expect.multiRemote()`.
+Number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren` and `toBeElementsArrayOfSize`) have no shorthand, since a plain object is a `NumberMatcher` (e.g. `{ gte: 1 }`): per-instance values require `expect.multiRemote()`.
 
 ```ts
 await expect(multiRemoteBrowser.$('h1')).toHaveWidth(expect.multiRemote({ chrome: 100, firefox: { gte: 90 } }))
