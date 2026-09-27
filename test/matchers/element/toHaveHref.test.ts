@@ -7,7 +7,7 @@ import stripAnsi from 'strip-ansi'
 
 import { multiRemote } from '../../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
-import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
+import { mockMultiRemoteElementsCommand, mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
 
 describe(toHaveHref, () => {
@@ -145,13 +145,15 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have attribute href
             expect(perInstance.pass).toBe(true)
         })
 
-        test('checks one array per instance, as the plain object shorthand, on $$()', async () => {
+        test('checks one array per instance, as the plain object shorthand, element by element on $$()', async () => {
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]
-            mockMultiRemoteInstanceCommand(elements, 'firefox', 'getAttribute', 'other')
+            mockMultiRemoteElementsCommand(elements, 'getAttribute', { chrome: ['some attribute', 'second'], firefox: ['other', 'another'] })
 
-            const result = await thisContext.toHaveHref(elements, { chrome: ['some attribute', 'some attribute'], firefox: ['other', 'other'] }, { wait: 0 })
+            const result = await thisContext.toHaveHref(elements, { chrome: ['some attribute', 'second'], firefox: ['other', 'another'] }, { wait: 0 })
+            const swapped = await thisContext.toHaveHref(elements, { chrome: ['second', 'some attribute'], firefox: ['another', 'other'] }, { wait: 0 })
 
             expect(result.pass).toBe(true)
+            expect(swapped.pass).toBe(false)
         })
 
         test('rejects one array per instance on $()', async () => {

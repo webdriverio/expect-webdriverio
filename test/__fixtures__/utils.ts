@@ -28,3 +28,17 @@ export function mockMultiRemoteInstanceCommand(
         (element.getInstance(instance)[command] as any).mockResolvedValue(value)
     }
 }
+
+/**
+ * Mocks the resolved value of an element command on every element of a multi-remote `$$()`, one value per element
+ * and per instance, e.g. `{ chrome: ['a', 'b'], firefox: ['c', 'd'] }`.
+ */
+export function mockMultiRemoteElementsCommand(
+    elements: WebdriverIO.MultiRemoteElement[],
+    command: Parameters<typeof mockMultiRemoteInstanceCommand>[2],
+    valuesPerInstance: Record<string, unknown[]>
+) {
+    for (const [instance, values] of Object.entries(valuesPerInstance)) {
+        values.forEach((value, index) => mockMultiRemoteInstanceCommand(elements[index], instance, command, value))
+    }
+}
