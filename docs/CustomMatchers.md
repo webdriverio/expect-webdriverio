@@ -1,4 +1,4 @@
-# Custom Matchers
+## Custom Matchers
 
 `expect-webdriverio` registers WebdriverIO custom matchers out of the box for a seamless experience.
 
@@ -8,7 +8,7 @@ To use WebdriverIO custom matchers (except asymmetric matchers) directly in:
     - Else, register matchers manually with `jasmine.addAsyncMatchers`, then they will be available on `expectAsync`.
 - **Types**: Type augmentation for custom matchers is provided. See [Types.md](Types.md) for details.
 
-## Adding your own matchers
+### Adding your own matchers
 
 Similar to how `expect-webdriverio` provide custom matchers it's possible to add your own custom matchers.
 
