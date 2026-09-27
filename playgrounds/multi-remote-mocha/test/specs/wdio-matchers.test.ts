@@ -428,6 +428,49 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(expect(h1).toHaveStyle({ chrome: { display: 'block' }, firefox: { display: 'block' } }, { wait: 0 })).rejects.toThrow(/to have style/)
                 })
             })
+
+            describe('Attributes, properties, classes, HTML and accessibility', () => {
+                const renameGitHubRepoOnFirefox = () => multiRemoteBrowser.getInstance('firefox')!.execute(() => {
+                    document.querySelector('#githubRepo')!.setAttribute('data-foundby', 'renamed')
+                })
+
+                it('should verify an attribute, href and id on every browser', async () => {
+                    const link = multiRemoteBrowser.$('#githubRepo')
+
+                    await expect(link).toHaveAttribute('data-foundby', 'link text')
+                    await expect(link).toHaveHref('https://github.com')
+                    await expect(link).toHaveId('githubRepo')
+                })
+
+                it('should verify one attribute per browser with expect.multiRemote()', async () => {
+                    await renameGitHubRepoOnFirefox()
+                    const link = multiRemoteBrowser.$('#githubRepo')
+
+                    await expect(link).toHaveAttribute('data-foundby', expect.multiRemote({ chrome: 'link text', firefox: 'renamed' }))
+                    await expect(expect(link).toHaveAttribute('data-foundby', 'link text', { wait: 0 })).rejects.toThrow(/\+   "firefox": "renamed",/)
+                })
+
+                it('should verify a property on every browser', async () => {
+                    await expect(multiRemoteBrowser.$('#githubRepo')).toHaveElementProperty('tagName', 'A')
+                    await expect(multiRemoteBrowser.$$('h1')).toHaveElementProperty('tagName', 'H1')
+                })
+
+                it('should verify a class on every browser', async () => {
+                    await expect(multiRemoteBrowser.$('#githubRepo')).toHaveElementClass('clearfix')
+                    await expect(multiRemoteBrowser.$$('h1.findme')).toHaveElementClass('findme')
+                })
+
+                it('should verify the HTML of every element on every browser', async () => {
+                    await expect(multiRemoteBrowser.$$('h1')).toHaveHTML(['<h1>WebdriverJS Testpage</h1>', '<h1 class="findme">Test CSS Attributes</h1>'])
+                })
+
+                it('should verify the computed role and label on every browser', async () => {
+                    const link = multiRemoteBrowser.$('#githubRepo')
+
+                    await expect(link).toHaveComputedRole('link')
+                    await expect(link).toHaveComputedLabel('GitHub Repo')
+                })
+            })
         })
     })
 })
