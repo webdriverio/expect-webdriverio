@@ -193,6 +193,8 @@ This document covers all deprecations (no breakings) introduced in **v6.0.0** th
 + await expect(el).toHaveText(expect.oneOf('foo', 'bar'))
 ```
 
+> **Note:** The `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is required when using `expect.oneOf()` inside an expected array for strict index-based multi-element comparison.
+
 ---
 
 > All deprecated APIs above will be **removed in v8.0.0**. We recommend updating usages as soon as possible after upgrading to v6.
