@@ -1,4 +1,5 @@
 import { isArrayContainingMatcher } from '../utils.js'
+import { hasMultiRemoteFlag } from './multiRemoteUtils.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../types.js'
 
 /**
@@ -178,11 +179,11 @@ export const awaitElementArray = async(received: WdioElementsMaybePromise | unde
 }
 
 const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] => {
-    return !!obj && typeof obj === 'object' && ('isMultiremote' in obj && obj.isMultiremote === true || 'isMultiRemote' in obj && obj.isMultiRemote === true)
+    return hasMultiRemoteFlag(obj)
 }
 
 export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemoteElement => {
-    // `selector` distinguishes a MultiRemoteElement from a MultiRemoteBrowser (both share `isMultiremote`/`getInstance`,
+    // `selector` distinguishes a MultiRemoteElement from a MultiRemoteBrowser (both share the multi-remote flag and `getInstance`,
     // only the element has a `selector`); the array check excludes MultiRemoteElement[] and WdioMultiRemoteElementArray.
     return isMultiRemote(obj) && !Array.isArray(obj) && 'selector' in obj
 }
@@ -203,7 +204,7 @@ export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRem
  * Need env variable `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` set to `true`
  */
 export const isMultiRemoteElementArray = (obj: unknown): obj is WdioMultiRemoteElementArray => {
-    return !!obj && typeof obj === 'object' && 'isMultiremote' in obj && obj.isMultiremote === true && 'parent' in obj && 'foundWith' in obj && 'selector' in obj
+    return hasMultiRemoteFlag(obj) && 'parent' in (obj as object) && 'foundWith' in (obj as object) && 'selector' in (obj as object)
 }
 
 /**

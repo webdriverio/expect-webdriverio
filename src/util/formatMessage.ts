@@ -4,7 +4,7 @@ import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements 
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
-import { isBrowser } from './multiRemoteUtils.js'
+import { isBrowser, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
@@ -74,13 +74,13 @@ export const enhanceError = (
     const { isNot, useNotInLabel = true } = context
 
     // Label the per-instance values `Multi-remote values {` instead of `Object {` in the printed diff
-    if ((isBrowser(subject) && subject.isMultiremote) || isMultiRemoteElementLike(subject)) {
+    if ((isBrowser(subject) && isMultiRemoteBrowser(subject)) || isMultiRemoteElementLike(subject)) {
         expected = labelMultiRemoteValues(expected)
         actual = labelMultiRemoteValues(actual)
     }
 
     if (isBrowser(subject)) {
-        if (subject.isMultiremote) {
+        if (isMultiRemoteBrowser(subject)) {
             subject = formatMultiRemoteInstanceNames(subject.instances)
         } else if (subject.isMobile) {
             subject = context.browserTargetType === 'window' ? 'mobile screen' : 'mobile'

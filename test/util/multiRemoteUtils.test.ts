@@ -1,6 +1,6 @@
 import { vi, test, describe, expect, afterEach } from 'vitest'
 
-import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, getMockInstanceNames, hasSameInstanceNames, isBrowser, isGlobalBrowserSingleRemote, isMockArray, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
+import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, getMockInstanceNames, hasMultiRemoteFlag, hasSameInstanceNames, isBrowser, isGlobalBrowserSingleRemote, isMockArray, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
 import { multiRemote } from '../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
 
@@ -77,6 +77,20 @@ describe('multiRemoteUtils', () => {
             vi.stubGlobal('multiRemoteBrowser', new Proxy({}, { get: () => { throw new Error('No browser instance registered') } }))
 
             expect(getGlobalMultiRemoteInstanceNames()).toBeUndefined()
+        })
+    })
+
+    describe(hasMultiRemoteFlag, () => {
+        test.each([
+            ['WebdriverIO v9 `isMultiremote`', { isMultiremote: true }],
+            ['WebdriverIO v10 `isMultiRemote`', { isMultiRemote: true }],
+            ['@wdio/globals proxy of a class', new Proxy(class Browser {}, { get: (_, prop) => prop === 'isMultiRemote' })],
+        ])('is true for %s', (_, value) => {
+            expect(hasMultiRemoteFlag(value)).toBe(true)
+        })
+
+        test.each([undefined, null, 'isMultiRemote', {}, { isMultiRemote: false }, { isMultiremote: 'true' }])('is false for %s', (value) => {
+            expect(hasMultiRemoteFlag(value)).toBe(false)
         })
     })
 
