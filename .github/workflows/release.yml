@@ -1,21 +1,16 @@
-name: Manual NPM Publish
+name: Manual NPM Publish (v7)
 
 on:
   workflow_dispatch:
     inputs:
       releaseType:
-        description: "Release type - major, minor or patch"
+        description: "Release type - patch or minor (v7 is a maintenance branch: no major)"
         required: true
         type: choice
         default: "patch"
         options:
           - patch
           - minor
-          - major
-      distTag:
-        description: 'NPM tag (e.g. use "next --preRelease=alpha --github.preRelease" to release a test version)'
-        required: true
-        default: 'latest'
       preRelease:
         description: If latest release was a pre-release (e.g. X.X.X-alpha.0) and you want to push another one, pick "yes"
         required: true
@@ -25,6 +20,7 @@ on:
           - "yes"
           - "no"
 
+# v7 is a maintenance branch: it keeps `latest` only until v8.0.0 is released.
 env:
   NPM_CONFIG_PROVENANCE: true
 
@@ -43,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          ref: 'main'
+          ref: 'v7'
           fetch-depth: 0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
@@ -58,13 +54,23 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+      - name: Pick Dist-Tag
+        id: tag
+        run: |
+          BRANCH_MAJOR=$(node -p "require('./package.json').version.split('.')[0]")
+          LATEST=$(npm view expect-webdriverio dist-tags.latest)
+          if [[ ! "$LATEST" =~ ^[0-9]+\. ]]; then echo "::error::Cannot read the npm latest version: '$LATEST'"; exit 1; fi
+          LATEST_MAJOR=${LATEST%%.*}
+          if [ "$LATEST_MAJOR" -gt "$BRANCH_MAJOR" ]; then TAG="v${BRANCH_MAJOR}-latest"; else TAG=latest; fi
+          echo "Publishing on $TAG (npm latest is $LATEST)"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
       - name: Release
-        run: npx release-it ${{github.event.inputs.releaseType}} --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=${{github.event.inputs.distTag}}
+        run: npx release-it ${{github.event.inputs.releaseType}} --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=${{ steps.tag.outputs.tag }} --github.makeLatest=${{ steps.tag.outputs.tag == 'latest' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ github.event.inputs.preRelease == 'no' }}
       - name: Pre-Release
-        run: npx release-it --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --preRelease=alpha --github.preRelease --npm.tag=next
+        run: npx release-it --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --preRelease=alpha --github.preRelease --npm.tag=v7-next
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ github.event.inputs.preRelease == 'yes' }}
