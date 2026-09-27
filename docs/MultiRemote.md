@@ -185,6 +185,28 @@ WebdriverIO does not tell which browser a mock belongs to, so:
 - Failure messages name each mock after the global `multiRemoteBrowser` instances, which `mock()` follows in order. When the mocks are not as many as these instances (e.g. from `multiRemoteBrowser.select('chrome').mock()`), or without injected WebdriverIO globals, they are named by index instead (`mocks[0]`, `mocks[1]`, ...).
 - Mocks from a `select()` naming every instance in another order than the configuration are named in the configuration order, so a failure message may show a mock under the wrong instance name.
 
+## Snapshot Matchers
+
+`toMatchSnapshot` and `toMatchInlineSnapshot` support a multi-remote element `$()`, taking its outerHTML on every instance:
+
+- When every instance has the same outerHTML, the snapshot is that outerHTML, as for a single element.
+- Otherwise, the snapshot holds the outerHTML of each instance, keyed by instance name (sorted, whatever their order in the configuration).
+
+```ts
+// The same on every browser
+await expect(multiRemoteBrowser.$('h1')).toMatchInlineSnapshot(`"<h1>Welcome</h1>"`)
+
+// Different per browser
+await expect(multiRemoteBrowser.$('h1')).toMatchInlineSnapshot(`
+  {
+    "chrome": "<h1>Welcome</h1>",
+    "firefox": "<h1>Bienvenue</h1>",
+  }
+`)
+```
+
+So a snapshot turns into one outerHTML per instance when browsers start to differ, which the snapshot diff shows, and needs an update when they are the same again. With `select()`, only the selected instances are part of the snapshot.
+
 ## Retries & Re-fetching Elements
 
 As with regular elements, failing assertions are retried until they pass or time out, re-fetching `$$()` elements in between.
@@ -226,7 +248,6 @@ Expect multi-remote<chrome, firefox>.$(`h1`) to have text
 ## Limitations
 
 - `toHaveText` requires the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag: its legacy strategy does not support multi-remote elements and fails the assertion.
-- Snapshot matchers are not multi-remote aware.
 - Network matchers support one expected value for every instance only, and may name a mock after the wrong instance, see [Network Matchers](#network-matchers).
 - Without `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY`, multi-remote `$$()` assertions are best effort, see [its limitations](#without-wdio_enable_multi_remote_element_array).
 
