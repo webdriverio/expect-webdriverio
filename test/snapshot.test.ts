@@ -1,11 +1,11 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { test, expect, vi } from 'vitest'
+import { test, expect, vi, afterEach } from 'vitest'
 import type { Frameworks } from '@wdio/types'
 
 import { expect as expectExport, SnapshotService } from '../src/index.js'
-import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementMock } from './__mocks__/@wdio/globals.js'
+import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from './__mocks__/@wdio/globals.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const __filename = path.basename(fileURLToPath(import.meta.url))
@@ -87,6 +87,134 @@ test('snapshots the outerHTML shared by every instance of a multi-remote element
     vi.mocked(element.getInstance('firefox').getHTML).mockResolvedValue('<h1>Welcome</h1>')
 
     await expectExport(element).toMatchInlineSnapshot('"<h1>Welcome</h1>"')
+    await service.after()
+})
+
+afterEach(() => {
+    vi.unstubAllEnvs()
+})
+
+const multiRemoteElementArrayCases = [
+    { name: 'MultiRemoteElement[]', isMultiRemoteElementArray: 'false' },
+    { name: 'MultiRemoteElementArray', isMultiRemoteElementArray: 'true' },
+]
+
+test.each(multiRemoteElementArrayCases)('snapshots the outerHTML of every element of every instance of a multi-remote element array, keyed by instance name, when it differs, as $name', async ({ name, isMultiRemoteElementArray }) => {
+    await service.beforeTest({
+        title: `multi-remote element array as ${name}`,
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+    vi.stubEnv('WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY', isMultiRemoteElementArray)
+
+    // Instances in another order than the snapshot: the keys are sorted
+    const elements = createMultiRemoteElementArrayMock({ firefox: browserFactory(), chrome: browserFactory() }, 'li', 2) as WebdriverIO.MultiRemoteElement[]
+    vi.mocked(elements[0].getInstance('chrome').getHTML).mockResolvedValue('<li>Coffee</li>')
+    vi.mocked(elements[1].getInstance('chrome').getHTML).mockResolvedValue('<li>Tea</li>')
+    vi.mocked(elements[0].getInstance('firefox').getHTML).mockResolvedValue('<li>Café</li>')
+    vi.mocked(elements[1].getInstance('firefox').getHTML).mockResolvedValue('<li>Thé</li>')
+
+    await expectExport(elements).toMatchInlineSnapshot(`
+      {
+        "chrome": [
+          "<li>Coffee</li>",
+          "<li>Tea</li>",
+        ],
+        "firefox": [
+          "<li>Café</li>",
+          "<li>Thé</li>",
+        ],
+      }
+    `)
+    // Non-awaited, like `multiRemoteBrowser.$$('li')`
+    await expectExport(Promise.resolve(elements)).toMatchInlineSnapshot(`
+      {
+        "chrome": [
+          "<li>Coffee</li>",
+          "<li>Tea</li>",
+        ],
+        "firefox": [
+          "<li>Café</li>",
+          "<li>Thé</li>",
+        ],
+      }
+    `)
+    expect(elements[0].getInstance('chrome').getHTML).toHaveBeenCalledWith({ includeSelectorTag: true })
+    await service.after()
+})
+
+test.each(multiRemoteElementArrayCases)('snapshots the outerHTML of every element shared by every instance of a multi-remote element array as is, as $name', async ({ name, isMultiRemoteElementArray }) => {
+    await service.beforeTest({
+        title: `multi-remote element array with the same outerHTML as ${name}`,
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+    vi.stubEnv('WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY', isMultiRemoteElementArray)
+
+    const elements = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'li', 2) as WebdriverIO.MultiRemoteElement[]
+    for (const instance of ['chrome', 'firefox']) {
+        vi.mocked(elements[0].getInstance(instance).getHTML).mockResolvedValue('<li>Coffee</li>')
+        vi.mocked(elements[1].getInstance(instance).getHTML).mockResolvedValue('<li>Tea</li>')
+    }
+
+    await expectExport(elements).toMatchInlineSnapshot(`
+      [
+        "<li>Coffee</li>",
+        "<li>Tea</li>",
+      ]
+    `)
+    await service.after()
+})
+
+test('snapshots the outerHTML of the elements each instance found, when instances found a different number of elements', async () => {
+    await service.beforeTest({
+        title: 'multi-remote element array with a different number of elements',
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+
+    const elements = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'li', 2) as WebdriverIO.MultiRemoteElement[]
+    vi.mocked(elements[0].getInstance('chrome').getHTML).mockResolvedValue('<li>Coffee</li>')
+    vi.mocked(elements[1].getInstance('chrome').getHTML).mockResolvedValue('<li>Tea</li>')
+    vi.mocked(elements[0].getInstance('firefox').getHTML).mockResolvedValue('<li>Café</li>')
+    // WebdriverIO zips the instances results by index: the trailing wrapper holds no element for firefox
+    const secondChromeElement = elements[1].getInstance('chrome')
+    vi.spyOn(elements[1], 'getInstance').mockImplementation((instance) => {
+        if (instance === 'firefox') {
+            throw new Error('no element for firefox')
+        }
+        return secondChromeElement
+    })
+
+    await expectExport(elements).toMatchInlineSnapshot(`
+      {
+        "chrome": [
+          "<li>Coffee</li>",
+          "<li>Tea</li>",
+        ],
+        "firefox": [
+          "<li>Café</li>",
+        ],
+      }
+    `)
+    await service.after()
+})
+
+test('snapshots an empty multi-remote $$() as an empty array', async () => {
+    await service.beforeTest({
+        title: 'empty multi-remote element array',
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+    vi.stubEnv('WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY', 'true')
+
+    const elements = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'li', 0)
+
+    await expectExport(elements).toMatchInlineSnapshot('[]')
     await service.after()
 })
 

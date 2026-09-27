@@ -1,0 +1,15 @@
+// Snapshot v1
+
+exports[`Multi-remote Snapshot Matchers > should match the outerHTML snapshot file of every browser 1`] = `
+{
+  "chrome": "<a href="https://github.com" id="githubRepo" class="clearfix" data-foundby="link text">GitHub Repo</a>",
+  "firefox": "<a href="https://github.com" id="githubRepo" class="clearfix" data-foundby="link text">GitHub Repo on Firefox</a>",
+}
+`;
+
+exports[`Multi-remote Snapshot Matchers > should match the outerHTML snapshot file of every browser 2`] = `
+[
+  "<h1>WebdriverJS Testpage</h1>",
+  "<h1 class="findme">Test CSS Attributes</h1>",
+]
+`;

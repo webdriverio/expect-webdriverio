@@ -187,9 +187,9 @@ WebdriverIO does not tell which browser a mock belongs to, so:
 
 ## Snapshot Matchers
 
-`toMatchSnapshot` and `toMatchInlineSnapshot` support a multi-remote element `$()`, taking its outerHTML on every instance:
+`toMatchSnapshot` and `toMatchInlineSnapshot` support multi-remote elements, `$()` and `$$()`, taking their outerHTML on every instance:
 
-- When every instance has the same outerHTML, the snapshot is that outerHTML, as for a single element.
+- When every instance has the same outerHTML, the snapshot is that outerHTML, as for a single element (an array of outerHTML for `$$()`, as for regular elements).
 - Otherwise, the snapshot holds the outerHTML of each instance, keyed by instance name (sorted, whatever their order in the configuration).
 
 ```ts
@@ -201,6 +201,27 @@ await expect(multiRemoteBrowser.$('h1')).toMatchInlineSnapshot(`
   {
     "chrome": "<h1>Welcome</h1>",
     "firefox": "<h1>Bienvenue</h1>",
+  }
+`)
+
+// With $$(), the same on every browser
+await expect(multiRemoteBrowser.$$('li')).toMatchInlineSnapshot(`
+  [
+    "<li>Coffee</li>",
+    "<li>Tea</li>",
+  ]
+`)
+
+// With $$(), different per browser
+await expect(multiRemoteBrowser.$$('li')).toMatchInlineSnapshot(`
+  {
+    "chrome": [
+      "<li>Coffee</li>",
+      "<li>Tea</li>",
+    ],
+    "firefox": [
+      "<li>Café</li>",
+    ],
   }
 `)
 ```
