@@ -32,7 +32,7 @@ describe('suite', () => {
     })
 
     it('advanced', async () => {
-        const myInput = await $('input')
+        const myInput = await $('#username')
 
         await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!', })
         await expect(myInput).toHaveAttribute('class', 'form-control')

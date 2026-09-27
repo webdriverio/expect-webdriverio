@@ -371,7 +371,7 @@ Checks if an element has a certain attribute with a specific value.
 ##### Usage
 
 ```js
-const myInput = await $('input')
+const myInput = await $('#username')
 await expect(myInput).toHaveAttribute('class', 'form-control')
 await expect(myInput).toHaveAttribute('class', expect.stringContaining('control'))
 ```
@@ -381,7 +381,7 @@ Checks if an element has a specific attribute.
 ##### Usage
 
 ```js
-const myInput = await $('input')
+const myInput = await $('#username')
 await expect(myInput).toHaveAttribute('class')
 // With options
 await expect(myInput).toHaveAttribute('class', expect.anything(), { wait: 1000 })
@@ -392,7 +392,7 @@ Checks if an element does not have the specified attribute.
 ##### Usage
 
 ```js
-const myInput = await $('input')
+const myInput = await $('#username')
 await expect(myInput).not.toHaveAttribute('class')
 // With options
 await expect(myInput).not.toHaveAttribute('class', expect.anything(), { wait: 1000 })
@@ -405,7 +405,7 @@ Checks if an element has a single class name. Can also be called with an array a
 ##### Usage
 
 ```js
-const myInput = await $('input')
+const myInput = await $('#username')
 await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!' })
 await expect(myInput).toHaveElementClass(['form-control' , 'w-full'], { message: 'not full width' })
 await expect(myInput).toHaveElementClass(expect.stringContaining('form'), { message: 'Not a form control!' })
@@ -446,7 +446,7 @@ Checks if an input element has a certain value.
 ##### Usage
 
 ```js
-const myInput = await $('input')
+const myInput = await $('#username')
 await expect(myInput).toHaveValue('admin-user', { ignoreCase: true })
 await expect(myInput).toHaveValue(expect.stringContaining('user'), { ignoreCase: true })
 ```
@@ -515,7 +515,7 @@ Checks if element has a specific computed WAI-ARIA label. Use `expect.oneOf()` w
 
 ```js
 await browser.url('https://webdriver.io/')
-const elem = await $('a[href="https://github.com/webdriverio/webdriverio"]')
+const elem = await $('a.navbar__link.header-github-link')
 await expect(elem).toHaveComputedLabel('GitHub repository')
 await expect(elem).toHaveComputedLabel(expect.stringContaining('repository'))
 ```
@@ -524,7 +524,7 @@ await expect(elem).toHaveComputedLabel(expect.stringContaining('repository'))
 
 ```js
 await browser.url('https://webdriver.io/')
-const elem = await $('a[href="https://github.com/webdriverio/webdriverio"]')
+const elem = await $('a.navbar__link.header-github-link')
 await expect(elem).toHaveComputedLabel(expect.oneOf('GitHub repository', 'Private repository'))
 await expect(elem).toHaveComputedLabel(expect.oneOf(expect.stringContaining('GitHub'), expect.stringContaining('Private')))
 ```
@@ -558,7 +558,7 @@ Checks if link element has a specific link target.
 ##### Usage
 
 ```js
-const link = await $('a')
+const link = await $('#homeLink')
 await expect(link).toHaveHref('https://webdriver.io')
 await expect(link).toHaveHref(expect.stringContaining('webdriver.io'))
 ```
@@ -570,7 +570,7 @@ Same as `toHaveHref`.
 ##### Usage
 
 ```js
-const link = await $('a')
+const link = await $('#homeLink')
 await expect(link).toHaveLink('https://webdriver.io')
 await expect(link).toHaveLink(expect.stringContaining('webdriver.io'))
 ```
@@ -609,7 +609,7 @@ Checks if an element matches a specific text exactly. You can also pass an asymm
 
 ```js
 await browser.url('https://webdriver.io/')
-const elem = await $('.container')
+const elem = await $('.hero__subtitle')
 
 // Exact match assertion
 await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
@@ -691,7 +691,7 @@ Checks amount of the fetched element's children by calling `element.$('./*')` co
 ##### Usage
 
 ```js
-const list = await $('ul')
+const list = await $('#list')
 await expect(list).toHaveChildren() // the list has at least one item
 // same as
 await expect(list).toHaveChildren({ gte: 1 })
@@ -709,7 +709,7 @@ Checks if element has a specific width.
 
 ```js
 await browser.url('http://github.com')
-const logo = await $('.octicon-mark-github')
+const logo = await $('[aria-label="Homepage"] .octicon-mark-github')
 await expect(logo).toHaveWidth(32)
 // Same as
 await expect(logo).toHaveWidth({ eq: 32 })
@@ -728,7 +728,7 @@ Checks if element has a specific height.
 
 ```js
 await browser.url('http://github.com')
-const logo = await $('.octicon-mark-github')
+const logo = await $('[aria-label="Homepage"] .octicon-mark-github')
 await expect(logo).toHaveHeight(32)
 // Same as
 await expect(logo).toHaveHeight({ eq: 32 })
@@ -748,7 +748,7 @@ Checks if element has a specific size.
 
 ```js
 await browser.url('http://github.com')
-const logo = await $('.octicon-mark-github')
+const logo = await $('[aria-label="Homepage"] .octicon-mark-github')
 await expect(logo).toHaveSize({ width: 32, height: 32 })
 ```
 
@@ -948,13 +948,13 @@ await expect($('elem').getCSSProperty('background-color')).toMatchSnapshot()
 Similarly, you can use the `toMatchInlineSnapshot()` to store the snapshot inline within the test file. For example, given:
 
 ```js
-await expect($('img')).toMatchInlineSnapshot()
+await expect($('#logo')).toMatchInlineSnapshot()
 ```
 
 Instead of creating a snapshot file, WebdriverIO will modify the test file directly to update the snapshot as a string:
 
 ```js
-await expect($('img')).toMatchInlineSnapshot(`"<img src="/public/apple-touch-icon-precomposed.png">"`)
+await expect($('#logo')).toMatchInlineSnapshot(`"<img id="logo" src="/public/apple-touch-icon-precomposed.png">"`)
 ```
 
 With `$$()`, the snapshot is the `outerHTML` of every element as an array:
@@ -1089,12 +1089,12 @@ You can also directly use regular expressions for all matchers that do text comp
 
 ```js
 await browser.url('https://webdriver.io/')
-const elem = await $('.container')
+const elem = await $('.hero__subtitle')
 await expect(elem).toHaveText(/node\.js/i)
 await expect(elem).toHaveText(expect.oneOf(/node\.js/i, 'Get Started'))
 await expect(browser).toHaveTitle(/webdriverio/i)
 await expect(browser).toHaveUrl(/webdriver\.io/)
-await expect(elem).toHaveElementClass(/Container/i)
+await expect(elem).toHaveElementClass(/Hero__Subtitle/i)
 ```
 
 ## Default Matchers

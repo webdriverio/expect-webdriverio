@@ -31,7 +31,7 @@
 If you run your tests through the [WDIO testrunner](https://webdriver.io/docs/clioptions), no additional setup is needed. WebdriverIO initializes `expect-webdriverio` and makes `expect` available in the global scope so you can use it directly in your tests:
 
 ```js
-await expect($('button')).toBeDisplayed()
+await expect($('#submit')).toBeDisplayed()
 await expect($$('buttons')).toBeDisplayed()
 ```
 
@@ -69,7 +69,7 @@ import { expect } from 'expect-webdriverio'
 
     await browser.url('https://webdriver.io')
 
-    const $button = await browser.$('button')
+    const $button = await browser.$('.DocSearch-Button')
     await expect($button).toBeDisplayed()
     
     await browser.deleteSession()
