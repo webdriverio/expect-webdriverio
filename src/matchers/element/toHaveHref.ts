@@ -26,13 +26,13 @@ export async function toHaveHref(
  */
 export async function toHaveHref(
     el: WdioMultiRemoteElements,
-    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveHref(
     el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
 

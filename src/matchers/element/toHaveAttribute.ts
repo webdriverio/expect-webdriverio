@@ -30,7 +30,7 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
     return compareText(attributeValue, expectedValue as string | RegExp | AsymmetricMatcher<string> | undefined, options)
 }
 
-export async function toHaveAttributeAndValue(received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements, attribute: string, expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
+export async function toHaveAttributeAndValue(received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements, attribute: string, expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     const { expectation = 'attribute', verb = 'have', isNot } = this
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
@@ -107,14 +107,14 @@ export async function toHaveAttribute(
 export async function toHaveAttribute(
     received: WdioMultiRemoteElements,
     attribute: string,
-    value: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
+    value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveAttribute(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements,
     attribute: string,
-    value?: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
+    value?: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const matcherName = 'toHaveAttribute'
@@ -126,7 +126,7 @@ export async function toHaveAttribute(
         options,
     })
 
-    let expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>
+    let expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>
     if (value === undefined) {
         if (paramsCount > 2) {
             // User have passed an explicit undefined or null value, which is deprecated. We will log a warning to inform the user about this deprecation.

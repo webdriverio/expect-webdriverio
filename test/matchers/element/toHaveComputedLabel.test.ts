@@ -355,5 +355,14 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have computed label
             expect(stripAnsi(same.message())).toEqual(message)
             expect(perInstance.pass).toBe(true)
         })
+
+        test('checks one array per instance, as the plain object shorthand, on $$()', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]
+            mockMultiRemoteInstanceCommand(elements, 'firefox', 'getComputedLabel', 'Other Label')
+
+            const result = await thisContext.toHaveComputedLabel(elements, { chrome: ['Computed Label', 'Computed Label'], firefox: ['Other Label', 'Other Label'] }, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
     })
 })

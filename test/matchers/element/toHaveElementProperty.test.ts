@@ -902,5 +902,14 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have property prop
             expect(stripAnsi(same.message())).toEqual(message)
             expect(perInstance.pass).toBe(true)
         })
+
+        test('checks one array per instance with expect.multiRemote() on $$()', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]
+            mockMultiRemoteInstanceCommand(elements, 'firefox', 'getProperty', '2')
+
+            const result = await thisContext.toHaveElementProperty(elements, 'prop', multiRemote({ chrome: ['1', '1'], firefox: ['2', '2'] }), { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
     })
 })

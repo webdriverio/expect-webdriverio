@@ -44,7 +44,7 @@ export function toHaveClass(...args: unknown[]) {
 
 export async function toHaveElementClass(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'class', verb = 'have', isNot, matcherName = 'toHaveElementClass' } = this

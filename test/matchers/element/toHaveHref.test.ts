@@ -144,5 +144,14 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have attribute href
             expect(stripAnsi(same.message())).toEqual(message)
             expect(perInstance.pass).toBe(true)
         })
+
+        test('checks one array per instance, as the plain object shorthand, on $$()', async () => {
+            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]
+            mockMultiRemoteInstanceCommand(elements, 'firefox', 'getAttribute', 'other')
+
+            const result = await thisContext.toHaveHref(elements, { chrome: ['some attribute', 'some attribute'], firefox: ['other', 'other'] }, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
     })
 })
