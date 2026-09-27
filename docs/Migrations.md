@@ -10,8 +10,11 @@ With `$$()`, an array of expected values is index-based: its length must equal t
   // <li>Coffee</li><li>Tea</li>
   // Inverted order
 - await expect($$('li')).toHaveText(['Tea', 'Coffee'])
+  // Same order as the elements
 + await expect($$('li')).toHaveText(['Coffee', 'Tea'])
+  // Each element has one of the texts, as before
 + await expect($$('li')).toHaveText(expect.oneOf('Tea', 'Coffee'))
+  // Each text is on an element, and other elements are allowed
 + await expect($$('li')).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
 ```
 
