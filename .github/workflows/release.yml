@@ -46,7 +46,7 @@ jobs:
           OUTPUT=$(npx release-it $INCREMENT --preRelease=alpha --release-version --ci --npm.skipChecks --no-git.requireCleanWorkingDir)
           NEXT=$(echo "$OUTPUT" | tail -1)
           if [[ ! "$NEXT" =~ ^[0-9]+\. ]]; then echo "::error::Cannot compute the next version: '$NEXT'"; exit 1; fi
-          if [ "${NEXT%%.*}" -lt 8 ]; then echo "::error::Next version $NEXT is lower than 8: release v7.x from the v7 branch"; exit 1; fi
+          if [[ ! "$NEXT" =~ ^8\.0\.0-alpha\. ]]; then echo "::error::Next version $NEXT is not a v8 alpha: this workflow releases only 8.0.0-alpha.N"; exit 1; fi
           echo "Releasing $NEXT"
           echo "increment=$INCREMENT" >> "$GITHUB_OUTPUT"
       - name: Pre-Release
