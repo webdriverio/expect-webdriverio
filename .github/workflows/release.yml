@@ -1,29 +1,8 @@
 name: Manual NPM Publish
 
+# v8 alphas only, until the v8.0.0 release (#2246). v7.x releases come from the v7 branch.
 on:
   workflow_dispatch:
-    inputs:
-      releaseType:
-        description: "Release type - major, minor or patch"
-        required: true
-        type: choice
-        default: "patch"
-        options:
-          - patch
-          - minor
-          - major
-      distTag:
-        description: 'NPM tag (e.g. use "next --preRelease=alpha --github.preRelease" to release a test version)'
-        required: true
-        default: 'latest'
-      preRelease:
-        description: If latest release was a pre-release (e.g. X.X.X-alpha.0) and you want to push another one, pick "yes"
-        required: true
-        type: choice
-        default: "no"
-        options:
-          - "yes"
-          - "no"
 
 env:
   NPM_CONFIG_PROVENANCE: true
@@ -58,13 +37,19 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-      - name: Release
-        run: npx release-it ${{github.event.inputs.releaseType}} --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=${{github.event.inputs.distTag}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ github.event.inputs.preRelease == 'no' }}
+      - name: Pick Version
+        id: version
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          # From a stable version (7.0.0) start 8.0.0-alpha.0, else bump the alpha
+          if [[ "$CURRENT" == *-* ]]; then INCREMENT=""; else INCREMENT="major"; fi
+          OUTPUT=$(npx release-it $INCREMENT --preRelease=alpha --release-version --ci --npm.skipChecks --no-git.requireCleanWorkingDir)
+          NEXT=$(echo "$OUTPUT" | tail -1)
+          if [[ ! "$NEXT" =~ ^[0-9]+\. ]]; then echo "::error::Cannot compute the next version: '$NEXT'"; exit 1; fi
+          if [[ ! "$NEXT" =~ ^8\.0\.0-alpha\. ]]; then echo "::error::Next version $NEXT is not a v8 alpha: this workflow releases only 8.0.0-alpha.N"; exit 1; fi
+          echo "Releasing $NEXT"
+          echo "increment=$INCREMENT" >> "$GITHUB_OUTPUT"
       - name: Pre-Release
-        run: npx release-it --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --preRelease=alpha --github.preRelease --npm.tag=next
+        run: npx release-it ${{ steps.version.outputs.increment }} --preRelease=alpha --github.release --github.preRelease --github.makeLatest=false --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=next
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ github.event.inputs.preRelease == 'yes' }}
