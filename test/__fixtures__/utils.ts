@@ -19,7 +19,7 @@ export function lastMatcherWords(matcherName: string) {
 export function mockMultiRemoteInstanceCommand(
     subject: WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray,
     instance: string,
-    command: 'getAttribute' | 'getProperty' | 'getHTML' | 'getComputedLabel' | 'getComputedRole' | 'getSize' | 'isDisplayed' | 'isExisting' | 'isSelected' | 'isClickable' | 'isFocused' | 'isEnabled',
+    command: 'getText' | 'getAttribute' | 'getProperty' | 'getHTML' | 'getComputedLabel' | 'getComputedRole' | 'getSize' | 'isDisplayed' | 'isExisting' | 'isSelected' | 'isClickable' | 'isFocused' | 'isEnabled',
     value: unknown
 ) {
     // At runtime, the items of a `MultiRemoteElementArray` are `MultiRemoteElement` too
