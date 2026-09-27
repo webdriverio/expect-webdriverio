@@ -83,12 +83,12 @@ async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, in
 
     if (isMultiRemoteElement(received)) {
         const multiRemoteElement = received
-        const htmlPerInstance = Object.fromEntries(await Promise.all(multiRemoteElement.instances.map(async (instance) => [
+        const htmlPerInstance = Object.fromEntries(await Promise.all([...multiRemoteElement.instances].sort().map(async (instance) => [
             instance,
             await multiRemoteElement.getInstance(instance).getHTML({ includeSelectorTag: true })
         ])))
         // The outerHTML shared by every instance, like a single element, else one outerHTML per instance, keyed by
-        // instance name (sorted by the serializer, whatever the instances order)
+        // instance name (sorted, whatever the instances order or the snapshotFormat)
         const htmls = new Set(Object.values(htmlPerInstance))
         received = htmls.size === 1 ? [...htmls][0] : htmlPerInstance
     } else if (received && typeof received === 'object' && 'elementId' in received) {
