@@ -442,7 +442,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
             options?: ExpectWebdriverIO.StringOptions
         ) :Promise<void>
-        /** @deprecated use `expect.oneOf()` instead of an array */
+        /** @deprecated an array means "has any of these classes", to review in https://github.com/webdriverio/expect-webdriverio/issues/2266 (`expect.oneOf()` compares the full class attribute) */
         (
             className: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
