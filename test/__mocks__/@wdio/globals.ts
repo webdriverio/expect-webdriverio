@@ -344,7 +344,7 @@ const buildMultiRemoteElementWrapper = (
             return instanceElements[idx] as unknown as WebdriverIO.Element
         },
 
-        // Delegate $() on multiremote element across all browser instances
+        // Delegate $() on multi-remote element across all browser instances
         $: vi.fn().mockImplementation((subSelector: string) => {
             const childBrowsers: Record<string, WebdriverIO.Browser> = {}
             instances.forEach((name, index) => {

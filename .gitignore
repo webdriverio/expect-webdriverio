@@ -12,3 +12,5 @@ coverage
 *.log.*
 
 tsconfig.tsbuildinfo
+
+.agents/verify-artifacts
