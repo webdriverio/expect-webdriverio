@@ -106,7 +106,6 @@ export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOpti
     })
 }
 
-
 /**
  * export snapshot utilities
  */
