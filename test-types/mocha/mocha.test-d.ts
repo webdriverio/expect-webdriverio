@@ -234,11 +234,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
 
             it('should reject an array for a single element', async () => {
-                // @ts-expect-error an array of expected values is for $$() only, use expect.oneOf()
-                expectTypeOf(expect(element).toHaveText).toBeCallableWith(['text1', 'text2'])
+                expectTypeOf(expect(element).toHaveText).parameter(0).extract<unknown[]>().toBeNever()
 
-                // @ts-expect-error an array of expected values is for $$() only, use expect.oneOf()
-                expectTypeOf(expect(chainableElement).toHaveText).toBeCallableWith(['text1', 'text2'])
+                expectTypeOf(expect(chainableElement).toHaveText).parameter(0).extract<unknown[]>().toBeNever()
             })
 
             it('should have ts errors when actual is not an element', async () => {
@@ -338,8 +336,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveHTML('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveHTML(expect.stringContaining('text'))).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveHTML(/text/)).toEqualTypeOf<Promise<void>>()
-                // @ts-expect-error an array of expected values is for $$() only, use expect.oneOf()
-                expectTypeOf(expect(element).toHaveHTML).toBeCallableWith(['text1', 'text2'])
+                expectTypeOf(expect(element).toHaveHTML).parameter(0).extract<unknown[]>().toBeNever()
                 await expect(element).toHaveHTML(
                     'My-Ex-Am-Ple',
                     {
@@ -389,8 +386,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
 
             it('should reject an array for a single element', async () => {
-                // @ts-expect-error an array of expected values is for $$() only, use expect.oneOf()
-                expectTypeOf(expect(chainableElement).toHaveHTML).toBeCallableWith(['text1', 'text2'])
+                expectTypeOf(expect(chainableElement).toHaveHTML).parameter(0).extract<unknown[]>().toBeNever()
             })
 
             it('should have ts errors when actual is not an element', async () => {

@@ -114,8 +114,7 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(element).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
-                // @ts-expect-error an array of expected values is for $$() only, use expect.oneOf()
-                expectTypeOf(expect(element).toHaveText).toBeCallableWith(['text1', 'text2'])
+                expectTypeOf(expect(element).toHaveText).parameter(0).extract<unknown[]>().toBeNever()
                 await expect(element).toHaveText(
                     'My-Ex-Am-Ple',
                     {
@@ -129,8 +128,7 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
 
                 expectTypeOf(expect(chainableElement).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(chainableElement).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
-                // @ts-expect-error an array of expected values is for $$() only, use expect.oneOf()
-                expectTypeOf(expect(chainableElement).toHaveText).toBeCallableWith(['text1', 'text2'])
+                expectTypeOf(expect(chainableElement).toHaveText).parameter(0).extract<unknown[]>().toBeNever()
 
                 expectTypeOf(expect(chainableElement).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
 

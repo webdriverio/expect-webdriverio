@@ -118,8 +118,7 @@ describe('Jasmine type agumentations', () => {
                 it('should return Promise<void>', async () => {
                     expectTypeOf(expectAsync(element).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(element).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
-                    // @ts-expect-error an array of expected values is for $$() only, use expect.oneOf()
-                    expectTypeOf(expectAsync(element).toHaveText).toBeCallableWith(['text1', 'text2'])
+                    expectTypeOf(expectAsync(element).toHaveText).parameter(0).extract<unknown[]>().toBeNever()
                     expectTypeOf(expectAsync(element).toHaveText(
                         'My-Ex-Am-Ple',
                         {
@@ -132,8 +131,7 @@ describe('Jasmine type agumentations', () => {
 
                     expectTypeOf(expectAsync(chainableElement).toHaveText('text')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(chainableElement).toHaveText(/text/)).toEqualTypeOf<Promise<void>>()
-                    // @ts-expect-error an array of expected values is for $$() only, use expect.oneOf()
-                    expectTypeOf(expectAsync(chainableElement).toHaveText).toBeCallableWith(['text1', 'text2'])
+                    expectTypeOf(expectAsync(chainableElement).toHaveText).parameter(0).extract<unknown[]>().toBeNever()
 
                     expectTypeOf(expectAsync(chainableElement).not.toHaveText('text')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expectAsync(chainableElement).toHaveText).parameter(0).extract<number>().toBeNever()
