@@ -1,13 +1,13 @@
 import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
-import { lastMatcherWords } from '../__fixtures__/utils.js'
+import { lastMatcherWords, mockMultiRemoteInstanceCommand } from '../__fixtures__/utils.js'
 import * as Matchers from '../../src/matchers.js'
 import { executeCommandBe, waitUntil } from '../../src/utils.js'
 import { DEFAULT_OPTIONS } from '../../src/constants.js'
 import stripAnsi from 'strip-ansi'
 import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeExisting, toBeFocused, toBePresent, toBeSelected, toExist } from '../../src/matchers.js'
 import { setDefaultOptions, setOptions } from '../../src/index.js'
-import { chainableElementArrayFactory, elementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
+import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -599,6 +599,83 @@ Expect $$(\`elements\`) ${verb} ${lastMatcherWords(matcherFn.name)}
                         expect.anything(),
                         expect.objectContaining({ wait: 99, interval: 101 })
                     )
+                })
+            })
+
+            describe('given multi-remote elements', () => {
+                const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+                const words = lastMatcherWords(matcherFn.name)
+
+                test.each([
+                    { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: () => `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) ${verb} ${words}
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": "${words}",
+-   "firefox": "${words}",
++   "firefox": "not ${words}",
+  }`, notMessage: () => `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) not ${verb} ${words}
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+-   "chrome": "not ${words}",
++   "chrome": "${words}",
+    "firefox": "not ${words}",
+  }` },
+                    { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: () => `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) ${verb} ${words}
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+      "${words}",
+      "${words}",
+    ],
+    "firefox": Array [
+-     "${words}",
+-     "${words}",
++     "not ${words}",
++     "not ${words}",
+    ],
+  }`, notMessage: () => `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) not ${verb} ${words}
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+-     "not ${words}",
+-     "not ${words}",
++     "${words}",
++     "${words}",
+    ],
+    "firefox": Array [
+      "not ${words}",
+      "not ${words}",
+    ],
+  }` },
+                ])('passes when every instance is, and fails with the value of each instance when one is not, on $name', async ({ subject, message, notMessage }) => {
+                    const element = subject()
+
+                    const pass = await thisContext.matcherFn(element, { wait: 0 })
+                    mockMultiRemoteInstanceCommand(element, 'firefox', elementFnName, false)
+                    const fail = await thisContext.matcherFn(element, { wait: 0 })
+                    const notFail = await thisNotContext.matcherFn(element, { wait: 0 })
+
+                    expect(pass.pass).toBe(true)
+                    expect(fail.pass).toBe(false)
+                    expect(stripAnsi(fail.message())).toEqual(message())
+                    expect(notFail.pass).toBe(true) // failure, boolean is inverted later because of `.not`: chrome still is
+                    expect(stripAnsi(notFail.message())).toEqual(notMessage())
                 })
             })
         })

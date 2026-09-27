@@ -3,6 +3,8 @@ import { $, $$ } from '@wdio/globals'
 import { toBeDisabled } from '../../../src/matchers/element/toBeDisabled.js'
 import stripAnsi from 'strip-ansi'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -307,6 +309,84 @@ Expect $$(\`sel\`) to be disabled
 +   "not disabled",
     "disabled",
   ]`)
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to be disabled
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": "disabled",
+-   "firefox": "disabled",
++   "firefox": "not disabled",
+  }`, notMessage: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) not to be disabled
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+-   "chrome": "not disabled",
++   "chrome": "disabled",
+    "firefox": "not disabled",
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be disabled
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+      "disabled",
+      "disabled",
+    ],
+    "firefox": Array [
+-     "disabled",
+-     "disabled",
++     "not disabled",
++     "not disabled",
+    ],
+  }`, notMessage: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) not to be disabled
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+-     "not disabled",
+-     "not disabled",
++     "disabled",
++     "disabled",
+    ],
+    "firefox": Array [
+      "not disabled",
+      "not disabled",
+    ],
+  }` },
+        ])('passes when every instance is, and fails with the value of each instance when one is not, on $name', async ({ subject, message, notMessage }) => {
+            const element = subject()
+            mockMultiRemoteInstanceCommand(element, 'chrome', 'isEnabled', false)
+            mockMultiRemoteInstanceCommand(element, 'firefox', 'isEnabled', false)
+
+            const pass = await thisContext.toBeDisabled(element, { wait: 0 })
+            mockMultiRemoteInstanceCommand(element, 'firefox', 'isEnabled', true)
+            const fail = await thisContext.toBeDisabled(element, { wait: 0 })
+            const notFail = await thisNotContext.toBeDisabled(element, { wait: 0 })
+
+            expect(pass.pass).toBe(true)
+            expect(fail.pass).toBe(false)
+            expect(stripAnsi(fail.message())).toEqual(message)
+            expect(notFail.pass).toBe(true) // failure, boolean is inverted later because of `.not`: chrome still is
+            expect(stripAnsi(notFail.message())).toEqual(notMessage)
         })
     })
 })
