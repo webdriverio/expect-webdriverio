@@ -653,13 +653,14 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableElement).not.toMatchSnapshot('test label')).toEqualTypeOf<Promise<void>>()
             })
 
-            it('should return Promise<void> for multi-remote elements', async () => {
+            it('should return Promise<void> for multi-remote elements, or also void for a plain MultiRemoteElement[], snapshotted synchronously when empty', async () => {
                 expectTypeOf(expect(multiRemoteElement).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElement).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteBrowser.$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(multiRemoteElements).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(multiRemoteElements).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(multiRemoteBrowser.$$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElements).toMatchSnapshot()).toEqualTypeOf<Promise<void> | void>()
+                expectTypeOf(expect(multiRemoteElements).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void> | void>()
+                // WebdriverIO types a non-awaited multi-remote `$$()` as a `MultiRemoteElement[]` too
+                expectTypeOf(expect(multiRemoteBrowser.$$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void> | void>()
             })
 
             it('should return Promise<void> for element arrays', async () => {
