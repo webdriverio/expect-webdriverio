@@ -113,6 +113,12 @@ git grep -nE "[Mm]ultiremote" -- ':!AGENTS.md' \
   history that another process is using.
 - Keep PRs to one topic. Conventional Commits (`fix: ...`, `feat: ...`,
   `docs: ...`, `test: ...`).
+- Keep all text concise and terse: docs, issues, commits, PRs, comments and
+  replies. Remove each word that adds no fact. Say *why*, not *what*: the diff
+  shows the what.
+- PR body: 1–3 bullets and "How you tested". Do not list the changed files.
+- Default to no code comment. Add one only for a constraint, a workaround, or
+  a surprise.
 - Smallest scope before a release: fix the regression only. Put other
   improvements in an issue.
 - Stage only intended files. Do not commit `lib/`, `coverage/` or
