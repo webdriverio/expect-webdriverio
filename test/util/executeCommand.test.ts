@@ -225,7 +225,8 @@ describe('executeCommand', () => {
                 expect(compare).toHaveBeenCalledWith(element.getInstance('chrome'), 'Match')
                 expect(compare).toHaveBeenCalledWith(element.getInstance('firefox'), 'Match')
                 expect(result.success).toBe(true)
-                expect(result.actual).toEqual({ chrome: 'chrome-text', firefox: 'firefox-text' })
+                // Passing instances show their expected value, so a failure diff only shows the failing ones
+                expect(result.actual).toEqual({ chrome: 'Match', firefox: 'Match' })
             })
 
             it('compares each instance against its own expected value when given a MultiRemoteValues object', async () => {
@@ -260,7 +261,8 @@ describe('executeCommand', () => {
                 expect(compare).toHaveBeenCalledTimes(2)
                 expect(compare).toHaveBeenCalledWith(expect.anything(), undefined)
                 expect(result.success).toBe(false)
-                expect(result.actual).toEqual({ chrome: 'ignored', firefox: 'ignored', safari: undefined })
+                // chrome passed so shows its expected value, firefox (not expected) its actual value, safari has none
+                expect(result.actual).toEqual({ chrome: 'Chrome expected', firefox: 'ignored', safari: undefined })
             })
 
             it('fails when the expected value omits an instance, even if every named instance matches', async () => {
@@ -313,9 +315,10 @@ describe('executeCommand', () => {
                 // 2 elements x 2 instances: if the comparisons weren't actually awaited, this would be 0.
                 expect(compare).toHaveBeenCalledTimes(4)
                 expect(result.success).toBe(true)
+                // Passing elements show their expected value, so a failure diff only shows the failing ones
                 expect(result.actual).toEqual({
-                    chrome: [' Valid Text ', ' Valid Text '],
-                    firefox: [' Valid Text ', ' Valid Text '],
+                    chrome: ['Match', 'Match'],
+                    firefox: ['Match', 'Match'],
                 })
             })
 
@@ -339,9 +342,9 @@ describe('executeCommand', () => {
             it('keeps actuals in element order even when comparisons resolve out of order', async () => {
                 const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
                 const compare = vi.fn(async (_el: WebdriverIO.Element, _expected: unknown, index?: number) => {
-                    // First element resolves last
+                    // First element resolves last, failing so that its actual value is shown
                     await new Promise((resolve) => setTimeout(resolve, index === 0 ? 10 : 0))
-                    return { success: true, actual: `el${index}` }
+                    return { success: false, actual: `el${index}` }
                 })
 
                 const result = await multipleElementResultsStrategy(elements, 'Match', compare, { isNot: false, isSome: false, iteration: 0 })
@@ -448,7 +451,7 @@ describe('executeCommand', () => {
 
                 expect(compare).toHaveBeenCalledTimes(1)
                 expect(result.success).toBe(false)
-                expect(result.actual).toEqual({ chrome: [' Valid Text '], firefox: [] })
+                expect(result.actual).toEqual({ chrome: ['Match'], firefox: [] })
             })
         })
     })

@@ -194,6 +194,15 @@ export const legacyMultipleElementResultsStrategy = async <Expected, Actual>(
 }
 
 /**
+ * The value shown for an element in the failure message diff: its expected value when it passed, so the diff only
+ * shows the elements that failed (e.g. an element matching once trimmed), as Jest does for a matching asymmetric
+ * matcher; its actual value as is when it failed. With `.not`, a matching element is the failure, so always as is.
+ */
+const displayedActual = <Actual>(result: CompareResult<Actual>, expected: unknown, isNot: boolean): Actual => {
+    return result.success && !isNot ? expected as Actual : result.actual
+}
+
+/**
  * Modern multiple element comparison strategy.
  *
  * Handles element arrays consistently:
@@ -306,7 +315,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         results.push(...Array(expectedValues.length - elementsSelector.length).fill({ success: false, actual: undefined }))
     }
 
-    const actual = results.map(({ actual }) => actual)
+    const actual = results.map((result, index) => displayedActual(result, Array.isArray(expectedValues) ? expectedValues[index] : expectedValues, isNot))
 
     /**
      * Length mismatch is an immediate structural failure (positive) / pass (.not): no need to
@@ -373,7 +382,7 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
             return forceElementFailure ? { success: false, actual: result.actual } : result
         }))
 
-        const actuals = results.map(({ actual }) => actual)
+        const actuals = results.map((result, index) => displayedActual(result, isSingleElement || !Array.isArray(instanceValue) ? instanceValue : instanceValue[index], isNot))
         if (isSingleElement) {
             actualPerInstance[instance] = actuals[0]
         } else {
