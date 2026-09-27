@@ -65,7 +65,7 @@ Coverage is on by default, with global thresholds. When you run one file, add
 
 | Change | Minimum local proof |
 |--------|---------------------|
-| One matcher or util | `npx vitest --run --coverage.enabled=false test/matchers/<target>/<name>.test.ts` |
+| One matcher or util | its test file: `npx vitest --run --coverage.enabled=false <test file>` |
 | Public types (`types/`, `jest.d.ts`, `jasmine*.d.ts`) | `npm run test:types` |
 | Failure messages | the unit tests that assert the message, and one playground run |
 | Multi-remote | unit tests with the flag off and on (see below), and `playgrounds/multi-remote-mocha` |
@@ -73,8 +73,11 @@ Coverage is on by default, with global thresholds. When you run one file, add
 | Docs only (`docs/`, `README.md`) | the multi-remote naming check, and check the links |
 | Before you push | `npm run checks:all` |
 
-Unit tests mirror source: `src/matchers/element/toHaveText.ts` →
-`test/matchers/element/toHaveText.test.ts`. Use the mocks in
+Unit tests mostly mirror source: `src/matchers/element/toHaveText.ts` →
+`test/matchers/element/toHaveText.test.ts`. Exceptions: most `toBe*` element
+matchers are in `test/matchers/beMatchers.test.ts`, and `toHaveUrl` /
+`toHaveTitle` in `test/matchers/browserMatchers.test.ts`. To find the tests of
+a matcher: `git grep -l <matcherName> -- test`. Use the mocks in
 `test/__mocks__/`; do not start a browser in unit tests.
 
 Multi-remote element arrays have two runtime shapes. The
@@ -103,7 +106,7 @@ follow [verify-expect-webdriverio](.agents/skills/verify-expect-webdriverio/SKIL
 Must print nothing before committing:
 
 ```sh
-git grep -nE "[Mm]ultiremote" -- ':!AGENTS.md' \
+git grep --untracked -nE "[Mm]ultiremote" -- ':!AGENTS.md' \
   | grep -vE "isMultiremote|MultiremoteConfig|multiremotebrowser|/docs/multiremote|Multiremote object has no instance"
 ```
 
