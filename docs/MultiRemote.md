@@ -204,7 +204,15 @@ await expect(multiRemoteBrowser.$('h1')).toMatchInlineSnapshot(`
   }
 `)
 
-// With $$(), one array per browser when they differ
+// With $$(), the same on every browser
+await expect(multiRemoteBrowser.$$('li')).toMatchInlineSnapshot(`
+  [
+    "<li>Coffee</li>",
+    "<li>Tea</li>",
+  ]
+`)
+
+// With $$(), different per browser
 await expect(multiRemoteBrowser.$$('li')).toMatchInlineSnapshot(`
   {
     "chrome": [
