@@ -1,0 +1,8 @@
+// Snapshot v1
+
+exports[`snapshot support > to match the snapshot file of $$() 1`] = `
+[
+  "<p class="text-amber-600">Times clicked: 0</p>",
+  "<button>increment</button>",
+]
+`;
