@@ -11,10 +11,6 @@ on:
         options:
           - patch
           - minor
-      distTag:
-        description: 'NPM tag: "latest" until v8.0.0 is released, then "v7-latest" so a v7 patch does not move "latest"'
-        required: true
-        default: 'latest'
       preRelease:
         description: If latest release was a pre-release (e.g. X.X.X-alpha.0) and you want to push another one, pick "yes"
         required: true
@@ -24,6 +20,7 @@ on:
           - "yes"
           - "no"
 
+# v7 is a maintenance branch: `latest` belongs to the newest major on main.
 env:
   NPM_CONFIG_PROVENANCE: true
 
@@ -58,7 +55,7 @@ jobs:
         env:
           NODE_ENV: production
       - name: Release
-        run: npx release-it ${{github.event.inputs.releaseType}} --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=${{github.event.inputs.distTag}} --github.makeLatest=${{ github.event.inputs.distTag == 'latest' }}
+        run: npx release-it ${{github.event.inputs.releaseType}} --github.release --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=v7-latest --github.makeLatest=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ github.event.inputs.preRelease == 'no' }}
