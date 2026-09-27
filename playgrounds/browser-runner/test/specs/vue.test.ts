@@ -3,6 +3,48 @@ import Component from '../../components/Component.vue'
 
 describe('Vue Component Testing', () => {
 
+    describe('snapshot support', () => {
+        let container: HTMLElement
+
+        beforeEach(() => {
+            // Scoped to this render: components rendered by other tests stay in the page
+            container = render(Component).container as HTMLElement
+        })
+
+        it('to match the outerHTML of an element', async () => {
+            await expect($(container).$('p')).toMatchInlineSnapshot(`"<p class="text-amber-600">Times clicked: 0</p>"`)
+        })
+
+        it('to match the outerHTML of every element of $$()', async () => {
+            await expect($(container).$$('p, button')).toMatchInlineSnapshot(`
+              [
+                "<p class="text-amber-600">Times clicked: 0</p>",
+                "<button>increment</button>",
+              ]
+            `)
+            await expect(await $(container).$$('p, button')).toMatchInlineSnapshot(`
+              [
+                "<p class="text-amber-600">Times clicked: 0</p>",
+                "<button>increment</button>",
+              ]
+            `)
+        })
+
+        it('to match the outerHTML of filtered elements (Element[])', async () => {
+            const buttons = await $(container).$$('p, button').filter(async (element) => await element.getTagName() === 'button')
+
+            await expect(buttons).toMatchInlineSnapshot(`
+              [
+                "<button>increment</button>",
+              ]
+            `)
+        })
+
+        it('to match the snapshot file of $$()', async () => {
+            await expect($(container).$$('p, button')).toMatchSnapshot()
+        })
+    })
+
     describe('when button clicked', () => {
         beforeEach(async () => {
             const { getByText } = render(Component)

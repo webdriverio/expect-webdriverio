@@ -322,3 +322,8 @@ it('some elements are displayed', async () => {
     await expect(expect.some($$('p=Times clicked: 1'))).toBeDisplayed()
 })            
 ```
+
+##### Multiple Elements & Multi-remote
+
+- `$$()` is supported, awaited or not, and filtered (`Element[]`), including by the snapshot matchers.
+- [Multi-remote](MultiRemote.md) is not supported: the Browser Runner runs tests in a single browser session, and stops with `No "browserName" defined in capability object` when given multi-remote capabilities. Use a Node.js runner framework instead, such as Mocha, Jasmine or Cucumber.
