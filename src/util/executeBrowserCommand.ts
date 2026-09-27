@@ -1,5 +1,5 @@
 import type { CompareResult, MultiRemoteCompareResult, StrategyResult } from './executeCommand.js'
-import { getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
+import { getPerInstanceValues, hasSameInstanceNames, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
 export async function executeBrowserCommand<Actual, Expected>( {
     browser,
@@ -15,7 +15,7 @@ export async function executeBrowserCommand<Actual, Expected>( {
 }
 ): Promise<StrategyResult<ArrayOrMultiRemoteValues<Actual | undefined> | Actual | undefined>> {
 
-    if (browser.isMultiremote) {
+    if (isMultiRemoteBrowser(browser)) {
         const { instances } = browser
 
         // `expect.multiRemote()` or, since browser expected values are never plain objects, any plain object holds one value per instance

@@ -245,7 +245,7 @@ export class CustomMultiRemoteDriver {
     // Multi remote properties
     [key: string]: unknown
     instances: string[]
-    isMultiremote = true
+    isMultiRemote = true
     select = vi.fn()
     getInstance = vi.fn()
 
@@ -331,7 +331,8 @@ const buildMultiRemoteElementWrapper = (
     selector: string
 ): WebdriverIO.MultiRemoteElement => {
     const multiRemoteElement = {
-        isMultiremote: true,
+        // WebdriverIO v10 name, the v9 types name it `isMultiremote`
+        isMultiRemote: true,
         selector,
         instances: instances,
 
@@ -381,7 +382,7 @@ const buildMultiRemoteElementWrapper = (
         isDisplayed: vi.fn().mockImplementation(() =>
             Promise.all(instanceElements.map((el) => el.isDisplayed()))
         ),
-    } satisfies Partial<WebdriverIO.MultiRemoteElement> as unknown as WebdriverIO.MultiRemoteElement
+    } satisfies Partial<WebdriverIO.MultiRemoteElement> & { isMultiRemote: true } as unknown as WebdriverIO.MultiRemoteElement
 
     // Attach named instance shortcuts (e.g. multiElement.chrome, multiElement.firefox)
     instances.forEach((name, idx) => {
@@ -409,7 +410,7 @@ export function createMultiRemoteElementMock(
  * results are zipped by index across instances into `WebdriverIO.MultiRemoteElement[]` (the default,
  * "official" shape). When `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`, the same array of wrappers is
  * additionally decorated with ElementArray-like properties (`.parent`, `.foundWith`, `.getElements()`,
- * an async-aware `.forEach()`) and `isMultiremote: true`, matching `enhanceElementsArray()` at runtime.
+ * an async-aware `.forEach()`) and `isMultiRemote: true`, matching `enhanceElementsArray()` at runtime.
  */
 export function createMultiRemoteElementArrayMock(
     browsers: Record<string, WebdriverIO.Browser>,
@@ -432,7 +433,7 @@ export function createMultiRemoteElementArrayMock(
     }
 
     const elementArray = wrapped as unknown as WdioMultiRemoteElementArray
-    elementArray.isMultiremote = true
+    elementArray.isMultiRemote = true
     elementArray.selector = selector
     elementArray.foundWith = '$$'
     elementArray.props = []
