@@ -2,6 +2,9 @@ import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import { toHaveHTML } from '../../../src/matchers/element/toHaveHTML.js'
 import stripAnsi from 'strip-ansi'
+import { multiRemote } from '../../../src/api/index.js'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 
 vi.mock('@wdio/globals')
 import { expect as wdioExpect } from 'expect-webdriverio'
@@ -628,6 +631,52 @@ Expect $$(\`sel\`) to have HTML
   ]`
                 )
             })
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have HTML
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": "<Html/>",
+-   "firefox": "<Html/>",
++   "firefox": "<div>bar</div>",
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have HTML
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+      "<Html/>",
+      "<Html/>",
+    ],
+    "firefox": Array [
+-     "<Html/>",
+-     "<Html/>",
++     "<div>bar</div>",
++     "<div>bar</div>",
+    ],
+  }` },
+        ])('checks the same HTML or one HTML per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
+            const element = subject()
+            mockMultiRemoteInstanceCommand(element, 'firefox', 'getHTML', '<div>bar</div>')
+
+            const same = await thisContext.toHaveHTML(element, '<Html/>', { wait: 0 })
+            const perInstance = await thisContext.toHaveHTML(element, multiRemote({ chrome: '<Html/>', firefox: '<div>bar</div>' }), { wait: 0 })
+
+            expect(same.pass).toBe(false)
+            expect(stripAnsi(same.message())).toEqual(message)
+            expect(perInstance.pass).toBe(true)
         })
     })
 })

@@ -7,6 +7,9 @@ import { jasmine } from '../../__mocks__/jasmine.js'
 import { waitUntil } from '../../../src/utils.js'
 import { expect as wdioExpect } from '../../../src/index.js'
 
+import { multiRemote } from '../../../src/api/index.js'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
 
 describe(toHaveElementProperty, () => {
@@ -852,6 +855,52 @@ Expected [not]: ["<jasmine.anything>", "<jasmine.anything>"]
 Received      : ["iphone", null]`)
                 })
             })
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have property prop
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": "1",
+-   "firefox": "1",
++   "firefox": "2",
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have property prop
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+      "1",
+      "1",
+    ],
+    "firefox": Array [
+-     "1",
+-     "1",
++     "2",
++     "2",
+    ],
+  }` },
+        ])('checks the same property or one property per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
+            const element = subject()
+            mockMultiRemoteInstanceCommand(element, 'firefox', 'getProperty', '2')
+
+            const same = await thisContext.toHaveElementProperty(element, 'prop', '1', { wait: 0 })
+            const perInstance = await thisContext.toHaveElementProperty(element, 'prop', multiRemote({ chrome: '1', firefox: '2' }), { wait: 0 })
+
+            expect(same.pass).toBe(false)
+            expect(stripAnsi(same.message())).toEqual(message)
+            expect(perInstance.pass).toBe(true)
         })
     })
 })

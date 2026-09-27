@@ -21,7 +21,7 @@ async function singleElementCompare(
 
 export async function toHaveComputedLabel(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>>,
+    expectedValue: MaybeArrayOrMultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'computed label', verb = 'have', isNot, matcherName = 'toHaveComputedLabel' } = this

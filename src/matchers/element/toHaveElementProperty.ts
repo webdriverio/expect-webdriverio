@@ -1,7 +1,7 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { expect } from 'expect'
@@ -83,10 +83,21 @@ export async function toHaveElementProperty(
 ): Promise<AssertionResult>
 
 // Implementation signature broadened to accept union types safely
+/**
+ * Multi-Remote Elements $() and $$() API: one value for every instance, or one per instance with `expect.multiRemote()`
+ * (a plain object is a literal property value)
+ */
+export async function toHaveElementProperty(
+    received: WdioMultiRemoteElements,
+    property: string,
+    value: SingleOrMultiRemoteMatcher<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>,
+    options?: ExpectWebdriverIO.StringOptions
+): Promise<AssertionResult>
+
 export async function toHaveElementProperty(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     property: string,
-    value?: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>  | undefined,
+    value?: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null> | SingleOrMultiRemoteMatcher<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null> | undefined,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     // A property value can itself be an object, so a plain object is a literal unless the caller knows better (e.g. `toHaveValue`)

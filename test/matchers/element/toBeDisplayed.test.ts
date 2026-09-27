@@ -4,7 +4,8 @@ import { $, $$ } from '@wdio/globals'
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
-import { browserFactory, chainableElementArrayFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 import { DEFAULT_OPTIONS } from '../../../src/constants.js'
 import { setDefaultOptions, setOptions } from '../../../src/index.js'
 import { refreshElementArray } from '../../../src/util/refetchElements.js'
@@ -702,5 +703,81 @@ Received: "not displayed"`)
         expect(refreshElementArray).toHaveBeenCalled()
 
         expect(result.pass).toBe(true)
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to be displayed
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": "displayed",
+-   "firefox": "displayed",
++   "firefox": "not displayed",
+  }`, notMessage: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) not to be displayed
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+-   "chrome": "not displayed",
++   "chrome": "displayed",
+    "firefox": "not displayed",
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be displayed
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+      "displayed",
+      "displayed",
+    ],
+    "firefox": Array [
+-     "displayed",
+-     "displayed",
++     "not displayed",
++     "not displayed",
+    ],
+  }`, notMessage: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) not to be displayed
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+-     "not displayed",
+-     "not displayed",
++     "displayed",
++     "displayed",
+    ],
+    "firefox": Array [
+      "not displayed",
+      "not displayed",
+    ],
+  }` },
+        ])('passes when every instance is, and fails with the value of each instance when one is not, on $name', async ({ subject, message, notMessage }) => {
+            const element = subject()
+
+            const pass = await thisContext.toBeDisplayed(element, { wait: 0 })
+            mockMultiRemoteInstanceCommand(element, 'firefox', 'isDisplayed', false)
+            const fail = await thisContext.toBeDisplayed(element, { wait: 0 })
+            const notFail = await thisNotContext.toBeDisplayed(element, { wait: 0 })
+
+            expect(pass.pass).toBe(true)
+            expect(fail.pass).toBe(false)
+            expect(stripAnsi(fail.message())).toEqual(message)
+            expect(notFail.pass).toBe(true) // failure, boolean is inverted later because of `.not`: chrome still is
+            expect(stripAnsi(notFail.message())).toEqual(notMessage)
+        })
     })
 })

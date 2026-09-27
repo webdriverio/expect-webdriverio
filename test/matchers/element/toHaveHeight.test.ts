@@ -1,8 +1,12 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 import { toHaveHeight } from '../../../src/matchers/element/toHaveHeight.js'
+import type { Size } from '../../../src/matchers/element/toHaveSize.js'
 import stripAnsi from 'strip-ansi'
 
+import { multiRemote } from '../../../src/api/index.js'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
 
 describe(toHaveHeight, () => {
@@ -119,6 +123,87 @@ Expect $(\`sel\`) to have height
 Expected: 50
 Received: 1`
             )
+        })
+    })
+
+    describe('given multiple elements', () => {
+        let elements: ChainablePromiseArray
+
+        beforeEach(async () => {
+            elements = await $$('sel')
+        })
+
+        test('checks the same height or one height per element', async () => {
+            const same = await thisContext.toHaveHeight(elements, 50, { wait: 0 })
+            const perElement = await thisContext.toHaveHeight(elements, [50, 50], { wait: 0 })
+
+            expect(same.pass).toBe(true)
+            expect(perElement.pass).toBe(true)
+        })
+
+        test('fails with the height of every element', async () => {
+            vi.mocked(elements[1].getSize).mockResolvedValue(60 as unknown as Size & number) // vitest does not support overloads function well
+
+            const result = await thisContext.toHaveHeight(elements, 50, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have height
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+    50,
+-   50,
++   60,
+  ]`)
+        })
+    })
+
+    describe('given multi-remote elements', () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test.each([
+            { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
+Expect multi-remote<chrome, firefox>.$(\`sel\`) to have height
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": 50,
+-   "firefox": 50,
++   "firefox": 60,
+  }` },
+            { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
+Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have height
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Array [
+      50,
+      50,
+    ],
+    "firefox": Array [
+-     50,
+-     50,
++     60,
++     60,
+    ],
+  }` },
+        ])('checks the same height or one height per instance with expect.multiRemote() on $name', async ({ subject, message }) => {
+            const element = subject()
+            mockMultiRemoteInstanceCommand(element, 'firefox', 'getSize', 60)
+
+            const same = await thisContext.toHaveHeight(element, 50, { wait: 0 })
+            const perInstance = await thisContext.toHaveHeight(element, multiRemote({ chrome: 50, firefox: 60 }), { wait: 0 })
+
+            expect(same.pass).toBe(false)
+            expect(stripAnsi(same.message())).toEqual(message)
+            expect(perInstance.pass).toBe(true)
         })
     })
 })
