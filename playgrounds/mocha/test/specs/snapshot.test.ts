@@ -35,6 +35,10 @@ describe('Snapshot Testing', () => {
             await expect(link).toMatchSnapshot()
         })
 
+        it('should match the outerHTML of every element of an element array snapshot', async () => {
+            await expect($$('h1')).toMatchSnapshot()
+        })
+
         it('should match the outerHTML of every element of an element array', async () => {
             await expect($$('h1')).toMatchInlineSnapshot(`
               [

@@ -104,6 +104,7 @@ test('snapshots the outerHTML of every element of an element array', async () =>
     vi.mocked(elements[1].getHTML).mockResolvedValue('<li>Tea</li>')
 
     // Non-awaited `$$()`
+    await expectExport(chainableElements).toMatchSnapshot()
     await expectExport(chainableElements).toMatchInlineSnapshot(`
       [
         "<li>Coffee</li>",

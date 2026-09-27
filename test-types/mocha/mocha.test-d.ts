@@ -662,6 +662,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             it('should return Promise<void> for element arrays', async () => {
                 expectTypeOf(expect(chainableArray).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(chainableArray).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(elementArray).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect([] as WebdriverIO.Element[]).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
             })
