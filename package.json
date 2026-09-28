@@ -118,9 +118,13 @@
     "webdriverio": "^9.32.0"
   },
   "peerDependencies": {
+    "@wdio/types": "^9.31.5",
     "webdriverio": "^9.31.5"
   },
   "peerDependenciesMeta": {
+    "@wdio/types": {
+      "optional": false
+    },
     "webdriverio": {
       "optional": false
     }
