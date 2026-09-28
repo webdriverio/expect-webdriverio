@@ -1,12 +1,11 @@
-import logger from '@wdio/logger'
-
 import { waitUntil, enhanceError, compareTextOrOneOf } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
-const log = logger('expect-webdriverio')
+/** The permission warning is logged once per worker: its cause is the browser, so it does not change between assertions or retries */
+let permissionWarningLogged = false
 
 /**
  * Browser
@@ -80,7 +79,12 @@ const compareClipboardText = async (
 ): Promise<CompareResult<string>> => {
     await browser.setPermissions({ name: 'clipboard-read' }, 'granted')
         // chances are that some browsers don't support the clipboard API yet
-        .catch((err) => log.warn(`Couldn't set clipboard permissions: ${err}`))
+        .catch((err) => {
+            if (!permissionWarningLogged) {
+                permissionWarningLogged = true
+                console.warn(`expect-webdriverio: Couldn't set clipboard permissions: ${err}`)
+            }
+        })
 
     const actual = await browser.execute(() => window.navigator.clipboard.readText())
 

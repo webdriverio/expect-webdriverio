@@ -4,6 +4,10 @@
 
 v8.0.0 requires Node.js `22.19.0` or higher, the same as WebdriverIO v10. Node.js 20 is no longer supported.
 
+## Peer dependencies
+
+`@wdio/globals` and `@wdio/logger` are no longer peer dependencies: only `webdriverio` is. You can remove them from your `package.json` if you do not use them yourself. When `toHaveClipboardText` cannot set the clipboard permissions, its warning now goes to `console.warn`, not to the WebdriverIO logger.
+
 ## `toHaveText` on multiple elements
 
 The strict strategy of the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is now the only one. The flag, `setFeatureFlags()` and the `featureFlags` option are removed.
