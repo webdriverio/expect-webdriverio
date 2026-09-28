@@ -24,7 +24,7 @@ jobs:
         with:
           ref: 'main'
           fetch-depth: 0
-          # No token on disk while the install and the build run third-party code: the release step sets it
+          # No token on disk during install and build
           persist-credentials: false
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
@@ -54,7 +54,7 @@ jobs:
           echo "increment=$INCREMENT" >> "$GITHUB_OUTPUT"
       - name: Pre-Release
         run: |
-          # release-it pushes the version commit and tag as the bot, which is in the bypass list of the `main` ruleset
+          # Push as wdio-bot, in the `main` ruleset bypass list
           git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $(printf 'x-access-token:%s' "$BOT_TOKEN" | base64 -w0)"
           pnpm exec release-it ${{ steps.version.outputs.increment }} --preRelease=alpha --github.release --github.preRelease --github.makeLatest=false --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=next
         env:
