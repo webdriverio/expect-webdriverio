@@ -4,6 +4,14 @@ When you're writing tests, you often need to check that values meet certain cond
 
 **Note**: Browser, element, network and snapshot matchers also support [multi-remote](MultiRemote.md), checking every browser instance with a single expected value or, for browser and element matchers, one per instance.
 
+Examples that do not open a page or show their HTML assume the [guinea pig test page](https://guinea-pig.webdriver.io/) is open:
+
+```js
+await browser.url('https://guinea-pig.webdriver.io/')
+// or, with multi-remote
+await multiRemoteBrowser.url('https://guinea-pig.webdriver.io/')
+```
+
 ## Soft Assertions
 
 Soft assertions allow you to continue test execution even when an assertion fails. This is useful when you want to check multiple conditions in a test and collect all failures rather than stopping at the first failure. Failures are collected and reported at the end of the test.
@@ -12,17 +20,17 @@ Soft assertions allow you to continue test execution even when an assertion fail
 
 ```js
 // Mocha example
-it('product page smoke', async () => {
+it('test page smoke', async () => {
   // These won't throw immediately if they fail
-  await expect.soft(await $('h1').getText()).toEqual('Basketball Shoes');
-  await expect.soft(await $('#price').getText()).toMatch(/€\d+/);
+  await expect.soft(await $('header h1').getText()).toEqual('WebdriverJS Testpage');
+  await expect.soft(await $('.sometext').getText()).toMatch(/some/);
   
   // Also work with basic matcher
-  const h1Text = await $('h1').getText()
-  expect.soft(h1Text).toEqual('Basketball Shoes');
+  const h1Text = await $('header h1').getText()
+  expect.soft(h1Text).toEqual('WebdriverJS Testpage');
 
   // Regular assertions still throw immediately
-  await expect(await $('.add-to-cart').isClickable()).toBe(true);
+  await expect(await $('.sendBtn').isClickable()).toBe(true);
 });
 
 // At the end of the test, all soft assertion failures
@@ -300,9 +308,9 @@ await expect(browser).toHaveLocalStorageItem('userId', /^user_\d+$/)
 Use `expect.arrayContaining()` to match values from an element collection in any order, allowing extra elements. This works with `toHaveText`, `toHaveHTML`, `toHaveAttribute`, `toHaveElementProperty`, `toHaveValue`, `toHaveElementClass`, `toHaveComputedLabel`, `toHaveComputedRole`, `toHaveId`, and `toHaveHref` (including their aliases). To compare with `expect.oneOf()`, see [Choosing the expected value](MultipleElements.md#choosing-the-expected-value).
 
 ```js
-await expect($$('ul > li')).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
-await expect($$('input')).toHaveValue(expect.arrayContaining(['admin']))
-await expect($$('a')).toHaveAttribute('href', expect.arrayContaining([expect.stringContaining('/docs')]))
+await expect($$('header a')).toHaveText(expect.arrayContaining(['2', '1']))
+await expect($$('form input')).toHaveValue(expect.arrayContaining(['b', 'a']))
+await expect($$('a')).toHaveAttribute('href', expect.arrayContaining([expect.stringContaining('two.html')]))
 await expect($$('button')).not.toHaveComputedLabel(expect.arrayContaining(['Delete']))
 ```
 
@@ -371,9 +379,9 @@ Checks if an element has a certain attribute with a specific value.
 ##### Usage
 
 ```js
-const myInput = await $('#username')
-await expect(myInput).toHaveAttribute('class', 'form-control')
-await expect(myInput).toHaveAttribute('class', expect.stringContaining('control'))
+const myInput = await $('.searchinput')
+await expect(myInput).toHaveAttribute('name', 'searchinput')
+await expect(myInput).toHaveAttribute('name', expect.stringContaining('search'))
 ```
 
 Checks if an element has a specific attribute.
@@ -381,10 +389,10 @@ Checks if an element has a specific attribute.
 ##### Usage
 
 ```js
-const myInput = await $('#username')
-await expect(myInput).toHaveAttribute('class')
+const myInput = await $('.searchinput')
+await expect(myInput).toHaveAttribute('name')
 // With options
-await expect(myInput).toHaveAttribute('class', expect.anything(), { wait: 1000 })
+await expect(myInput).toHaveAttribute('name', expect.anything(), { wait: 1000 })
 ```
 
 Checks if an element does not have the specified attribute.
@@ -392,10 +400,10 @@ Checks if an element does not have the specified attribute.
 ##### Usage
 
 ```js
-const myInput = await $('#username')
-await expect(myInput).not.toHaveAttribute('class')
+const myInput = await $('.searchinput')
+await expect(myInput).not.toHaveAttribute('disabled')
 // With options
-await expect(myInput).not.toHaveAttribute('class', expect.anything(), { wait: 1000 })
+await expect(myInput).not.toHaveAttribute('disabled', expect.anything(), { wait: 1000 })
 ```
 
 ### toHaveElementClass
@@ -405,10 +413,10 @@ Checks if an element has a single class name. Can also be called with an array a
 ##### Usage
 
 ```js
-const myInput = await $('#username')
-await expect(myInput).toHaveElementClass('form-control', { message: 'Not a form control!' })
-await expect(myInput).toHaveElementClass(['form-control' , 'w-full'], { message: 'not full width' })
-await expect(myInput).toHaveElementClass(expect.stringContaining('form'), { message: 'Not a form control!' })
+const box = await $('#purplebox')
+await expect(box).toHaveElementClass('box', { message: 'Not a box!' })
+await expect(box).toHaveElementClass(['box', 'purple'], { message: 'Not a purple box!' })
+await expect(box).toHaveElementClass(expect.stringContaining('purple'), { message: 'Not a purple box!' })
 ```
 
 ### toHaveElementProperty
@@ -446,9 +454,9 @@ Checks if an input element has a certain value.
 ##### Usage
 
 ```js
-const myInput = await $('#username')
-await expect(myInput).toHaveValue('admin-user', { ignoreCase: true })
-await expect(myInput).toHaveValue(expect.stringContaining('user'), { ignoreCase: true })
+const myInput = await $('.waitForValueEnabled')
+await expect(myInput).toHaveValue('Some Content', { ignoreCase: true })
+await expect(myInput).toHaveValue(expect.stringContaining('Content'), { ignoreCase: true })
 ```
 
 ### toBeClickable
@@ -558,9 +566,9 @@ Checks if link element has a specific link target.
 ##### Usage
 
 ```js
-const link = await $('#homeLink')
-await expect(link).toHaveHref('https://webdriver.io')
-await expect(link).toHaveHref(expect.stringContaining('webdriver.io'))
+const link = await $('#githubRepo')
+await expect(link).toHaveHref('https://github.com')
+await expect(link).toHaveHref(expect.stringContaining('github.com'))
 ```
 
 ### toHaveLink
@@ -570,9 +578,9 @@ Same as `toHaveHref`.
 ##### Usage
 
 ```js
-const link = await $('#homeLink')
-await expect(link).toHaveLink('https://webdriver.io')
-await expect(link).toHaveLink(expect.stringContaining('webdriver.io'))
+const link = await $('#githubRepo')
+await expect(link).toHaveLink('https://github.com')
+await expect(link).toHaveLink(expect.stringContaining('github.com'))
 ```
 
 ### toHaveId
@@ -691,12 +699,12 @@ Checks amount of the fetched element's children by calling `element.$('./*')` co
 ##### Usage
 
 ```js
-const list = await $('#list')
-await expect(list).toHaveChildren() // the list has at least one item
+const list = await $('#selectbox')
+await expect(list).toHaveChildren() // the list has at least one option
 // same as
 await expect(list).toHaveChildren({ gte: 1 })
 
-await expect(list).toHaveChildren(3) // the list has 3 items
+await expect(list).toHaveChildren(3) // the list has 3 options
 // same as
 await expect(list).toHaveChildren({ eq: 3 })
 ```
@@ -761,8 +769,8 @@ Checks amount of fetched elements using [`$$`](https://webdriver.io/docs/api/ele
 ##### Usage
 
 ```js
-const listItems = await $$('ul>li')
-await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in the list
+const listItems = await $$('.box')
+await expect(listItems).toBeElementsArrayOfSize(5) // 5 boxes
 
 // Greater/Less then
 await expect(listItems).toBeElementsArrayOfSize({ lte: 10 })
@@ -777,8 +785,8 @@ await expect(listItems).toBeElementsArrayOfSize({ gte: 5, lte: 5 })
 With [multi-remote](MultiRemote.md), the size is checked per browser instance. Pass a single size that every instance must match, or one size per instance (every instance must be listed):
 
 ```js
-const listItems = await multiRemoteBrowser.$$('ul>li')
-await expect(listItems).toBeElementsArrayOfSize(5) // 5 items in every browser
+const listItems = await multiRemoteBrowser.$$('.box')
+await expect(listItems).toBeElementsArrayOfSize(5) // 5 boxes in every browser
 await expect(listItems).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 5, firefox: { gte: 3 } }))
 ```
 
@@ -936,9 +944,9 @@ expect({ foo: 'bar' }).toMatchSnapshot()
 await expect($('elem')).toMatchSnapshot()
 // snapshot `outerHTML` of multi-remote elements, $() or $$(): shared by every instance, else keyed by instance name (requires "await")
 await expect(multiRemoteBrowser.$('elem')).toMatchSnapshot()
-await expect(multiRemoteBrowser.$$('li')).toMatchSnapshot()
+await expect(multiRemoteBrowser.$$('.box')).toMatchSnapshot()
 // snapshot `outerHTML` of every element of $$() as an array (requires "await")
-await expect($$('li')).toMatchSnapshot()
+await expect($$('.box')).toMatchSnapshot()
 // snapshot result of element command
 await expect($('elem').getCSSProperty('background-color')).toMatchSnapshot()
 ```
@@ -948,22 +956,23 @@ await expect($('elem').getCSSProperty('background-color')).toMatchSnapshot()
 Similarly, you can use the `toMatchInlineSnapshot()` to store the snapshot inline within the test file. For example, given:
 
 ```js
-await expect($('#logo')).toMatchInlineSnapshot()
+await expect($('#secondPageLink')).toMatchInlineSnapshot()
 ```
 
 Instead of creating a snapshot file, WebdriverIO will modify the test file directly to update the snapshot as a string:
 
 ```js
-await expect($('#logo')).toMatchInlineSnapshot(`"<img id="logo" src="/public/apple-touch-icon-precomposed.png">"`)
+await expect($('#secondPageLink')).toMatchInlineSnapshot(`"<a href="./two.html" id="secondPageLink">two</a>"`)
 ```
 
 With `$$()`, the snapshot is the `outerHTML` of every element as an array:
 
 ```js
-await expect($$('li')).toMatchInlineSnapshot(`
+await expect($$('header a')).toMatchInlineSnapshot(`
   [
-    "<li>Coffee</li>",
-    "<li>Tea</li>",
+    "<a href="pointer.html">3</a>",
+    "<a href="gestureTest.html">2</a>",
+    "<a href="index.html">1</a>",
   ]
 `)
 ```
@@ -984,7 +993,7 @@ Checks that if given element matches with snapshot of baseline.
 ##### Usage
 
 ```js
-await expect($('.hero__title-logo')).toMatchElementSnapshot('wdioLogo', 0, {
+await expect($('#purplebox')).toMatchElementSnapshot('purpleBox', 0, {
     // options
 })
 ```
@@ -992,7 +1001,7 @@ await expect($('.hero__title-logo')).toMatchElementSnapshot('wdioLogo', 0, {
 The expected result is by default `0`, so you can write the same assertion as:
 
 ```js
-await expect($('.hero__title-logo')).toMatchElementSnapshot('wdioLogo', {
+await expect($('#purplebox')).toMatchElementSnapshot('purpleBox', {
     // options
 })
 ```
@@ -1000,7 +1009,7 @@ await expect($('.hero__title-logo')).toMatchElementSnapshot('wdioLogo', {
 or not pass in any options at all:
 
 ```js
-await expect($('.hero__title-logo')).toMatchElementSnapshot()
+await expect($('#purplebox')).toMatchElementSnapshot()
 ```
 
 ### toMatchScreenSnapshot
@@ -1225,8 +1234,8 @@ await expect(browser).toHaveTitle(expect.not.stringContaining('some title'))
 With [multi-remote](MultiRemote.md), passes one expected value per browser instance, keyed by instance name. Every instance must be listed.
 
 ```ts
-await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: expect.stringContaining('Titre') }))
-await expect(multiRemoteBrowser.$('h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
+await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'WebdriverJS Testpage', firefox: expect.stringContaining('Testpage') }))
+await expect(multiRemoteBrowser.$('header h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
 ```
 
 See [Expected Values](MultiRemote.md#expected-values) for the plain object shorthand.
