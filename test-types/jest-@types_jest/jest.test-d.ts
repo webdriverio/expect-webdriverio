@@ -65,6 +65,18 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
             })
         })
 
+        describe('toHaveLocalStorageItem', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', 'value')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveLocalStorageItem('key', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should have ts errors when actual is not a Browser element', async () => {
+                expectTypeOf(expect(element).toHaveLocalStorageItem).toBeNever()
+            })
+        })
+
         describe('toHaveClipboardText', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(browser).toHaveClipboardText('text')).toEqualTypeOf<Promise<void>>()

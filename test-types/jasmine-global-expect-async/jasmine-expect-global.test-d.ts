@@ -308,6 +308,39 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
             })
         })
 
+        describe('Other browser and element matchers', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(browser).toHaveClipboardText('text')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', 'value')).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(element).toExist()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toBePresent()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toBeExisting()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toBeDisplayedInViewport()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toBeEnabled()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toBeFocused()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toBeSelected()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toBeChecked()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toBeChecked({ wait: 1 })).toEqualTypeOf<Promise<void>>()
+
+                expectTypeOf(expect(element).toHaveChildren()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveChildren({ gte: 1 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveWidth(100)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveStyle({ color: 'red' })).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should reject wrong arguments', async () => {
+                // @ts-expect-error a local storage key is a string
+                expectTypeOf(expect(browser).toHaveLocalStorageItem).toBeCallableWith(1)
+                // @ts-expect-error a width is a number
+                expectTypeOf(expect(element).toHaveWidth).toBeCallableWith('100')
+                // @ts-expect-error `wait` is a number
+                expectTypeOf(expect(element).toBeEnabled).toBeCallableWith({ wait: '1' })
+            })
+        })
+
         describe('Custom matchers', () => {
             describe('using `ExpectWebdriverIO` namespace augmentation', () => {
                 it('should return Promise<void> for a non-promise custom matcher', async () => {
