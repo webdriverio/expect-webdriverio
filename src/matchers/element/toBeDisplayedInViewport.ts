@@ -8,16 +8,17 @@ export async function toBeDisplayedInViewport(
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'displayed in viewport'
+    const { matcherName = 'toBeDisplayedInViewport' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeDisplayedInViewport',
+        matcherName,
         options,
     })
 
     const result = await executeCommandBe.call(this, received, el => el?.isDisplayed({ withinViewport: true }), options)
 
     await options.afterAssertion?.({
-        matcherName: 'toBeDisplayedInViewport',
+        matcherName,
         options,
         result
     })

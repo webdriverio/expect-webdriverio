@@ -54,9 +54,10 @@ export async function toHaveHref(
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
+    const { matcherName = 'toHaveHref' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveHref',
+        matcherName,
         expectedValue,
         options,
     })
@@ -64,7 +65,7 @@ export async function toHaveHref(
     const result = await toHaveAttributeAndValue.call(this, el, 'href', expectedValue, options)
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveHref',
+        matcherName,
         expectedValue,
         options,
         result
@@ -73,4 +74,9 @@ export async function toHaveHref(
     return result
 }
 
-export const toHaveLink = toHaveHref
+/**
+ * Alias of `toHaveHref`, with its own name in the `beforeAssertion` and `afterAssertion` hooks
+ */
+export const toHaveLink: typeof toHaveHref = function toHaveLink(this: WdioMatcherContext, ...args: unknown[]): Promise<AssertionResult> {
+    return (toHaveHref as (this: WdioMatcherContext, ...args: unknown[]) => Promise<AssertionResult>).call({ matcherName: 'toHaveLink', ...this }, ...args)
+}

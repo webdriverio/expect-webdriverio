@@ -8,16 +8,17 @@ export async function toBeFocused(
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'focused'
+    const { matcherName = 'toBeFocused' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeFocused',
+        matcherName,
         options,
     })
 
     const result = await executeCommandBe.call(this, received, el => el?.isFocused(), options)
 
     await options.afterAssertion?.({
-        matcherName: 'toBeFocused',
+        matcherName,
         options,
         result
     })

@@ -190,6 +190,19 @@ Received: ""`)
             expect(element.getHTML).toHaveBeenCalledTimes(1)
         })
 
+        test('sends the original oneOf to both hooks', async () => {
+            vi.mocked(element.getHTML).mockResolvedValue('<div>FOO</div>')
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+            const expectedValue = wdioExpect.oneOf('div', '<div>foo</div>')
+
+            const result = await thisContext.toHaveHTML(element, expectedValue, { wait: 1, ignoreCase: true, beforeAssertion, afterAssertion })
+
+            expect(result.pass).toBe(true)
+            expect(beforeAssertion.mock.calls[0][0].expectedValue).toBe(expectedValue)
+            expect(afterAssertion.mock.calls[0][0].expectedValue).toBe(expectedValue)
+        })
+
         test('success if oneOf matches with html and trim', async () => {
             vi.mocked(element.getHTML).mockResolvedValue('   <div>foo</div>   ')
 

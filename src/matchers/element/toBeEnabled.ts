@@ -8,16 +8,17 @@ export async function toBeEnabled(
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'enabled'
+    const { matcherName = 'toBeEnabled' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeEnabled',
+        matcherName,
         options,
     })
 
     const result = await executeCommandBe.call(this, received, el => el?.isEnabled(), options)
 
     await options.afterAssertion?.({
-        matcherName: 'toBeEnabled',
+        matcherName,
         options,
         result
     })

@@ -86,15 +86,26 @@ describe('be* matchers', () => {
                         },
                     )
                     expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 125, interval: 50 })
+                    // Aliases (e.g. `toBeExisting`, `toBeChecked`) report their own name, not the matcher they delegate to
                     expect(beforeAssertion).toHaveBeenCalledWith({
-                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name, // TODO fix in major version the wrong selector name for matcher aliases
+                        matcherName: matcherFn.name,
                         options: { beforeAssertion, afterAssertion, wait: 125, interval: 50 }
                     })
                     expect(afterAssertion).toHaveBeenCalledWith({
-                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name,
+                        matcherName: matcherFn.name,
                         options: { beforeAssertion, afterAssertion, wait: 125, interval: 50 },
                         result
                     })
+                })
+
+                test('keeps the matcher name that the caller sets', async () => {
+                    const beforeAssertion = vi.fn()
+                    const afterAssertion = vi.fn()
+
+                    await matcherFn.call({ matcherName: 'toHaveText' }, el, { beforeAssertion, afterAssertion, wait: 0 })
+
+                    expect(beforeAssertion).toHaveBeenCalledWith(expect.objectContaining({ matcherName: 'toHaveText' }))
+                    expect(afterAssertion).toHaveBeenCalledWith(expect.objectContaining({ matcherName: 'toHaveText' }))
                 })
 
                 test('wait but error', async () => {
@@ -206,11 +217,11 @@ Received: "not ${lastMatcherWords(matcherFn.name)}"`)
                     expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 500, interval: undefined })
                     expect(result.pass).toEqual(true)
                     expect(beforeAssertion).toHaveBeenCalledWith({
-                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name, // TODO fix in major version the wrong selector name for matcher aliases
+                        matcherName: matcherFn.name,
                         options: { beforeAssertion, afterAssertion, wait: 500 }
                     })
                     expect(afterAssertion).toHaveBeenCalledWith({
-                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name, // TODO fix in major version the wrong selector name for matcher aliases
+                        matcherName: matcherFn.name,
                         options: { beforeAssertion, afterAssertion, wait: 500 },
                         result
                     })

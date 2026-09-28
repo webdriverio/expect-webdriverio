@@ -54,9 +54,10 @@ export async function toHaveId(
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
+    const { matcherName = 'toHaveId' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toHaveId',
+        matcherName,
         expectedValue,
         options,
     })
@@ -64,7 +65,7 @@ export async function toHaveId(
     const result: ExpectWebdriverIO.AssertionResult = await toHaveAttributeAndValue.call(this, el, 'id', expectedValue, options)
 
     await options.afterAssertion?.({
-        matcherName: 'toHaveId',
+        matcherName,
         expectedValue,
         options,
         result
