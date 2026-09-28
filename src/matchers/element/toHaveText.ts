@@ -33,7 +33,7 @@ export async function toHaveText(
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: actualText, subject: subject, context: { isSome } = {}, expected } = await waitUntil(
+    const { success: pass, actual: actualText, subject, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,

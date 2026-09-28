@@ -730,7 +730,7 @@ Expect ${selectorName} not to be displayed
             expect(isStrictlyStringContaining).toBe(false)
         })
 
-        test('should work with %s matcher', async () => {
+        test('should work with expect.not.stringContaining matcher', async () => {
             const asymmetricMatcher = expect.not.stringContaining('foo')
 
             const isStrictlyStringContaining = isInversedStringContainingMatcher(asymmetricMatcher)
