@@ -3,7 +3,7 @@ import type { ParsedCSSValue } from 'webdriverio'
 
 import { expect } from 'expect'
 
-import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MultiRemoteValuesWithArray } from './types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MultiRemoteValuesWithArray, WdioMatcherContext } from './types.js'
 import { wrapExpectedWithArray } from './util/elementsUtil.js'
 import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
@@ -93,13 +93,15 @@ export function getAsymmetricMatcherValue<T>(
 }
 
 async function executeCommandBe(
+    this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
     options: ExpectWebdriverIO.CommandOptions = {}
 ): ExpectWebdriverIO.AsyncAssertionResult {
-    const { isNot, verb = 'be', allowEmptyElements = false } = this
+    // Every `toBe*` matcher sets `expectation` before it calls this function
+    const { isNot, verb = 'be', expectation = '', allowEmptyElements = false } = this
 
-    const { success: pass, actual, subject, context: { isSome } = {} } = await waitUntil(
+    const { success: pass, actual, subject, context: { isSome = false } = {} } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy({
                 unresolvedElements: received,
@@ -118,7 +120,7 @@ async function executeCommandBe(
     )
 
     // TODO dprevost fix typing?
-    const message = enhanceErrorBe(subject, actual as boolean[] | boolean | MultiRemoteValuesWithArray<boolean> | undefined, { ...this, verb, isSome }, options)
+    const message = enhanceErrorBe(subject, actual as boolean[] | boolean | MultiRemoteValuesWithArray<boolean> | undefined, { ...this, verb, expectation, isSome }, options)
 
     return {
         pass,

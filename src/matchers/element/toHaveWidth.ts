@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { validateNumberMatcherArray, type NumberMatcher } from '../../util/numberOptionsUtil.js'
@@ -45,6 +45,7 @@ export async function toHaveWidth(
 ):Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveWidth(
+    this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS

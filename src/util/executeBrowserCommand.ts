@@ -9,7 +9,8 @@ export async function executeBrowserCommand<Actual, Expected>( {
 } :{
     browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser
     expectedValue: MaybeArrayOrMultiRemoteValues<Expected> | Expected | unknown
-    compare: (browser: WebdriverIO.Browser, expectedValue: Expected | unknown, index?: number) => Promise<CompareResult<Actual>>
+    // A method signature, so its parameters stay bivariant: each matcher types the expected value it compares
+    compare(browser: WebdriverIO.Browser, expectedValue: Expected | unknown, index?: number): Promise<CompareResult<Actual>>
     /** Needed so a forced (structural) failure also fails under `.not`, since Jest inverts `success` afterwards */
     isNot?: boolean
 }

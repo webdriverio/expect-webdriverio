@@ -42,7 +42,7 @@ export const waitUntil = async <T>(
                 }
                 await sleep(interval)
             } catch (err) {
-                error = err
+                error = err as Error
                 await sleep(interval)
             }
         }

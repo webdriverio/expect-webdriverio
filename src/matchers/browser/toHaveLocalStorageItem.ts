@@ -4,6 +4,7 @@ import { expect } from 'expect'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
+import type { WdioMatcherContext } from '../../types.js'
 
 /**
  * Browser or Multi-Remote Browser: only check that the item exists
@@ -34,6 +35,7 @@ export async function toHaveLocalStorageItem(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveLocalStorageItem(
+    this: WdioMatcherContext,
     browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
     key: string,
     expectedValue?: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,

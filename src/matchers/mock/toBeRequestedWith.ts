@@ -5,6 +5,7 @@ import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import { awaitMocks, getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
 import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
+import type { WdioMatcherContext } from '../../types.js'
 
 const STR_LIMIT = 80
 const KEY_LIMIT = 12
@@ -44,6 +45,7 @@ export async function toBeRequestedWith(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toBeRequestedWith(
+    this: WdioMatcherContext,
     received: WebdriverIO.Mock | WebdriverIO.Mock[] | Promise<WebdriverIO.Mock[]>,
     expectedValue: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
@@ -316,9 +318,12 @@ type ExpectedBody =
  * Note: `body`/`postData` populate asynchronously and may still be `undefined` here on an early
  * `waitUntil` iteration - see the timing comment on `toBeRequestedWith` for how retries handle that.
  */
+/** A method signature, so its parameter stays bivariant: the `postData` and `response` callbacks each type their own body */
+type BodyPredicate = { match(body: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined): boolean }['match']
+
 const bodyMatcher = (
     body: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined,
-    expected: ExpectedBody | ((r: string | Buffer | ExpectWebdriverIO.JsonCompatible | undefined) => boolean) | undefined,
+    expected: ExpectedBody | BodyPredicate | undefined,
     parseCache: Map<string, ParsedJson>
 ) => {
     if (typeof expected === 'undefined') {
@@ -550,6 +555,6 @@ const deleteUndefinedValues = (obj: Record<string, unknown>, baseline = obj) => 
     })
 }
 
-export function toBeRequestedWithResponse(...args: unknown[]) {
-    return toBeRequestedWith.call(this, ...args)
+export function toBeRequestedWithResponse(this: WdioMatcherContext, ...args: unknown[]) {
+    return (toBeRequestedWith as (this: WdioMatcherContext, ...args: unknown[]) => Promise<ExpectWebdriverIO.AssertionResult>).call(this, ...args)
 }

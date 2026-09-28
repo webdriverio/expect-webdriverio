@@ -1,6 +1,6 @@
 import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
@@ -30,7 +30,7 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
     return compareText(attributeValue, expectedValue as string | RegExp | AsymmetricMatcher<string> | undefined, options)
 }
 
-export async function toHaveAttributeAndValue(received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements, attribute: string, expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
+export async function toHaveAttributeAndValue(this: WdioMatcherContext, received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements, attribute: string, expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
     const { expectation = 'attribute', verb = 'have', isNot } = this
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
@@ -122,6 +122,7 @@ export async function toHaveAttribute(
 ): Promise<AssertionResult>
 
 export async function toHaveAttribute(
+    this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements,
     attribute: string,
     value?: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,

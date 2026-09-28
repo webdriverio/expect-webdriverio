@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { MaybeArray, WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
+import type { MaybeArray, WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
@@ -46,6 +46,7 @@ export async function toHaveStyle(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveStyle(
+    this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArray<{ [key: string]: string; }> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<{ [key: string]: string; }>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS

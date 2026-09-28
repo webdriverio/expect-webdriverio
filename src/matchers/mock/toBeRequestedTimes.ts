@@ -3,6 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { awaitMocks, getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
 import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
+import type { WdioMatcherContext } from '../../types.js'
 
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock,
@@ -20,6 +21,7 @@ export async function toBeRequestedTimes(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toBeRequestedTimes(
+    this: WdioMatcherContext,
     received: WebdriverIO.Mock | WebdriverIO.Mock[] | Promise<WebdriverIO.Mock[]>,
     expectedValue: number | ExpectWebdriverIO.NumberMatcher,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS

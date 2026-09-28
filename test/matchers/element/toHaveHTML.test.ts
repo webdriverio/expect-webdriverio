@@ -137,8 +137,8 @@ Received      : "<div>foo</div>"`
         })
 
         test('should return true if actual html equals the expected html with includeSelectorTag set to false', async () => {
-            vi.mocked(element.getHTML).mockImplementation(async ({ includeSelectorTag }: { includeSelectorTag: boolean }) => {
-                return includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
+            vi.mocked(element.getHTML).mockImplementation(async (options) => {
+                return options?.includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
             })
 
             const result = await thisContext.toHaveHTML(element, '<div>foo</div>', { wait: 1, includeSelectorTag: false })
@@ -146,8 +146,8 @@ Received      : "<div>foo</div>"`
         })
 
         test('should return true if actual html equals the expected html with includeSelectorTag set to true', async () => {
-            vi.mocked(element.getHTML).mockImplementation(async ({ includeSelectorTag }: { includeSelectorTag: boolean }) => {
-                return includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
+            vi.mocked(element.getHTML).mockImplementation(async (options) => {
+                return options?.includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
             })
 
             const result = await thisContext.toHaveHTML(element, '<div><div>foo</div></div>', {
@@ -464,8 +464,8 @@ Received      : ["<div>foo</div>", "<div>fii</div>"]`
         })
 
         test('should return true if actual html equals the expected html with includeSelectorTag set to false', async () => {
-            elements.forEach(el => vi.mocked(el.getHTML).mockImplementation(async ({ includeSelectorTag }: { includeSelectorTag: boolean }) => {
-                return includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
+            elements.forEach(el => vi.mocked(el.getHTML).mockImplementation(async (options) => {
+                return options?.includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
             }))
 
             const result = await thisContext.toHaveHTML(elements, '<div>foo</div>', { includeSelectorTag: false })
@@ -473,8 +473,8 @@ Received      : ["<div>foo</div>", "<div>fii</div>"]`
         })
 
         test('should return true if actual html equals the expected html with includeSelectorTag set to true', async () => {
-            elements.forEach(el => vi.mocked(el.getHTML).mockImplementation(async ({ includeSelectorTag }: { includeSelectorTag: boolean }) => {
-                return includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
+            elements.forEach(el => vi.mocked(el.getHTML).mockImplementation(async (options) => {
+                return options?.includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
             }))
 
             const result = await thisContext.toHaveHTML(elements, '<div><div>foo</div></div>', {
