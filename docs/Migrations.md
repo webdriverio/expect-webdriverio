@@ -69,6 +69,8 @@ v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#mi
 | `toHaveChildren(undefined \| {}, options)` | `toHaveChildren()`, or `toHaveChildren({ gte: 1 }, options)` |
 | `NumberOptions` as expected value, e.g. `toHaveChildren({ gte: 1, wait: 0 })` | a `NumberMatcher` and the options apart: `toHaveChildren({ gte: 1 }, { wait: 0 })` |
 | `ExpectWebdriverIO.NumberOptions` type | `ExpectWebdriverIO.NumberMatcher` and `ExpectWebdriverIO.CommandOptions` |
+| `toBeRequestedWithResponse()`, not typed or documented | `toBeRequestedWith({ response })` |
+| `toHaveAttributeAndValue()`, an internal helper registered by mistake | `toHaveAttribute()` |
 
 `NumberOptions` applied to `toHaveChildren`, `toHaveWidth`, `toHaveHeight`, `toBeElementsArrayOfSize` and `toBeRequestedTimes`. A number matcher with other keys than `eq`, `gte` and `lte` now throws `Invalid NumberMatcher`, instead of taking them as command options.
 

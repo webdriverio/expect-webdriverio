@@ -554,8 +554,3 @@ const deleteUndefinedValues = (obj: Record<string, unknown>, baseline = obj) => 
         }
     })
 }
-
-// Not in the public types, so the hooks get the public name `toBeRequestedWith` (`AssertionHookParams.matcherName`)
-export function toBeRequestedWithResponse(this: WdioMatcherContext, ...args: unknown[]) {
-    return (toBeRequestedWith as (this: WdioMatcherContext, ...args: unknown[]) => Promise<ExpectWebdriverIO.AssertionResult>).call(this, ...args)
-}

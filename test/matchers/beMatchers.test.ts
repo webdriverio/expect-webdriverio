@@ -12,7 +12,7 @@ import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementA
 vi.mock('@wdio/globals')
 
 const ignoredMatchers = [
-    'toBeElementsArrayOfSize', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWithResponse', 'toBeRequestedWith', 'toBeDisplayed', 'toBeDisabled'
+    'toBeElementsArrayOfSize', 'toBeRequested', 'toBeRequestedTimes', 'toBeRequestedWith', 'toBeDisplayed', 'toBeDisabled'
 ]
 
 const matcherPairs = [
