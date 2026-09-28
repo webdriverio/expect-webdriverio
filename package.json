@@ -19,7 +19,7 @@
     "wdio"
   ],
   "type": "module",
-  "module": "./lib/index.js",
+  "main": "./lib/index.js",
   "exports": {
     ".": [
       {
