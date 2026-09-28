@@ -4,6 +4,9 @@ import type { CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
+/** Reset at the start of each assertion, so the permission warning is logged once per assertion, not on every retry */
+let permissionWarningLogged = false
+
 /**
  * Browser
  */
@@ -37,8 +40,7 @@ export async function toHaveClipboardText(
 
     // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
-    // Warn once per assertion, not on every retry
-    const permissionWarning = { logged: false }
+    permissionWarningLogged = false
 
     const { actual, success: pass, subject, expected } = await waitUntil(
         async () => {
@@ -48,7 +50,7 @@ export async function toHaveClipboardText(
                 expectedValue: expectedWithOptions,
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
-                ) => compareClipboardText(browser, expectedValue, options, permissionWarning),
+                ) => compareClipboardText(browser, expectedValue, options),
             })
         },
         isNot,
@@ -74,14 +76,13 @@ export async function toHaveClipboardText(
 const compareClipboardText = async (
     browser: WebdriverIO.Browser,
     expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
-    options: ExpectWebdriverIO.StringOptions,
-    permissionWarning: { logged: boolean }
+    options: ExpectWebdriverIO.StringOptions
 ): Promise<CompareResult<string>> => {
     await browser.setPermissions({ name: 'clipboard-read' }, 'granted')
         // chances are that some browsers don't support the clipboard API yet
         .catch((err) => {
-            if (!permissionWarning.logged) {
-                permissionWarning.logged = true
+            if (!permissionWarningLogged) {
+                permissionWarningLogged = true
                 console.warn(`expect-webdriverio: Couldn't set clipboard permissions: ${err}`)
             }
         })

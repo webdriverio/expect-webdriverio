@@ -71,6 +71,10 @@ Received: "actual text"`
             expect(result.pass).toBe(false)
             expect(vi.mocked(browser.setPermissions).mock.calls.length).toBeGreaterThan(1)
             expect(warn).toHaveBeenCalledExactlyOnceWith("expect-webdriverio: Couldn't set clipboard permissions: Error: unsupported")
+
+            // The next assertion logs it again
+            await thisContext.toHaveClipboardText(browser, 'expected text', { wait: 0 })
+            expect(warn).toHaveBeenCalledTimes(2)
         })
         test('success with isNot true', async () => {
             vi.mocked(browser.execute).mockResolvedValue('some clipboard text')
