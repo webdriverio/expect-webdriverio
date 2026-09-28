@@ -1,6 +1,6 @@
 # expect-webdriverio Playgrounds
 
-A pnpm workspace for testing expect-webdriverio with Jasmine, Jest, and Mocha.
+Workspaces for testing expect-webdriverio with Jasmine, Jest, and Mocha.
 
 ## Setup
 
