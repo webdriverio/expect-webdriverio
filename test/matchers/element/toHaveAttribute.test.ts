@@ -390,7 +390,7 @@ Expect $$(\`sel\`) to have attribute attribute_name
             test.for([
                 undefined,
                 null
-            ])('failure when not present for %s', async ( attributeValue) => {
+            ])('failure when not present with expect.anything() for %s', async ( attributeValue) => {
                 els.forEach(el => {
                     vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
                 })
@@ -403,7 +403,7 @@ Expect $$(\`sel\`) to have attribute attribute_name
             test.for([
                 undefined,
                 null
-            ])('not - success when not present for %s - pass should be false', async ( attributeValue) => {
+            ])('not - success when not present with expect.anything() for %s - pass should be false', async ( attributeValue) => {
                 els.forEach(el => {
                     vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
                 })

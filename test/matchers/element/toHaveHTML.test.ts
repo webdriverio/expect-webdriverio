@@ -137,7 +137,7 @@ Received      : "<div>foo</div>"`
         })
 
         test('should return true if actual html equals the expected html with includeSelectorTag set to false', async () => {
-            vi.mocked(element.getHTML).mockImplementation(async ({ includeSelectorTag}: { includeSelectorTag: boolean }) => {
+            vi.mocked(element.getHTML).mockImplementation(async ({ includeSelectorTag }: { includeSelectorTag: boolean }) => {
                 return includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
             })
 
@@ -146,7 +146,7 @@ Received      : "<div>foo</div>"`
         })
 
         test('should return true if actual html equals the expected html with includeSelectorTag set to true', async () => {
-            vi.mocked(element.getHTML).mockImplementation(async ({ includeSelectorTag}: { includeSelectorTag: boolean }) => {
+            vi.mocked(element.getHTML).mockImplementation(async ({ includeSelectorTag }: { includeSelectorTag: boolean }) => {
                 return includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
             })
 
@@ -464,7 +464,7 @@ Received      : ["<div>foo</div>", "<div>fii</div>"]`
         })
 
         test('should return true if actual html equals the expected html with includeSelectorTag set to false', async () => {
-            elements.forEach(el => vi.mocked(el.getHTML).mockImplementation(async ({ includeSelectorTag}: { includeSelectorTag: boolean }) => {
+            elements.forEach(el => vi.mocked(el.getHTML).mockImplementation(async ({ includeSelectorTag }: { includeSelectorTag: boolean }) => {
                 return includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
             }))
 
@@ -473,7 +473,7 @@ Received      : ["<div>foo</div>", "<div>fii</div>"]`
         })
 
         test('should return true if actual html equals the expected html with includeSelectorTag set to true', async () => {
-            elements.forEach(el => vi.mocked(el.getHTML).mockImplementation(async ({ includeSelectorTag}: { includeSelectorTag: boolean }) => {
+            elements.forEach(el => vi.mocked(el.getHTML).mockImplementation(async ({ includeSelectorTag }: { includeSelectorTag: boolean }) => {
                 return includeSelectorTag ? '<div><div>foo</div></div>' : '<div>foo</div>'
             }))
 

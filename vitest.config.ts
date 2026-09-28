@@ -27,7 +27,7 @@ export default defineConfig({
                 'test/**',
                 'test-types/**',
                 '.eslintrc.cjs',
-                'eslint.config.mjs',
+                'oxlint-local-plugin.mjs',
                 'vitest.config.ts',
                 'types-checks-filter-out-node_modules.js',
             ],
