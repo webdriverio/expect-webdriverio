@@ -8,7 +8,8 @@ import { promisify } from 'node:util'
  * Installs the packed package in a project outside the repo, as a user does, then type-checks and imports each entry point.
  * - Outside the repo: our `node_modules` (and a `~/node_modules`) must not resolve what the package does not declare.
  * - pnpm `hoist: false`: only the declared dependencies and peers resolve.
- * - The same versions as our lockfile: no network resolution of newer versions, and pnpm `minimumReleaseAge` passes.
+ * - No lockfile, on purpose: the dependencies of the package resolve as for a user, who does not get our lockfile.
+ *   Only the direct dependencies of the project use the versions of our lockfile. `--prefer-offline` reuses the pnpm cache.
  * Needs a build (`lib/`), as `ts:arethetypeswrong`.
  */
 

@@ -26,9 +26,16 @@ const entries = readdirSync(dir)
 
 const results = await Promise.all(entries.flatMap((entry) => modes.map(async ([module, moduleResolution]) => {
     const args = ['-p', `${dir}/tsconfig.${entry}.json`, '--module', module, '--moduleResolution', moduleResolution]
-    const output = await exec('node_modules/.bin/tsc', args).then(({ stdout }) => stdout, (error) => error.stdout + error.stderr)
-    const errors = output.split('\n')
-        .filter((line) => line.includes('error TS'))
+    const { failed, output } = await exec('node_modules/.bin/tsc', args).then(
+        ({ stdout }) => ({ failed: false, output: stdout }),
+        (error) => ({ failed: true, output: `${error.stdout ?? ''}${error.stderr ?? ''}` || error.message })
+    )
+    const typeErrors = output.split('\n').filter((line) => line.includes('error TS'))
+    // A failure without type errors means that the compiler did not check the entry point
+    if (failed && typeErrors.length === 0) {
+        return { name: `${entry} (${module})`, errors: [`tsc failed: ${output.trim()}`] }
+    }
+    const errors = typeErrors
         .filter((line) => !line.startsWith('node_modules/'))
         .filter((line) => !knownErrors.some((patterns) => patterns.every((pattern) => line.includes(pattern))))
     return { name: `${entry} (${module})`, errors }
