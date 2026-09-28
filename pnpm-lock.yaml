@@ -63,6 +63,9 @@ importers:
       '@wdio/globals':
         specifier: ^9.31.3
         version: 9.31.3(expect-webdriverio@)(webdriverio@9.32.0(supports-color@8.1.1))
+      '@wdio/protocols':
+        specifier: ^9.31.5
+        version: 9.31.5
       '@wdio/types':
         specifier: ^9.32.0
         version: 9.32.0
@@ -90,6 +93,9 @@ importers:
       vitest:
         specifier: ^5.0.2
         version: 5.0.2(@types/node@24.13.3)(@vitest/coverage-v8@5.0.2)(vite@8.3.1(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.6.1)(tsx@4.23.15))
+      webdriver:
+        specifier: ^9.32.0
+        version: 9.32.0(supports-color@8.1.1)
       webdriverio:
         specifier: ^9.32.0
         version: 9.32.0(supports-color@8.1.1)
