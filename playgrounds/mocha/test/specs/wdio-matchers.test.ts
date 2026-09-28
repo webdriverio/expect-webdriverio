@@ -29,8 +29,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
         it('should verify not localStorage item with options', async () => {
             await expect(browser).not.toHaveLocalStorageItem('key', expect.anything(), { wait: 0 })
-            await expect(browser).not.toHaveLocalStorageItem('key', undefined, { wait: 0 })
-            await expect(browser).not.toHaveLocalStorageItem('key', undefined)
+            await expect(browser).not.toHaveLocalStorageItem('key')
         })
     })
 

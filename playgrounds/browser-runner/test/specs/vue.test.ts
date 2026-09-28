@@ -77,7 +77,6 @@ describe('Vue Component Testing', () => {
 
             it.skip('to have attribute', async () => {
                 await expect($('p=Times clicked: 1')).toHaveAttribute('class')
-                await expect($('p=Times clicked: 1')).toHaveAttribute('class', undefined, { wait: 0 })
                 await expect($('p=Times clicked: 1')).toHaveAttribute('class', expect.anything(), { wait: 0 })
             })
         })
@@ -110,7 +109,7 @@ describe('Vue Component Testing', () => {
 
             it.skip('to have attribute', async () => {
                 await expect($$('p=Times clicked: 1')).toHaveAttribute('class')
-                await expect(await $$('p=Times clicked: 1')).toHaveAttribute('class', undefined, { wait: 0 })
+                await expect(await $$('p=Times clicked: 1')).toHaveAttribute('class', expect.anything(), { wait: 0 })
                 await expect($$('p=Times clicked: 1')).toHaveAttribute('class', expect.anything(), { wait: 0 })
                 await expect($$('p=Times clicked: 1')).toHaveAttribute('class', expect.anything(), { wait: 0 })
             })
