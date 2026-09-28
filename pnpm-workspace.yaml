@@ -2,6 +2,7 @@
 
 # No dependency needs its install script: WebdriverIO downloads the drivers at runtime
 allowBuilds:
+  '@parcel/watcher': false
   edgedriver: false
   esbuild: false
   geckodriver: false
