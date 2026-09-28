@@ -77,6 +77,6 @@ export async function toHaveHref(
 /**
  * Alias of `toHaveHref`, with its own name in the `beforeAssertion` and `afterAssertion` hooks
  */
-export function toHaveLink(this: WdioMatcherContext, ...args: unknown[]): Promise<AssertionResult> {
+export const toHaveLink: typeof toHaveHref = function toHaveLink(this: WdioMatcherContext, ...args: unknown[]): Promise<AssertionResult> {
     return (toHaveHref as (this: WdioMatcherContext, ...args: unknown[]) => Promise<AssertionResult>).call({ matcherName: 'toHaveLink', ...this }, ...args)
 }

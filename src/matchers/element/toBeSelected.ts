@@ -28,7 +28,7 @@ export async function toBeSelected(
 
 export async function toBeChecked (this: WdioMatcherContext, received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
     this.expectation = 'checked'
-    this.matcherName = 'toBeChecked'
+    this.matcherName ??= 'toBeChecked'
 
     const result = await toBeSelected.call(this, received, options)
 

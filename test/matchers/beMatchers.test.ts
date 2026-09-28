@@ -98,6 +98,16 @@ describe('be* matchers', () => {
                     })
                 })
 
+                test('keeps the matcher name that the caller sets', async () => {
+                    const beforeAssertion = vi.fn()
+                    const afterAssertion = vi.fn()
+
+                    await matcherFn.call({ matcherName: 'toHaveText' }, el, { beforeAssertion, afterAssertion, wait: 0 })
+
+                    expect(beforeAssertion).toHaveBeenCalledWith(expect.objectContaining({ matcherName: 'toHaveText' }))
+                    expect(afterAssertion).toHaveBeenCalledWith(expect.objectContaining({ matcherName: 'toHaveText' }))
+                })
+
                 test('wait but error', async () => {
                     vi.mocked(elementFn).mockRejectedValue(new Error('some error'))
 

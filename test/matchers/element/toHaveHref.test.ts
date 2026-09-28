@@ -50,7 +50,7 @@ describe(toHaveHref, () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await toHaveLink.call({}, el, 'https://www.example.com', { wait: 0, beforeAssertion, afterAssertion })
+            const result = await ({ toHaveLink }).toHaveLink(el, 'https://www.example.com', { wait: 0, beforeAssertion, afterAssertion })
 
             expect(result.pass).toBe(true)
             expect(beforeAssertion).toHaveBeenCalledWith(expect.objectContaining({ matcherName: 'toHaveLink' }))

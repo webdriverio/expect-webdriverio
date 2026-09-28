@@ -31,14 +31,14 @@ export async function toExist(
 export function toBeExisting(this: WdioMatcherContext, el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, options?: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'existing'
     this.verb = 'be'
-    this.matcherName = 'toBeExisting'
+    this.matcherName ??= 'toBeExisting'
 
     return toExist.call(this, el, options)
 }
 export function toBePresent(this: WdioMatcherContext, el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, options?: ExpectWebdriverIO.CommandOptions) {
     this.expectation = 'present'
     this.verb = 'be'
-    this.matcherName = 'toBePresent'
+    this.matcherName ??= 'toBePresent'
 
     return toExist.call(this, el, options)
 }
