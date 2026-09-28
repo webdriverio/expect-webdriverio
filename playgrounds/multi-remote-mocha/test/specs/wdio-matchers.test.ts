@@ -86,7 +86,9 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 const assertion = expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'WebdriverJS Testpage', firefox: 'WebdriverJS Testpage' }))
 
-                await expect(assertion).rejects.toThrow(/-   "firefox": "WebdriverJS Testpage",\n\+   "firefox": "",/)
+                // One line per check: in a terminal, color codes surround each diff line
+                await expect(assertion).rejects.toThrow(/-   "firefox": "WebdriverJS Testpage",/)
+                await expect(assertion).rejects.toThrow(/\+   "firefox": "",/)
             })
 
             it('should fail strictly, also with .not, when a browser is missing or unknown', async () => {
