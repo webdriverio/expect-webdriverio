@@ -1,0 +1,19 @@
+packages:
+  - jasmine
+  - jest
+  - mocha
+  - multi-remote-mocha
+  - browser-runner
+
+# The WebdriverIO packages depend on `expect-webdriverio`: use the local package, not a release
+overrides:
+  expect-webdriverio: 'link:..'
+
+# No dependency needs its install script: WebdriverIO downloads the drivers at runtime,
+# and the native binaries come from optional dependencies
+allowBuilds:
+  '@swc/core': false
+  edgedriver: false
+  esbuild: false
+  geckodriver: false
+  unrs-resolver: false

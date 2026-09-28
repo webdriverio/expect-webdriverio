@@ -8,12 +8,12 @@
     "typecheck": "tsc --noEmit",
     "test": "wdio run wdio.conf.ts",
     "lint": "eslint .",
-    "checks:all": "npm run typecheck && npm run lint && npm test"
+    "checks:all": "pnpm run typecheck && pnpm run lint && pnpm test"
   },
   "devDependencies": {
     "@wdio/mocha-framework": "^9.32.0",
     "eslint-plugin-mocha": "^11.3.0",
-    "expect-webdriverio": "file:../.."
+    "expect-webdriverio": "link:../.."
   },
   "peerDependencies": {
     "@wdio/cli": "*",

@@ -8,13 +8,15 @@
     "typecheck": "tsc --noEmit",
     "test": "wdio run wdio.conf.ts",
     "lint": "eslint .",
-    "checks:all": "npm run typecheck && npm run lint && npm test"
+    "checks:all": "pnpm run typecheck && pnpm run lint && pnpm test"
   },
   "devDependencies": {
-    "vite": "^6.4.3",
     "@testing-library/vue": "^8.1.0",
+    "@vitejs/plugin-vue": "^5.2.4",
     "@vue/test-utils": "^2.4.11",
+    "@wdio/mocha-framework": "^9.32.0",
     "eslint-plugin-mocha": "^11.3.0",
-    "@vitejs/plugin-vue": "^5.2.4"
+    "vite": "^6.4.3",
+    "vue": "^3.5.41"
   }
 }

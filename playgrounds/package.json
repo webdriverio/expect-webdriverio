@@ -4,18 +4,19 @@
   "type": "module",
   "private": true,
   "description": "Playground projects common dependencies",
-  "workspaces": ["./jasmine", "./jest", "./mocha", "./multi-remote-mocha", "./browser-runner"],
+  "packageManager": "pnpm@11.27.1+sha512.a81d4c21b9b09a4b0aebf90ef5e527d4262bdda322d26082978cb549023ac6d9cafc98b19fffaa5c71db438a65f70224edb78d7311187861ff96480d1cdca23c",
   "scripts": {
-    "preinstall": "cd .. && npm run compile",
-    "setup": "npm install",
-    "typecheck": "npm exec --workspaces --call 'npm run typecheck'",
-    "test": "npm exec --workspaces --call 'npm run test'",
-    "lint": "npm exec --workspaces --call 'npm run lint'",
-    "checks:all": "npm run typecheck && npm run lint && npm test",
-    "snapshots:update": "npm exec --workspace=mocha --call 'npm run snapshots:update'"
+    "preinstall": "cd .. && pnpm run compile",
+    "setup": "pnpm install",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r --workspace-concurrency=1 run test",
+    "lint": "pnpm -r run lint",
+    "checks:all": "pnpm run typecheck && pnpm run lint && pnpm test",
+    "snapshots:update": "pnpm --filter ./mocha run snapshots:update"
   },
   "devDependencies": {
-    "expect-webdriverio": "file:..",
+    "@typescript-eslint/eslint-plugin": "^8.70.1",
+    "@typescript-eslint/parser": "^8.70.1",
     "@wdio/browser-runner": "^9.32.0",
     "@wdio/cli": "^9.32.0",
     "@wdio/globals": "^9.31.3",
@@ -24,11 +25,9 @@
     "@wdio/spec-reporter": "^9.32.0",
     "@wdio/visual-service": "^10.1.0",
     "eslint": "^9.39.5",
+    "expect-webdriverio": "link:..",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "webdriverio": "^9.32.0"
-  },
-  "overrides": {
-    "expect-webdriverio": "$expect-webdriverio"
   }
 }

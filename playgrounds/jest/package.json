@@ -7,7 +7,7 @@
     "typecheck": "tsc --noEmit",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --verbose --forceExit",
     "lint": "eslint .",
-    "checks:all": "npm run typecheck && npm run lint && npm test"
+    "checks:all": "pnpm run typecheck && pnpm run lint && pnpm test"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

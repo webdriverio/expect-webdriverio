@@ -7,13 +7,13 @@
     "typecheck": "tsc --noEmit",
     "test": "wdio run wdio.conf.ts",
     "lint": "eslint .",
-    "checks:all": "npm run typecheck && npm run lint && npm test"
+    "checks:all": "pnpm run typecheck && pnpm run lint && pnpm test"
   },
   "devDependencies": {
     "@types/jasmine": "^6.0.0",
     "@wdio/jasmine-framework": "^9.32.0",
     "eslint-plugin-jasmine": "^4.2.2",
-    "expect-webdriverio": "file:../.."
+    "expect-webdriverio": "link:../.."
   },
   "peerDependencies": {
     "@wdio/cli": "*",
