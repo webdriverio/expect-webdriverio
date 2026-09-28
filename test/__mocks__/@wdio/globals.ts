@@ -143,6 +143,29 @@ export const $Factory = (element: WebdriverIO.Element, findDelay = 0): Chainable
     return runtimeChainableElement as unknown as ChainablePromiseElement
 }
 
+/**
+ * Mirrors WebdriverIO v10 `StrictSelectorError`, thrown by a strict `$()` when the selector matches several elements.
+ * @see https://github.com/webdriverio/webdriverio/issues/15666
+ */
+export class StrictSelectorError extends Error {
+    matches: number
+    selector: string
+
+    constructor(selector: string, matches: number) {
+        const printable = JSON.stringify(selector)
+        super(
+            `strict mode violation: \`$(${printable})\` resolved to ${matches} elements, expected 1.\n` +
+            `Use \`$$(${printable})\` to work with all matches, \`$$(${printable})[0]\` if you explicitly ` +
+            'want the first one, or narrow down the selector so it matches a single element.\n' +
+            `Opt out for a single call with \`$(${printable}, { strict: false })\` or globally by setting ` +
+            '`strictSelectors: false` in your WebdriverIO config.'
+        )
+        this.name = 'StrictSelectorError'
+        this.matches = matches
+        this.selector = selector
+    }
+}
+
 export const $ = vi.fn((_selector: string) => {
     const element = elementFactory(_selector)
 

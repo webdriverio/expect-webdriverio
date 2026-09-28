@@ -112,27 +112,27 @@ describe('WebdriverIO Custom Matchers', () => {
         describe('toBe Matchers', () => {
             describe('$', () => {
                 it('should verify element is displayed', async () => {
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await expect(h1).toBeDisplayed()
                     await expect(await h1).toBeDisplayed()
                 })
 
                 it('should verify element is displayed for specific browser', async () => {
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await expect(h1.select('firefox')).toBeDisplayed()
                 })
 
                 it('should verify element exists', async () => {
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await expect(h1).toExist()
                     await expect(await h1).toExist()
                 })
 
                 it('should verify element exists for specific browser', async () => {
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await expect(h1.select('firefox')).toExist()
                 })
@@ -154,7 +154,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
                     await multiRemoteBrowser.getInstance('chrome')!.url('about:blank')
 
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await expect(h1).not.toBeDisplayed()
                 })
@@ -162,31 +162,31 @@ describe('WebdriverIO Custom Matchers', () => {
                 it('should be able to query isDisplayed on element never existed for a specific browser', async () => {
                     await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
 
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await expect(h1.select('firefox')).not.toBeDisplayed()
                     await expect(h1.select('chrome')).toBeDisplayed()
                 })
 
                 it('should be able to query isDisplayed on element no longer existing', async () => {
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
                     await multiRemoteBrowser.getInstance('chrome')!.url('about:blank')
 
                     await expect(h1).not.toBeDisplayed()
-                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`h1`\) to be displayed/)
+                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`header h1`\) to be displayed/)
                 })
 
                 it('should be able to query isDisplayed on element no longer existing and one still existing', async () => {
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
 
                     await expect(h1.select('firefox')).not.toBeDisplayed()
                     await expect(h1.select('chrome')).toBeDisplayed()
-                    await expect(expect(h1).not.toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`h1`\) not to be displayed/)
-                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`h1`\) to be displayed/)
+                    await expect(expect(h1).not.toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`header h1`\) not to be displayed/)
+                    await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`header h1`\) to be displayed/)
                 })
             })
 
@@ -341,14 +341,14 @@ describe('WebdriverIO Custom Matchers', () => {
 
             describe('Single element', () => {
                 it('should verify element have text with one expect value', async () => {
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await expect(h1).toHaveText('WebdriverJS Testpage')
                     await expect(await h1).toHaveText('WebdriverJS Testpage')
                 })
 
                 it('should verify element have text with multi-remote expect values', async () => {
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await expect(h1).toHaveText({
                         'firefox': 'WebdriverJS Testpage',
@@ -415,12 +415,12 @@ describe('WebdriverIO Custom Matchers', () => {
                 })
 
                 it('should verify one NumberMatcher per browser', async () => {
-                    await expect(multiRemoteBrowser.$('h1')).toHaveWidth(expect.multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }))
-                    await expect(multiRemoteBrowser.$('h1')).toHaveHeight(expect.multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }))
+                    await expect(multiRemoteBrowser.$('header h1')).toHaveWidth(expect.multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }))
+                    await expect(multiRemoteBrowser.$('header h1')).toHaveHeight(expect.multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }))
                 })
 
                 it('should treat a plain object as a literal style, and per-browser styles with expect.multiRemote()', async () => {
-                    const h1 = multiRemoteBrowser.$('h1')
+                    const h1 = multiRemoteBrowser.$('header h1')
 
                     await expect(h1).toHaveStyle({ display: 'block' })
                     await expect(h1).toHaveStyle(expect.multiRemote({ chrome: { display: 'block' }, firefox: { display: 'block' } }))

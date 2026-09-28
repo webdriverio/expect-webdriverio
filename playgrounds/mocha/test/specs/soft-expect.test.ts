@@ -7,7 +7,7 @@ describe('Soft Assertions with expect.soft', () => {
 
     describe('Basic soft assertions', () => {
         it('should collect multiple failures before asserting', async () => {
-            const heading = await $('h1')
+            const heading = await $('header h1')
             const button = await $('.btn1')
 
             // These assertions won't stop test execution immediately
@@ -34,7 +34,7 @@ describe('Soft Assertions with expect.soft', () => {
         it('should validate multiple elements with soft assertions', async () => {
             const button = await $('.btn1')
             const header = await $('header')
-            const heading = await $('h1')
+            const heading = await $('header h1')
 
             await expect.soft(button).toExist()
             await expect.soft(button).toBeClickable()
@@ -128,7 +128,7 @@ describe('Soft Assertions with expect.soft', () => {
             await expect.soft(button).toHaveElementProperty('type', 'submit')
 
             // Validate heading
-            const heading = await $('h1')
+            const heading = await $('header h1')
             await expect.soft(heading).toExist()
             await expect.soft(heading).toHaveText(expect.stringContaining('WebdriverJS'))
 

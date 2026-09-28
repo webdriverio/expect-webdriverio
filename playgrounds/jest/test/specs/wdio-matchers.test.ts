@@ -148,7 +148,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
     describe('With wait options', () => {
         it('should wait for condition to be met', async () => {
-            const heading = await standalone.$('h1')
+            const heading = await standalone.$('header h1')
             await expect(heading).toBeDisplayed({ wait: 5000 })
         })
 

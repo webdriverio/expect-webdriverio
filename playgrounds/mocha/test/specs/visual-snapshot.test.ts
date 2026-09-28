@@ -29,7 +29,7 @@ describe('Visual Snapshot Testing', () => {
         })
 
         it('should match element visual snapshot with mismatch percentage', async () => {
-            const heading = await $('h1')
+            const heading = await $('header h1')
 
             await expect(heading).toMatchElementSnapshot('mainHeading', 5)
         })
