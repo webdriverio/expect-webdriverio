@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "types": ["@types/jasmine", "expect-webdriverio/jasmine"] },
+  "files": ["jasmine.ts"]
+}

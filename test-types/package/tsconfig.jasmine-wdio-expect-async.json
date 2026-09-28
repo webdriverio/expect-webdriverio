@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.base.json",
+  // The documented order: the first global `expect` wins
+  "compilerOptions": { "types": ["expect-webdriverio/jasmine-wdio-expect-async", "@types/jasmine"] },
+  "files": ["jasmine-wdio-expect-async.ts"]
+}

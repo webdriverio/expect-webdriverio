@@ -29,7 +29,8 @@ export default defineConfig({
                 '.eslintrc.cjs',
                 'oxlint-local-plugin.mjs',
                 'vitest.config.ts',
-                'types-checks-filter-out-node_modules.js',
+                'types-checks-declarations.js',
+                'types-checks-package.js',
             ],
             thresholds: {
                 lines: 92.3,

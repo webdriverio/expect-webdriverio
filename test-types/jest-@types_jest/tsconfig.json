@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "noEmit": true,
+    "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "target": "es2022",

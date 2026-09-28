@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.base.json",
+  // `expect-global` overrides the Jasmine `expect` in standalone Jasmine
+  "compilerOptions": { "types": ["@types/jasmine"] },
+  "files": ["../../types/expect-global.d.ts"]
+}

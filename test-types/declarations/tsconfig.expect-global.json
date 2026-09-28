@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "types": [] },
+  "files": ["../../types/expect-global.d.ts"]
+}

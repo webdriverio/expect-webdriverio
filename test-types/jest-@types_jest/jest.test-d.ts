@@ -65,6 +65,18 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
             })
         })
 
+        describe('toHaveLocalStorageItem', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', 'value')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveLocalStorageItem('key', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should have ts errors when actual is not a Browser element', async () => {
+                expectTypeOf(expect(element).toHaveLocalStorageItem).toBeNever()
+            })
+        })
+
         describe('toHaveClipboardText', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(browser).toHaveClipboardText('text')).toEqualTypeOf<Promise<void>>()
@@ -479,6 +491,13 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
                 expectTypeOf(expect(element).toHaveElementProperty('prop', 'val')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
             })
+
+            it('should reject an explicit undefined or null value', async () => {
+                // @ts-expect-error omit the value, or use `expect.anything()` with options
+                expectTypeOf(expect(element).toHaveElementProperty).toBeCallableWith('prop', null)
+                // @ts-expect-error omit the value, or use `expect.anything()` with options
+                expectTypeOf(expect(element).toHaveElementProperty).toBeCallableWith('prop', undefined, { wait: 1 })
+            })
         })
 
         describe('Link Matchers', () => {
@@ -488,6 +507,13 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
 
                 expectTypeOf(expect(element).toHaveLink('href')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveLink(expect.stringContaining('href'))).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should reject a value that is not a string', async () => {
+                // @ts-expect-error an href is a string
+                expectTypeOf(expect(element).toHaveHref).toBeCallableWith(1)
+                // @ts-expect-error an href is a string
+                expectTypeOf(expect(element).toHaveLink).toBeCallableWith(1)
             })
         })
 

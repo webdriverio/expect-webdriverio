@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "types": ["@types/jest"] },
+  "files": ["../../jest.d.ts"]
+}

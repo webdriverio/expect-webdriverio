@@ -26,7 +26,7 @@ src/softExpect.ts        soft assertions (and softAssert*.ts)
 types/*.d.ts             hand-written public types (not generated)
 jest.d.ts, jasmine*.d.ts framework augmentations of the public types
 test/                    Vitest unit tests, mirror src/ (browser mocked in test/__mocks__)
-test-types/              type tests, one project per framework augmentation
+test-types/              type tests, one project per framework augmentation; declarations/ and package/ check the published files
 playgrounds/             real-browser WebdriverIO projects (a pnpm workspace)
 docs/                    user docs, also published on webdriver.io
 ```
@@ -70,7 +70,7 @@ Coverage is on by default, with global thresholds. When you run one file, add
 | Change | Minimum local proof |
 |--------|---------------------|
 | One matcher or util | its test file: `pnpm exec vitest --run --coverage.enabled=false <test file>` |
-| Public types (`types/`, `jest.d.ts`, `jasmine*.d.ts`) | `pnpm run test:types` |
+| Public types (`types/`, `jest.d.ts`, `jasmine*.d.ts`) | `pnpm run build && pnpm run test:types` (`ts:package` installs the packed build) |
 | Failure messages | the unit tests that assert the message, and one playground run |
 | Multi-remote | unit tests with the flag off and on (see below), and `playgrounds/multi-remote-mocha` |
 | Snapshot matchers | `test/snapshot.test.ts`, and the Mocha, Jasmine and Browser Runner playgrounds |
