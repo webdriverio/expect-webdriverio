@@ -3170,8 +3170,8 @@ packages:
   iobuffer@6.0.1:
     resolution: {integrity: sha512-SZWYkWNfjIXIBYSDpXDYIgshqtbOPsi4lviawAEceR1Kqk+sHDlcQjWrzNQsii80AyBY0q5c8HCTNjqo74ul+Q==}
 
-  ip-address@10.4.0:
-    resolution: {integrity: sha512-oSK96Grm3aP6OrS263xVxbNDGVL7rzBtYdpGqlDG8iQdoenDoTs/nkki+DflYbAEE8Xl6o5YxhxlrKvI3nqKXQ==}
+  ip-address@10.7.2:
+    resolution: {integrity: sha512-7H/2gFSIitxc0hG3nOI1glS8QLo/EHBFFLk8vEUjXY/xu0AdL8jZ9U1IzO2PUm0d2D/ofQcAifb0g6OBkt8U7w==}
     engines: {node: '>= 12'}
 
   is-arguments@1.2.0:
@@ -7886,7 +7886,7 @@ snapshots:
 
   iobuffer@6.0.1: {}
 
-  ip-address@10.4.0: {}
+  ip-address@10.7.2: {}
 
   is-arguments@1.2.0:
     dependencies:
@@ -9173,7 +9173,7 @@ snapshots:
 
   socks@2.8.9:
     dependencies:
-      ip-address: 10.4.0
+      ip-address: 10.7.2
       smart-buffer: 4.2.0
 
   source-map-js@1.2.1: {}
