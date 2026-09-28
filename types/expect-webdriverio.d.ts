@@ -1387,8 +1387,7 @@ declare namespace ExpectWebdriverIO {
             | null
             | ExpectWebdriverIO.JsonCompatible
             | ExpectWebdriverIO.PartialMatcher<string | ExpectWebdriverIO.JsonCompatible>
-            // A method signature, so the callback can type its parameter, also with `strictFunctionTypes`
-            | { match(response: unknown): boolean }['match']
+            | ((response: unknown) => boolean)
     }
 
     type jsonPrimitive = string | number | boolean | null

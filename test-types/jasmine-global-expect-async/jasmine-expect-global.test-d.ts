@@ -386,7 +386,7 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
                     statusCode: [401, 403],
                     requestHeaders: headers => headers.Authorization.startsWith('Bearer '),
                     postData: wdioExpect.objectContaining({ released: true, title: wdioExpect.stringContaining('foobar') }),
-                    response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
+                    response: (r) => typeof r === 'object' && r !== null && 'data' in r
                 })).toEqualTypeOf<Promise<void>>()
             })
         })

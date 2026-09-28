@@ -979,8 +979,15 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 statusCode: [401, 403],
                 requestHeaders: headers => headers.Authorization.startsWith('Bearer '),
                 postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
-                response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
+                response: (r) => typeof r === 'object' && r !== null && 'data' in r
             })).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should not accept a parsed type for the raw response body', async () => {
+            await expect(networkMock).toBeRequestedWith({
+                // @ts-expect-error the callback gets the raw body (string, Buffer, JSON or undefined), not a parsed object
+                response: (r: { data: { items: unknown[] } }) => r.data.items.length === 20
+            })
         })
 
         it('should have ts errors with command options in the number', async () => {

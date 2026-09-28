@@ -434,7 +434,7 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
                 statusCode: [401, 403],
                 requestHeaders: headers => headers.Authorization.startsWith('Bearer '),
                 postData: expect.objectContaining({ released: true, title: expect.stringContaining('foobar') }),
-                response: (r: { data: { items: unknown[] } }) => Array.isArray(r) && r.data.items.length === 20
+                response: (r) => typeof r === 'object' && r !== null && 'data' in r
             })).toEqualTypeOf<Promise<void>>()
         })
     })
