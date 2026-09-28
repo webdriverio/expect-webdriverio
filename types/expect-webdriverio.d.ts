@@ -21,7 +21,7 @@ type ExpectLibAsyncExpectationResult = import('expect').AsyncExpectationResult
 type ExpectLibExpectationResult = import('expect').ExpectationResult
 type ExpectLibMatcherContext = import('expect').MatcherContext
 type MatchersObject = Parameters<typeof import('expect').expect.extend>[0]
-type ExpectLibAnything = ReturnType<typeof expect.any> | ReturnType<typeof expect.anything>
+type ExpectLibAnything = ReturnType<typeof import('expect').expect.any> | ReturnType<typeof import('expect').expect.anything>
 type WdioGetHTMLOptions = NonNullable<Parameters<WebdriverIO.Element['getHTML']>[0]>
 
 // Extracted from the expect library, this is the type of the matcher function used in the expect library.

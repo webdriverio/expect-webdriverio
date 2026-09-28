@@ -28,6 +28,15 @@ describe('Jasmine type agumentations', () => {
         expectTypeOf(expectAsync(chainableArray).toHaveValue(wdioExpect.not.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
     })
 
+    it('rejects wrong arguments', () => {
+        // @ts-expect-error an href is a string
+        expectTypeOf(expectAsync(elementArray).toHaveHref).toBeCallableWith(1)
+        // @ts-expect-error an attribute name is a string
+        expectTypeOf(expectAsync(elementArray).toHaveAttribute).toBeCallableWith(1)
+        // @ts-expect-error `wait` is a number
+        expectTypeOf(expectAsync(elementArray).toBeDisplayed).toBeCallableWith({ wait: '1' })
+    })
+
     describe('Augment expectAsync properly', () => {
 
         describe('Browser', () => {
@@ -279,9 +288,15 @@ describe('Jasmine type agumentations', () => {
                         expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', [jasmine.anything(), jasmine.any(Number), 'value', jasmine.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
                     })
 
-                    it('should not reject an explicit undefined or null value, because the value type is `any` with Jasmine', async () => {
-                        // `ExpectLibAnything` uses `expect.any`, which Jasmine does not have, so it is `any` here
-                        expectTypeOf(expectAsync(elements).toHaveElementProperty).parameter(1).toBeAny()
+                    it('should reject an explicit undefined or null value', async () => {
+                        // @ts-expect-error omit the value, or use `jasmine.anything()` with options
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty).toBeCallableWith('prop', null)
+                        // @ts-expect-error omit the value, or use `jasmine.anything()` with options
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty).toBeCallableWith('prop', undefined)
+                        // @ts-expect-error omit the value, or use `jasmine.anything()` with options
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty).toBeCallableWith('prop', null, { wait: 1 })
+                        // @ts-expect-error omit the value, or use `jasmine.anything()` with options
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty).toBeCallableWith('prop', undefined, { wait: 1 })
                     })
                 })
             })

@@ -5,12 +5,11 @@
  * Required when used in standalone mode (mocha) or to override the one of Jasmine
  */
 
-// @ts-expect-error: IDE might flags this one but just does be concerned by it. This way the `tsc:root-types` can pass!
+// @ts-ignore, not @ts-expect-error: only a conflict when the Jasmine `expect` is also loaded
 declare const expect: ExpectWebdriverIO.Expect
 
 declare namespace NodeJS {
     interface Global {
-        // @ts-expect-error: Both wdio & Jasmine augmentation declare different global expect explaining why TS is complaining here
         expect: ExpectWebdriverIO.Expect
     }
 }

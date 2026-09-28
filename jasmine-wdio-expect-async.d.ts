@@ -80,7 +80,7 @@ declare namespace ExpectWebdriverIO {
  * Under `@wdio/jasmine-framework`, the global `expect` is overridden to use Jasmine's `expectAsync`.
  * It contains custom WebdriverIO matchers as well as Jasmine's built-in async & sync matchers but not the basic Jest's expect library matchers.
  */
-// @ts-expect-error: IDE might flag this, but ignore it. This way the `tsc:root-types` can pass!
+// @ts-expect-error: the Jasmine `expect` is always loaded with this entry, so the two declarations conflict
 declare const expect: ExpectWebdriverIO.JasmineExpect
 declare namespace NodeJS {
     interface Global {
