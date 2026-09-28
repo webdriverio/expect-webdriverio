@@ -1,5 +1,6 @@
 import { multiRemoteBrowser  } from '@wdio/globals'
 import { some } from 'expect-webdriverio/api'
+import stripAnsi from 'strip-ansi'
 
 describe('WebdriverIO Custom Matchers', () => {
     beforeEach(async () => {
@@ -86,9 +87,9 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 const assertion = expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'WebdriverJS Testpage', firefox: 'WebdriverJS Testpage' }))
 
-                // One line per check: in a terminal, color codes surround each diff line
-                await expect(assertion).rejects.toThrow(/-   "firefox": "WebdriverJS Testpage",/)
-                await expect(assertion).rejects.toThrow(/\+   "firefox": "",/)
+                // Without the terminal color codes, which surround each diff line
+                const message = await assertion.then(() => '', (error: Error) => stripAnsi(error.message))
+                expect(message).toMatch(/-   "firefox": "WebdriverJS Testpage",\n\+   "firefox": "",/)
             })
 
             it('should fail strictly, also with .not, when a browser is missing or unknown', async () => {
