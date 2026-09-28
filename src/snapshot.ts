@@ -1,4 +1,3 @@
-import { expect } from '@wdio/globals'
 import { SnapshotClient, type SnapshotResult, type SnapshotStateOptions, type SnapshotUpdateState } from '@vitest/snapshot'
 import { NodeSnapshotEnvironment } from '@vitest/snapshot/environment'
 
@@ -110,13 +109,12 @@ export class SnapshotService implements Services.ServiceInstance {
         this.#snapshotResults.push(result)
     }
 
+    /**
+     * Only called by `SnapshotClient.assert()` for its `properties` option, which our snapshot matchers never pass.
+     * Same as the `toBe()` of the `expect` that `@wdio/globals` gave outside Jasmine.
+     */
     #isEqual (received: unknown, expected: unknown) {
-        try {
-            expect(received).toBe(expected)
-            return true
-        } catch {
-            return false
-        }
+        return Object.is(received, expected)
     }
 
     static initiate (options?: SnapshotServiceArgs) {
