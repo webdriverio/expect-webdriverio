@@ -37,6 +37,8 @@ export async function toHaveClipboardText(
 
     // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
+    // Warn once per assertion, not on every retry
+    const permissionWarning = { logged: false }
 
     const { actual, success: pass, subject, expected } = await waitUntil(
         async () => {
@@ -46,7 +48,7 @@ export async function toHaveClipboardText(
                 expectedValue: expectedWithOptions,
                 compare: (
                     browser, expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined
-                ) => compareClipboardText(browser, expectedValue, options),
+                ) => compareClipboardText(browser, expectedValue, options, permissionWarning),
             })
         },
         isNot,
@@ -72,11 +74,17 @@ export async function toHaveClipboardText(
 const compareClipboardText = async (
     browser: WebdriverIO.Browser,
     expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
-    options: ExpectWebdriverIO.StringOptions
+    options: ExpectWebdriverIO.StringOptions,
+    permissionWarning: { logged: boolean }
 ): Promise<CompareResult<string>> => {
     await browser.setPermissions({ name: 'clipboard-read' }, 'granted')
         // chances are that some browsers don't support the clipboard API yet
-        .catch((err) => console.warn(`expect-webdriverio: Couldn't set clipboard permissions: ${err}`))
+        .catch((err) => {
+            if (!permissionWarning.logged) {
+                permissionWarning.logged = true
+                console.warn(`expect-webdriverio: Couldn't set clipboard permissions: ${err}`)
+            }
+        })
 
     const actual = await browser.execute(() => window.navigator.clipboard.readText())
 
