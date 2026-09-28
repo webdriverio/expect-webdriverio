@@ -1,3 +1,3 @@
 #!/bin/sh
 
-npm run compile
+pnpm run compile
