@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ${{ github.event_name == 'pull_request' && fromJSON('["24.x"]') || fromJSON('["22.x", "24.x", "26.x"]') }}
+        node-version: ${{ github.event_name == 'pull_request' && fromJSON('["24.x"]') || fromJSON('["22.19.0", "24.x", "26.x"]') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
