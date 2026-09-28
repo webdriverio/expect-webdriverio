@@ -14,7 +14,7 @@ A user runs `expect()` in a WebdriverIO spec, with Mocha, Jasmine, Jest or the
 Browser Runner. Prove the change by running that same path in a playground.
 
 A unit test does not prove the feature: its browser and elements are mocks.
-Do not run `npm test`, `npm run checks:all`, or `npm run playgrounds:checks:all`
+Do not run `pnpm test`, `pnpm run checks:all`, or `pnpm run playgrounds:checks:all`
 as the proof.
 
 ## Pick the harness
@@ -25,8 +25,8 @@ as the proof.
 | Multi-remote browsers, `$()` or `$$()` | `multi-remote-mocha` | The `mocha` playground |
 | Snapshot matchers | `mocha`, `jasmine` and `browser-runner` | One framework only |
 | Browser Runner (matcher code in the browser) | `browser-runner` | A local runner playground |
-| Framework augmentations (`jest.d.ts`, `jasmine*.d.ts`) | `npm run test:types`, then that framework's playground `npm run typecheck` | A runtime run |
-| Public types in `types/` | `npm run test:types` | A runtime run |
+| Framework augmentations (`jest.d.ts`, `jasmine*.d.ts`) | `pnpm run test:types`, then that framework's playground `pnpm run typecheck` | A runtime run |
+| Public types in `types/` | `pnpm run test:types` | A runtime run |
 
 If the change is visible in a failure message, add or change a playground spec
 that fails on purpose only when you run it by hand, and record the message.
@@ -37,35 +37,35 @@ Do not commit a failing spec.
 The playgrounds use the compiled `lib/` through a symlink. Set them up once:
 
 ```sh
-npm run playgrounds:setup
+pnpm run playgrounds:setup
 ```
 
 After each change to `src/`, compile again. You do not need to set up again:
 
 ```sh
-npm run compile
+pnpm run compile
 ```
 
 ## Drive
 
-From `playgrounds/`, one workspace at a time:
+From `playgrounds/`, one workspace package at a time:
 
 ```sh
 cd playgrounds
-npm --workspace=mocha test
-npm --workspace=multi-remote-mocha test
-npm --workspace=jasmine test
-npm --workspace=jest test
-npm --workspace=browser-runner test
+pnpm --filter ./mocha test
+pnpm --filter ./multi-remote-mocha test
+pnpm --filter ./jasmine test
+pnpm --filter ./jest test
+pnpm --filter ./browser-runner test
 ```
 
-To run one spec: `npm --workspace=mocha test -- --spec test/specs/basic-matchers.test.ts`.
+To run one spec: `pnpm --filter ./mocha test --spec test/specs/basic-matchers.test.ts` (no `--`: pnpm passes it to `wdio`).
 
 `multi-remote-mocha` sets `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true` in its
 `wdio.conf.ts`. The unit tests cover the flag off (see [AGENTS.md](../../../AGENTS.md)).
 
 Visual snapshots can fail when the test website changes. Update them only when
-the change is about snapshots, with `npm run snapshots:update` (in `playgrounds/`), and
+the change is about snapshots, with `pnpm run snapshots:update` (in `playgrounds/`), and
 review the diff.
 
 Exit code 0 is required. It is not sufficient. The spec reporter must show the

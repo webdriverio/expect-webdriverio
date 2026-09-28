@@ -20,15 +20,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 22.x
 
       - name: Install Dependencies
-        run: npm ci && npm ci --prefix playgrounds
+        run: pnpm install --frozen-lockfile && pnpm --dir playgrounds install --frozen-lockfile
 
       - name: Run Typecheck and Lint
-        run: npm run typecheck && npm run lint
+        run: pnpm run typecheck && pnpm run lint
         working-directory: playgrounds
 
   # 2. Run e2e tests for each workspace in parallel
@@ -40,15 +41,16 @@ jobs:
         workspace: [jasmine, jest, multi-remote-mocha, browser-runner]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 22.x
 
       - name: Install Dependencies
-        run: npm ci && npm ci --prefix playgrounds
+        run: pnpm install --frozen-lockfile && pnpm --dir playgrounds install --frozen-lockfile
 
       - name: Run ${{ matrix.workspace }} E2e Tests
-        run: npm --workspace=${{ matrix.workspace }} test
+        run: pnpm --filter ./${{ matrix.workspace }} test
         working-directory: playgrounds
 
   # 3. Run e2e tests hacving snapshots differently!
@@ -60,16 +62,17 @@ jobs:
         workspace: [mocha]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 22.x
 
       - name: Install Dependencies
-        run: npm ci && npm ci --prefix playgrounds
+        run: pnpm install --frozen-lockfile && pnpm --dir playgrounds install --frozen-lockfile
 
       - name: Update & Run Snapshots Tests
-        run: npm run playgrounds:snapshots:update
+        run: pnpm run playgrounds:snapshots:update
 
       - name: Run ${{ matrix.workspace }} E2e Tests (without snapshot tests)
-        run: npm --workspace=${{ matrix.workspace }} test -- --exclude test/specs/*snapshot.test.ts
+        run: pnpm --filter ./${{ matrix.workspace }} test --exclude 'test/specs/*snapshot.test.ts'
         working-directory: playgrounds

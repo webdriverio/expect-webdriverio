@@ -27,37 +27,41 @@ types/*.d.ts             hand-written public types (not generated)
 jest.d.ts, jasmine*.d.ts framework augmentations of the public types
 test/                    Vitest unit tests, mirror src/ (browser mocked in test/__mocks__)
 test-types/              type tests, one project per framework augmentation
-playgrounds/             real-browser WebdriverIO projects (npm workspaces)
+playgrounds/             real-browser WebdriverIO projects (a pnpm workspace)
 docs/                    user docs, also published on webdriver.io
 ```
 
 ## Setup
 
-Use the Node version in [`.nvmrc`](.nvmrc) and npm. Do not switch the package
-manager.
+Use the Node version in [`.nvmrc`](.nvmrc) and pnpm: the `packageManager`
+version of `package.json`, which Corepack or pnpm 9.7+ selects. Do not switch
+the package manager.
 
 ```sh
-npm install
-npm run build           # clean + compile src/ to lib/
+pnpm install
+pnpm run build          # clean + compile src/ to lib/
 ```
 
 Edits to `src/` are invisible to the playgrounds until you compile again
-(`npm run compile`, or `npm run watch`). Unit tests run from `src/` and do not
+(`pnpm run compile`, or `pnpm run watch`). Unit tests run from `src/` and do not
 need a build.
+
+pnpm passes `--` to the script, so do not write it: `pnpm run test --spec x`,
+not `pnpm run test -- --spec x`.
 
 ## Do not hand-edit
 
 | Path | Owner |
 |------|-------|
-| `lib/` | `npm run compile` |
+| `lib/` | `pnpm run compile` |
 | `coverage/`, `types/coverage/` | Vitest coverage |
 | `**/__snapshots__/*.snap`, `test/*.snap` | the test run (`--updateSnapshots`), then review the diff |
-| `package-lock.json`, `playgrounds/**/package-lock.json` | npm |
+| `pnpm-lock.yaml`, `playgrounds/pnpm-lock.yaml` | pnpm |
 
 ## Test selection
 
 Prefer the smallest proof that covers the touched contract. Do not start with
-`npm test` or `npm run checks:all`: they run lint, tsc, all unit tests and all
+`pnpm test` or `pnpm run checks:all`: they run lint, tsc, all unit tests and all
 type tests.
 
 Coverage is on by default, with global thresholds. When you run one file, add
@@ -65,13 +69,13 @@ Coverage is on by default, with global thresholds. When you run one file, add
 
 | Change | Minimum local proof |
 |--------|---------------------|
-| One matcher or util | its test file: `npx vitest --run --coverage.enabled=false <test file>` |
-| Public types (`types/`, `jest.d.ts`, `jasmine*.d.ts`) | `npm run test:types` |
+| One matcher or util | its test file: `pnpm exec vitest --run --coverage.enabled=false <test file>` |
+| Public types (`types/`, `jest.d.ts`, `jasmine*.d.ts`) | `pnpm run test:types` |
 | Failure messages | the unit tests that assert the message, and one playground run |
 | Multi-remote | unit tests with the flag off and on (see below), and `playgrounds/multi-remote-mocha` |
 | Snapshot matchers | `test/snapshot.test.ts`, and the Mocha, Jasmine and Browser Runner playgrounds |
 | Docs only (`docs/`, `README.md`) | the multi-remote naming check, and check the links |
-| Before you push | `npm run checks:all` |
+| Before you push | `pnpm run checks:all` |
 
 Unit tests mostly mirror source: `src/matchers/element/toHaveText.ts` →
 `test/matchers/element/toHaveText.test.ts`. Exceptions: most `toBe*` element
@@ -85,8 +89,8 @@ Multi-remote element arrays have two runtime shapes. The
 shape. Run the unit tests both ways:
 
 ```sh
-npx vitest --run --coverage.enabled=false
-WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true npx vitest --run --coverage.enabled=false
+pnpm exec vitest --run --coverage.enabled=false
+WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true pnpm exec vitest --run --coverage.enabled=false
 ```
 
 The unit tests are the regression check. They are not proof that a change
