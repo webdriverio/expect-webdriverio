@@ -264,13 +264,6 @@ describe('Jasmine type agumentations', () => {
                         expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop', 'val')).toEqualTypeOf<Promise<void>>()
                         expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop', jasmine.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
                     })
-
-                    it('should be deprecated', async () => {
-                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expectAsync(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
-                    })
                 })
 
                 describe('given elements', () => {
@@ -286,11 +279,9 @@ describe('Jasmine type agumentations', () => {
                         expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', [jasmine.anything(), jasmine.any(Number), 'value', jasmine.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
                     })
 
-                    it('should not be supported (never)', async () => {
-                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<never>>()
-                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<never>>()
-                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
-                        expectTypeOf(expectAsync(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
+                    it('should not reject an explicit undefined or null value, because the value type is `any` with Jasmine', async () => {
+                        // `ExpectLibAnything` uses `expect.any`, which Jasmine does not have, so it is `any` here
+                        expectTypeOf(expectAsync(elements).toHaveElementProperty).parameter(1).toBeAny()
                     })
                 })
             })

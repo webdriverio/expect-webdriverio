@@ -121,15 +121,20 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(browser).toHaveLocalStorageItem('key', expect.anything())).toEqualTypeOf<Promise<void>>()
             })
 
+            it('should reject an explicit undefined value', async () => {
+                // @ts-expect-error omit the value, or use `expect.anything()` with options
+                expectTypeOf(expect(browser).toHaveLocalStorageItem).toBeCallableWith('key', undefined)
+                // @ts-expect-error omit the value, or use `expect.anything()` with options
+                expectTypeOf(expect(browser).toHaveLocalStorageItem).toBeCallableWith('key', undefined, { wait: 1 })
+                // @ts-expect-error omit the value, or use `expect.anything()` with options
+                expectTypeOf(expect(multiRemoteBrowser).toHaveLocalStorageItem).toBeCallableWith('key', undefined, { wait: 1 })
+            })
+
             it('should have ts errors when actual is not a Browser element', async () => {
                 expectTypeOf(expect(element).toHaveLocalStorageItem).toBeNever()
                 expectTypeOf(expect(true).toHaveLocalStorageItem).toBeNever()
             })
 
-            it('should have deprecated when expected value is undefined', async () => {
-                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', undefined)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(browser).toHaveLocalStorageItem('key', undefined, { wait: 0 })).toEqualTypeOf<Promise<void>>()
-            })
         })
     })
 
@@ -422,11 +427,6 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(element).toHaveAttribute).parameter(1).not.toBeArray()
                 })
 
-                it('should have undefined has value deprecated', async () => {
-                    expectTypeOf(expect(element).toHaveAttribute('attributeName', undefined)).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveAttribute('attributeName', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
-                })
-
                 it('should return Promise<void>', async () => {
                     expectTypeOf(expect(element).toHaveAttribute('attributeName')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).toHaveAttribute('attributeName', expect.anything(), { wait: 0 })).toEqualTypeOf<Promise<void>>()
@@ -473,11 +473,6 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(elements).toHaveAttribute).parameter(0).not.toBeArray()
                     // Attribute value
                     expectTypeOf(expect(elements).toHaveAttribute).parameter(1).not.toBeArray()
-                })
-
-                it('should have undefined as value deprecated/should not be supported', async () => {
-                    expectTypeOf(expect(elements).toHaveAttribute('attributeName', undefined)).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(elements).toHaveAttribute('attributeName', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
                 })
 
                 it('should return Promise<void>', async () => {
@@ -766,7 +761,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(true).toBeElementsArrayOfSize).toBeNever()
             })
 
-            it('should be deprecated with NumberOptions', async () => {
+            it('should have ts errors with command options in the size', async () => {
+                // @ts-expect-error command options go in the options argument
                 expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize({ lte: 10, wait: 1000 })).toExtend<Promise<void>>()
             })
 
@@ -778,11 +774,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
 
             it('should require expect.multiRemote() for per-instance numbers', async () => {
-                // @ts-expect-error a plain object is a legacy NumberOptions, not per-instance values
+                // @ts-expect-error a plain object is a NumberMatcher, not per-instance values
                 expectTypeOf(expect(multiRemoteElement).toHaveWidth({ chrome: 100, firefox: { gte: 50 } })).toEqualTypeOf<Promise<void>>()
-                // @ts-expect-error a plain object is a legacy NumberOptions, not per-instance values
+                // @ts-expect-error a plain object is a NumberMatcher, not per-instance values
                 expectTypeOf(expect(multiRemoteElements).toHaveChildren({ chrome: [1, 2], firefox: 2 })).toEqualTypeOf<Promise<void>>()
-                // @ts-expect-error a plain object is a legacy NumberOptions, not per-instance sizes
+                // @ts-expect-error a plain object is a NumberMatcher, not per-instance sizes
                 expectTypeOf(expect(multiRemoteElements).toBeElementsArrayOfSize({ chrome: 2, firefox: { gte: 1 } })).toExtend<Promise<void>>()
             })
 
@@ -987,7 +983,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })).toEqualTypeOf<Promise<void>>()
         })
 
-        it('should be deprecated with NumberOptions', async () => {
+        it('should have ts errors with command options in the number', async () => {
+            // @ts-expect-error command options go in the options argument
             expectTypeOf(expect(promiseNetworkMock).toBeRequestedTimes({ gte: 5, lte: 10, wait: 0 })).toEqualTypeOf<Promise<void>>()
         })
 
@@ -1032,15 +1029,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveAttribute('class')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveAttribute('class', 'val')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveAttribute('class', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+            })
 
-                // Deprecated matchers with undefined value
-                expectTypeOf(expect(element).toHaveAttribute('class', undefined)).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveAttribute('class', undefined,  { wait: 1 })).toEqualTypeOf<Promise<void>>()
-
-                // Deprecated matchers
-                expectTypeOf(expect(element).toHaveAttr('class')).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveAttr('class', 'val')).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveAttr('class', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+            it('should not have the removed toHaveAttr alias', async () => {
+                // @ts-expect-error use toHaveAttribute
+                expect(element).toHaveAttr('class')
             })
         })
 
@@ -1048,6 +1041,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(element).toHaveElementClass('class')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveElementClass(expect.stringContaining('class'))).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should not have the removed toHaveClass alias', async () => {
+                // @ts-expect-error use toHaveElementClass
+                expect(element).toHaveClass('class')
             })
         })
 
@@ -1068,13 +1066,6 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).not.toHaveElementProperty('prop', 'val')).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).not.toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
-                })
-
-                it('should be deprecated', async () => {
-                    expectTypeOf(expect(element).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
                 })
 
                 it('should have ts errors but to support one day???', async () => {
@@ -1100,11 +1091,17 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(elements).toHaveElementProperty('prop', [expect.anything(), expect.any(Number), 'value', expect.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
                 })
 
-                it('should not be supported (never)', async () => {
-                    expectTypeOf(expect(elements).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<never>>()
-                    expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<never>>()
-                    expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
-                    expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
+                it('should reject an explicit undefined or null value', async () => {
+                    // @ts-expect-error omit the value, or use `expect.anything()` with options
+                    expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', null)
+                    // @ts-expect-error omit the value, or use `expect.anything()` with options
+                    expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', undefined)
+                    // @ts-expect-error omit the value, or use `expect.anything()` with options
+                    expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', null, { wait: 1 })
+                    // @ts-expect-error omit the value, or use `expect.anything()` with options
+                    expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', undefined, { wait: 1 })
+                    // @ts-expect-error omit the value, or use `expect.anything()` with options
+                    expectTypeOf(expect(multiRemoteElements).toHaveElementProperty).toBeCallableWith('prop', null, { wait: 1 })
                 })
 
                 it('should have ts errors but to support one day???', async () => {
@@ -1182,14 +1179,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(element).toHaveChildren).not.parameter(0).toBeArray()
                 })
 
-                it('should be deprecated', async () => {
+                it('should have ts errors with command options in the number', async () => {
+                    // @ts-expect-error command options go in the options argument
                     expectTypeOf(expect(element).toHaveChildren({ wait: 1000 })).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveChildren(undefined)).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(element).toHaveChildren(undefined, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    // @ts-expect-error command options go in the options argument
                     expectTypeOf(expect(element).toHaveChildren({ eq: 5, wait: 1000 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
-
-                    // Deprecating this is just too hard but let's not support this!
-                    expectTypeOf(expect(element).toHaveChildren({})).toEqualTypeOf<Promise<void>>()
                 })
             })
 
@@ -1204,11 +1198,6 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(elements).toHaveChildren({ lte: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(elements).toHaveChildren({ gte: 1, lte: 5 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(elements).toHaveChildren([{ gte: 1, lte: 5 }, 1, { eq: 1 }], { wait: 1000 })).toEqualTypeOf<Promise<void>>()
-                })
-
-                it('should be deprecated since it was never supported', async () => {
-                    expectTypeOf(expect(elements).toHaveChildren(undefined)).toEqualTypeOf<Promise<void>>()
-                    expectTypeOf(expect(elements).toHaveChildren(undefined, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
                 })
 
                 it('should have tsc error since it is not supported', async () => {

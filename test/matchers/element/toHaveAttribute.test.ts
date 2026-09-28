@@ -50,20 +50,6 @@ describe(toHaveAttribute, () => {
                 })
             })
 
-            test('success when present by passing undefined value - deprecated', async () => {
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined)
-
-                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 20, interval: 1 })
-                expect(result.pass).toBe(true)
-            })
-
-            test('success when present by passing undefined value with options - deprecated', async () => {
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined,  { wait: 0 })
-
-                expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0 })
-                expect(result.pass).toBe(true)
-            })
-
             test('success when checking with asymmetric matcher', async () => {
                 // Casting since we use vitest asymmetrics matcher instead of wdio one and TypeScript show a deprecation
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name', expect.stringContaining('Correct') as AsymmetricMatcher<string>)
@@ -189,32 +175,10 @@ Received: ${attributeValue}`
             test.for([
                 undefined,
                 null
-            ])('failure when not present with undefined expected value for %s - deprecated', async ( attributeValue) => {
-                vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
-
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', undefined)
-
-                expect(result.pass).toBe(false)
-            })
-
-            test.for([
-                undefined,
-                null
             ])('not - success when not present for %s - pass should be false', async ( attributeValue) => {
                 vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
 
                 const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name')
-
-                expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-            })
-
-            test.for([
-                undefined,
-                null
-            ])('not - success when not present with undefined expected value for %s - pass should be false -- deprecated', async ( attributeValue) => {
-                vi.mocked(el.getAttribute).mockResolvedValue(attributeValue as unknown as string)
-
-                const result = await thisIsNotContext.toHaveAttribute(el, 'attribute_name', undefined)
 
                 expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
             })

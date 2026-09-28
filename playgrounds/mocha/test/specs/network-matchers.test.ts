@@ -86,7 +86,7 @@ describe('Network Matchers', () => {
     })
 
     it('should assert times called lte with options - deprecated', async () => {
-        await expect(mock).toBeRequestedTimes({ lte: 2, wait: 0 })
+        await expect(mock).toBeRequestedTimes({ lte: 2 }, { wait: 0 })
     })
 
     it('should be requested', async () => {

@@ -2,6 +2,7 @@
   "compilerOptions": {
     "noEmit": true,
     "noImplicitAny": true,
+    "strictNullChecks": true,
     "target": "es2022",
     "module": "node18",
     "skipLibCheck": true,

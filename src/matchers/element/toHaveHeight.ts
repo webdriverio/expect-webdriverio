@@ -4,7 +4,7 @@ import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
-import { validateNumberArrayAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { validateNumberMatcherArray } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
     waitUntil,
@@ -38,15 +38,6 @@ export async function toHaveHeight(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 /**
- * @deprecated since v6.0.0, remove in v8.0.0. Use `toHaveHeight(received, NumberMatcher, options)` instead.
- */
-export async function toHaveHeight(
-    received: WdioElementMaybePromise,
-    expectedValue: ExpectWebdriverIO.NumberOptions,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
-
-/**
  * Multi-remote $() or $$(): one expected value for every instance, or one per instance
  */
 export async function toHaveHeight(
@@ -57,7 +48,7 @@ export async function toHaveHeight(
 
 export async function toHaveHeight(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | ExpectWebdriverIO.NumberOptions,
+    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'height', verb = 'have', isNot, matcherName = 'toHaveHeight' } = this
@@ -68,7 +59,7 @@ export async function toHaveHeight(
         options,
     })
 
-    const { numberMatcher: expectedNumber, commandOptions } = validateNumberArrayAndExtractOptions(expectedValue, options)
+    const expectedNumber = validateNumberMatcherArray(expectedValue)
 
     const { success: pass, actual: actualHeight, subject: elements, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
@@ -81,7 +72,7 @@ export async function toHaveHeight(
             })
         },
         isNot,
-        { wait: commandOptions.wait, interval: commandOptions.interval }
+        { wait: options.wait, interval: options.interval }
     )
 
     const expectedValues = expected ?? wrapExpectedWithArray(elements, actualHeight, expectedNumber)
@@ -93,7 +84,7 @@ export async function toHaveHeight(
         verb,
         expectation,
         '',
-        commandOptions,
+        options,
     )
 
     const result: ExpectWebdriverIO.AssertionResult = {

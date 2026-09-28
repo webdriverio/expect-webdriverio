@@ -1,6 +1,6 @@
 import { waitUntil, enhanceError } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import { validateNumberAndExtractOptions } from '../../util/numberOptionsUtil.js'
+import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { awaitMocks, getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
 import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
 
@@ -19,18 +19,9 @@ export async function toBeRequestedTimes(
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
-/**
- * @deprecated since v6.0.0, remove in v8.0.0. Use `NumberMatcher` & `CommandOptions` as separate parameters instead.
- */
-export async function toBeRequestedTimes(
-    received: WebdriverIO.Mock,
-    expectedValue: ExpectWebdriverIO.NumberOptions,
-    options?: ExpectWebdriverIO.CommandOptions
-):Promise<ExpectWebdriverIO.AssertionResult>
-
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock | WebdriverIO.Mock[] | Promise<WebdriverIO.Mock[]>,
-    expectedValue: number | ExpectWebdriverIO.NumberOptions | ExpectWebdriverIO.NumberMatcher,
+    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ): Promise<ExpectWebdriverIO.AssertionResult> {
     const {
@@ -44,7 +35,7 @@ export async function toBeRequestedTimes(
         options,
     })
 
-    const { numberMatcher: expectedNumber, commandOptions } = validateNumberAndExtractOptions(expectedValue, options)
+    const expectedNumber = validateNumberMatcher(expectedValue)
 
     const mocks = await awaitMocks(received)
     let message: string
@@ -64,11 +55,11 @@ export async function toBeRequestedTimes(
                 return { success, subject: mocks, actual }
             },
             isNot,
-            { wait: commandOptions.wait, interval: commandOptions.interval }
+            { wait: options.wait, interval: options.interval }
         )
         pass = result.success
         const expected = Object.fromEntries(names.map((name) => [name, expectedNumber]))
-        message = enhanceError(formatMultiRemoteMocks(instanceNames), label(expected), label(result.actual), this, verb, expectation, '', commandOptions)
+        message = enhanceError(formatMultiRemoteMocks(instanceNames), label(expected), label(result.actual), this, verb, expectation, '', options)
     } else {
         const mock = mocks as WebdriverIO.Mock
         const result = await waitUntil(
@@ -77,10 +68,10 @@ export async function toBeRequestedTimes(
                 return { success: expectedNumber.asymmetricMatch(actual), subject: mock, actual }
             },
             isNot,
-            { wait: commandOptions.wait, interval: commandOptions.interval }
+            { wait: options.wait, interval: options.interval }
         )
         pass = result.success
-        message = enhanceError('mock', expectedNumber, result.actual, this, verb, expectation, '', commandOptions)
+        message = enhanceError('mock', expectedNumber, result.actual, this, verb, expectation, '', options)
     }
 
     const result: ExpectWebdriverIO.AssertionResult = {

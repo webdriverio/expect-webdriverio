@@ -72,19 +72,11 @@ describe('toBeRequestedTimes', () => {
         })
     })
 
-    test('use wait from number options - deprecated', async () => {
+    test('throws on a legacy NumberOptions', async () => {
         const mock: Mock = new TestMock()
 
-        setTimeout(() => {
-            mock.calls.push(mockMatch)
-        }, 10)
-
-        const beforeAssertion = vi.fn()
-        const afterAssertion = vi.fn()
-
-        const result = await thisContext.toBeRequestedTimes(mock, { gte: 1, wait: 0 }, { beforeAssertion, afterAssertion, wait: 1000 })
-
-        expect(result.pass).toBe(false)
+        // @ts-expect-error command options go in the options argument
+        await expect(thisContext.toBeRequestedTimes(mock, { gte: 1, wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
     })
 
     test('wait for success using number options', async () => {
@@ -94,12 +86,12 @@ describe('toBeRequestedTimes', () => {
             mock.calls.push(mockMatch)
         }, 10)
 
-        const result = await thisContext.toBeRequestedTimes(mock, { gte: 1, wait: 500 })
+        const result = await thisContext.toBeRequestedTimes(mock, { gte: 1 }, { wait: 500 })
         expect(result.pass).toBe(true)
 
-        const result2 = await thisContext.toBeRequestedTimes(mock, { eq: 1, wait: 500 })
+        const result2 = await thisContext.toBeRequestedTimes(mock, { eq: 1 }, { wait: 500 })
         expect(result2.pass).toBe(true)
-        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 500, interval: 1 })
+        expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 500, interval: undefined })
     })
 
     test('wait but failure', async () => {
@@ -118,13 +110,13 @@ describe('toBeRequestedTimes', () => {
         const result3 = await thisContext.toBeRequestedTimes(mock, 2)
         expect(result3.pass).toBe(true)
 
-        const result4 = await thisContext.toBeRequestedTimes(mock, { gte: 2, wait: 1 })
+        const result4 = await thisContext.toBeRequestedTimes(mock, { gte: 2 }, { wait: 1 })
         expect(result4.pass).toBe(true)
 
-        const result5 = await thisContext.toBeRequestedTimes(mock, { lte: 2, wait: 1 })
+        const result5 = await thisContext.toBeRequestedTimes(mock, { lte: 2 }, { wait: 1 })
         expect(result5.pass).toBe(true)
 
-        const result6 = await thisContext.toBeRequestedTimes(mock, { lte: 3, wait: 1 })
+        const result6 = await thisContext.toBeRequestedTimes(mock, { lte: 3 }, { wait: 1 })
         expect(result6.pass).toBe(true)
     })
 

@@ -266,13 +266,6 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
                         expectTypeOf(expect(element).not.toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
                     })
 
-                    it('should be deprecated', async () => {
-                        expectTypeOf(expect(element).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expect(element).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expect(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
-                        expectTypeOf(expect(element).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<void>>()
-                    })
-
                     it('should have ts errors but to support one day???', async () => {
                     // @ts-expect-error
                         expectTypeOf(expect(element).toHaveElementProperty('prop', ['test'])).toEqualTypeOf<Promise<void>>()
@@ -294,11 +287,15 @@ describe('Jasmine global type augmentations under `wdio/jasmine-framework`', () 
                         expectTypeOf(expect(elements).toHaveElementProperty('prop', [expect.anything(), expect.any(Number), 'value', expect.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
                     })
 
-                    it('should not be supported (never)', async () => {
-                        expectTypeOf(expect(elements).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<never>>()
-                        expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<never>>()
-                        expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
-                        expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
+                    it('should reject an explicit undefined or null value', async () => {
+                        // @ts-expect-error omit the value, or use `expect.anything()` with options
+                        expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', null)
+                        // @ts-expect-error omit the value, or use `expect.anything()` with options
+                        expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', undefined)
+                        // @ts-expect-error omit the value, or use `expect.anything()` with options
+                        expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', null, { wait: 1 })
+                        // @ts-expect-error omit the value, or use `expect.anything()` with options
+                        expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', undefined, { wait: 1 })
                     })
 
                     it('should have ts errors but to support one day???', async () => {

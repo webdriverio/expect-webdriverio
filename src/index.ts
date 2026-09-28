@@ -12,7 +12,6 @@ import { getGlobalSingleton } from './util/globalSingleton.js'
 interface SharedExpectSetup {
     wdioExpect: ExpectWebdriverIO.Expect
     wdioCustomMatchers: MatchersObject
-    matchers: Map<string, RawMatcherFn>
 }
 
 // Builds the fully configured wdio `expect` exactly once, no matter how many module
@@ -23,7 +22,6 @@ interface SharedExpectSetup {
 // the shared result instead of redoing this setup with its own local `expectLib`.
 function createSharedExpectSetup(): SharedExpectSetup {
     const wdioCustomMatchers: MatchersObject = {}
-    const matchers = new Map<string, RawMatcherFn>()
 
     const extend = expectLib.extend
     expectLib.extend = (extendedMatchers) => {
@@ -33,7 +31,6 @@ function createSharedExpectSetup(): SharedExpectSetup {
 
         Object.entries(extendedMatchers).forEach(([name, matcher]) => {
             wdioCustomMatchers[name] = matcher
-            matchers.set(name, matcher)
         })
         return extend(extendedMatchers)
     }
@@ -79,7 +76,7 @@ function createSharedExpectSetup(): SharedExpectSetup {
         value: (testId?: string) => SoftAssertService.getInstance().clearFailures(testId)
     })
 
-    return { wdioExpect, wdioCustomMatchers, matchers }
+    return { wdioExpect, wdioCustomMatchers }
 }
 
 const sharedExpectSetup = getGlobalSingleton('expect', createSharedExpectSetup)
@@ -92,11 +89,6 @@ const sharedExpectSetup = getGlobalSingleton('expect', createSharedExpectSetup)
  * Does NOT include the default matchers from the `expect` library, like `toBe`, `toEqual`, or wdio asymmetrics like `expect.oneOf()`
  */
 export const wdioCustomMatchers = sharedExpectSetup.wdioCustomMatchers
-
-/**
- * @deprecated use `wdioCustomMatchers` instead. To remove in v6
- */
-export const matchers = sharedExpectSetup.matchers
 
 // Fully configured global expect instance with all the custom WDIO matchers, asymmetric matchers, and soft assertions
 export const expect = sharedExpectSetup.wdioExpect
@@ -113,11 +105,6 @@ export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOpti
         })
     })
 }
-
-/** @deprecated since v6.0.0, use setDefaultOptions instead. Will be removed in v8.0.0 */
-export const setOptions = setDefaultOptions
-/** @deprecated since v6.0.0, use `getDefaultOptions` instead, will be removed in v8.0.0 */
-export const getConfig = getDefaultOptions
 
 /**
  * export snapshot utilities

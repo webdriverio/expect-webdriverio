@@ -455,10 +455,11 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
                 expectTypeOf(expect(element).toHaveAttribute('class')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveAttribute('class', 'val')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveAttribute('class', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+            })
 
-                expectTypeOf(expect(element).toHaveAttr('class')).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveAttr('class', 'val')).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(element).toHaveAttr('class', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+            it('should not have the removed toHaveAttr alias', async () => {
+                // @ts-expect-error use toHaveAttribute
+                expect(element).toHaveAttr('class')
             })
         })
 

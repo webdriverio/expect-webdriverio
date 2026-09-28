@@ -43,7 +43,6 @@
         "types": "./jasmine-wdio-expect-async.d.ts"
       }
     ],
-    "./types": "./types/expect-global.d.ts",
     "./expect-global": "./types/expect-global.d.ts",
     "./api": [
       {

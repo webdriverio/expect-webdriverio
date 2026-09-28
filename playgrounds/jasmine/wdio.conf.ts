@@ -1,5 +1,5 @@
 
-import { setOptions } from 'expect-webdriverio'
+import { setDefaultOptions } from 'expect-webdriverio'
 
 export const config: WebdriverIO.Config = {
     //
@@ -68,7 +68,7 @@ export const config: WebdriverIO.Config = {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     before: function (_capabilities, _specs) {
         // 500ms wasn't enough headroom for `postData`/`response` collection (an async
-        setOptions({ wait: 2000 })
+        setDefaultOptions({ wait: 2000 })
     },
     afterTest: function (_test, _context, { error }) {
         if (error) {

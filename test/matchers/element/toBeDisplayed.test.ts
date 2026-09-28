@@ -7,7 +7,7 @@ import stripAnsi from 'strip-ansi'
 import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 import { DEFAULT_OPTIONS } from '../../../src/constants.js'
-import { setDefaultOptions, setOptions } from '../../../src/index.js'
+import { setDefaultOptions } from '../../../src/index.js'
 import { refreshElementArray } from '../../../src/util/refetchElements.js'
 import { some } from '../../../src/api/index.js'
 
@@ -633,7 +633,7 @@ Received: "not displayed"`)
     })
 
     describe.each(
-        [{ fn: setOptions, name: 'setOptions' }, { fn: setDefaultOptions, name: 'setDefaultOptions' }]
+        [{ fn: setDefaultOptions, name: 'setDefaultOptions' }]
     )('Global default options with $name', ({ fn: setDefaultOptionsFn }) => {
         describe('global options', () => {
             const defaultOptions = { ...DEFAULT_OPTIONS }

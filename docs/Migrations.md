@@ -31,6 +31,30 @@ An array of expected values on a single element fails the assertion with `toHave
 
 `expect.oneOf()` now trims the actual value by default (`trim: true`), as a single expected value does. Pass `{ trim: false }` to compare the text as is.
 
+## Removed deprecated APIs
+
+v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#migration-guide-v5-to-v6) below.
+
+| Removed | Replacement |
+| ------- | ----------- |
+| `setOptions()` | `setDefaultOptions()` |
+| `getConfig()` | `getDefaultOptions()` |
+| `matchers` export | `wdioCustomMatchers` |
+| `expect-webdriverio/types` export | `expect-webdriverio/expect-global` |
+| `utils.compareNumbers()` | none, internal |
+| `toHaveAttr()` | `toHaveAttribute()` |
+| `toHaveClass()` | `toHaveElementClass()` |
+| `toHaveAttribute(name, undefined, options)` | `toHaveAttribute(name)`, or `toHaveAttribute(name, expect.anything(), options)` |
+| `toHaveElementProperty(name, undefined \| null, options)` | `toHaveElementProperty(name)`, or `toHaveElementProperty(name, expect.anything(), options)` |
+| `toHaveLocalStorageItem(key, undefined, options)` | `toHaveLocalStorageItem(key)`, or `toHaveLocalStorageItem(key, expect.anything(), options)` |
+| `toHaveChildren(undefined \| {}, options)` | `toHaveChildren()`, or `toHaveChildren({ gte: 1 }, options)` |
+| `NumberOptions` as expected value, e.g. `toHaveChildren({ gte: 1, wait: 0 })` | a `NumberMatcher` and the options apart: `toHaveChildren({ gte: 1 }, { wait: 0 })` |
+| `ExpectWebdriverIO.NumberOptions` type | `ExpectWebdriverIO.NumberMatcher` and `ExpectWebdriverIO.CommandOptions` |
+
+`NumberOptions` applied to `toHaveChildren`, `toHaveWidth`, `toHaveHeight`, `toBeElementsArrayOfSize` and `toBeRequestedTimes`. A number matcher with other keys than `eq`, `gte` and `lte` now throws `Invalid NumberMatcher`, instead of taking them as command options.
+
+The deprecation warnings are removed.
+
 ---
 
 # Migration Guide: v5 to v6
