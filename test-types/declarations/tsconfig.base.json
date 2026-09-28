@@ -1,0 +1,9 @@
+{
+  // Checks the published declaration files as a user's compiler reads them: see types-checks-declarations.js
+  "compilerOptions": {
+    "target": "ES2022",
+    "strict": true,
+    "skipLibCheck": false,
+    "noEmit": true
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "types": ["@types/jasmine"] },
+  "files": ["../../jasmine-wdio-expect-async.d.ts"]
+}

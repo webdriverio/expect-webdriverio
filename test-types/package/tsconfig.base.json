@@ -1,0 +1,11 @@
+{
+  // A user's project: see types-checks-package.js
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  }
+}
