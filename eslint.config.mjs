@@ -4,6 +4,7 @@ import vitest from '@vitest/eslint-plugin'
 export default wdioEslint.config([
     {
         ignores: [
+            '.claude/worktrees/**',
             '.vscode/**',
             '.yalc/**',
             'coverage/**',
