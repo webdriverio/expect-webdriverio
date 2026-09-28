@@ -59,12 +59,12 @@ describe(toBeRequested, () => {
         const result2 = await toBeRequested(mock, { beforeAssertion, afterAssertion, wait: 500 })
         expect(result2.pass).toBe(true)
         expect(beforeAssertion).toHaveBeenCalledWith({
-            matcherName: 'toBeRequestedTimes',
+            matcherName: 'toBeRequested',
             expectedValue: { gte: 1 },
             options: { beforeAssertion, afterAssertion, wait: 500 }
         })
         expect(afterAssertion).toHaveBeenCalledWith({
-            matcherName: 'toBeRequestedTimes',
+            matcherName: 'toBeRequested',
             expectedValue: { gte: 1 },
             options: { beforeAssertion, afterAssertion, wait: 500 },
             result: result2

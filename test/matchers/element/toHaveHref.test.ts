@@ -1,7 +1,7 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 
-import { toHaveHref } from '../../../src/matchers/element/toHaveHref.js'
+import { toHaveHref, toHaveLink } from '../../../src/matchers/element/toHaveHref.js'
 import type { AssertionResult } from 'expect-webdriverio'
 import stripAnsi from 'strip-ansi'
 
@@ -44,6 +44,17 @@ describe(toHaveHref, () => {
                 options: { beforeAssertion, afterAssertion, wait: 0 },
                 result
             })
+        })
+
+        test('toHaveLink reports its own name to the hooks', async () => {
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+
+            const result = await toHaveLink.call({}, el, 'https://www.example.com', { wait: 0, beforeAssertion, afterAssertion })
+
+            expect(result.pass).toBe(true)
+            expect(beforeAssertion).toHaveBeenCalledWith(expect.objectContaining({ matcherName: 'toHaveLink' }))
+            expect(afterAssertion).toHaveBeenCalledWith(expect.objectContaining({ matcherName: 'toHaveLink', result }))
         })
 
         describe('failure when doesnt contain', () => {

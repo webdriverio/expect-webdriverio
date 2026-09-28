@@ -8,17 +8,17 @@ export async function toBeSelected(
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'selected'
-    this.matcherName = this.matcherName || 'toBeSelected'
+    const { matcherName = 'toBeSelected' } = this
 
     await options.beforeAssertion?.({
-        matcherName: this.matcherName,
+        matcherName,
         options,
     })
 
     const result = await executeCommandBe.call(this, received, el => el?.isSelected(), options)
 
     await options.afterAssertion?.({
-        matcherName: this.matcherName,
+        matcherName,
         options,
         result
     })

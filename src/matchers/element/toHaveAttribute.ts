@@ -128,7 +128,7 @@ export async function toHaveAttribute(
     value?: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
-    const matcherName = 'toHaveAttribute'
+    const { matcherName = 'toHaveAttribute' } = this
 
     await options.beforeAssertion?.({
         matcherName,

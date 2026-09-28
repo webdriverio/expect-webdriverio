@@ -37,7 +37,7 @@ export function toHaveValue(
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult>{
     // The value is a string, so a plain object is the multi-remote per-instance shorthand, not a literal value
-    return (toHaveElementProperty as ToHaveElementPropertyFn).call({ ...this, allowObjectExpectedValue: false }, el, 'value', value, options)
+    return (toHaveElementProperty as ToHaveElementPropertyFn).call({ matcherName: 'toHaveValue', ...this, allowObjectExpectedValue: false }, el, 'value', value, options)
 }
 
 // toHaveElementProperty.call does not respect well the tsc so using the below workaround to make it work with the correct typing.

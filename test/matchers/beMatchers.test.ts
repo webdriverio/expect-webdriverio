@@ -86,12 +86,13 @@ describe('be* matchers', () => {
                         },
                     )
                     expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 125, interval: 50 })
+                    // Aliases (e.g. `toBeExisting`, `toBeChecked`) report their own name, not the matcher they delegate to
                     expect(beforeAssertion).toHaveBeenCalledWith({
-                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name, // TODO fix in major version the wrong selector name for matcher aliases
+                        matcherName: matcherFn.name,
                         options: { beforeAssertion, afterAssertion, wait: 125, interval: 50 }
                     })
                     expect(afterAssertion).toHaveBeenCalledWith({
-                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name,
+                        matcherName: matcherFn.name,
                         options: { beforeAssertion, afterAssertion, wait: 125, interval: 50 },
                         result
                     })
@@ -206,11 +207,11 @@ Received: "not ${lastMatcherWords(matcherFn.name)}"`)
                     expect(waitUntil).toHaveBeenCalledExactlyOnceWith(expect.any(Function), undefined, { wait: 500, interval: undefined })
                     expect(result.pass).toEqual(true)
                     expect(beforeAssertion).toHaveBeenCalledWith({
-                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name, // TODO fix in major version the wrong selector name for matcher aliases
+                        matcherName: matcherFn.name,
                         options: { beforeAssertion, afterAssertion, wait: 500 }
                     })
                     expect(afterAssertion).toHaveBeenCalledWith({
-                        matcherName: elementFn.name === 'isExisting' ? 'toExist': matcherFn.name, // TODO fix in major version the wrong selector name for matcher aliases
+                        matcherName: matcherFn.name,
                         options: { beforeAssertion, afterAssertion, wait: 500 },
                         result
                     })

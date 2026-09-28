@@ -8,9 +8,10 @@ export async function toBeDisplayed(
     options: ExpectWebdriverIO.ToBeDisplayedOptions = DEFAULT_OPTIONS_TO_BE_DISPLAYED,
 ) {
     this.expectation = this.expectation || 'displayed'
+    const { matcherName = 'toBeDisplayed' } = this
 
     await options.beforeAssertion?.({
-        matcherName: 'toBeDisplayed',
+        matcherName,
         options,
     })
 
@@ -30,7 +31,7 @@ export async function toBeDisplayed(
     }), commandOptions)
 
     await options.afterAssertion?.({
-        matcherName: 'toBeDisplayed',
+        matcherName,
         options,
         result
     })

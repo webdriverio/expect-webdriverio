@@ -8,6 +8,17 @@ v8.0.0 requires Node.js `22.19.0` or higher, the same as WebdriverIO v10. Node.j
 
 `@wdio/globals` and `@wdio/logger` are no longer peer dependencies: only `webdriverio` is. You can remove them from your `package.json` if you do not use them yourself. When `toHaveClipboardText` cannot set the clipboard permissions, its warning now goes to `console.warn`, not to the WebdriverIO logger.
 
+## Matcher names in `beforeAssertion` and `afterAssertion`
+
+The `matcherName` given to the `beforeAssertion` and `afterAssertion` hooks is now the name of the matcher that you called. Before, some aliases sent the name of the matcher that they use:
+
+| Matcher | Before | Now |
+| ------- | ------ | --- |
+| `toBeExisting`, `toBePresent` | `toExist` | its own name |
+| `toHaveLink` | `toHaveHref` | `toHaveLink` |
+| `toHaveValue` | `toHaveElementProperty` | `toHaveValue` |
+| `toBeRequested` | `toBeRequestedTimes` | `toBeRequested` |
+
 ## `toHaveText` on multiple elements
 
 The strict strategy of the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is now the only one. The flag, `setFeatureFlags()` and the `featureFlags` option are removed.
