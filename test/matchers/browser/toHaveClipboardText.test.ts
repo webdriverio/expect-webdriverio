@@ -61,20 +61,21 @@ Received: "actual text"`
             expect(browser.setPermissions).toHaveBeenCalledWith({ name: 'clipboard-read' }, 'granted')
         })
 
-        test('should log the setPermissions warning once per assertion, not on every retry', async () => {
+        test('should log the setPermissions warning once in total, not on every retry or assertion', async () => {
+            // Fresh module, so that no other test has logged the warning already
+            vi.resetModules()
+            const { toHaveClipboardText: freshToHaveClipboardText } = await import('../../../src/matchers/browser/toHaveClipboardText')
+            const context = { toHaveClipboardText: freshToHaveClipboardText }
             const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
             vi.mocked(browser.execute).mockResolvedValue('actual text')
             vi.mocked(browser.setPermissions).mockRejectedValue(new Error('unsupported'))
 
-            const result = await thisContext.toHaveClipboardText(browser, 'expected text', { wait: 200, interval: 10 })
+            const result = await context.toHaveClipboardText(browser, 'expected text', { wait: 200, interval: 10 })
+            await context.toHaveClipboardText(browser, 'expected text', { wait: 0 })
 
             expect(result.pass).toBe(false)
-            expect(vi.mocked(browser.setPermissions).mock.calls.length).toBeGreaterThan(1)
+            expect(vi.mocked(browser.setPermissions).mock.calls.length).toBeGreaterThan(2)
             expect(warn).toHaveBeenCalledExactlyOnceWith("expect-webdriverio: Couldn't set clipboard permissions: Error: unsupported")
-
-            // The next assertion logs it again
-            await thisContext.toHaveClipboardText(browser, 'expected text', { wait: 0 })
-            expect(warn).toHaveBeenCalledTimes(2)
         })
         test('success with isNot true', async () => {
             vi.mocked(browser.execute).mockResolvedValue('some clipboard text')

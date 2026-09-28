@@ -4,7 +4,7 @@ import type { CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
-/** Reset at the start of each assertion, so the permission warning is logged once per assertion, not on every retry */
+/** The permission warning is logged once per worker: its cause is the browser, so it does not change between assertions or retries */
 let permissionWarningLogged = false
 
 /**
@@ -40,7 +40,6 @@ export async function toHaveClipboardText(
 
     // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
-    permissionWarningLogged = false
 
     const { actual, success: pass, subject, expected } = await waitUntil(
         async () => {
