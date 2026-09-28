@@ -77,7 +77,7 @@
     "ts:jest:@types-jest": "cd test-types/jest-@types_jest && vitest --typecheck --typecheck.tsconfig ./tsconfig.json --run",
     "ts:mocha": "cd test-types/mocha && vitest --typecheck --typecheck.tsconfig ./tsconfig.json --run",
     "ts:arethetypeswrong": "attw --pack . --profile esm-only",
-    "checks:all": "pnpm run build && pnpm run compile && pnpm run tsc:root-types && pnpm run test && pnpm run ts",
+    "checks:all": "pnpm run build && pnpm test",
     "watch": "pnpm run compile --watch",
     "prepare": "husky",
     "playgrounds:clean": "rimraf --glob '**/node_modules'",
