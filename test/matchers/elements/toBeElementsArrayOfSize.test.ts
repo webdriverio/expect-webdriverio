@@ -346,28 +346,10 @@ Received      : 2`
         await expect(thisContext.toBeElementsArrayOfSize(els, {},  { wait: 0 })).rejects.toThrow('Invalid NumberMatcher. Received: {}')
     })
 
-    describe.each([
-        { flag: undefined, shape: 'MultiRemoteElement[] (default)' },
-        { flag: 'true', shape: 'WdioMultiRemoteElementArray (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true)' },
-    ])('given a multi-remote $$() - $shape', ({ flag }) => {
+    describe('given a multi-remote $$()', () => {
         const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
-        let originalEnv: string | undefined
-
-        beforeEach(() => {
-            originalEnv = process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-            if (flag) {
-                process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = flag
-            } else {
-                delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-            }
-        })
 
         afterEach(() => {
-            if (originalEnv === undefined) {
-                delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-            } else {
-                process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = originalEnv
-            }
             vi.unstubAllGlobals()
         })
 
@@ -378,7 +360,7 @@ Received      : 2`
             const getInstance = last.getInstance.bind(last)
             last.getInstance = ((name: string) => {
                 if (name === 'firefox') {
-                    throw new Error('Multiremote object has no instance named "firefox"')
+                    throw new Error('Multi-remote object has no instance named "firefox"')
                 }
                 return getInstance(name)
             }) as WebdriverIO.MultiRemoteElement['getInstance']
@@ -620,23 +602,12 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 
     describe('given a multi-remote $$() retried until the size matches', () => {
         const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
-        let originalEnv: string | undefined
-
-        beforeEach(() => {
-            originalEnv = process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-        })
 
         afterEach(() => {
-            if (originalEnv === undefined) {
-                delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-            } else {
-                process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = originalEnv
-            }
             vi.unstubAllGlobals()
         })
 
-        test('WdioMultiRemoteElementArray: refetches from its parent and synchronizes the received array', async () => {
-            process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+        test('refetches from its parent and synchronizes the received array', async () => {
             const parent = multiRemoteBrowserFactory(browsers())
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 1, parent)
             vi.mocked(parent.$$).mockResolvedValue(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as never)
@@ -648,8 +619,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             expect(elements).toHaveLength(2)
         })
 
-        test('WdioMultiRemoteElementArray: an empty array takes its instances from its parent and retries', async () => {
-            process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+        test('an empty array takes its instances from its parent and retries', async () => {
             const parent = multiRemoteBrowserFactory(browsers())
             const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 0, parent)
             vi.mocked(parent.$$).mockResolvedValue(createMultiRemoteElementArrayMock(browsers(), 'sel', 1) as never)
@@ -659,20 +629,13 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             expect(result.pass).toBe(true)
         })
 
-        test('MultiRemoteElement[]: refetches best effort from the global multiRemoteBrowser, with a warning', async () => {
-            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-            const globalMultiRemoteBrowser = multiRemoteBrowserFactory(browsers())
-            vi.mocked(globalMultiRemoteBrowser.$$).mockResolvedValue(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as never)
-            vi.stubGlobal('multiRemoteBrowser', globalMultiRemoteBrowser)
-            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 1)
+        test('an empty array from a selected instance only expects that instance', async () => {
+            const parent = multiRemoteBrowserFactory(browsers()).select('firefox')
+            const elements = createMultiRemoteElementArrayMock({ firefox: browserFactory() }, 'sel', 0, parent)
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, 2, { wait: 500, interval: 10 })
+            const result = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ firefox: 0 }), { wait: 0 })
 
             expect(result.pass).toBe(true)
-            expect(globalMultiRemoteBrowser.$$).toHaveBeenCalledWith('sel')
-            expect(elements).toHaveLength(2)
-            expect(warn.mock.calls.flat().join()).toMatch(/best effort.*WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true/s)
         })
 
         describe('an empty array outside multi-remote rejects per-instance sizes, like a non-empty one, instead of passing', () => {
@@ -685,8 +648,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
                 await expect(thisNotContext.toBeElementsArrayOfSize(elements, { chrome: 1, firefox: 1 }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
             })
 
-            test('an empty plain array with a single (non multi-remote) global browser', async () => {
-                vi.stubGlobal('browser', browserFactory())
+            test('an empty plain array', async () => {
                 const elements = [] as unknown as WebdriverIO.MultiRemoteElement[]
 
                 await expect(thisContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 0, firefox: 0 }), { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
@@ -694,118 +656,15 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             })
         })
 
-        test('MultiRemoteElement[]: an empty (unknown instances) array accepts per-instance sizes instead of throwing', async () => {
-            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-
-            const pass = await thisContext.toBeElementsArrayOfSize([] as unknown as WebdriverIO.MultiRemoteElement[], multiRemote({ chrome: 0, firefox: 0 }), { wait: 0 })
-            const fail = await thisContext.toBeElementsArrayOfSize([] as unknown as WebdriverIO.MultiRemoteElement[], multiRemote({ chrome: 2, firefox: 2 }), { wait: 0 })
-
-            expect(pass.pass).toBe(true)
-            expect(fail.pass).toBe(false)
-            expect(stripAnsi(fail.message())).toEqual(`\
-Expect [] to be elements array of size
-
-- Expected  - 2
-+ Received  + 2
-
-  Object {
--   "chrome": 2,
--   "firefox": 2,
-+   "chrome": 0,
-+   "firefox": 0,
-  }`)
-        })
-
-        describe('MultiRemoteElement[]: an empty array checks per-instance sizes against the global multiRemoteBrowser instances', () => {
-            const emptyElements = () => [] as unknown as WebdriverIO.MultiRemoteElement[]
-
-            beforeEach(() => {
-                delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory(browsers()))
-            })
-
-            test('passes when naming exactly the instances', async () => {
-                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), multiRemote({ firefox: 0, chrome: 0 }), { wait: 0 })
-
-                expect(result.pass).toBe(true)
-            })
-
-            test.each<{ name: string, expected: MultiRemoteValues<number>, message: string }>([
-                { name: 'a missing instance', expected: { chrome: 0 }, message: `\
-Expect [] to be elements array of size
-
-- Expected  - 0
-+ Received  + 1
-
-  Object {
-    "chrome": 0,
-+   "firefox": 0,
-  }` },
-                { name: 'misspelled instances', expected: { Chrome: 0, Firefox: 0 }, message: `\
-Expect [] to be elements array of size
-
-- Expected  - 2
-+ Received  + 2
-
-  Object {
--   "Chrome": 0,
--   "Firefox": 0,
-+   "chrome": 0,
-+   "firefox": 0,
-  }` },
-                { name: 'an unknown instance', expected: { chrome: 0, firefox: 0, safari: 0 }, message: `\
-Expect [] to be elements array of size
-
-- Expected  - 1
-+ Received  + 0
-
-  Object {
-    "chrome": 0,
-    "firefox": 0,
--   "safari": 0,
-  }` },
-            ])('fails with $name, also with .not', async ({ expected, message }) => {
-                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), multiRemote(expected), { wait: 0 })
-                const notResult = await thisNotContext.toBeElementsArrayOfSize(emptyElements(), multiRemote(expected), { wait: 0 })
-
-                expect(result.pass).toBe(false)
-                expect(stripAnsi(result.message())).toEqual(message)
-                expect(notResult.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-            })
-
-            test('falls back on the expected instance names when the global multiRemoteBrowser has no registered browser', async () => {
-                vi.stubGlobal('multiRemoteBrowser', new Proxy({}, { get: () => { throw new Error('No browser instance registered') } }))
-
-                const result = await thisContext.toBeElementsArrayOfSize(emptyElements(), multiRemote({ chrome: 0 }), { wait: 0 })
-
-                expect(result.pass).toBe(true)
-            })
-        })
-
-        test('MultiRemoteElement[]: keeps refetching from the received elements when a best-effort refetch is empty', async () => {
-            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-            const globalMultiRemoteBrowser = { $$: vi.fn()
-                .mockResolvedValueOnce([])
-                .mockResolvedValue(createMultiRemoteElementArrayMock(browsers(), 'sel', 2)) }
+        test('MultiRemoteElement[]: a plain array has no parent, so it is not refetched', async () => {
+            const globalMultiRemoteBrowser = multiRemoteBrowserFactory(browsers())
             vi.stubGlobal('multiRemoteBrowser', globalMultiRemoteBrowser)
-            vi.spyOn(console, 'warn').mockImplementation(() => {})
-            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 1)
-
-            const result = await thisContext.toBeElementsArrayOfSize(elements, 2, { wait: 500, interval: 10 })
-
-            expect(result.pass).toBe(true)
-            expect(globalMultiRemoteBrowser.$$).toHaveBeenCalledTimes(2)
-            expect(elements).toHaveLength(2)
-        })
-
-        test('MultiRemoteElement[]: without the global multiRemoteBrowser, keeps comparing the same elements instead of throwing', async () => {
-            delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-            vi.spyOn(console, 'warn').mockImplementation(() => {})
-            const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 1)
+            const elements = Array.from(createMultiRemoteElementArrayMock(browsers(), 'sel', 1))
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, 2, { wait: 50, interval: 10 })
 
             expect(result.pass).toBe(false)
+            expect(globalMultiRemoteBrowser.$$).not.toHaveBeenCalled()
             expect(stripAnsi(result.message())).toEqual(`\
 Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
 

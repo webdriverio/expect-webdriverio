@@ -20,8 +20,12 @@ export type MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements =
 
 export type WdioMultiRemoteElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray
 
-/** WebdriverIO v9 sets `isMultiremote`, v10 sets `isMultiRemote` */
-export type WdioMultiRemoteElementArray = WebdriverIO.ElementArray & ({ isMultiremote: true } | { isMultiRemote: true })
+/** Multi-remote `$$()` result: WebdriverIO v10 `WebdriverIO.MultiRemoteElementArray`, missing from the v9 types (#2246) */
+export type WdioMultiRemoteElementArray = Omit<WebdriverIO.ElementArray, 'parent' | 'getElements'> & {
+    parent: WebdriverIO.MultiRemoteBrowser | WebdriverIO.MultiRemoteElement
+    isMultiRemote: true
+    getElements(): Promise<WdioMultiRemoteElementArray>
+}
 
 export type RawMatcherFn<Context extends MatcherContext = MatcherContext> = {
     (this: Context, actual: unknown, ...expected: unknown[]): ExpectationResult;

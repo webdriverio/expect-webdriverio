@@ -61,9 +61,6 @@ npm --workspace=browser-runner test
 
 To run one spec: `npm --workspace=mocha test -- --spec test/specs/basic-matchers.test.ts`.
 
-`multi-remote-mocha` sets `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true` in its
-`wdio.conf.ts`. The unit tests cover the flag off (see [AGENTS.md](../../../AGENTS.md)).
-
 Visual snapshots can fail when the test website changes. Update them only when
 the change is about snapshots, with `npm run snapshots:update` (in `playgrounds/`), and
 review the diff.

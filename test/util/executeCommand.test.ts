@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
+import { afterEach, describe, it, expect, vi } from 'vitest'
 import { executeCommandWithStrategy, multipleElementResultsStrategy } from '../../src/util/executeCommand'
-import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../__mocks__/@wdio/globals'
+import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals'
 import { $ } from '@wdio/globals'
 import { multiRemote, some } from '../../src/api/index.js'
 
@@ -255,29 +255,8 @@ describe('executeCommand', () => {
             })
         })
 
-        describe.each([
-            { flag: undefined, shape: 'MultiRemoteElement[] (default)' },
-            { flag: 'true', shape: 'WdioMultiRemoteElementArray (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true)' },
-        ])('given a multi-remote element array ($$()) - $shape', ({ flag }) => {
+        describe('given a multi-remote element array ($$())', () => {
             const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
-            let originalEnv: string | undefined
-
-            beforeEach(() => {
-                originalEnv = process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                if (flag) {
-                    process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = flag
-                } else {
-                    delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                }
-            })
-
-            afterEach(() => {
-                if (originalEnv === undefined) {
-                    delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                } else {
-                    process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = originalEnv
-                }
-            })
 
             it('compares every element across every instance and actually waits for all comparisons (regression for the forEach/await bug)', async () => {
                 const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
@@ -398,13 +377,13 @@ describe('executeCommand', () => {
                 expect(result.success).toBe(true)
             })
 
-            it(`${flag ? 'retries (no abort)' : 'aborts'} when empty since only the MultiRemoteElementArray shape can be refetched`, async () => {
+            it('retries (no abort) when empty, since it can be refetched', async () => {
                 const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 0)
 
                 const result = await multipleElementResultsStrategy(elements, 'Match', vi.fn(), { isNot: false, isSome: false, iteration: 0 })
 
                 expect(result.success).toBe(false)
-                expect(result.abort).toBe(!flag)
+                expect(result.abort).toBe(false)
             })
 
             it('fails when an instance found no element, reporting its own (empty) elements', async () => {
@@ -413,7 +392,7 @@ describe('executeCommand', () => {
                 const originalGetInstance = firstElement.getInstance.bind(firstElement)
                 firstElement.getInstance = vi.fn((name: string) => {
                     if (name === 'firefox') {
-                        throw new Error('Multiremote object has no instance named "firefox"')
+                        throw new Error('Multi-remote object has no instance named "firefox"')
                     }
                     return originalGetInstance(name)
                 })
@@ -446,7 +425,7 @@ describe('executeCommand', () => {
             const getInstance = last.getInstance.bind(last)
             last.getInstance = ((name: string) => {
                 if (name === 'firefox') {
-                    throw new Error('Multiremote object has no instance named "firefox"')
+                    throw new Error('Multi-remote object has no instance named "firefox"')
                 }
                 return getInstance(name)
             }) as WebdriverIO.MultiRemoteElement['getInstance']
@@ -643,37 +622,35 @@ describe('executeCommand', () => {
             })
         })
 
-        describe('given a best-effort refetch (MultiRemoteElement[] without WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY)', () => {
-            let originalEnv: string | undefined
-
-            beforeEach(() => {
-                originalEnv = process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                vi.spyOn(console, 'warn').mockImplementation(() => {})
-            })
-
+        describe('given a retry', () => {
             afterEach(() => {
-                if (originalEnv !== undefined) {
-                    process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = originalEnv
-                }
                 vi.unstubAllGlobals()
             })
 
-            it('keeps the received elements, and so the selector, when a refetch is empty and keeps retrying', async () => {
-                const globalMultiRemoteBrowser = { $$: vi.fn()
-                    .mockResolvedValueOnce([])
-                    .mockResolvedValueOnce(createMultiRemoteElementArrayMock(browsers(), 'sel', 2)) }
-                vi.stubGlobal('multiRemoteBrowser', globalMultiRemoteBrowser)
-                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 1)
+            it('refetches from the parent, even when initially empty', async () => {
+                const parent = multiRemoteBrowserFactory(browsers())
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 0, parent)
+                vi.mocked(parent.$$).mockImplementation(() => Promise.resolve(createMultiRemoteElementArrayMock(browsers(), 'sel', 2, parent)) as never)
 
-                const first = await multipleElementResultsStrategy(elements, 'a', compareEquals, { ...context, iteration: 1 })
+                const first = await multipleElementResultsStrategy(elements, 'a', compareEquals, context)
                 expect(first).toEqual(expect.objectContaining({ success: false, abort: false }))
-                expect(elements).toHaveLength(1)
 
-                const second = await multipleElementResultsStrategy(elements, 'a', compareEquals, { ...context, iteration: 2 })
+                const second = await multipleElementResultsStrategy(elements, 'a', compareEquals, { ...context, iteration: 1 })
                 expect(second.success).toBe(true)
+                expect(parent.$$).toHaveBeenCalledExactlyOnceWith('sel')
                 expect(elements).toHaveLength(2)
-                expect(globalMultiRemoteBrowser.$$).toHaveBeenCalledTimes(2)
+            })
+
+            it('does not refetch a plain MultiRemoteElement[], which has no parent', async () => {
+                const parent = multiRemoteBrowserFactory(browsers())
+                const elements = Array.from(createMultiRemoteElementArrayMock(browsers(), 'sel', 1, parent))
+                vi.stubGlobal('multiRemoteBrowser', parent)
+
+                const result = await multipleElementResultsStrategy(elements, 'a', compareEquals, { ...context, iteration: 1 })
+
+                expect(result.success).toBe(true)
+                expect(parent.$$).not.toHaveBeenCalled()
+                expect(elements).toHaveLength(1)
             })
         })
     })

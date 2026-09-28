@@ -50,7 +50,7 @@ await expect(multiRemoteBrowser).toHaveTitle('WebdriverIO')
 await expect(multiRemoteBrowser.$('h1')).toHaveText(expect.multiRemote({ chrome: 'Welcome', firefox: 'Bienvenue' }))
 ```
 
-Some WebdriverIO environment variables are recommended, see [Multi-remote Support](docs/MultiRemote.md#requirements--configuration).
+WebdriverIO `v10` or higher is required, see [Multi-remote Support](docs/MultiRemote.md#requirements).
 
 #### Local & Browser Runners
 - **Local Runner**: Fully compatible. You can leverage your test framework adapter as mentioned above.
