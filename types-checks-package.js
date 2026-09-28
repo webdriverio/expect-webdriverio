@@ -54,11 +54,18 @@ try {
         if (typeof expect !== 'function' || Object.keys(wdioCustomMatchers).length === 0 || !some || !multiRemote) process.exit(1)
     `]).catch((error) => failures.push(`runtime import: ${error.message}`))
 
+    // `require()` of an ES module (Node.js 22.12+) resolves through the plain string fallback of `exports`
+    await run('node', ['--input-type=commonjs', '-e', `
+        const { expect } = require('expect-webdriverio')
+        const { some } = require('expect-webdriverio/api')
+        if (typeof expect !== 'function' || !some) process.exit(1)
+    `]).catch((error) => failures.push(`runtime require: ${error.message}`))
+
     if (failures.length > 0) {
         console.error(failures.join('\n'))
         process.exitCode = 1
     } else {
-        console.log(`SUCCESS: the packed package type-checks and imports in a clean project (${entries.join(', ')}).`)
+        console.log(`SUCCESS: the packed package type-checks, imports and requires in a clean project (${entries.join(', ')}).`)
     }
 } finally {
     if (process.exitCode) {
