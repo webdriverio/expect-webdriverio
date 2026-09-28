@@ -6,7 +6,7 @@ import { stripSnapshotIndentation } from '@vitest/snapshot'
 import { SnapshotService } from '../snapshot.js'
 import { awaitElementOrArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementsLike, isStrictlyElementArray } from '../util/elementsUtil.js'
 import { getElementsPerInstance } from '../util/multiRemoteUtils.js'
-import type { WdioMultiRemoteElementArray } from '../types.js'
+import type { WdioMultiRemoteElementArray, WdioMatcherContext } from '../types.js'
 
 interface InlineSnapshotOptions {
     inlineSnapshot: string
@@ -165,12 +165,12 @@ export function toMatchSnapshot(received: unknown, message: string) {
     return toMatchSnapshotHelper(received, message)
 }
 
-export function toMatchInlineSnapshot(received: unknown, inlineSnapshot: string, message: string) {
+export function toMatchInlineSnapshot(this: WdioMatcherContext, received: unknown, inlineSnapshot: string, message: string) {
     /**
      * When running component/unit tests in the browser we receive a stack trace
      * through the `this` scope.
      */
-    const browserErrorLine: string = this.errorStack
+    const browserErrorLine = this.errorStack
 
     function __INLINE_SNAPSHOT__(inlineSnapshot: string, message: string) {
         /**

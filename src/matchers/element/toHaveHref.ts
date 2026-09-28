@@ -1,6 +1,6 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { AssertionResult } from 'expect-webdriverio'
 
 /**
@@ -49,6 +49,7 @@ export async function toHaveHref(
 ): Promise<AssertionResult>
 
 export async function toHaveHref(
+    this: WdioMatcherContext,
     el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS

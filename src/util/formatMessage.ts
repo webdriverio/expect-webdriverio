@@ -64,7 +64,7 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot: boolean | undefined, useNotInLabel?: boolean, isSome?: boolean, browserTargetType?: 'browser' | 'window' },
+    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, browserTargetType?: 'browser' | 'window' },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
@@ -196,10 +196,10 @@ const printArrayWithMatchingItemInRed = (
 export const enhanceErrorBe = (
     subject: WebdriverIO.Element | WdioElements | unknown,
     actuals: boolean[] | boolean | MultiRemoteValuesWithArray<boolean> | undefined,
-    context: { isNot: boolean, isSome: boolean, verb: string, expectation: string },
+    context: { isNot?: boolean, isSome: boolean, verb: string, expectation: string },
     options: ExpectWebdriverIO.CommandOptions
 ) => {
-    const { isNot, verb, expectation } = context
+    const { isNot = false, verb, expectation } = context
     let expected
     let actual
 

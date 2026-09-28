@@ -7,6 +7,7 @@
    */
   "compilerOptions": {
     "target": "ES2022",
+    "strict": true,
     "strictBindCallApply": true,
     "noImplicitAny": true,
     
@@ -19,7 +20,8 @@
     "types": [
       "@wdio/types",
     ],
-    "moduleResolution": "node",
+    "module": "preserve", // `moduleResolution: "node"` (node10) is removed in TypeScript 7
+    "moduleResolution": "bundler",
     "noEmit": true,
   },
   

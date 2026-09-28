@@ -23,6 +23,18 @@ export type WdioMultiRemoteElements = WebdriverIO.MultiRemoteElement | Webdriver
 /** WebdriverIO v9 sets `isMultiremote`, v10 sets `isMultiRemote` */
 export type WdioMultiRemoteElementArray = WebdriverIO.ElementArray & ({ isMultiremote: true } | { isMultiRemote: true })
 
+/** The `this` of a matcher: the public context, and the internal options that some matchers set */
+export type WdioMatcherContext = ExpectWebdriverIO.MatcherContext & {
+    /** An empty element set passes instead of failing (e.g. `.not.toExist()`) */
+    allowEmptyElements?: boolean
+    /** Browser Runner: the stack line of the `toMatchInlineSnapshot()` call in the browser */
+    errorStack?: string
+    /** `toHaveElementProperty`: the expected value can be a plain object (false for `toHaveValue`) */
+    allowObjectExpectedValue?: boolean
+    /** The `expect` library context has more properties (`utils`, `equals`, `promise`, ...) */
+    [key: string]: unknown
+}
+
 export type RawMatcherFn<Context extends MatcherContext = MatcherContext> = {
     (this: Context, actual: unknown, ...expected: unknown[]): ExpectationResult;
 }

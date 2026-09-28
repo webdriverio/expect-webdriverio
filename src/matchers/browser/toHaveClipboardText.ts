@@ -3,6 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
+import type { WdioMatcherContext } from '../../types.js'
 
 /** The permission warning is logged once per worker: its cause is the browser, so it does not change between assertions or retries */
 let permissionWarningLogged = false
@@ -26,6 +27,7 @@ export async function toHaveClipboardText(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveClipboardText(
+    this: WdioMatcherContext,
     browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS

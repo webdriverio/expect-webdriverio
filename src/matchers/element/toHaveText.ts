@@ -5,7 +5,7 @@ import {
     isArrayContainingMatcher,
     waitUntil,
 } from '../../utils.js'
-import type { MaybeArray, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements } from '../../types.js'
+import type { MaybeArray, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
@@ -18,6 +18,7 @@ async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<
 }
 
 export async function toHaveText(
+    this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>
         | MultiRemoteValues<MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>>,

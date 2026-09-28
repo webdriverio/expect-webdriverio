@@ -28,14 +28,15 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     unresolvedElements,
     expectedValues,
     singleElementCompare,
-    context: { isNot, iteration },
+    context: { isNot = false, iteration },
     supportsArrayContaining = false,
     strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
 } :{
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements | unknown
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | unknown
-    singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>
-    context: { isNot: boolean, iteration: number },
+    // A method signature, so its parameters stay bivariant: each matcher types the expected value it compares
+    singleElementCompare(awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number): Promise<CompareResult<Actual>>
+    context: { isNot?: boolean, iteration: number },
     /** Compare collection snapshots using singleElementCompare(element, undefined). 'arrayOnly' rejects scalar subjects. */
     supportsArrayContaining?: boolean | 'arrayOnly',
     /**
@@ -85,7 +86,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
         return { subject: selector, ...await singleElementCompare(selector, expectedValues as MaybeArray<Expected>) }
     }
 
-    return multipleElementResultsStrategy(actualReceived, expectedValues, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)
+    return multipleElementResultsStrategy(actualReceived, expectedValues as MaybeArrayOrMultiRemoteValues<Expected> | undefined, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)
 }
 
 /**

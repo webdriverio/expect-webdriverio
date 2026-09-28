@@ -1,5 +1,5 @@
 import { toHaveElementProperty } from './toHaveElementProperty.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { AssertionResult } from 'expect-webdriverio'
 
@@ -31,6 +31,7 @@ export function toHaveValue(
 ): Promise<AssertionResult>
 
 export function toHaveValue(
+    this: WdioMatcherContext,
     el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS

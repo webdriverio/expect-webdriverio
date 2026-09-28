@@ -1,7 +1,7 @@
 import { waitUntil, enhanceError, } from '../../utils.js'
 import { refetchElements, synchronizeElementArray, syncronizeElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementsMaybePromise, WdioMultiRemoteElementArray } from '../../types.js'
+import type { WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMatcherContext } from '../../types.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { awaitElementArray, isMultiRemoteElementArray, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from '../../util/elementsUtil.js'
@@ -23,6 +23,7 @@ export async function toBeElementsArrayOfSize(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toBeElementsArrayOfSize(
+    this: WdioMatcherContext,
     received: WdioElementsMaybePromise | WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray | Promise<WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray>,
     expectedValue: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS

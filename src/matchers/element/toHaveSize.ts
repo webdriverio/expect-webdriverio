@@ -1,6 +1,6 @@
 import type { RectReturn } from '@wdio/protocols'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../../types.js'
+import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
@@ -46,6 +46,7 @@ export async function toHaveSize(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toHaveSize(
+    this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArray<Size> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<Size>>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS

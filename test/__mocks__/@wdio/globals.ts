@@ -166,14 +166,14 @@ export class StrictSelectorError extends Error {
     }
 }
 
-export const $ = vi.fn((_selector: string) => {
-    const element = elementFactory(_selector)
+export const $ = vi.fn((_selector: Parameters<WebdriverIO.Element['$']>[0]) => {
+    const element = elementFactory(_selector as string)
 
     return $Factory(element)
 })
 
-export const $$ = vi.fn((selector: string) => {
-    return chainableElementArrayFactory(selector, 2, browserFactory())
+export const $$ = vi.fn((selector: Parameters<WebdriverIO.Element['$$']>[0]) => {
+    return chainableElementArrayFactory(selector as string, 2, browserFactory())
 })
 
 export function elementArrayFactory(selector: string, length: number = 2, parent: WebdriverIO.Browser | WebdriverIO.Element = browserFactory(length)): WebdriverIO.ElementArray {
