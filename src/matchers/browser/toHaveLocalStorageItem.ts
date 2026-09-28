@@ -6,12 +6,20 @@ import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
 /**
+ * Browser or Multi-Remote Browser: only check that the item exists
+ */
+export async function toHaveLocalStorageItem(
+    browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
+    key: string,
+): Promise<ExpectWebdriverIO.AssertionResult>
+
+/**
  * Browser
  */
 export async function toHaveLocalStorageItem(
     browser: WebdriverIO.Browser,
     key: string,
-    expectedValue?: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
+    expectedValue: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 

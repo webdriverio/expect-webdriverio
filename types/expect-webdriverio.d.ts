@@ -204,20 +204,34 @@ interface WdioBrowserMatchers<_R, ActualT>{
         /**
         * `WebdriverIO.Browser` -> `getLocalStorageItem`
         */
-        (
-            key: string,
-            expectedValue?: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) => Promise<void>,
+        {
+            /**
+             * Only check that the item exists.
+             * Use `toHaveLocalStorageItem(key, expect.anything(), options)` to check it with options.
+             */
+            (key: string): Promise<void>
+            (
+                key: string,
+                expectedValue: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+                options?: ExpectWebdriverIO.StringOptions
+            ): Promise<void>
+        },
 
         /**
         * `WebdriverIO.MultiRemoteBrowser` -> `getLocalStorageItem`
         */
-        (
-            key: string,
-            expectedValue?: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) => Promise<void>
+        {
+            /**
+             * Only check that the item exists.
+             * Use `toHaveLocalStorageItem(key, expect.anything(), options)` to check it with options.
+             */
+            (key: string): Promise<void>
+            (
+                key: string,
+                expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+                options?: ExpectWebdriverIO.StringOptions
+            ): Promise<void>
+        }
     >
 }
 
@@ -435,19 +449,10 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
             property: string,
         ): Promise<void>;
 
-        /**
-         * Not supported: use `expect.anything()` to check for the presence of the property with options.
-         */
-        (
-            property: string,
-            propertyValue: undefined | null,
-            options?: ExpectWebdriverIO.StringOptions
-        ): Promise<never>;
-
         /** Assert both property name AND a specific expected value */
         (
             property: string,
-            value: MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>,
+            value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>, null>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>;
     }, {
@@ -467,7 +472,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>
         (
             property: string,
-            value: MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>>,
+            value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>, null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>>,
             options?: ExpectWebdriverIO.StringOptions
         ): Promise<void>
     }>

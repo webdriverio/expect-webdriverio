@@ -121,6 +121,15 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(browser).toHaveLocalStorageItem('key', expect.anything())).toEqualTypeOf<Promise<void>>()
             })
 
+            it('should reject an explicit undefined value', async () => {
+                // @ts-expect-error omit the value, or use `expect.anything()` with options
+                expectTypeOf(expect(browser).toHaveLocalStorageItem).toBeCallableWith('key', undefined)
+                // @ts-expect-error omit the value, or use `expect.anything()` with options
+                expectTypeOf(expect(browser).toHaveLocalStorageItem).toBeCallableWith('key', undefined, { wait: 1 })
+                // @ts-expect-error omit the value, or use `expect.anything()` with options
+                expectTypeOf(expect(multiRemoteBrowser).toHaveLocalStorageItem).toBeCallableWith('key', undefined, { wait: 1 })
+            })
+
             it('should have ts errors when actual is not a Browser element', async () => {
                 expectTypeOf(expect(element).toHaveLocalStorageItem).toBeNever()
                 expectTypeOf(expect(true).toHaveLocalStorageItem).toBeNever()
@@ -1082,11 +1091,17 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(elements).toHaveElementProperty('prop', [expect.anything(), expect.any(Number), 'value', expect.stringContaining('val')])).toEqualTypeOf<Promise<void>>()
                 })
 
-                it('should not be supported (never)', async () => {
-                    expectTypeOf(expect(elements).toHaveElementProperty('prop', null)).toEqualTypeOf<Promise<never>>()
-                    expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined)).toEqualTypeOf<Promise<never>>()
-                    expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
-                    expectTypeOf(expect(elements).toHaveElementProperty('prop', undefined, { wait: 1 })).toEqualTypeOf<Promise<never>>()
+                it('should reject an explicit undefined or null value', async () => {
+                    // @ts-expect-error omit the value, or use `expect.anything()` with options
+                    expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', null)
+                    // @ts-expect-error omit the value, or use `expect.anything()` with options
+                    expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', undefined)
+                    // @ts-expect-error omit the value, or use `expect.anything()` with options
+                    expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', null, { wait: 1 })
+                    // @ts-expect-error omit the value, or use `expect.anything()` with options
+                    expectTypeOf(expect(elements).toHaveElementProperty).toBeCallableWith('prop', undefined, { wait: 1 })
+                    // @ts-expect-error omit the value, or use `expect.anything()` with options
+                    expectTypeOf(expect(multiRemoteElements).toHaveElementProperty).toBeCallableWith('prop', null, { wait: 1 })
                 })
 
                 it('should have ts errors but to support one day???', async () => {

@@ -55,7 +55,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementsMaybePromise,
     property: string,
-    value: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null> | undefined,
+    value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>, null>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>
 
