@@ -20,6 +20,27 @@ jobs:
       contents: write
       id-token: write
     steps:
+      - name: Check Push Access
+        # npm publishes before the git push: stop now if the push token cannot bypass the rulesets of main
+        run: |
+          set -o pipefail
+          api() { curl --fail-with-body --silent --show-error -H "Authorization: Bearer $PUSH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}$1"; }
+          # Assignments, not `$(...)` inside `echo` or `for`, so that a failed API call stops the step
+          repo=$(api "")
+          echo "Write access: $(jq -r '.permissions.push // "not reported for this token"' <<< "$repo")"
+          ids=$(api "/rules/branches/main" | jq -r '[.[].ruleset_id] | unique | .[]')
+          for id in $ids; do
+            ruleset=$(api "/rulesets/$id")
+            name=$(jq -r '.name' <<< "$ruleset")
+            bypass=$(jq -r '.current_user_can_bypass' <<< "$ruleset")
+            echo "Ruleset '$name': current_user_can_bypass=$bypass"
+            if [[ "$bypass" != "always" && "$bypass" != "exempt" ]]; then
+              echo "::error::The push token cannot bypass the ruleset '$name' of main, so the release push would be rejected"
+              exit 1
+            fi
+          done
+        env:
+          PUSH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: 'main'
