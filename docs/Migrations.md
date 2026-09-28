@@ -6,7 +6,7 @@ v8.0.0 requires Node.js `22.19.0` or higher, the same as WebdriverIO v10. Node.j
 
 ## Peer dependencies
 
-`@wdio/globals` and `@wdio/logger` are no longer peer dependencies: only `webdriverio` and `@wdio/types` are. You can remove them from your `package.json` if you do not use them yourself. `@wdio/types` is a new peer: the public types import it, and `webdriverio` already installs it. When `toHaveClipboardText` cannot set the clipboard permissions, its warning now goes to `console.warn`, not to the WebdriverIO logger.
+`@wdio/globals` and `@wdio/logger` are no longer peer dependencies: only `webdriverio` is. You can remove them from your `package.json` if you do not use them yourself. When `toHaveClipboardText` cannot set the clipboard permissions, its warning now goes to `console.warn`, not to the WebdriverIO logger.
 
 ## Matcher names in `beforeAssertion` and `afterAssertion`
 
