@@ -6,6 +6,6 @@ allowBuilds:
   esbuild: false
   geckodriver: false
 
-# `@wdio/globals` has a peer dependency on `expect-webdriverio`: use this package, not an older release
+# Dev dependency `@wdio/globals` (test mocks, global types) peers on an older `expect-webdriverio`: use ours, so its types do not merge with ours
 overrides:
   expect-webdriverio: 'link:.'
