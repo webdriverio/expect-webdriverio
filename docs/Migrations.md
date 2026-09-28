@@ -63,7 +63,7 @@ v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#mi
 | `utils.compareNumbers()` | none, internal |
 | `toHaveAttr()` | `toHaveAttribute()` |
 | `toHaveClass()` | `toHaveElementClass()` |
-| `toHaveAttribute(name, undefined, options)` | `toHaveAttribute(name)`, or `toHaveAttribute(name, expect.anything(), options)` |
+| `toHaveAttribute(name, undefined \| null, options)`, which checks that the attribute is present | `toHaveAttribute(name)`, or `toHaveAttribute(name, expect.anything(), options)` |
 | `toHaveElementProperty(name, undefined \| null, options)` | `toHaveElementProperty(name)`, or `toHaveElementProperty(name, expect.anything(), options)` |
 | `toHaveLocalStorageItem(key, undefined, options)` | `toHaveLocalStorageItem(key)`, or `toHaveLocalStorageItem(key, expect.anything(), options)` |
 | `toHaveChildren(undefined \| {}, options)` | `toHaveChildren()`, or `toHaveChildren({ gte: 1 }, options)` |
@@ -71,6 +71,7 @@ v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#mi
 | `ExpectWebdriverIO.NumberOptions` type | `ExpectWebdriverIO.NumberMatcher` and `ExpectWebdriverIO.CommandOptions` |
 | `toBeRequestedWithResponse()`, not typed or documented | `toBeRequestedWith({ response })` |
 | `toHaveAttributeAndValue()`, an internal helper registered by mistake | `toHaveAttribute()` |
+| `toHaveAttributeAndValue(name, null)` to check for a missing attribute | `not.toHaveAttribute(name)` |
 
 `NumberOptions` applied to `toHaveChildren`, `toHaveWidth`, `toHaveHeight`, `toBeElementsArrayOfSize` and `toBeRequestedTimes`. A number matcher with other keys than `eq`, `gte` and `lte` now throws `Invalid NumberMatcher`, instead of taking them as command options.
 
