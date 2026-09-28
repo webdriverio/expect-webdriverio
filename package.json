@@ -87,6 +87,7 @@
   },
   "dependencies": {
     "@vitest/snapshot": "^5.0.2",
+    "@wdio/types": "^9.31.5",
     "deep-eql": "^5.0.2",
     "expect": "^30.5.2",
     "jest-matcher-utils": "^30.5.2"
@@ -105,7 +106,6 @@
     "@wdio/cli": "^9.32.0",
     "@wdio/globals": "^9.31.3",
     "@wdio/protocols": "^9.31.5",
-    "@wdio/types": "^9.32.0",
     "husky": "^9.1.7",
     "npm-run-all2": "^9.0.3",
     "oxlint": "^1.85.0",

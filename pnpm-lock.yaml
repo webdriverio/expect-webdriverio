@@ -14,6 +14,9 @@ importers:
       '@vitest/snapshot':
         specifier: ^5.0.2
         version: 5.0.2
+      '@wdio/types':
+        specifier: ^9.31.5
+        version: 9.32.0
       deep-eql:
         specifier: ^5.0.2
         version: 5.0.2
@@ -63,9 +66,6 @@ importers:
       '@wdio/protocols':
         specifier: ^9.31.5
         version: 9.31.5
-      '@wdio/types':
-        specifier: ^9.32.0
-        version: 9.32.0
       husky:
         specifier: ^9.1.7
         version: 9.1.7
