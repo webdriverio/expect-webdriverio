@@ -1,5 +1,9 @@
 # expect-webdriverio [![Test](https://github.com/webdriverio/expect-webdriverio/actions/workflows/test.yml/badge.svg)](https://github.com/webdriverio/expect-webdriverio/actions/workflows/test.yml)
 
+> [!IMPORTANT]
+> This branch is v8, in development for WebdriverIO v10. Its docs are not released yet.
+> For the latest release (v7, WebdriverIO v9), see the [v7 README](https://github.com/webdriverio/expect-webdriverio/blob/v7/README.md).
+
 ###### [API](docs/API.md) | [Multiple Elements](docs/MultipleElements.md) | [Multi-remote](docs/MultiRemote.md) | [TypeScript / JS Autocomplete](docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](docs/CustomMatchers.md)
 
 > [WebdriverIO](https://webdriver.io/) assertion library inspired by [expect](https://www.npmjs.com/package/expect)
