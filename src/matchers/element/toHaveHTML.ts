@@ -24,13 +24,13 @@ export async function toHaveHTML(
 ): Promise<AssertionResult> {
     const { expectation = 'HTML', verb = 'have', isNot, matcherName = 'toHaveHTML' } = this
 
-    expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
-
     await options.beforeAssertion?.({
         matcherName,
         expectedValue,
         options,
     })
+
+    expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
     const { success: pass, actual: actualHTML, subject: elements, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
