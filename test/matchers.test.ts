@@ -23,7 +23,6 @@ const ALL_MATCHERS = [
     'toBeFocused',
     'toBeSelected',
     'toBeChecked',
-    'toHaveAttributeAndValue',
     'toHaveAttribute',
     'toHaveChildren',
     'toHaveComputedLabel',
@@ -48,7 +47,6 @@ const ALL_MATCHERS = [
     'toBeRequested',
     'toBeRequestedTimes',
     'toBeRequestedWith',
-    'toBeRequestedWithResponse',
 
     // snapshot
     'toMatchSnapshot',

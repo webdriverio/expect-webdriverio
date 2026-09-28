@@ -328,7 +328,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
 
     toHaveAttribute: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
-        /** Check ONLY for the presence of the attribute (and optional configuration options) */
+        /** Check ONLY for the presence of the attribute. For options, use `toHaveAttribute(attribute, expect.anything(), options)` */
         (
             attribute: string,
         ): Promise<void>;
@@ -341,7 +341,7 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
         ): Promise<void>;
     }, {
         /** Elements $$() API */
-        /** Check ONLY for the presence of the attribute (and optional configuration options) */
+        /** Check ONLY for the presence of the attribute. For options, use `toHaveAttribute(attribute, expect.anything(), options)` */
         (
             attribute: string,
         ): Promise<void>;
@@ -1241,7 +1241,7 @@ declare namespace ExpectWebdriverIO {
 
     interface DefaultOptions {
         /**
-         * time in ms to wait for expectation to succeed. Default: 3000
+         * time in ms to wait for expectation to succeed. Default: 2000
          */
         wait?: number
 

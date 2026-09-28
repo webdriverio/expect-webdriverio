@@ -61,7 +61,7 @@ export async function toHaveAttributeAndValue(this: WdioMatcherContext, received
 }
 
 /**
- * When called with only the attribute name (and optional configuration options).
+ * When called with only the attribute name. For options, use `toHaveAttribute(el, attribute, expect.anything(), options)`.
  */
 export async function toHaveAttribute(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
