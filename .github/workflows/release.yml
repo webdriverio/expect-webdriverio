@@ -24,6 +24,7 @@ jobs:
         with:
           ref: 'main'
           fetch-depth: 0
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24.x
@@ -32,9 +33,9 @@ jobs:
           git config --global user.email "bot@webdriver.io"
           git config --global user.name "WebdriverIO Release Bot"
       - name: Install Dependencies
-        run: npm ci --force
+        run: pnpm install --frozen-lockfile
       - name: Build Project
-        run: npm run build
+        run: pnpm run build
         env:
           NODE_ENV: production
       - name: Pick Version
@@ -43,13 +44,13 @@ jobs:
           CURRENT=$(node -p "require('./package.json').version")
           # From a stable version (7.0.0) start 8.0.0-alpha.0, else bump the alpha
           if [[ "$CURRENT" == *-* ]]; then INCREMENT=""; else INCREMENT="major"; fi
-          OUTPUT=$(npx release-it $INCREMENT --preRelease=alpha --release-version --ci --npm.skipChecks --no-git.requireCleanWorkingDir)
+          OUTPUT=$(pnpm exec release-it $INCREMENT --preRelease=alpha --release-version --ci --npm.skipChecks --no-git.requireCleanWorkingDir)
           NEXT=$(echo "$OUTPUT" | tail -1)
           if [[ ! "$NEXT" =~ ^[0-9]+\. ]]; then echo "::error::Cannot compute the next version: '$NEXT'"; exit 1; fi
           if [[ ! "$NEXT" =~ ^8\.0\.0-alpha\. ]]; then echo "::error::Next version $NEXT is not a v8 alpha: this workflow releases only 8.0.0-alpha.N"; exit 1; fi
           echo "Releasing $NEXT"
           echo "increment=$INCREMENT" >> "$GITHUB_OUTPUT"
       - name: Pre-Release
-        run: npx release-it ${{ steps.version.outputs.increment }} --preRelease=alpha --github.release --github.preRelease --github.makeLatest=false --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=next
+        run: pnpm exec release-it ${{ steps.version.outputs.increment }} --preRelease=alpha --github.release --github.preRelease --github.makeLatest=false --ci --npm.skipChecks --no-git.requireCleanWorkingDir --npm.tag=next
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

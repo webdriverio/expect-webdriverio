@@ -1,0 +1,11 @@
+# The root package only: the playgrounds are a separate workspace (playgrounds/pnpm-workspace.yaml)
+
+# No dependency needs its install script: WebdriverIO downloads the drivers at runtime
+allowBuilds:
+  edgedriver: false
+  esbuild: false
+  geckodriver: false
+
+# Dev dependency `@wdio/globals` (test mocks, global types) peers on an older `expect-webdriverio`: use ours, so its types do not merge with ours
+overrides:
+  expect-webdriverio: 'link:.'

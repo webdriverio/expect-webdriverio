@@ -1,0 +1,40 @@
+packages:
+  - jasmine
+  - jest
+  - mocha
+  - multi-remote-mocha
+  - browser-runner
+
+# The WebdriverIO packages depend on `expect-webdriverio`: use the local package, not a release
+overrides:
+  expect-webdriverio: 'link:..'
+
+# No dependency needs its install script: WebdriverIO downloads the drivers at runtime,
+# and the native binaries come from optional dependencies
+allowBuilds:
+  '@swc/core': false
+  edgedriver: false
+  esbuild: false
+  geckodriver: false
+  unrs-resolver: false
+
+# `@wdio/browser-runner` makes Vite pre-bundle these CommonJS packages (its `optimizeDeps.include`),
+# and Vite looks for them from the project root: hoist them, else the browser loads raw CommonJS
+publicHoistPattern:
+  - aria-query
+  - css-shorthand-properties
+  - css-value
+  - deepmerge-ts
+  - expect
+  - grapheme-splitter
+  - jest-matcher-utils
+  - jest-util
+  - lodash.clonedeep
+  - lodash.flattendeep
+  - lodash.merge
+  - lodash.pickby
+  - lodash.zip
+  - minimatch
+  - rgb2hex
+  - split2
+  - ws
