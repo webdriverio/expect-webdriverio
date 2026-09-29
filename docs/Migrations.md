@@ -8,7 +8,7 @@ v8.0.0 requires Node.js `22.19.0` or higher, the same as WebdriverIO v10. Node.j
 
 v8.0.0 requires `webdriverio` `9.32.0` or higher.
 
-`@wdio/globals` and `@wdio/logger` are no longer peer dependencies: only `webdriverio` and `@wdio/types` are. You can remove them from your `package.json` if you do not use them yourself. `webdriverio` installs `@wdio/types`, so our types use the same copy as WebdriverIO. When `toHaveClipboardText` cannot set the clipboard permissions, its warning now goes to `console.warn`, not to the WebdriverIO logger.
+`@wdio/globals` and `@wdio/logger` are no longer peer dependencies: only `webdriverio` and `@wdio/types` are. You can remove them from your `package.json` if you do not use them yourself. `webdriverio` installs `@wdio/types`, so our types use the same copy as WebdriverIO. With Yarn Plug'n'Play, also add `@wdio/types` to your `package.json` (Yarn warns with `YN0002`). If you do not, the types of `SnapshotService` and `SoftAssertionService` become `any`. When `toHaveClipboardText` cannot set the clipboard permissions, its warning now goes to `console.warn`, not to the WebdriverIO logger.
 
 ## Matcher names in `beforeAssertion` and `afterAssertion`
 
