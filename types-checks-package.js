@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process'
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { promisify } from 'node:util'
@@ -47,6 +47,12 @@ try {
     const entries = ['module', 'expect-global', 'jest', 'jasmine', 'jasmine-wdio-expect-async']
     const results = await Promise.allSettled(entries.map((entry) => run('node_modules/.bin/tsc', ['-p', `tsconfig.${entry}.json`])))
     const failures = results.flatMap((result, index) => result.status === 'rejected' ? [`${entries[index]}: ${result.reason.message}`] : [])
+
+    // Our service types must use the `@wdio/types` of `webdriverio`, not a second copy. pnpm links the dependencies of a package next to it.
+    const wdioTypes = (name) => realpathSync(join(realpathSync(join(project, 'node_modules', name)), '..', '@wdio', 'types'))
+    if (wdioTypes('expect-webdriverio') !== wdioTypes('webdriverio')) {
+        failures.push(`@wdio/types: expect-webdriverio uses ${wdioTypes('expect-webdriverio')}, webdriverio uses ${wdioTypes('webdriverio')}`)
+    }
 
     await run('node', ['--input-type=module', '-e', `
         const { expect, wdioCustomMatchers } = await import('expect-webdriverio')
