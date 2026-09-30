@@ -101,7 +101,7 @@
     "@types/jasmine": "^6.0.0",
     "@types/jest": "^30.0.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^24.19.0",
+    "@types/node": "^26.6.3",
     "@vitest/coverage-v8": "^5.0.2",
     "@wdio/cli": "^9.32.0 || ^10.0.0-0",
     "@wdio/globals": "^9.31.3 || ^10.0.0-0",
