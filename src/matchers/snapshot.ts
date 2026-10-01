@@ -4,7 +4,7 @@ import { expect } from 'expect'
 import { stripSnapshotIndentation } from '@vitest/snapshot'
 import { SnapshotService } from '../snapshot.js'
 import { awaitElementOrArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from '../util/elementsUtil.js'
-import { getElementsPerInstance } from '../util/multiRemoteUtils.js'
+import { getElementsPerInstance, getMultiRemoteElementArrayInstances } from '../util/multiRemoteUtils.js'
 import { filterInlineSnapshotStack } from '../util/stackUtil.js'
 import type { WdioMultiRemoteElementArray, WdioMatcherContext } from '../types.js'
 
@@ -95,8 +95,7 @@ const getMultiRemoteOuterHTML = async (multiRemoteElements: WebdriverIO.MultiRem
         // An empty `MultiRemoteElementArray`, found on no instance
         return []
     }
-    // Every `$$()` wrapper holds all the instances, zipped by index
-    const instances = [...(isSingleElement ? multiRemoteElements : (multiRemoteElements[0] as unknown as WebdriverIO.MultiRemoteElement)).instances].sort()
+    const instances = [...(isSingleElement ? multiRemoteElements.instances : getMultiRemoteElementArrayInstances(multiRemoteElements))].sort()
     const elementsPerInstance = isSingleElement ? undefined : getElementsPerInstance(multiRemoteElements, instances)
     const htmlPerInstance: Record<string, unknown> = Object.fromEntries(await Promise.all(instances.map(async (instance) => [
         instance,

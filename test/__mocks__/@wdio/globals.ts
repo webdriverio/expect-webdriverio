@@ -455,7 +455,7 @@ export function createMultiRemoteElementArrayMock(
     elementArray.selector = selector
     elementArray.foundWith = '$$'
     elementArray.props = []
-    elementArray.parent = parent as unknown as WdioMultiRemoteElementArray['parent']
+    elementArray.parent = parent
     elementArray.getElements = vi.fn().mockResolvedValue(elementArray)
     // WebdriverIO's `enhanceElementsArray()` binds real async iterators here (running callbacks
     // concurrently and awaiting them, unlike `Array.prototype.forEach`); only `forEach` is mocked

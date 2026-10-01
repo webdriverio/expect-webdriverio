@@ -40,6 +40,14 @@ export const getPerInstanceValues = (value: unknown, { allowObjectExpectedValue 
 }
 
 /**
+ * The instances of a multi-remote `$$()`, also when it found no element: its parent (multi-remote browser, `select()`
+ * subset or multi-remote element) has the instances that `$$()` queried, in the same order.
+ */
+export const getMultiRemoteElementArrayInstances = (elements: WdioMultiRemoteElementArray): string[] => {
+    return elements.parent.instances
+}
+
+/**
  * Splits a multi-remote `$$()` result back into each instance's own elements.
  * WebdriverIO zips the per-instance results by index, so when instances find a different number of elements the
  * trailing wrappers hold no element for the instances that found fewer (and `getInstance` then throws).

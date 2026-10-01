@@ -1,6 +1,6 @@
 import { vi, test, describe, expect, afterEach } from 'vitest'
 
-import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, getMockInstanceNames, hasMultiRemoteFlag, hasSameInstanceNames, isBrowser, isMockArray, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
+import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getMultiRemoteElementArrayInstances, getPerInstanceValues, getMockInstanceNames, hasMultiRemoteFlag, hasSameInstanceNames, isBrowser, isMockArray, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
 import { multiRemote } from '../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
 
@@ -149,6 +149,22 @@ describe('multiRemoteUtils', () => {
         expect(hasSameInstanceNames({ firefox: 1, chrome: 1 }, ['chrome', 'firefox'])).toBe(true)
         expect(hasSameInstanceNames({ chrome: 1 }, ['chrome', 'firefox'])).toBe(false)
         expect(hasSameInstanceNames({ chrome: 1, safari: 1 }, ['chrome', 'firefox'])).toBe(false)
+    })
+
+    describe(getMultiRemoteElementArrayInstances, () => {
+        const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test('gives the instances of the parent, also when no element was found', () => {
+            expect(getMultiRemoteElementArrayInstances(createMultiRemoteElementArrayMock(browsers(), 'sel', 2))).toEqual(['chrome', 'firefox'])
+            expect(getMultiRemoteElementArrayInstances(createMultiRemoteElementArrayMock(browsers(), 'sel', 0))).toEqual(['chrome', 'firefox'])
+        })
+
+        test('gives the instances of a select() in its own order, not in the configuration order', () => {
+            const selectedBrowsers = { firefox: browserFactory(), chrome: browserFactory() }
+            const selected = multiRemoteBrowserFactory(selectedBrowsers)
+
+            expect(getMultiRemoteElementArrayInstances(createMultiRemoteElementArrayMock(selectedBrowsers, 'sel', 0, selected))).toEqual(['firefox', 'chrome'])
+        })
     })
 
     describe(getElementsPerInstance, () => {

@@ -3,7 +3,7 @@ import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, WdioMultiRemoteElementArray, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
 import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from './elementsUtil.js'
-import { getElementsPerInstance, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
+import { getElementsPerInstance, getMultiRemoteElementArrayInstances, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
 export type CompareResult<Actual> = { success: boolean; actual: Actual }
@@ -100,14 +100,13 @@ const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValuesWithArray<Actual>>> => {
     const currentElements = iteration > 0 ? await refreshElementArray(elements) : elements
 
-    const multiRemoteElements = currentElements as unknown as WebdriverIO.MultiRemoteElement[]
-    if (multiRemoteElements.length === 0) {
+    if (currentElements.length === 0) {
         // See empty case of `multipleElementResultsStrategy`: retry, the elements are fetched again
         return { subject: elements, actual: undefined, success: false }
     }
 
-    const { instances } = multiRemoteElements[0]
-    const elementsPerInstance = getElementsPerInstance(multiRemoteElements, instances)
+    const instances = getMultiRemoteElementArrayInstances(currentElements)
+    const elementsPerInstance = getElementsPerInstance(currentElements, instances)
     const actual: MultiRemoteValues<Actual[]> = Object.fromEntries(await Promise.all(instances.map(async (instance) => {
         // Reuse each matcher's value extraction, including command-specific options.
         const results = await Promise.all(elementsPerInstance[instance].map((element, index) => singleElementCompare(element, undefined, index)))
@@ -267,9 +266,8 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     { allowArrayWithSingleElement, allowObjectExpectedValue }: { allowArrayWithSingleElement: boolean, allowObjectExpectedValue: boolean }
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const isSingleElement = isMultiRemoteElement(multiRemoteSelector)
-    const multiRemoteElements = isSingleElement ? [multiRemoteSelector] : multiRemoteSelector as unknown as WebdriverIO.MultiRemoteElement[]
-    const { instances } = multiRemoteElements[0]
-    const elementsPerInstance = getElementsPerInstance(multiRemoteElements, instances)
+    const instances = isSingleElement ? multiRemoteSelector.instances : getMultiRemoteElementArrayInstances(multiRemoteSelector)
+    const elementsPerInstance = getElementsPerInstance(isSingleElement ? [multiRemoteSelector] : multiRemoteSelector, instances)
 
     const perInstanceValues = getPerInstanceValues(expectedValues, { allowObjectExpectedValue })
     // A single expected value is shared by every instance

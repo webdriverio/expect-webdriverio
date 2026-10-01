@@ -20,8 +20,14 @@ export type MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements =
 
 export type WdioMultiRemoteElements = WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray
 
-/** WebdriverIO v9 sets `isMultiremote`, v10 sets `isMultiRemote` */
-export type WdioMultiRemoteElementArray = WebdriverIO.ElementArray & ({ isMultiremote: true } | { isMultiRemote: true })
+/**
+ * A multi-remote `$$()`: its parent is the multi-remote browser (or its `select()` subset) or a multi-remote element.
+ * WebdriverIO v9 sets `isMultiremote`, v10 sets `isMultiRemote`.
+ * TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteElementArray` type instead
+ */
+export type WdioMultiRemoteElementArray = WebdriverIO.ElementArray
+    & { parent: WebdriverIO.MultiRemoteBrowser | WebdriverIO.MultiRemoteElement }
+    & ({ isMultiremote: true } | { isMultiRemote: true })
 
 /** WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock` with one mock per instance name, not in the v9 types */
 // TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteMock` type instead

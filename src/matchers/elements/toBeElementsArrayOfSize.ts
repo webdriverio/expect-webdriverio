@@ -5,7 +5,7 @@ import type { WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMatcher
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { awaitElementArray, isMultiRemoteElementArray, isStrictlyElementArray } from '../../util/elementsUtil.js'
-import { getElementsPerInstance, hasSameInstanceNames, isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
+import { getElementsPerInstance, getMultiRemoteElementArrayInstances, hasSameInstanceNames, isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -104,7 +104,7 @@ const multiRemoteElementsArrayOfSize = async (
 ): Promise<ExpectWebdriverIO.AssertionResult> => {
     const { isNot } = context
     const perInstanceSizes = getPerInstanceSizes(expectedValue)
-    const instances = getMultiRemoteInstanceNames(received)
+    const instances = getMultiRemoteElementArrayInstances(received)
 
     let expected: MultiRemoteValues<NumberMatcher>
     let instanceMismatch = false
@@ -155,14 +155,6 @@ const multiRemoteElementsArrayOfSize = async (
 /** One size per instance with `expect.multiRemote()`, or `undefined` for a single size shared by every instance */
 const getPerInstanceSizes = (value: unknown): MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> | undefined => {
     return isMultiRemoteMatcher(value) ? value.sample as MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> : undefined
-}
-
-/**
- * The instances of a multi-remote `$$()`, also when it found no element: its parent (multi-remote browser, `select()`
- * subset or multi-remote element) has the instances that `$$()` queried, in the same order.
- */
-const getMultiRemoteInstanceNames = (elements: WdioMultiRemoteElementArray): string[] => {
-    return (elements.parent as unknown as WebdriverIO.MultiRemoteBrowser).instances
 }
 
 const countElementsPerInstance = (elements: WdioMultiRemoteElementArray, instances: string[]): MultiRemoteValues<number> => {
