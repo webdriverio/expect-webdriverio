@@ -234,7 +234,11 @@ Expect multi-remote<chrome, firefox>.$(`h1`) to have text
 ## Limitations
 
 - Network matchers support one expected value for every instance only, and may name a mock after the wrong instance, see [Network Matchers](#network-matchers).
-- A plain array of multi-remote elements, e.g. `[...elements]`, is not supported: it is not recognized as elements, so the assertion fails. Pass the `MultiRemoteElementArray` of `$$()`.
+- A plain `MultiRemoteElement[]` is not supported: it is not recognized as elements, so the assertion fails. Pass the `MultiRemoteElementArray` of `$$()`. You get a plain `MultiRemoteElement[]` from:
+  - `[...elements]`, `Array.from(elements)` or `elements.concat()` on a `MultiRemoteElementArray`
+  - the multi-remote `custom$$()` and `react$$()`, which WebdriverIO does not zip into a `MultiRemoteElementArray`
+
+  If you need to assert on a `MultiRemoteElement[]`, [open an issue](https://github.com/webdriverio/expect-webdriverio/issues/new) with your use case.
 - The Browser Runner (`@wdio/browser-runner`) does not support multi-remote, see [Browser Runner](Framework.md#multiple-elements--multi-remote).
 
 ## Alternatives
