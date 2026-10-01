@@ -1,7 +1,8 @@
 
 import { setDefaultOptions } from 'expect-webdriverio'
 
-// Recommended with multi-remote, see docs/MultiRemote.md#requirements--configuration
+// WebdriverIO v9 only: WebdriverIO v10 always gives a MultiRemoteElementArray and has a stable `select()`
+// TODO(#2255) WebdriverIO v9: remove when the playgrounds use WebdriverIO v10
 process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
 process.env.WDIO_ENABLE_MULTI_REMOTE_SELECT = 'true'
 

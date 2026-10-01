@@ -429,18 +429,17 @@ export function createMultiRemoteElementMock(
 }
 
 /**
- * Mocks `multiRemoteBrowser.$$()` / `multiRemoteElement.$$()`, mirroring WebdriverIO's real behavior:
- * results are zipped by index across instances into `WebdriverIO.MultiRemoteElement[]` (the default,
- * "official" shape). When `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`, the same array of wrappers is
- * additionally decorated with ElementArray-like properties (`.parent`, `.foundWith`, `.getElements()`,
- * an async-aware `.forEach()`) and `isMultiRemote: true`, matching `enhanceElementsArray()` at runtime.
+ * Mocks `multiRemoteBrowser.$$()` / `multiRemoteElement.$$()`, mirroring WebdriverIO's real behavior: results are zipped
+ * by index across instances into `MultiRemoteElement` wrappers, in a `MultiRemoteElementArray` decorated with
+ * ElementArray-like properties (`.parent`, `.foundWith`, `.getElements()`, an async-aware `.forEach()`) and
+ * `isMultiRemote: true`, matching `enhanceElementsArray()` at runtime.
  */
 export function createMultiRemoteElementArrayMock(
     browsers: Record<string, WebdriverIO.Browser>,
     selector: string,
     length = 2,
     parent: WebdriverIO.MultiRemoteBrowser = multiRemoteBrowserFactory(browsers)
-): WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray {
+): WdioMultiRemoteElementArray {
     const instances = Object.keys(browsers)
 
     // Per-instance element arrays, e.g. { chrome: [el0, el1], firefox: [el0, el1] }
@@ -451,16 +450,12 @@ export function createMultiRemoteElementArrayMock(
         buildMultiRemoteElementWrapper(instances, instanceElementArrays.map((elements) => elements[index]), selector)
     )
 
-    if (process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY !== 'true') {
-        return wrapped
-    }
-
     const elementArray = wrapped as unknown as WdioMultiRemoteElementArray & { isMultiRemote: true }
     elementArray.isMultiRemote = true
     elementArray.selector = selector
     elementArray.foundWith = '$$'
     elementArray.props = []
-    elementArray.parent = parent as unknown as WdioMultiRemoteElementArray['parent']
+    elementArray.parent = parent
     elementArray.getElements = vi.fn().mockResolvedValue(elementArray)
     // WebdriverIO's `enhanceElementsArray()` binds real async iterators here (running callbacks
     // concurrently and awaiting them, unlike `Array.prototype.forEach`); only `forEach` is mocked

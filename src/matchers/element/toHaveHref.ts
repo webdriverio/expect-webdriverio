@@ -34,7 +34,7 @@ export async function toHaveHref(
  * Multi-Remote Elements $$() API: shared or one per instance, each maybe one per element
  */
 export async function toHaveHref(
-    el: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray,
+    el: WdioMultiRemoteElementArray,
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>

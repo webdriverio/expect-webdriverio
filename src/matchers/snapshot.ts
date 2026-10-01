@@ -3,7 +3,7 @@ import type { AssertionError } from 'node:assert'
 import { expect } from 'expect'
 import { stripSnapshotIndentation } from '@vitest/snapshot'
 import { SnapshotService } from '../snapshot.js'
-import { awaitElementOrArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementsLike, isStrictlyElementArray } from '../util/elementsUtil.js'
+import { awaitElementOrArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from '../util/elementsUtil.js'
 import { getElementsPerInstance } from '../util/multiRemoteUtils.js'
 import { filterInlineSnapshotStack } from '../util/stackUtil.js'
 import type { WdioMultiRemoteElementArray, WdioMatcherContext } from '../types.js'
@@ -89,15 +89,14 @@ const getOuterHTML = (element: WebdriverIO.Element) => element.getHTML({ include
  * The outerHTML shared by every instance, like without multi-remote, else one outerHTML per instance, keyed by instance
  * name (sorted, whatever the instances order or the snapshotFormat).
  */
-const getMultiRemoteOuterHTML = async (multiRemoteElements: WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray) => {
+const getMultiRemoteOuterHTML = async (multiRemoteElements: WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray) => {
     const isSingleElement = isMultiRemoteElement(multiRemoteElements)
     if (!isSingleElement && multiRemoteElements.length === 0) {
         // An empty `MultiRemoteElementArray`, found on no instance
         return []
     }
-    // Every `$$()` wrapper holds all the instances, zipped by index
-    const instances = [...(isSingleElement ? multiRemoteElements : (multiRemoteElements as WebdriverIO.MultiRemoteElement[])[0]).instances].sort()
-    const elementsPerInstance = isSingleElement ? undefined : getElementsPerInstance(multiRemoteElements as WebdriverIO.MultiRemoteElement[], instances)
+    const instances = [...(isSingleElement ? multiRemoteElements.instances : multiRemoteElements.parent.instances)].sort()
+    const elementsPerInstance = isSingleElement ? undefined : getElementsPerInstance(multiRemoteElements, instances)
     const htmlPerInstance: Record<string, unknown> = Object.fromEntries(await Promise.all(instances.map(async (instance) => [
         instance,
         elementsPerInstance
@@ -121,7 +120,7 @@ async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, in
     let received: unknown = other
     if (multiRemoteSelector) {
         received = await getMultiRemoteOuterHTML(multiRemoteSelector)
-    } else if (elements && isMultiRemoteElementsLike(elements)) {
+    } else if (elements && isMultiRemoteElementArray(elements)) {
         received = await getMultiRemoteOuterHTML(elements)
     } else if (elements) {
         // Array.from() to also snapshot an `ElementArray` as a plain array

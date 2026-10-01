@@ -34,7 +34,7 @@ export async function toHaveId(
  * Multi-Remote Elements $$() API: shared or one per instance, each maybe one per element
  */
 export async function toHaveId(
-    el: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray,
+    el: WdioMultiRemoteElementArray,
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<AssertionResult>

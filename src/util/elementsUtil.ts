@@ -118,7 +118,7 @@ export const isElementOrArrayOrMultiRemoteElementLike = (obj: unknown): obj is W
  */
 export const awaitElementOrArray = async(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | PromiseLike<WebdriverIO.Element> | WdioMultiRemoteElements | unknown
-): Promise<{ selector?: WdioElements | WebdriverIO.Element | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[], elements?: WdioElements | WebdriverIO.MultiRemoteElement[], element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean, multiRemoteSelector?: WebdriverIO.MultiRemoteElement }> => {
+): Promise<{ selector?: WdioElements | WebdriverIO.Element | WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray, elements?: WdioElements | WdioMultiRemoteElementArray, element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean, multiRemoteSelector?: WebdriverIO.MultiRemoteElement }> => {
     if (!received || typeof received !== 'object') {
         return { other: received }
     }
@@ -152,7 +152,7 @@ export const awaitElementOrArray = async(
         return { selector: elements, elements, isEmptyElements: elements.length === 0 }
     }
 
-    // for `WebdriverIO.Element[]` or MultiRemoteElement[] for Multi-Remote
+    // for `WebdriverIO.Element[]`
     return { selector: awaitedElements, elements: awaitedElements, isEmptyElements: awaitedElements.length === 0 }
 }
 
@@ -178,30 +178,18 @@ export const awaitElementArray = async(received: WdioElementsMaybePromise | unde
     return { elements: awaitedElements }
 }
 
-const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] => {
+const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray => {
     return hasMultiRemoteFlag(obj)
 }
 
 export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemoteElement => {
     // `selector` distinguishes a MultiRemoteElement from a MultiRemoteBrowser (both share the multi-remote flag and `getInstance`,
-    // only the element has a `selector`); the array check excludes MultiRemoteElement[] and WdioMultiRemoteElementArray.
+    // only the element has a `selector`); the array check excludes WdioMultiRemoteElementArray.
     return isMultiRemote(obj) && !Array.isArray(obj) && 'selector' in obj
 }
 
 /**
- * MultiRemoteElement[]
- * Warning: empty array returns false and is treated as Element[] (see `isElementArrayLike`),
- * so both guards never match the same value.
- */
-export const isMultiRemoteElements = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] => {
-    return Array.isArray(obj) && obj.length > 0 && !isMultiRemoteElementArray(obj)
-        // Using Array.prototype to bypass asynchronous iterator of ElementArray
-        && Array.prototype.every.call(obj, isMultiRemoteElement)
-}
-
-/**
- * Fake MultiRemoteElementArray at runtime for v9, should be better typed in v10
- * Need env variable `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` set to `true`
+ * The `MultiRemoteElementArray` of a multi-remote `$$()`, which knows its parent, its selector and its instances.
  */
 export const isMultiRemoteElementArray = (obj: unknown): obj is WdioMultiRemoteElementArray => {
     return hasMultiRemoteFlag(obj) && 'parent' in (obj as object) && 'foundWith' in (obj as object) && 'selector' in (obj as object)
@@ -211,12 +199,5 @@ export const isMultiRemoteElementArray = (obj: unknown): obj is WdioMultiRemoteE
  * Checks if the object is like a MultiRemoteElement, array or not.
  */
 export const isMultiRemoteElementLike = (obj: unknown): obj is WdioMultiRemoteElements => {
-    return isMultiRemoteElement(obj) || isMultiRemoteElementsLike(obj)
-}
-
-/**
- * Checks if the object is like a MultiRemoteElement array
- */
-export const isMultiRemoteElementsLike = (obj: unknown): obj is WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray => {
-    return isMultiRemoteElementArray(obj) || isMultiRemoteElements(obj)
+    return isMultiRemoteElement(obj) || isMultiRemoteElementArray(obj)
 }

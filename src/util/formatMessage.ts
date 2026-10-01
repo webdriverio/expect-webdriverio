@@ -1,7 +1,7 @@
 import { printDiffOrStringify, printExpected, printReceived, RECEIVED_COLOR, EXPECTED_COLOR, INVERTED_COLOR, stringify } from 'jest-matcher-utils'
 import { equals } from '../jasmineUtils.js'
 import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements } from '../types.js'
-import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
+import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
 import { isBrowser, isMultiRemoteBrowser } from './multiRemoteUtils.js'
@@ -29,10 +29,9 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiR
         const subject = formatMultiRemoteInstanceNames(el.instances)
 
         return `${subject}.$(\`${getSelector(el)}\`)`
-    } else if (isMultiRemoteElementsLike(el)) {
-        const instances = isMultiRemoteElementArray(el) ? (el.parent as WebdriverIO.MultiRemoteBrowser).instances : el[0].instances ?? []
-        const selector = isMultiRemoteElementArray(el) ? getSelector(el) : el[0] ? getSelector(el[0]) : ''
-        const subject = formatMultiRemoteInstanceNames(instances)
+    } else if (isMultiRemoteElementArray(el)) {
+        const selector = getSelector(el)
+        const subject = formatMultiRemoteInstanceNames(el.parent.instances)
 
         return `${subject}.$$(\`${selector}\`)`
     } else if (isStrictlyElementArray(el)) {
@@ -217,13 +216,12 @@ export const enhanceErrorBe = (
                 acc[instance] = expectedValue
                 return acc
             }, {} as MultiRemoteValues<string>)
-        } else if (isMultiRemoteElementsLike(subject) && subject.length === 0) {
-            // Empty `MultiRemoteElementArray` (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY): no instance names to report per browser
+        } else if (subject.length === 0) {
+            // Empty `MultiRemoteElementArray`: no instance names to report per browser
             expected = 'at least one result'
             actual = actualValue
-        } else if (isMultiRemoteElementsLike(subject)) {
-            // Plain `MultiRemoteElement[]` or `MultiRemoteElementArray`, items are `MultiRemoteElement` at runtime in both cases
-            const { instances } = subject[0] as unknown as WebdriverIO.MultiRemoteElement
+        } else {
+            const { instances } = subject.parent
             const typedActuals = actuals as MultiRemoteValues<boolean[]>
             actual = instances.reduce((acc, instance) => {
                 acc[instance] = typedActuals[instance].map(actual => isSuccess(isNot, actual) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
@@ -233,8 +231,6 @@ export const enhanceErrorBe = (
                 acc[instance] = Array(typedActuals[instance].length).fill(expectedValue)
                 return acc
             }, {} as MultiRemoteValues<string[]>)
-        } else {
-            throw new Error('Unsupported Multi-remote object type for enhanceErrorBe')
         }
     } else if (isElementArrayLike(subject)) {
         expected = subject.length === 0 ? 'at least one result' : Array(subject.length).fill(expectedValue)

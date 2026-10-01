@@ -87,7 +87,7 @@ export async function toHaveElementProperty(
  * `expect.multiRemote()` (a plain object is a literal property value)
  */
 export async function toHaveElementProperty(
-    received: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray,
+    received: WdioMultiRemoteElementArray,
     property: string,
     value: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>>,
     options?: ExpectWebdriverIO.StringOptions
