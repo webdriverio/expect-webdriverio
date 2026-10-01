@@ -28,20 +28,9 @@ export const config: WebdriverIO.MultiremoteConfig = {
 }
 ```
 
-## Requirements & Configuration
+## Requirements
 
-WebdriverIO `v9.31.5` or higher is required.
-
-| Flag | Kind | Default | Details |
-| ---- | ---- | ------- | ------- |
-| `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` | WebdriverIO environment variable | unset | **Required with WebdriverIO v9.** `$$()` returns a `MultiRemoteElementArray`, which knows how it was fetched (parent, selector, selected instances). Without it, `$$()` returns a plain array of multi-remote elements, which is not supported. WebdriverIO v10 always returns a `MultiRemoteElementArray`. |
-| `WDIO_ENABLE_MULTI_REMOTE_SELECT` | WebdriverIO environment variable | unset | **Recommended** when using `select()`: elements queried from a selected multi-remote browser or element stay scoped to the selected instances. It is read when the multi-remote browser is created, so set it before the session starts. |
-
-```ts
-// wdio.conf.ts
-process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
-process.env.WDIO_ENABLE_MULTI_REMOTE_SELECT = 'true'
-```
+WebdriverIO `v10` or higher is required.
 
 ## Expected Values
 
@@ -245,7 +234,7 @@ Expect multi-remote<chrome, firefox>.$(`h1`) to have text
 ## Limitations
 
 - Network matchers support one expected value for every instance only, and may name a mock after the wrong instance, see [Network Matchers](#network-matchers).
-- A plain array of multi-remote elements, e.g. `[...elements]` or a WebdriverIO v9 `$$()` without `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY`, is not supported: it is not recognized as elements, so the assertion fails. Pass the `MultiRemoteElementArray` of `$$()`.
+- A plain array of multi-remote elements, e.g. `[...elements]`, is not supported: it is not recognized as elements, so the assertion fails. Pass the `MultiRemoteElementArray` of `$$()`.
 - The Browser Runner (`@wdio/browser-runner`) does not support multi-remote, see [Browser Runner](Framework.md#multiple-elements--multi-remote).
 
 ## Alternatives

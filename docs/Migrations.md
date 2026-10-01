@@ -52,15 +52,11 @@ An array of expected values on a single element fails the assertion with `toHave
 
 `expect.oneOf()` now trims the actual value by default (`trim: true`), as a single expected value does. Pass `{ trim: false }` to compare the text as is.
 
-## Multi-remote `$$()`
+## Multi-remote `$$()` and `select()`
 
-Multi-remote `$$()` assertions support only the `MultiRemoteElementArray` of `$$()`. WebdriverIO v10 always returns it. With WebdriverIO v9, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` before the session starts, e.g. at the top of your `wdio.conf` file:
+Multi-remote assertions use the WebdriverIO v10 multi-remote `$$()` and `select()`. The WebdriverIO v9 environment variables `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELECT` are not supported anymore: remove them from your `wdio.conf` file.
 
-```ts
-process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
-```
-
-Without it, WebdriverIO v9 `$$()` returns a plain array of multi-remote elements. This plain array is not recognized as elements anymore, so the assertion fails. The best-effort re-fetch from the global `multiRemoteBrowser` and its warning are removed.
+Multi-remote `$$()` assertions support only the `MultiRemoteElementArray` that WebdriverIO v10 `$$()` returns. A plain array of multi-remote elements, e.g. `[...elements]`, is not recognized as elements, so the assertion fails. The best-effort re-fetch from the global `multiRemoteBrowser` and its warning are removed.
 
 ## Removed deprecated APIs
 

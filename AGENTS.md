@@ -84,15 +84,6 @@ matchers are in `test/matchers/beMatchers.test.ts`, and `toHaveUrl` /
 a matcher: `git grep -l <matcherName> -- test`. Use the mocks in
 `test/__mocks__/`; do not start a browser in unit tests.
 
-Multi-remote element arrays have two runtime shapes. The
-`WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` flag of WebdriverIO v9 selects the
-shape. Run the unit tests both ways:
-
-```sh
-pnpm exec vitest --run --coverage.enabled=false
-WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true pnpm exec vitest --run --coverage.enabled=false
-```
-
 The unit tests are the regression check. They are not proof that a change
 works the way a user runs it. Before you report a feature or bug fix as done,
 follow [verify-expect-webdriverio](.agents/skills/verify-expect-webdriverio/SKILL.md).

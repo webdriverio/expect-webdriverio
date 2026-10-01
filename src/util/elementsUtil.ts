@@ -190,7 +190,6 @@ export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemo
 
 /**
  * The `MultiRemoteElementArray` of a multi-remote `$$()`, which knows its parent, its selector and its instances.
- * With WebdriverIO v9, it needs the environment variable `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` set to `true`.
  */
 export const isMultiRemoteElementArray = (obj: unknown): obj is WdioMultiRemoteElementArray => {
     return hasMultiRemoteFlag(obj) && 'parent' in (obj as object) && 'foundWith' in (obj as object) && 'selector' in (obj as object)

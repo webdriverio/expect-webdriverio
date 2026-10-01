@@ -216,15 +216,6 @@ You can find all unicode references in the [HTML spec](https://html.spec.whatwg.
 
 **Note:** unicode is case-insensitive hence both `\u00a0` and `\u00A0` works. To find element in browser inspect, remove `u` from unicode e.g.: `div[data="Some\00a0Value"]`
 
-## Environment Variables
-
-The following opt-in WebdriverIO environment variables, not enabled by default, are relevant with [multi-remote](MultiRemote.md). Set them before the session starts, e.g. at the top of your `wdio.conf` file:
-
-| Environment variable | Details |
-| -------------------- | ------- |
-| `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true` | Required with WebdriverIO v9: multi-remote `$$()` returns a `MultiRemoteElementArray`. Without it, `$$()` returns a plain array of multi-remote elements, which is not supported. WebdriverIO v10 does not need it. |
-| `WDIO_ENABLE_MULTI_REMOTE_SELECT=true` | Recommended when using `select()`: elements queried from a selected multi-remote browser or element stay scoped to the selected instances. |
-
 ## Browser Matchers
 
 Browser matchers support the multi-remote browser, with a single expected value or one per instance, see [Multi-remote Support](MultiRemote.md#browser-matchers).
@@ -789,8 +780,6 @@ const listItems = await multiRemoteBrowser.$$('.box')
 await expect(listItems).toBeElementsArrayOfSize(5) // 5 boxes in every browser
 await expect(listItems).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 5, firefox: { gte: 3 } }))
 ```
-
-**Note:** With WebdriverIO v9, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`, see [Requirements & Configuration](MultiRemote.md#requirements--configuration).
 
 ### Multiple Elements Support
 

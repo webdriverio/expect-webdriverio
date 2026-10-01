@@ -50,8 +50,6 @@ await expect(multiRemoteBrowser).toHaveTitle('WebdriverIO')
 await expect(multiRemoteBrowser.$('h1')).toHaveText(expect.multiRemote({ chrome: 'Welcome', firefox: 'Bienvenue' }))
 ```
 
-Some WebdriverIO environment variables are recommended, see [Multi-remote Support](docs/MultiRemote.md#requirements--configuration).
-
 #### Local & Browser Runners
 - **Local Runner**: Fully compatible. You can leverage your test framework adapter as mentioned above.
 - **Browser Runner**: Designed for component frameworks like React, Preact, Vue.js, Svelte, and SolidJS, with a few known limitations. For details, see the [Browser Runner Framework section](docs/Framework.md#browser-runner).
