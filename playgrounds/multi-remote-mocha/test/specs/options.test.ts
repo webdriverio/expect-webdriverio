@@ -20,8 +20,9 @@ describe('Global Options', () => {
         await expect(expect(multiRemoteBrowser.$('non-existent-element-' + Date.now())).toBeDisplayed()).rejects.toThrow()
         const duration = Date.now() - start
 
-        // Ensure failure was fast (< 500ms) compared to default timeout
-        expect(duration).toBeLessThan(500)
+        // Ensure failure was fast compared to the default timeout (10000ms): half of it, because
+        // one multi-remote assertion queries every browser, which takes ~800ms on Windows runners
+        expect(duration).toBeLessThan(5000)
     })
 
     after(() => {
