@@ -7,6 +7,7 @@ import { refetchElements } from '../../../src/util/refetchElements.js'
 import stripAnsi from 'strip-ansi'
 import { multiRemote } from '../../../src/api/index.js'
 import { waitUntil } from '../../../src/util/waitUntil.js'
+import type { WdioMultiRemoteElementArray } from '../../../src/types.js'
 
 vi.mock('@wdio/globals')
 
@@ -655,6 +656,22 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to be elements array of size
             vi.mocked(parent.$$).mockResolvedValue(createMultiRemoteElementArrayMock(browsers(), 'sel', 1) as never)
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, multiRemote({ chrome: 1, firefox: 1 }), { wait: 500, interval: 10 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('WdioMultiRemoteElementArray: an empty array takes its instances from its parent when an index past the end is a lazy element (WebdriverIO v10)', async () => {
+            process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+            const parent = multiRemoteBrowserFactory(browsers())
+            const emptyElements = createMultiRemoteElementArrayMock(browsers(), 'sel', 0, parent) as WdioMultiRemoteElementArray
+            // WebdriverIO v10 gives a truthy lazy element, whose properties are promises, for an index past the end
+            const lazyElement = { instances: Promise.resolve(['chrome', 'firefox']) }
+            const elements = new Proxy(emptyElements, {
+                get: (target, prop, receiver) => prop === '0' ? lazyElement : Reflect.get(target, prop, receiver)
+            })
+            vi.mocked(emptyElements.getElements).mockResolvedValue(elements)
+
+            const result = await thisContext.toBeElementsArrayOfSize(elements, 0, { wait: 0 })
 
             expect(result.pass).toBe(true)
         })

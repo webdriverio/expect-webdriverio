@@ -174,9 +174,9 @@ const getPerInstanceSizes = (value: unknown): MultiRemoteValues<number | ExpectW
 
 /** `undefined` for an empty plain `MultiRemoteElement[]`, which holds no reference to its instances */
 const getMultiRemoteInstanceNames = (elements: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray): string[] | undefined => {
-    const first = (elements as WebdriverIO.MultiRemoteElement[])[0] as WebdriverIO.MultiRemoteElement | undefined
-    if (first) {
-        return first.instances
+    // WebdriverIO v10 gives a lazy element for an index past the end, so read the first element only when there is one
+    if (elements.length > 0) {
+        return (elements as WebdriverIO.MultiRemoteElement[])[0].instances
     }
     // Empty `MultiRemoteElementArray`: its parent (multi-remote browser or element) still knows the instances
     const parent = isMultiRemoteElementArray(elements) ? elements.parent as unknown as { instances?: string[] } : undefined
