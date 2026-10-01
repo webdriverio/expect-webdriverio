@@ -5,7 +5,7 @@ import type { WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMatcher
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { awaitElementArray, isMultiRemoteElementArray, isStrictlyElementArray } from '../../util/elementsUtil.js'
-import { getElementsPerInstance, getMultiRemoteElementArrayInstances, hasSameInstanceNames, isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
+import { getElementsPerInstance, hasSameInstanceNames, isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
@@ -104,7 +104,7 @@ const multiRemoteElementsArrayOfSize = async (
 ): Promise<ExpectWebdriverIO.AssertionResult> => {
     const { isNot } = context
     const perInstanceSizes = getPerInstanceSizes(expectedValue)
-    const instances = getMultiRemoteElementArrayInstances(received)
+    const { instances } = received.parent
 
     let expected: MultiRemoteValues<NumberMatcher>
     let instanceMismatch = false

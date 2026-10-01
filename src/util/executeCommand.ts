@@ -3,7 +3,7 @@ import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, WdioMultiRemoteElementArray, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
 import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from './elementsUtil.js'
-import { getElementsPerInstance, getMultiRemoteElementArrayInstances, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
+import { getElementsPerInstance, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
 export type CompareResult<Actual> = { success: boolean; actual: Actual }
@@ -105,7 +105,7 @@ const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
         return { subject: elements, actual: undefined, success: false }
     }
 
-    const instances = getMultiRemoteElementArrayInstances(currentElements)
+    const { instances } = currentElements.parent
     const elementsPerInstance = getElementsPerInstance(currentElements, instances)
     const actual: MultiRemoteValues<Actual[]> = Object.fromEntries(await Promise.all(instances.map(async (instance) => {
         // Reuse each matcher's value extraction, including command-specific options.
@@ -266,7 +266,7 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     { allowArrayWithSingleElement, allowObjectExpectedValue }: { allowArrayWithSingleElement: boolean, allowObjectExpectedValue: boolean }
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const isSingleElement = isMultiRemoteElement(multiRemoteSelector)
-    const instances = isSingleElement ? multiRemoteSelector.instances : getMultiRemoteElementArrayInstances(multiRemoteSelector)
+    const instances = isSingleElement ? multiRemoteSelector.instances : multiRemoteSelector.parent.instances
     const elementsPerInstance = getElementsPerInstance(isSingleElement ? [multiRemoteSelector] : multiRemoteSelector, instances)
 
     const perInstanceValues = getPerInstanceValues(expectedValues, { allowObjectExpectedValue })

@@ -21,7 +21,8 @@ export type MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements =
 export type WdioMultiRemoteElements = WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray
 
 /**
- * A multi-remote `$$()`: its parent is the multi-remote browser (or its `select()` subset) or a multi-remote element.
+ * A multi-remote `$$()`: its parent is the multi-remote browser (or its `select()` subset) or a multi-remote element,
+ * which has the instances that `$$()` queried, in the same order, also when no element was found.
  * WebdriverIO v9 sets `isMultiremote`, v10 sets `isMultiRemote`.
  * TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteElementArray` type instead
  */

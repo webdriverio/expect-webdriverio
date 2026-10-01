@@ -4,7 +4,7 @@ import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements 
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
-import { getMultiRemoteElementArrayInstances, isBrowser, isMultiRemoteBrowser } from './multiRemoteUtils.js'
+import { isBrowser, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
@@ -30,9 +30,8 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiR
 
         return `${subject}.$(\`${getSelector(el)}\`)`
     } else if (isMultiRemoteElementArray(el)) {
-        const instances = getMultiRemoteElementArrayInstances(el)
         const selector = getSelector(el)
-        const subject = formatMultiRemoteInstanceNames(instances)
+        const subject = formatMultiRemoteInstanceNames(el.parent.instances)
 
         return `${subject}.$$(\`${selector}\`)`
     } else if (isStrictlyElementArray(el)) {
@@ -222,7 +221,7 @@ export const enhanceErrorBe = (
             expected = 'at least one result'
             actual = actualValue
         } else {
-            const instances = getMultiRemoteElementArrayInstances(subject)
+            const { instances } = subject.parent
             const typedActuals = actuals as MultiRemoteValues<boolean[]>
             actual = instances.reduce((acc, instance) => {
                 acc[instance] = typedActuals[instance].map(actual => isSuccess(isNot, actual) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
