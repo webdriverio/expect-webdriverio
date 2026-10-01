@@ -90,6 +90,24 @@ test('snapshots the outerHTML shared by every instance of a multi-remote element
     await service.after()
 })
 
+test('gives each different inline snapshot of a test its own location', async () => {
+    await service.beforeTest({
+        title: 'two different inline snapshots',
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+
+    /**
+     * The location is a stack frame. If a frame of the matcher stays in the stack,
+     * both calls get the same location, and the second one fails with
+     * "toMatchInlineSnapshot with different snapshots cannot be called at the same location".
+     */
+    await expectExport('first').toMatchInlineSnapshot('"first"')
+    await expectExport('second').toMatchInlineSnapshot('"second"')
+    await service.after()
+})
+
 afterEach(() => {
     vi.unstubAllEnvs()
 })

@@ -1,4 +1,3 @@
-import path from 'node:path'
 import type { AssertionError } from 'node:assert'
 
 import { expect } from 'expect'
@@ -6,6 +5,7 @@ import { stripSnapshotIndentation } from '@vitest/snapshot'
 import { SnapshotService } from '../snapshot.js'
 import { awaitElementOrArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementsLike, isStrictlyElementArray } from '../util/elementsUtil.js'
 import { getElementsPerInstance } from '../util/multiRemoteUtils.js'
+import { filterInlineSnapshotStack } from '../util/stackUtil.js'
 import type { WdioMultiRemoteElementArray, WdioMatcherContext } from '../types.js'
 
 interface InlineSnapshotOptions {
@@ -191,18 +191,7 @@ export function toMatchInlineSnapshot(this: WdioMatcherContext, received: unknow
                 ...stack.slice(3)
             ].join('\n')
         }
-        const trace = error.stack?.split('\n').filter((line) => (
-            line.includes('__INLINE_SNAPSHOT__') ||
-            !(
-                line.includes('__EXTERNAL_MATCHER_TRAP__') ||
-                line.includes(`expect-webdriverio${path.sep}lib${path.sep}matchers${path.sep}snapshot.js:`)
-            )
-        )).filter((line) => (
-            /**
-             * remove jasmine-core stack trace to make it work with jasmine
-             */
-            !line.includes('node_modules/jasmine-core/')
-        )) || []
+        const trace = error.stack ? filterInlineSnapshotStack(error.stack) : []
 
         /**
          * tweak the stack trace to enable inline snapshot testing within this projects

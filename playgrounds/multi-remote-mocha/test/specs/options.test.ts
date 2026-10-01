@@ -15,13 +15,19 @@ describe('Global Options', () => {
     })
 
     it('should allow setting and using global wait option', async () => {
-        const start = Date.now()
+        // One multi-remote assertion queries every browser, which takes ~800ms on Windows runners,
+        // so measure that cost with an explicit `wait: 1` that does not depend on the global option
+        const baselineStart = Date.now()
+        await expect(expect(multiRemoteBrowser.$('non-existent-element-' + Date.now())).toBeDisplayed({ wait: 1 })).rejects.toThrow()
+        const baseline = Date.now() - baselineStart
 
+        const start = Date.now()
         await expect(expect(multiRemoteBrowser.$('non-existent-element-' + Date.now())).toBeDisplayed()).rejects.toThrow()
         const duration = Date.now() - start
 
-        // Ensure failure was fast (< 500ms) compared to default timeout
-        expect(duration).toBeLessThan(500)
+        // Ensure failure was as fast as the baseline: ignoring the global option would wait at
+        // least the wdio.conf.ts default (1000ms)
+        expect(duration).toBeLessThan(baseline + 500)
     })
 
     after(() => {
