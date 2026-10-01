@@ -73,3 +73,27 @@ jobs:
       - name: Run ${{ matrix.workspace }} E2e Tests (without snapshot tests)
         run: npm --workspace=${{ matrix.workspace }} test -- --exclude test/specs/*snapshot.test.ts
         working-directory: playgrounds
+
+  # 4. Run the multi-remote e2e tests on Windows: they have different inline snapshots in one
+  #    file, and on Windows the stack frames differ (`\` paths, `file:///` URLs). See #2292.
+  playgrounds-e2e-tests-windows:
+    needs: playgrounds-tsc-and-lint
+    runs-on: windows-latest
+    env:
+      # the root `compile:check` script, run when the playgrounds install, uses POSIX shell syntax
+      npm_config_script_shell: C:\Program Files\Git\bin\bash.exe
+    strategy:
+      matrix:
+        workspace: [multi-remote-mocha]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22.x
+
+      - name: Install Dependencies
+        run: npm ci && npm ci --prefix playgrounds
+
+      - name: Run ${{ matrix.workspace }} E2e Tests
+        run: npm --workspace=${{ matrix.workspace }} test
+        working-directory: playgrounds
