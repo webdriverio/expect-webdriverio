@@ -1007,6 +1007,18 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expectTypeOf(expect(promiseMultiRemoteMocks).toBeRequestedWith({ method: 'GET' })).toEqualTypeOf<Promise<void>>()
         })
 
+        it('should support WebdriverIO v10 multi-remote mocks', async () => {
+            // WebdriverIO v10 `multiRemoteBrowser.mock()` gives a `MultiRemoteMock`, not in the v9 types
+            const multiRemoteMock = {} as { readonly isMultiRemote: true, readonly instances: string[], getInstance(name: string): WebdriverIO.Mock }
+            const promiseMultiRemoteMock = Promise.resolve(multiRemoteMock)
+
+            expectTypeOf(expect(multiRemoteMock).toBeRequested()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(multiRemoteMock).toBeRequestedTimes({ gte: 1 })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(multiRemoteMock).not.toBeRequestedTimes(2, { wait: 0 })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(multiRemoteMock).toBeRequestedWith({ method: 'GET' })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseMultiRemoteMock).toBeRequested()).toEqualTypeOf<Promise<void>>()
+        })
+
         it('should not support per-instance values on multi-remote mocks', async () => {
             const multiRemoteMocks = await multiRemoteBrowser.mock('**/api/**')
 

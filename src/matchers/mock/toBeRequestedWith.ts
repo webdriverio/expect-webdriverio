@@ -5,7 +5,7 @@ import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import { awaitMocks, getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
 import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
-import type { WdioMatcherContext } from '../../types.js'
+import type { WdioMatcherContext, WdioMultiRemoteMocks } from '../../types.js'
 
 const STR_LIMIT = 80
 const KEY_LIMIT = 12
@@ -39,14 +39,14 @@ export async function toBeRequestedWith(
  * Multi-remote mocks (`multiRemoteBrowser.mock()`): every instance's mock must have a matching call
  */
 export async function toBeRequestedWith(
-    received: WebdriverIO.Mock[] | Promise<WebdriverIO.Mock[]>,
+    received: WdioMultiRemoteMocks,
     expectedValue?: ExpectWebdriverIO.RequestedWith,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toBeRequestedWith(
     this: WdioMatcherContext,
-    received: WebdriverIO.Mock | WebdriverIO.Mock[] | Promise<WebdriverIO.Mock[]>,
+    received: WebdriverIO.Mock | WdioMultiRemoteMocks,
     expectedValue: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {

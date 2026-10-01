@@ -23,6 +23,12 @@ export type WdioMultiRemoteElements = WebdriverIO.MultiRemoteElement | Webdriver
 /** WebdriverIO v9 sets `isMultiremote`, v10 sets `isMultiRemote` */
 export type WdioMultiRemoteElementArray = WebdriverIO.ElementArray & ({ isMultiremote: true } | { isMultiRemote: true })
 
+/** WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock` with one mock per instance name, not in the v9 types */
+export type WdioMultiRemoteMock = { isMultiRemote: true, instances: readonly string[], getInstance(name: string): WebdriverIO.Mock }
+
+/** Multi-remote `mock()`: one mock per instance, as an array (WebdriverIO v9) or a `MultiRemoteMock` (v10) */
+export type WdioMultiRemoteMocks = WebdriverIO.Mock[] | WdioMultiRemoteMock | Promise<WebdriverIO.Mock[] | WdioMultiRemoteMock>
+
 /** The `this` of a matcher: the public context, and the internal options that some matchers set */
 export type WdioMatcherContext = ExpectWebdriverIO.MatcherContext & {
     /** An empty element set passes instead of failing (e.g. `.not.toExist()`) */

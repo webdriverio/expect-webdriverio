@@ -167,9 +167,12 @@ await expect(mocks).toBeRequestedTimes({ gte: 1 })
 await expect(mocks).toBeRequestedWith({ method: 'GET', statusCode: 200 })
 ```
 
-WebdriverIO does not tell which browser a mock belongs to, so:
+There is **one expected value for every instance**: per-instance values with `expect.multiRemote()` are not supported.
 
-- There is **one expected value for every instance**: per-instance values with `expect.multiRemote()` are not supported.
+With WebdriverIO v10, `mock()` gives a `MultiRemoteMock`, which knows the instance of each mock. Failure messages name each mock after its instance, also after `select()`.
+
+With WebdriverIO v9, `mock()` gives an array of mocks, and WebdriverIO does not tell which browser a mock belongs to, so:
+
 - Failure messages name each mock after the global `multiRemoteBrowser` instances, which `mock()` follows in order. When the mocks are not as many as these instances (e.g. from `multiRemoteBrowser.select('chrome').mock()`), or without injected WebdriverIO globals, they are named by index instead (`mocks[0]`, `mocks[1]`, ...).
 - Mocks from a `select()` naming every instance in another order than the configuration are named in the configuration order, so a failure message may show a mock under the wrong instance name.
 

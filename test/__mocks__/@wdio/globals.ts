@@ -5,7 +5,7 @@
 import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
 import { Size } from '../../../src/matchers/element/toHaveSize'
-import type { WdioMultiRemoteElementArray } from '../../../src/types'
+import type { WdioMultiRemoteElementArray, WdioMultiRemoteMock } from '../../../src/types'
 
 const getElementMethods = () => ({
     isDisplayed: vi.spyOn({ isDisplayed: async () => true }, 'isDisplayed'),
@@ -471,3 +471,10 @@ export function createMultiRemoteElementArrayMock(
 
     return elementArray
 }
+
+/** Mocks a WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock` with one mock per instance name */
+export const multiRemoteMockFactory = (mocks: Record<string, WebdriverIO.Mock>): WdioMultiRemoteMock => ({
+    isMultiRemote: true,
+    instances: Object.keys(mocks),
+    getInstance: (name: string) => mocks[name]
+})

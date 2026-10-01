@@ -4,7 +4,7 @@ import { toBeRequestedWith } from '../../../src/matchers/mock/toBeRequestedWith.
 import type { local } from 'webdriver'
 import { jasmine } from '../../__mocks__/jasmine.js'
 import stripAnsi from 'strip-ansi'
-import { multiRemoteBrowserFactory } from '../../__mocks__/@wdio/globals.js'
+import { multiRemoteBrowserFactory, multiRemoteMockFactory } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -826,5 +826,40 @@ Expect multi-remote<chrome, firefox> mocks to be called with
         const result = await thisNotContext.toBeRequestedWith(mocksWithCalls([mockPost], []), expected, { wait: 0 })
 
         expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+    })
+
+    describe('WebdriverIO v10 MultiRemoteMock', () => {
+        test('passes when every instance\'s mock has a matching call', async () => {
+            const [chrome, firefox] = mocksWithCalls([mockGet], [mockPost, mockGet])
+
+            const result = await thisContext.toBeRequestedWith(multiRemoteMockFactory({ chrome, firefox }), expected, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('fails with a message named by the instances of the MultiRemoteMock when an instance\'s mock has no matching call', async () => {
+            const [firefox, chrome] = mocksWithCalls([], [mockGet])
+
+            const result = await thisContext.toBeRequestedWith(multiRemoteMockFactory({ firefox, chrome }), expected, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<firefox, chrome> mocks to be called with
+
+- Expected  - 4
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": Object {
+      "method": "GET",
+      "url": "${mockGet.request.url}",
+    },
+-   "firefox": Object {
+-     "method": "GET",
+-     "url": "${mockGet.request.url}",
+-   },
++   "firefox": "was not called",
+  }`)
+        })
     })
 })
