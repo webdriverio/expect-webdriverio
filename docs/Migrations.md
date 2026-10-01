@@ -54,11 +54,11 @@ An array of expected values on a single element fails the assertion with `toHave
 
 ## Multi-remote `$$()` and `select()`
 
-Multi-remote `$$()` and `select()` assertions need WebdriverIO v10. The WebdriverIO v9 environment variables `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELECT` are not supported anymore: remove them from your `wdio.conf` file.
+Multi-remote `$$()` and `select()` need WebdriverIO v10. Remove `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELECT`: they are not supported anymore.
 
-Multi-remote `$$()` assertions support only the `MultiRemoteElementArray` that WebdriverIO v10 `$$()` returns: pass the `$$()` result as is. A plain `MultiRemoteElement[]`, e.g. from `[...elements]` or the multi-remote `custom$$()`, is not recognized as elements, so the assertion fails. See the [multi-remote limitations](MultiRemote.md#limitations).
+Pass the `$$()` result as is. A plain `MultiRemoteElement[]` (e.g. `[...elements]`, `custom$$()`) is not recognized as elements, so the assertion fails. See the [limitations](MultiRemote.md#limitations).
 
-Between retries, the elements of a `MultiRemoteElementArray` are still re-fetched from their real scope (parent element, `select()` subset) with their selector. Only the best-effort re-fetch of a plain array from the global `multiRemoteBrowser`, and its warning, are removed.
+Retries still re-fetch `$$()` elements from their scope. Only the best-effort re-fetch of a plain array from the global `multiRemoteBrowser`, and its warning, are removed.
 
 ## Removed deprecated APIs
 
