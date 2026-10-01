@@ -97,6 +97,7 @@ export const isMultiRemoteMock = (obj: unknown): obj is WdioMultiRemoteMock => {
 }
 
 /** The instance names of the mocks taken from a `MultiRemoteMock`, which knows them, also after `select()` */
+// TODO(#2255) WebdriverIO v9: without the v9 array of mocks, `awaitMocks()` can return the names with the mocks, remove this map
 const multiRemoteMockInstanceNames = new WeakMap<WebdriverIO.Mock[], string[]>()
 
 /**
@@ -130,6 +131,7 @@ export const getMockInstanceNames = (mocks: WebdriverIO.Mock[]): { names: string
     if (multiRemoteMockNames) {
         return { names: multiRemoteMockNames, isNamedByInstance: true }
     }
+    // TODO(#2255) WebdriverIO v9: remove the names from the global instances, only the v9 array of mocks needs them
     const instances = getGlobalMultiRemoteInstanceNames()
     if (instances && instances.length === mocks.length) {
         return { names: instances, isNamedByInstance: true }

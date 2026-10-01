@@ -1009,6 +1009,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
         it('should support WebdriverIO v10 multi-remote mocks', async () => {
             // WebdriverIO v10 `multiRemoteBrowser.mock()` gives a `MultiRemoteMock`, not in the v9 types
+            // TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteMock` type instead
             const multiRemoteMock = {} as { readonly isMultiRemote: true, readonly instances: string[], getInstance(name: string): WebdriverIO.Mock }
             const promiseMultiRemoteMock = Promise.resolve(multiRemoteMock)
 

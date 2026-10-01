@@ -171,6 +171,7 @@ There is **one expected value for every instance**: per-instance values with `ex
 
 With WebdriverIO v10, `mock()` gives a `MultiRemoteMock`, which knows the instance of each mock. Failure messages name each mock after its instance, also after `select()`.
 
+<!-- TODO(#2255) WebdriverIO v9: remove this paragraph and its list -->
 With WebdriverIO v9, `mock()` gives an array of mocks, and WebdriverIO does not tell which browser a mock belongs to, so:
 
 - Failure messages name each mock after the global `multiRemoteBrowser` instances, which `mock()` follows in order. When the mocks are not as many as these instances (e.g. from `multiRemoteBrowser.select('chrome').mock()`), or without injected WebdriverIO globals, they are named by index instead (`mocks[0]`, `mocks[1]`, ...).

@@ -1,6 +1,7 @@
 import { multiRemoteBrowser } from '@wdio/globals'
 
 describe('Network Matchers', () => {
+    // TODO(#2255) WebdriverIO v9: with v10, `mock()` gives a `MultiRemoteMock`, use `getInstance(name)` instead of `mocks[0]` and `mocks.map()`
     let mocks: WebdriverIO.Mock[]
 
     before(async function() {
@@ -100,6 +101,7 @@ describe('Network Matchers', () => {
 
 describe('Multi-remote Network Matchers', () => {
     // Not calling `respond()`, which hangs on Firefox, see https://github.com/webdriverio/expect-webdriverio/pull/2229
+    // TODO(#2255) WebdriverIO v9: with v10, `mock()` gives a `MultiRemoteMock`, use `getInstance(name)` instead of `mocks[0]` and `mocks.map()`
     let mocks: WebdriverIO.Mock[]
 
     before(async () => {

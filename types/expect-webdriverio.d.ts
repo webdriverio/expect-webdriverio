@@ -89,8 +89,10 @@ type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainableP
 type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]
 type MockPromise = Promise<WebdriverIO.Mock>
 /** WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock` with one mock per instance name, not in the v9 types */
+// TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteMock` type instead
 type MultiRemoteMockLike = { isMultiRemote: true, instances: readonly string[], getInstance(name: string): WebdriverIO.Mock }
 /** Multi-remote `mock()`, one mock per instance: every instance's mock must satisfy the network matcher */
+// TODO(#2255) WebdriverIO v9: remove the `WebdriverIO.Mock[]` of the v9 `mock()`
 type MultiRemoteMocks = WebdriverIO.Mock[] | Promise<WebdriverIO.Mock[]> | MultiRemoteMockLike | Promise<MultiRemoteMockLike>
 
 /**
