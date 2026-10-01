@@ -157,14 +157,12 @@ const getPerInstanceSizes = (value: unknown): MultiRemoteValues<number | ExpectW
     return isMultiRemoteMatcher(value) ? value.sample as MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> : undefined
 }
 
-/** The instances of a multi-remote `$$()`, also when it found no element */
+/**
+ * The instances of a multi-remote `$$()`, also when it found no element: its parent (multi-remote browser, `select()`
+ * subset or multi-remote element) has the instances that `$$()` queried, in the same order.
+ */
 const getMultiRemoteInstanceNames = (elements: WdioMultiRemoteElementArray): string[] => {
-    // WebdriverIO v10 gives a lazy element for an index past the end, so read the first element only when there is one
-    if (elements.length > 0) {
-        return (elements[0] as unknown as WebdriverIO.MultiRemoteElement).instances
-    }
-    // Empty: its parent (multi-remote browser or element) still knows the instances
-    return (elements.parent as unknown as { instances?: string[] }).instances ?? []
+    return (elements.parent as unknown as WebdriverIO.MultiRemoteBrowser).instances
 }
 
 const countElementsPerInstance = (elements: WdioMultiRemoteElementArray, instances: string[]): MultiRemoteValues<number> => {
