@@ -2,6 +2,7 @@ import { $, $$ } from '@wdio/globals'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray } from 'webdriverio'
+import type { WdioMultiRemoteElementArray } from '../../../src/types.js'
 import { $Factory, browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
@@ -1430,7 +1431,7 @@ Received: "Invalid Text"`)
         describe('given multi-remote elements', () => {
             const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
             // Exact text on every instance, so that the diff only shows the failing instance
-            const withText = <T extends WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]>(subject: T): T => {
+            const withText = <T extends WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray>(subject: T): T => {
                 mockMultiRemoteInstanceCommand(subject, 'chrome', 'getText', 'Valid Text')
                 mockMultiRemoteInstanceCommand(subject, 'firefox', 'getText', 'Valid Text')
                 return subject
@@ -1461,8 +1462,8 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have text
             test('$$() fails with the same per-instance message as the plain object shorthand', async () => {
                 const expected = { chrome: 'Valid Text', firefox: ['Valid Text', 'Other'] }
 
-                const withPlainObject = await thisContext.toHaveText(withText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]), expected, { wait: 0 })
-                const withMatcher = await thisContext.toHaveText(withText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as WebdriverIO.MultiRemoteElement[]), wdioExpect.multiRemote(expected), { wait: 0 })
+                const withPlainObject = await thisContext.toHaveText(withText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2)), expected, { wait: 0 })
+                const withMatcher = await thisContext.toHaveText(withText(createMultiRemoteElementArrayMock(browsers(), 'sel', 2)), wdioExpect.multiRemote(expected), { wait: 0 })
 
                 expect(withMatcher.pass).toBe(false)
                 expect(stripAnsi(withPlainObject.message())).toEqual(stripAnsi(withMatcher.message()))

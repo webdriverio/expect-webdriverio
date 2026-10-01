@@ -2,7 +2,7 @@ import { equals } from '../jasmineUtils.js'
 import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, WdioMultiRemoteElementArray, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
-import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElements, isMultiRemoteElementsLike, isStrictlyElementArray } from './elementsUtil.js'
+import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from './elementsUtil.js'
 import { getElementsPerInstance, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
@@ -53,7 +53,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
 
     if (supportsArrayContaining && !isSome && isArrayContainingMatcher(expectedValues)) {
         const { selector, elements, other } = await awaitElementOrArray(unresolvedElements)
-        if (isMultiRemoteElementsLike(elements)) {
+        if (isMultiRemoteElementArray(elements)) {
             return multiRemoteArrayContainingStrategy(elements, expectedValues, singleElementCompare, iteration)
         }
         if (elements) {
@@ -93,7 +93,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
  * `arrayContaining` on a multi-remote `$$()`: every instance's own collection of values must satisfy it.
  */
 const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
-    elements: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray,
+    elements: WdioMultiRemoteElementArray,
     expectedValues: unknown,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     iteration: number
@@ -102,8 +102,8 @@ const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
 
     const multiRemoteElements = currentElements as unknown as WebdriverIO.MultiRemoteElement[]
     if (multiRemoteElements.length === 0) {
-        // See empty case of `multipleElementResultsStrategy`: a static empty array cannot be refetched
-        return { subject: elements, actual: undefined, success: false, abort: !isMultiRemoteElementArray(elements) && !isMultiRemoteElements(elements) }
+        // See empty case of `multipleElementResultsStrategy`: retry, the elements are fetched again
+        return { subject: elements, actual: undefined, success: false }
     }
 
     const { instances } = multiRemoteElements[0]
@@ -142,13 +142,12 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const { selector, other, multiRemoteSelector } = await awaitElementOrArray(unresolvedElements)
 
-    // Only these arrays can be refetched: a plain `MultiRemoteElement[]` best effort through its elements' selector
-    const isRefetchable = isStrictlyElementArray(selector) || isMultiRemoteElementArray(selector) || isMultiRemoteElements(selector)
+    // Only these arrays can be refetched
+    const isRefetchable = isStrictlyElementArray(selector) || isMultiRemoteElementArray(selector)
 
     let currentElements: unknown = selector
-    if (iteration > 0 && (isStrictlyElementArray(selector) || isMultiRemoteElementsLike(selector))) {
+    if (iteration > 0 && isRefetchable) {
         // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
-        // Except for an empty best-effort refetch, returned without being synchronized to keep refetching.
         currentElements = await refreshElementArray(selector)
     }
 
@@ -172,7 +171,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
 
     // Multi-remote per-instance values can never match a non multi-remote element(s)
-    const isUnexpectedPerInstanceValues = !multiRemoteSelector && !isMultiRemoteElementsLike(selector)
+    const isUnexpectedPerInstanceValues = !multiRemoteSelector && !isMultiRemoteElementArray(selector)
         && getPerInstanceValues(expectedValues, { allowObjectExpectedValue }) !== undefined
 
     // --- Single element case ---
@@ -188,10 +187,10 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
 
     // --- Multi-remote $() single element & $$() multiple elements cases ---
-    if (multiRemoteSelector || isMultiRemoteElementsLike(selector)) {
+    if (multiRemoteSelector || isMultiRemoteElementArray(selector)) {
         return multiRemoteElementsResultsStrategy<Actual, Expected>(
             subject,
-            multiRemoteSelector ?? selector as WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray,
+            multiRemoteSelector ?? selector as WdioMultiRemoteElementArray,
             expectedValues,
             singleElementCompare,
             { isNot, isSome },
@@ -200,7 +199,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     }
 
     // --- Multiple elements $$() case ---
-    // `selector` is a plain element array here: the multi-remote cases above already handled both a bare `MultiRemoteElement` and `isMultiRemoteElementsLike`.
+    // `selector` is a plain element array here: the multi-remote cases above already handled a `MultiRemoteElement` and a `MultiRemoteElementArray`.
     const elementsSelector = selector as WdioElements
     const lengthMismatch = Array.isArray(expectedValues) && expectedValues.length !== elementsSelector.length
 
@@ -249,8 +248,8 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 }
 
 /**
- * Multi-remote strict strategy, for a `$()` single element or a `$$()` array (plain `MultiRemoteElement[]` or
- * `MultiRemoteElementArray`, whose items are `MultiRemoteElement` at runtime in both cases).
+ * Multi-remote strict strategy, for a `$()` single element or a `$$()` array (`MultiRemoteElementArray`, whose items
+ * are `MultiRemoteElement` at runtime).
  *
  * Every instance is compared on its own elements (WebdriverIO zips `$$()` results by index, so instances may have
  * found a different number of elements) against either one expected value shared by all instances or one expected
@@ -261,14 +260,14 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
  */
 const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     subject: unknown,
-    multiRemoteSelector: WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray,
+    multiRemoteSelector: WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray,
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     { isNot, isSome }: { isNot: boolean; isSome: boolean },
     { allowArrayWithSingleElement, allowObjectExpectedValue }: { allowArrayWithSingleElement: boolean, allowObjectExpectedValue: boolean }
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const isSingleElement = isMultiRemoteElement(multiRemoteSelector)
-    const multiRemoteElements = isSingleElement ? [multiRemoteSelector] : multiRemoteSelector as WebdriverIO.MultiRemoteElement[]
+    const multiRemoteElements = isSingleElement ? [multiRemoteSelector] : multiRemoteSelector as unknown as WebdriverIO.MultiRemoteElement[]
     const { instances } = multiRemoteElements[0]
     const elementsPerInstance = getElementsPerInstance(multiRemoteElements, instances)
 

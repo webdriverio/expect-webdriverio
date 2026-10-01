@@ -222,7 +222,7 @@ The following opt-in WebdriverIO environment variables, not enabled by default, 
 
 | Environment variable | Details |
 | -------------------- | ------- |
-| `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true` | Recommended. Multi-remote `$$()` elements are reliably re-fetched between retries, from their real scope and even when initially empty. Without it, multi-remote `$$()` assertions are best effort, see [its limitations](MultiRemote.md#without-wdio_enable_multi_remote_element_array). |
+| `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true` | Required with WebdriverIO v9: multi-remote `$$()` returns a `MultiRemoteElementArray`. Without it, `$$()` returns a plain array of multi-remote elements, which is not supported. WebdriverIO v10 does not need it. |
 | `WDIO_ENABLE_MULTI_REMOTE_SELECT=true` | Recommended when using `select()`: elements queried from a selected multi-remote browser or element stay scoped to the selected instances. |
 
 ## Browser Matchers
@@ -790,7 +790,7 @@ await expect(listItems).toBeElementsArrayOfSize(5) // 5 boxes in every browser
 await expect(listItems).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 5, firefox: { gte: 3 } }))
 ```
 
-**Note:** To reliably re-fetch multi-remote elements between retries, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`. Without it, elements are re-fetched on a best-effort basis from the global `multiRemoteBrowser`, ignoring any parent element or `select()` scope. See [its limitations](MultiRemote.md#without-wdio_enable_multi_remote_element_array).
+**Note:** With WebdriverIO v9, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`, see [Requirements & Configuration](MultiRemote.md#requirements--configuration).
 
 ### Multiple Elements Support
 

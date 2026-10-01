@@ -52,6 +52,16 @@ An array of expected values on a single element fails the assertion with `toHave
 
 `expect.oneOf()` now trims the actual value by default (`trim: true`), as a single expected value does. Pass `{ trim: false }` to compare the text as is.
 
+## Multi-remote `$$()`
+
+Multi-remote `$$()` assertions support only the `MultiRemoteElementArray` of `$$()`. WebdriverIO v10 always returns it. With WebdriverIO v9, set `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` before the session starts, e.g. at the top of your `wdio.conf` file:
+
+```ts
+process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = 'true'
+```
+
+Without it, WebdriverIO v9 `$$()` returns a plain array of multi-remote elements. This plain array is not recognized as elements anymore, so the assertion fails. The best-effort re-fetch from the global `multiRemoteBrowser` and its warning are removed.
+
 ## Removed deprecated APIs
 
 v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#migration-guide-v5-to-v6) below.

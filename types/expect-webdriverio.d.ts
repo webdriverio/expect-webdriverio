@@ -84,6 +84,8 @@ type ArrayOfElementsPromise = Promise<WebdriverIO.Element[]>
  */
 type ElementOrMaybeSomeArrayLike = ElementLike | MaybeSomeElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
+// `MultiRemoteElement[]` is the WebdriverIO v9 type of a multi-remote `$$()`, a `MultiRemoteElementArray` at runtime
+// TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteElementArray` type instead of `MultiRemoteElement[]`
 type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[]
 type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[]>
 type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]

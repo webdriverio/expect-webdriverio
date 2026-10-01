@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { executeCommandWithStrategy, multipleElementResultsStrategy } from '../../src/util/executeCommand'
 import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../__mocks__/@wdio/globals'
 import { $ } from '@wdio/globals'
@@ -255,29 +255,8 @@ describe('executeCommand', () => {
             })
         })
 
-        describe.each([
-            { flag: undefined, shape: 'MultiRemoteElement[] (default)' },
-            { flag: 'true', shape: 'WdioMultiRemoteElementArray (WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true)' },
-        ])('given a multi-remote element array ($$()) - $shape', ({ flag }) => {
+        describe('given a multi-remote element array ($$())', () => {
             const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
-            let originalEnv: string | undefined
-
-            beforeEach(() => {
-                originalEnv = process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                if (flag) {
-                    process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = flag
-                } else {
-                    delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                }
-            })
-
-            afterEach(() => {
-                if (originalEnv === undefined) {
-                    delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                } else {
-                    process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = originalEnv
-                }
-            })
 
             it('compares every element across every instance and actually waits for all comparisons (regression for the forEach/await bug)', async () => {
                 const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
@@ -398,13 +377,23 @@ describe('executeCommand', () => {
                 expect(result.success).toBe(true)
             })
 
-            it(`${flag ? 'retries (no abort)' : 'aborts'} when empty since only the MultiRemoteElementArray shape can be refetched`, async () => {
+            it('retries (no abort) when empty since the MultiRemoteElementArray can be refetched', async () => {
                 const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 0)
 
                 const result = await multipleElementResultsStrategy(elements, 'Match', vi.fn(), { isNot: false, isSome: false, iteration: 0 })
 
                 expect(result.success).toBe(false)
-                expect(result.abort).toBe(!flag)
+                expect(result.abort).toBe(false)
+            })
+
+            it('does not compare a plain array of multi-remote elements', async () => {
+                const elements = Array.from(createMultiRemoteElementArrayMock(browsers(), 'sel', 2) as unknown as WebdriverIO.MultiRemoteElement[])
+                const compare = vi.fn()
+
+                const result = await multipleElementResultsStrategy(elements, 'Match', compare, { isNot: false, isSome: false, iteration: 0 })
+
+                expect(result).toEqual(expect.objectContaining({ subject: elements, success: false, abort: true }))
+                expect(compare).not.toHaveBeenCalled()
             })
 
             it('fails when an instance found no element, reporting its own (empty) elements', async () => {
@@ -640,40 +629,6 @@ describe('executeCommand', () => {
 
                 expect(result.success).toBe(false)
                 expect(result.actual).toEqual({ chrome: ['item0', 'item1', 'item2'], firefox: ['item0', 'item1'] })
-            })
-        })
-
-        describe('given a best-effort refetch (MultiRemoteElement[] without WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY)', () => {
-            let originalEnv: string | undefined
-
-            beforeEach(() => {
-                originalEnv = process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                delete process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY
-                vi.spyOn(console, 'warn').mockImplementation(() => {})
-            })
-
-            afterEach(() => {
-                if (originalEnv !== undefined) {
-                    process.env.WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY = originalEnv
-                }
-                vi.unstubAllGlobals()
-            })
-
-            it('keeps the received elements, and so the selector, when a refetch is empty and keeps retrying', async () => {
-                const globalMultiRemoteBrowser = { $$: vi.fn()
-                    .mockResolvedValueOnce([])
-                    .mockResolvedValueOnce(createMultiRemoteElementArrayMock(browsers(), 'sel', 2)) }
-                vi.stubGlobal('multiRemoteBrowser', globalMultiRemoteBrowser)
-                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 1)
-
-                const first = await multipleElementResultsStrategy(elements, 'a', compareEquals, { ...context, iteration: 1 })
-                expect(first).toEqual(expect.objectContaining({ success: false, abort: false }))
-                expect(elements).toHaveLength(1)
-
-                const second = await multipleElementResultsStrategy(elements, 'a', compareEquals, { ...context, iteration: 2 })
-                expect(second.success).toBe(true)
-                expect(elements).toHaveLength(2)
-                expect(globalMultiRemoteBrowser.$$).toHaveBeenCalledTimes(2)
             })
         })
     })

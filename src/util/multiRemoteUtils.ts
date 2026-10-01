@@ -1,5 +1,5 @@
 import { isAsymmetricMatcher } from '../utils.js'
-import type { WdioMultiRemoteMock } from '../types.js'
+import type { WdioMultiRemoteElementArray, WdioMultiRemoteMock } from '../types.js'
 
 export const isMultiRemoteValues = (value: unknown, existingInstanceNames?: string[]): value is MultiRemoteValues<unknown> =>  {
     if (value && typeof value === 'object' && !Array.isArray(value) && !isAsymmetricMatcher(value) && !(value instanceof RegExp) && Object.keys(value).length > 0) {
@@ -44,7 +44,9 @@ export const getPerInstanceValues = (value: unknown, { allowObjectExpectedValue 
  * WebdriverIO zips the per-instance results by index, so when instances find a different number of elements the
  * trailing wrappers hold no element for the instances that found fewer (and `getInstance` then throws).
  */
-export const getElementsPerInstance = (multiRemoteElements: WebdriverIO.MultiRemoteElement[] | ArrayLike<WebdriverIO.MultiRemoteElement>, instances: string[]): MultiRemoteValues<WebdriverIO.Element[]> => {
+export const getElementsPerInstance = (elements: WdioMultiRemoteElementArray | readonly WebdriverIO.MultiRemoteElement[], instances: string[]): MultiRemoteValues<WebdriverIO.Element[]> => {
+    // The items of a `MultiRemoteElementArray` are `MultiRemoteElement` at runtime
+    const multiRemoteElements = elements as unknown as ArrayLike<WebdriverIO.MultiRemoteElement>
     return Object.fromEntries(instances.map((name) => {
         const elements: WebdriverIO.Element[] = []
         // Plain loop to bypass the asynchronous iterators of `MultiRemoteElementArray`
@@ -137,15 +139,6 @@ export const getMockInstanceNames = (mocks: WebdriverIO.Mock[]): { names: string
         return { names: instances, isNamedByInstance: true }
     }
     return { names: mocks.map((_, index) => `mocks[${index}]`), isNamedByInstance: false }
-}
-
-/** Whether the injected global `browser` is a regular (non multi-remote) browser, i.e. not a multi-remote session */
-export const isGlobalBrowserSingleRemote = (): boolean => {
-    try {
-        return typeof browser !== 'undefined' && isBrowser(browser) && !hasMultiRemoteFlag(browser)
-    } catch {
-        return false
-    }
 }
 
 /**

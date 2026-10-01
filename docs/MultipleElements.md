@@ -27,7 +27,7 @@ You can pass any of these element types to `expect`:
 - `ChainablePromiseArray` (the non-awaited case)
 - `ElementArray` (the awaited case)
 - `Element[]` (the filtered case)
-- `MultiRemoteElement[]` (multi-remote `$$()`), where these rules apply per browser instance, see [Multi-remote Support](MultiRemote.md#multiple-elements-)
+- `MultiRemoteElementArray` (multi-remote `$$()`), where these rules apply per browser instance, see [Multi-remote Support](MultiRemote.md#multiple-elements-)
 
 ## Choosing the expected value
 

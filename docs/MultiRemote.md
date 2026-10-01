@@ -1,6 +1,6 @@
 # Multi-remote Support
 
-With [multi-remote](https://webdriver.io/docs/multiremote), a single assertion checks every browser instance: the multi-remote browser (`multiRemoteBrowser`), its elements `$()` (`MultiRemoteElement`) and element arrays `$$()` (`MultiRemoteElement[]`).
+With [multi-remote](https://webdriver.io/docs/multiremote), a single assertion checks every browser instance: the multi-remote browser (`multiRemoteBrowser`), its elements `$()` (`MultiRemoteElement`) and element arrays `$$()` (`MultiRemoteElementArray`).
 
 ```ts
 import { multiRemoteBrowser } from '@wdio/globals'
@@ -34,7 +34,7 @@ WebdriverIO `v9.31.5` or higher is required.
 
 | Flag | Kind | Default | Details |
 | ---- | ---- | ------- | ------- |
-| `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` | WebdriverIO environment variable | unset | **Recommended.** `$$()` returns an array knowing how it was fetched (parent, selector, selected instances), so it is reliably re-fetched between retries, even when initially empty. Without it, see the [limitations](#without-wdio_enable_multi_remote_element_array). |
+| `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` | WebdriverIO environment variable | unset | **Required with WebdriverIO v9.** `$$()` returns a `MultiRemoteElementArray`, which knows how it was fetched (parent, selector, selected instances). Without it, `$$()` returns a plain array of multi-remote elements, which is not supported. WebdriverIO v10 always returns a `MultiRemoteElementArray`. |
 | `WDIO_ENABLE_MULTI_REMOTE_SELECT` | WebdriverIO environment variable | unset | **Recommended** when using `select()`: elements queried from a selected multi-remote browser or element stay scoped to the selected instances. It is read when the multi-remote browser is created, so set it before the session starts. |
 
 ```ts
@@ -223,22 +223,7 @@ So a snapshot turns into one outerHTML per instance when browsers start to diffe
 
 As with regular elements, failing assertions are retried until they pass or time out, re-fetching `$$()` elements in between.
 
-- **With `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY=true`** (recommended), elements are re-fetched from their real scope (parent element, `select()` subset) with their original selector, even when the first result is empty.
-- **Without it**, re-fetching is best effort, see below.
-
-## Without `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY`
-
-Both `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELECT` are opt-in WebdriverIO environment variables, not enabled by default. Without the former, `$$()` returns a plain `MultiRemoteElement[]` that knows nothing about how it was fetched: no parent element, no `select()` subset, and, when empty, not even its selector or instance names. Multi-remote `$$()` assertions are then **best effort**:
-
-- **Re-fetching uses the global `multiRemoteBrowser`** with the elements' selector, ignoring any parent element or `select()` subset, and a one-time warning is logged. A retry may therefore assert on elements outside the original scope, e.g. `multiRemoteBrowser.select('firefox').$$('li')` is re-fetched on every instance, and `multiRemoteBrowser.$('form').$$('input')` from the whole page.
-- **Without injected WebdriverIO globals** (e.g. `injectGlobals: false` or standalone mode), elements are not re-fetched: every retry compares the same elements.
-- **An initially empty result cannot be re-fetched**, having no element to get the selector from: the assertion fails immediately instead of waiting for elements to appear, and the failure message shows `[]` instead of the selector.
-- **`toBeElementsArrayOfSize` with per-instance sizes on an empty result** cannot know the queried instances:
-  - They are taken from the global `multiRemoteBrowser`, ignoring any `select()` subset, so `expect(multiRemoteBrowser.select('firefox').$$('li')).toBeElementsArrayOfSize({ firefox: 0 })` fails since every instance is expected.
-  - Without injected globals, per-instance sizes are only checked against their own instance names, so a missing or misspelled instance name is not detected.
-  - A single size shared by every instance, e.g. `toBeElementsArrayOfSize(0)`, is not affected.
-
-Browser matchers, single elements `$()`, and `$$()` assertions passing on the first attempt are not affected.
+Elements are re-fetched from their real scope (parent element, `select()` subset) with their original selector, even when the first result is empty.
 
 ## Error Messages
 
@@ -260,7 +245,7 @@ Expect multi-remote<chrome, firefox>.$(`h1`) to have text
 ## Limitations
 
 - Network matchers support one expected value for every instance only, and may name a mock after the wrong instance, see [Network Matchers](#network-matchers).
-- Without `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY`, multi-remote `$$()` assertions are best effort, see [its limitations](#without-wdio_enable_multi_remote_element_array).
+- A plain array of multi-remote elements, e.g. `[...elements]` or a WebdriverIO v9 `$$()` without `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY`, is not supported: it is not recognized as elements, so the assertion fails. Pass the `MultiRemoteElementArray` of `$$()`.
 - The Browser Runner (`@wdio/browser-runner`) does not support multi-remote, see [Browser Runner](Framework.md#multiple-elements--multi-remote).
 
 ## Alternatives

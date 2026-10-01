@@ -105,7 +105,7 @@ export async function toHaveAttribute(
  * When called with an expected attribute name and value, shared or one per instance, each maybe one per element.
  */
 export async function toHaveAttribute(
-    received: WebdriverIO.MultiRemoteElement[] | WdioMultiRemoteElementArray,
+    received: WdioMultiRemoteElementArray,
     attribute: string,
     value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
     options?: ExpectWebdriverIO.StringOptions
