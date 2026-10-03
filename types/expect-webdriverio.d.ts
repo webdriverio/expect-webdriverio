@@ -86,9 +86,9 @@ type ElementOrMaybeSomeArrayLike = ElementLike | MaybeSomeElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
 // `MultiRemoteElement[]` is the WebdriverIO v9 type of a multi-remote `$$()`, a `MultiRemoteElementArray` at runtime
 // TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteElementArray` type instead of `MultiRemoteElement[]`
-type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[]
-type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[]>
-type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[]
+type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[] | WebdriverIO.MultiRemoteElementArray
+type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[] | WebdriverIO.MultiRemoteElementArray>
+type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] | WebdriverIO.MultiRemoteElementArray
 type MockPromise = Promise<WebdriverIO.Mock>
 /** WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock` with one mock per instance name, not in the v9 types */
 // TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteMock` type instead
@@ -110,8 +110,8 @@ type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT ext
  *
  * Fix: If type inference issues arise, split the implementation into separate interfaces
  */
-type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement, FnMultiRemoteElement = FnElement, FnMultiRemoteElements = FnArray> = ActualT extends WebdriverIO.MultiRemoteElement[] ? FnMultiRemoteElements : ActualT extends WebdriverIO.MultiRemoteElement ? FnMultiRemoteElement : ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement : never
-type FnWhenElementArrayLike<ActualT, Fn, FnMultiRemoteElements = Fn> = ActualT extends WebdriverIO.MultiRemoteElement[] ? FnMultiRemoteElements : ActualT extends MaybeSomeElementArrayLike ? Fn : never
+type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement, FnMultiRemoteElement = FnElement, FnMultiRemoteElements = FnArray> = ActualT extends WebdriverIO.MultiRemoteElement[] | WebdriverIO.MultiRemoteElementArray ? FnMultiRemoteElements : ActualT extends WebdriverIO.MultiRemoteElement ? FnMultiRemoteElement : ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement : never
+type FnWhenElementArrayLike<ActualT, Fn, FnMultiRemoteElements = Fn> = ActualT extends WebdriverIO.MultiRemoteElement[] | WebdriverIO.MultiRemoteElementArray ? FnMultiRemoteElements : ActualT extends MaybeSomeElementArrayLike ? Fn : never
 
 /**
  * Same as the other but because of Jasmine and it's expectAsync typing which does not force T to be a promise, then we need to account for `WebdriverIO.Mock
