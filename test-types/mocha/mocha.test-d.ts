@@ -638,8 +638,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(multiRemoteBrowser.$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElements).toMatchSnapshot()).toEqualTypeOf<Promise<void> | void>()
                 expectTypeOf(expect(multiRemoteElements).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void> | void>()
-                // WebdriverIO types a non-awaited multi-remote `$$()` as a `MultiRemoteElement[]` too
-                expectTypeOf(expect(multiRemoteBrowser.$$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void> | void>()
+                // A multi-remote `$$()` is a `MultiRemoteElementArray`, snapshotted asynchronously even when empty
+                expectTypeOf(expect(multiRemoteBrowser.$$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
             })
 
             it('should return Promise<void> for element arrays', async () => {
