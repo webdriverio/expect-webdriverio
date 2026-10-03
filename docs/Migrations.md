@@ -56,7 +56,7 @@ An array of expected values on a single element fails the assertion with `toHave
 
 Multi-remote `$$()` and `select()` need WebdriverIO v10. Remove `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELECT`: they are not supported anymore.
 
-Pass the `$$()` result as is. A plain `MultiRemoteElement[]` (e.g. `[...elements]`, `custom$$()`) is not recognized as elements, so the assertion fails. See the [limitations](MultiRemote.md#limitations).
+Pass the `$$()`, `custom$$()` or `react$$()` result as is. A plain `MultiRemoteElement[]` (e.g. `[...elements]`) is not recognized as elements, so the assertion fails. See the [limitations](MultiRemote.md#limitations).
 
 Retries still re-fetch `$$()` elements from their scope. Only the best-effort re-fetch of a plain array from the global `multiRemoteBrowser`, and its warning, are removed.
 
