@@ -54,7 +54,7 @@ describe('be* matchers', () => {
 
             const verb = matcherFn.name === 'toExist' ? 'to' : 'to be'
 
-            let el: ChainablePromiseElement
+            let el: WebdriverIO.Element
             let elementFn: ElementKeyFnTypes
 
             beforeEach(async () => {
@@ -187,7 +187,7 @@ Received: "not ${lastMatcherWords(matcherFn.name)}"`)
             })
 
             describe('given multiple elements', () => {
-                let elements: ChainablePromiseArray
+                let elements: WebdriverIO.ElementArray
                 const selectorName = '$$(`sel`)'
 
                 beforeEach(async () => {

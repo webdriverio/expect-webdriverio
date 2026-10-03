@@ -22,7 +22,7 @@ describe(toBeDisabled, () => {
     })
 
     describe('given single element', () => {
-        let el: ChainablePromiseElement
+        let el: WebdriverIO.Element
 
         beforeEach(async () => {
             thisContext = { toBeDisabled }
@@ -128,7 +128,7 @@ Received: "disabled"`)
     })
 
     describe('given multiple elements', () => {
-        let elements: ChainablePromiseArray
+        let elements: WebdriverIO.ElementArray
 
         beforeEach(async () => {
             elements = await $$('sel')

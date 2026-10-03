@@ -20,7 +20,7 @@ describe(toHaveValue, () => {
     })
 
     describe('given single element', () => {
-        let el: ChainablePromiseElement
+        let el: WebdriverIO.Element
 
         beforeEach(async () => {
             el = await $('sel')

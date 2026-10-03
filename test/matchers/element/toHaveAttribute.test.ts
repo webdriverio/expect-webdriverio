@@ -21,7 +21,7 @@ describe(toHaveAttribute, () => {
     })
 
     describe('given single element', () => {
-        let el: ChainablePromiseElement
+        let el: WebdriverIO.Element
 
         beforeEach(async () => {
             el = await $('sel')
@@ -209,7 +209,7 @@ Received: undefined`)
     })
 
     describe('given multiple elements', () => {
-        let els: ChainablePromiseArray
+        let els: WebdriverIO.ElementArray
 
         beforeEach(async () => {
             els = await $$('sel')
