@@ -12,14 +12,14 @@
     "snapshots:update": "pnpm run test --spec snapshot.test.ts --updateSnapshots && pnpm run test --spec visual-snapshot.test.ts --update-visual-baseline"
   },
   "devDependencies": {
-    "@wdio/mocha-framework": "^9.32.0",
+    "@wdio/mocha-framework": "^10.0.0-alpha.150",
     "eslint-plugin-mocha": "^11.3.0"
   },
   "peerDependencies": {
-    "@wdio/cli": "*",
-    "@wdio/globals": "*",
-    "@wdio/local-runner": "*",
-    "@wdio/spec-reporter": "*",
+    "@wdio/cli": "^10.0.0-0",
+    "@wdio/globals": "^10.0.0-0",
+    "@wdio/local-runner": "^10.0.0-0",
+    "@wdio/spec-reporter": "^10.0.0-0",
     "@wdio/visual-service": "*"
   }
 }

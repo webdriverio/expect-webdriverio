@@ -19,7 +19,7 @@ describe(toHaveHref, () => {
     })
 
     describe('given a single element', () => {
-        let el: ChainablePromiseElement
+        let el: WebdriverIO.Element
 
         beforeEach(async () => {
             el = await $('sel')
@@ -77,7 +77,7 @@ Received: "https://www.example.com"`
     })
 
     describe('given multiple elements', () => {
-        let elements: ChainablePromiseArray
+        let elements: WebdriverIO.ElementArray
 
         beforeEach(async () => {
             elements = await $$('sel')

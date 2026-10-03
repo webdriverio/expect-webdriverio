@@ -183,8 +183,8 @@ Received      : 2`
         let elements: ChainablePromiseArray | WebdriverIO.Element[] | WebdriverIO.ElementArray
         let nonAwaitedElements: ChainablePromiseArray | WebdriverIO.Element[] | WebdriverIO.ElementArray
         let browser: WebdriverIO.Browser
-        let elementArrayOf2: ChainablePromiseArray
-        let elementArrayOf5: ChainablePromiseArray
+        let elementArrayOf2: WebdriverIO.ElementArray
+        let elementArrayOf5: WebdriverIO.ElementArray
 
         beforeEach(async () => {
             const actuatlRefetchElements = await vi.importActual<typeof import('../../../src/util/refetchElements.js')>('../../../src/util/refetchElements.js')
@@ -214,7 +214,7 @@ Received      : 2`
         })
 
         test('refresh once the elements array using parent $$ and update actual element with newly fetched elements', async () => {
-            vi.mocked(browser.$$).mockReturnValue(elementArrayOf5)
+            vi.mocked(browser.$$).mockResolvedValue(elementArrayOf5)
             const result = await thisContext.toBeElementsArrayOfSize(elements, 5, { wait: 95, interval: 50 })
 
             expect(result.pass).toBe(true)
@@ -274,8 +274,8 @@ Received      : 2`
 
         test('refresh once the element array with the wait option', async () => {
             vi.mocked(browser.$$)
-                .mockReturnValueOnce(elementArrayOf2)
-                .mockReturnValue(elementArrayOf5)
+                .mockResolvedValueOnce(elementArrayOf2)
+                .mockResolvedValue(elementArrayOf5)
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { wait: 450, interval: 100 })
 
@@ -292,8 +292,8 @@ Received      : 2`
 
         test('refresh once the element array with the DEFAULT_OPTIONS wait value', async () => {
             vi.mocked(browser.$$)
-                .mockReturnValueOnce(elementArrayOf2)
-                .mockReturnValue(elementArrayOf5)
+                .mockResolvedValueOnce(elementArrayOf2)
+                .mockResolvedValue(elementArrayOf5)
 
             const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { beforeAssertion: undefined, afterAssertion: undefined })
 

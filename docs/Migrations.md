@@ -6,7 +6,7 @@ v8.0.0 requires Node.js `22.19.0` or higher, the same as WebdriverIO v10. Node.j
 
 ## Peer dependencies
 
-v8.0.0 requires `webdriverio` `9.32.0` or higher.
+v8.0.0 requires WebdriverIO v10: `webdriverio` `10.0.0-0` or higher. WebdriverIO v9 is no longer supported.
 
 `@wdio/globals` and `@wdio/logger` are no longer peer dependencies: only `webdriverio` and `@wdio/types` are. You can remove them from your `package.json` if you do not use them yourself. `webdriverio` installs `@wdio/types`, so our types use the same copy as WebdriverIO. With Yarn Plug'n'Play, also add `@wdio/types` to your `package.json` (Yarn warns with `YN0002`). If you do not, the types of `SnapshotService` and `SoftAssertionService` become `any`. When `toHaveClipboardText` cannot set the clipboard permissions, its warning now goes to `console.warn`, not to the WebdriverIO logger.
 
@@ -23,7 +23,7 @@ The `matcherName` given to the `beforeAssertion` and `afterAssertion` hooks is n
 
 ## `toHaveText` on multiple elements
 
-The strict strategy of the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is now the only one. The flag, `setFeatureFlags()` and the `featureFlags` option are removed.
+The strict strategy of the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is now the only one. The flag, `setFeatureFlags()`, the `featureFlags` option and the `ExpectWebdriverIO.FeatureFlags` type are removed. The internal `utils.compareTextWithArray()` and `utils.getFeatureFlagValue()` are also removed.
 
 With `$$()`, an array of expected values is index-based: its length must equal the element count, and each element must match the value at its index, as with every other matcher. Before, each element could match any value of the array.
 
@@ -56,7 +56,7 @@ An array of expected values on a single element fails the assertion with `toHave
 
 Multi-remote `$$()` and `select()` need WebdriverIO v10. Remove `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELECT`: they are not supported anymore.
 
-Pass the `$$()` result as is. A plain `MultiRemoteElement[]` (e.g. `[...elements]`, `custom$$()`) is not recognized as elements, so the assertion fails. See the [limitations](MultiRemote.md#limitations).
+Pass the `$$()`, `custom$$()` or `react$$()` result as is. A plain `MultiRemoteElement[]` (e.g. `[...elements]`) is not recognized as elements, so the assertion fails. See the [limitations](MultiRemote.md#limitations).
 
 Retries still re-fetch `$$()` elements from their scope. Only the best-effort re-fetch of a plain array from the global `multiRemoteBrowser`, and its warning, are removed.
 

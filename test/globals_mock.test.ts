@@ -64,7 +64,6 @@ describe('globals mock', () => {
         it('should return a ChainablePromiseArray', async () => {
             const els = $$('foo')
             expect(els).toHaveProperty('then')
-            // @ts-expect-error
             expect(typeof els.then).toBe('function')
         })
 

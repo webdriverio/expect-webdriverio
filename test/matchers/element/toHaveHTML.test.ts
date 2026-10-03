@@ -20,7 +20,7 @@ describe(toHaveHTML, () => {
     })
 
     describe('given single element', () => {
-        let element: ChainablePromiseElement
+        let element: WebdriverIO.Element
 
         beforeEach(async () => {
             element = await $('sel')
@@ -333,7 +333,7 @@ Received: "This is example HTML"`
     })
 
     describe('given multiple elements', () => {
-        let elements: ChainablePromiseArray
+        let elements: WebdriverIO.ElementArray
 
         beforeEach(async () => {
             elements = await $$('sel')

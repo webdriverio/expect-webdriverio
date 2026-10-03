@@ -14,7 +14,7 @@ describe(toHaveChildren, () => {
     const thisNotContext = { isNot: true, toHaveChildren }
 
     describe('given a single element', () => {
-        let el: ChainablePromiseElement
+        let el: WebdriverIO.Element
 
         beforeEach(async () => {
             el = await $('sel')
@@ -161,7 +161,7 @@ Received      : 2`
     })
 
     describe('given multiple elements', () => {
-        let elements: ChainablePromiseArray
+        let elements: WebdriverIO.ElementArray
 
         beforeEach(async () => {
             elements = await $$('sel')

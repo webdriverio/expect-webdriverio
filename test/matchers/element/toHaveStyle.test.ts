@@ -19,7 +19,7 @@ describe(toHaveStyle, () => {
     })
 
     describe('given a single element', () => {
-        let el: ChainablePromiseElement
+        let el: WebdriverIO.Element
 
         const mockStyle: { [key: string]: string; } = {
             'font-family': 'Faktum',
@@ -339,7 +339,7 @@ Received: undefined`
     })
 
     describe('given multiple elements', () => {
-        let elements: ChainablePromiseArray
+        let elements: WebdriverIO.ElementArray
 
         const mockStyle: { [key: string]: string; } = {
             'font-family': 'Faktum',

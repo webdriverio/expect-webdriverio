@@ -1,8 +1,12 @@
 # expect-webdriverio [![Test](https://github.com/webdriverio/expect-webdriverio/actions/workflows/test.yml/badge.svg)](https://github.com/webdriverio/expect-webdriverio/actions/workflows/test.yml)
 
 > [!IMPORTANT]
-> This branch is v8, in development for WebdriverIO v10. Its docs are not released yet.
-> For the latest release (v7, WebdriverIO v9), see the [v7 README](https://github.com/webdriverio/expect-webdriverio/blob/v7/README.md).
+> This branch is v8 (WebdriverIO v10), not released yet.
+
+| expect-webdriverio | WebdriverIO | Node.js | Status | Docs |
+| --- | --- | --- | --- | --- |
+| v8 | v10 | ≥ 22.19.0 | In development | This README |
+| v7 | v9 (≥ 9.31.5) | ≥ 20 | Latest release, fixes only | [v7 README](https://github.com/webdriverio/expect-webdriverio/blob/v7/README.md) |
 
 ###### [API](docs/API.md) | [Multiple Elements](docs/MultipleElements.md) | [Multi-remote](docs/MultiRemote.md) | [TypeScript / JS Autocomplete](docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](docs/CustomMatchers.md)
 

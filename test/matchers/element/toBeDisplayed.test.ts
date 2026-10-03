@@ -638,7 +638,7 @@ Received: "not displayed"`)
         describe('global options', () => {
             const defaultOptions = { ...DEFAULT_OPTIONS }
 
-            let el: ChainablePromiseElement
+            let el: WebdriverIO.Element
 
             beforeEach(async () => {
                 setDefaultOptionsFn({ wait: 99, interval: 101 })
@@ -692,9 +692,9 @@ Received: "not displayed"`)
         })
 
         vi.mocked(browser.$$)
-            .mockReturnValueOnce(emptyElements)
-            .mockReturnValueOnce(emptyElements)
-            .mockReturnValueOnce(elements2)
+            .mockResolvedValueOnce(emptyElements)
+            .mockResolvedValueOnce(emptyElements)
+            .mockResolvedValueOnce(elements2)
 
         const result = await thisContext.toBeDisplayed(emptyElements)
         expect(browser.$$).toHaveBeenCalledWith('sel0')

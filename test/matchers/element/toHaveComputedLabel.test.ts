@@ -19,7 +19,7 @@ describe(toHaveComputedLabel, () => {
     })
 
     describe('given a single element', () => {
-        let el: ChainablePromiseElement
+        let el: WebdriverIO.Element
 
         beforeEach(async () => {
             el = await $('sel')
@@ -278,7 +278,7 @@ Received: "This is example computed label"`
     })
 
     describe('given multiple elements', () => {
-        let elements: ChainablePromiseArray
+        let elements: WebdriverIO.ElementArray
 
         beforeEach(async () => {
             elements = await $$('sel')

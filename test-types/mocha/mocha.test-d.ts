@@ -638,8 +638,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(multiRemoteBrowser.$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElements).toMatchSnapshot()).toEqualTypeOf<Promise<void> | void>()
                 expectTypeOf(expect(multiRemoteElements).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void> | void>()
-                // WebdriverIO types a non-awaited multi-remote `$$()` as a `MultiRemoteElement[]` too
-                expectTypeOf(expect(multiRemoteBrowser.$$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void> | void>()
+                // A multi-remote `$$()` is a `MultiRemoteElementArray`, snapshotted asynchronously even when empty
+                expectTypeOf(expect(multiRemoteBrowser.$$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
             })
 
             it('should return Promise<void> for element arrays', async () => {
@@ -707,6 +707,17 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(multiRemoteElements).toHaveWidth([100, 200])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElements).toHaveId(['a', 'b'])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElements).toHaveHref(['a', 'b'])).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should support the MultiRemoteElementArray of a WebdriverIO v10 multi-remote $$()', async () => {
+                const multiRemoteElementArray = multiRemoteBrowser.$$('h1')
+                expectTypeOf(multiRemoteElementArray).toEqualTypeOf<WebdriverIO.MultiRemoteElementArray>()
+
+                expectTypeOf(expect(multiRemoteElementArray).toBeDisplayed()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElementArray).not.toBeExisting()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElementArray).toHaveText(['a', 'b'])).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteElementArray).toBeElementsArrayOfSize(2)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(some(multiRemoteElementArray)).toHaveText('a')).toEqualTypeOf<Promise<void>>()
             })
 
             it('should require expect.multiRemote() for per-instance values of object matchers', async () => {

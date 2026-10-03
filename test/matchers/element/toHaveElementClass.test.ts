@@ -20,7 +20,7 @@ describe(toHaveElementClass, () => {
     })
 
     describe('given a single element', () => {
-        let el: ChainablePromiseElement
+        let el: WebdriverIO.Element
 
         beforeEach(async () => {
             el = await $('sel')
@@ -189,7 +189,7 @@ Received: "some-class another-class yet-another-class"` )
     })
 
     describe('given multiple elements', () => {
-        let elements: ChainablePromiseArray
+        let elements: WebdriverIO.ElementArray
 
         const selectorName = '$$(`sel`)'
         beforeEach(async () => {

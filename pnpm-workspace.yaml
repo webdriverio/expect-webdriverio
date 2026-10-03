@@ -10,3 +10,10 @@ allowBuilds:
 # Dev dependency `@wdio/globals` (test mocks, global types) peers on an older `expect-webdriverio`: use ours, so its types do not merge with ours
 overrides:
   expect-webdriverio: 'link:.'
+
+# WebdriverIO v10 is in alpha, with several releases a day: accept them before `minimumReleaseAge`
+minimumReleaseAgeExclude:
+  - '@wdio/*'
+  - create-wdio
+  - webdriver
+  - webdriverio

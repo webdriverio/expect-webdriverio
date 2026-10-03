@@ -353,7 +353,7 @@ Received      : "Test Value"`)
     })
 
     describe('given multiple elements', () => {
-        let els: ChainablePromiseArray
+        let els: WebdriverIO.ElementArray
 
         beforeEach(async () => {
             els = await $$('sel')

@@ -1382,7 +1382,7 @@ Received: "Invalid Text"`)
                             .mockResolvedValueOnce('Invalid Text')
                             .mockResolvedValueOnce('Valid Text')
 
-                        const awaitedElement: ChainablePromiseElement = await $Factory(element, 500)
+                        const awaitedElement: WebdriverIO.Element = await $Factory(element, 500)
 
                         const result = await thisContext.toHaveText(awaitedElement, 'Valid Text', { wait: 250, interval: 100 })
 
@@ -1399,8 +1399,8 @@ Received: "Invalid Text"`)
                     const elements2 = await chainableElementArrayFactory('sel0', 2, browser)
 
                     vi.mocked(browser.$$)
-                        .mockReturnValueOnce(emptyElements)
-                        .mockReturnValueOnce(elements2)
+                        .mockResolvedValueOnce(emptyElements)
+                        .mockResolvedValueOnce(elements2)
 
                     const result = await thisContext.toHaveText(emptyElements, ['Valid Text', 'Valid Text'], { wait: 250, interval: 100 })
                     expect(browser.$$).toHaveBeenCalledWith('sel0')
@@ -1416,8 +1416,8 @@ Received: "Invalid Text"`)
                     const elements2 = await chainableElementArrayFactory('sel0', 2, browser)
 
                     vi.mocked(browser.$$)
-                        .mockReturnValueOnce(elements2)
-                        .mockReturnValueOnce(elements1)
+                        .mockResolvedValueOnce(elements2)
+                        .mockResolvedValueOnce(elements1)
 
                     const result = await thisContext.toHaveText(elements2, ['Valid Text'], { wait: 250, interval: 100 })
                     expect(browser.$$).toHaveBeenCalledWith('sel0')
