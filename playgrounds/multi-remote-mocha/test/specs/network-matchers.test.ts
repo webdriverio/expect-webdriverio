@@ -1,8 +1,7 @@
 import { multiRemoteBrowser } from '@wdio/globals'
 
 describe('Network Matchers', () => {
-    // TODO(#2255) WebdriverIO v9: with v10, `mock()` gives a `MultiRemoteMock`, use `getInstance(name)` instead of `mocks[0]` and `mocks.map()`
-    let mocks: WebdriverIO.Mock[]
+    let mocks: WebdriverIO.MultiRemoteMock
 
     before(async function() {
         if(process.env.CI) {
@@ -12,7 +11,7 @@ describe('Network Matchers', () => {
         mocks = await multiRemoteBrowser.mock('https://guinea-pig.webdriver.io/api/foo', {
             method: 'POST'
         })
-        mocks[0].respond({ success: true }, {
+        mocks.getInstance('chrome').respond({ success: true }, {
             statusCode: 200,
             headers: { Authorization: 'bar' }
         })
@@ -29,7 +28,7 @@ describe('Network Matchers', () => {
     })
 
     it('should assert on network calls', async () => {
-        await expect(mocks[0]).toBeRequestedWith({
+        await expect(mocks.getInstance('chrome')).toBeRequestedWith({
             url: 'https://guinea-pig.webdriver.io/api/foo',
             method: 'POST'
         })
@@ -37,7 +36,7 @@ describe('Network Matchers', () => {
 
     it('should work with asymmetric matchers', async () => {
         // Asymmetric matcher as argument
-        await expect(mocks[0]).toBeRequestedWith({
+        await expect(mocks.getInstance('chrome')).toBeRequestedWith({
             method: 'POST',
             url: expect.stringContaining('/api/foo')
         })
@@ -46,7 +45,7 @@ describe('Network Matchers', () => {
 
     it('should support inverted wdio expect asymmetric matchers', async () => {
         await expect(
-             expect(mocks[0]).toBeRequestedWith({
+             expect(mocks.getInstance('chrome')).toBeRequestedWith({
             method: 'POST',
             url: expect.not.stringContaining('/api/foo'),
         })).rejects.toThrow(
@@ -67,42 +66,41 @@ describe('Network Matchers', () => {
     })
 
     it('should assert times called', async () => {
-        await expect(mocks[0]).toBeRequestedTimes(1)
+        await expect(mocks.getInstance('chrome')).toBeRequestedTimes(1)
     })
 
     it('should assert times called gte', async () => {
-        await expect(mocks[0]).toBeRequestedTimes({ gte: 1 })
+        await expect(mocks.getInstance('chrome')).toBeRequestedTimes({ gte: 1 })
     })
 
     it('should assert times called lte', async () => {
-        await expect(mocks[0]).toBeRequestedTimes({ lte: 2 })
+        await expect(mocks.getInstance('chrome')).toBeRequestedTimes({ lte: 2 })
     })
 
     it('should assert times called gte and lte', async () => {
-        await expect(mocks[0]).toBeRequestedTimes({ gte: 1, lte: 2 })
+        await expect(mocks.getInstance('chrome')).toBeRequestedTimes({ gte: 1, lte: 2 })
     })
 
     it('should assert times called lte with options', async () => {
-        await expect(mocks[0]).toBeRequestedTimes({ lte: 2 }, { wait: 0 })
+        await expect(mocks.getInstance('chrome')).toBeRequestedTimes({ lte: 2 }, { wait: 0 })
     })
 
     it('should assert times called lte with options - deprecated', async () => {
-        await expect(mocks[0]).toBeRequestedTimes({ lte: 2 }, { wait: 0 })
+        await expect(mocks.getInstance('chrome')).toBeRequestedTimes({ lte: 2 }, { wait: 0 })
     })
 
     it('should be requested', async () => {
-        await expect(mocks[0]).toBeRequested()
+        await expect(mocks.getInstance('chrome')).toBeRequested()
     })
 
     it('should throw an error when asserting not be requested', async () => {
-        await expect(expect(mocks[0]).not.toBeRequested()).rejects.toThrow()
+        await expect(expect(mocks.getInstance('chrome')).not.toBeRequested()).rejects.toThrow()
     })
 })
 
 describe('Multi-remote Network Matchers', () => {
     // Not calling `respond()`, which hangs on Firefox, see https://github.com/webdriverio/expect-webdriverio/pull/2229
-    // TODO(#2255) WebdriverIO v9: with v10, `mock()` gives a `MultiRemoteMock`, use `getInstance(name)` instead of `mocks[0]` and `mocks.map()`
-    let mocks: WebdriverIO.Mock[]
+    let mocks: WebdriverIO.MultiRemoteMock
 
     before(async () => {
         mocks = await multiRemoteBrowser.mock('https://guinea-pig.webdriver.io/')
@@ -110,7 +108,7 @@ describe('Multi-remote Network Matchers', () => {
     })
 
     after(async () => {
-        await Promise.all(mocks.map((mock) => mock.restore()))
+        await Promise.all(mocks.instances.map((name) => mocks.getInstance(name).restore()))
     })
 
     it('should assert that every browser requested the page', async () => {

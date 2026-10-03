@@ -39,3 +39,10 @@ publicHoistPattern:
   - rgb2hex
   - split2
   - ws
+
+# WebdriverIO v10 is in alpha, with several releases a day: accept them before `minimumReleaseAge`
+minimumReleaseAgeExclude:
+  - '@wdio/*'
+  - create-wdio
+  - webdriver
+  - webdriverio
