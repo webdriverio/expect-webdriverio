@@ -11,7 +11,7 @@ allowBuilds:
 overrides:
   expect-webdriverio: 'link:.'
 
-# WebdriverIO v10 is in alpha, with several releases a day: accept them before `minimumReleaseAge`
+# WebdriverIO v10 has new releases often: accept them before `minimumReleaseAge`
 minimumReleaseAgeExclude:
   - '@wdio/*'
   - create-wdio
