@@ -1,3 +1,5 @@
+import { join } from 'node:path'
+import type { VisualServiceOptions } from '@wdio/visual-service'
 import { setDefaultOptions } from 'expect-webdriverio'
 
 export const config: WebdriverIO.MultiRemoteConfig = {
@@ -43,6 +45,9 @@ export const config: WebdriverIO.MultiRemoteConfig = {
                                 'https://guinea-pig.webdriver.io:443,*': { setting: 1 }
                             }
                         }
+                    },
+                    'wdio-ics:options': {
+                        logName: 'chrome-multi-remote'
                     }
                 }
             },
@@ -52,6 +57,9 @@ export const config: WebdriverIO.MultiRemoteConfig = {
                     browserVersion: 'stable', // Required locally to force downloading!
                     'moz:firefoxOptions': {
                         args: ['-headless', 'disable-gpu']
+                    },
+                    'wdio-ics:options': {
+                        logName: 'firefox-multi-remote'
                     }
                 }
             },
@@ -67,6 +75,23 @@ export const config: WebdriverIO.MultiRemoteConfig = {
     waitforTimeout: 10000,
     connectionRetryTimeout: 120000,
     connectionRetryCount: 3,
+    services: [
+        [
+            'visual',
+            {
+                baselineFolder: join(process.cwd(), 'visual-snapshot/baseline'),
+                formatImageName: '{tag}-{logName}-{width}x{height}',
+                screenshotPath: join(process.cwd(), 'visual-snapshot/.temp'),
+                savePerInstance: true,
+                autoSaveBaseline: true,
+                compareOptions: {
+                    // Block out the changing elements
+                    blockOutStatusBar: true,
+                    blockOutToolBar: true
+                }
+            } satisfies VisualServiceOptions
+        ]
+    ],
     framework: 'mocha',
     reporters: ['spec'],
     mochaOpts: {
