@@ -53,6 +53,17 @@ jobs:
         run: pnpm --filter ./${{ matrix.workspace }} test
         working-directory: playgrounds
 
+      - name: Upload Visual Snapshots
+        # The baseline, actual and diff images explain a visual snapshot failure
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-snapshots-linux-${{ matrix.workspace }}
+          path: playgrounds/${{ matrix.workspace }}/visual-snapshot/
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
   # 3. Run e2e tests hacving snapshots differently!
   playgrounds-e2e-tests-with-snapshots:
     needs: playgrounds-tsc-and-lint
@@ -76,6 +87,17 @@ jobs:
       - name: Run ${{ matrix.workspace }} E2e Tests (without snapshot tests)
         run: pnpm --filter ./${{ matrix.workspace }} test --exclude 'test/specs/*snapshot.test.ts'
         working-directory: playgrounds
+
+      - name: Upload Visual Snapshots
+        # The baseline, actual and diff images explain a visual snapshot failure
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-snapshots-linux-${{ matrix.workspace }}
+          path: playgrounds/${{ matrix.workspace }}/visual-snapshot/
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
 
   # 4. Run the multi-remote e2e tests on Windows: they have different inline snapshots in one
   #    file, and on Windows the stack frames differ (`\` paths, `file:///` URLs). See #2292.
@@ -101,3 +123,14 @@ jobs:
       - name: Run ${{ matrix.workspace }} E2e Tests
         run: pnpm --filter ./${{ matrix.workspace }} test
         working-directory: playgrounds
+
+      - name: Upload Visual Snapshots
+        # The baseline, actual and diff images explain a visual snapshot failure
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-snapshots-windows-${{ matrix.workspace }}
+          path: playgrounds/${{ matrix.workspace }}/visual-snapshot/
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
