@@ -103,10 +103,10 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.19.0",
     "@vitest/coverage-v8": "^5.0.2",
-    "@wdio/cli": "^10.0.0-alpha.150",
-    "@wdio/globals": "^10.0.0-alpha.150",
-    "@wdio/protocols": "^10.0.0-alpha.150",
-    "@wdio/types": "^10.0.0-alpha.150",
+    "@wdio/cli": "^10.0.0",
+    "@wdio/globals": "^10.0.0",
+    "@wdio/protocols": "^10.0.0",
+    "@wdio/types": "^10.0.0",
     "husky": "^9.1.7",
     "npm-run-all2": "^9.0.3",
     "oxlint": "^1.85.0",
@@ -115,12 +115,12 @@
     "strip-ansi": "^7.2.0",
     "typescript": "^7.0.2",
     "vitest": "^5.0.2",
-    "webdriver": "^10.0.0-alpha.150",
-    "webdriverio": "^10.0.0-alpha.150"
+    "webdriver": "^10.0.0",
+    "webdriverio": "^10.0.0"
   },
   "peerDependencies": {
-    "@wdio/types": "^10.0.0-0",
-    "webdriverio": "^10.0.0-0"
+    "@wdio/types": "^10.0.0",
+    "webdriverio": "^10.0.0"
   },
   "peerDependenciesMeta": {
     "webdriverio": {

@@ -16,10 +16,10 @@
     "ts-jest": "^29.4.12"
   },
   "peerDependencies": {
-    "@wdio/cli": "^10.0.0-0",
-    "@wdio/globals": "^10.0.0-0",
-    "@wdio/local-runner": "^10.0.0-0",
-    "@wdio/spec-reporter": "^10.0.0-0",
+    "@wdio/cli": "^10.0.0",
+    "@wdio/globals": "^10.0.0",
+    "@wdio/local-runner": "^10.0.0",
+    "@wdio/spec-reporter": "^10.0.0",
     "@wdio/visual-service": "*"
   }
 }
