@@ -23,7 +23,7 @@
     "@wdio/local-runner": "^10.0.0",
     "@wdio/runner": "^10.0.0",
     "@wdio/spec-reporter": "^10.0.0",
-    "@wdio/visual-service": "^10.2.0",
+    "@wdio/visual-service": "^10.2.1",
     "eslint": "^9.39.5",
     "expect-webdriverio": "link:..",
     "ts-node": "^10.9.2",

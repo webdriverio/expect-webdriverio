@@ -43,17 +43,26 @@ describe('Multi-remote Visual Snapshot Testing', () => {
         })
     })
 
-    // @wdio/visual-service 10.2.0 does not support multi-remote elements with WebdriverIO v10 (webdriverio/visual-testing#1238):
-    // - a multi-remote element has no `parent`, so the matcher does not find the browser
-    // - `addCommand()` on the multi-remote browser also adds the command to every instance, so the
-    //   multi-remote `checkElement` replaces the one of each instance and runs the element of one browser on all
-    describe.skip('Element Visual Snapshots', () => {
+    describe('Element Visual Snapshots', () => {
         it('should match the element visual snapshot of every browser', async () => {
-            await expect(multiRemoteBrowser.$('#purplebox')).toMatchElementSnapshot('purplebox')
+            await expect(multiRemoteBrowser.$('#purplebox')).toMatchElementSnapshot('purplebox', 0)
+        })
+
+        it('should match the element visual snapshot of every browser with a mismatch percentage', async () => {
+            await expect(multiRemoteBrowser.$('header h1')).toMatchElementSnapshot('mainHeading', 5)
         })
 
         it('should match the element visual snapshot of one browser', async () => {
-            await expect(multiRemoteBrowser.getInstance('chrome').$('#purplebox')).toMatchElementSnapshot('purplebox')
+            await expect(multiRemoteBrowser.getInstance('chrome').$('#purplebox')).toMatchElementSnapshot('purplebox', 0)
+        })
+
+        it('should fail for the element of the browser that differs only', async () => {
+            await multiRemoteBrowser.getInstance('firefox')!.execute(() => {
+                document.querySelector<HTMLElement>('#purplebox')!.style.backgroundColor = 'orange'
+            })
+
+            await expect(expect(multiRemoteBrowser.$('#purplebox')).toMatchElementSnapshot('purplebox', 0))
+                .rejects.toThrow(/^Instance "firefox":\nExpected image mismatch percentage to be at most 0%/)
         })
     })
 })
