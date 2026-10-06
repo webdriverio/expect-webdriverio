@@ -4,7 +4,7 @@ import { toBeRequestedWith } from '../../../src/matchers/mock/toBeRequestedWith.
 import type { local } from 'webdriver'
 import { jasmine } from '../../__mocks__/jasmine.js'
 import stripAnsi from 'strip-ansi'
-import { multiRemoteBrowserFactory, multiRemoteMockFactory } from '../../__mocks__/@wdio/globals.js'
+import { multiRemoteBrowserFactory, multiRemoteMockFactory, setWdioKind } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -29,6 +29,7 @@ class TestMock {
         return this._calls
     }
 }
+setWdioKind(TestMock.prototype, 'mock')
 
 function reduceHeaders(headers: local.NetworkHeader[]) {
     return Object.entries(headers).reduce((acc, [, value]: [string, local.NetworkHeader]) => {

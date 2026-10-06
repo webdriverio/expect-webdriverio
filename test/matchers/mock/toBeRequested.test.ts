@@ -4,7 +4,7 @@ import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
 import stripAnsi from 'strip-ansi'
-import { multiRemoteBrowserFactory } from '../../__mocks__/@wdio/globals.js'
+import { multiRemoteBrowserFactory, setWdioKind } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 class TestMock implements Mock {
@@ -25,6 +25,7 @@ class TestMock implements Mock {
     restore () { return Promise.resolve() }
     waitForResponse () { return Promise.resolve(true) }
 }
+setWdioKind(TestMock.prototype, 'mock')
 
 const mockMatch: Matches = {
     body: 'foo',

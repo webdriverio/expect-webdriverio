@@ -2,7 +2,7 @@ import { vi, test, describe, expect, afterEach } from 'vitest'
 
 import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, getMockInstanceNames, hasMultiRemoteFlag, hasSameInstanceNames, isBrowser, isMockArray, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
 import { multiRemote } from '../../src/api/index.js'
-import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
+import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory, setWdioKind } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -94,7 +94,7 @@ describe('multiRemoteUtils', () => {
     })
 
     describe(isMockArray, () => {
-        const mock = () => ({ calls: [] }) as unknown as WebdriverIO.Mock
+        const mock = () => setWdioKind({ calls: [] }, 'mock') as unknown as WebdriverIO.Mock
 
         test('is true for a non-empty array of mocks', () => {
             expect(isMockArray([mock(), mock()])).toBe(true)
@@ -106,7 +106,7 @@ describe('multiRemoteUtils', () => {
     })
 
     describe(getMockInstanceNames, () => {
-        const mocks = (length: number) => Array.from({ length }, () => ({ calls: [] }) as unknown as WebdriverIO.Mock)
+        const mocks = (length: number) => Array.from({ length }, () => setWdioKind({ calls: [] }, 'mock') as unknown as WebdriverIO.Mock)
 
         afterEach(() => {
             vi.unstubAllGlobals()

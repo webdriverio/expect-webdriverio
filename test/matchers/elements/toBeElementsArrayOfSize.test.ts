@@ -241,7 +241,7 @@ Received      : 2`
             expect(refetchElements).toHaveBeenNthCalledWith(3, elementArrayOf5)
         })
 
-        test('refresh once but does not update actual elements since they are not of type ElementArray or Element[]', async () => {
+        test('refresh once and update in place a not-awaited $$(), which is the element list itself in WebdriverIO v10', async () => {
             vi.mocked(browser.$$)
                 .mockResolvedValueOnce(elementArrayOf2)
                 .mockResolvedValue(elementArrayOf5)
@@ -249,7 +249,7 @@ Received      : 2`
             const result = await thisContext.toBeElementsArrayOfSize(nonAwaitedElements, 5, { wait: 500 })
 
             expect(result.pass).toBe(true)
-            expect(nonAwaitedElements).toBeInstanceOf(Promise)
+            expect(nonAwaitedElements).not.toBeInstanceOf(Promise)
             expect((await nonAwaitedElements).length).toBe(5)
             expect(await nonAwaitedElements).toBe(elements) // Original actual elements array but altered
             expect(browser.$$).toHaveBeenCalledTimes(2)

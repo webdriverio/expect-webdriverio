@@ -61,10 +61,14 @@ describe('globals mock', () => {
     })
 
     describe($$, () => {
-        it('should return a ChainablePromiseArray', async () => {
+        it('should return the element list, with `then` until it is awaited, like WebdriverIO v10', async () => {
             const els = $$('foo')
-            expect(els).toHaveProperty('then')
             expect(typeof els.then).toBe('function')
+            expect(els).not.toBeInstanceOf(Promise)
+            expect(Array.isArray(els)).toBe(true)
+
+            expect(await els).toBe(els)
+            expect(els.then).toBeUndefined()
         })
 
         it('should resolve to an element array', async () => {
@@ -82,8 +86,8 @@ describe('globals mock', () => {
 
         it('should allow calling getElements on the chainable promise', async () => {
             const chainable = $$('foo')
-            // 'getElements' should not be present in the chainable object if checked via `in`
-            expect('getElements' in chainable).toBe(false)
+            // Like WebdriverIO v10, which keeps `'getElements' in` true on a not-awaited `$$()`
+            expect('getElements' in chainable).toBe(true)
 
             // But it should be callable
             const els = await chainable.getElements()

@@ -272,6 +272,8 @@ describe('elementsUtil', () => {
         test.for([
             await $$('elements').getElements(),
             await $$('elements'),
+            // WebdriverIO v10: a not-awaited `$$()` is the element list itself, not a Promise
+            $$('elements'),
             elementArrayFactory('elements'),
             await chainableElementArrayFactory('elements', 3),
         ])('should return true for ElementArray: %s', async (elements) => {
@@ -285,7 +287,6 @@ describe('elementsUtil', () => {
         test.for([
             await $('elements'),
             await $('elements').getElement(),
-            $$('elements'),
             $$('elements').getElements(),
             elementFactory('element'),
             [elementFactory('element1'), elementFactory('element2')],
@@ -339,6 +340,7 @@ describe('elementsUtil', () => {
             await $$('elements'),
             elementArrayFactory('elements'),
             await chainableElementArrayFactory('elements', 3),
+            $$('elements'),
             [elementFactory('element1'), elementFactory('element2')],
             []
         ])('should return true for ElementArray or Element[] %s', async (elements) => {
@@ -350,7 +352,6 @@ describe('elementsUtil', () => {
         test.for([
             await $('elements'),
             await $('elements').getElement(),
-            $$('elements'),
             $$('elements').getElements(),
             undefined,
             null,
@@ -377,6 +378,7 @@ describe('elementsUtil', () => {
             await $$('elements'),
             elementArrayFactory('elements'),
             await chainableElementArrayFactory('elements', 3),
+            $$('elements'),
             [elementFactory('element1'), elementFactory('element2')],
             []
         ])('should return true for Element or ElementArray or Element[]: %s', async (element) => {
@@ -386,7 +388,6 @@ describe('elementsUtil', () => {
         })
 
         test.for([
-            $$('elements'),
             $$('elements').getElements(),
             $('element'),
             $('element').getElement(),
