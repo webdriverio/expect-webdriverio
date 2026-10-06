@@ -110,6 +110,15 @@ Received      : 1`
     })
 })
 
+describe('toBeRequested on a fake mock without the wdio.kind brand', () => {
+    test('fails with its normal message and does not throw', async () => {
+        const result = await toBeRequested({ calls: [] } as unknown as Mock, { wait: 0 })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toContain('Expect mock to be called')
+    })
+})
+
 describe('toBeRequested on multi-remote mocks', () => {
     const thisContext = { toBeRequested }
     const thisNotContext = { isNot: true, toBeRequested }
