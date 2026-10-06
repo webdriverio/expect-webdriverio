@@ -5,7 +5,7 @@ import type { Matches, Mock } from 'webdriverio'
 import { toBeRequestedTimes } from '../../../src/matchers/mock/toBeRequestedTimes.js'
 import stripAnsi from 'strip-ansi'
 import { waitUntil } from '../../../src/util/waitUntil.js'
-import { multiRemoteBrowserFactory, multiRemoteMockFactory } from '../../__mocks__/@wdio/globals.js'
+import { multiRemoteBrowserFactory, multiRemoteMockFactory, setWdioKind } from '../../__mocks__/@wdio/globals.js'
 
 class TestMock implements Mock {
     _calls: Matches[]
@@ -25,6 +25,7 @@ class TestMock implements Mock {
     restore () { return Promise.resolve() }
     waitForResponse () { return Promise.resolve(true) }
 }
+setWdioKind(TestMock.prototype, 'mock')
 
 const mockMatch: Matches = {
     body: 'foo',

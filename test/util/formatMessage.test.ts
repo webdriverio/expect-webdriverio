@@ -2,7 +2,7 @@ import { test, describe, beforeEach, expect, vi } from 'vitest'
 import { INVERTED_COLOR, printDiffOrStringify } from 'jest-matcher-utils'
 import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
 import stripAnsi from 'strip-ansi'
-import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
+import { $Factory, browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, elementFactory, setWdioKind } from '../__mocks__/@wdio/globals.js'
 import { jasmine } from '../__mocks__/jasmine.js'
 
 const multiRemoteBrowsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
@@ -824,5 +824,38 @@ Expect multi-remote<chrome, firefox>.$$(\`button\`) to be displayed
                 expect(message).toContain('Expected: "at least one result"')
             })
         })
+    })
+})
+
+describe('the subject of an unbranded copy of an element list', () => {
+    test('lists each selector of the copy', () => {
+        const copy = [...elementArrayFactory('a', 2)]
+
+        const message = stripAnsi(enhanceError(copy, 'b', 'c', { isNot: false }, 'have', 'text'))
+
+        expect(message).toContain('Expect [$$(`a`)[0],$$(`a`)[1]] to have text')
+    })
+})
+
+describe('the subject of a browsing context', () => {
+    test.each([undefined, 'window' as const])('names a browsing context like its browser (browserTargetType: %s)', (browserTargetType) => {
+        const message = (kind: 'browser' | 'browsing-context') => stripAnsi(enhanceError(
+            setWdioKind({ requestedCapabilities: { browserName: 'chrome' } }, kind),
+            'a', 'b', { isNot: false, browserTargetType }, 'have', 'title'
+        ))
+
+        expect(message('browsing-context')).toEqual(message('browser'))
+        expect(message('browser')).toContain(browserTargetType === 'window' ? "Expect chrome's window to have title" : 'Expect chrome to have title')
+    })
+})
+
+describe('the subject of an element whose parent is not loaded', () => {
+    test('stops at a not-awaited parent, as in a chained $(`form`).$(`input`) before await', () => {
+        const notAwaitedParent = $Factory(elementFactory('form')) as unknown as WebdriverIO.Element
+        const element = elementFactory('input', undefined, notAwaitedParent)
+
+        const message = stripAnsi(enhanceError(element, 'b', 'c', { isNot: false }, 'have', 'text'))
+
+        expect(message).toContain('Expect $(`input`) to have text')
     })
 })

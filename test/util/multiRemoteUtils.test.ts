@@ -1,8 +1,8 @@
 import { vi, test, describe, expect, afterEach } from 'vitest'
 
-import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, getMockInstanceNames, hasMultiRemoteFlag, hasSameInstanceNames, isBrowser, isMockArray, isMultiRemoteMatcher, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
+import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, getMockInstanceNames, hasMultiRemoteFlag, hasSameInstanceNames, isBrowser, isMock, isMockArray, isMultiRemoteBrowser, isMultiRemoteMatcher, isMultiRemoteMock, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
 import { multiRemote } from '../../src/api/index.js'
-import { browserFactory, createMultiRemoteElementArrayMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, multiRemoteBrowserFactory, multiRemoteMockFactory, setWdioKind } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -27,6 +27,43 @@ describe('multiRemoteUtils', () => {
 
         test.each([undefined, null, {}, 'browser', Object.create(null)])('does not recognize %s', (value) => {
             expect(isBrowser(value)).toBe(false)
+        })
+
+        test('is not a browser by its constructor name', () => {
+            expect(isBrowser(new (class Browser {})())).toBe(false)
+        })
+
+        test('a browsing context is a browser subject, until #2298 decides', () => {
+            expect(isBrowser(setWdioKind({}, 'browsing-context'))).toBe(true)
+        })
+    })
+
+    describe(isMultiRemoteBrowser, () => {
+        test('a multi-remote element is not a multi-remote browser', () => {
+            const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel')
+
+            expect(isMultiRemoteBrowser(element as unknown as WebdriverIO.MultiRemoteBrowser)).toBe(false)
+        })
+
+        test('is a multi-remote browser', () => {
+            expect(isMultiRemoteBrowser(multiRemoteBrowserFactory())).toBe(true)
+        })
+    })
+
+    describe(isMock, () => {
+        test('is not a mock without the brand', () => {
+            expect(isMock({ calls: [] })).toBe(false)
+        })
+
+        test('a multi-remote mock is not a mock', () => {
+            const multiRemoteMock = multiRemoteMockFactory({ chrome: setWdioKind({ calls: [] }, 'mock') as unknown as WebdriverIO.Mock })
+
+            expect(isMock(multiRemoteMock)).toBe(false)
+            expect(isMultiRemoteMock(multiRemoteMock)).toBe(true)
+        })
+
+        test('is not a multi-remote mock without the brand', () => {
+            expect(isMultiRemoteMock({ isMultiRemote: true, instances: ['chrome'], getInstance: () => ({ calls: [] }) })).toBe(false)
         })
     })
 
@@ -94,7 +131,7 @@ describe('multiRemoteUtils', () => {
     })
 
     describe(isMockArray, () => {
-        const mock = () => ({ calls: [] }) as unknown as WebdriverIO.Mock
+        const mock = () => setWdioKind({ calls: [] }, 'mock') as unknown as WebdriverIO.Mock
 
         test('is true for a non-empty array of mocks', () => {
             expect(isMockArray([mock(), mock()])).toBe(true)
@@ -106,7 +143,7 @@ describe('multiRemoteUtils', () => {
     })
 
     describe(getMockInstanceNames, () => {
-        const mocks = (length: number) => Array.from({ length }, () => ({ calls: [] }) as unknown as WebdriverIO.Mock)
+        const mocks = (length: number) => Array.from({ length }, () => setWdioKind({ calls: [] }, 'mock') as unknown as WebdriverIO.Mock)
 
         afterEach(() => {
             vi.unstubAllGlobals()

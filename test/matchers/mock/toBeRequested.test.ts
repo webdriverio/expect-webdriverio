@@ -4,7 +4,7 @@ import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
 import stripAnsi from 'strip-ansi'
-import { multiRemoteBrowserFactory } from '../../__mocks__/@wdio/globals.js'
+import { multiRemoteBrowserFactory, setWdioKind } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 class TestMock implements Mock {
@@ -25,6 +25,7 @@ class TestMock implements Mock {
     restore () { return Promise.resolve() }
     waitForResponse () { return Promise.resolve(true) }
 }
+setWdioKind(TestMock.prototype, 'mock')
 
 const mockMatch: Matches = {
     body: 'foo',
@@ -106,6 +107,15 @@ Expect mock not to be called
 Expected [not]: >= 1
 Received      : 1`
         )
+    })
+})
+
+describe('toBeRequested on a fake mock without the wdio.kind brand', () => {
+    test('fails with its normal message and does not throw', async () => {
+        const result = await toBeRequested({ calls: [] } as unknown as Mock, { wait: 0 })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toContain('Expect mock to be called')
     })
 })
 

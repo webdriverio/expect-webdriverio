@@ -4,7 +4,7 @@ import { $, $$ } from '@wdio/globals'
 import { toBeDisplayed } from '../../../src/matchers/element/toBeDisplayed.js'
 import { executeCommandBe, waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
-import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
+import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, multiRemoteBrowserFactory, notAwaitedMultiRemoteElementArrayMock, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 import { DEFAULT_OPTIONS } from '../../../src/constants.js'
 import { setDefaultOptions } from '../../../src/index.js'
@@ -705,6 +705,23 @@ Received: "not displayed"`)
 
     describe('given multi-remote elements', () => {
         const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+        test('passes at once for a not-awaited multi-remote $$(), which is a list and not a Promise in WebdriverIO v10', async () => {
+            const result = await thisContext.toBeDisplayed(notAwaitedMultiRemoteElementArrayMock(browsers(), 'sel', 2), { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test.each([
+            { name: 'multiRemoteBrowser.$()', subject: () => multiRemoteBrowserFactory(browsers()).$('sel') },
+            { name: 'multi-remote element .$()', subject: () => createMultiRemoteElementMock(browsers(), 'parent').$('sel') },
+            { name: 'multi-remote element .$$()', subject: () => createMultiRemoteElementMock(browsers(), 'parent').$$('sel') },
+        ])('passes at once for a not-awaited $name', async ({ subject }) => {
+            // TODO(#2255) use the WebdriverIO v10 `MultiRemoteElementArray` type in the matcher types
+            const result = await thisContext.toBeDisplayed(subject() as unknown as WebdriverIO.MultiRemoteElement, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
 
         test.each([
             { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\

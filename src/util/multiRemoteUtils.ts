@@ -1,5 +1,6 @@
 import { isAsymmetricMatcher } from '../utils.js'
 import type { WdioMultiRemoteElementArray, WdioMultiRemoteMock } from '../types.js'
+import { getWdioKind } from './wdioKind.js'
 
 export const isMultiRemoteValues = (value: unknown, existingInstanceNames?: string[]): value is MultiRemoteValues<unknown> =>  {
     if (value && typeof value === 'object' && !Array.isArray(value) && !isAsymmetricMatcher(value) && !(value instanceof RegExp) && Object.keys(value).length > 0) {
@@ -81,9 +82,9 @@ export const getGlobalMultiRemoteInstanceNames = (): string[] | undefined => {
     }
 }
 
-/** A `WebdriverIO.Mock`, recognized by its log of `calls` */
+/** A `WebdriverIO.Mock` of one browser */
 export const isMock = (obj: unknown): obj is WebdriverIO.Mock => {
-    return typeof obj === 'object' && obj !== null && Array.isArray((obj as { calls?: unknown }).calls)
+    return getWdioKind(obj) === 'mock' && !hasMultiRemoteFlag(obj)
 }
 
 /** The mocks returned by a multi-remote `mock()`, one per instance, or any other non-empty array of mocks */
@@ -93,9 +94,7 @@ export const isMockArray = (obj: unknown): obj is WebdriverIO.Mock[] => {
 
 /** A WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock`, which is not an array and has no `calls` */
 export const isMultiRemoteMock = (obj: unknown): obj is WdioMultiRemoteMock => {
-    return typeof obj === 'object' && obj !== null && !Array.isArray(obj) && hasMultiRemoteFlag(obj)
-        && Array.isArray((obj as { instances?: unknown }).instances)
-        && typeof (obj as { getInstance?: unknown }).getInstance === 'function'
+    return getWdioKind(obj) === 'mock' && hasMultiRemoteFlag(obj)
 }
 
 /** The instance names of the mocks taken from a `MultiRemoteMock`, which knows them, also after `select()` */
@@ -148,10 +147,13 @@ export const hasMultiRemoteFlag = (obj: unknown): boolean =>
     (obj as { isMultiRemote?: unknown } | null | undefined)?.isMultiRemote === true
 
 export const isMultiRemoteBrowser = (browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser): browser is WebdriverIO.MultiRemoteBrowser =>
-    hasMultiRemoteFlag(browser)
+    getWdioKind(browser) === 'browser' && hasMultiRemoteFlag(browser)
 
+/**
+ * A browser, multi-remote or not, or a browsing context (a tab, a window or a frame).
+ * TODO(#2298) decide if a browsing context is a browser subject
+ */
 export const isBrowser = (obj: unknown): obj is WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser => {
-    // The `@wdio/globals` proxies bind every function they return, `constructor` included, so its name is prefixed with `bound `
-    const name = (obj as { constructor?: { name?: string } } | undefined)?.constructor?.name?.replace(/^bound /, '')
-    return name === 'Browser' || !!name?.endsWith('MultiRemoteDriver')
+    const kind = getWdioKind(obj)
+    return kind === 'browser' || kind === 'browsing-context'
 }

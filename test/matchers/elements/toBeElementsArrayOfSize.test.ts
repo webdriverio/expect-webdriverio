@@ -2,7 +2,7 @@ import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 import { $$ } from '@wdio/globals'
 
 import { toBeElementsArrayOfSize } from '../../../src/matchers/elements/toBeElementsArrayOfSize.js'
-import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, elementArrayFactory, elementFactory, multiRemoteBrowserFactory } from '../../__mocks__/@wdio/globals.js'
+import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, elementFactory, multiRemoteBrowserFactory, notAwaitedMultiRemoteElementArrayMock } from '../../__mocks__/@wdio/globals.js'
 import { refetchElements } from '../../../src/util/refetchElements.js'
 import stripAnsi from 'strip-ansi'
 import { multiRemote } from '../../../src/api/index.js'
@@ -241,7 +241,7 @@ Received      : 2`
             expect(refetchElements).toHaveBeenNthCalledWith(3, elementArrayOf5)
         })
 
-        test('refresh once but does not update actual elements since they are not of type ElementArray or Element[]', async () => {
+        test('refresh once and update in place a not-awaited $$(), which is the element list itself in WebdriverIO v10', async () => {
             vi.mocked(browser.$$)
                 .mockResolvedValueOnce(elementArrayOf2)
                 .mockResolvedValue(elementArrayOf5)
@@ -249,7 +249,7 @@ Received      : 2`
             const result = await thisContext.toBeElementsArrayOfSize(nonAwaitedElements, 5, { wait: 500 })
 
             expect(result.pass).toBe(true)
-            expect(nonAwaitedElements).toBeInstanceOf(Promise)
+            expect(nonAwaitedElements).not.toBeInstanceOf(Promise)
             expect((await nonAwaitedElements).length).toBe(5)
             expect(await nonAwaitedElements).toBe(elements) // Original actual elements array but altered
             expect(browser.$$).toHaveBeenCalledTimes(2)
@@ -382,6 +382,27 @@ Received      : 2`
             const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 1, lte: 2 }, { wait: 0 })
 
             expect(result.pass).toBe(true)
+        })
+
+        test('passes for a not-awaited multi-remote $$(), which is a list and not a Promise in WebdriverIO v10', async () => {
+            const result = await thisContext.toBeElementsArrayOfSize(notAwaitedMultiRemoteElementArrayMock(browsers(), 'sel', 2), 2, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('counts a not-awaited $$() of a multi-remote element', async () => {
+            const element = createMultiRemoteElementMock(browsers(), 'parent')
+            // TODO(#2255) use the WebdriverIO v10 `MultiRemoteElementArray` type in the matcher types
+            const notAwaited = () => element.$$('sel') as unknown as WdioMultiRemoteElementArray
+
+            expect((await thisContext.toBeElementsArrayOfSize(notAwaited(), 2, { wait: 0 })).pass).toBe(true)
+            expect((await thisContext.toBeElementsArrayOfSize(notAwaited(), 0, { wait: 0 })).pass).toBe(false)
+        })
+
+        test('fails for a not-awaited multi-remote $$() with another size', async () => {
+            const result = await thisContext.toBeElementsArrayOfSize(notAwaitedMultiRemoteElementArrayMock(browsers(), 'sel', 2), 0, { wait: 0 })
+
+            expect(result.pass).toBe(false)
         })
 
         test('passes with a promise of multi-remote elements', async () => {

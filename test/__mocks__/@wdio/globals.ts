@@ -6,6 +6,14 @@ import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
 import { Size } from '../../../src/matchers/element/toHaveSize'
 import type { WdioMultiRemoteElementArray, WdioMultiRemoteMock } from '../../../src/types'
+import { WDIO_KIND, type WdioKind } from '../../../src/util/wdioKind'
+
+/** WebdriverIO v10 sets it on a not-awaited element (`$()`, `$$()[i]`) */
+const WDIO_CHAINABLE = Symbol.for('wdio.chainable')
+
+/** Brands a mock like WebdriverIO v10 `setWdioKind()`: a non-enumerable `Symbol.for('wdio.kind')`, so a copy has no brand */
+export const setWdioKind = <T extends object>(target: T, kind: WdioKind): T =>
+    Object.defineProperty(target, WDIO_KIND, { value: kind, configurable: true })
 
 const getElementMethods = () => ({
     isDisplayed: vi.spyOn({ isDisplayed: async () => true }, 'isDisplayed'),
@@ -44,7 +52,7 @@ export const elementWithoutSelectorFactory = (index?: number, parent: WebdriverI
         parent
     } satisfies Partial<WebdriverIO.Element>
 
-    const element = partialElement as unknown as WebdriverIO.Element
+    const element = setWdioKind(partialElement, 'element') as unknown as WebdriverIO.Element
     element.getElement = vi.fn().mockResolvedValue(element)
 
     // Note: an element found has element.elementId while a not found has element.error
@@ -63,7 +71,7 @@ export const elementFactory = (selector: string, index?: number, parent: Webdriv
         parent
     } satisfies Partial<WebdriverIO.Element>
 
-    const element = partialElement as unknown as WebdriverIO.Element
+    const element = setWdioKind(partialElement, 'element') as unknown as WebdriverIO.Element
     element.getElement = vi.fn().mockResolvedValue(element)
 
     // Note: an element found has element.elementId while a not found has element.error
@@ -82,7 +90,7 @@ export const notFoundElementFactory = (_selector: string, index?: number, parent
         parent
     } satisfies Partial<WebdriverIO.Element>
 
-    const element = partialElement as unknown as WebdriverIO.Element
+    const element = setWdioKind(partialElement, 'element') as unknown as WebdriverIO.Element
 
     // Note: an element found has element.elementId while a not found has element.error
     const elementId = `${_selector}${index ? '-' + index : ''}`
@@ -124,6 +132,10 @@ export const $Factory = (element: WebdriverIO.Element, findDelay = 0): Chainable
     // Ensure `'getElement' in chainableElement` at runtime does not exist while allowing to use `await chainableElement.getElement()`
     const runtimeChainableElement = new Proxy(chainablePromiseElement, {
         get(target, prop) {
+            // Like WebdriverIO v10: a not-awaited `$()` has the `element` brand (read below from the element) and is chainable
+            if (prop === WDIO_CHAINABLE) {
+                return true
+            }
             if (prop in element) {
                 const originalValue = element[prop as keyof WebdriverIO.Element]
 
@@ -141,6 +153,28 @@ export const $Factory = (element: WebdriverIO.Element, findDelay = 0): Chainable
         }
     })
     return runtimeChainableElement as unknown as ChainablePromiseElement
+}
+
+/**
+ * Mocks a not-awaited multi-remote `$()` like WebdriverIO v10: a Promise of the element, with the `element` brand and `wdio.chainable`
+ */
+const notAwaitedMultiRemoteElementMock = (element: Promise<WebdriverIO.MultiRemoteElement>): ChainablePromiseElement =>
+    new Proxy(element, {
+        get(target, prop) {
+            if (prop === WDIO_KIND) {
+                return 'element'
+            }
+            if (prop === WDIO_CHAINABLE) {
+                return true
+            }
+            const value = Reflect.get(target, prop)
+            return typeof value === 'function' ? value.bind(target) : value
+        }
+    }) as unknown as ChainablePromiseElement
+
+/** Like WebdriverIO v10: `for...of` and the spread of a list throw until the list is loaded */
+const notLoadedIterator = (): never => {
+    throw new Error('Cannot synchronously iterate over an element list that has not resolved yet. Use `for await (const el of $$(\'...\')) { ... }` instead.')
 }
 
 /**
@@ -179,7 +213,7 @@ export const $$ = vi.fn((selector: Parameters<WebdriverIO.Element['$$']>[0]) => 
 export function elementArrayFactory(selector: string, length: number = 2, parent: WebdriverIO.Browser | WebdriverIO.Element = browserFactory(length)): WebdriverIO.ElementArray {
     const elements: WebdriverIO.Element[] = Array(length).fill(null).map((_, index) => elementFactory(selector, index))
 
-    const elementArray = elements as unknown as WebdriverIO.ElementArray
+    const elementArray = setWdioKind(elements, 'element-array') as unknown as WebdriverIO.ElementArray
 
     elementArray.foundWith = '$$'
     elementArray.props = []
@@ -194,20 +228,42 @@ export function elementArrayFactory(selector: string, length: number = 2, parent
     return elementArray
 }
 
+/**
+ * Mocks a not-awaited `$$()` like WebdriverIO v10: it is the element list itself, not a Promise. Until it is awaited,
+ * it has `then`, `catch` and `finally`, and its `length` is a Promise. Awaiting it resolves to the same list, without `then`.
+ */
 export function chainableElementArrayFactory(selector: string, length: number, parent: WebdriverIO.Browser | WebdriverIO.Element = browserFactory()): ChainablePromiseArray {
     const elementArray = elementArrayFactory(selector, length, parent)
+    let resolved = false
+    let loading: Promise<WebdriverIO.ElementArray> | undefined
+    // Like the `load()` of WebdriverIO v10: the list is resolved later, not when the load starts
+    const settle = () => loading ??= new Promise((resolve) => setTimeout(() => {
+        resolved = true
+        resolve(runtimeChainablePromiseArray as unknown as WebdriverIO.ElementArray)
+    }))
 
-    // Wdio framework does return a Promise-wrapped element, so we need to mimic this behavior
-    const chainablePromiseArray = Promise.resolve(elementArray) as unknown as ChainablePromiseArray
-
-    // Ensure `'getElements' in chainableElements` is false while allowing to use `await chainableElement.getElements()`
-    const runtimeChainablePromiseArray = new Proxy(chainablePromiseArray, {
-        get(target, prop) {
+    const runtimeChainablePromiseArray: ChainablePromiseArray = new Proxy(elementArray, {
+        get(target, prop, receiver) {
+            if (!resolved) {
+                if (prop === 'then') {
+                    return (onFulfilled?: (value: unknown) => unknown, onRejected?: (reason: unknown) => unknown) => settle().then(onFulfilled, onRejected)
+                }
+                if (prop === 'catch' || prop === 'finally') {
+                    return (handler: () => unknown) => settle()[prop](handler)
+                }
+                if (prop === 'length') {
+                    return settle().then(() => target.length)
+                }
+                if (prop === Symbol.iterator) {
+                    return notLoadedIterator
+                }
+            }
             if (typeof prop === 'string' && /^\d+$/.test(prop)) {
                 // Simulate index out of bounds error when asking for an element outside the array length
                 const index = parseInt(prop, 10)
-                if (index >= length) {
-                    const error = new Error(`Index out of bounds! $$(${selector}) returned only ${length} elements.`)
+                // The current length: a refetch writes the new elements into the same list
+                if (index >= target.length) {
+                    const error = new Error(`Index out of bounds! $$(${selector}) returned only ${target.length} elements.`)
                     return new Proxy(Promise.resolve(), {
                         get(_target, prop) {
                             if (prop === 'then') {
@@ -218,12 +274,12 @@ export function chainableElementArrayFactory(selector: string, length: number, p
                     })
                 }
             }
-            if (elementArray && prop in elementArray) {
-                return elementArray[prop as keyof WebdriverIO.ElementArray]
-            }
-            const value = Reflect.get(target, prop)
-            return typeof value === 'function' ? value.bind(target) : value
+            return Reflect.get(target, prop, receiver)
         }
+    }) as unknown as ChainablePromiseArray
+    elementArray.getElements = vi.fn().mockImplementation(async () => {
+        await settle()
+        return runtimeChainablePromiseArray
     })
 
     elementArray.parent.$$ = vi.fn().mockImplementation((selector: string) =>   {
@@ -257,6 +313,8 @@ export class Browser {
         return fn()
     }
 }
+
+setWdioKind(Browser.prototype, 'browser')
 
 export const browserFactory = (elementArrayLength = 2): WebdriverIO.Browser => {
     return new Browser(elementArrayLength) as unknown as WebdriverIO.Browser
@@ -318,13 +376,13 @@ export class CustomMultiRemoteDriver {
          * Common browser methods
          */
         // Like `MultiRemote.elementWrapper()` at runtime: one `MultiRemoteElement` wrapping each instance's resolved element
-        vi.mocked(this.$).mockImplementation(async (selector: string) => {
+        vi.mocked(this.$).mockImplementation((selector: string) => notAwaitedMultiRemoteElementMock((async () => {
             const instanceElements = await Promise.all(availableBrowsers.map((browser) => browser.$(selector))) as unknown as WebdriverIO.Element[]
             return buildMultiRemoteElementWrapper(this.instances, instanceElements, selector)
-        })
+        })()))
 
         vi.mocked(this.$$).mockImplementation((selector: string) => {
-            return Promise.resolve(createMultiRemoteElementArrayMock(browsers, selector, 2, this as unknown as WebdriverIO.MultiRemoteBrowser))
+            return notAwaitedMultiRemoteElementArrayMock(browsers, selector, 2, this as unknown as WebdriverIO.MultiRemoteBrowser)
         })
 
         vi.mocked(this.setPermissions).mockImplementation((descriptor: object, state: string, oneRealm?: boolean) => {
@@ -340,6 +398,8 @@ export class CustomMultiRemoteDriver {
         })
     }
 }
+
+setWdioKind(CustomMultiRemoteDriver.prototype, 'browser')
 
 export const multiRemoteBrowserFactory = (
     browsers?: Record<string, WebdriverIO.Browser>
@@ -382,7 +442,7 @@ const buildMultiRemoteElementWrapper = (
                     $$: () => instanceElements[index].$$(subSelector),
                 } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
             })
-            return createMultiRemoteElementMock(childBrowsers, subSelector)
+            return notAwaitedMultiRemoteElementMock(Promise.resolve(createMultiRemoteElementMock(childBrowsers, subSelector)))
         }),
 
         // Delegate $$() across all browser instances
@@ -394,7 +454,7 @@ const buildMultiRemoteElementWrapper = (
                     $$: () => instanceElements[index].$$(subSelector),
                 } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
             })
-            return createMultiRemoteElementArrayMock(childBrowsers, subSelector, 2, multiRemoteElement)
+            return notAwaitedMultiRemoteElementArrayMock(childBrowsers, subSelector, 2, multiRemoteElement)
         }),
 
         // Common element method proxies returning Promise.all array of results
@@ -412,7 +472,7 @@ const buildMultiRemoteElementWrapper = (
         ),
     } satisfies Partial<WebdriverIO.MultiRemoteElement> & { isMultiRemote: true } as unknown as WebdriverIO.MultiRemoteElement
 
-    return multiRemoteElement
+    return setWdioKind(multiRemoteElement, 'element')
 }
 
 export function createMultiRemoteElementMock(
@@ -433,6 +493,50 @@ export function createMultiRemoteElementMock(
  * ElementArray-like properties (`.parent`, `.foundWith`, `.getElements()`, an async-aware `.forEach()`) and
  * `isMultiRemote: true`, matching `enhanceElementsArray()` at runtime.
  */
+/**
+ * Mocks a not-awaited multi-remote `$$()` like WebdriverIO v10: the `MultiRemoteElementArray` itself, not a Promise.
+ * Until it is awaited, it has `then`, `catch` and `finally`, and its `length` is a Promise. Awaiting it gives the same list.
+ */
+export function notAwaitedMultiRemoteElementArrayMock(
+    browsers: Record<string, WebdriverIO.Browser>,
+    selector: string,
+    length = 2,
+    parent: WebdriverIO.MultiRemoteBrowser | WebdriverIO.MultiRemoteElement = multiRemoteBrowserFactory(browsers)
+): WdioMultiRemoteElementArray {
+    const elementArray = createMultiRemoteElementArrayMock(browsers, selector, length, parent)
+    let resolved = false
+    let loading: Promise<WdioMultiRemoteElementArray> | undefined
+    // Like the `load()` of WebdriverIO v10: the list is resolved later, not when the load starts
+    const settle = () => loading ??= new Promise((resolve) => setTimeout(() => {
+        resolved = true
+        resolve(notAwaited)
+    }))
+    const notAwaited: WdioMultiRemoteElementArray = new Proxy(elementArray, {
+        get(target, prop, receiver) {
+            if (!resolved) {
+                if (prop === 'then') {
+                    return (onFulfilled?: (value: unknown) => unknown, onRejected?: (reason: unknown) => unknown) => settle().then(onFulfilled, onRejected)
+                }
+                if (prop === 'catch' || prop === 'finally') {
+                    return (handler: () => unknown) => settle()[prop](handler)
+                }
+                if (prop === 'length') {
+                    return settle().then(() => target.length)
+                }
+                if (prop === Symbol.iterator) {
+                    return notLoadedIterator
+                }
+            }
+            return Reflect.get(target, prop, receiver)
+        }
+    })
+    elementArray.getElements = vi.fn().mockImplementation(async () => {
+        await settle()
+        return notAwaited
+    })
+    return notAwaited
+}
+
 export function createMultiRemoteElementArrayMock(
     browsers: Record<string, WebdriverIO.Browser>,
     selector: string,
@@ -449,7 +553,7 @@ export function createMultiRemoteElementArrayMock(
         buildMultiRemoteElementWrapper(instances, instanceElementArrays.map((elements) => elements[index]), selector)
     )
 
-    const elementArray = wrapped as unknown as WdioMultiRemoteElementArray & { isMultiRemote: true }
+    const elementArray = setWdioKind(wrapped, 'element-array') as unknown as WdioMultiRemoteElementArray & { isMultiRemote: true }
     elementArray.isMultiRemote = true
     elementArray.selector = selector
     elementArray.foundWith = '$$'
@@ -467,8 +571,8 @@ export function createMultiRemoteElementArrayMock(
 }
 
 /** Mocks a WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock` with one mock per instance name */
-export const multiRemoteMockFactory = (mocks: Record<string, WebdriverIO.Mock>): WdioMultiRemoteMock => ({
-    isMultiRemote: true,
+export const multiRemoteMockFactory = (mocks: Record<string, WebdriverIO.Mock>): WdioMultiRemoteMock => setWdioKind({
+    isMultiRemote: true as const,
     instances: Object.keys(mocks),
     getInstance: (name: string) => mocks[name]
-})
+}, 'mock')

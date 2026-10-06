@@ -1,8 +1,8 @@
 import { vi, test, describe, expect, beforeEach } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 
-import { awaitElementOrArray, isArray, isArrayOfElement, isElement, isElementArray, isElementArrayLike, isElementOrArrayLike, isMultiRemoteElement, isMultiRemoteElementArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElementLike, isStrictlyElementArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
-import { elementFactory, elementArrayFactory, chainableElementArrayFactory, notFoundElementFactory, elementWithoutSelectorFactory, browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
+import { awaitElementOrArray, isArray, isArrayOfElement, isElement, isElementArrayLike, isElementOrArrayLike, isMultiRemoteElement, isMultiRemoteElementArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElementLike, isStrictlyElementArray, wrapExpectedWithArray } from '../../src/util/elementsUtil.js'
+import { elementFactory, elementArrayFactory, chainableElementArrayFactory, notFoundElementFactory, elementWithoutSelectorFactory, browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, multiRemoteBrowserFactory, setWdioKind } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -272,6 +272,8 @@ describe('elementsUtil', () => {
         test.for([
             await $$('elements').getElements(),
             await $$('elements'),
+            // WebdriverIO v10: a not-awaited `$$()` is the element list itself, not a Promise
+            $$('elements'),
             elementArrayFactory('elements'),
             await chainableElementArrayFactory('elements', 3),
         ])('should return true for ElementArray: %s', async (elements) => {
@@ -285,7 +287,6 @@ describe('elementsUtil', () => {
         test.for([
             await $('elements'),
             await $('elements').getElement(),
-            $$('elements'),
             $$('elements').getElements(),
             elementFactory('element'),
             [elementFactory('element1'), elementFactory('element2')],
@@ -339,6 +340,7 @@ describe('elementsUtil', () => {
             await $$('elements'),
             elementArrayFactory('elements'),
             await chainableElementArrayFactory('elements', 3),
+            $$('elements'),
             [elementFactory('element1'), elementFactory('element2')],
             []
         ])('should return true for ElementArray or Element[] %s', async (elements) => {
@@ -350,7 +352,6 @@ describe('elementsUtil', () => {
         test.for([
             await $('elements'),
             await $('elements').getElement(),
-            $$('elements'),
             $$('elements').getElements(),
             undefined,
             null,
@@ -377,6 +378,7 @@ describe('elementsUtil', () => {
             await $$('elements'),
             elementArrayFactory('elements'),
             await chainableElementArrayFactory('elements', 3),
+            $$('elements'),
             [elementFactory('element1'), elementFactory('element2')],
             []
         ])('should return true for Element or ElementArray or Element[]: %s', async (element) => {
@@ -386,7 +388,6 @@ describe('elementsUtil', () => {
         })
 
         test.for([
-            $$('elements'),
             $$('elements').getElements(),
             $('element'),
             $('element').getElement(),
@@ -444,7 +445,6 @@ describe('elementsUtil', () => {
             expect(isElementArrayLike(plainMultiRemoteElements())).toBe(false)
 
             const elementArray = multiRemoteElementArray()
-            expect(isElementArray(elementArray)).toBe(false)
             expect(isStrictlyElementArray(elementArray)).toBe(false)
             expect(isElementArrayLike(elementArray)).toBe(false)
         })
@@ -467,6 +467,55 @@ describe('elementsUtil', () => {
             elements.every = async () => false
 
             expect(isElementArrayLike(elements)).toBe(false)
+        })
+    })
+
+    describe('the WebdriverIO v10 wdio.kind brand', () => {
+        const browser = browserFactory()
+
+        test('is not an element without the brand', () => {
+            expect(isElement({ selector: 'a', parent: browser, getElement: () => {} })).toBe(false)
+        })
+
+        test('a chained $().$$() before await is a Promise with the element-array brand, not an element list', () => {
+            // Like WebdriverIO v10 `chainKind('$$')` on the Promise proxy of a chained query or of a custom `$$` command
+            const chainedList = setWdioKind(Promise.resolve(elementArrayFactory('b')), 'element-array')
+
+            expect(isStrictlyElementArray(chainedList)).toBe(false)
+        })
+
+        test('is not an element list without the brand', () => {
+            expect(isStrictlyElementArray(Object.assign([], { selector: 'a', parent: browser, foundWith: '$$', getElements: () => {} }))).toBe(false)
+        })
+
+        test('is not a multi-remote element without the brand', () => {
+            expect(isMultiRemoteElement({ isMultiRemote: true, selector: 'a', getElement: () => {} })).toBe(false)
+        })
+
+        test('is not a multi-remote element list without the brand', () => {
+            expect(isMultiRemoteElementArray(Object.assign([], { isMultiRemote: true, selector: 'a', parent: multiRemoteBrowserFactory(), foundWith: '$$' }))).toBe(false)
+        })
+
+        test('a browsing context is not an element', () => {
+            expect(isElement(setWdioKind({ parent: browser, getElement: () => {} }, 'browsing-context'))).toBe(false)
+        })
+
+        test('a not-awaited $() is not an element', () => {
+            expect(isElement($('a'))).toBe(false)
+        })
+
+        test('an unbranded copy of an element list is an Element[]', () => {
+            const copy = [...elementArrayFactory('a', 2)]
+
+            expect(isArrayOfElement(copy)).toBe(true)
+            expect(isStrictlyElementArray(copy)).toBe(false)
+        })
+
+        test('a multi-remote element without parent is a multi-remote element', () => {
+            const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'a')
+
+            expect('parent' in element).toBe(false)
+            expect(isMultiRemoteElement(element)).toBe(true)
         })
     })
 })

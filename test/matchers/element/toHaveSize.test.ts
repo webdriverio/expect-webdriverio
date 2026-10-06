@@ -170,7 +170,8 @@ Received: {"height": 32, "width": 32}`
         beforeEach(async () => {
             els = elements
 
-            awaitedEls = Array.isArray(els) ? els : await els
+            // WebdriverIO v10: a not-awaited `$$()` is also an array, so await it to read its length
+            awaitedEls = await els
             awaitedEls.forEach((el) => {
                 vi.mocked(el.getSize).mockResolvedValue(expectedValue as unknown as Size & number)
             })

@@ -60,6 +60,22 @@ Pass the `$$()`, `custom$$()` or `react$$()` result as is. A plain `MultiRemoteE
 
 Retries still re-fetch `$$()` elements from their scope. Only the best-effort re-fetch of a plain array from the global `multiRemoteBrowser`, and its warning, are removed.
 
+## WebdriverIO objects are identified by their brand
+
+The matchers find a browser, an element, an element list or a mock by the WebdriverIO v10 brand `Symbol.for('wdio.kind')`, not by its properties or its class name. The objects that WebdriverIO gives have the brand, so tests that pass them need no change.
+
+A hand-made fake without the brand, for example in your own unit tests, is not recognized: the matcher fails with its normal message, or throws for an array of fake mocks. Give the fake the brand of the object it replaces, `'browser'`, `'browsing-context'`, `'element'`, `'element-array'` or `'mock'`, and the methods that the matcher calls. A fake element also needs `getElement()`:
+
+```ts
+const element = Object.defineProperty({
+    selector: 'h1',
+    getText: async () => 'Welcome',
+    async getElement() { return this },
+}, Symbol.for('wdio.kind'), { value: 'element' })
+```
+
+A copy of an element list, such as `[...elements]`, is still an array of elements, because each element keeps its brand.
+
 ## Removed deprecated APIs
 
 v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#migration-guide-v5-to-v6) below.
