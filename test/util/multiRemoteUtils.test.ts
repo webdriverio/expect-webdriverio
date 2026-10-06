@@ -82,14 +82,13 @@ describe('multiRemoteUtils', () => {
 
     describe(hasMultiRemoteFlag, () => {
         test.each([
-            ['WebdriverIO v9 `isMultiremote`', { isMultiremote: true }],
             ['WebdriverIO v10 `isMultiRemote`', { isMultiRemote: true }],
             ['@wdio/globals proxy of a class', new Proxy(class Browser {}, { get: (_, prop) => prop === 'isMultiRemote' })],
         ])('is true for %s', (_, value) => {
             expect(hasMultiRemoteFlag(value)).toBe(true)
         })
 
-        test.each([undefined, null, 'isMultiRemote', {}, { isMultiRemote: false }, { isMultiremote: 'true' }])('is false for %s', (value) => {
+        test.each([undefined, null, 'isMultiRemote', {}, { isMultiRemote: false }, { isMultiremote: true }])('is false for %s', (value) => {
             expect(hasMultiRemoteFlag(value)).toBe(false)
         })
     })
@@ -158,7 +157,7 @@ describe('multiRemoteUtils', () => {
             const getInstance = last.getInstance.bind(last)
             last.getInstance = ((name: string) => {
                 if (name === 'firefox') {
-                    throw new Error('Multiremote object has no instance named "firefox"')
+                    throw new Error('Multi-remote object has no instance named "firefox"')
                 }
                 return getInstance(name)
             }) as WebdriverIO.MultiRemoteElement['getInstance']

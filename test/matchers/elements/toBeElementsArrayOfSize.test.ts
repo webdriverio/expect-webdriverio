@@ -361,7 +361,7 @@ Received      : 2`
             const getInstance = last.getInstance.bind(last)
             last.getInstance = ((name: string) => {
                 if (name === 'firefox') {
-                    throw new Error('Multiremote object has no instance named "firefox"')
+                    throw new Error('Multi-remote object has no instance named "firefox"')
                 }
                 return getInstance(name)
             }) as WebdriverIO.MultiRemoteElement['getInstance']

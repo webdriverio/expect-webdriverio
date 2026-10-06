@@ -402,7 +402,7 @@ describe('executeCommand', () => {
                 const originalGetInstance = firstElement.getInstance.bind(firstElement)
                 firstElement.getInstance = vi.fn((name: string) => {
                     if (name === 'firefox') {
-                        throw new Error('Multiremote object has no instance named "firefox"')
+                        throw new Error('Multi-remote object has no instance named "firefox"')
                     }
                     return originalGetInstance(name)
                 })
@@ -435,7 +435,7 @@ describe('executeCommand', () => {
             const getInstance = last.getInstance.bind(last)
             last.getInstance = ((name: string) => {
                 if (name === 'firefox') {
-                    throw new Error('Multiremote object has no instance named "firefox"')
+                    throw new Error('Multi-remote object has no instance named "firefox"')
                 }
                 return getInstance(name)
             }) as WebdriverIO.MultiRemoteElement['getInstance']

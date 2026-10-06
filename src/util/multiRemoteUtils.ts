@@ -62,7 +62,7 @@ export const getElementsPerInstance = (elements: WdioMultiRemoteElementArray | r
 
 const getInstanceOrUndefined = (element: WebdriverIO.MultiRemoteElement, name: string): WebdriverIO.Element | undefined => {
     try {
-        return element.getInstance(name) || undefined
+        return element.getInstance(name)
     } catch {
         return undefined
     }
@@ -142,16 +142,10 @@ export const getMockInstanceNames = (mocks: WebdriverIO.Mock[]): { names: string
 }
 
 /**
- * WebdriverIO v10 renamed `isMultiremote` to `isMultiRemote`: read both, so one release supports v9 and v10.
- * Reads the properties without `in`: the `@wdio/globals` browser is a Proxy of a class with only a `get` trap.
+ * Reads the property without `in`: the `@wdio/globals` browser is a Proxy of a class with only a `get` trap.
  */
-export const hasMultiRemoteFlag = (obj: unknown): boolean => {
-    if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
-        return false
-    }
-    const { isMultiRemote, isMultiremote } = obj as { isMultiRemote?: unknown, isMultiremote?: unknown }
-    return isMultiRemote === true || isMultiremote === true
-}
+export const hasMultiRemoteFlag = (obj: unknown): boolean =>
+    (obj as { isMultiRemote?: unknown } | null | undefined)?.isMultiRemote === true
 
 export const isMultiRemoteBrowser = (browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser): browser is WebdriverIO.MultiRemoteBrowser =>
     hasMultiRemoteFlag(browser)
