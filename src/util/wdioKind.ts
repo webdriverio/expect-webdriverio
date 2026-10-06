@@ -1,6 +1,5 @@
-// `Symbol.for()` gives the symbols of `@wdio/utils` without a dependency on it, also with two copies of `webdriverio`
+// `Symbol.for()` gives the symbol of `@wdio/utils` without a dependency on it, also with two copies of `webdriverio`
 export const WDIO_KIND = Symbol.for('wdio.kind')
-export const WDIO_CHAINABLE = Symbol.for('wdio.chainable')
 
 export type WdioKind = 'browser' | 'element' | 'element-array' | 'mock' | 'browsing-context'
 
@@ -18,6 +17,9 @@ export const getWdioKind = (value: unknown): WdioKind | undefined => {
     return WDIO_KINDS.includes(kind) ? kind as WdioKind : undefined
 }
 
-/** A not-awaited `$()`: the brand says `element`, but it is a Promise of the element */
-export const isChainable = (value: unknown): boolean =>
-    (value as { [WDIO_CHAINABLE]?: unknown } | null | undefined)?.[WDIO_CHAINABLE] === true
+/**
+ * The brand of a loaded value. A not-awaited `$()` (a Promise) and a not-awaited `$$()` (a list with `then`) have the
+ * brand too, but their `then` shows that they are not loaded yet.
+ */
+export const getLoadedWdioKind = (value: unknown): WdioKind | undefined =>
+    typeof (value as { then?: unknown } | null | undefined)?.then === 'function' ? undefined : getWdioKind(value)

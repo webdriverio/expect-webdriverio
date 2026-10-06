@@ -6,7 +6,10 @@ import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
 import { Size } from '../../../src/matchers/element/toHaveSize'
 import type { WdioMultiRemoteElementArray, WdioMultiRemoteMock } from '../../../src/types'
-import { WDIO_CHAINABLE, WDIO_KIND, type WdioKind } from '../../../src/util/wdioKind'
+import { WDIO_KIND, type WdioKind } from '../../../src/util/wdioKind'
+
+/** WebdriverIO v10 sets it on a not-awaited element (`$()`, `$$()[i]`) */
+const WDIO_CHAINABLE = Symbol.for('wdio.chainable')
 
 /** Brands a mock like WebdriverIO v10 `setWdioKind()`: a non-enumerable `Symbol.for('wdio.kind')`, so a copy has no brand */
 export const setWdioKind = <T extends object>(target: T, kind: WdioKind): T =>

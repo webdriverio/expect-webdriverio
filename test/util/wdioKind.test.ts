@@ -1,6 +1,9 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
-import { getWdioKind, isChainable } from '../../src/util/wdioKind.js'
+import { getLoadedWdioKind, getWdioKind } from '../../src/util/wdioKind.js'
+import { $Factory, chainableElementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
+
+vi.mock('@wdio/globals')
 
 describe(getWdioKind, () => {
     test.each(['browser', 'element', 'element-array', 'mock', 'browsing-context'])('returns the %s kind', (kind) => {
@@ -33,16 +36,22 @@ describe(getWdioKind, () => {
     })
 })
 
-describe(isChainable, () => {
-    test('is true for a not-awaited `$()`', () => {
-        expect(isChainable({ [Symbol.for('wdio.chainable')]: true })).toBe(true)
+describe(getLoadedWdioKind, () => {
+    const withBrand = <T extends object>(value: T, kind: string): T => Object.defineProperty(value, Symbol.for('wdio.kind'), { value: kind })
+
+    test.each([
+        ['an awaited `$()`', withBrand({}, 'element'), 'element'],
+        ['an awaited `$$()`', withBrand([], 'element-array'), 'element-array'],
+        ['a browser', withBrand({}, 'browser'), 'browser'],
+    ])('returns the kind of %s', (_, value, kind) => {
+        expect(getLoadedWdioKind(value)).toBe(kind)
     })
 
     test.each([
-        ['an object without the flag', {}],
-        ['null', null],
-        ['a flag that is not `true`', { [Symbol.for('wdio.chainable')]: 'true' }],
-    ])('is false for %s', (_, value) => {
-        expect(isChainable(value)).toBe(false)
+        ['a not-awaited `$()`, a Promise of the element', $Factory(elementFactory('a'))],
+        ['a not-awaited `$$()`, a list with `then`', chainableElementArrayFactory('a', 1)],
+        ['a value without brand', {}],
+    ])('returns undefined for %s', (_, value) => {
+        expect(getLoadedWdioKind(value)).toBeUndefined()
     })
 })

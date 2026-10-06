@@ -2,7 +2,7 @@ import { test, describe, beforeEach, expect, vi } from 'vitest'
 import { INVERTED_COLOR, printDiffOrStringify } from 'jest-matcher-utils'
 import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
 import stripAnsi from 'strip-ansi'
-import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, elementFactory, setWdioKind } from '../__mocks__/@wdio/globals.js'
+import { $Factory, browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, elementFactory, setWdioKind } from '../__mocks__/@wdio/globals.js'
 import { jasmine } from '../__mocks__/jasmine.js'
 
 const multiRemoteBrowsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
@@ -846,5 +846,16 @@ describe('the subject of a browsing context', () => {
 
         expect(message('browsing-context')).toEqual(message('browser'))
         expect(message('browser')).toContain(browserTargetType === 'window' ? "Expect chrome's window to have title" : 'Expect chrome to have title')
+    })
+})
+
+describe('the subject of an element whose parent is not loaded', () => {
+    test('stops at a not-awaited parent, as in a chained $(`form`).$(`input`) before await', () => {
+        const notAwaitedParent = $Factory(elementFactory('form')) as unknown as WebdriverIO.Element
+        const element = elementFactory('input', undefined, notAwaitedParent)
+
+        const message = stripAnsi(enhanceError(element, 'b', 'c', { isNot: false }, 'have', 'text'))
+
+        expect(message).toContain('Expect $(`input`) to have text')
     })
 })

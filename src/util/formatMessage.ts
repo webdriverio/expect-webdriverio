@@ -3,7 +3,7 @@ import { equals } from '../jasmineUtils.js'
 import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements } from '../types.js'
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
-import { getWdioKind, isChainable } from './wdioKind.js'
+import { getLoadedWdioKind } from './wdioKind.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
 import { isBrowser, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
@@ -19,8 +19,8 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray |
 }
 
 const isAwaitedElementOrList = (value: unknown): value is WebdriverIO.Element | WebdriverIO.ElementArray => {
-    const kind = getWdioKind(value)
-    return (kind === 'element' && !isChainable(value)) || kind === 'element-array'
+    const kind = getLoadedWdioKind(value)
+    return kind === 'element' || kind === 'element-array'
 }
 
 export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiRemoteElements): string => {

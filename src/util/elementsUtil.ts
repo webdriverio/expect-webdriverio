@@ -1,6 +1,6 @@
 import { isArrayContainingMatcher } from '../utils.js'
 import { hasMultiRemoteFlag } from './multiRemoteUtils.js'
-import { getWdioKind, isChainable } from './wdioKind.js'
+import { getLoadedWdioKind, getWdioKind } from './wdioKind.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../types.js'
 
 /**
@@ -46,11 +46,10 @@ export const isStrictlyElementArray = (obj: unknown): obj is WebdriverIO.Element
 
 /**
  * A loaded element: an awaited `$()`, an item of an awaited `$$()`, or the result of `getElement()`.
- * A not-awaited `$()` has the same brand, but it is a Promise of the element (`wdio.chainable`).
+ * A not-awaited `$()` has the same brand, but it is a Promise of the element.
  */
 export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
-    return getWdioKind(obj) === 'element'
-    && !isChainable(obj)
+    return getLoadedWdioKind(obj) === 'element'
     && !isMultiRemote(obj)
 }
 
@@ -174,7 +173,7 @@ const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | Wd
  * An awaited multi-remote `$()`, or an item of a multi-remote `$$()`. It has no `parent`.
  */
 export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemoteElement => {
-    return getWdioKind(obj) === 'element' && !isChainable(obj) && isMultiRemote(obj)
+    return getLoadedWdioKind(obj) === 'element' && isMultiRemote(obj)
 }
 
 /**
