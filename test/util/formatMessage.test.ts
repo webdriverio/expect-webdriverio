@@ -826,3 +826,13 @@ Expect multi-remote<chrome, firefox>.$$(\`button\`) to be displayed
         })
     })
 })
+
+describe('the subject of an unbranded copy of an element list', () => {
+    test('lists each selector of the copy', () => {
+        const copy = [...elementArrayFactory('a', 2)]
+
+        const message = stripAnsi(enhanceError(copy, 'b', 'c', { isNot: false }, 'have', 'text'))
+
+        expect(message).toContain('Expect [$$(`a`)[0],$$(`a`)[1]] to have text')
+    })
+})

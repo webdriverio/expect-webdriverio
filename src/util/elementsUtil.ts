@@ -1,5 +1,6 @@
 import { isArrayContainingMatcher } from '../utils.js'
 import { hasMultiRemoteFlag } from './multiRemoteUtils.js'
+import { getWdioKind, isChainable } from './wdioKind.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../types.js'
 
 /**
@@ -33,32 +34,22 @@ export const isArray = (obj: unknown): obj is unknown[] | WebdriverIO.ElementArr
     return Array.isArray(obj)
 }
 
-const isSelector = (obj: unknown): obj is WebdriverIO.ElementArray | WebdriverIO.Element => {
-    // WARNING: selector can be undefined, so it is unreliable to check for it.
-    return !!obj
-    && typeof obj === 'object'
-    && 'parent' in obj
-}
-
-export const isElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
-    return isSelector(obj)
-    && 'foundWith' in obj
-    && !isMultiRemote(obj) // Ensure multi-remote elements are excluded
-}
-
+/**
+ * A `$$()` list, awaited or not: in WebdriverIO v10, a not-awaited `$$()` is the list itself, not a Promise.
+ */
 export const isStrictlyElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
-    return isElementArray(obj)
+    return getWdioKind(obj) === 'element-array'
     && Array.isArray(obj)
-    && 'getElements' in obj // specific to ElementArray
-    && !isMultiRemote(obj) // Ensure multi-remote elements are excluded
+    && !isMultiRemote(obj)
 }
 
+/**
+ * An awaited `$()`: a not-awaited `$()` has the same brand, but it is a Promise of the element.
+ */
 export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
-    // Note: elementId is only for found element
-    return isSelector(obj)
-    && !Array.isArray(obj)
-    && 'getElement' in obj // specific to Element
-    && !isMultiRemote(obj) // Ensure multi-remote elements are excluded
+    return getWdioKind(obj) === 'element'
+    && !isChainable(obj)
+    && !isMultiRemote(obj)
 }
 
 /**
@@ -142,12 +133,12 @@ export const awaitElementOrArray = async(
     }
 
     // for `await $()` or `WebdriverIO.Element`
-    if ('getElement' in awaitedElements) {
+    if (isElement(awaitedElements)) {
         const element = await (awaitedElements as WebdriverIO.Element).getElement()
         return { selector: element, element }
     }
-    // for `await $$()` or `WebdriverIO.ElementArray` but not `WebdriverIO.Element[]`
-    if ('getElements' in awaitedElements) {
+    // for `$$()`, awaited or not, or `WebdriverIO.ElementArray` but not `WebdriverIO.Element[]`
+    if (isStrictlyElementArray(awaitedElements)) {
         const elements = await awaitedElements.getElements()
         return { selector: elements, elements, isEmptyElements: elements.length === 0 }
     }
@@ -169,8 +160,8 @@ export const awaitElementArray = async(received: WdioElementsMaybePromise | unde
         return { other: awaitedElements as any }
     }
 
-    // for `await $$()` or `WebdriverIO.ElementArray` but not `WebdriverIO.Element[]`
-    if ('getElements' in awaitedElements) {
+    // for `$$()`, awaited or not, or `WebdriverIO.ElementArray` but not `WebdriverIO.Element[]`
+    if (isStrictlyElementArray(awaitedElements)) {
         return { elements: await awaitedElements.getElements() }
     }
 
@@ -182,17 +173,18 @@ const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | Wd
     return hasMultiRemoteFlag(obj)
 }
 
+/**
+ * An awaited multi-remote `$()`, or an item of a multi-remote `$$()`. It has no `parent`.
+ */
 export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemoteElement => {
-    // `selector` distinguishes a MultiRemoteElement from a MultiRemoteBrowser (both share the multi-remote flag and `getInstance`,
-    // only the element has a `selector`); the array check excludes WdioMultiRemoteElementArray.
-    return isMultiRemote(obj) && !Array.isArray(obj) && 'selector' in obj
+    return getWdioKind(obj) === 'element' && !isChainable(obj) && isMultiRemote(obj)
 }
 
 /**
  * The `MultiRemoteElementArray` of a multi-remote `$$()`, which knows its parent, its selector and its instances.
  */
 export const isMultiRemoteElementArray = (obj: unknown): obj is WdioMultiRemoteElementArray => {
-    return hasMultiRemoteFlag(obj) && 'parent' in (obj as object) && 'foundWith' in (obj as object) && 'selector' in (obj as object)
+    return getWdioKind(obj) === 'element-array' && isMultiRemote(obj)
 }
 
 /**

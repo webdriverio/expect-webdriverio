@@ -3,6 +3,7 @@ import { equals } from '../jasmineUtils.js'
 import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements } from '../types.js'
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
+import { getWdioKind, isChainable } from './wdioKind.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
 import { isBrowser, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
@@ -15,6 +16,11 @@ export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray |
         result += ', <props>'
     }
     return result
+}
+
+const isAwaitedElementOrList = (value: unknown): value is WebdriverIO.Element | WebdriverIO.ElementArray => {
+    const kind = getWdioKind(value)
+    return (kind === 'element' && !isChainable(value)) || kind === 'element-array'
 }
 
 export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiRemoteElements): string => {
@@ -46,7 +52,8 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiR
         parent = el
     }
 
-    while (!!parent && typeof parent === 'object' && 'selector' in parent) {
+    // Up to the browser or the browsing context. A parent that is a not-awaited `$()` has no selector to show yet.
+    while (isAwaitedElementOrList(parent)) {
         const selector = getSelector(parent)
         const index = isDefined(parent.index) ? `[${parent.index}]` : ''
         selectors.push(`${isDefined(parent.index) ? '$' : ''}$(\`${selector}\`)${index}`)
