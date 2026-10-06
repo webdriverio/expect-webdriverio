@@ -409,6 +409,12 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(h1).toBeElementsArrayOfSize(expect.multiRemote({ chrome: 2, firefox: { gte: 1 } }))
                 })
 
+                it('should count the elements of a not-awaited $$() at once, without a retry', async () => {
+                    await expect(multiRemoteBrowser.$$('h1')).toBeElementsArrayOfSize(2, { wait: 0 })
+                    await expect(expect(multiRemoteBrowser.$$('h1')).toBeElementsArrayOfSize(0, { wait: 0 })).rejects.toThrow(/to be elements array of size/)
+                    await expect(multiRemoteBrowser.$$('h1')).toBeDisplayed({ wait: 0 })
+                })
+
                 it('should count the elements of each browser when browsers find a different number of elements', async () => {
                     await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
                     const h1 = multiRemoteBrowser.$$('h1')

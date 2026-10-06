@@ -21,3 +21,10 @@ export const getWdioKind = (value: unknown): WdioKind | undefined => {
 /** A not-awaited `$()`: the brand says `element`, but it is a Promise of the element */
 export const isChainable = (value: unknown): boolean =>
     (value as { [WDIO_CHAINABLE]?: unknown } | null | undefined)?.[WDIO_CHAINABLE] === true
+
+/**
+ * A not-awaited `$$()`: in WebdriverIO v10 it is the element list itself, not a Promise. Until it is loaded, it has
+ * `then` and its `length` is a Promise, so await it before reading its elements. Awaiting it gives the same list.
+ */
+export const isNotAwaitedElementList = (value: unknown): boolean =>
+    getWdioKind(value) === 'element-array' && typeof (value as { then?: unknown }).then === 'function'

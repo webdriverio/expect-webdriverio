@@ -210,10 +210,12 @@ export function elementArrayFactory(selector: string, length: number = 2, parent
 export function chainableElementArrayFactory(selector: string, length: number, parent: WebdriverIO.Browser | WebdriverIO.Element = browserFactory()): ChainablePromiseArray {
     const elementArray = elementArrayFactory(selector, length, parent)
     let resolved = false
-    const settle = () => {
+    let loading: Promise<WebdriverIO.ElementArray> | undefined
+    // Like the `load()` of WebdriverIO v10: the list is resolved later, not when the load starts
+    const settle = () => loading ??= new Promise((resolve) => setTimeout(() => {
         resolved = true
-        return Promise.resolve(runtimeChainablePromiseArray as unknown as WebdriverIO.ElementArray)
-    }
+        resolve(runtimeChainablePromiseArray as unknown as WebdriverIO.ElementArray)
+    }))
 
     const runtimeChainablePromiseArray: ChainablePromiseArray = new Proxy(elementArray, {
         get(target, prop, receiver) {
@@ -352,7 +354,7 @@ export class CustomMultiRemoteDriver {
         })
 
         vi.mocked(this.$$).mockImplementation((selector: string) => {
-            return Promise.resolve(createMultiRemoteElementArrayMock(browsers, selector, 2, this as unknown as WebdriverIO.MultiRemoteBrowser))
+            return notAwaitedMultiRemoteElementArrayMock(browsers, selector, 2, this as unknown as WebdriverIO.MultiRemoteBrowser)
         })
 
         vi.mocked(this.setPermissions).mockImplementation((descriptor: object, state: string, oneRealm?: boolean) => {
@@ -463,6 +465,47 @@ export function createMultiRemoteElementMock(
  * ElementArray-like properties (`.parent`, `.foundWith`, `.getElements()`, an async-aware `.forEach()`) and
  * `isMultiRemote: true`, matching `enhanceElementsArray()` at runtime.
  */
+/**
+ * Mocks a not-awaited multi-remote `$$()` like WebdriverIO v10: the `MultiRemoteElementArray` itself, not a Promise.
+ * Until it is awaited, it has `then`, `catch` and `finally`, and its `length` is a Promise. Awaiting it gives the same list.
+ */
+export function notAwaitedMultiRemoteElementArrayMock(
+    browsers: Record<string, WebdriverIO.Browser>,
+    selector: string,
+    length = 2,
+    parent: WebdriverIO.MultiRemoteBrowser | WebdriverIO.MultiRemoteElement = multiRemoteBrowserFactory(browsers)
+): WdioMultiRemoteElementArray {
+    const elementArray = createMultiRemoteElementArrayMock(browsers, selector, length, parent)
+    let resolved = false
+    let loading: Promise<WdioMultiRemoteElementArray> | undefined
+    // Like the `load()` of WebdriverIO v10: the list is resolved later, not when the load starts
+    const settle = () => loading ??= new Promise((resolve) => setTimeout(() => {
+        resolved = true
+        resolve(notAwaited)
+    }))
+    const notAwaited: WdioMultiRemoteElementArray = new Proxy(elementArray, {
+        get(target, prop, receiver) {
+            if (!resolved) {
+                if (prop === 'then') {
+                    return (onFulfilled?: (value: unknown) => unknown, onRejected?: (reason: unknown) => unknown) => settle().then(onFulfilled, onRejected)
+                }
+                if (prop === 'catch' || prop === 'finally') {
+                    return (handler: () => unknown) => settle()[prop](handler)
+                }
+                if (prop === 'length') {
+                    return settle().then(() => target.length)
+                }
+            }
+            return Reflect.get(target, prop, receiver)
+        }
+    })
+    elementArray.getElements = vi.fn().mockImplementation(async () => {
+        await settle()
+        return notAwaited
+    })
+    return notAwaited
+}
+
 export function createMultiRemoteElementArrayMock(
     browsers: Record<string, WebdriverIO.Browser>,
     selector: string,

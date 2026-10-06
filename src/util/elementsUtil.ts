@@ -1,6 +1,6 @@
 import { isArrayContainingMatcher } from '../utils.js'
 import { hasMultiRemoteFlag } from './multiRemoteUtils.js'
-import { getWdioKind, isChainable } from './wdioKind.js'
+import { getWdioKind, isChainable, isNotAwaitedElementList } from './wdioKind.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../types.js'
 
 /**
@@ -116,9 +116,9 @@ export const awaitElementOrArray = async(
 
     let awaitedElements = received
 
-    // For non-awaited `$()` or `$$()`, so ChainablePromiseElement | ChainablePromiseArray.
-    // Extend also to other valid non-awaited case like `$().getElement()`, `$$().getElements()` or `$$().filter()`.
-    if (awaitedElements instanceof Promise) {
+    // A not-awaited `$()`, and the Promises of `$().getElement()`, `$$().getElements()` or `$$().filter()`.
+    // A not-awaited `$$()`, multi-remote or not, is a list that is not loaded yet: its `length` is a Promise until then.
+    if (awaitedElements instanceof Promise || isNotAwaitedElementList(awaitedElements)) {
         awaitedElements = await awaitedElements
     }
 
@@ -149,9 +149,9 @@ export const awaitElementOrArray = async(
 
 export const awaitElementArray = async(received: WdioElementsMaybePromise | undefined): Promise<{ elements?: WdioElements, other?: unknown }> => {
     let awaitedElements = received
-    // For non-awaited `$$()`, so ChainablePromiseElement | ChainablePromiseArray.
+    // A not-awaited `$$()`, multi-remote or not, is a list that is not loaded yet: its `length` is a Promise until then.
     // At some extend it also process non-awaited `$$().getElements()` or `$$().filter()` (e.g. Promise<WebdriverIO.Element[]>), but typings does not allow it
-    if (awaitedElements instanceof Promise) {
+    if (awaitedElements instanceof Promise || isNotAwaitedElementList(awaitedElements)) {
         awaitedElements = await awaitedElements
     }
 

@@ -2,7 +2,7 @@ import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 import { $$ } from '@wdio/globals'
 
 import { toBeElementsArrayOfSize } from '../../../src/matchers/elements/toBeElementsArrayOfSize.js'
-import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, elementArrayFactory, elementFactory, multiRemoteBrowserFactory } from '../../__mocks__/@wdio/globals.js'
+import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, elementArrayFactory, elementFactory, multiRemoteBrowserFactory, notAwaitedMultiRemoteElementArrayMock } from '../../__mocks__/@wdio/globals.js'
 import { refetchElements } from '../../../src/util/refetchElements.js'
 import stripAnsi from 'strip-ansi'
 import { multiRemote } from '../../../src/api/index.js'
@@ -382,6 +382,18 @@ Received      : 2`
             const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 1, lte: 2 }, { wait: 0 })
 
             expect(result.pass).toBe(true)
+        })
+
+        test('passes for a not-awaited multi-remote $$(), which is a list and not a Promise in WebdriverIO v10', async () => {
+            const result = await thisContext.toBeElementsArrayOfSize(notAwaitedMultiRemoteElementArrayMock(browsers(), 'sel', 2), 2, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('fails for a not-awaited multi-remote $$() with another size', async () => {
+            const result = await thisContext.toBeElementsArrayOfSize(notAwaitedMultiRemoteElementArrayMock(browsers(), 'sel', 2), 0, { wait: 0 })
+
+            expect(result.pass).toBe(false)
         })
 
         test('passes with a promise of multi-remote elements', async () => {
