@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { getWdioKind, isChainable, isNotAwaitedElementList } from '../../src/util/wdioKind.js'
+import { getWdioKind, isChainable } from '../../src/util/wdioKind.js'
 
 describe(getWdioKind, () => {
     test.each(['browser', 'element', 'element-array', 'mock', 'browsing-context'])('returns the %s kind', (kind) => {
@@ -44,25 +44,5 @@ describe(isChainable, () => {
         ['a flag that is not `true`', { [Symbol.for('wdio.chainable')]: 'true' }],
     ])('is false for %s', (_, value) => {
         expect(isChainable(value)).toBe(false)
-    })
-})
-
-describe(isNotAwaitedElementList, () => {
-    const list = (props: object) => Object.defineProperty(Object.assign([], props), Symbol.for('wdio.kind'), { value: 'element-array' })
-    // A thenable is what these tests check
-    // eslint-disable-next-line unicorn/no-thenable
-    const withThen = <T extends object>(value: T): T => Object.assign(value, { then: () => {} })
-
-    test('is true for a not-awaited `$$()`: an element list that still has `then`', () => {
-        expect(isNotAwaitedElementList(list(withThen({})))).toBe(true)
-    })
-
-    test.each([
-        ['an awaited element list', list({})],
-        ['a thenable without the brand', withThen({})],
-        ['a not-awaited `$()`', withThen({ [Symbol.for('wdio.kind')]: 'element', [Symbol.for('wdio.chainable')]: true })],
-        ['undefined', undefined],
-    ])('is false for %s', (_, value) => {
-        expect(isNotAwaitedElementList(value)).toBe(false)
     })
 })

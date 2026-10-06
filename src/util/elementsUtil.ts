@@ -1,6 +1,6 @@
 import { isArrayContainingMatcher } from '../utils.js'
 import { hasMultiRemoteFlag } from './multiRemoteUtils.js'
-import { getWdioKind, isChainable, isNotAwaitedElementList } from './wdioKind.js'
+import { getWdioKind, isChainable } from './wdioKind.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../types.js'
 
 /**
@@ -116,13 +116,10 @@ export const awaitElementOrArray = async(
         return { other: received }
     }
 
-    let awaitedElements = received
-
-    // A not-awaited `$()`, and the Promises of `$().getElement()`, `$$().getElements()` or `$$().filter()`.
-    // A not-awaited `$$()`, multi-remote or not, is a list that is not loaded yet: its `length` is a Promise until then.
-    if (awaitedElements instanceof Promise || isNotAwaitedElementList(awaitedElements)) {
-        awaitedElements = await awaitedElements
-    }
+    // Simpler to always `await` than to check for a Promise or a `then`: `await` gives back a value that is not a thenable.
+    // In WebdriverIO v10, a not-awaited `$()` is a Promise, but a not-awaited `$$()` is a list with `then` and a `length` that is
+    // a Promise until it is loaded. `$().getElement()`, `$$().getElements()` and `$$().filter()` are Promises too.
+    const awaitedElements = await received
 
     if (!isElementOrArrayOrMultiRemoteElementLike(awaitedElements)) {
         return { other: awaitedElements }
@@ -150,12 +147,10 @@ export const awaitElementOrArray = async(
 }
 
 export const awaitElementArray = async(received: WdioElementsMaybePromise | undefined): Promise<{ elements?: WdioElements, other?: unknown }> => {
-    let awaitedElements = received
-    // A not-awaited `$$()`, multi-remote or not, is a list that is not loaded yet: its `length` is a Promise until then.
-    // At some extend it also process non-awaited `$$().getElements()` or `$$().filter()` (e.g. Promise<WebdriverIO.Element[]>), but typings does not allow it
-    if (awaitedElements instanceof Promise || isNotAwaitedElementList(awaitedElements)) {
-        awaitedElements = await awaitedElements
-    }
+    // Simpler to always `await` than to check for a Promise or a `then`: `await` gives back a value that is not a thenable.
+    // In WebdriverIO v10, a not-awaited `$$()` is a list with `then` and a `length` that is a Promise until it is loaded.
+    // It also processes a not-awaited `$$().getElements()` or `$$().filter()` (a Promise), but the types do not allow it.
+    const awaitedElements = await received
 
     if (!isElementArrayLike(awaitedElements)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
