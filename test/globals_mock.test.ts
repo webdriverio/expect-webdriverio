@@ -84,6 +84,13 @@ describe('globals mock', () => {
             expect(await els.getElements()).toEqual(els)
         })
 
+        it('should throw on a synchronous iteration until it is awaited, like WebdriverIO v10', async () => {
+            const els = $$('foo')
+            expect(() => [...els]).toThrow('Cannot synchronously iterate over an element list that has not resolved yet')
+
+            expect([...await els]).toHaveLength(2)
+        })
+
         it('should allow calling getElements on the chainable promise', async () => {
             const chainable = $$('foo')
             // Like WebdriverIO v10, which keeps `'getElements' in` true on a not-awaited `$$()`

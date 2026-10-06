@@ -153,6 +153,28 @@ export const $Factory = (element: WebdriverIO.Element, findDelay = 0): Chainable
 }
 
 /**
+ * Mocks a not-awaited multi-remote `$()` like WebdriverIO v10: a Promise of the element, with the `element` brand and `wdio.chainable`
+ */
+const notAwaitedMultiRemoteElementMock = (element: Promise<WebdriverIO.MultiRemoteElement>): ChainablePromiseElement =>
+    new Proxy(element, {
+        get(target, prop) {
+            if (prop === WDIO_KIND) {
+                return 'element'
+            }
+            if (prop === WDIO_CHAINABLE) {
+                return true
+            }
+            const value = Reflect.get(target, prop)
+            return typeof value === 'function' ? value.bind(target) : value
+        }
+    }) as unknown as ChainablePromiseElement
+
+/** Like WebdriverIO v10: `for...of` and the spread of a list throw until the list is loaded */
+const notLoadedIterator = (): never => {
+    throw new Error('Cannot synchronously iterate over an element list that has not resolved yet. Use `for await (const el of $$(\'...\')) { ... }` instead.')
+}
+
+/**
  * Mirrors WebdriverIO v10 `StrictSelectorError`, thrown by a strict `$()` when the selector matches several elements.
  * @see https://github.com/webdriverio/webdriverio/issues/15666
  */
@@ -228,6 +250,9 @@ export function chainableElementArrayFactory(selector: string, length: number, p
                 }
                 if (prop === 'length') {
                     return settle().then(() => target.length)
+                }
+                if (prop === Symbol.iterator) {
+                    return notLoadedIterator
                 }
             }
             if (typeof prop === 'string' && /^\d+$/.test(prop)) {
@@ -348,10 +373,10 @@ export class CustomMultiRemoteDriver {
          * Common browser methods
          */
         // Like `MultiRemote.elementWrapper()` at runtime: one `MultiRemoteElement` wrapping each instance's resolved element
-        vi.mocked(this.$).mockImplementation(async (selector: string) => {
+        vi.mocked(this.$).mockImplementation((selector: string) => notAwaitedMultiRemoteElementMock((async () => {
             const instanceElements = await Promise.all(availableBrowsers.map((browser) => browser.$(selector))) as unknown as WebdriverIO.Element[]
             return buildMultiRemoteElementWrapper(this.instances, instanceElements, selector)
-        })
+        })()))
 
         vi.mocked(this.$$).mockImplementation((selector: string) => {
             return notAwaitedMultiRemoteElementArrayMock(browsers, selector, 2, this as unknown as WebdriverIO.MultiRemoteBrowser)
@@ -414,7 +439,7 @@ const buildMultiRemoteElementWrapper = (
                     $$: () => instanceElements[index].$$(subSelector),
                 } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
             })
-            return createMultiRemoteElementMock(childBrowsers, subSelector)
+            return notAwaitedMultiRemoteElementMock(Promise.resolve(createMultiRemoteElementMock(childBrowsers, subSelector)))
         }),
 
         // Delegate $$() across all browser instances
@@ -426,7 +451,7 @@ const buildMultiRemoteElementWrapper = (
                     $$: () => instanceElements[index].$$(subSelector),
                 } satisfies Partial<WebdriverIO.Browser> as unknown as WebdriverIO.Browser
             })
-            return createMultiRemoteElementArrayMock(childBrowsers, subSelector, 2, multiRemoteElement)
+            return notAwaitedMultiRemoteElementArrayMock(childBrowsers, subSelector, 2, multiRemoteElement)
         }),
 
         // Common element method proxies returning Promise.all array of results
@@ -494,6 +519,9 @@ export function notAwaitedMultiRemoteElementArrayMock(
                 }
                 if (prop === 'length') {
                     return settle().then(() => target.length)
+                }
+                if (prop === Symbol.iterator) {
+                    return notLoadedIterator
                 }
             }
             return Reflect.get(target, prop, receiver)
