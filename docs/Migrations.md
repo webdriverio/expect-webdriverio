@@ -64,10 +64,14 @@ Retries still re-fetch `$$()` elements from their scope. Only the best-effort re
 
 The matchers find a browser, an element, an element list or a mock by the WebdriverIO v10 brand `Symbol.for('wdio.kind')`, not by its properties or its class name. The objects that WebdriverIO gives have the brand, so tests that pass them need no change.
 
-A hand-made fake without the brand, for example in your own unit tests, is not recognized: the matcher fails with its normal message, or throws for an array of fake mocks. Give the fake the brand of the object it replaces, `'browser'`, `'browsing-context'`, `'element'`, `'element-array'` or `'mock'`:
+A hand-made fake without the brand, for example in your own unit tests, is not recognized: the matcher fails with its normal message, or throws for an array of fake mocks. Give the fake the brand of the object it replaces, `'browser'`, `'browsing-context'`, `'element'`, `'element-array'` or `'mock'`, and the methods that the matcher calls. A fake element also needs `getElement()`:
 
 ```ts
-const element = Object.defineProperty({ selector: 'h1', getText: async () => 'Welcome' }, Symbol.for('wdio.kind'), { value: 'element' })
+const element = Object.defineProperty({
+    selector: 'h1',
+    getText: async () => 'Welcome',
+    async getElement() { return this },
+}, Symbol.for('wdio.kind'), { value: 'element' })
 ```
 
 A copy of an element list, such as `[...elements]`, is still an array of elements, because each element keeps its brand.

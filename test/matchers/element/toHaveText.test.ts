@@ -1518,3 +1518,17 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have text
         })
     })
 })
+
+describe('a hand-made fake element with the wdio.kind brand, as in the v8 migration guide', () => {
+    test('passes toHaveText', async () => {
+        const element = Object.defineProperty({
+            selector: 'h1',
+            getText: async () => 'Welcome',
+            async getElement() { return this },
+        }, Symbol.for('wdio.kind'), { value: 'element' })
+
+        const result = await toHaveText.call({ isNot: false }, element as unknown as WebdriverIO.Element, 'Welcome', { wait: 0 })
+
+        expect(result.pass).toBe(true)
+    })
+})
