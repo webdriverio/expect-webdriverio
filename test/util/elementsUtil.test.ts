@@ -477,6 +477,13 @@ describe('elementsUtil', () => {
             expect(isElement({ selector: 'a', parent: browser, getElement: () => {} })).toBe(false)
         })
 
+        test('a chained $().$$() before await is a Promise with the element-array brand, not an element list', () => {
+            // Like WebdriverIO v10 `chainKind('$$')` on the Promise proxy of a chained query or of a custom `$$` command
+            const chainedList = setWdioKind(Promise.resolve(elementArrayFactory('b')), 'element-array')
+
+            expect(isStrictlyElementArray(chainedList)).toBe(false)
+        })
+
         test('is not an element list without the brand', () => {
             expect(isStrictlyElementArray(Object.assign([], { selector: 'a', parent: browser, foundWith: '$$', getElements: () => {} }))).toBe(false)
         })

@@ -39,12 +39,14 @@ export const isArray = (obj: unknown): obj is unknown[] | WebdriverIO.ElementArr
  */
 export const isStrictlyElementArray = (obj: unknown): obj is WebdriverIO.ElementArray => {
     return getWdioKind(obj) === 'element-array'
+    // A chained `$('a').$$('b')` or a custom `$$` command before `await` is a Promise with the same brand
     && Array.isArray(obj)
     && !isMultiRemote(obj)
 }
 
 /**
- * An awaited `$()`: a not-awaited `$()` has the same brand, but it is a Promise of the element.
+ * A loaded element: an awaited `$()`, an item of an awaited `$$()`, or the result of `getElement()`.
+ * A not-awaited `$()` has the same brand, but it is a Promise of the element (`wdio.chainable`).
  */
 export const isElement = (obj: unknown): obj is WebdriverIO.Element => {
     return getWdioKind(obj) === 'element'
