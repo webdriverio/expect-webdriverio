@@ -4,6 +4,8 @@ import { multiRemoteBrowser } from '@wdio/globals'
 describe('Multi-remote Visual Snapshot Testing', () => {
     beforeEach(async () => {
         await multiRemoteBrowser.url('https://guinea-pig.webdriver.io/')
+        // The page changes 2 seconds after it loads (`.lateElem`, `#selectbox`...): take every screenshot after that
+        await multiRemoteBrowser.$('.lateElem').waitForExist()
     })
 
     describe('Screen Visual Snapshots', () => {

@@ -87,7 +87,9 @@ export const config: WebdriverIO.MultiRemoteConfig = {
                 compareOptions: {
                     // Block out the changing elements
                     blockOutStatusBar: true,
-                    blockOutToolBar: true
+                    blockOutToolBar: true,
+                    // Firefox on Windows can draw the edges of the same text differently between two page loads
+                    ignoreAntialiasing: true
                 }
             } satisfies VisualServiceOptions
         ]
