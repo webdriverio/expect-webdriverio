@@ -1,6 +1,0 @@
-{
-  "extends": "./tsconfig.base.json",
-  // The `@wdio/jasmine-framework` setup, and `expect-webdriverio/jasmine` for the WDIO matchers on `expectAsync`
-  "compilerOptions": { "types": ["@types/jasmine", "@wdio/globals/types", "@wdio/jasmine-framework", "../../jasmine.d.ts"] },
-  "files": ["jasmine.ts", "jasmine-expect-async.ts"]
-}

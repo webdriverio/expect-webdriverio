@@ -219,12 +219,12 @@ Expected in `tsconfig.json`:
 }
 ```
 
-For the WDIO matchers on `expectAsync`, e.g. `await expectAsync(browser).toHaveUrl('https://example.com')`, also add `"expect-webdriverio/jasmine"` to `types`: `@wdio/jasmine-framework` types only the global `expect`.
+`expectAsync` also has the WDIO matchers, e.g. `await expectAsync(browser).toHaveUrl('https://example.com')`. Their types need the `@wdio/jasmine-framework` release with [webdriverio#15954](https://github.com/webdriverio/webdriverio/pull/15954).
 
 > Note: When using Jasmine, Jest's expect matchers are not leveraged, meaning standard Jest-specific assertion matchers are unavailable.
 
-##### Jasmine `expectAsync`
-When you do not use `@wdio/globals/types` (or when `@types/jasmine` takes type-resolution priority), the global ambient `expect` resolves to Jasmine's native behavior. By defining `expect-webdriverio/jasmine` in your types, you can use WDIO custom matchers directly on `expectAsync`. Note that if you are running outside of `@wdio/jasmine-framework`, these matchers must be registered manually.
+##### Jasmine without `@wdio/jasmine-framework`
+With Jasmine 6 alone, register the WDIO matchers on `expectAsync` yourself, and add `expect-webdriverio/jasmine` to `types`. Do not use `expect-webdriverio/jasmine` with `@wdio/jasmine-framework`, which has its own types.
 
 ```ts
 describe('My tests', async () => {

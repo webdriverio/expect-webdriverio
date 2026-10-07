@@ -33,6 +33,18 @@ describe('WebdriverIO testrunner with Jasmine', () => {
         })
     })
 
+    // The adapter registers the WDIO matchers on `expectAsync`
+    describe('`expectAsync`', () => {
+        it('should have the WDIO matchers', async () => {
+            expectTypeOf(expectAsync(browser).toHaveTitle('foo')).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expectAsync($('h1')).not.toBeDisplayed()).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should have the Jasmine async matchers', async () => {
+            expectTypeOf(expectAsync(booleanPromise).toBeResolvedTo(true)).toEqualTypeOf<PromiseLike<void>>()
+        })
+    })
+
     // The Jest-based `expect`, whatever the global `expect` is
     describe('`expect` export of expect-webdriverio', () => {
         it('should have the WDIO matchers', async () => {
