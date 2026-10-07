@@ -219,6 +219,8 @@ Expected in `tsconfig.json`:
 }
 ```
 
+For the WDIO matchers on `expectAsync`, e.g. `await expectAsync(browser).toHaveUrl('https://example.com')`, also add `"expect-webdriverio/jasmine"` to `types`: `@wdio/jasmine-framework` types only the global `expect`.
+
 > Note: When using Jasmine, Jest's expect matchers are not leveraged, meaning standard Jest-specific assertion matchers are unavailable.
 
 ##### Jasmine `expectAsync`

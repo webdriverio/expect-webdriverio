@@ -90,7 +90,7 @@ The `expect-webdriverio/jasmine-wdio-expect-async` entry point is removed. In We
   ]
 ```
 
-`expect-webdriverio/jasmine`, for `expectAsync` without `@wdio/jasmine-framework`, does not change.
+`expect-webdriverio/jasmine` does not change. With `@wdio/jasmine-framework`, also add it to `types` if you use the WDIO matchers on `expectAsync`: the removed entry point typed them.
 
 ## Removed deprecated APIs
 

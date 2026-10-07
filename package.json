@@ -72,7 +72,7 @@
     "ts:arethetypeswrong": "attw --pack . --profile esm-only",
     "ts:declarations": "node types-checks-declarations.js",
     "ts:package": "node types-checks-package.js",
-    "ts:wdio-testrunner": "tsc -p test-types/wdio-testrunner/tsconfig.mocha.json && tsc -p test-types/wdio-testrunner/tsconfig.jasmine.json",
+    "ts:wdio-testrunner": "tsc -p test-types/wdio-testrunner/tsconfig.mocha.json && tsc -p test-types/wdio-testrunner/tsconfig.jasmine.json && tsc -p test-types/wdio-testrunner/tsconfig.jasmine-expect-async.json",
     "checks:all": "pnpm run build && pnpm test",
     "watch": "pnpm run compile --watch",
     "prepare": "husky",
