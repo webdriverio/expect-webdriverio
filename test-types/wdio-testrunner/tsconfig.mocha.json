@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.base.json",
+  // The WebdriverIO testrunner: `@wdio/globals/types` types the global `expect`
+  "compilerOptions": { "types": ["@types/mocha", "@wdio/globals/types"] },
+  "files": ["mocha.ts"]
+}
