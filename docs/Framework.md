@@ -265,6 +265,8 @@ describe('My tests', async () => {
 })     
 ```
 
+> With `@wdio/jasmine-framework` 10.0.1 or lower, the types of this `expect` have the Jasmine matchers, not the Jest ones: [webdriverio#15954](https://github.com/webdriverio/webdriverio/pull/15954) fixes it (merged, not released yet).
+
 ##### Asymmetric matchers
 Jasmine's asymmetric matchers have improved, but certain limitations may still exist. 
 - `jasmine.stringContaining`, `jasmine.stringMatching`, `jasmine.any(Type)`, and `jasmine.anything()` work seamlessly across the board.

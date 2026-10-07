@@ -55,7 +55,7 @@ await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Webdr
 await expect(multiRemoteBrowser.select('chrome')).toHaveTitle('WebdriverIO')
 ```
 
-`expect.multiRemote()` is also exported as `multiRemote` from `expect-webdriverio/api`, e.g. when using another `expect` than the one from `expect-webdriverio`.
+`expect.multiRemote()` is also exported as `multiRemote` from `expect-webdriverio/api`, e.g. when using another `expect` than the one from `expect-webdriverio`. With `@wdio/jasmine-framework` 10.0.1 or lower, the global `expect` has no `expect.multiRemote()`: use this export.
 
 **Note:** There is no default value for the instances not listed, and an array of expected values is not one value per instance in configuration order: use `expect.multiRemote()` instead.
 
