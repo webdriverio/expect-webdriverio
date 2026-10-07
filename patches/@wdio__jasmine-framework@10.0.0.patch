@@ -1,8 +1,12 @@
 diff --git a/build/index.d.ts b/build/index.d.ts
-index 13f507738fe9d7b62f9d969fdf775360b3fbed1d..b6ccc09dffc3edc304ae90ee5294c626528b3d2c 100644
+index 13f507738fe9d7b62f9d969fdf775360b3fbed1d..46e940807b4ff8b93afc10a51179ba03edfc1b4f 100644
 --- a/build/index.d.ts
 +++ b/build/index.d.ts
-@@ -178,6 +178,13 @@ declare global {
+@@ -175,9 +175,17 @@ declare global {
+         const stringContaining: ExpectWebdriverIO.Expect['stringContaining'];
+         const stringMatching: ExpectWebdriverIO.Expect['stringMatching'];
+         const oneOf: ExpectWebdriverIO.Expect['oneOf'];
++        const multiRemote: ExpectWebdriverIO.Expect['multiRemote'];
          const not: ExpectWebdriverIO.Expect['not'];
      }
      namespace jasmine {
@@ -16,7 +20,7 @@ index 13f507738fe9d7b62f9d969fdf775360b3fbed1d..b6ccc09dffc3edc304ae90ee5294c626
          /**
           * Jasmine sync matchers stay sync and return `void`. WebdriverIO matchers
           * and Jasmine async matchers go to `expectAsync` and return a Promise.
-@@ -190,13 +197,15 @@ declare global {
+@@ -190,13 +198,15 @@ declare global {
              toHaveSize(...args: MatcherArgs<WdioAsyncMatchers<T>['toHaveSize']>): Promise<void>;
          }
      }
@@ -34,3 +38,15 @@ index 13f507738fe9d7b62f9d969fdf775360b3fbed1d..b6ccc09dffc3edc304ae90ee5294c626
              <T extends jasmine.Func>(spy: T | jasmine.Spy<T>): jasmine.FunctionMatchers<T>;
              (actual: string): jasmine.Matchers<string>;
              <T>(actual: ArrayLike<T>): jasmine.ArrayLikeMatchers<T>;
+diff --git a/build/index.js b/build/index.js
+index 15770b061dbb03e0dab46950c2e504fc85ebc13d..85aec48de827d64f6fe0964e3315d80789c1d960 100644
+--- a/build/index.js
++++ b/build/index.js
+@@ -244,6 +244,7 @@ var EXPECT_ASYMMETRIC_MATCHERS = [
+   "stringContaining",
+   "stringMatching",
+   "oneOf",
++  "multiRemote",
+   "not"
+ ];
+ var TEST_INTERFACES = ["it", "fit", "xit"];

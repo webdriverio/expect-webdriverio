@@ -43,6 +43,10 @@ describe('Jasmine-Specific Features', () => {
             }
             await expect(hrefs).toEqual(jasmine.arrayContaining(['./two.html']))
         })
+
+        it('should have expect.multiRemote() of expect-webdriverio', async () => {
+            expect(expect.multiRemote).toEqual(jasmine.any(Function))
+        })
     })
 
     describe('Custom matchers with WebdriverIO', () => {

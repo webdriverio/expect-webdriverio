@@ -23,6 +23,7 @@ describe('WebdriverIO testrunner with Jasmine', () => {
 
         it('should have the asymmetric matchers', async () => {
             expectTypeOf(expect(browser).toHaveTitle(expect.stringContaining('foo'))).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'foo' }))).toEqualTypeOf<Promise<void>>()
         })
 
         it('should not have the Jest matchers', async () => {
