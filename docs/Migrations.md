@@ -76,6 +76,22 @@ const element = Object.defineProperty({
 
 A copy of an element list, such as `[...elements]`, is still an array of elements, because each element keeps its brand.
 
+## Jasmine types with `@wdio/jasmine-framework`
+
+The `expect-webdriverio/jasmine-wdio-expect-async` entry point is removed. In WebdriverIO v10, `@wdio/jasmine-framework` keeps the Jasmine synchronous matchers synchronous, and has the types of its global `expect`. Use them in `tsconfig.json`:
+
+```diff
+  "types": [
+-   "expect-webdriverio/jasmine-wdio-expect-async",
+    "@types/jasmine",
+-   "@wdio/globals/types"
++   "@wdio/globals/types",
++   "@wdio/jasmine-framework"
+  ]
+```
+
+`expect-webdriverio/jasmine`, for `expectAsync` without `@wdio/jasmine-framework`, does not change.
+
 ## Removed deprecated APIs
 
 v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#migration-guide-v5-to-v6) below.

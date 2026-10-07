@@ -1157,7 +1157,7 @@ await expect(Promise.reject(new Error('fail'))).rejects.toThrow('fail');
 For Jasmine, see the official documentation for [expect/expectAsync](https://jasmine.github.io/api/edge/global.html#expect), [matchers](https://jasmine.github.io/tutorials/your_first_suite#section-Matchers), and [async-matchers](https://jasmine.github.io/api/edge/async-matchers.html).
 
 **Note:**
-- With the global import in @wdio/jasmine-framework, only WebdriverIO custom matchers are registered on expectAsync (assigned to global expect), so all matchers are always async, even those that are normally synchronous.
+- With the global `expect` of `@wdio/jasmine-framework`, the Jasmine synchronous matchers stay synchronous. The WebdriverIO matchers and the Jasmine async matchers return a promise. See [Jasmine](Framework.md#jasmine).
 - Default matchers are still available if you import `expect` directly from `expect-webdriverio` instead of using the global.
 
 ## Modifiers

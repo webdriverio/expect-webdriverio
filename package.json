@@ -38,11 +38,6 @@
         "types": "./jasmine.d.ts"
       }
     ],
-    "./jasmine-wdio-expect-async": [
-      {
-        "types": "./jasmine-wdio-expect-async.d.ts"
-      }
-    ],
     "./expect-global": "./types/expect-global.d.ts",
     "./api": [
       {
@@ -72,7 +67,6 @@
     "test:types": "pnpm run ts",
     "ts": "run-s ts:* ts:*:*",
     "ts:jasmine": "cd test-types/jasmine && vitest --typecheck --coverage.enabled=false --typecheck.tsconfig ./tsconfig.json --run",
-    "ts:jasmine-global-expect-async": "cd test-types/jasmine-global-expect-async && vitest --typecheck --coverage.enabled=false --typecheck.tsconfig ./tsconfig.json --run",
     "ts:jest:@types-jest": "cd test-types/jest-@types_jest && vitest --typecheck --coverage.enabled=false --typecheck.tsconfig ./tsconfig.json --run",
     "ts:mocha": "cd test-types/mocha && vitest --typecheck --coverage.enabled=false --typecheck.tsconfig ./tsconfig.json --run",
     "ts:arethetypeswrong": "attw --pack . --profile esm-only",
