@@ -39,7 +39,7 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiR
         const selector = getSelector(el)
         const subject = formatMultiRemoteInstanceNames(el.parent.instances)
 
-        return `${subject}.$$(\`${selector}\`)`
+        return `${subject}.${el.foundWith ?? '$$'}(\`${selector}\`)`
     } else if (isStrictlyElementArray(el)) {
         // Type ElementArray
         selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)

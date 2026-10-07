@@ -566,6 +566,22 @@ Expect multi-remote<chrome, firefox>.$$(\`button\`) to have text
 +   "Actual2",
   ]`)
             })
+
+            test.each(['custom$$', 'react$$', 'shadow$$'])('names the %s query', (foundWith) => {
+                const subject = Object.assign(createMultiRemoteElementArrayMock(multiRemoteBrowsers(), 'button', 1), { foundWith })
+
+                const result = stripAnsi(enhanceError(subject, 'Expected', 'Actual', { isNot: false, isSome: false }, 'have', 'text'))
+
+                expect(result.split('\n')[0]).toEqual(`Expect multi-remote<chrome, firefox>.${foundWith}(\`button\`) to have text`)
+            })
+
+            test('names the $$ query when foundWith is missing', () => {
+                const subject = Object.assign(createMultiRemoteElementArrayMock(multiRemoteBrowsers(), 'button', 1), { foundWith: undefined })
+
+                const result = stripAnsi(enhanceError(subject, 'Expected', 'Actual', { isNot: false, isSome: false }, 'have', 'text'))
+
+                expect(result.split('\n')[0]).toEqual('Expect multi-remote<chrome, firefox>.$$(`button`) to have text')
+            })
         })
     })
 
