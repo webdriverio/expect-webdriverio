@@ -7,6 +7,10 @@ settings:
 overrides:
   expect-webdriverio: link:.
 
+patchedDependencies:
+  '@wdio/globals@10.0.0': ee5e800ecc688250bf42c48d4214d7c019f2a3f0925b9a81b4750f1ab14f3a15
+  '@wdio/jasmine-framework@10.0.0': 2a6637f6f4a14d5b9d89066573ae9ae312d157bf1cf2e5dd24c13f8607553d12
+
 importers:
 
   .:
@@ -59,10 +63,10 @@ importers:
         version: 10.0.0(@types/node@24.19.0)(expect-webdriverio@)(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0)
       '@wdio/globals':
         specifier: ^10.0.0
-        version: 10.0.0(expect-webdriverio@)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))
+        version: 10.0.0(patch_hash=ee5e800ecc688250bf42c48d4214d7c019f2a3f0925b9a81b4750f1ab14f3a15)(expect-webdriverio@)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))
       '@wdio/jasmine-framework':
         specifier: ^10.0.0
-        version: 10.0.0(@wdio/runner@10.0.0(expect-webdriverio@)(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))(yauzl@2.10.0))(expect-webdriverio@)(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))(yauzl@2.10.0)
+        version: 10.0.0(patch_hash=2a6637f6f4a14d5b9d89066573ae9ae312d157bf1cf2e5dd24c13f8607553d12)(@wdio/runner@10.0.0(expect-webdriverio@)(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))(yauzl@2.10.0))(expect-webdriverio@)(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))(yauzl@2.10.0)
       '@wdio/protocols':
         specifier: ^10.0.0
         version: 10.0.0
@@ -4954,7 +4958,7 @@ snapshots:
     dependencies:
       '@vitest/snapshot': 5.0.3
       '@wdio/config': 10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0)
-      '@wdio/globals': 10.0.0(expect-webdriverio@)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))
+      '@wdio/globals': 10.0.0(patch_hash=ee5e800ecc688250bf42c48d4214d7c019f2a3f0925b9a81b4750f1ab14f3a15)(expect-webdriverio@)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))
       '@wdio/logger': 10.0.0
       '@wdio/protocols': 10.0.0
       '@wdio/session': 10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0)
@@ -5014,16 +5018,16 @@ snapshots:
       '@wdio/types': 10.0.0
       chalk: 5.6.2
 
-  '@wdio/globals@10.0.0(expect-webdriverio@)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))':
+  '@wdio/globals@10.0.0(patch_hash=ee5e800ecc688250bf42c48d4214d7c019f2a3f0925b9a81b4750f1ab14f3a15)(expect-webdriverio@)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))':
     dependencies:
       expect-webdriverio: 'link:'
       webdriverio: 10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0)
 
-  '@wdio/jasmine-framework@10.0.0(@wdio/runner@10.0.0(expect-webdriverio@)(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))(yauzl@2.10.0))(expect-webdriverio@)(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))(yauzl@2.10.0)':
+  '@wdio/jasmine-framework@10.0.0(patch_hash=2a6637f6f4a14d5b9d89066573ae9ae312d157bf1cf2e5dd24c13f8607553d12)(@wdio/runner@10.0.0(expect-webdriverio@)(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))(yauzl@2.10.0))(expect-webdriverio@)(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))(yauzl@2.10.0)':
     dependencies:
       '@types/jasmine': 6.0.0
       '@types/node': 22.20.5
-      '@wdio/globals': 10.0.0(expect-webdriverio@)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))
+      '@wdio/globals': 10.0.0(patch_hash=ee5e800ecc688250bf42c48d4214d7c019f2a3f0925b9a81b4750f1ab14f3a15)(expect-webdriverio@)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))
       '@wdio/logger': 10.0.0
       '@wdio/runner': 10.0.0(expect-webdriverio@)(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))(yauzl@2.10.0)
       '@wdio/types': 10.0.0
@@ -5070,7 +5074,7 @@ snapshots:
       '@types/node': 22.20.5
       '@wdio/config': 10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0)
       '@wdio/dot-reporter': 10.0.0
-      '@wdio/globals': 10.0.0(expect-webdriverio@)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))
+      '@wdio/globals': 10.0.0(patch_hash=ee5e800ecc688250bf42c48d4214d7c019f2a3f0925b9a81b4750f1ab14f3a15)(expect-webdriverio@)(webdriverio@10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0))
       '@wdio/logger': 10.0.0
       '@wdio/session': 10.0.0(proxy-agent@8.0.2(supports-color@8.1.1))(supports-color@8.1.1)(yauzl@2.10.0)
       '@wdio/types': 10.0.0
