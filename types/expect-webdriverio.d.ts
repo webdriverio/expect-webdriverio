@@ -1020,17 +1020,6 @@ interface WdioCustomExpect {
  */
 type WdioExpect = WdioCustomExpect & ExpectLibExpect
 
-/** What `expect(actual)` gives: the WebdriverIO and Jest matchers, and the promise matchers for a promise */
-type WdioExpectResult<T> = T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<void, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>
-
-/**
- * The call of the `expect` export, apart from `ExpectWebdriverIO.Expect`: that interface also types the global `expect`,
- * and a framework adapter can add call signatures to it (`@wdio/jasmine-framework` v10 adds the Jasmine ones).
- */
-interface WdioExpectCall {
-    <T = unknown>(actual: T): WdioExpectResult<T>
-}
-
 /**
  * Asymmetric matchers supported by the expect-webdriverio library.
  * The type is the same as the one from the expect library, but we need to redefine it to have it available in the `ExpectWebdriverIO` namespace.
@@ -1092,8 +1081,7 @@ declare namespace ExpectWebdriverIO {
      * When importing expect from 'expect-webdriverio', instead of using globals this is the one used.
      * Note: Using a const instead of a function, else we cannot use asymmetric matcher like expect.anything().
      */
-    // The call of `WdioExpectCall` comes first, so it wins over the call signatures that a framework adds to `Expect`
-    const expect: WdioExpectCall & ExpectWebdriverIO.Expect
+    const expect: ExpectWebdriverIO.Expect
 
     /**
      * Used by the webdriverio main project to configure the matchers in the runner.
@@ -1141,7 +1129,7 @@ declare namespace ExpectWebdriverIO {
          *
          * @param actual The value to apply matchers against.
          */
-        <T = unknown>(actual: T): WdioExpectResult<T>;
+        <T = unknown>(actual: T): T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<void, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
     }
 
     /**
