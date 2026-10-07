@@ -8,6 +8,9 @@ export async function check() {
     await expect(el).toHaveText('text')
     await expect(some(els)).toBeDisplayed()
     await expect(el).toHaveText(multiRemote({ chrome: 'text' }))
+    // The Jest matchers of the export, which a framework adapter must not hide (`@wdio/jasmine-framework` v10 types the global `expect`)
+    await expect({ a: 1 }).toHaveProperty('a')
+    await expect(Promise.resolve(1)).resolves.toBe(1)
     // @ts-expect-error an attribute name is a string
     await expect(el).toHaveAttribute(1)
 
