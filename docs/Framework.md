@@ -219,7 +219,7 @@ Expected in `tsconfig.json`:
 }
 ```
 
-`expectAsync` also has the WDIO matchers, e.g. `await expectAsync(browser).toHaveUrl('https://example.com')`, typed since `@wdio/jasmine-framework` 10.0.1.
+`expectAsync` also has the WDIO matchers, e.g. `await expectAsync(browser).toHaveUrl('https://example.com')`, typed since `@wdio/jasmine-framework` 10.0.2.
 
 > Note: When using Jasmine, Jest's expect matchers are not leveraged, meaning standard Jest-specific assertion matchers are unavailable.
 
@@ -265,7 +265,7 @@ describe('My tests', async () => {
 })     
 ```
 
-> Since `@wdio/jasmine-framework` 10.0.1, the types of this `expect` keep the Jest matchers, as at runtime.
+> Since `@wdio/jasmine-framework` 10.0.2, the types of this `expect` keep the Jest matchers, as at runtime.
 
 ##### Asymmetric matchers
 Jasmine's asymmetric matchers have improved, but certain limitations may still exist. 
