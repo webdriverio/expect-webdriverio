@@ -2,7 +2,7 @@ import { waitUntil, enhanceError } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { awaitMocks, isInstanceMocks } from '../../util/multiRemoteUtils.js'
-import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
+import { formatMultiRemoteInstanceNames, labelMultiRemoteValues } from '../../util/formatMessage.js'
 import type { WdioMatcherContext, WdioMultiRemoteMockMaybePromise } from '../../types.js'
 
 export async function toBeRequestedTimes(
@@ -58,7 +58,7 @@ export async function toBeRequestedTimes(
         )
         pass = result.success
         const expected = Object.fromEntries(names.map((name) => [name, expectedNumber]))
-        message = enhanceError(formatMultiRemoteMocks(names), labelMultiRemoteValues(expected), labelMultiRemoteValues(result.actual), this, verb, expectation, '', options)
+        message = enhanceError(`${formatMultiRemoteInstanceNames(names)} mocks`, labelMultiRemoteValues(expected), labelMultiRemoteValues(result.actual), this, verb, expectation, '', options)
     } else {
         const mock = mocks
         const result = await waitUntil(

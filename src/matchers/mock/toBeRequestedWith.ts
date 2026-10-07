@@ -4,7 +4,7 @@ import { waitUntil, enhanceError, isAsymmetricMatcher, getAsymmetricMatcherValue
 import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import { awaitMocks, isInstanceMocks } from '../../util/multiRemoteUtils.js'
-import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
+import { formatMultiRemoteInstanceNames, labelMultiRemoteValues } from '../../util/formatMessage.js'
 import type { WdioMatcherContext, WdioMultiRemoteMockMaybePromise } from '../../types.js'
 
 const STR_LIMIT = 80
@@ -75,7 +75,7 @@ export async function toBeRequestedWith(
         const expected = Object.fromEntries(names.map((name) => [name, minifyRequestedWith(expectedValue)]))
         const actual = Object.fromEntries(results.map((result, index) => [names[index], result.actual]))
         const payloadNeverCollected = results.some((result) => !result.pass && result.payloadNeverCollected)
-        message = enhanceError(formatMultiRemoteMocks(names), labelMultiRemoteValues(expected), labelMultiRemoteValues(actual), this, verb, expectation, '', options)
+        message = enhanceError(`${formatMultiRemoteInstanceNames(names)} mocks`, labelMultiRemoteValues(expected), labelMultiRemoteValues(actual), this, verb, expectation, '', options)
             + (!pass && !isNot && payloadNeverCollected ? payloadCollectionHint(expectedValue) : '')
     } else {
         const result = await checkRequestedWith(mocks, expectedValue, options, !!isNot, parseCache)

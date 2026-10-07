@@ -264,12 +264,7 @@ export const labelMultiRemoteValues = (value: unknown): unknown => {
     return isPlainObject ? Object.assign(new MultiRemoteValuesLabel(), value) : value
 }
 
-/** Subject of the failure message of multi-remote mocks, e.g. `multi-remote<chrome, firefox> mocks` */
-export const formatMultiRemoteMocks = (names: string[]): string => {
-    return `${formatMultiRemoteInstanceNames(names)} mocks`
-}
-
-const formatMultiRemoteInstanceNames = (instances: string[]): string => {
+export const formatMultiRemoteInstanceNames = (instances: string[]): string => {
     let instanceNames = instances.join(', ')
     instanceNames = instanceNames.length > 50 ? `${instanceNames.substring(0, 50)}...` : instanceNames
     return `multi-remote<${instanceNames}>`
