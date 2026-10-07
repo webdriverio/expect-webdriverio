@@ -77,9 +77,7 @@ describe('Basic Expect Matchers available when pulling expect from expect-webdri
         it('should match object properties', async () => {
             const capabilities = await browser.capabilities
 
-            // @ts-expect-error `@wdio/jasmine-framework` 10.0.0 adds Jasmine signatures to `ExpectWebdriverIO.Expect`, which also types this Jest-based `expect`
             await expect(capabilities).toHaveProperty('browserName')
-            // @ts-expect-error `@wdio/jasmine-framework` 10.0.0 adds Jasmine signatures to `ExpectWebdriverIO.Expect`, which also types this Jest-based `expect`
             await expect(capabilities).toMatchObject({
                 browserName: 'chrome'
             })
@@ -90,14 +88,12 @@ describe('Basic Expect Matchers available when pulling expect from expect-webdri
         it('should handle promises', async () => {
             const titlePromise = browser.getTitle()
 
-            // @ts-expect-error `@wdio/jasmine-framework` 10.0.0 adds Jasmine signatures to `ExpectWebdriverIO.Expect`, which also types this Jest-based `expect`
             await expect(titlePromise).resolves.toContain('WebdriverJS')
         })
 
         it('should not reject', async () => {
             const urlPromise = browser.getUrl()
 
-            // @ts-expect-error `@wdio/jasmine-framework` 10.0.0 adds Jasmine signatures to `ExpectWebdriverIO.Expect`, which also types this Jest-based `expect`
             await expect(urlPromise).resolves.toBeDefined()
         })
     })
