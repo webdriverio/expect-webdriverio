@@ -92,7 +92,7 @@ The `expect-webdriverio/jasmine-wdio-expect-async` entry point is removed. In We
 
 `expect-webdriverio/jasmine` does not change: it is for Jasmine without `@wdio/jasmine-framework`.
 
-With `@wdio/jasmine-framework` 10.0.1 or lower, the WDIO matchers on `expectAsync` have no types, and the types of `import { expect } from 'expect-webdriverio'` have the Jasmine matchers, not the Jest ones. [webdriverio#15954](https://github.com/webdriverio/webdriverio/pull/15954) fixes both: it is merged, not released yet.
+Since `@wdio/jasmine-framework` 10.0.1, the WDIO matchers on `expectAsync` are typed, and the types of `import { expect } from 'expect-webdriverio'` keep the Jest matchers.
 
 ## Removed deprecated APIs
 
