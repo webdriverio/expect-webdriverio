@@ -1,9 +1,9 @@
 import { waitUntil, enhanceError } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
-import { awaitMocks, getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
-import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
-import type { WdioMatcherContext, WdioMultiRemoteMocks } from '../../types.js'
+import { awaitMocks, isInstanceMocks } from '../../util/multiRemoteUtils.js'
+import { formatMultiRemoteInstanceNames, labelMultiRemoteValues } from '../../util/formatMessage.js'
+import type { WdioMatcherContext, WdioMultiRemoteMockMaybePromise } from '../../types.js'
 
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock,
@@ -15,14 +15,14 @@ export async function toBeRequestedTimes(
  * Multi-remote mocks (`multiRemoteBrowser.mock()`): every instance's mock must be called the expected number of times
  */
 export async function toBeRequestedTimes(
-    received: WdioMultiRemoteMocks,
+    received: WdioMultiRemoteMockMaybePromise,
     expectedValue: number | ExpectWebdriverIO.NumberMatcher,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toBeRequestedTimes(
     this: WdioMatcherContext,
-    received: WebdriverIO.Mock | WdioMultiRemoteMocks,
+    received: WebdriverIO.Mock | WdioMultiRemoteMockMaybePromise,
     expectedValue: number | ExpectWebdriverIO.NumberMatcher,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ): Promise<ExpectWebdriverIO.AssertionResult> {
@@ -43,27 +43,24 @@ export async function toBeRequestedTimes(
     let message: string
     let pass: boolean
 
-    if (isMockArray(mocks)) {
-        const instanceNames = getMockInstanceNames(mocks)
-        const { names } = instanceNames
-        // Mocks named by index may not be multi-remote ones, so they keep the plain `Object` label
-        const label = (value: unknown) => instanceNames.isNamedByInstance ? labelMultiRemoteValues(value) : value
+    if (isInstanceMocks(mocks)) {
+        const { names, mocks: instanceMocks } = mocks
         const result = await waitUntil(
             async () => {
-                const actual = Object.fromEntries(mocks.map((mock, index) => [names[index], mock.calls.length]))
+                const actual = Object.fromEntries(instanceMocks.map((mock, index) => [names[index], mock.calls.length]))
                 const matches = (name: string) => expectedNumber.asymmetricMatch(actual[name])
                 // Strict on every instance: with `.not`, no instance may match (`success` is inverted by `waitUntil`)
                 const success = isNot ? names.some(matches) : names.every(matches)
-                return { success, subject: mocks, actual }
+                return { success, subject: instanceMocks, actual }
             },
             isNot,
             { wait: options.wait, interval: options.interval }
         )
         pass = result.success
         const expected = Object.fromEntries(names.map((name) => [name, expectedNumber]))
-        message = enhanceError(formatMultiRemoteMocks(instanceNames), label(expected), label(result.actual), this, verb, expectation, '', options)
+        message = enhanceError(`${formatMultiRemoteInstanceNames(names)} mocks`, labelMultiRemoteValues(expected), labelMultiRemoteValues(result.actual), this, verb, expectation, '', options)
     } else {
-        const mock = mocks as WebdriverIO.Mock
+        const mock = mocks
         const result = await waitUntil(
             async () => {
                 const actual = mock.calls.length

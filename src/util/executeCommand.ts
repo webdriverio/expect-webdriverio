@@ -1,7 +1,7 @@
 import { equals } from '../jasmineUtils.js'
 import { isArrayContainingMatcher } from '../utils.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, WdioMultiRemoteElementArray, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
 import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from './elementsUtil.js'
 import { getElementsPerInstance, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
@@ -93,7 +93,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
  * `arrayContaining` on a multi-remote `$$()`: every instance's own collection of values must satisfy it.
  */
 const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
-    elements: WdioMultiRemoteElementArray,
+    elements: WebdriverIO.MultiRemoteElementArray,
     expectedValues: unknown,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     iteration: number
@@ -189,7 +189,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     if (multiRemoteSelector || isMultiRemoteElementArray(selector)) {
         return multiRemoteElementsResultsStrategy<Actual, Expected>(
             subject,
-            multiRemoteSelector ?? selector as WdioMultiRemoteElementArray,
+            multiRemoteSelector ?? selector as WebdriverIO.MultiRemoteElementArray,
             expectedValues,
             singleElementCompare,
             { isNot, isSome },
@@ -259,7 +259,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
  */
 const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     subject: unknown,
-    multiRemoteSelector: WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray,
+    multiRemoteSelector: WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray,
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     { isNot, isSome }: { isNot: boolean; isSome: boolean },

@@ -18,24 +18,10 @@ export type WdioElementOrArrayMaybePromise =
 export type MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements =
     MaybeSome<WdioElementMaybePromise | WdioElementsMaybePromise | WdioMultiRemoteElements>
 
-export type WdioMultiRemoteElements = WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray
+export type WdioMultiRemoteElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray
 
-/**
- * A multi-remote `$$()`: its parent is the multi-remote browser (or its `select()` subset) or a multi-remote element,
- * which has the instances that `$$()` queried, in the same order, also when no element was found.
- * TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteElementArray` type instead
- */
-export type WdioMultiRemoteElementArray = WebdriverIO.ElementArray
-    & { parent: WebdriverIO.MultiRemoteBrowser | WebdriverIO.MultiRemoteElement }
-    & { isMultiRemote: true }
-
-/** WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock` with one mock per instance name, not in the v9 types */
-// TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteMock` type instead
-export type WdioMultiRemoteMock = { isMultiRemote: true, instances: readonly string[], getInstance(name: string): WebdriverIO.Mock }
-
-/** Multi-remote `mock()`: one mock per instance, as an array (WebdriverIO v9) or a `MultiRemoteMock` (v10) */
-// TODO(#2255) WebdriverIO v9: remove the `WebdriverIO.Mock[]` of the v9 `mock()`
-export type WdioMultiRemoteMocks = WebdriverIO.Mock[] | WdioMultiRemoteMock | Promise<WebdriverIO.Mock[] | WdioMultiRemoteMock>
+/** Multi-remote `mock()`, awaited or not */
+export type WdioMultiRemoteMockMaybePromise = WebdriverIO.MultiRemoteMock | Promise<WebdriverIO.MultiRemoteMock>
 
 /** The `this` of a matcher: the public context, and the internal options that some matchers set */
 export type WdioMatcherContext = ExpectWebdriverIO.MatcherContext & {

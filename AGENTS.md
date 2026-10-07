@@ -100,14 +100,13 @@ follow [verify-expect-webdriverio](.agents/skills/verify-expect-webdriverio/SKIL
 - `multiRemote` / `MultiRemote` in camelCase / PascalCase code, e.g. `multiRemoteBrowser`.
 - Never write `multiremote` or `Multiremote` in new names.
 - Exceptions: WebdriverIO v9 names that this repo cannot rename
-  (`isMultiremote`, `WebdriverIO.MultiremoteConfig`, `multiremotebrowser`),
-  and the `/docs/multiremote` links.
+  (`isMultiremote`, `multiremotebrowser`), and the `/docs/multiremote` links.
 
 Must print nothing before committing:
 
 ```sh
 git grep --untracked -nE "[Mm]ultiremote" -- ':!AGENTS.md' \
-  | grep -vE "isMultiremote|MultiremoteConfig|multiremotebrowser|/docs/multiremote"
+  | grep -vE "isMultiremote|multiremotebrowser|/docs/multiremote"
 ```
 
 ## Working agreement

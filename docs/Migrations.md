@@ -74,11 +74,15 @@ Pass the `$$()`, `custom$$()` or `react$$()` result as is. A plain `MultiRemoteE
 
 Retries still re-fetch `$$()` elements from their scope. Only the best-effort re-fetch of a plain array from the global `multiRemoteBrowser`, and its warning, are removed.
 
+The network matchers accept the `MultiRemoteMock` of a multi-remote `mock()`, not an array of mocks: an array throws `Expected a mock or a multi-remote mock, received an array`.
+
+The types follow WebdriverIO v10: a multi-remote `$$()` is a `WebdriverIO.MultiRemoteElementArray`, and a multi-remote `mock()` is a `WebdriverIO.MultiRemoteMock`. The matchers do not accept a `MultiRemoteElement[]` or a `Mock[]` anymore, except the snapshot matchers. In a WebdriverIO config, use the v10 name `WebdriverIO.MultiRemoteConfig`.
+
 ## WebdriverIO objects are identified by their brand
 
 The matchers find a browser, an element, an element list or a mock by the WebdriverIO v10 brand `Symbol.for('wdio.kind')`, not by its properties or its class name. The objects that WebdriverIO gives have the brand, so tests that pass them need no change.
 
-A hand-made fake without the brand, for example in your own unit tests, is not recognized: the matcher fails with its normal message, or throws for an array of fake mocks. Give the fake the brand of the object it replaces, `'browser'`, `'browsing-context'`, `'element'`, `'element-array'` or `'mock'`, and the methods that the matcher calls. A fake element also needs `getElement()`:
+A hand-made fake without the brand, for example in your own unit tests, is not recognized: the matcher fails with its normal message. Give the fake the brand of the object it replaces, `'browser'`, `'browsing-context'`, `'element'`, `'element-array'` or `'mock'`, and the methods that the matcher calls. A fake element also needs `getElement()`:
 
 ```ts
 const element = Object.defineProperty({
@@ -88,7 +92,7 @@ const element = Object.defineProperty({
 }, Symbol.for('wdio.kind'), { value: 'element' })
 ```
 
-A copy of an element list, such as `[...elements]`, is still an array of elements, because each element keeps its brand.
+A copy of the element list of one browser, such as `[...elements]`, is still an array of elements, because each element keeps its brand. A copy of a multi-remote `$$()` is not recognized (see above).
 
 ## Jasmine types with `@wdio/jasmine-framework`
 

@@ -2,7 +2,6 @@ import { $, $$ } from '@wdio/globals'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { toHaveText } from '../../../src/matchers/element/toHaveText.js'
 import type { ChainablePromiseArray } from 'webdriverio'
-import type { WdioMultiRemoteElementArray } from '../../../src/types.js'
 import { $Factory, browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, elementFactory, notFoundElementFactory } from '../../__mocks__/@wdio/globals.js'
 import { waitUntil } from '../../../src/utils.js'
 import stripAnsi from 'strip-ansi'
@@ -1431,7 +1430,7 @@ Received: "Invalid Text"`)
         describe('given multi-remote elements', () => {
             const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
             // Exact text on every instance, so that the diff only shows the failing instance
-            const withText = <T extends WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray>(subject: T): T => {
+            const withText = <T extends WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray>(subject: T): T => {
                 mockMultiRemoteInstanceCommand(subject, 'chrome', 'getText', 'Valid Text')
                 mockMultiRemoteInstanceCommand(subject, 'firefox', 'getText', 'Valid Text')
                 return subject
