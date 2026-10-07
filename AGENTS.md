@@ -26,7 +26,8 @@ src/softExpect.ts        soft assertions (and softAssert*.ts)
 types/*.d.ts             hand-written public types (not generated)
 jest.d.ts, jasmine*.d.ts framework augmentations of the public types
 test/                    Vitest unit tests, mirror src/ (browser mocked in test/__mocks__)
-test-types/              type tests, one project per framework augmentation; declarations/ and package/ check the published files
+test-types/              type tests, one project per framework augmentation; declarations/ and package/ check the published files;
+                         wdio-testrunner/ checks the global and the exported `expect` with the WebdriverIO testrunner types
 playgrounds/             real-browser WebdriverIO projects (a pnpm workspace)
 docs/                    user docs, also published on webdriver.io
 ```

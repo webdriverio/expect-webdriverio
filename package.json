@@ -38,11 +38,6 @@
         "types": "./jasmine.d.ts"
       }
     ],
-    "./jasmine-wdio-expect-async": [
-      {
-        "types": "./jasmine-wdio-expect-async.d.ts"
-      }
-    ],
     "./expect-global": "./types/expect-global.d.ts",
     "./api": [
       {
@@ -72,12 +67,12 @@
     "test:types": "pnpm run ts",
     "ts": "run-s ts:* ts:*:*",
     "ts:jasmine": "cd test-types/jasmine && vitest --typecheck --coverage.enabled=false --typecheck.tsconfig ./tsconfig.json --run",
-    "ts:jasmine-global-expect-async": "cd test-types/jasmine-global-expect-async && vitest --typecheck --coverage.enabled=false --typecheck.tsconfig ./tsconfig.json --run",
     "ts:jest:@types-jest": "cd test-types/jest-@types_jest && vitest --typecheck --coverage.enabled=false --typecheck.tsconfig ./tsconfig.json --run",
     "ts:mocha": "cd test-types/mocha && vitest --typecheck --coverage.enabled=false --typecheck.tsconfig ./tsconfig.json --run",
     "ts:arethetypeswrong": "attw --pack . --profile esm-only",
     "ts:declarations": "node types-checks-declarations.js",
     "ts:package": "node types-checks-package.js",
+    "ts:wdio-testrunner": "tsc -p test-types/wdio-testrunner/tsconfig.mocha.json && tsc -p test-types/wdio-testrunner/tsconfig.jasmine.json",
     "checks:all": "pnpm run build && pnpm test",
     "watch": "pnpm run compile --watch",
     "prepare": "husky",
@@ -103,10 +98,12 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.19.0",
     "@vitest/coverage-v8": "^5.0.2",
-    "@wdio/cli": "^10.0.0",
-    "@wdio/globals": "^10.0.0",
+    "@wdio/cli": "^10.0.1",
+    "@wdio/globals": "^10.0.1",
+    "@wdio/jasmine-framework": "^10.0.1",
     "@wdio/protocols": "^10.0.0",
-    "@wdio/types": "^10.0.0",
+    "@wdio/runner": "^10.0.1",
+    "@wdio/types": "^10.0.1",
     "husky": "^9.1.7",
     "npm-run-all2": "^9.0.3",
     "oxlint": "^1.85.0",
@@ -116,7 +113,7 @@
     "typescript": "^7.0.2",
     "vitest": "^5.0.2",
     "webdriver": "^10.0.0",
-    "webdriverio": "^10.0.0"
+    "webdriverio": "^10.0.1"
   },
   "peerDependencies": {
     "@wdio/types": "^10.0.0",

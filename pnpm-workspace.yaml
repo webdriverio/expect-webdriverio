@@ -17,3 +17,7 @@ minimumReleaseAgeExclude:
   - create-wdio
   - webdriver
   - webdriverio
+
+patchedDependencies:
+  '@wdio/globals@10.0.1': patches/@wdio__globals@10.0.1.patch
+  '@wdio/jasmine-framework@10.0.1': patches/@wdio__jasmine-framework@10.0.1.patch

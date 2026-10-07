@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.base.json",
+  // The setup documented by `@wdio/jasmine-framework`: it types its hybrid global `expect`
+  "compilerOptions": { "types": ["@types/jasmine", "@wdio/globals/types", "@wdio/jasmine-framework"] },
+  "files": ["jasmine.ts"]
+}

@@ -479,6 +479,7 @@ describe('Jasmine type agumentations', () => {
         it('should support WDIO matchers', async () => {
             expectTypeOf(wdioExpect(browser).toHaveTitle('foo')).toEqualTypeOf<Promise<void>>()
             expectTypeOf(wdioExpect(element).toBeClickable()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(wdioExpect(element).not.toBeClickable()).toEqualTypeOf<Promise<void>>()
 
             expectTypeOf(wdioExpect(browser).toHaveTitle(wdioExpect.stringContaining('foo'))).toEqualTypeOf<Promise<void>>()
             expectTypeOf(wdioExpect(browser).toHaveTitle(jasmine.stringMatching('foo'))).toEqualTypeOf<Promise<void>>()
@@ -488,6 +489,12 @@ describe('Jasmine type agumentations', () => {
             expectTypeOf(wdioExpect({ a: 1 }).toHaveProperty('a')).toEqualTypeOf<void>()
             expectTypeOf(wdioExpect([1, 2]).toHaveLength(2)).toEqualTypeOf<void>()
             expectTypeOf(wdioExpect({ a: 1 }).toMatchObject({ a: 1 })).toEqualTypeOf<void>()
+            expectTypeOf(wdioExpect({ a: 1 }).not.toMatchObject({ a: 2 })).toEqualTypeOf<void>()
+        })
+
+        it('should support resolves and rejects for a promise', async () => {
+            expectTypeOf(wdioExpect(Promise.resolve(true)).resolves.toBe(true)).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(wdioExpect(Promise.resolve(true)).rejects.not.toBe(true)).toEqualTypeOf<Promise<void>>()
         })
 
         it('should support custom matchers', async () => {

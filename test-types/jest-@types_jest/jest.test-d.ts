@@ -1,4 +1,5 @@
 import { expectTypeOf } from 'vitest'
+import { expect as wdioExpect } from 'expect-webdriverio'
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 
 describe('Jest augmentation typing assertions tests paired with `@types/jest`', () => {
@@ -733,5 +734,38 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
             })
         })
     })
-})
 
+    describe('`expect` export: `import { expect as wdioExpect } from \'expect-webdriverio\'`', () => {
+        const booleanPromise: Promise<boolean> = Promise.resolve(true)
+
+        it('should have the WDIO matchers', async () => {
+            expectTypeOf(wdioExpect(browser).toHaveTitle('foo')).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(wdioExpect(chainableElement).toBeDisplayed()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(wdioExpect(element).not.toBeClickable()).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(wdioExpect(networkMock).toBeRequested()).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should have the Jest matchers', async () => {
+            expectTypeOf(wdioExpect(true).toBe(true)).toEqualTypeOf<void>()
+            expectTypeOf(wdioExpect({ a: 1 }).toHaveProperty('a')).toEqualTypeOf<void>()
+            expectTypeOf(wdioExpect({ a: 1 }).not.toMatchObject({ a: 2 })).toEqualTypeOf<void>()
+        })
+
+        it('should have resolves and rejects for a promise', async () => {
+            expectTypeOf(wdioExpect(booleanPromise).resolves.toBe(true)).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(wdioExpect(booleanPromise).rejects.not.toBe(true)).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should have the asymmetric matchers', async () => {
+            expectTypeOf(wdioExpect(browser).toHaveTitle(wdioExpect.stringContaining('foo'))).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(wdioExpect(browser).toHaveTitle(wdioExpect.not.stringContaining('foo'))).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(wdioExpect(element).toHaveText(wdioExpect.oneOf('foo', 'bar'))).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should have the custom matchers', async () => {
+            expectTypeOf(wdioExpect('test').toBeCustomWdio()).toEqualTypeOf<void>()
+            expectTypeOf(wdioExpect(1).toBeWithinRangeExpect(0, 2)).toEqualTypeOf<void>()
+            expectTypeOf(wdioExpect.toBeCustomWdio()).toEqualTypeOf<ExpectWebdriverIO.PartialMatcher<string>>()
+        })
+    })
+})

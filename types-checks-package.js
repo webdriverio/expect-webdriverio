@@ -44,7 +44,7 @@ try {
 
     await run('pnpm', ['install', '--prefer-offline'])
 
-    const entries = ['module', 'expect-global', 'jest', 'jasmine', 'jasmine-wdio-expect-async']
+    const entries = ['module', 'expect-global', 'jest', 'jasmine']
     const results = await Promise.allSettled(entries.map((entry) => run('node_modules/.bin/tsc', ['-p', `tsconfig.${entry}.json`])))
     const failures = results.flatMap((result, index) => result.status === 'rejected' ? [`${entries[index]}: ${result.reason.message}`] : [])
 

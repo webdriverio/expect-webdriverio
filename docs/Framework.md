@@ -185,26 +185,14 @@ This limitation is a known [upstream issue](https://github.com/jestjs/jest/issue
 
 
 #### Jasmine
-When paired with [Jasmine](https://jasmine.github.io/), [`@wdio/jasmine-framework`](https://www.npmjs.com/package/@wdio/jasmine-framework) is required to ensure proper runtime configuration. The adapter forces the global `expect` to map to Jasmine's native `expectAsync` and registers the necessary WDIO matchers via `addAsyncMatcher`.
+When paired with [Jasmine](https://jasmine.github.io/), [`@wdio/jasmine-framework`](https://www.npmjs.com/package/@wdio/jasmine-framework) is required to ensure proper runtime configuration. The adapter registers the WDIO matchers with `addAsyncMatchers` and sets a hybrid global `expect`:
+- Jasmine synchronous matchers (`toBe`, `toEqual`, ...) stay synchronous and return `void`.
+- WDIO matchers and Jasmine async matchers (`toBeResolved`, ...) go to `expectAsync` and return a promise: always `await` them.
 
-Jasmine differs from other standard assertion libraries in two key ways:
-1. **Built-in Soft Assertions:** Jasmine executes soft assertions out-of-the-box by tracking and collecting validation failures until a spec block finishes execution. Because this mechanism is native to Jasmine, the `expect-webdriverio` SoftAssertion service is neither required nor supported.
-2. **Implicit Promise Handling:** Forcing `expectAsync` to act as the global `expect` binding makes even basic matchers asynchronous. Because Jasmine automatically hooks into outstanding spec promises and flushes them at the end of the test, assertions may *appear* to execute correctly even if you omit the `await` keyword—unlike in other frameworks where `await` is strictly mandatory.
+Jasmine collects the failures until the spec ends (built-in soft assertions), so the `expect-webdriverio` SoftAssertion service is neither required nor supported.
 
-> ⚠️ **Warning:** Omitting `await` directly conflicts with [Jasmine's official async matcher recommendations](https://jasmine.github.io/api/edge/async-matchers) and can introduce silent timing issues or unhandled rejections into your test suite. Always explicitly `await` your assertions.
-
-##### Available Type Definitions
-1. **`expect-webdriverio/jasmine`**
-   Augments Jasmine's native `expectAsync` interface directly with WebDriverIO custom matchers.
-
-2. **`expect-webdriverio/jasmine-wdio-expect-async`**
-   Specifically dedicated to aligning with the `@wdio/jasmine-framework` architecture. This entry point is subject to breaking changes and may be moved directly into the framework adapter in a future release. It performs the following modifications:
-   - Augments `expect` with WebDriverIO custom matchers.
-   - Transforms synchronous, native Jasmine matchers on the `expect` interface to return promises (making them asynchronous).
-   - Establishes a global `expect` type definition with the above modifications.
-
-##### Global `expectAsync` forced as `expect`
-When using `@wdio/jasmine-framework`, the global ambient `expect` is forced to behave as Jasmine's native `expectAsync` under the hood. It is strongly recommended to explicitly `await` all assertions—including basic, non-WDIO matchers. While Jasmine automatically processes un-awaited spec promises at the end of test execution, omitting the keyword can introduce unpredictable timing issues or silent validation bypasses.
+##### Global `expect` with `@wdio/jasmine-framework`
+`@wdio/jasmine-framework` v10 has the types of its hybrid `expect`.
  - See [example playgrounds](https://github.com/webdriverio/expect-webdriverio/tree/main/playgrounds/jasmine/test/specs/globalImport)
 
 ```ts
@@ -212,10 +200,10 @@ describe('My tests', async () => {
     it('should verify my browser to have the expected url', async () => {
         await expect(browser).toHaveUrl('https://example.com')
 
-        // Always await basic assertions as well since they resolve to promises under the hood
-        await expect(true).toBe(true)
+        // Jasmine synchronous matcher
+        expect(true).toBe(true)
     })
-})     
+})
 ```
 
 Expected in `tsconfig.json`:
@@ -223,22 +211,20 @@ Expected in `tsconfig.json`:
 {
   "compilerOptions": {
     "types": [
-      // Enforces Promise-based assertion return types (Beta: Subject to future integration into @wdio/jasmine-framework)  
-      "expect-webdriverio/jasmine-wdio-expect-async", 
-      
+      "@types/jasmine",
       "@wdio/globals/types",
-      "@types/jasmine"
+      "@wdio/jasmine-framework"
     ]
   }
 }
 ```
 
-> **Warning**: Because `@wdio/jasmine-framework` overrides synchronous matchers and introduces complicated type augmentations, a proposal was made for WebdriverIO v10 to preserve Jasmine's clean `expectAsync` API, attach custom WDIO matchers directly to it, and keep basic matchers synchronous.
+`expectAsync` also has the WDIO matchers, e.g. `await expectAsync(browser).toHaveUrl('https://example.com')`, typed since `@wdio/jasmine-framework` 10.0.2.
 
 > Note: When using Jasmine, Jest's expect matchers are not leveraged, meaning standard Jest-specific assertion matchers are unavailable.
 
-##### Jasmine `expectAsync`
-When you do not use `@wdio/globals/types` (or when `@types/jasmine` takes type-resolution priority), the global ambient `expect` resolves to Jasmine's native behavior. By defining `expect-webdriverio/jasmine` in your types, you can use WDIO custom matchers directly on `expectAsync`. Note that if you are running outside of `@wdio/jasmine-framework`, these matchers must be registered manually.
+##### Jasmine without `@wdio/jasmine-framework`
+With Jasmine 6 alone, register the WDIO matchers on `expectAsync` yourself, and add `expect-webdriverio/jasmine` to `types`. Do not use `expect-webdriverio/jasmine` with `@wdio/jasmine-framework`, which has its own types.
 
 ```ts
 describe('My tests', async () => {
@@ -278,6 +264,8 @@ describe('My tests', async () => {
     })
 })     
 ```
+
+> Since `@wdio/jasmine-framework` 10.0.2, the types of this `expect` keep the Jest matchers, as at runtime.
 
 ##### Asymmetric matchers
 Jasmine's asymmetric matchers have improved, but certain limitations may still exist. 

@@ -15,7 +15,7 @@ const typeTests = readdirSync('test-types', { recursive: true, encoding: 'utf8' 
 describe('types coverage', () => {
     test('finds the matchers and the type tests', () => {
         expect(matcherNames.length).toBeGreaterThan(30)
-        expect(typeTests.length).toBeGreaterThanOrEqual(4)
+        expect(typeTests.length).toBeGreaterThanOrEqual(3)
     })
 
     test('each matcher has a public type', () => {
