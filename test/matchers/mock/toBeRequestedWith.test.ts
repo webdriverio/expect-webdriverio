@@ -4,7 +4,7 @@ import { toBeRequestedWith } from '../../../src/matchers/mock/toBeRequestedWith.
 import type { local } from 'webdriver'
 import { jasmine } from '../../__mocks__/jasmine.js'
 import stripAnsi from 'strip-ansi'
-import { multiRemoteBrowserFactory, multiRemoteMockFactory, setWdioKind } from '../../__mocks__/@wdio/globals.js'
+import { multiRemoteMockFactory, setWdioKind } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -762,35 +762,30 @@ describe('toBeRequestedWith on multi-remote mocks', () => {
     const thisNotContext = { isNot: true, toBeRequestedWith }
     const expected = { url: mockGet.request.url, method: mockGet.request.method }
 
-    /** One mock per instance, like `multiRemoteBrowser.mock()`, with the given calls */
-    const mocksWithCalls = (...calls: MockCallFixture[][]) => calls.map((mockCalls) => {
+    const mockWithCalls = (calls: MockCallFixture[]) => {
         const mock = new TestMock()
-        mock.calls.push(...mockCalls.map((call) => ({ ...call })))
+        mock.calls.push(...calls.map((call) => ({ ...call })))
         return mock as unknown as WebdriverIO.Mock
-    })
+    }
 
-    beforeEach(() => {
-        vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory())
-    })
-
-    afterEach(() => {
-        vi.unstubAllGlobals()
-    })
+    /** Like `multiRemoteBrowser.mock()`: one mock per instance, with the given calls */
+    const multiRemoteMockWithCalls = (calls: Record<string, MockCallFixture[]>) =>
+        multiRemoteMockFactory(Object.fromEntries(Object.entries(calls).map(([name, mockCalls]) => [name, mockWithCalls(mockCalls)])))
 
     test('passes when every instance\'s mock has a matching call', async () => {
-        const result = await thisContext.toBeRequestedWith(mocksWithCalls([mockGet], [mockPost, mockGet]), expected, { wait: 0 })
+        const result = await thisContext.toBeRequestedWith(multiRemoteMockWithCalls({ chrome: [mockGet], firefox: [mockPost, mockGet] }), expected, { wait: 0 })
 
         expect(result.pass).toBe(true)
     })
 
-    test('passes with a promise of mocks', async () => {
-        const result = await thisContext.toBeRequestedWith(Promise.resolve(mocksWithCalls([mockGet], [mockGet])), expected, { wait: 0 })
+    test('passes with a promise of a MultiRemoteMock, like a not-awaited mock()', async () => {
+        const result = await thisContext.toBeRequestedWith(Promise.resolve(multiRemoteMockWithCalls({ chrome: [mockGet], firefox: [mockGet] })), expected, { wait: 0 })
 
         expect(result.pass).toBe(true)
     })
 
     test('fails with a per-instance message when an instance\'s mock has no matching call', async () => {
-        const result = await thisContext.toBeRequestedWith(mocksWithCalls([mockGet], []), expected, { wait: 0 })
+        const result = await thisContext.toBeRequestedWith(multiRemoteMockWithCalls({ chrome: [mockGet], firefox: [] }), expected, { wait: 0 })
 
         expect(result.pass).toBe(false)
         expect(stripAnsi(result.message())).toEqual(`\
@@ -812,39 +807,11 @@ Expect multi-remote<chrome, firefox> mocks to be called with
   }`)
     })
 
-    test('rejects an empty array of mocks, which has nothing to assert on, also with .not', async () => {
-        await expect(thisContext.toBeRequestedWith([], expected, { wait: 0 })).rejects.toThrow('Expected a mock or a non-empty array of mocks, received an empty array')
-        await expect(thisNotContext.toBeRequestedWith([], expected, { wait: 0 })).rejects.toThrow('Expected a mock or a non-empty array of mocks, received an empty array')
-    })
+    test('names the mocks by the instances of the MultiRemoteMock, in its order', async () => {
+        const result = await thisContext.toBeRequestedWith(multiRemoteMockWithCalls({ firefox: [], chrome: [mockGet] }), expected, { wait: 0 })
 
-    test('fails with .not when only some instances\' mocks have a matching call', async () => {
-        const result = await thisNotContext.toBeRequestedWith(mocksWithCalls([mockGet], [mockPost]), expected, { wait: 0 })
-
-        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
-    })
-
-    test('passes with .not when no instance\'s mock has a matching call', async () => {
-        const result = await thisNotContext.toBeRequestedWith(mocksWithCalls([mockPost], []), expected, { wait: 0 })
-
-        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
-    })
-
-    describe('WebdriverIO v10 MultiRemoteMock', () => {
-        test('passes when every instance\'s mock has a matching call', async () => {
-            const [chrome, firefox] = mocksWithCalls([mockGet], [mockPost, mockGet])
-
-            const result = await thisContext.toBeRequestedWith(multiRemoteMockFactory({ chrome, firefox }), expected, { wait: 0 })
-
-            expect(result.pass).toBe(true)
-        })
-
-        test('fails with a message named by the instances of the MultiRemoteMock when an instance\'s mock has no matching call', async () => {
-            const [firefox, chrome] = mocksWithCalls([], [mockGet])
-
-            const result = await thisContext.toBeRequestedWith(multiRemoteMockFactory({ firefox, chrome }), expected, { wait: 0 })
-
-            expect(result.pass).toBe(false)
-            expect(stripAnsi(result.message())).toEqual(`\
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
 Expect multi-remote<firefox, chrome> mocks to be called with
 
 - Expected  - 4
@@ -861,6 +828,24 @@ Expect multi-remote<firefox, chrome> mocks to be called with
 -   },
 +   "firefox": "was not called",
   }`)
-        })
+    })
+
+    test('rejects an array of mocks, also with .not: a multi-remote mock() is a MultiRemoteMock', async () => {
+        const mocks = [mockWithCalls([mockGet]), mockWithCalls([mockGet])] as unknown as WebdriverIO.Mock
+
+        await expect(thisContext.toBeRequestedWith(mocks, expected, { wait: 0 })).rejects.toThrow('Expected a mock or a multi-remote mock, received an array')
+        await expect(thisNotContext.toBeRequestedWith(mocks, expected, { wait: 0 })).rejects.toThrow('Expected a mock or a multi-remote mock, received an array')
+    })
+
+    test('fails with .not when only some instances\' mocks have a matching call', async () => {
+        const result = await thisNotContext.toBeRequestedWith(multiRemoteMockWithCalls({ chrome: [mockGet], firefox: [mockPost] }), expected, { wait: 0 })
+
+        expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+    })
+
+    test('passes with .not when no instance\'s mock has a matching call', async () => {
+        const result = await thisNotContext.toBeRequestedWith(multiRemoteMockWithCalls({ chrome: [mockPost], firefox: [] }), expected, { wait: 0 })
+
+        expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
     })
 })

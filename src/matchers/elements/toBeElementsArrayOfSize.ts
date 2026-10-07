@@ -1,7 +1,7 @@
 import { waitUntil, enhanceError, } from '../../utils.js'
 import { refetchElements, synchronizeElementArray, syncronizeElements } from '../../util/refetchElements.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMatcherContext } from '../../types.js'
+import type { WdioElementsMaybePromise, WdioMatcherContext } from '../../types.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { awaitElementArray, isMultiRemoteElementArray, isStrictlyElementArray } from '../../util/elementsUtil.js'
@@ -17,14 +17,14 @@ export async function toBeElementsArrayOfSize(
  * Multi-Remote `$$()`: the size is checked per browser instance.
  */
 export async function toBeElementsArrayOfSize(
-    received: WdioMultiRemoteElementArray | Promise<WdioMultiRemoteElementArray>,
+    received: WebdriverIO.MultiRemoteElementArray | Promise<WebdriverIO.MultiRemoteElementArray>,
     expectedValue: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toBeElementsArrayOfSize(
     this: WdioMatcherContext,
-    received: WdioElementsMaybePromise | WdioMultiRemoteElementArray | Promise<WdioMultiRemoteElementArray>,
+    received: WdioElementsMaybePromise | WebdriverIO.MultiRemoteElementArray | Promise<WebdriverIO.MultiRemoteElementArray>,
     expectedValue: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
@@ -97,7 +97,7 @@ export async function toBeElementsArrayOfSize(
  * Browsers returning a different count are zipped by index by WebdriverIO, so counts are taken per instance.
  */
 const multiRemoteElementsArrayOfSize = async (
-    received: WdioMultiRemoteElementArray,
+    received: WebdriverIO.MultiRemoteElementArray,
     expectedValue: unknown,
     options: ExpectWebdriverIO.CommandOptions,
     { context, verb, expectation }: { context: ExpectWebdriverIO.MatcherContext, verb: string, expectation: string }
@@ -157,7 +157,7 @@ const getPerInstanceSizes = (value: unknown): MultiRemoteValues<number | ExpectW
     return isMultiRemoteMatcher(value) ? value.sample as MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> : undefined
 }
 
-const countElementsPerInstance = (elements: WdioMultiRemoteElementArray, instances: string[]): MultiRemoteValues<number> => {
+const countElementsPerInstance = (elements: WebdriverIO.MultiRemoteElementArray, instances: string[]): MultiRemoteValues<number> => {
     const elementsPerInstance = getElementsPerInstance(elements, instances)
     return Object.fromEntries(instances.map((name) => [name, elementsPerInstance[name].length]))
 }

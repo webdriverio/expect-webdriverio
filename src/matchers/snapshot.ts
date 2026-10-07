@@ -6,7 +6,7 @@ import { SnapshotService } from '../snapshot.js'
 import { awaitElementOrArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from '../util/elementsUtil.js'
 import { getElementsPerInstance } from '../util/multiRemoteUtils.js'
 import { filterInlineSnapshotStack } from '../util/stackUtil.js'
-import type { WdioMultiRemoteElementArray, WdioMatcherContext } from '../types.js'
+import type { WdioMatcherContext } from '../types.js'
 
 interface InlineSnapshotOptions {
     inlineSnapshot: string
@@ -89,7 +89,7 @@ const getOuterHTML = (element: WebdriverIO.Element) => element.getHTML({ include
  * The outerHTML shared by every instance, like without multi-remote, else one outerHTML per instance, keyed by instance
  * name (sorted, whatever the instances order or the snapshotFormat).
  */
-const getMultiRemoteOuterHTML = async (multiRemoteElements: WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray) => {
+const getMultiRemoteOuterHTML = async (multiRemoteElements: WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray) => {
     const isSingleElement = isMultiRemoteElement(multiRemoteElements)
     if (!isSingleElement && multiRemoteElements.length === 0) {
         // An empty `MultiRemoteElementArray`, found on no instance

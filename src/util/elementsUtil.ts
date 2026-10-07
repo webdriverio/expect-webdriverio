@@ -1,7 +1,7 @@
 import { isArrayContainingMatcher } from '../utils.js'
 import { hasMultiRemoteFlag } from './multiRemoteUtils.js'
 import { getLoadedWdioKind, getWdioKind } from './wdioKind.js'
-import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElementArray, WdioMultiRemoteElements } from '../types.js'
+import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../types.js'
 
 /**
  * Wraps the expected value in an array if both the target element (`el`) and the `actual` value are arrays.
@@ -110,7 +110,7 @@ export const isElementOrArrayOrMultiRemoteElementLike = (obj: unknown): obj is W
  */
 export const awaitElementOrArray = async(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | PromiseLike<WebdriverIO.Element> | WdioMultiRemoteElements | unknown
-): Promise<{ selector?: WdioElements | WebdriverIO.Element | WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray, elements?: WdioElements | WdioMultiRemoteElementArray, element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean, multiRemoteSelector?: WebdriverIO.MultiRemoteElement }> => {
+): Promise<{ selector?: WdioElements | WebdriverIO.Element | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray, elements?: WdioElements | WebdriverIO.MultiRemoteElementArray, element?: WebdriverIO.Element, other?: unknown, isEmptyElements?: boolean, multiRemoteSelector?: WebdriverIO.MultiRemoteElement }> => {
     if (!received || typeof received !== 'object') {
         return { other: received }
     }
@@ -165,7 +165,7 @@ export const awaitElementArray = async(received: WdioElementsMaybePromise | unde
     return { elements: awaitedElements }
 }
 
-const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray => {
+const isMultiRemote = (obj: unknown): obj is WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray => {
     return hasMultiRemoteFlag(obj)
 }
 
@@ -179,7 +179,7 @@ export const isMultiRemoteElement = (obj: unknown): obj is WebdriverIO.MultiRemo
 /**
  * The `MultiRemoteElementArray` of a multi-remote `$$()`, which knows its parent, its selector and its instances.
  */
-export const isMultiRemoteElementArray = (obj: unknown): obj is WdioMultiRemoteElementArray => {
+export const isMultiRemoteElementArray = (obj: unknown): obj is WebdriverIO.MultiRemoteElementArray => {
     return getWdioKind(obj) === 'element-array' && isMultiRemote(obj)
 }
 

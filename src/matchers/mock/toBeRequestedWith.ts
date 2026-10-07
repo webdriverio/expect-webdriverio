@@ -3,9 +3,9 @@ import type { local } from 'webdriver'
 import { waitUntil, enhanceError, isAsymmetricMatcher, getAsymmetricMatcherValue } from '../../utils.js'
 import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import { awaitMocks, getMockInstanceNames, isMockArray } from '../../util/multiRemoteUtils.js'
+import { awaitMocks, isInstanceMocks } from '../../util/multiRemoteUtils.js'
 import { formatMultiRemoteMocks, labelMultiRemoteValues } from '../../util/formatMessage.js'
-import type { WdioMatcherContext, WdioMultiRemoteMocks } from '../../types.js'
+import type { WdioMatcherContext, WdioMultiRemoteMockMaybePromise } from '../../types.js'
 
 const STR_LIMIT = 80
 const KEY_LIMIT = 12
@@ -39,14 +39,14 @@ export async function toBeRequestedWith(
  * Multi-remote mocks (`multiRemoteBrowser.mock()`): every instance's mock must have a matching call
  */
 export async function toBeRequestedWith(
-    received: WdioMultiRemoteMocks,
+    received: WdioMultiRemoteMockMaybePromise,
     expectedValue?: ExpectWebdriverIO.RequestedWith,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toBeRequestedWith(
     this: WdioMatcherContext,
-    received: WebdriverIO.Mock | WdioMultiRemoteMocks,
+    received: WebdriverIO.Mock | WdioMultiRemoteMockMaybePromise,
     expectedValue: ExpectWebdriverIO.RequestedWith = {},
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
@@ -66,22 +66,19 @@ export async function toBeRequestedWith(
     let pass: boolean
     let message: string
 
-    if (isMockArray(mocks)) {
-        const instanceNames = getMockInstanceNames(mocks)
-        const { names } = instanceNames
-        // Mocks named by index may not be multi-remote ones, so they keep the plain `Object` label
-        const label = (value: unknown) => instanceNames.isNamedByInstance ? labelMultiRemoteValues(value) : value
-        const results = await Promise.all(mocks.map((mock) => checkRequestedWith(mock, expectedValue, options, !!isNot, parseCache)))
+    if (isInstanceMocks(mocks)) {
+        const { names, mocks: instanceMocks } = mocks
+        const results = await Promise.all(instanceMocks.map((mock) => checkRequestedWith(mock, expectedValue, options, !!isNot, parseCache)))
         // `pass` means "a matching call was found", `.not` being inverted downstream: strict on every instance,
         // so with `.not` no instance may have a matching call
         pass = isNot ? results.some((result) => result.pass) : results.every((result) => result.pass)
         const expected = Object.fromEntries(names.map((name) => [name, minifyRequestedWith(expectedValue)]))
         const actual = Object.fromEntries(results.map((result, index) => [names[index], result.actual]))
         const payloadNeverCollected = results.some((result) => !result.pass && result.payloadNeverCollected)
-        message = enhanceError(formatMultiRemoteMocks(instanceNames), label(expected), label(actual), this, verb, expectation, '', options)
+        message = enhanceError(formatMultiRemoteMocks(names), labelMultiRemoteValues(expected), labelMultiRemoteValues(actual), this, verb, expectation, '', options)
             + (!pass && !isNot && payloadNeverCollected ? payloadCollectionHint(expectedValue) : '')
     } else {
-        const result = await checkRequestedWith(mocks as WebdriverIO.Mock, expectedValue, options, !!isNot, parseCache)
+        const result = await checkRequestedWith(mocks, expectedValue, options, !!isNot, parseCache)
         pass = result.pass
         message = enhanceError(
             'mock',

@@ -5,7 +5,6 @@
 import { vi } from 'vitest'
 import type { ChainablePromiseArray, ChainablePromiseElement, ParsedCSSValue } from 'webdriverio'
 import { Size } from '../../../src/matchers/element/toHaveSize'
-import type { WdioMultiRemoteElementArray, WdioMultiRemoteMock } from '../../../src/types'
 import { WDIO_KIND, type WdioKind } from '../../../src/util/wdioKind'
 
 /** WebdriverIO v10 sets it on a not-awaited element (`$()`, `$$()[i]`) */
@@ -502,16 +501,16 @@ export function notAwaitedMultiRemoteElementArrayMock(
     selector: string,
     length = 2,
     parent: WebdriverIO.MultiRemoteBrowser | WebdriverIO.MultiRemoteElement = multiRemoteBrowserFactory(browsers)
-): WdioMultiRemoteElementArray {
+): WebdriverIO.MultiRemoteElementArray {
     const elementArray = createMultiRemoteElementArrayMock(browsers, selector, length, parent)
     let resolved = false
-    let loading: Promise<WdioMultiRemoteElementArray> | undefined
+    let loading: Promise<WebdriverIO.MultiRemoteElementArray> | undefined
     // Like the `load()` of WebdriverIO v10: the list is resolved later, not when the load starts
     const settle = () => loading ??= new Promise((resolve) => setTimeout(() => {
         resolved = true
         resolve(notAwaited)
     }))
-    const notAwaited: WdioMultiRemoteElementArray = new Proxy(elementArray, {
+    const notAwaited: WebdriverIO.MultiRemoteElementArray = new Proxy(elementArray, {
         get(target, prop, receiver) {
             if (!resolved) {
                 if (prop === 'then') {
@@ -542,7 +541,7 @@ export function createMultiRemoteElementArrayMock(
     selector: string,
     length = 2,
     parent: WebdriverIO.MultiRemoteBrowser | WebdriverIO.MultiRemoteElement = multiRemoteBrowserFactory(browsers)
-): WdioMultiRemoteElementArray {
+): WebdriverIO.MultiRemoteElementArray {
     const instances = Object.keys(browsers)
 
     // Per-instance element arrays, e.g. { chrome: [el0, el1], firefox: [el0, el1] }
@@ -553,26 +552,26 @@ export function createMultiRemoteElementArrayMock(
         buildMultiRemoteElementWrapper(instances, instanceElementArrays.map((elements) => elements[index]), selector)
     )
 
-    const elementArray = setWdioKind(wrapped, 'element-array') as unknown as WdioMultiRemoteElementArray & { isMultiRemote: true }
+    const elementArray = setWdioKind(wrapped, 'element-array') as unknown as WebdriverIO.MultiRemoteElementArray & { isMultiRemote: true }
     elementArray.isMultiRemote = true
     elementArray.selector = selector
     elementArray.foundWith = '$$'
     elementArray.props = []
-    elementArray.parent = parent as WdioMultiRemoteElementArray['parent']
+    elementArray.parent = parent as WebdriverIO.MultiRemoteElementArray['parent']
     elementArray.getElements = vi.fn().mockResolvedValue(elementArray)
     // WebdriverIO's `enhanceElementsArray()` binds real async iterators here (running callbacks
     // concurrently and awaiting them, unlike `Array.prototype.forEach`); only `forEach` is mocked
     // since it's the only one this codebase currently relies on.
     elementArray.forEach = (async (callback: (element: WebdriverIO.MultiRemoteElement, index: number, array: WebdriverIO.MultiRemoteElement[]) => unknown) => {
         await Promise.all(wrapped.map((element, index) => callback(element, index, wrapped)))
-    }) as unknown as WdioMultiRemoteElementArray['forEach']
+    }) as unknown as WebdriverIO.MultiRemoteElementArray['forEach']
 
     return elementArray
 }
 
 /** Mocks a WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock` with one mock per instance name */
-export const multiRemoteMockFactory = (mocks: Record<string, WebdriverIO.Mock>): WdioMultiRemoteMock => setWdioKind({
+export const multiRemoteMockFactory = (mocks: Record<string, WebdriverIO.Mock>): WebdriverIO.MultiRemoteMock => setWdioKind({
     isMultiRemote: true as const,
     instances: Object.keys(mocks),
     getInstance: (name: string) => mocks[name]
-}, 'mock')
+}, 'mock') as unknown as WebdriverIO.MultiRemoteMock

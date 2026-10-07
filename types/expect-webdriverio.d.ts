@@ -84,18 +84,12 @@ type ArrayOfElementsPromise = Promise<WebdriverIO.Element[]>
  */
 type ElementOrMaybeSomeArrayLike = ElementLike | MaybeSomeElementArrayLike
 type ElementLike = WebdriverIO.Element | ChainablePromiseElement
-// `MultiRemoteElement[]` is the WebdriverIO v9 type of a multi-remote `$$()`, a `MultiRemoteElementArray` at runtime
-// TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteElementArray` type instead of `MultiRemoteElement[]`
-type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[] | WebdriverIO.MultiRemoteElementArray
-type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElement[] | WebdriverIO.MultiRemoteElementArray>
-type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElement[] | WebdriverIO.MultiRemoteElementArray
+type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElementArray
+type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElementArray>
+type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray
 type MockPromise = Promise<WebdriverIO.Mock>
-/** WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock` with one mock per instance name, not in the v9 types */
-// TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteMock` type instead
-type MultiRemoteMockLike = { isMultiRemote: true, instances: readonly string[], getInstance(name: string): WebdriverIO.Mock }
 /** Multi-remote `mock()`, one mock per instance: every instance's mock must satisfy the network matcher */
-// TODO(#2255) WebdriverIO v9: remove the `WebdriverIO.Mock[]` of the v9 `mock()`
-type MultiRemoteMocks = WebdriverIO.Mock[] | Promise<WebdriverIO.Mock[]> | MultiRemoteMockLike | Promise<MultiRemoteMockLike>
+type MultiRemoteMocks = WebdriverIO.MultiRemoteMock | Promise<WebdriverIO.MultiRemoteMock>
 
 /**
  * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
@@ -110,8 +104,8 @@ type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT ext
  *
  * Fix: If type inference issues arise, split the implementation into separate interfaces
  */
-type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement, FnMultiRemoteElement = FnElement, FnMultiRemoteElements = FnArray> = ActualT extends WebdriverIO.MultiRemoteElement[] | WebdriverIO.MultiRemoteElementArray ? FnMultiRemoteElements : ActualT extends WebdriverIO.MultiRemoteElement ? FnMultiRemoteElement : ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement : never
-type FnWhenElementArrayLike<ActualT, Fn, FnMultiRemoteElements = Fn> = ActualT extends WebdriverIO.MultiRemoteElement[] | WebdriverIO.MultiRemoteElementArray ? FnMultiRemoteElements : ActualT extends MaybeSomeElementArrayLike ? Fn : never
+type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement, FnMultiRemoteElement = FnElement, FnMultiRemoteElements = FnArray> = ActualT extends WebdriverIO.MultiRemoteElementArray ? FnMultiRemoteElements : ActualT extends WebdriverIO.MultiRemoteElement ? FnMultiRemoteElement : ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement : never
+type FnWhenElementArrayLike<ActualT, Fn, FnMultiRemoteElements = Fn> = ActualT extends WebdriverIO.MultiRemoteElementArray ? FnMultiRemoteElements : ActualT extends MaybeSomeElementArrayLike ? Fn : never
 
 /**
  * Same as the other but because of Jasmine and it's expectAsync typing which does not force T to be a promise, then we need to account for `WebdriverIO.Mock
@@ -271,7 +265,7 @@ interface WdioNetworkMatchers<_R, ActualT> {
 
 /**
  * Matchers dedicated to WebdriverIO Element or ElementArray (or chainable) on Browser
- * For Multi-Remote Browser, MultiRemoteElement or MultiRemoteElement[]
+ * For Multi-Remote Browser, MultiRemoteElement or MultiRemoteElementArray
  * When asserting on an element or element array's properties requiring to be awaited, the return type is a Promise.
  * When actual is neither of WebdriverIO.Element, WebdriverIO.ElementArray, ChainableElement, ChainableElementArray, the return type is never, so the function cannot be used.
  */

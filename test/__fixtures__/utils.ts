@@ -1,4 +1,3 @@
-import type { WdioMultiRemoteElementArray } from '../../src/types.js'
 
 export function matcherNameLastWords(matcherName: string) {
     return matcherName.replace(/^toHave/, '').replace(/^toBe/, '')
@@ -17,7 +16,7 @@ export function lastMatcherWords(matcherName: string) {
  * multi-remote `$$()`, e.g. to make firefox differ from chrome.
  */
 export function mockMultiRemoteInstanceCommand(
-    subject: WebdriverIO.MultiRemoteElement | WdioMultiRemoteElementArray,
+    subject: WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray,
     instance: string,
     command: 'getText' | 'getAttribute' | 'getProperty' | 'getHTML' | 'getComputedLabel' | 'getComputedRole' | 'getSize' | 'isDisplayed' | 'isExisting' | 'isSelected' | 'isClickable' | 'isFocused' | 'isEnabled',
     value: unknown
@@ -34,7 +33,7 @@ export function mockMultiRemoteInstanceCommand(
  * and per instance, e.g. `{ chrome: ['a', 'b'], firefox: ['c', 'd'] }`.
  */
 export function mockMultiRemoteElementsCommand(
-    elements: WdioMultiRemoteElementArray,
+    elements: WebdriverIO.MultiRemoteElementArray,
     command: Parameters<typeof mockMultiRemoteInstanceCommand>[2],
     valuesPerInstance: Record<string, unknown[]>
 ) {

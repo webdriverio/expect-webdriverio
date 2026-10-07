@@ -717,8 +717,7 @@ Received: "not displayed"`)
             { name: 'multi-remote element .$()', subject: () => createMultiRemoteElementMock(browsers(), 'parent').$('sel') },
             { name: 'multi-remote element .$$()', subject: () => createMultiRemoteElementMock(browsers(), 'parent').$$('sel') },
         ])('passes at once for a not-awaited $name', async ({ subject }) => {
-            // TODO(#2255) use the WebdriverIO v10 `MultiRemoteElementArray` type in the matcher types
-            const result = await thisContext.toBeDisplayed(subject() as unknown as WebdriverIO.MultiRemoteElement, { wait: 0 })
+            const result = await thisContext.toBeDisplayed(subject(), { wait: 0 })
 
             expect(result.pass).toBe(true)
         })

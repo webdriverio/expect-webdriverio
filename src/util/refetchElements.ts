@@ -1,12 +1,12 @@
 import type { ChainablePromiseArray } from 'webdriverio'
-import type { WdioElements, WdioMultiRemoteElementArray } from '../types.js'
+import type { WdioElements } from '../types.js'
 import { isMultiRemoteElementArray, isStrictlyElementArray } from './elementsUtil.js'
 
 /**
  * Refetch elements array or return when elements is not of type WebdriverIO.ElementArray or a `MultiRemoteElementArray`
  * @param elements WebdriverIO.ElementArray | WebdriverIO.Element[] | MultiRemoteElementArray
  */
-export const refetchElements = async <T extends WdioElements | WdioMultiRemoteElementArray>(
+export const refetchElements = async <T extends WdioElements | WebdriverIO.MultiRemoteElementArray>(
     elements: T,
 ): Promise<T> => {
     if (elements
@@ -34,7 +34,7 @@ export const syncronizeChainableElementArray = async (subject: ChainablePromiseA
     }
 }
 
-export const synchronizeElementArray = (subject: WebdriverIO.ElementArray, refetchedElements: WebdriverIO.ElementArray) => {
+export const synchronizeElementArray = <T extends WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElementArray>(subject: T, refetchedElements: T) => {
     subject.length = refetchedElements.length
     for (let index = 0; index < refetchedElements.length; index++) {
         subject[index] = refetchedElements[index]
@@ -44,7 +44,7 @@ export const synchronizeElementArray = (subject: WebdriverIO.ElementArray, refet
 /**
  * Refetch and synchronize `subject` with the latest elements, returning them.
  */
-export const refreshElementArray = async <T extends WebdriverIO.ElementArray>(subject: T): Promise<T> => {
+export const refreshElementArray = async <T extends WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElementArray>(subject: T): Promise<T> => {
     const refetchedElements = await refetchElements(subject)
     synchronizeElementArray(subject, refetchedElements)
     return subject

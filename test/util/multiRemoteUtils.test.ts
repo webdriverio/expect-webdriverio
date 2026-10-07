@@ -1,6 +1,6 @@
-import { vi, test, describe, expect, afterEach } from 'vitest'
+import { vi, test, describe, expect } from 'vitest'
 
-import { getElementsPerInstance, getGlobalMultiRemoteInstanceNames, getPerInstanceValues, getMockInstanceNames, hasMultiRemoteFlag, hasSameInstanceNames, isBrowser, isMock, isMockArray, isMultiRemoteBrowser, isMultiRemoteMatcher, isMultiRemoteMock, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
+import { awaitMocks, getElementsPerInstance, getPerInstanceValues, hasMultiRemoteFlag, hasSameInstanceNames, isBrowser, isMock, isMultiRemoteBrowser, isMultiRemoteMatcher, isMultiRemoteMock, isMultiRemoteValues } from '../../src/util/multiRemoteUtils.js'
 import { multiRemote } from '../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, multiRemoteBrowserFactory, multiRemoteMockFactory, setWdioKind } from '../__mocks__/@wdio/globals.js'
 
@@ -95,28 +95,6 @@ describe('multiRemoteUtils', () => {
         expect(isMultiRemoteMatcher(undefined)).toBe(false)
     })
 
-    describe(getGlobalMultiRemoteInstanceNames, () => {
-        afterEach(() => {
-            vi.unstubAllGlobals()
-        })
-
-        test('returns the instances of the global multiRemoteBrowser', () => {
-            vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory())
-
-            expect(getGlobalMultiRemoteInstanceNames()).toEqual(['chrome', 'firefox'])
-        })
-
-        test('returns undefined without the global multiRemoteBrowser', () => {
-            expect(getGlobalMultiRemoteInstanceNames()).toBeUndefined()
-        })
-
-        test('returns undefined when the @wdio/globals proxy has no registered browser', () => {
-            vi.stubGlobal('multiRemoteBrowser', new Proxy({}, { get: () => { throw new Error('No browser instance registered') } }))
-
-            expect(getGlobalMultiRemoteInstanceNames()).toBeUndefined()
-        })
-    })
-
     describe(hasMultiRemoteFlag, () => {
         test.each([
             ['WebdriverIO v10 `isMultiRemote`', { isMultiRemote: true }],
@@ -130,39 +108,27 @@ describe('multiRemoteUtils', () => {
         })
     })
 
-    describe(isMockArray, () => {
+    describe(awaitMocks, () => {
         const mock = () => setWdioKind({ calls: [] }, 'mock') as unknown as WebdriverIO.Mock
 
-        test('is true for a non-empty array of mocks', () => {
-            expect(isMockArray([mock(), mock()])).toBe(true)
+        test('gives the mock of each instance of a MultiRemoteMock, awaited or not, with the instance names', async () => {
+            const firefox = mock()
+            const chrome = mock()
+            const multiRemoteMock = multiRemoteMockFactory({ firefox, chrome })
+
+            expect(await awaitMocks(multiRemoteMock)).toEqual({ names: ['firefox', 'chrome'], mocks: [firefox, chrome] })
+            expect(await awaitMocks(Promise.resolve(multiRemoteMock))).toEqual({ names: ['firefox', 'chrome'], mocks: [firefox, chrome] })
         })
 
-        test.each([[], mock(), [mock(), {}], ['a'], undefined])('is false for %s', (value) => {
-            expect(isMockArray(value)).toBe(false)
-        })
-    })
+        test('gives a mock, awaited or not', async () => {
+            const single = mock()
 
-    describe(getMockInstanceNames, () => {
-        const mocks = (length: number) => Array.from({ length }, () => setWdioKind({ calls: [] }, 'mock') as unknown as WebdriverIO.Mock)
-
-        afterEach(() => {
-            vi.unstubAllGlobals()
+            expect(await awaitMocks(single)).toBe(single)
+            expect(await awaitMocks(Promise.resolve(single) as unknown as WebdriverIO.Mock)).toBe(single)
         })
 
-        test('names the mocks after the global multiRemoteBrowser instances, in the same order', () => {
-            vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory())
-
-            expect(getMockInstanceNames(mocks(2))).toEqual({ names: ['chrome', 'firefox'], isNamedByInstance: true })
-        })
-
-        test('names the mocks by index when they are not as many as the global instances, e.g. from select()', () => {
-            vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory())
-
-            expect(getMockInstanceNames(mocks(1))).toEqual({ names: ['mocks[0]'], isNamedByInstance: false })
-        })
-
-        test('names the mocks by index without the global multiRemoteBrowser', () => {
-            expect(getMockInstanceNames(mocks(2))).toEqual({ names: ['mocks[0]', 'mocks[1]'], isNamedByInstance: false })
+        test.each([[[]], [[mock(), mock()]]])('rejects an array: %s', async (mocks) => {
+            await expect(awaitMocks(mocks as unknown as WebdriverIO.Mock)).rejects.toThrow('Expected a mock or a multi-remote mock, received an array')
         })
     })
 

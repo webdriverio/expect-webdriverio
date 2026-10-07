@@ -1,5 +1,5 @@
 import { isAsymmetricMatcher } from '../utils.js'
-import type { WdioMultiRemoteElementArray, WdioMultiRemoteMock } from '../types.js'
+import type { WdioMultiRemoteMockMaybePromise } from '../types.js'
 import { getWdioKind } from './wdioKind.js'
 
 export const isMultiRemoteValues = (value: unknown, existingInstanceNames?: string[]): value is MultiRemoteValues<unknown> =>  {
@@ -45,7 +45,7 @@ export const getPerInstanceValues = (value: unknown, { allowObjectExpectedValue 
  * WebdriverIO zips the per-instance results by index, so when instances find a different number of elements the
  * trailing wrappers hold no element for the instances that found fewer (and `getInstance` then throws).
  */
-export const getElementsPerInstance = (elements: WdioMultiRemoteElementArray | readonly WebdriverIO.MultiRemoteElement[], instances: string[]): MultiRemoteValues<WebdriverIO.Element[]> => {
+export const getElementsPerInstance = (elements: WebdriverIO.MultiRemoteElementArray | readonly WebdriverIO.MultiRemoteElement[], instances: string[]): MultiRemoteValues<WebdriverIO.Element[]> => {
     // The items of a `MultiRemoteElementArray` are `MultiRemoteElement` at runtime
     const multiRemoteElements = elements as unknown as ArrayLike<WebdriverIO.MultiRemoteElement>
     return Object.fromEntries(instances.map((name) => {
@@ -69,75 +69,36 @@ const getInstanceOrUndefined = (element: WebdriverIO.MultiRemoteElement, name: s
     }
 }
 
-/**
- * Best effort: the instance names of the global `multiRemoteBrowser` injected by the testrunner, ignoring any `select()` subset.
- * `undefined` without injected globals, or when the `@wdio/globals` proxy has no registered browser (it then throws).
- */
-export const getGlobalMultiRemoteInstanceNames = (): string[] | undefined => {
-    try {
-        const instances = typeof multiRemoteBrowser === 'undefined' ? undefined : multiRemoteBrowser.instances
-        return Array.isArray(instances) ? instances : undefined
-    } catch {
-        return undefined
-    }
-}
-
 /** A `WebdriverIO.Mock` of one browser */
 export const isMock = (obj: unknown): obj is WebdriverIO.Mock => {
     return getWdioKind(obj) === 'mock' && !hasMultiRemoteFlag(obj)
 }
 
-/** The mocks returned by a multi-remote `mock()`, one per instance, or any other non-empty array of mocks */
-export const isMockArray = (obj: unknown): obj is WebdriverIO.Mock[] => {
-    return Array.isArray(obj) && obj.length > 0 && obj.every(isMock)
-}
-
-/** A WebdriverIO v10 multi-remote `mock()`: a `MultiRemoteMock`, which is not an array and has no `calls` */
-export const isMultiRemoteMock = (obj: unknown): obj is WdioMultiRemoteMock => {
+/** A multi-remote `mock()`: a `MultiRemoteMock`, which is not an array and has no `calls` */
+export const isMultiRemoteMock = (obj: unknown): obj is WebdriverIO.MultiRemoteMock => {
     return getWdioKind(obj) === 'mock' && hasMultiRemoteFlag(obj)
 }
 
-/** The instance names of the mocks taken from a `MultiRemoteMock`, which knows them, also after `select()` */
-// TODO(#2255) WebdriverIO v9: without the v9 array of mocks, `awaitMocks()` can return the names with the mocks, remove this map
-const multiRemoteMockInstanceNames = new WeakMap<WebdriverIO.Mock[], string[]>()
+/** The mock of each instance of a `MultiRemoteMock`, with the instance names, in its order (also after `select()`) */
+export type InstanceMocks = { names: string[], mocks: WebdriverIO.Mock[] }
 
 /**
- * The received mock(s) of a network matcher, awaiting an unawaited `mock()`, multi-remote or not.
- * A `MultiRemoteMock` gives its mocks, one per instance.
- * An empty array is rejected: there is no mock to assert on, and every mock of none would vacuously pass.
+ * The received mock of a network matcher, awaiting a not-awaited `mock()`. A `MultiRemoteMock` gives its mocks, one per instance.
+ * An array is rejected: since WebdriverIO v10, a multi-remote `mock()` is a `MultiRemoteMock`.
  */
-export const awaitMocks = async <T>(received: T | Promise<WebdriverIO.Mock[] | WdioMultiRemoteMock>): Promise<Exclude<T, WdioMultiRemoteMock> | WebdriverIO.Mock[]> => {
+export const awaitMocks = async (received: WebdriverIO.Mock | WdioMultiRemoteMockMaybePromise): Promise<WebdriverIO.Mock | InstanceMocks> => {
     const awaited = received instanceof Promise ? await received : received
     if (isMultiRemoteMock(awaited)) {
-        const multiRemoteMocks = awaited.instances.map((name) => awaited.getInstance(name))
-        multiRemoteMockInstanceNames.set(multiRemoteMocks, [...awaited.instances])
-        return multiRemoteMocks
+        return { names: [...awaited.instances], mocks: awaited.instances.map((name) => awaited.getInstance(name)) }
     }
-    const mocks = awaited as Exclude<T, WdioMultiRemoteMock> | WebdriverIO.Mock[]
-    if (Array.isArray(mocks) && mocks.length === 0) {
-        throw new Error('Expected a mock or a non-empty array of mocks, received an empty array')
+    if (Array.isArray(awaited)) {
+        throw new Error('Expected a mock or a multi-remote mock, received an array')
     }
-    return mocks
+    return awaited
 }
 
-/**
- * The name of each mock's instance, or `mocks[index]` when unknown.
- *
- * A WebdriverIO v10 `MultiRemoteMock` names its mocks. A WebdriverIO v9 multi-remote `mock()` returns one mock per
- * instance, in `multiRemoteBrowser.instances` order: the global instance names are used when they are as many as the mocks.
- * Limitation (v9): mocks from `select()` naming every instance but in another order are named in the global order.
- */
-export const getMockInstanceNames = (mocks: WebdriverIO.Mock[]): { names: string[], isNamedByInstance: boolean } => {
-    const multiRemoteMockNames = multiRemoteMockInstanceNames.get(mocks)
-    if (multiRemoteMockNames) {
-        return { names: multiRemoteMockNames, isNamedByInstance: true }
-    }
-    // TODO(#2255) WebdriverIO v9: remove the names from the global instances, only the v9 array of mocks needs them
-    const instances = getGlobalMultiRemoteInstanceNames()
-    if (instances && instances.length === mocks.length) {
-        return { names: instances, isNamedByInstance: true }
-    }
-    return { names: mocks.map((_, index) => `mocks[${index}]`), isNamedByInstance: false }
+export const isInstanceMocks = (mocks: WebdriverIO.Mock | InstanceMocks): mocks is InstanceMocks => {
+    return !isMock(mocks) && Array.isArray((mocks as InstanceMocks).mocks)
 }
 
 /**

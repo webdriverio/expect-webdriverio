@@ -16,7 +16,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
     const browser: WebdriverIO.Browser = {} as unknown as WebdriverIO.Browser
 
     const multiRemoteElement: WebdriverIO.MultiRemoteElement = {} as unknown as WebdriverIO.MultiRemoteElement
-    const multiRemoteElements: WebdriverIO.MultiRemoteElement[] = [] as unknown as WebdriverIO.MultiRemoteElement[]
+    const multiRemoteElements: WebdriverIO.MultiRemoteElementArray = [] as unknown as WebdriverIO.MultiRemoteElementArray
+    const plainMultiRemoteElements: WebdriverIO.MultiRemoteElement[] = [] as unknown as WebdriverIO.MultiRemoteElement[]
 
     it('supports collection asymmetric expectations across value matchers', () => {
         expectTypeOf(expect(elementArray).toHaveHTML(expect.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
@@ -637,8 +638,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(multiRemoteElement).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElement).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteBrowser.$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
-                expectTypeOf(expect(multiRemoteElements).toMatchSnapshot()).toEqualTypeOf<Promise<void> | void>()
-                expectTypeOf(expect(multiRemoteElements).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void> | void>()
+                expectTypeOf(expect(plainMultiRemoteElements).toMatchSnapshot()).toEqualTypeOf<Promise<void> | void>()
+                expectTypeOf(expect(plainMultiRemoteElements).toMatchInlineSnapshot()).toEqualTypeOf<Promise<void> | void>()
                 // A multi-remote `$$()` is a `MultiRemoteElementArray`, snapshotted asynchronously even when empty
                 expectTypeOf(expect(multiRemoteBrowser.$$('h1')).toMatchSnapshot()).toEqualTypeOf<Promise<void>>()
             })
@@ -719,6 +720,13 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(multiRemoteElementArray).toHaveText(['a', 'b'])).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(multiRemoteElementArray).toBeElementsArrayOfSize(2)).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(some(multiRemoteElementArray)).toHaveText('a')).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should not support a plain MultiRemoteElement[], which is not recognized as elements', async () => {
+                // @ts-expect-error pass the `$$()` result as is, not a copy such as `[...elements]`
+                expectTypeOf(expect(plainMultiRemoteElements).toBeDisplayed()).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error pass the `$$()` result as is, not a copy such as `[...elements]`
+                expectTypeOf(expect(plainMultiRemoteElements).toBeElementsArrayOfSize(2)).toExtend<Promise<void>>()
             })
 
             it('should require expect.multiRemote() for per-instance values of object matchers', async () => {
@@ -1010,6 +1018,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         it('should support multi-remote mocks', async () => {
             const multiRemoteMocks = await multiRemoteBrowser.mock('**/api/**')
             const promiseMultiRemoteMocks = multiRemoteBrowser.mock('**/api/**')
+            expectTypeOf(multiRemoteMocks).toEqualTypeOf<WebdriverIO.MultiRemoteMock>()
 
             expectTypeOf(expect(multiRemoteMocks).toBeRequested()).toEqualTypeOf<Promise<void>>()
             expectTypeOf(expect(multiRemoteMocks).toBeRequestedTimes(2)).toEqualTypeOf<Promise<void>>()
@@ -1019,17 +1028,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expectTypeOf(expect(promiseMultiRemoteMocks).toBeRequestedWith({ method: 'GET' })).toEqualTypeOf<Promise<void>>()
         })
 
-        it('should support WebdriverIO v10 multi-remote mocks', async () => {
-            // WebdriverIO v10 `multiRemoteBrowser.mock()` gives a `MultiRemoteMock`, not in the v9 types
-            // TODO(#2255) WebdriverIO v9: use the WebdriverIO v10 `MultiRemoteMock` type instead
-            const multiRemoteMock = {} as { readonly isMultiRemote: true, readonly instances: string[], getInstance(name: string): WebdriverIO.Mock }
-            const promiseMultiRemoteMock = Promise.resolve(multiRemoteMock)
-
-            expectTypeOf(expect(multiRemoteMock).toBeRequested()).toEqualTypeOf<Promise<void>>()
-            expectTypeOf(expect(multiRemoteMock).toBeRequestedTimes({ gte: 1 })).toEqualTypeOf<Promise<void>>()
-            expectTypeOf(expect(multiRemoteMock).not.toBeRequestedTimes(2, { wait: 0 })).toEqualTypeOf<Promise<void>>()
-            expectTypeOf(expect(multiRemoteMock).toBeRequestedWith({ method: 'GET' })).toEqualTypeOf<Promise<void>>()
-            expectTypeOf(expect(promiseMultiRemoteMock).toBeRequested()).toEqualTypeOf<Promise<void>>()
+        it('should not support an array of mocks: a multi-remote mock() is a MultiRemoteMock', async () => {
+            // @ts-expect-error give the `MultiRemoteMock` of `multiRemoteBrowser.mock()`
+            expectTypeOf(expect([networkMock, networkMock]).toBeRequested()).toEqualTypeOf<Promise<void>>()
         })
 
         it('should not support per-instance values on multi-remote mocks', async () => {

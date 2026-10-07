@@ -60,6 +60,10 @@ Pass the `$$()`, `custom$$()` or `react$$()` result as is. A plain `MultiRemoteE
 
 Retries still re-fetch `$$()` elements from their scope. Only the best-effort re-fetch of a plain array from the global `multiRemoteBrowser`, and its warning, are removed.
 
+The network matchers accept the `MultiRemoteMock` of a multi-remote `mock()`, not an array of mocks: an array throws `Expected a mock or a multi-remote mock, received an array`.
+
+The types follow WebdriverIO v10: a multi-remote `$$()` is a `WebdriverIO.MultiRemoteElementArray`, and a multi-remote `mock()` is a `WebdriverIO.MultiRemoteMock`. The matchers do not accept a `MultiRemoteElement[]` or a `Mock[]` anymore, except the snapshot matchers. In a WebdriverIO config, use `WebdriverIO.MultiRemoteConfig`: WebdriverIO v10 removed `WebdriverIO.MultiremoteConfig`.
+
 ## WebdriverIO objects are identified by their brand
 
 The matchers find a browser, an element, an element list or a mock by the WebdriverIO v10 brand `Symbol.for('wdio.kind')`, not by its properties or its class name. The objects that WebdriverIO gives have the brand, so tests that pass them need no change.

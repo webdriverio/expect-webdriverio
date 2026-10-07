@@ -9,7 +9,7 @@ import { isBrowser, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
-export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElement) => {
+export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray) => {
     let result = typeof el.selector === 'string' ? el.selector : '<fn>'
     if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
         // TODO handle custom$ selector
@@ -265,8 +265,8 @@ export const labelMultiRemoteValues = (value: unknown): unknown => {
 }
 
 /** Subject of the failure message of multi-remote mocks, e.g. `multi-remote<chrome, firefox> mocks` */
-export const formatMultiRemoteMocks = ({ names, isNamedByInstance }: { names: string[], isNamedByInstance: boolean }): string => {
-    return isNamedByInstance ? `${formatMultiRemoteInstanceNames(names)} mocks` : 'mocks'
+export const formatMultiRemoteMocks = (names: string[]): string => {
+    return `${formatMultiRemoteInstanceNames(names)} mocks`
 }
 
 const formatMultiRemoteInstanceNames = (instances: string[]): string => {

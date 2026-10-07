@@ -1,10 +1,10 @@
-import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
+import { vi, test, describe, expect, beforeEach } from 'vitest'
 // @ts-ignore TODO fix me
 import type { Matches, Mock } from 'webdriverio'
 
 import { toBeRequested } from '../../../src/matchers/mock/toBeRequested.js'
 import stripAnsi from 'strip-ansi'
-import { multiRemoteBrowserFactory, setWdioKind } from '../../__mocks__/@wdio/globals.js'
+import { multiRemoteMockFactory, setWdioKind } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 class TestMock implements Mock {
@@ -123,29 +123,24 @@ describe('toBeRequested on multi-remote mocks', () => {
     const thisContext = { toBeRequested }
     const thisNotContext = { isNot: true, toBeRequested }
 
-    /** One mock per instance, like `multiRemoteBrowser.mock()`, each called the given number of times */
-    const mocksCalled = (...counts: number[]): Mock[] => counts.map((count) => {
+    const mockCalled = (count: number): Mock => {
         const mock = new TestMock()
         mock.calls.push(...Array(count).fill(mockMatch))
         return mock
-    })
+    }
 
-    beforeEach(() => {
-        vi.stubGlobal('multiRemoteBrowser', multiRemoteBrowserFactory())
-    })
-
-    afterEach(() => {
-        vi.unstubAllGlobals()
-    })
+    /** Like `multiRemoteBrowser.mock()`: one mock per instance, each called the given number of times */
+    const multiRemoteMockCalled = (counts: Record<string, number>) =>
+        multiRemoteMockFactory(Object.fromEntries(Object.entries(counts).map(([name, count]) => [name, mockCalled(count)])))
 
     test('passes when every instance\'s mock is called', async () => {
-        const result = await thisContext.toBeRequested(mocksCalled(1, 2), { wait: 0 })
+        const result = await thisContext.toBeRequested(multiRemoteMockCalled({ chrome: 1, firefox: 2 }), { wait: 0 })
 
         expect(result.pass).toBe(true)
     })
 
     test('fails with a per-instance message when an instance\'s mock is not called', async () => {
-        const result = await thisContext.toBeRequested(mocksCalled(1, 0), { wait: 0 })
+        const result = await thisContext.toBeRequested(multiRemoteMockCalled({ chrome: 1, firefox: 0 }), { wait: 0 })
 
         expect(result.pass).toBe(false)
         expect(stripAnsi(result.message())).toEqual(`\
@@ -161,12 +156,14 @@ Expect multi-remote<chrome, firefox> mocks to be called
   }`)
     })
 
-    test('rejects an empty array of mocks, which has nothing to assert on', async () => {
-        await expect(thisContext.toBeRequested([], { wait: 0 })).rejects.toThrow('Expected a mock or a non-empty array of mocks, received an empty array')
+    test('rejects an array of mocks: a multi-remote mock() is a MultiRemoteMock', async () => {
+        const mocks = [mockCalled(1), mockCalled(1)] as unknown as Mock
+
+        await expect(thisContext.toBeRequested(mocks, { wait: 0 })).rejects.toThrow('Expected a mock or a multi-remote mock, received an array')
     })
 
     test('fails with .not when only some instances\' mocks are called', async () => {
-        const result = await thisNotContext.toBeRequested(mocksCalled(1, 0), { wait: 0 })
+        const result = await thisNotContext.toBeRequested(multiRemoteMockCalled({ chrome: 1, firefox: 0 }), { wait: 0 })
 
         expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
     })
