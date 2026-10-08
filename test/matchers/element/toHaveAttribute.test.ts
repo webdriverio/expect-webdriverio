@@ -51,8 +51,7 @@ describe(toHaveAttribute, () => {
             })
 
             test('success when checking with asymmetric matcher', async () => {
-                // Casting since we use vitest asymmetrics matcher instead of wdio one and TypeScript show a deprecation
-                const result = await thisContext.toHaveAttribute(el, 'attribute_name', expect.stringContaining('Correct') as AsymmetricMatcher<string>)
+                const result = await thisContext.toHaveAttribute(el, 'attribute_name', expect.stringContaining('Correct'))
 
                 expect(result.pass).toBe(true)
             })

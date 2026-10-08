@@ -85,9 +85,6 @@ describe('Network Matchers', () => {
         await expect(mocks.getInstance('chrome')).toBeRequestedTimes({ lte: 2 }, { wait: 0 })
     })
 
-    it('should assert times called lte with options - deprecated', async () => {
-        await expect(mocks.getInstance('chrome')).toBeRequestedTimes({ lte: 2 }, { wait: 0 })
-    })
 
     it('should be requested', async () => {
         await expect(mocks.getInstance('chrome')).toBeRequested()
