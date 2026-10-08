@@ -135,7 +135,7 @@ export async function toHaveElementProperty(
                     return condition(element, property, expectedValue, options)
                 },
                 context: { isNot, iteration },
-                strictConfiguration: { allowArrayWithSingleElement: false, allowObjectExpectedValue }
+                strictConfiguration: { allowObjectExpectedValue }
             })
         },
         isNot,

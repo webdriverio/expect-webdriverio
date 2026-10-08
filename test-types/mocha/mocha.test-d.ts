@@ -1088,6 +1088,13 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toHaveElementClass(expect.stringContaining('class'))).toEqualTypeOf<Promise<void>>()
             })
 
+            it('should take expect.oneOf() for "has any" on $(), and an array only on $$()', async () => {
+                expectTypeOf(expect(element).toHaveElementClass(expect.oneOf('btn', 'active'))).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error an array on $() fails the assertion: use expect.oneOf() for "has any", and 1 assertion for each class for "has all"
+                expect(element).toHaveElementClass(['btn', 'active'])
+                expectTypeOf(expect(elementArray).toHaveElementClass(['btn', 'active'])).toEqualTypeOf<Promise<void>>()
+            })
+
             it('should not have the removed toHaveClass alias', async () => {
                 // @ts-expect-error use toHaveElementClass
                 expect(element).toHaveClass('class')

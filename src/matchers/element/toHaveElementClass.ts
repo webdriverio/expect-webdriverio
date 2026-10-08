@@ -3,7 +3,8 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
-import { compareText, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import { compareTextOrOneOf, enhanceError, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const actualClass = await el.getAttribute(attribute)
@@ -16,17 +17,13 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
         return { success: false, actual: actualClass }
     }
 
-    /**
-     * if value is an asymmetric matcher, no need to split class names
-     * into an array and compare each of them
-     */
-    if (isAsymmetricMatcher(value)) {
-        return compareText(actualClass, value, options)
-    }
-
-    const classes = actualClass.split(' ')
+    // HTML separates the classes with ASCII whitespace only (space, tab, new line, form feed, carriage return): a
+    // non-breaking space is part of a class name. Each class is compared, for plain values and asymmetric matchers
+    // alike: for the full attribute, use `toHaveAttribute('class', ...)`
+    const classes = actualClass.split(/[\t\n\f\r ]+/).filter(Boolean)
     const values = Array.isArray(value) ? value : [value]
-    const isValueInClasses = classes.some((clazz) => values.some((expected) => compareText(clazz, expected, options).success))
+    // `compareTextOrOneOf()` lets `expect.oneOf()` apply the string options itself, so that they apply once
+    const isValueInClasses = classes.some((clazz) => values.some((expected) => compareTextOrOneOf(clazz, expected, options).success))
 
     return {
         success: isValueInClasses,
@@ -49,24 +46,24 @@ export async function toHaveElementClass(
     })
 
     const attribute = 'class'
+    // Apply the string options (`ignoreCase`, `trim`, `containing`...) to `expect.oneOf()`, as the other matchers do
+    const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
     const { success: pass, actual: attr, subject: el, context: { isSome } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 supportsArrayContaining: true,
-                expectedValues: expectedValue,
+                expectedValues: expectedWithOptions,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, attribute, expectedValue, options),
                 context: { isNot, iteration },
-                // TODO: an array on $() means "has any of these classes", to review in https://github.com/webdriverio/expect-webdriverio/issues/2266
-                strictConfiguration: { allowArrayWithSingleElement: true }
             })
         },
         isNot,
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, expected ?? wrapExpectedWithArray(el, attr, expectedValue), attr, { isNot, isSome }, verb, expectation, '', options)
+    const message = enhanceError(el, expected ?? wrapExpectedWithArray(el, attr, expectedWithOptions), attr, { isNot, isSome }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

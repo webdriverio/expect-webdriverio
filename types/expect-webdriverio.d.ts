@@ -379,8 +379,9 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
     /**
      * `WebdriverIO.Element` -> `getAttribute` class
      *
-     * Checks if an element has the specified class or matches any of the provided class patterns.
-     * @param className - The class name(s) or pattern(s) to match against.
+     * Checks if one of the classes of an element matches the expected value. Each class is compared, also with an
+     * asymmetric matcher: for the full attribute, use `toHaveAttribute('class', ...)`.
+     * @param className - The class name, pattern or asymmetric matcher to match against.
      * @param options - Optional settings that can be passed to the function.
      *
      * **Usage**
@@ -389,18 +390,17 @@ interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
      * await expect(element).toHaveElementClass('btn');
      *
      * // Check if an element has any of the specified classes
-     * await expect(element).toHaveElementClass(['btn', 'btn-large']);
+     * await expect(element).toHaveElementClass(expect.oneOf('btn', 'btn-large'));
+     *
+     * // Check if an element has all the specified classes: 1 assertion for each class
+     * await expect(element).toHaveElementClass('btn');
+     * await expect(element).toHaveElementClass('btn-large');
      * ```
      */
     toHaveElementClass: FnWhenElementOrArrayLike<ActualT, {
         /** Element $() API */
         (
             className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
-            options?: ExpectWebdriverIO.StringOptions
-        ) :Promise<void>
-        /** @deprecated an array means "has any of these classes", to review in https://github.com/webdriverio/expect-webdriverio/issues/2266 (`expect.oneOf()` compares the full class attribute) */
-        (
-            className: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
             options?: ExpectWebdriverIO.StringOptions
         ) :Promise<void>
     }, {

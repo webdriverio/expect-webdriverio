@@ -69,7 +69,6 @@ export async function toHaveHeight(
                 expectedValues: expectedNumber,
                 singleElementCompare: (element, expectedNumber: NumberMatcher | undefined) => condition(element, expectedNumber),
                 context: { isNot, iteration },
-                strictConfiguration: { allowArrayWithSingleElement: false }
             })
         },
         isNot,

@@ -304,6 +304,21 @@ describe('WebdriverIO Custom Matchers', () => {
             const button = await $('.btn1')
             await expect(button).toHaveElementClass(expect.stringContaining('btn'))
         })
+
+        it('compares each class, also with an asymmetric matcher', async () => {
+            // <div class="box purple" id="purplebox">
+            const box = $('#purplebox')
+            await expect(box).toHaveElementClass(expect.oneOf('red', 'purple'))
+            await expect(box).toHaveElementClass(expect.stringMatching(/^purp/))
+            await expect(box).not.toHaveElementClass(expect.stringContaining('box purple'), { wait: 0 })
+            // the full attribute
+            await expect(box).toHaveAttribute('class', expect.stringContaining('box purple'))
+        })
+
+        it('fails for an array of expected classes on a single element', async () => {
+            // @ts-expect-error an array on $() fails: use expect.oneOf() for "has any", and 1 assertion for each class for "has all"
+            await expect(expect($('#purplebox')).toHaveElementClass(['box', 'purple'], { wait: 0 })).rejects.toThrow('to have class')
+        })
     })
 
     describe('Element property matchers', () => {

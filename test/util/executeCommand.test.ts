@@ -520,17 +520,7 @@ describe('executeCommand', () => {
         })
 
         describe('given an array expected value on $()', () => {
-            it('compares every instance against the array when the matcher supports it (e.g. classes)', async () => {
-                const compare = vi.fn(async (_el: WebdriverIO.Element, expected: unknown) => ({ success: Array.isArray(expected), actual: 'a b' }))
-
-                const result = await multipleElementResultsStrategy(createMultiRemoteElementMock(browsers(), 'sel'), ['a', 'b'], compare, context, { allowArrayWithSingleElement: true })
-
-                expect(result.success).toBe(true)
-                expect(compare).toHaveBeenCalledTimes(2)
-                expect(compare).toHaveBeenCalledWith(expect.anything(), ['a', 'b'])
-            })
-
-            it('fails strictly and aborts when the matcher does not support it', async () => {
+            it('fails strictly and aborts, as for a single element of one browser', async () => {
                 const result = await multipleElementResultsStrategy(createMultiRemoteElementMock(browsers(), 'sel'), ['a', 'b'], compareEquals, context)
 
                 expect(result).toEqual(expect.objectContaining({ success: false, abort: true, actual: { chrome: 'a', firefox: 'a' } }))
