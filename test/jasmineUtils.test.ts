@@ -115,6 +115,12 @@ describe('equals: the matrix of cases', () => {
         ['sets with equal objects', new Set([{ a: 1 }]), new Set([{ a: 1 }]), true],
         ['sets with different objects', new Set([{ a: 1 }]), new Set([{ a: 2 }]), false],
         ['sets with 2 equal objects and 2 different objects', new Set([{ a: 1 }, { a: 1 }]), new Set([{ a: 1 }, { a: 2 }]), false],
+        // a failed comparison of one entry must not change the comparison of the next entries
+        ['sets of objects in another order', new Set([{ a: 1 }, { a: 2 }]), new Set([{ a: 2 }, { a: 1 }]), true],
+        ['sets of arrays in another order', new Set([[1], [2]]), new Set([[2], [1]]), true],
+        ['sets with a circular object in another order', new Set([circular(), { a: 2 }]), new Set([{ a: 2 }, circular()]), true],
+        ['sets of objects in another order, in an array', [new Set([{ a: 1 }, { a: 2 }])], [new Set([{ a: 2 }, { a: 1 }])], true],
+        ['maps with object keys in another order', new Map([[{ k: 1 }, 'x'], [{ k: 2 }, 'y']]), new Map([[{ k: 2 }, 'y'], [{ k: 1 }, 'x']]), true],
         ['same maps in another order', new Map([['a', 1], ['b', 2]]), new Map([['b', 2], ['a', 1]]), true],
         ['maps with another value', new Map([['a', 1]]), new Map([['a', 2]]), false],
         ['maps with another key', new Map([['a', 1]]), new Map([['b', 1]]), false],

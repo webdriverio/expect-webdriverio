@@ -161,64 +161,61 @@ function eq(
     // Add the first object to the stack of traversed objects.
     aStack.push(a);
     bStack.push(b);
+    // A false result is not always final (a set or map tries other entries): remove the objects on each return
+    try {
 
-    // Sets, maps, array buffers and data views have no own keys: compare their content
-    if (className == '[object Set]' || className == '[object Map]') {
-        result = collectionEquals(a, b, className == '[object Map]', aStack, bStack, customTesters, hasKey);
-        aStack.pop();
-        bStack.pop();
-        return result;
-    }
-    if (className == '[object ArrayBuffer]' || className == '[object SharedArrayBuffer]' || className == '[object DataView]') {
-        aStack.pop();
-        bStack.pop();
-        return bytesEquals(a, b);
-    }
+        // Sets, maps, array buffers and data views have no own keys: compare their content
+        if (className == '[object Set]' || className == '[object Map]') {
+            return collectionEquals(a, b, className == '[object Map]', aStack, bStack, customTesters, hasKey);
+        }
+        if (className == '[object ArrayBuffer]' || className == '[object SharedArrayBuffer]' || className == '[object DataView]') {
+            return bytesEquals(a, b);
+        }
 
-    var size = 0;
-    // Recursively compare objects and arrays.
-    // Compare array lengths to determine if a deep comparison is necessary.
-    if (className == '[object Array]') {
-        size = a.length;
-        if (size !== b.length) {
+        var size = 0;
+        // Recursively compare objects and arrays.
+        // Compare array lengths to determine if a deep comparison is necessary.
+        if (className == '[object Array]') {
+            size = a.length;
+            if (size !== b.length) {
+                return false;
+            }
+
+            while (size--) {
+                result = eq(a[size], b[size], aStack, bStack, customTesters, hasKey);
+                if (!result) {
+                    return false;
+                }
+            }
+        }
+
+        // Deep compare objects.
+        var aKeys = keys(a, className == '[object Array]', hasKey),
+            key;
+        size = aKeys.length;
+
+        // Ensure that both objects contain the same number of properties before comparing deep equality.
+        if (keys(b, className == '[object Array]', hasKey).length !== size) {
             return false;
         }
 
         while (size--) {
-            result = eq(a[size], b[size], aStack, bStack, customTesters, hasKey);
+            key = aKeys[size];
+
+            // Deep compare each member
+            result =
+                hasKey(b, key) &&
+                eq(a[key], b[key], aStack, bStack, customTesters, hasKey);
+
             if (!result) {
                 return false;
             }
         }
+        return result;
+    } finally {
+        aStack.pop();
+        bStack.pop();
     }
-
-    // Deep compare objects.
-    var aKeys = keys(a, className == '[object Array]', hasKey),
-        key;
-    size = aKeys.length;
-
-    // Ensure that both objects contain the same number of properties before comparing deep equality.
-    if (keys(b, className == '[object Array]', hasKey).length !== size) {
-        return false;
-    }
-
-    while (size--) {
-        key = aKeys[size];
-
-        // Deep compare each member
-        result =
-            hasKey(b, key) &&
-            eq(a[key], b[key], aStack, bStack, customTesters, hasKey);
-
-        if (!result) {
-            return false;
-        }
-    }
-    // Remove the first object from the stack of traversed objects.
-    aStack.pop();
-    bStack.pop();
-
-    return result;
 }
 
 /**
