@@ -118,7 +118,7 @@ Since `@wdio/jasmine-framework` 10.0.2, the WDIO matchers on `expectAsync` are t
 
 ## Deep equality of URLs, sets, maps and binary data
 
-The deep equality of the matchers (for example in `expect.multiRemote()`, `toBeRequestedWith`, or a Jasmine asymmetric matcher such as `jasmine.objectContaining()`) now compares:
+The deep equality of the matchers (for example in `expect.multiRemote()`, or in a Jasmine asymmetric matcher such as `jasmine.objectContaining()`) now compares:
 
 - a `URL` by its `href`;
 - a `Set` or a `Map` by its entries, in any order, with each entry matched once: `Set{{a: 1}, {a: 1}, {a: 2}}` is not equal to `Set{{a: 1}, {a: 2}, {a: 2}}`;
