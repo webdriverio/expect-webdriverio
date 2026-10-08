@@ -44,6 +44,17 @@ describe('equals: the matrix of cases', () => {
     const sameSymbol = Symbol('same')
     const sameFunction = () => 1
     const bytes = (...values: number[]) => new Uint8Array(values).buffer
+    const detached = (...values: number[]) => {
+        const buffer = bytes(...values)
+        structuredClone(buffer, { transfer: [buffer] })
+        return buffer
+    }
+    const detachedView = (...values: number[]) => {
+        const buffer = bytes(...values)
+        const view = new DataView(buffer)
+        structuredClone(buffer, { transfer: [buffer] })
+        return view
+    }
     const withHole = () => {
         const array = [undefined, 1]
         delete array[0]
@@ -141,6 +152,16 @@ describe('equals: the matrix of cases', () => {
         ['maps with another own property', Object.assign(new Map([['a', 1]]), { x: 1 }), new Map([['a', 1]]), false],
         ['array buffers with another own property', Object.assign(bytes(1), { x: 1 }), bytes(1), false],
         ['data views with another own property', Object.assign(new DataView(bytes(1)), { x: 1 }), new DataView(bytes(1)), false],
+        // a value with only the type tag of a set or a map is a plain object: its own keys are compared
+        ['objects with the type tag of a set', { [Symbol.toStringTag]: 'Set', x: 1 }, { [Symbol.toStringTag]: 'Set', x: 1 }, true],
+        ['objects with the type tag of a map and other keys', { [Symbol.toStringTag]: 'Map', x: 1 }, { [Symbol.toStringTag]: 'Map', x: 2 }, false],
+        ['objects with the type tag of an array buffer', { [Symbol.toStringTag]: 'ArrayBuffer', x: 1 }, { [Symbol.toStringTag]: 'ArrayBuffer', x: 1 }, true],
+        // a detached buffer has no bytes
+        ['detached array buffers', detached(1, 2), detached(3), true],
+        ['a detached and an empty array buffer', detached(1, 2), bytes(), true],
+        ['a detached and a filled array buffer', detached(1, 2), bytes(1, 2), false],
+        ['data views of detached array buffers', detachedView(1), detachedView(2), true],
+        ['a data view of a detached and of a filled array buffer', detachedView(1), new DataView(bytes(1)), false],
         // Jest asymmetric matchers
         ['Jest any(Number)', 1, jestExpect.any(Number), true],
         ['Jest any(Number) on a string', 'a', jestExpect.any(Number), false],
@@ -196,7 +217,18 @@ describe('equals: the matrix of cases', () => {
     })
 })
 
-describe('equals: sets and maps', () => {
+describe('equals: sets, maps and other built-in objects', () => {
+    // A proxy without a handler cannot be read (its `size`, `entries()` or `href` throws): the error is shown, as in Jest
+    test.each([
+        ['a set', new Proxy(new Set([1]), {}), new Set([2])],
+        ['a map', new Proxy(new Map([['a', 1]]), {}), new Map([['a', 2]])],
+        ['a URL', new Proxy(new URL('https://a.test/'), {}), new URL('https://b.test/')],
+        ['an array buffer', new Proxy(new Uint8Array([1, 2]).buffer, {}), new ArrayBuffer(0)],
+    ])('throws a TypeError for a proxy of %s', (_name, proxy, other) => {
+        expect(() => equals(proxy, other)).toThrow(TypeError)
+        expect(() => equals(other, proxy)).toThrow(TypeError)
+    })
+
     // A custom tester that returns `undefined` counts the comparisons without a change to the result
     const countComparisons = (a: unknown, b: unknown) => {
         let count = 0

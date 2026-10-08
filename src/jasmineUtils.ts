@@ -163,16 +163,16 @@ function eq(
 
         // URLs, sets, maps, array buffers and data views keep their content out of their own keys:
         // compare the content here, and the own keys (usually none) below
-        if (className == '[object URL]' && a.href !== b.href) {
-            return false;
-        }
-        if ((className == '[object Set]' || className == '[object Map]')
-            && !collectionEquals(a, b, className == '[object Map]', aStack, bStack, customTesters, hasKey)) {
-            return false;
-        }
-        if ((className == '[object ArrayBuffer]' || className == '[object SharedArrayBuffer]' || className == '[object DataView]')
-            && !bytesEquals(a, b)) {
-            return false;
+        var aContent = contentOf(a, className),
+            bContent = contentOf(b, className);
+        if (aContent !== undefined && bContent !== undefined) {
+            if (className == '[object Set]' || className == '[object Map]') {
+                if (!collectionEquals(aContent as Array<[unknown, unknown]>, bContent as Array<[unknown, unknown]>, className == '[object Map]', aStack, bStack, customTesters, hasKey)) {
+                    return false;
+                }
+            } else if (className == '[object URL]' ? aContent !== bContent : !bytesEquals(aContent as Uint8Array, bContent as Uint8Array)) {
+                return false;
+            }
         }
 
         var size = 0;
@@ -227,19 +227,17 @@ function eq(
  * An asymmetric matcher can match more than 1 entry, so a first match can be wrong: the last step moves matches (Kuhn's algorithm).
  */
 function collectionEquals(
-    a: Set<unknown> | Map<unknown, unknown>,
-    b: Set<unknown> | Map<unknown, unknown>,
+    aEntries: Array<[unknown, unknown]>,
+    bEntries: Array<[unknown, unknown]>,
     isMap: boolean,
     aStack: Array<unknown>,
     bStack: Array<unknown>,
     customTesters: Array<any>,
     hasKey: any,
 ): boolean {
-    if (a.size !== b.size) {
+    if (aEntries.length !== bEntries.length) {
         return false;
     }
-    const aEntries = [...a.entries()];
-    const bEntries = [...b.entries()];
     const entryEquals = (i: number, j: number) =>
         eq(aEntries[i][0], bEntries[j][0], aStack, bStack, customTesters, hasKey)
         && (!isMap || eq(aEntries[i][1], bEntries[j][1], aStack, bStack, customTesters, hasKey));
@@ -297,12 +295,35 @@ function collectionEquals(
     });
 }
 
-function bytesEquals(a: ArrayBufferLike | DataView, b: ArrayBufferLike | DataView): boolean {
-    const toBytes = (value: ArrayBufferLike | DataView) => ArrayBuffer.isView(value)
-        ? new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
-        : new Uint8Array(value);
-    const aBytes = toBytes(a);
-    const bBytes = toBytes(b);
+/**
+ * The content of a URL (its `href`), a set or map (its entries) or binary data (its bytes).
+ * `undefined` when the value has only the type tag (`Symbol.toStringTag`) and not the API of the type: then only its own keys are compared.
+ * A value with the API that throws, such as a proxy without a handler, throws here, as in Jest.
+ * A detached buffer has no bytes.
+ */
+function contentOf(value: any, className: string): string | Array<[unknown, unknown]> | Uint8Array | undefined {
+    switch (className) {
+        case '[object URL]':
+            return 'href' in value ? value.href : undefined;
+        case '[object Set]':
+        case '[object Map]':
+            return typeof value.entries === 'function' ? [...value.entries()] : undefined;
+        case '[object ArrayBuffer]':
+        case '[object SharedArrayBuffer]':
+            if (!('byteLength' in value)) {
+                return undefined;
+            }
+            return value.byteLength === 0 || value.detached ? new Uint8Array(0) : new Uint8Array(value);
+        case '[object DataView]':
+            if (!('byteLength' in value)) {
+                return undefined;
+            }
+            return value.buffer.detached ? new Uint8Array(0) : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+    }
+    return undefined;
+}
+
+function bytesEquals(aBytes: Uint8Array, bBytes: Uint8Array): boolean {
     return aBytes.length === bBytes.length && aBytes.every((byte, index) => byte === bBytes[index]);
 }
 
