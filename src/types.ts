@@ -20,9 +20,6 @@ export type MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements =
 
 export type WdioMultiRemoteElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray
 
-/** A WebdriverIO v10 browsing context (a tab, a window or a frame), with fields that its public type does not declare in 10.0.1 */
-export type WdioBrowsingContext = WebdriverIO.BrowsingContext & { browser: WebdriverIO.Browser, isFrame: boolean, url: string }
-
 /** Multi-remote `mock()`, awaited or not */
 export type WdioMultiRemoteMockMaybePromise = WebdriverIO.MultiRemoteMock | Promise<WebdriverIO.MultiRemoteMock>
 

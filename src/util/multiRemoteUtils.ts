@@ -1,5 +1,5 @@
 import { isAsymmetricMatcher } from '../utils.js'
-import type { WdioBrowsingContext, WdioMultiRemoteMockMaybePromise } from '../types.js'
+import type { WdioMultiRemoteMockMaybePromise } from '../types.js'
 import { getWdioKind } from './wdioKind.js'
 
 export const isMultiRemoteValues = (value: unknown, existingInstanceNames?: string[]): value is MultiRemoteValues<unknown> =>  {
@@ -119,4 +119,4 @@ export const isBrowser = (obj: unknown): obj is WebdriverIO.Browser | WebdriverI
 }
 
 /** A browsing context: a tab, a window or a frame, with its own commands, but no session command such as `setPermissions` */
-export const isBrowsingContext = (obj: unknown): obj is WdioBrowsingContext => getWdioKind(obj) === 'browsing-context'
+export const isBrowsingContext = (obj: unknown): obj is WebdriverIO.BrowsingContext => getWdioKind(obj) === 'browsing-context'
