@@ -165,6 +165,10 @@ describe('equals: the matrix of cases', () => {
         ['an array buffer and an object with only its type tag', bytes(1, 2), tagged('ArrayBuffer'), false],
         ['a data view and an object with only its type tag', new DataView(bytes(1)), tagged('DataView'), false],
         ['2 objects with only the type tag of a set', tagged('Set'), tagged('Set'), true],
+        // an object with only the type tag and some properties of the type is still a plain object
+        ['objects with the type tag of a data view and a byteLength', { [Symbol.toStringTag]: 'DataView', byteLength: 1 }, { [Symbol.toStringTag]: 'DataView', byteLength: 1 }, true],
+        ['objects with the type tag of an array buffer and a byteLength', { [Symbol.toStringTag]: 'ArrayBuffer', byteLength: 1 }, { [Symbol.toStringTag]: 'ArrayBuffer', byteLength: 1 }, true],
+        ['objects with the type tag of a URL and an href that is not a string', { [Symbol.toStringTag]: 'URL', href: {} }, { [Symbol.toStringTag]: 'URL', href: {} }, true],
         // a detached buffer has no bytes
         ['detached array buffers', detached(1, 2), detached(3), true],
         ['a detached and an empty array buffer', detached(1, 2), bytes(), true],

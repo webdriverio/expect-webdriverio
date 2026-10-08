@@ -301,25 +301,28 @@ function collectionEquals(
 
 /**
  * The content of a URL (its `href`), a set or map (its entries) or binary data (its bytes).
- * `undefined` when the value has only the type tag (`Symbol.toStringTag`) and not the API of the type: then only its own keys are compared.
+ * `undefined` when the value has only the type tag (`Symbol.toStringTag`) and not the API of the type (a method of
+ * its prototype, or a string `href`): then it is a plain object, and only its own keys are compared.
  * A value with the API that throws, such as a proxy without a handler, throws here, as in Jest.
  * A detached buffer has no bytes.
  */
 function contentOf(value: any, className: string): string | Array<[unknown, unknown]> | Uint8Array | undefined {
     switch (className) {
-        case '[object URL]':
-            return 'href' in value ? value.href : undefined;
+        case '[object URL]': {
+            const href = 'href' in value ? value.href : undefined;
+            return typeof href === 'string' ? href : undefined;
+        }
         case '[object Set]':
         case '[object Map]':
             return typeof value.entries === 'function' ? [...value.entries()] : undefined;
         case '[object ArrayBuffer]':
         case '[object SharedArrayBuffer]':
-            if (!('byteLength' in value)) {
+            if (typeof value.slice !== 'function') {
                 return undefined;
             }
             return value.byteLength === 0 || value.detached ? new Uint8Array(0) : new Uint8Array(value);
         case '[object DataView]':
-            if (!('byteLength' in value)) {
+            if (typeof value.getUint8 !== 'function') {
                 return undefined;
             }
             return value.buffer.detached ? new Uint8Array(0) : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
