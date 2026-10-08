@@ -552,6 +552,11 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
         describe('Structure Matchers', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(element).toHaveChildren()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveChildren({ gte: 1, lte: 3 })).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error no bound: the runtime throws `Invalid NumberMatcher`
+                expectTypeOf(expect(element).toHaveChildren({})).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error `eq` with another bound: the runtime ignores the other bound
+                expectTypeOf(expect(element).toHaveChildren({ eq: 1, gte: 2 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveSize({ width: 10, height: 10 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveWidth(10)).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveStyle({ color: 'red' })).toEqualTypeOf<Promise<void>>()

@@ -1345,21 +1345,41 @@ declare namespace ExpectWebdriverIO {
         visibilityProperty?: boolean
     }
 
-    interface NumberMatcher {
-        /**
-         * equals
-         */
-        eq?: number
-        /**
-         * less than or equals
-         */
-        lte?: number
-
-        /**
-         * greater than or equals
-         */
-        gte?: number
-    }
+    /**
+     * A number to compare with: `eq`, or a range with `gte`, `lte` or both.
+     * The `never` fields reject `{}` and `eq` with a range, which TypeScript accepts for a union without them.
+     */
+    type NumberMatcher =
+        | {
+            /**
+             * equals
+             */
+            eq: number
+            gte?: never
+            lte?: never
+        }
+        | {
+            eq?: never
+            /**
+             * greater than or equals
+             */
+            gte: number
+            /**
+             * less than or equals
+             */
+            lte?: number
+        }
+        | {
+            eq?: never
+            /**
+             * greater than or equals
+             */
+            gte?: number
+            /**
+             * less than or equals
+             */
+            lte: number
+        }
 
     type RequestedWith = {
         url?: string | ExpectWebdriverIO.PartialMatcher<string>| ((url: string) => boolean)

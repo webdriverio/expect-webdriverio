@@ -320,6 +320,10 @@ describe('Jasmine type agumentations', () => {
 
                 expectTypeOf(expectAsync(element).toHaveChildren()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expectAsync(element).toHaveChildren({ gte: 1 })).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error no bound: the runtime throws `Invalid NumberMatcher`
+                expectTypeOf(expectAsync(element).toHaveChildren({})).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error `eq` with another bound: the runtime ignores the other bound
+                expectTypeOf(expectAsync(element).toHaveChildren({ eq: 1, gte: 2 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expectAsync(element).toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expectAsync(element).toHaveWidth(100)).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expectAsync(element).toHaveStyle({ color: 'red' })).toEqualTypeOf<Promise<void>>()

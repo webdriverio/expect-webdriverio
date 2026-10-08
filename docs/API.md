@@ -196,6 +196,8 @@ Number matchers take a number or a `NumberMatcher` as the expected value, and th
 | <code><var>lte</var></code> | number | less then equals |
 | <code><var>gte</var></code> | number | greater than or equals |
 
+Give `eq` alone, or a range with `gte`, `lte` or both. The types reject `{}` and `eq` with `gte` or `lte`.
+
 ### Handling HTML Entities
 
 An HTML entity is a piece of text (“string”) that begins with an ampersand (`&`) and ends with a semicolon (`;`). Entities are frequently used to display reserved characters (which would otherwise be interpreted as HTML code), and invisible characters (like non-breaking spaces, e.g. `&nbsp;`).

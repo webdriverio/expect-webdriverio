@@ -342,8 +342,9 @@ Received      : 2`
     test('fails for empty expected value', async () => {
         const els = await $$('elements')
 
-        await expect(thisContext.toBeElementsArrayOfSize(els, {})).rejects.toThrow('Invalid NumberMatcher. Received: {}')
-        await expect(thisContext.toBeElementsArrayOfSize(els, {},  { wait: 0 })).rejects.toThrow('Invalid NumberMatcher. Received: {}')
+        // The types reject `{}`, the runtime checks it for JavaScript users
+        await expect(thisContext.toBeElementsArrayOfSize(els, {} as never)).rejects.toThrow('Invalid NumberMatcher. Received: {}')
+        await expect(thisContext.toBeElementsArrayOfSize(els, {} as never,  { wait: 0 })).rejects.toThrow('Invalid NumberMatcher. Received: {}')
     })
 
     describe('given a multi-remote $$()', () => {

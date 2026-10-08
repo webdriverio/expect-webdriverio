@@ -160,7 +160,7 @@ describe('numberOptionsUtil', () => {
 
         test('throws error for empty or entirely invalid options objects', () => {
             expect(() => validateNumberMatcher(null as any)).toThrow(/Invalid NumberMatcher/)
-            expect(() => validateNumberMatcher({})).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher({} as never)).toThrow(/Invalid NumberMatcher/)
             expect(() => validateNumberMatcher(undefined)).toThrow(/Invalid NumberMatcher/)
             expect(() => validateNumberMatcher( { invalidkey:'test' } as any)).toThrow(/Invalid NumberMatcher/)
             expect(() => validateNumberMatcher( { wait: 0 } as any)).toThrow(/Invalid NumberMatcher/)
@@ -195,7 +195,7 @@ describe('numberOptionsUtil', () => {
         })
 
         test('throws error when {} is passed and supportDefaultAsGteThen1 is true', () => {
-            expect(() => validateNumberMatcher({}, { supportDefaultAsGteThen1: true })).toThrow(/Invalid NumberMatcher/)
+            expect(() => validateNumberMatcher({} as never, { supportDefaultAsGteThen1: true })).toThrow(/Invalid NumberMatcher/)
         })
     })
 
