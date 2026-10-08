@@ -98,11 +98,11 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.19.0",
     "@vitest/coverage-v8": "^5.0.2",
-    "@wdio/cli": "^10.0.1",
-    "@wdio/globals": "^10.0.1",
-    "@wdio/jasmine-framework": "^10.0.1",
-    "@wdio/protocols": "^10.0.0",
-    "@wdio/runner": "^10.0.1",
+    "@wdio/cli": "^10.0.2",
+    "@wdio/globals": "^10.0.2",
+    "@wdio/jasmine-framework": "^10.0.2",
+    "@wdio/protocols": "^10.0.2",
+    "@wdio/runner": "^10.0.2",
     "@wdio/types": "^10.0.1",
     "husky": "^9.1.7",
     "jasmine-core": "^6.3.0",
@@ -113,8 +113,8 @@
     "strip-ansi": "^7.2.0",
     "typescript": "^7.0.2",
     "vitest": "^5.0.2",
-    "webdriver": "^10.0.0",
-    "webdriverio": "^10.0.1"
+    "webdriver": "^10.0.2",
+    "webdriverio": "^10.0.2"
   },
   "peerDependencies": {
     "@wdio/types": "^10.0.0",
