@@ -121,7 +121,7 @@ Since `@wdio/jasmine-framework` 10.0.2, the WDIO matchers on `expectAsync` are t
 The deep equality of the matchers (for example in `expect.multiRemote()`, or in a Jasmine asymmetric matcher such as `jasmine.objectContaining()`) now compares:
 
 - a `URL` by its `href`;
-- a `Set` or a `Map` by its entries, in any order, with each entry matched once: `Set{{a: 1}, {a: 1}, {a: 2}}` is not equal to `Set{{a: 1}, {a: 2}, {a: 2}}`;
+- a `Set` or a `Map` by its entries, in any order, with each entry matched once: `Set{{a: 1}, {a: 1}, {a: 2}}` is not equal to `Set{{a: 1}, {a: 2}, {a: 2}}`. An asymmetric matcher in a set or a map can receive any entry, so it must not throw for a value of another type (as in Jest);
 - an `ArrayBuffer` or a `DataView` by its bytes.
 
 These values keep their content out of their own keys, so before, 2 different ones were equal: an assertion on them passed by mistake, and now fails. With WebdriverIO v10 and BiDi, `getProperty()` and `execute()` can return real `Set` and `Map` values. A proxy without a handler of one of these values now throws a `TypeError`, as in Jest. An object that has only the type tag (`Symbol.toStringTag`) of one of these types is compared as a plain object, and is not equal to a real value of the type. A detached buffer, or a data view out of the bounds of a resized buffer, has no bytes.
