@@ -69,7 +69,7 @@ export async function toBeRequestedWith(
         Object.fromEntries(Object.entries(perInstanceValues).map(([name, value]) => [name, minifyRequestedWith(value)]))
     )
     // On a structural failure, the last call of a mock shows the fields of every per-instance value
-    const allFields = perInstanceValues && Object.assign({}, ...Object.values(perInstanceValues)) as ExpectWebdriverIO.RequestedWith
+    const allFields = perInstanceValues && mergeDefinedFields(Object.values(perInstanceValues))
     const lastCall = (mock: WebdriverIO.Mock, requestedWith = allFields) =>
         minifyRequestMock((mock.calls as RequestMock[]).at(-1), requestedWith, parseCache) || 'was not called'
 
@@ -96,7 +96,7 @@ export async function toBeRequestedWith(
             const actual = Object.fromEntries(results.map((result, index) => [names[index], result.actual]))
             const payloadNeverCollected = names.filter((_, index) => !results[index].pass && results[index].payloadNeverCollected)
             message = enhanceError(label, minifiedExpected, labelMultiRemoteValues(actual), this, verb, expectation, '', options)
-                + (!pass && !isNot && payloadNeverCollected.length > 0 ? payloadCollectionHint(Object.assign({}, ...payloadNeverCollected.map((name) => expected[name]))) : '')
+                + (!pass && !isNot && payloadNeverCollected.length > 0 ? payloadCollectionHint(mergeDefinedFields(payloadNeverCollected.map((name) => expected[name]))) : '')
         }
     } else if (perInstanceValues) {
         // Per-instance values can never match a single mock
@@ -132,6 +132,13 @@ export async function toBeRequestedWith(
 
     return result
 }
+
+/**
+ * The fields of several expected values, in one value. Unlike `Object.assign()`, a field set to `undefined` in one value
+ * does not remove the field of another value.
+ */
+const mergeDefinedFields = (values: ExpectWebdriverIO.RequestedWith[]): ExpectWebdriverIO.RequestedWith =>
+    Object.assign({}, ...values.map((value) => Object.fromEntries(Object.entries(value).filter(([, field]) => field !== undefined))))
 
 /**
  * Whether the mock has a call matching the expected value, with the (minified) last call for the failure message.

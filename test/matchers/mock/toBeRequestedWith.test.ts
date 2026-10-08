@@ -958,5 +958,38 @@ Expect multi-remote<chrome, firefox> mocks to be called with
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toContain('its body was never collected, so postData could not be compared')
         })
+
+        test('hints at the uncollected body with every field, also when another instance sets it to undefined', async () => {
+            const result = await thisContext.toBeRequestedWith(
+                multiRemoteMockWithCalls({ chrome: [{ ...mockPost, postData: undefined }], firefox: [{ ...mockPost, body: undefined }] }),
+                multiRemote({ chrome: { ...expectedPost, postData: { foo: 'bar' } }, firefox: { ...expectedPost, postData: undefined, response: { foo: 'bar' } } }),
+                { wait: 0 }
+            )
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toContain('its body was never collected, so postData and response could not be compared')
+        })
+
+        test('shows every field of the per-instance values in the last call of a single mock, also when an instance sets it to undefined', async () => {
+            const perInstance = multiRemote({ chrome: { method: 'GET' }, firefox: { method: undefined, url: mockGet.request.url } }) as ExpectWebdriverIO.RequestedWith
+            const result = await thisContext.toBeRequestedWith(mockWithCalls([mockGet]), perInstance, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect mock to be called with
+
+- Expected  - 5
++ Received  + 1
+
+- Multi-remote values {
+-   "chrome": Object {
++ Object {
+    "method": "GET",
+-   },
+-   "firefox": Object {
+    "url": "${mockGet.request.url}",
+-   },
+  }`)
+        })
     })
 })
