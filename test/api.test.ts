@@ -1,5 +1,4 @@
 import { describe, expect as vitestExpect, test } from 'vitest'
-import { expect as expectLib } from 'expect'
 
 import { expect, wdioCustomMatchers } from '../src/index.js'
 import { asymmetricMatcherNames, inverseAsymmetricMatcherNames, wdioCustomMatcherNames } from '../src/api/index.js'
@@ -15,12 +14,14 @@ describe('api', () => {
         vitestExpect([...wdioCustomMatcherNames].sort()).toEqual(Object.keys(wdioCustomMatchers).sort())
     })
 
-    test('asymmetricMatcherNames has each asymmetric matcher on expect', () => {
-        const fromExpectLib = asymmetricKeys(expectLib.not)
-        const expected = [...fromExpectLib, 'any', 'anything', 'oneOf', 'multiRemote']
+    // The functions of `expect` that are not asymmetric matchers. A new function of `expect` fails the test below,
+    // so that someone checks whether it is an asymmetric matcher
+    const expectApi = new Set(['extend', 'addEqualityTesters', 'assertions', 'hasAssertions', 'getState', 'setState', 'extractExpectedAssertionsErrors'])
 
-        vitestExpect([...asymmetricMatcherNames].sort()).toEqual(expected.sort())
-        asymmetricMatcherNames.forEach((name) => vitestExpect(expect[name]).toBeTypeOf('function'))
+    test('asymmetricMatcherNames has each asymmetric matcher on expect', () => {
+        const functions = asymmetricKeys(expect).filter((name) => typeof (expect as unknown as Record<string, unknown>)[name] === 'function')
+
+        vitestExpect([...asymmetricMatcherNames].sort()).toEqual(functions.filter((name) => !expectApi.has(name)).sort())
     })
 
     test('inverseAsymmetricMatcherNames has each asymmetric matcher on expect.not', () => {
