@@ -22,6 +22,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
+import { types } from 'node:util'
+
 /* eslint-disable */
 
 
@@ -300,13 +302,68 @@ function collectionEquals(
 }
 
 /**
- * The content of a URL (its `href`), a set or map (its entries) or binary data (its bytes).
- * `undefined` when the value has only the type tag (`Symbol.toStringTag`) and not the API of the type (a method of
- * its prototype, or a string `href`): then it is a plain object, and only its own keys are compared.
- * A value with the API that throws, such as a proxy without a handler, throws here, as in Jest.
- * A detached buffer has no bytes.
+ * The methods and getters of the built-in prototypes. They read the internal slots of a real value, so an own
+ * property of the value (for example `entries` or `byteLength`) cannot hide its content.
+ */
+const getter = (prototype: object, name: string) => Object.getOwnPropertyDescriptor(prototype, name)!.get!;
+const intrinsics = {
+    urlHref: getter(URL.prototype, 'href'),
+    setEntries: Set.prototype.entries,
+    mapEntries: Map.prototype.entries,
+    bufferByteLength: getter(ArrayBuffer.prototype, 'byteLength'),
+    bufferDetached: getter(ArrayBuffer.prototype, 'detached'),
+    viewBuffer: getter(DataView.prototype, 'buffer'),
+    viewByteOffset: getter(DataView.prototype, 'byteOffset'),
+    viewByteLength: getter(DataView.prototype, 'byteLength'),
+};
+
+/**
+ * The content of a URL (its `href`), a set or map (its entries) or binary data (its bytes), or `undefined` when the
+ * value has only the type tag (`Symbol.toStringTag`): then it is a plain object, and only its own keys are compared.
+ * - A real value (not a proxy) is read through its internal slots, with the methods of the built-in prototype.
+ * - A proxy, or another object with the type tag (a polyfill, a library collection), is read through its API: a
+ *   proxy without a handler throws, as in Jest, and a proxy that reads on the real object (as Vue `reactive()`) gives
+ *   the content. Without the API (a method of its prototype, or a string `href`), it has only the type tag.
+ * A detached buffer, or a data view out of the bounds of a resized buffer, has no bytes.
  */
 function contentOf(value: any, className: string): string | Array<[unknown, unknown]> | Uint8Array | undefined {
+    if (!types.isProxy(value)) {
+        if (className == '[object URL]' && value instanceof URL) {
+            return intrinsics.urlHref.call(value);
+        }
+        if (types.isSet(value)) {
+            return [...intrinsics.setEntries.call(value)];
+        }
+        if (types.isMap(value)) {
+            return [...intrinsics.mapEntries.call(value)];
+        }
+        if (types.isArrayBuffer(value)) {
+            return intrinsics.bufferByteLength.call(value) === 0 || intrinsics.bufferDetached.call(value) ? new Uint8Array(0) : new Uint8Array(value);
+        }
+        if (types.isSharedArrayBuffer(value)) {
+            return new Uint8Array(value);
+        }
+        if (types.isDataView(value)) {
+            // a real data view throws on `byteOffset` and `byteLength` only when it is out of the bounds of
+            // its resized buffer: then it has no bytes, as a data view of a detached buffer
+            const buffer = intrinsics.viewBuffer.call(value);
+            if (types.isArrayBuffer(buffer) && intrinsics.bufferDetached.call(buffer)) {
+                return new Uint8Array(0);
+            }
+            try {
+                return new Uint8Array(buffer, intrinsics.viewByteOffset.call(value), intrinsics.viewByteLength.call(value));
+            } catch {
+                return new Uint8Array(0);
+            }
+        }
+    }
+    return apiContentOf(value, className);
+}
+
+/**
+ * The content of a proxy or of another object with the type tag, read through its API.
+ */
+function apiContentOf(value: any, className: string): string | Array<[unknown, unknown]> | Uint8Array | undefined {
     switch (className) {
         case '[object URL]': {
             const href = 'href' in value ? value.href : undefined;
@@ -323,39 +380,15 @@ function contentOf(value: any, className: string): string | Array<[unknown, unkn
             if (value.byteLength === 0 || value.detached) {
                 return new Uint8Array(0);
             }
-            return bufferBytes(value);
+            // `Uint8Array` reads a proxy as a list with no `length`: a copy with `slice()` gives the bytes
+            return new Uint8Array(value.slice(0));
         case '[object DataView]':
             if (typeof value.getUint8 !== 'function') {
                 return undefined;
             }
-            if (ArrayBuffer.isView(value)) {
-                // a real data view throws on `byteOffset` and `byteLength` only when it is out of the bounds of
-                // its resized buffer: then it has no bytes, as a data view of a detached buffer
-                try {
-                    return viewBytes(value as DataView);
-                } catch {
-                    return new Uint8Array(0);
-                }
-            }
-            // a proxy: without a handler, it throws
-            return viewBytes(value);
+            return value.buffer.detached ? new Uint8Array(0) : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
     }
     return undefined;
-}
-
-/**
- * The bytes of an array buffer. `Uint8Array` reads a proxy as a list with no `length`, so 0 bytes:
- * a proxy that reads on the real buffer (as Vue `reactive()`) gives its bytes with `slice()`, a copy.
- */
-function bufferBytes(buffer: ArrayBufferLike): Uint8Array {
-    const bytes = new Uint8Array(buffer);
-    return bytes.length === buffer.byteLength ? bytes : new Uint8Array(buffer.slice(0));
-}
-
-function viewBytes(view: DataView): Uint8Array {
-    return (view.buffer as ArrayBuffer & { detached?: boolean }).detached
-        ? new Uint8Array(0)
-        : new Uint8Array(view.buffer, view.byteOffset, view.byteLength);
 }
 
 function bytesEquals(aBytes: Uint8Array, bBytes: Uint8Array): boolean {

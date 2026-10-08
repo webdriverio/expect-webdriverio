@@ -59,6 +59,12 @@ describe('equals: the matrix of cases', () => {
         new Uint8Array(buffer).set(values)
         return new DataView(buffer)
     }
+    // A real value with a method or getter of its type shadowed by a non-enumerable own property
+    const shadowed = <T extends object>(value: T, key: string, shadow?: unknown) => Object.defineProperty(value, key, { value: shadow })
+    class ValuesAsEntriesMap<K, V> extends Map<K, V> {
+        // @ts-expect-error a subclass that gives other values than the entries
+        entries() { return this.values() }
+    }
     // An object with only a type tag, on its class: it has no own keys
     const tagged = (tag: string) => new (class { get [Symbol.toStringTag]() { return tag } })()
     const detached = (...values: number[]) => {
@@ -180,6 +186,15 @@ describe('equals: the matrix of cases', () => {
         ['an array buffer and an object with only its type tag', bytes(1, 2), tagged('ArrayBuffer'), false],
         ['a data view and an object with only its type tag', new DataView(bytes(1)), tagged('DataView'), false],
         ['2 objects with only the type tag of a set', tagged('Set'), tagged('Set'), true],
+        // the content of a real value comes from its internal slots: an own property cannot hide it
+        ['array buffers with other bytes and a shadowed slice()', shadowed(bytes(1, 2), 'slice'), shadowed(bytes(9, 9), 'slice'), false],
+        ['array buffers with the same bytes and a shadowed slice()', shadowed(bytes(1, 2), 'slice'), shadowed(bytes(1, 2), 'slice'), true],
+        ['a filled array buffer with a shadowed byteLength of 0, and an empty one', shadowed(bytes(1, 2), 'byteLength', 0), bytes(), false],
+        ['data views with other bytes and a shadowed getUint8()', shadowed(new DataView(bytes(1)), 'getUint8'), shadowed(new DataView(bytes(2)), 'getUint8'), false],
+        ['sets with other entries and a shadowed entries()', shadowed(new Set([1]), 'entries'), shadowed(new Set([2]), 'entries'), false],
+        ['maps with other entries and a shadowed entries()', shadowed(new Map([['a', 1]]), 'entries'), shadowed(new Map([['a', 2]]), 'entries'), false],
+        ['URLs with a shadowed href', shadowed(new URL('https://a.test/'), 'href', 'x'), shadowed(new URL('https://b.test/'), 'href', 'x'), false],
+        ['maps of a subclass whose entries() gives the values', new ValuesAsEntriesMap([['a', 1]]), new ValuesAsEntriesMap([['b', 1]]), false],
         // an object with only the type tag and some properties of the type is still a plain object
         ['objects with the type tag of a data view and a byteLength', { [Symbol.toStringTag]: 'DataView', byteLength: 1 }, { [Symbol.toStringTag]: 'DataView', byteLength: 1 }, true],
         ['objects with the type tag of an array buffer and a byteLength', { [Symbol.toStringTag]: 'ArrayBuffer', byteLength: 1 }, { [Symbol.toStringTag]: 'ArrayBuffer', byteLength: 1 }, true],
