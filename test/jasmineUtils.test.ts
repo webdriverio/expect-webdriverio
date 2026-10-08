@@ -134,6 +134,13 @@ describe('equals: the matrix of cases', () => {
         ['different array buffers', bytes(1, 2), bytes(1, 3), false],
         ['same data views', new DataView(bytes(1)), new DataView(bytes(1)), true],
         ['different data views', new DataView(bytes(1)), new DataView(bytes(2)), false],
+        // the content is compared, and then the own keys, as for other objects
+        ['URLs with another own property', Object.assign(new URL('https://a.test/'), { x: 1 }), new URL('https://a.test/'), false],
+        ['sets with another own property', Object.assign(new Set([1]), { x: 1 }), new Set([1]), false],
+        ['sets with the same own property', Object.assign(new Set([1]), { x: 1 }), Object.assign(new Set([1]), { x: 1 }), true],
+        ['maps with another own property', Object.assign(new Map([['a', 1]]), { x: 1 }), new Map([['a', 1]]), false],
+        ['array buffers with another own property', Object.assign(bytes(1), { x: 1 }), bytes(1), false],
+        ['data views with another own property', Object.assign(new DataView(bytes(1)), { x: 1 }), new DataView(bytes(1)), false],
         // Jest asymmetric matchers
         ['Jest any(Number)', 1, jestExpect.any(Number), true],
         ['Jest any(Number) on a string', 'a', jestExpect.any(Number), false],

@@ -132,9 +132,6 @@ function eq(
         // RegExps are compared by their source patterns and flags.
         case '[object RegExp]':
             return a.source === b.source && a.flags === b.flags;
-        // URLs have no own keys: compare their whole URL
-        case '[object URL]':
-            return a.href === b.href;
     }
     if (typeof a !== 'object' || typeof b !== 'object') {
         return false;
@@ -164,12 +161,18 @@ function eq(
     // A false result is not always final (a set or map tries other entries): remove the objects on each return
     try {
 
-        // Sets, maps, array buffers and data views have no own keys: compare their content
-        if (className == '[object Set]' || className == '[object Map]') {
-            return collectionEquals(a, b, className == '[object Map]', aStack, bStack, customTesters, hasKey);
+        // URLs, sets, maps, array buffers and data views keep their content out of their own keys:
+        // compare the content here, and the own keys (usually none) below
+        if (className == '[object URL]' && a.href !== b.href) {
+            return false;
         }
-        if (className == '[object ArrayBuffer]' || className == '[object SharedArrayBuffer]' || className == '[object DataView]') {
-            return bytesEquals(a, b);
+        if ((className == '[object Set]' || className == '[object Map]')
+            && !collectionEquals(a, b, className == '[object Map]', aStack, bStack, customTesters, hasKey)) {
+            return false;
+        }
+        if ((className == '[object ArrayBuffer]' || className == '[object SharedArrayBuffer]' || className == '[object DataView]')
+            && !bytesEquals(a, b)) {
+            return false;
         }
 
         var size = 0;
