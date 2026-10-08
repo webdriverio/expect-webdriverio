@@ -92,6 +92,14 @@ describe('Jasmine type agumentations', () => {
                     expectTypeOf(expectAsync(true).not.toHaveTitle).toBeNever()
                 })
             })
+
+            describe('toHaveLocalStorageItem', () => {
+                it('should reject an explicit undefined value', async () => {
+                    expectTypeOf(expectAsync(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()
+                    // @ts-expect-error omit the value to check that the item exists
+                    expectTypeOf(expectAsync(browser).toHaveLocalStorageItem).toBeCallableWith('key', undefined)
+                })
+            })
         })
 
         describe('element or elements', () => {
@@ -272,6 +280,17 @@ describe('Jasmine type agumentations', () => {
                         expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
                         expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop', 'val')).toEqualTypeOf<Promise<void>>()
                         expectTypeOf(expectAsync(element).not.toHaveElementProperty('prop', jasmine.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
+                    })
+
+                    it('should reject an explicit undefined or null value', async () => {
+                        // @ts-expect-error omit the value, or use `jasmine.anything()` with options
+                        expectTypeOf(expectAsync(element).toHaveElementProperty).toBeCallableWith('prop', undefined)
+                        // @ts-expect-error omit the value, or use `jasmine.anything()` with options
+                        expectTypeOf(expectAsync(element).toHaveElementProperty).toBeCallableWith('prop', null)
+                        // @ts-expect-error omit the value to check that the attribute exists
+                        expectTypeOf(expectAsync(element).toHaveAttribute).toBeCallableWith('attr', undefined)
+                        // @ts-expect-error use `not.toHaveAttribute()` to check that the attribute is missing
+                        expectTypeOf(expectAsync(element).toHaveAttribute).toBeCallableWith('attr', null)
                     })
                 })
 
