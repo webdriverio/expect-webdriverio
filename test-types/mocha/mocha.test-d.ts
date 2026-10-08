@@ -1045,11 +1045,28 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expectTypeOf(expect([networkMock, networkMock]).toBeRequested()).toEqualTypeOf<Promise<void>>()
         })
 
-        it('should not support per-instance values on multi-remote mocks', async () => {
+        it('should support per-instance values with expect.multiRemote() on multi-remote mocks', async () => {
+            const multiRemoteMocks = await multiRemoteBrowser.mock('**/api/**')
+            const promiseMultiRemoteMocks = multiRemoteBrowser.mock('**/api/**')
+
+            expectTypeOf(expect(multiRemoteMocks).toBeRequestedTimes(expect.multiRemote({ chrome: 1, firefox: { gte: 2 } }))).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseMultiRemoteMocks).not.toBeRequestedTimes(expect.multiRemote({ chrome: 1, firefox: 2 }), { wait: 0 })).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(multiRemoteMocks).toBeRequestedWith(expect.multiRemote({ chrome: { method: 'GET' }, firefox: { method: 'POST', statusCode: 201 } }))).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(promiseMultiRemoteMocks).not.toBeRequestedWith(expect.multiRemote({ chrome: { method: 'GET' } }), { wait: 0 })).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should have ts errors with per-instance numbers in a plain object on multi-remote mocks', async () => {
             const multiRemoteMocks = await multiRemoteBrowser.mock('**/api/**')
 
-            // @ts-expect-error the browser of each mock is unknown, so there is one expected value for every instance
-            expectTypeOf(expect(multiRemoteMocks).toBeRequestedTimes(expect.multiRemote({ chrome: 1, firefox: 2 }))).toEqualTypeOf<Promise<void>>()
+            // @ts-expect-error a plain object is a `NumberMatcher`: per-instance numbers need `expect.multiRemote()`
+            expectTypeOf(expect(multiRemoteMocks).toBeRequestedTimes({ chrome: 1, firefox: 2 })).toEqualTypeOf<Promise<void>>()
+        })
+
+        it('should have ts errors with per-instance values on a single mock', async () => {
+            // @ts-expect-error per-instance values are for multi-remote mocks only
+            expectTypeOf(expect(networkMock).toBeRequestedTimes(expect.multiRemote({ chrome: 1 }))).toEqualTypeOf<Promise<void>>()
+            // @ts-expect-error per-instance values are for multi-remote mocks only
+            expectTypeOf(expect(promiseNetworkMock).toBeRequestedWith(expect.multiRemote({ chrome: { method: 'GET' } }))).toEqualTypeOf<Promise<void>>()
         })
 
         it('should not support array as expected', async () => {

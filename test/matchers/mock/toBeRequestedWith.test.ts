@@ -5,6 +5,7 @@ import type { local } from 'webdriver'
 import { jasmine } from '../../__fixtures__/jasmine.js'
 import stripAnsi from 'strip-ansi'
 import { multiRemoteMockFactory, setWdioKind } from '../../__mocks__/@wdio/globals.js'
+import { multiRemote } from '../../../src/api/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -847,5 +848,115 @@ Expect multi-remote<firefox, chrome> mocks to be called with
         const result = await thisNotContext.toBeRequestedWith(multiRemoteMockWithCalls({ chrome: [mockPost], firefox: [] }), expected, { wait: 0 })
 
         expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+    })
+
+    describe('given one expected value per instance with expect.multiRemote()', () => {
+        const expectedGet = { url: mockGet.request.url, method: 'GET' }
+        const expectedPost = { url: mockPost.request.url, method: 'POST' }
+
+        /** Counts the reads of `calls`: more than one read per instance means the matcher retried */
+        const countReads = (mock: WebdriverIO.MultiRemoteMock) => {
+            let reads = 0
+            for (const name of mock.instances) {
+                const instanceMock = mock.getInstance(name) as unknown as TestMock
+                const calls = instanceMock.calls
+                Object.defineProperty(instanceMock, 'calls', { get: () => { reads++; return calls } })
+            }
+            return () => reads
+        }
+
+        test('passes when each instance\'s mock has a call matching its own value', async () => {
+            const result = await thisContext.toBeRequestedWith(multiRemoteMockWithCalls({ chrome: [mockGet], firefox: [mockPost] }), multiRemote({ chrome: expectedGet, firefox: expectedPost }), { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test('fails with a per-instance message when an instance\'s mock has no call matching its own value', async () => {
+            const result = await thisContext.toBeRequestedWith(multiRemoteMockWithCalls({ chrome: [mockGet], firefox: [mockGet] }), multiRemote({ chrome: expectedGet, firefox: expectedPost }), { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> mocks to be called with
+
+- Expected  - 2
++ Received  + 2
+
+  Multi-remote values {
+    "chrome": Object {
+      "method": "GET",
+      "url": "${mockGet.request.url}",
+    },
+    "firefox": Object {
+-     "method": "POST",
+-     "url": "${mockPost.request.url}",
++     "method": "GET",
++     "url": "${mockGet.request.url}",
+    },
+  }`)
+        })
+
+        test('fails with .not when only some instances\' mocks have a call matching their own value', async () => {
+            const result = await thisNotContext.toBeRequestedWith(multiRemoteMockWithCalls({ chrome: [mockGet], firefox: [mockGet] }), multiRemote({ chrome: expectedGet, firefox: expectedPost }), { wait: 0 })
+
+            expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
+        })
+
+        test('passes with .not when no instance\'s mock has a call matching its own value', async () => {
+            const result = await thisNotContext.toBeRequestedWith(multiRemoteMockWithCalls({ chrome: [mockPost], firefox: [mockGet] }), multiRemote({ chrome: expectedGet, firefox: expectedPost }), { wait: 0 })
+
+            expect(result.pass).toBe(false) // success, boolean is inverted later because of `.not`
+        })
+
+        test('fails strictly without retry when the values do not name exactly the instances, also with .not', async () => {
+            const unknownName = multiRemoteMockWithCalls({ chrome: [mockGet], firefox: [] })
+            const reads = countReads(unknownName)
+
+            const result = await thisContext.toBeRequestedWith(unknownName, multiRemote({ chrome: expectedGet, safari: expectedGet }), { wait: 100, interval: 10 })
+
+            expect(result.pass).toBe(false)
+            expect(reads()).toBe(2) // one read per instance, for the actual value of the message
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect multi-remote<chrome, firefox> mocks to be called with
+
+- Expected  - 4
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": Object {
+      "method": "GET",
+      "url": "${mockGet.request.url}",
+    },
+-   "safari": Object {
+-     "method": "GET",
+-     "url": "${mockGet.request.url}",
+-   },
++   "firefox": "was not called",
+  }`)
+
+            const missingName = multiRemoteMockWithCalls({ chrome: [mockGet], firefox: [mockGet] })
+            expect((await thisContext.toBeRequestedWith(missingName, multiRemote({ chrome: expectedGet }), { wait: 0 })).pass).toBe(false)
+            expect((await thisNotContext.toBeRequestedWith(missingName, multiRemote({ chrome: expectedGet }), { wait: 0 })).pass).toBe(true) // failure with `.not`
+        })
+
+        test('fails on a single mock, also with .not', async () => {
+            // The types of a single mock reject per-instance values
+            const perInstance = multiRemote({ chrome: expectedGet }) as ExpectWebdriverIO.RequestedWith
+            const result = await thisContext.toBeRequestedWith(mockWithCalls([mockGet]), perInstance, { wait: 0 })
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toContain('Multi-remote values {')
+            expect((await thisNotContext.toBeRequestedWith(mockWithCalls([mockGet]), perInstance, { wait: 0 })).pass).toBe(true) // failure with `.not`
+        })
+
+        test('hints at the uncollected body with the fields of the per-instance values', async () => {
+            const result = await thisContext.toBeRequestedWith(
+                multiRemoteMockWithCalls({ chrome: [{ ...mockPost, postData: undefined }], firefox: [{ ...mockPost, body: undefined }] }),
+                multiRemote({ chrome: { ...expectedPost, postData: { foo: 'bar' } }, firefox: expectedPost }),
+                { wait: 0 }
+            )
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toContain('its body was never collected, so postData could not be compared')
+        })
     })
 })
