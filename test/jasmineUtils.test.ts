@@ -1,7 +1,8 @@
 import { describe, test, expect } from 'vitest'
 import jestExpect from 'expect'
 import { equals } from '../src/jasmineUtils.js'
-import { jasmine } from './__mocks__/jasmine.js'
+import { jasmine } from './__fixtures__/jasmine.js'
+import { oneOf } from '../src/matchers/asymmetrics/oneOf.js'
 
 describe('jasmineUtils', () => {
     describe(equals, () => {
@@ -29,5 +30,323 @@ describe('jasmineUtils', () => {
                 expect(equals({ a: { b: [1, 2] } }, asymmetric.objectContaining({ a: asymmetric.objectContaining({ b: asymmetric.arrayContaining([2]) }) }))).toBe(true)
             })
         })
+    })
+})
+
+describe('equals: the matrix of cases', () => {
+    const j = jasmine
+    const circular = () => {
+        const value: Record<string, unknown> = { a: 1 }
+        value.self = value
+        return value
+    }
+    const symbolKey = Symbol('key')
+    const sameSymbol = Symbol('same')
+    const sameFunction = () => 1
+    const bytes = (...values: number[]) => new Uint8Array(values).buffer
+    // Resizable array buffers are ES2024, which is not in the TypeScript library of the project
+    type ResizableArrayBufferConstructor = new (length: number, options: { maxByteLength: number }) => ArrayBuffer & { resize(length: number): void }
+    const resizable = (length: number) => new (ArrayBuffer as unknown as ResizableArrayBufferConstructor)(length, { maxByteLength: 8 })
+    // A data view out of the bounds of its resizable buffer, after a resize: its `byteOffset` and `byteLength` throw
+    const outOfBoundsView = () => {
+        const buffer = resizable(8)
+        const view = new DataView(buffer, 4)
+        buffer.resize(2)
+        return view
+    }
+    const lengthTrackingView = (...values: number[]) => {
+        const buffer = resizable(values.length)
+        new Uint8Array(buffer).set(values)
+        return new DataView(buffer)
+    }
+    // A real value with a method or getter of its type shadowed by a non-enumerable own property
+    const shadowed = <T extends object>(value: T, key: string, shadow?: unknown) => Object.defineProperty(value, key, { value: shadow })
+    class ValuesAsEntriesMap<K, V> extends Map<K, V> {
+        // @ts-expect-error a subclass that gives other values than the entries
+        entries() { return this.values() }
+    }
+    // A subclass with its own type tag: a real value, read through its internal slots
+    const withTag = <T extends abstract new (...args: any[]) => object>(Base: T, tag: string) => {
+        abstract class Tagged extends Base {
+            get [Symbol.toStringTag]() { return tag }
+        }
+        return Tagged as unknown as T
+    }
+    const TaggedSet = withTag(Set, 'TaggedSet')
+    const TaggedMap = withTag(Map, 'TaggedMap')
+    const TaggedUrl = withTag(URL, 'TaggedUrl')
+    // An object with only a type tag, on its class: it has no own keys
+    const tagged = (tag: string) => new (class { get [Symbol.toStringTag]() { return tag } })()
+    const detached = (...values: number[]) => {
+        const buffer = bytes(...values)
+        structuredClone(buffer, { transfer: [buffer] })
+        return buffer
+    }
+    const detachedView = (...values: number[]) => {
+        const buffer = bytes(...values)
+        const view = new DataView(buffer)
+        structuredClone(buffer, { transfer: [buffer] })
+        return view
+    }
+    const withHole = () => {
+        const array = [undefined, 1]
+        delete array[0]
+        return array
+    }
+
+    // [name, a, b, expected]: each case also runs as equals(b, a)
+    const cases: [string, unknown, unknown, boolean][] = [
+        // primitives
+        ['same numbers', 1, 1, true],
+        ['different numbers', 1, 2, false],
+        ['same strings', 'a', 'a', true],
+        ['different strings', 'a', 'b', false],
+        ['different booleans', true, false, false],
+        ['NaN and NaN', NaN, NaN, true],
+        ['+0 and -0 (Object.is)', 0, -0, false],
+        ['null and null', null, null, true],
+        ['undefined and undefined', undefined, undefined, true],
+        ['null and undefined', null, undefined, false],
+        ['number and numeric string', 1, '1', false],
+        ['same bigints', 1n, 1n, true],
+        ['bigint and number', 1n, 1, false],
+        ['same symbol', sameSymbol, sameSymbol, true],
+        ['2 symbols with the same description', Symbol('a'), Symbol('a'), false],
+        ['boxed and plain number', new Number(1), 1, false],
+        ['same boxed numbers', new Number(1), new Number(1), true],
+        ['different boxed strings', new String('a'), new String('b'), false],
+        // objects
+        ['same objects', { a: 1 }, { a: 1 }, true],
+        ['different values', { a: 1 }, { a: 2 }, false],
+        ['a missing key', { a: 1 }, {}, false],
+        ['an extra key', { a: 1 }, { a: 1, b: 2 }, false],
+        ['an undefined key and a missing key', { a: undefined }, {}, true],
+        ['same nested objects', { a: { b: 1 } }, { a: { b: 1 } }, true],
+        ['different nested objects', { a: { b: 1 } }, { a: { b: 2 } }, false],
+        ['same symbol keys', { [symbolKey]: 1 }, { [symbolKey]: 1 }, true],
+        ['different symbol key values', { [symbolKey]: 1 }, { [symbolKey]: 2 }, false],
+        ['a non-enumerable key is ignored', Object.defineProperty({}, 'x', { value: 1 }), {}, true],
+        ['a class instance and a plain object', new (class A { x = 1 })(), { x: 1 }, true],
+        ['a null-prototype object and a plain object', Object.assign(Object.create(null), { a: 1 }), { a: 1 }, true],
+        ['same circular objects', circular(), circular(), true],
+        ['a circular and a plain object', circular(), { a: 1, self: { a: 1 } }, false],
+        // arrays
+        ['same arrays', [1, 2], [1, 2], true],
+        ['another order', [1, 2], [2, 1], false],
+        ['another length', [1], [1, 2], false],
+        ['a trailing undefined item', [1], [1, undefined], false],
+        ['a hole and an undefined item', withHole(), [undefined, 1], true],
+        ['an array and an object', [], {}, false],
+        ['an array with an extra property', Object.assign([1], { x: 1 }), [1], false],
+        // built-in objects
+        ['same dates', new Date(1), new Date(1), true],
+        ['different dates', new Date(1), new Date(2), false],
+        ['2 invalid dates', new Date(NaN), new Date(NaN), false],
+        ['same regular expressions', /a/g, /a/g, true],
+        ['regular expressions with other flags', /a/g, /a/i, false],
+        ['regular expressions with other sources', /a/, /b/, false],
+        ['same URLs', new URL('https://a.test/x'), new URL('https://a.test/x'), true],
+        ['different URLs', new URL('https://a.test/'), new URL('https://b.test/'), false],
+        ['errors with the same message', new Error('x'), new Error('x'), true],
+        ['errors with different messages', new Error('x'), new Error('y'), false],
+        ['error classes with the same message', new TypeError('x'), new Error('x'), true],
+        ['same functions', sameFunction, sameFunction, true],
+        ['different functions', () => 1, () => 1, false],
+        // collections
+        ['same sets in another order', new Set([1, 2]), new Set([2, 1]), true],
+        ['different sets', new Set([1]), new Set([2]), false],
+        ['sets of another size', new Set([1]), new Set([1, 2]), false],
+        ['sets with equal objects', new Set([{ a: 1 }]), new Set([{ a: 1 }]), true],
+        ['sets with different objects', new Set([{ a: 1 }]), new Set([{ a: 2 }]), false],
+        ['sets with 2 equal objects and 2 different objects', new Set([{ a: 1 }, { a: 1 }]), new Set([{ a: 1 }, { a: 2 }]), false],
+        // a failed comparison of one entry must not change the comparison of the next entries
+        ['sets of objects in another order', new Set([{ a: 1 }, { a: 2 }]), new Set([{ a: 2 }, { a: 1 }]), true],
+        ['sets of arrays in another order', new Set([[1], [2]]), new Set([[2], [1]]), true],
+        ['sets with a circular object in another order', new Set([circular(), { a: 2 }]), new Set([{ a: 2 }, circular()]), true],
+        ['sets of objects in another order, in an array', [new Set([{ a: 1 }, { a: 2 }])], [new Set([{ a: 2 }, { a: 1 }])], true],
+        ['maps with object keys in another order', new Map([[{ k: 1 }, 'x'], [{ k: 2 }, 'y']]), new Map([[{ k: 2 }, 'y'], [{ k: 1 }, 'x']]), true],
+        ['same maps in another order', new Map([['a', 1], ['b', 2]]), new Map([['b', 2], ['a', 1]]), true],
+        ['maps with another value', new Map([['a', 1]]), new Map([['a', 2]]), false],
+        ['maps with another key', new Map([['a', 1]]), new Map([['b', 1]]), false],
+        ['maps of another size', new Map([['a', 1]]), new Map([['a', 1], ['b', 2]]), false],
+        ['maps with equal object keys', new Map([[{ k: 1 }, 1]]), new Map([[{ k: 1 }, 1]]), true],
+        ['a set and an array', new Set([1]), [1], false],
+        ['same typed arrays', new Uint8Array([1, 2]), new Uint8Array([1, 2]), true],
+        ['different typed arrays', new Uint8Array([1, 2]), new Uint8Array([1, 3]), false],
+        ['typed arrays of another type', new Uint8Array([1]), new Int8Array([1]), false],
+        ['same array buffers', bytes(1, 2), bytes(1, 2), true],
+        ['different array buffers', bytes(1, 2), bytes(1, 3), false],
+        ['same data views', new DataView(bytes(1)), new DataView(bytes(1)), true],
+        ['different data views', new DataView(bytes(1)), new DataView(bytes(2)), false],
+        // the content is compared, and then the own keys, as for other objects
+        ['URLs with another own property', Object.assign(new URL('https://a.test/'), { x: 1 }), new URL('https://a.test/'), false],
+        ['sets with another own property', Object.assign(new Set([1]), { x: 1 }), new Set([1]), false],
+        ['sets with the same own property', Object.assign(new Set([1]), { x: 1 }), Object.assign(new Set([1]), { x: 1 }), true],
+        ['maps with another own property', Object.assign(new Map([['a', 1]]), { x: 1 }), new Map([['a', 1]]), false],
+        ['array buffers with another own property', Object.assign(bytes(1), { x: 1 }), bytes(1), false],
+        ['data views with another own property', Object.assign(new DataView(bytes(1)), { x: 1 }), new DataView(bytes(1)), false],
+        // a value with only the type tag of a set or a map is a plain object: its own keys are compared
+        ['objects with the type tag of a set', { [Symbol.toStringTag]: 'Set', x: 1 }, { [Symbol.toStringTag]: 'Set', x: 1 }, true],
+        ['objects with the type tag of a map and other keys', { [Symbol.toStringTag]: 'Map', x: 1 }, { [Symbol.toStringTag]: 'Map', x: 2 }, false],
+        ['objects with the type tag of an array buffer', { [Symbol.toStringTag]: 'ArrayBuffer', x: 1 }, { [Symbol.toStringTag]: 'ArrayBuffer', x: 1 }, true],
+        // a value of the type and an object with only its type tag are not equal, also without own keys
+        ['a set and an object with only the type tag of a set', new Set([1, 2, 3]), tagged('Set'), false],
+        ['a map and an object with only the type tag of a map', new Map([['a', 1]]), tagged('Map'), false],
+        ['a URL and an object with only the type tag of a URL', new URL('https://a.test/'), tagged('URL'), false],
+        ['an array buffer and an object with only its type tag', bytes(1, 2), tagged('ArrayBuffer'), false],
+        ['a data view and an object with only its type tag', new DataView(bytes(1)), tagged('DataView'), false],
+        ['2 objects with only the type tag of a set', tagged('Set'), tagged('Set'), true],
+        // a subclass with its own type tag is compared by its content, as its built-in type
+        ['sets of a subclass with its own type tag', new TaggedSet([1]), new TaggedSet([1]), true],
+        ['sets of a subclass with its own type tag and other entries', new TaggedSet([1]), new TaggedSet([2]), false],
+        ['maps of a subclass with its own type tag', new TaggedMap([['a', 1]]), new TaggedMap([['a', 1]]), true],
+        ['maps of a subclass with its own type tag and other entries', new TaggedMap([['a', 1]]), new TaggedMap([['a', 2]]), false],
+        ['URLs of a subclass with its own type tag', new TaggedUrl('https://a.test/'), new TaggedUrl('https://a.test/'), true],
+        ['URLs of a subclass with its own type tag and another href', new TaggedUrl('https://a.test/'), new TaggedUrl('https://b.test/'), false],
+        // the content of a real value comes from its internal slots: an own property cannot hide it
+        ['array buffers with other bytes and a shadowed slice()', shadowed(bytes(1, 2), 'slice'), shadowed(bytes(9, 9), 'slice'), false],
+        ['array buffers with the same bytes and a shadowed slice()', shadowed(bytes(1, 2), 'slice'), shadowed(bytes(1, 2), 'slice'), true],
+        ['a filled array buffer with a shadowed byteLength of 0, and an empty one', shadowed(bytes(1, 2), 'byteLength', 0), bytes(), false],
+        ['data views with other bytes and a shadowed getUint8()', shadowed(new DataView(bytes(1)), 'getUint8'), shadowed(new DataView(bytes(2)), 'getUint8'), false],
+        ['sets with other entries and a shadowed entries()', shadowed(new Set([1]), 'entries'), shadowed(new Set([2]), 'entries'), false],
+        ['maps with other entries and a shadowed entries()', shadowed(new Map([['a', 1]]), 'entries'), shadowed(new Map([['a', 2]]), 'entries'), false],
+        ['URLs with a shadowed href', shadowed(new URL('https://a.test/'), 'href', 'x'), shadowed(new URL('https://b.test/'), 'href', 'x'), false],
+        ['maps of a subclass whose entries() gives the values', new ValuesAsEntriesMap([['a', 1]]), new ValuesAsEntriesMap([['b', 1]]), false],
+        // an object with only the type tag and some properties of the type is still a plain object
+        ['objects with the type tag of a data view and a byteLength', { [Symbol.toStringTag]: 'DataView', byteLength: 1 }, { [Symbol.toStringTag]: 'DataView', byteLength: 1 }, true],
+        ['objects with the type tag of an array buffer and a byteLength', { [Symbol.toStringTag]: 'ArrayBuffer', byteLength: 1 }, { [Symbol.toStringTag]: 'ArrayBuffer', byteLength: 1 }, true],
+        ['objects with the type tag of a URL and an href that is not a string', { [Symbol.toStringTag]: 'URL', href: {} }, { [Symbol.toStringTag]: 'URL', href: {} }, true],
+        // a detached buffer has no bytes
+        ['detached array buffers', detached(1, 2), detached(3), true],
+        ['a detached and an empty array buffer', detached(1, 2), bytes(), true],
+        ['a detached and a filled array buffer', detached(1, 2), bytes(1, 2), false],
+        ['data views of detached array buffers', detachedView(1), detachedView(2), true],
+        ['a data view of a detached and of a filled array buffer', detachedView(1), new DataView(bytes(1)), false],
+        // a data view out of the bounds of a resized buffer has no bytes, as a data view of a detached buffer
+        ['data views out of the bounds of a resized buffer', outOfBoundsView(), outOfBoundsView(), true],
+        ['a data view out of bounds and a filled data view', outOfBoundsView(), new DataView(bytes(1)), false],
+        ['a length-tracking data view of a resizable buffer', lengthTrackingView(1, 2), new DataView(bytes(1, 2)), true],
+        // Jest asymmetric matchers
+        ['Jest any(Number)', 1, jestExpect.any(Number), true],
+        ['Jest any(Number) on a string', 'a', jestExpect.any(Number), false],
+        ['Jest anything() on undefined', undefined, jestExpect.anything(), false],
+        ['Jest objectContaining', { a: 1, b: 2 }, jestExpect.objectContaining({ a: 1 }), true],
+        ['Jest objectContaining, no match', { a: 2 }, jestExpect.objectContaining({ a: 1 }), false],
+        ['Jest arrayContaining', [1, 2], jestExpect.arrayContaining([2]), true],
+        ['Jest stringMatching', 'abc', jestExpect.stringMatching(/b/), true],
+        ['Jest closeTo', 1.001, jestExpect.closeTo(1, 2), true],
+        ['Jest not.objectContaining', { a: 1 }, jestExpect.not.objectContaining({ a: 2 }), true],
+        ['Jest arrayOf', [1, 2], jestExpect.arrayOf(jestExpect.any(Number)), true],
+        ['Jest matcher in a set', new Set([1]), new Set([jestExpect.any(Number)]), true],
+        ['Jest matcher in a map value', new Map([['a', 1]]), new Map([['a', jestExpect.any(Number)]]), true],
+        // a matcher that matches 2 entries must not take the only match of another entry
+        ['Jest anything() first in a set', new Set([5, 'x']), new Set([jestExpect.anything(), 5]), true],
+        ['Jest anything() last in a set', new Set([5, 'x']), new Set([5, jestExpect.anything()]), true],
+        ['Jest any(Number) that matches 2 entries of a set', new Set([1, 2]), new Set([jestExpect.any(Number), 1]), true],
+        ['Jest anything() as the first key and value of a map', new Map<unknown, unknown>([[{ k: 1 }, 5], [{ k: 2 }, 'x']]), new Map<unknown, unknown>([[jestExpect.anything(), jestExpect.anything()], [{ k: 1 }, 5]]), true],
+        ['sets with 3 objects in other counts', new Set([{ a: 1 }, { a: 1 }, { a: 2 }]), new Set([{ a: 1 }, { a: 2 }, { a: 2 }]), false],
+        ['Vitest objectContaining', { a: 1, b: 2 }, expect.objectContaining({ a: 1 }), true],
+        // Jasmine asymmetric matchers, from Jasmine 6
+        ['Jasmine any(Number)', 1, j.any(Number), true],
+        ['Jasmine anything()', 1, j.anything(), true],
+        ['Jasmine objectContaining', { a: 1, b: 2 }, j.objectContaining({ a: 1 }), true],
+        ['Jasmine objectContaining, no match', { a: 2 }, j.objectContaining({ a: 1 }), false],
+        ['Jasmine arrayContaining', [1, 2], j.arrayContaining([2]), true],
+        ['Jasmine arrayWithExactContents', [1, 2], j.arrayWithExactContents([2, 1]), true],
+        ['Jasmine arrayWithExactContents, no match', [1, 2], j.arrayWithExactContents([1]), false],
+        ['Jasmine setContaining', new Set([1, 2]), j.setContaining(new Set([2])), true],
+        ['Jasmine setContaining, no match', new Set([1]), j.setContaining(new Set([2])), false],
+        ['Jasmine mapContaining', new Map([['a', 1], ['b', 2]]), j.mapContaining(new Map([['a', 1]])), true],
+        ['Jasmine mapContaining, no match', new Map([['a', 1]]), j.mapContaining(new Map([['a', 2]])), false],
+        ['Jasmine stringContaining', 'abc', j.stringContaining('b'), true],
+        ['Jasmine stringMatching', 'abc', j.stringMatching(/c$/), true],
+        ['Jasmine truthy', 'x', j.truthy(), true],
+        ['Jasmine falsy', 0, j.falsy(), true],
+        ['Jasmine empty', [], j.empty(), true],
+        ['Jasmine notEmpty', [1], j.notEmpty(), true],
+        ['Jasmine is', sameSymbol, j.is(sameSymbol), true],
+        ['Jasmine is, another object', { a: 1 }, j.is({ a: 1 }), false],
+        ['Jest any() in Jasmine objectContaining', { a: 1 }, j.objectContaining({ a: jestExpect.any(Number) }), true],
+        ['Jasmine any() in Jest objectContaining', { a: 1 }, jestExpect.objectContaining({ a: j.any(Number) }), true],
+        ['Jasmine matcher in a set', new Set([{ a: 1, b: 2 }]), new Set([j.objectContaining({ a: 1 })]), true],
+        ['Jasmine anything() first in a set', new Set([5, 'x']), new Set([j.anything(), 5]), true],
+        // expect-webdriverio asymmetric matchers
+        ['oneOf', 'b', oneOf('a', 'b'), true],
+        ['oneOf, no match', 'c', oneOf('a', 'b'), false],
+    ]
+
+    test.each(cases)('%s', (_name, a, b, expected) => {
+        expect(equals(a, b)).toBe(expected)
+        expect(equals(b, a)).toBe(expected)
+    })
+})
+
+describe('equals: sets, maps and other built-in objects', () => {
+    // A proxy without a handler cannot be read (its `size`, `entries()`, `href` or `buffer` throws): the error is shown, as in Jest
+    test.each([
+        ['a set', new Proxy(new Set([1]), {}), new Set([2])],
+        ['a map', new Proxy(new Map([['a', 1]]), {}), new Map([['a', 2]])],
+        ['a URL', new Proxy(new URL('https://a.test/'), {}), new URL('https://b.test/')],
+        ['an array buffer', new Proxy(new Uint8Array([1, 2]).buffer, {}), new ArrayBuffer(0)],
+        ['a data view', new Proxy(new DataView(new Uint8Array([1]).buffer), {}), new DataView(new Uint8Array([1]).buffer)],
+    ])('throws a TypeError for a proxy of %s', (_name, proxy, other) => {
+        expect(() => equals(proxy, other)).toThrow(TypeError)
+        expect(() => equals(other, proxy)).toThrow(TypeError)
+    })
+
+    test('does not throw for a proxy compared with itself', () => {
+        const proxy = new Proxy(new Set([1]), {})
+
+        expect(equals(proxy, proxy)).toBe(true)
+    })
+
+    // A proxy that reads the methods and getters on the real object, as Vue `reactive()`, is compared by its content
+    const reactive = <T extends object>(target: T) => new Proxy(target, {
+        get: (object, key) => {
+            const value = Reflect.get(object, key, object)
+            return typeof value === 'function' ? value.bind(object) : value
+        },
+    })
+    test.each([
+        ['a set', reactive(new Set([1])), new Set([1]), new Set([2])],
+        ['a map', reactive(new Map([['a', 1]])), new Map([['a', 1]]), new Map([['a', 2]])],
+        ['a URL', reactive(new URL('https://a.test/')), new URL('https://a.test/'), new URL('https://b.test/')],
+        ['an array buffer', reactive(new Uint8Array([1, 2]).buffer), new Uint8Array([1, 2]).buffer, new ArrayBuffer(0)],
+        ['a data view', reactive(new DataView(new Uint8Array([1]).buffer)), new DataView(new Uint8Array([1]).buffer), new DataView(new Uint8Array([2]).buffer)],
+    ])('compares a readable proxy of %s by its content', (_name, proxy, same, other) => {
+        expect(equals(proxy, same)).toBe(true)
+        expect(equals(same, proxy)).toBe(true)
+        expect(equals(proxy, other)).toBe(false)
+        expect(equals(other, proxy)).toBe(false)
+    })
+
+    // A custom tester that returns `undefined` counts the comparisons without a change to the result
+    const countComparisons = (a: unknown, b: unknown) => {
+        let count = 0
+        const result = equals(a, b, [() => { count++ }])
+        return { result, count }
+    }
+
+    test.each([
+        ['set', (values: number[]) => new Set(values)],
+        ['map', (values: number[]) => new Map(values.map((value) => [`k${value}`, value]))],
+    ])('compares each entry of a %s with the entry that has the same key first', (_name, make) => {
+        const values = [...Array(1000).keys()]
+
+        const { result, count } = countComparisons(make(values), make([...values].reverse()))
+
+        // in another order: 1 comparison for each entry (2 for a map: key and value), not 1 with each other entry
+        expect(result).toBe(true)
+        expect(count).toBeLessThanOrEqual(1 + 2 * values.length)
+    })
+
+    test('moves a long chain of matches without a stack overflow', () => {
+        // `b` entry j matches the values j and j + 1. `a` is 1, 2, ..., n - 1, 0: each first match is wrong,
+        // and the last value needs a chain of n - 1 moves
+        const n = 5000
+        const values = [...Array(n).keys()]
+        const matcher = (j: number) => ({ asymmetricMatch: (value: unknown) => value === j || value === j + 1 })
+
+        expect(equals(new Set([...values.slice(1), 0]), new Set(values.map(matcher)))).toBe(true)
     })
 })

@@ -116,6 +116,24 @@ The `expect-webdriverio/jasmine-wdio-expect-async` entry point is removed. In We
 
 Since `@wdio/jasmine-framework` 10.0.2, the WDIO matchers on `expectAsync` are typed, and the types of `import { expect } from 'expect-webdriverio'` keep the Jest matchers.
 
+## Deep equality of URLs, sets, maps and binary data
+
+The deep equality of the matchers (for example in `expect.multiRemote()`, or in a Jasmine asymmetric matcher such as `jasmine.objectContaining()`) now compares:
+
+- a `URL` by its `href`;
+- a `Set` or a `Map` by its entries, in any order, with each entry matched once: `Set{{a: 1}, {a: 1}, {a: 2}}` is not equal to `Set{{a: 1}, {a: 2}, {a: 2}}`. An asymmetric matcher in a set or a map can receive any entry, so it must not throw for a value of another type (as in Jest);
+- an `ArrayBuffer` or a `DataView` by its bytes.
+
+```ts
+// Jasmine, an element of a frame: `state.tags` is a real `Set`, compared in any order
+await expect(frame.$('body')).toHaveElementProperty('state', jasmine.objectContaining({ tags: new Set(['a', 'b']) }))
+
+// Mocha or Jest, multi-remote: a real `Set` from each instance (`tags` is `{ chrome: Set, firefox: Set }`)
+expect(tags).toEqual(expect.multiRemote({ chrome: new Set(['a', 'b']), firefox: new Set(['a', 'b']) }))
+```
+
+These values keep their content out of their own keys, so before, 2 different ones were equal: an assertion on them passed by mistake, and now fails. With WebdriverIO v10 and BiDi, `browser.execute()` returns real `Set` and `Map` values, and so does `getProperty()` for an element of a frame or of another tab (in the current context, it gives `{}`). A proxy without a handler of one of these values now throws a `TypeError`, as in Jest. An object that has only the type tag (`Symbol.toStringTag`) of one of these types is compared as a plain object, and is not equal to a real value of the type. A detached buffer, or a data view out of the bounds of a resized buffer, has no bytes.
+
 ## Removed deprecated APIs
 
 v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#migration-guide-v5-to-v6) below.

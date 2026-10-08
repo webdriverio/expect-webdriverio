@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest'
 import { compareObject, compareText, executeCommandBe, getAsymmetricMatcherValue, isArrayContainingMatcher, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
-import { jasmine } from './__mocks__/jasmine'
+import { jasmine } from './__fixtures__/jasmine.js'
 import type { CommandOptions } from 'expect-webdriverio'
 import { $, $$ } from '@wdio/globals'
 import stripAnsi from 'strip-ansi'
@@ -680,23 +680,6 @@ Expect ${selectorName} not to be displayed
     })
 
     describe(isAsymmetricMatcher, () => {
-
-        describe('StringContaining (Jasmine mimic)', () => {
-            test('matches when substring is present', () => {
-                const matcher = jasmine.stringContaining('foo')
-                expect(matcher.asymmetricMatch('foobar')).toBe(true)
-                expect(matcher.asymmetricMatch('barfoo')).toBe(true)
-                expect(matcher.asymmetricMatch('barbaz')).toBe(false)
-            })
-            test('throws if expected is not a string', () => {
-                // @ts-expect-error
-                expect(() => jasmine.stringContaining(123)).toThrow('Expected is not a string')
-            })
-            test('jasmineToString and getExpectedType', () => {
-                const matcher = jasmine.stringContaining('foo')
-                expect(matcher.jasmineToString()).toBe('<jasmine.stringContaining("foo")>')
-            })
-        })
 
         test.for([
             expect.stringContaining('foo'),

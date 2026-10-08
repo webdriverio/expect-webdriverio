@@ -2,7 +2,7 @@ import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest'
 
 import { toBeRequestedWith } from '../../../src/matchers/mock/toBeRequestedWith.js'
 import type { local } from 'webdriver'
-import { jasmine } from '../../__mocks__/jasmine.js'
+import { jasmine } from '../../__fixtures__/jasmine.js'
 import stripAnsi from 'strip-ansi'
 import { multiRemoteMockFactory, setWdioKind } from '../../__mocks__/@wdio/globals.js'
 
