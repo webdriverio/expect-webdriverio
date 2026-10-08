@@ -44,6 +44,8 @@ describe('equals: the matrix of cases', () => {
     const sameSymbol = Symbol('same')
     const sameFunction = () => 1
     const bytes = (...values: number[]) => new Uint8Array(values).buffer
+    // An object with only a type tag, on its class: it has no own keys
+    const tagged = (tag: string) => new (class { get [Symbol.toStringTag]() { return tag } })()
     const detached = (...values: number[]) => {
         const buffer = bytes(...values)
         structuredClone(buffer, { transfer: [buffer] })
@@ -156,6 +158,13 @@ describe('equals: the matrix of cases', () => {
         ['objects with the type tag of a set', { [Symbol.toStringTag]: 'Set', x: 1 }, { [Symbol.toStringTag]: 'Set', x: 1 }, true],
         ['objects with the type tag of a map and other keys', { [Symbol.toStringTag]: 'Map', x: 1 }, { [Symbol.toStringTag]: 'Map', x: 2 }, false],
         ['objects with the type tag of an array buffer', { [Symbol.toStringTag]: 'ArrayBuffer', x: 1 }, { [Symbol.toStringTag]: 'ArrayBuffer', x: 1 }, true],
+        // a value of the type and an object with only its type tag are not equal, also without own keys
+        ['a set and an object with only the type tag of a set', new Set([1, 2, 3]), tagged('Set'), false],
+        ['a map and an object with only the type tag of a map', new Map([['a', 1]]), tagged('Map'), false],
+        ['a URL and an object with only the type tag of a URL', new URL('https://a.test/'), tagged('URL'), false],
+        ['an array buffer and an object with only its type tag', bytes(1, 2), tagged('ArrayBuffer'), false],
+        ['a data view and an object with only its type tag', new DataView(bytes(1)), tagged('DataView'), false],
+        ['2 objects with only the type tag of a set', tagged('Set'), tagged('Set'), true],
         // a detached buffer has no bytes
         ['detached array buffers', detached(1, 2), detached(3), true],
         ['a detached and an empty array buffer', detached(1, 2), bytes(), true],

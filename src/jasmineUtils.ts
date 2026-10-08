@@ -165,6 +165,10 @@ function eq(
         // compare the content here, and the own keys (usually none) below
         var aContent = contentOf(a, className),
             bContent = contentOf(b, className);
+        // a value of the type and an object with only its type tag are not equal
+        if ((aContent === undefined) !== (bContent === undefined)) {
+            return false;
+        }
         if (aContent !== undefined && bContent !== undefined) {
             if (className == '[object Set]' || className == '[object Map]') {
                 if (!collectionEquals(aContent as Array<[unknown, unknown]>, bContent as Array<[unknown, unknown]>, className == '[object Map]', aStack, bStack, customTesters, hasKey)) {
