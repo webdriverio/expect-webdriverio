@@ -324,8 +324,10 @@ A framework adapter, a lint rule or a runner that must know the matchers before 
 import { wdioCustomMatcherNames, asymmetricMatcherNames, inverseAsymmetricMatcherNames } from 'expect-webdriverio/api'
 
 wdioCustomMatcherNames        // ['toBeChecked', ..., 'toMatchSnapshot']: the names of `wdioCustomMatchers`, not the matchers of the `expect` package
-asymmetricMatcherNames        // ['any', ..., 'oneOf', 'multiRemote']: all the asymmetric matchers on `expect`, of the `expect` package and of expect-webdriverio
-inverseAsymmetricMatcherNames // ['arrayContaining', ..., 'stringMatching']: all the asymmetric matchers on `expect.not`
+asymmetricMatcherNames        // ['any', ..., 'oneOf', 'multiRemote']: the asymmetric matchers of the `expect` package and of expect-webdriverio
+inverseAsymmetricMatcherNames // ['arrayContaining', ..., 'stringMatching']: the same, on `expect.not`
 ```
 
 Each matcher returns a promise, except `toMatchSnapshot` and `toMatchInlineSnapshot` when the received value is not an element, a list of elements or a promise. The lists do not have the matchers that you add with `expect.extend()`, or the `some` modifier.
+
+`expect.extend()` also adds each matcher to `expect` and `expect.not` as an asymmetric matcher, and the asymmetric lists do not have these. The matchers of `wdioCustomMatcherNames` are async, so their asymmetric form does not work (`expect.toHaveTitle('x').asymmetricMatch(browser)` gives `undefined`): do not add them to the asymmetric lists. A sync matcher that you add with `expect.extend()` works as an asymmetric matcher.

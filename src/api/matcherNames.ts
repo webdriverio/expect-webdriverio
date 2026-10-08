@@ -50,6 +50,7 @@ export const wdioCustomMatcherNames = [
 
 /**
  * The asymmetric matchers on `expect`: the ones of the `expect` package, and `oneOf` and `multiRemote`.
+ * Not the asymmetric form of each matcher that `expect.extend()` adds: the matchers of expect-webdriverio are async, so this form does not work for them.
  */
 export const asymmetricMatcherNames = [
     'any',
@@ -65,7 +66,7 @@ export const asymmetricMatcherNames = [
 ] as const
 
 /**
- * The asymmetric matchers on `expect.not`.
+ * The asymmetric matchers on `expect.not`, without the asymmetric form of the matchers that `expect.extend()` adds.
  */
 export const inverseAsymmetricMatcherNames = [
     'arrayContaining',
