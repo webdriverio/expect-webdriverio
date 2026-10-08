@@ -118,7 +118,13 @@ Since `@wdio/jasmine-framework` 10.0.2, the WDIO matchers on `expectAsync` are t
 
 ## Deep equality of URLs, sets, maps and binary data
 
-The matchers that compare values deeply (`toHaveElementProperty`, `toBeRequestedWith`, `expect.arrayContaining()` on `$$()` and `expect.multiRemote()`) now compare a `URL` by its `href`, a `Set` or a `Map` by its entries in any order, and an `ArrayBuffer` or a `DataView` by its bytes. These values have no own keys, so before, 2 different ones were equal: an assertion on them passed by mistake, and now fails.
+The deep equality of the matchers (for example in `expect.multiRemote()`, `toBeRequestedWith`, or a Jasmine asymmetric matcher such as `jasmine.objectContaining()`) now compares:
+
+- a `URL` by its `href`;
+- a `Set` or a `Map` by its entries, in any order, with each entry matched once: `Set{{a: 1}, {a: 1}, {a: 2}}` is not equal to `Set{{a: 1}, {a: 2}, {a: 2}}`;
+- an `ArrayBuffer` or a `DataView` by its bytes.
+
+These values keep their content out of their own keys, so before, 2 different ones were equal: an assertion on them passed by mistake, and now fails. With WebdriverIO v10 and BiDi, `getProperty()` and `execute()` can return real `Set` and `Map` values. A proxy without a handler of one of these values now throws a `TypeError`, as in Jest.
 
 ## Removed deprecated APIs
 
