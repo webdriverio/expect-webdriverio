@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest'
+import { beforeEach, describe, test, expect } from 'vitest'
 import { isDeepStrictEqual } from 'node:util'
 import { expect as jestExpect } from 'expect'
 import { equals } from '../src/jasmineUtils.js'
@@ -14,7 +14,8 @@ const randomFrom = (seed: number) => () => {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
 }
-const random = randomFrom(2317)
+const seed = 2317
+let random = randomFrom(seed)
 const pick = <T>(values: T[]) => values[Math.floor(random() * values.length)]
 const permutations = <T>(values: T[]): T[][] => values.length <= 1
     ? [values]
@@ -31,6 +32,11 @@ const pairs = (a: unknown[], b: unknown[], same: (x: unknown, y: unknown) => boo
     a.length === b.length && permutations(b).some((order) => a.every((value, i) => same(value, order[i])))
 
 describe('equals: random checks', () => {
+    // Each test starts from the seed, so that it checks the same cases when it runs alone (`vitest -t`)
+    beforeEach(() => {
+        random = randomFrom(seed)
+    })
+
     test('matches the entries of a set as a check of each permutation does', () => {
         for (let run = 0; run < 2000; run++) {
             const a = new Set(randomList(anyValues)), b = new Set(randomList(anyValues))
@@ -62,11 +68,23 @@ describe('equals: random checks', () => {
     })
 
     test('agrees with isDeepStrictEqual of Node on values without matchers', () => {
+        let skipped = 0
         for (let run = 0; run < 2000; run++) {
             const a = pick([pick(plainValues()), new Set(randomList(plainValues)), randomList(plainValues), { v: pick(plainValues()) }])
             const b = pick([pick(plainValues()), new Set(randomList(plainValues)), randomList(plainValues), { v: pick(plainValues()) }])
 
-            expect(equals(a, b), `${run}`).toBe(isDeepStrictEqual(a, b))
+            // Node 24.20 `isDeepStrictEqual()` throws for some sets that hold `null` and objects ("Cannot read properties
+            // of null (reading 'constructor')"): it gives no answer for these cases
+            let expected: boolean
+            try {
+                expected = isDeepStrictEqual(a, b)
+            } catch {
+                skipped++
+                continue
+            }
+            expect(equals(a, b), `${run}`).toBe(expected)
         }
+        // the check still compares almost all the cases
+        expect(skipped).toBeLessThan(20)
     })
 })
