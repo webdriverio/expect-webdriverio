@@ -221,6 +221,7 @@ function eq(
 /**
  * The entries of 2 sets or maps, in any order, with a deep equality of each key (and value for a map).
  * Each entry of `b` matches 1 entry of `a` only, so `Set{{a:1}, {a:1}}` is not equal to `Set{{a:1}, {a:2}}`.
+ * An asymmetric matcher can match more than 1 entry, so a first match can be wrong: the last step moves matches (Kuhn's algorithm).
  */
 function collectionEquals(
     a: Set<unknown> | Map<unknown, unknown>,
@@ -234,19 +235,53 @@ function collectionEquals(
     if (a.size !== b.size) {
         return false;
     }
+    const aEntries = [...a.entries()];
     const bEntries = [...b.entries()];
-    const matched = new Set<number>();
-    for (const [aKey, aValue] of a.entries()) {
-        const index = bEntries.findIndex(([bKey, bValue], i) =>
-            !matched.has(i)
-            && eq(aKey, bKey, aStack, bStack, customTesters, hasKey)
-            && (!isMap || eq(aValue, bValue, aStack, bStack, customTesters, hasKey)));
-        if (index === -1) {
-            return false;
+    const entryEquals = (i: number, j: number) =>
+        eq(aEntries[i][0], bEntries[j][0], aStack, bStack, customTesters, hasKey)
+        && (!isMap || eq(aEntries[i][1], bEntries[j][1], aStack, bStack, customTesters, hasKey));
+    // `matchOf[j]` is the entry of `a` that uses the entry `j` of `b`
+    const matchOf: Array<number | undefined> = [];
+    const unmatched: number[] = [];
+
+    // 1. The first free entry of `b` that is equal
+    for (let i = 0; i < aEntries.length; i++) {
+        const j = bEntries.findIndex((_, j) => matchOf[j] === undefined && entryEquals(i, j));
+        if (j === -1) {
+            unmatched.push(i);
+        } else {
+            matchOf[j] = i;
         }
-        matched.add(index);
     }
-    return true;
+    // 2. For each entry left, find a chain of moves that frees an entry of `b` for it, without recursion
+    return unmatched.every((start) => {
+        const visited = new Set<number>();
+        const path = [{ i: start, next: 0, via: -1 }];
+        while (path.length > 0) {
+            const top = path[path.length - 1];
+            if (top.next === bEntries.length) {
+                path.pop();
+                continue;
+            }
+            const j = top.next++;
+            if (visited.has(j) || !entryEquals(top.i, j)) {
+                continue;
+            }
+            visited.add(j);
+            const owner = matchOf[j];
+            if (owner !== undefined) {
+                path.push({ i: owner, next: 0, via: j });
+                continue;
+            }
+            // `j` is free: each entry of `a` on the path takes the entry of `b` that the next one gives up
+            matchOf[j] = top.i;
+            for (let k = path.length - 1; k > 0; k--) {
+                matchOf[path[k].via] = path[k - 1].i;
+            }
+            return true;
+        }
+        return false;
+    });
 }
 
 function bytesEquals(a: ArrayBufferLike | DataView, b: ArrayBufferLike | DataView): boolean {

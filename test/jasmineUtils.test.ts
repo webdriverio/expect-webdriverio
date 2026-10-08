@@ -147,6 +147,12 @@ describe('equals: the matrix of cases', () => {
         ['Jest arrayOf', [1, 2], jestExpect.arrayOf(jestExpect.any(Number)), true],
         ['Jest matcher in a set', new Set([1]), new Set([jestExpect.any(Number)]), true],
         ['Jest matcher in a map value', new Map([['a', 1]]), new Map([['a', jestExpect.any(Number)]]), true],
+        // a matcher that matches 2 entries must not take the only match of another entry
+        ['Jest anything() first in a set', new Set([5, 'x']), new Set([jestExpect.anything(), 5]), true],
+        ['Jest anything() last in a set', new Set([5, 'x']), new Set([5, jestExpect.anything()]), true],
+        ['Jest any(Number) that matches 2 entries of a set', new Set([1, 2]), new Set([jestExpect.any(Number), 1]), true],
+        ['Jest anything() as the first key and value of a map', new Map<unknown, unknown>([[{ k: 1 }, 5], [{ k: 2 }, 'x']]), new Map<unknown, unknown>([[jestExpect.anything(), jestExpect.anything()], [{ k: 1 }, 5]]), true],
+        ['sets with 3 objects in other counts', new Set([{ a: 1 }, { a: 1 }, { a: 2 }]), new Set([{ a: 1 }, { a: 2 }, { a: 2 }]), false],
         ['Vitest objectContaining', { a: 1, b: 2 }, expect.objectContaining({ a: 1 }), true],
         // Jasmine asymmetric matchers, from Jasmine 6
         ['Jasmine any(Number)', 1, j.any(Number), true],
@@ -171,6 +177,7 @@ describe('equals: the matrix of cases', () => {
         ['Jest any() in Jasmine objectContaining', { a: 1 }, j.objectContaining({ a: jestExpect.any(Number) }), true],
         ['Jasmine any() in Jest objectContaining', { a: 1 }, jestExpect.objectContaining({ a: j.any(Number) }), true],
         ['Jasmine matcher in a set', new Set([{ a: 1, b: 2 }]), new Set([j.objectContaining({ a: 1 })]), true],
+        ['Jasmine anything() first in a set', new Set([5, 'x']), new Set([j.anything(), 5]), true],
         // expect-webdriverio asymmetric matchers
         ['oneOf', 'b', oneOf('a', 'b'), true],
         ['oneOf, no match', 'c', oneOf('a', 'b'), false],
@@ -179,5 +186,17 @@ describe('equals: the matrix of cases', () => {
     test.each(cases)('%s', (_name, a, b, expected) => {
         expect(equals(a, b)).toBe(expected)
         expect(equals(b, a)).toBe(expected)
+    })
+})
+
+describe('equals: sets and maps', () => {
+    test('moves a long chain of matches without a stack overflow', () => {
+        // `b` entry j matches the values j and j + 1. `a` is 1, 2, ..., n - 1, 0: each first match is wrong,
+        // and the last value needs a chain of n - 1 moves
+        const n = 5000
+        const values = [...Array(n).keys()]
+        const matcher = (j: number) => ({ asymmetricMatch: (value: unknown) => value === j || value === j + 1 })
+
+        expect(equals(new Set([...values.slice(1), 0]), new Set(values.map(matcher)))).toBe(true)
     })
 })
