@@ -190,6 +190,26 @@ describe('equals: the matrix of cases', () => {
 })
 
 describe('equals: sets and maps', () => {
+    // A custom tester that returns `undefined` counts the comparisons without a change to the result
+    const countComparisons = (a: unknown, b: unknown) => {
+        let count = 0
+        const result = equals(a, b, [() => { count++ }])
+        return { result, count }
+    }
+
+    test.each([
+        ['set', (values: number[]) => new Set(values)],
+        ['map', (values: number[]) => new Map(values.map((value) => [`k${value}`, value]))],
+    ])('compares each entry of a %s with the entry that has the same key first', (_name, make) => {
+        const values = [...Array(1000).keys()]
+
+        const { result, count } = countComparisons(make(values), make([...values].reverse()))
+
+        // in another order: 1 comparison for each entry (2 for a map: key and value), not 1 with each other entry
+        expect(result).toBe(true)
+        expect(count).toBeLessThanOrEqual(1 + 2 * values.length)
+    })
+
     test('moves a long chain of matches without a stack overflow', () => {
         // `b` entry j matches the values j and j + 1. `a` is 1, 2, ..., n - 1, 0: each first match is wrong,
         // and the last value needs a chain of n - 1 moves

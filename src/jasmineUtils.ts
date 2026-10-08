@@ -244,8 +244,18 @@ function collectionEquals(
     const matchOf: Array<number | undefined> = [];
     const unmatched: number[] = [];
 
-    // 1. The first free entry of `b` that is equal
-    for (let i = 0; i < aEntries.length; i++) {
+    // 1. The same key in `b` (a primitive or the same object): no deep comparison of the other entries
+    const bIndexOfKey = new Map(bEntries.map(([key], j) => [key, j]));
+    const rest = aEntries.map((_, i) => i).filter((i) => {
+        const j = bIndexOfKey.get(aEntries[i][0]);
+        if (j !== undefined && entryEquals(i, j)) {
+            matchOf[j] = i;
+            return false;
+        }
+        return true;
+    });
+    // 2. The first free entry of `b` that is equal
+    for (const i of rest) {
         const j = bEntries.findIndex((_, j) => matchOf[j] === undefined && entryEquals(i, j));
         if (j === -1) {
             unmatched.push(i);
@@ -253,7 +263,7 @@ function collectionEquals(
             matchOf[j] = i;
         }
     }
-    // 2. For each entry left, find a chain of moves that frees an entry of `b` for it, without recursion
+    // 3. For each entry left, find a chain of moves that frees an entry of `b` for it, without recursion
     return unmatched.every((start) => {
         const visited = new Set<number>();
         const path = [{ i: start, next: 0, via: -1 }];
