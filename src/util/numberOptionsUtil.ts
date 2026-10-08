@@ -57,13 +57,16 @@ export function validateNumberMatcherArray(
     return validateNumberMatcher(expectedValues as number | ExpectWebdriverIO.NumberMatcher | undefined, { supportDefaultAsGteThen1 })
 }
 
+/** The bounds of a valid `ExpectWebdriverIO.NumberMatcher`, after `validateNumberMatcher()` */
+type NumberBounds = { eq?: number, gte?: number, lte?: number }
+
 /**
  * Using a class to univerally handle number matching and stringification the same way everywhere and with Global Apis like equal() toString() and toJSON()
  */
-export class NumberMatcher extends AsymmetricMatcher<number | ExpectWebdriverIO.NumberMatcher> {
+export class NumberMatcher extends AsymmetricMatcher<number | NumberBounds> {
 
-    public sample: number | ExpectWebdriverIO.NumberMatcher
-    constructor(sample: number | ExpectWebdriverIO.NumberMatcher) {
+    public sample: number | NumberBounds
+    constructor(sample: number | NumberBounds) {
         super(sample)
         this.sample = sample
     }

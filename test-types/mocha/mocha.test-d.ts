@@ -1218,6 +1218,23 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     // @ts-expect-error command options go in the options argument
                     expectTypeOf(expect(element).toHaveChildren({ eq: 5, wait: 1000 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
                 })
+
+                it('should have ts errors with an invalid number matcher', async () => {
+                    // @ts-expect-error no bound: the runtime throws `Invalid NumberMatcher`
+                    expectTypeOf(expect(element).toHaveChildren({})).toEqualTypeOf<Promise<void>>()
+                    // @ts-expect-error `eq` with another bound: the runtime ignores the other bound
+                    expectTypeOf(expect(element).toHaveChildren({ eq: 1, gte: 2 })).toEqualTypeOf<Promise<void>>()
+                    // @ts-expect-error `eq` with another bound: the runtime ignores the other bound
+                    expectTypeOf(expect(element).toHaveChildren({ eq: 1, lte: 2 })).toEqualTypeOf<Promise<void>>()
+                    // @ts-expect-error also in an array of `$$()` expected values
+                    expectTypeOf(expect(elements).toHaveChildren([{ gte: 1 }, {}])).toEqualTypeOf<Promise<void>>()
+                    // @ts-expect-error also for the other number matchers
+                    expectTypeOf(expect(element).toHaveWidth({})).toEqualTypeOf<Promise<void>>()
+                    // @ts-expect-error also for the other number matchers
+                    expectTypeOf(expect(elements).toBeElementsArrayOfSize({ eq: 1, lte: 2 })).toExtend<Promise<void>>()
+                    // @ts-expect-error also for the other number matchers
+                    expectTypeOf(expect(networkMock).toBeRequestedTimes({})).toEqualTypeOf<Promise<void>>()
+                })
             })
 
             describe('given elements', () => {

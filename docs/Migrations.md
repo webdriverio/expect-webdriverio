@@ -137,6 +137,8 @@ v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#mi
 
 `NumberOptions` applied to `toHaveChildren`, `toHaveWidth`, `toHaveHeight`, `toBeElementsArrayOfSize` and `toBeRequestedTimes`. A number matcher with other keys than `eq`, `gte` and `lte` now throws `Invalid NumberMatcher`, instead of taking them as command options.
 
+`ExpectWebdriverIO.NumberMatcher` is now a type, not an interface: `eq` alone, or a range with `gte`, `lte` or both. The types reject `{}` (the runtime throws `Invalid NumberMatcher`) and `eq` with `gte` or `lte` (the runtime used `eq` and ignored the range). To extend it, write `type MyMatcher = ExpectWebdriverIO.NumberMatcher & { ... }`, not `interface MyMatcher extends ExpectWebdriverIO.NumberMatcher`.
+
 The deprecation warnings are removed.
 
 ---
