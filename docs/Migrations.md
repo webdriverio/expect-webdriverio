@@ -116,6 +116,10 @@ The `expect-webdriverio/jasmine-wdio-expect-async` entry point is removed. In We
 
 Since `@wdio/jasmine-framework` 10.0.2, the WDIO matchers on `expectAsync` are typed, and the types of `import { expect } from 'expect-webdriverio'` keep the Jest matchers.
 
+## Deep equality of URLs, sets, maps and binary data
+
+The matchers that compare values deeply (`toHaveElementProperty`, `toBeRequestedWith`, `expect.arrayContaining()` on `$$()` and `expect.multiRemote()`) now compare a `URL` by its `href`, a `Set` or a `Map` by its entries in any order, and an `ArrayBuffer` or a `DataView` by its bytes. These values have no own keys, so before, 2 different ones were equal: an assertion on them passed by mistake, and now fails.
+
 ## Removed deprecated APIs
 
 v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#migration-guide-v5-to-v6) below.

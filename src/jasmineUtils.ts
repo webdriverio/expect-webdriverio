@@ -26,9 +26,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Extracted out of jasmine 2.5.2
- * Used only in network matchers & in message formatting.
- * TODO consolidate usage with other wdio matchers and upgrade to latest jasmine utils.
+ * The deep equality of the matchers, adapted from the `jasmineUtils.ts` of Jest's `expect` (itself from Jasmine 2.5.2).
+ * Jest's `equals()` cannot replace it: it calls `asymmetricMatch()` without a `matchersUtil`, so the Jasmine
+ * collection matchers (`objectContaining`, `arrayContaining`, `setContaining`, ...) throw.
+ * Added here: URLs, sets, maps, array buffers and data views are compared by their content.
  * @see https://github.com/jasmine/jasmine/blob/v2.5.2/src/core/matchers/matchersUtil.js
  */
 export function equals(
@@ -40,8 +41,6 @@ export function equals(
     customTesters = customTesters || [];
     return eq(a, b, [], [], customTesters, strictCheck ? hasKey : hasDefinedKey);
 }
-
-const functionToString = Function.prototype.toString;
 
 function isAsymmetric(obj: any) {
     return !!obj && isA('Function', obj.asymmetricMatch);
@@ -133,6 +132,9 @@ function eq(
         // RegExps are compared by their source patterns and flags.
         case '[object RegExp]':
             return a.source === b.source && a.flags === b.flags;
+        // URLs have no own keys: compare their whole URL
+        case '[object URL]':
+            return a.href === b.href;
     }
     if (typeof a !== 'object' || typeof b !== 'object') {
         return false;
@@ -159,6 +161,20 @@ function eq(
     // Add the first object to the stack of traversed objects.
     aStack.push(a);
     bStack.push(b);
+
+    // Sets, maps, array buffers and data views have no own keys: compare their content
+    if (className == '[object Set]' || className == '[object Map]') {
+        result = collectionEquals(a, b, className == '[object Map]', aStack, bStack, customTesters, hasKey);
+        aStack.pop();
+        bStack.pop();
+        return result;
+    }
+    if (className == '[object ArrayBuffer]' || className == '[object SharedArrayBuffer]' || className == '[object DataView]') {
+        aStack.pop();
+        bStack.pop();
+        return bytesEquals(a, b);
+    }
+
     var size = 0;
     // Recursively compare objects and arrays.
     // Compare array lengths to determine if a deep comparison is necessary.
@@ -203,6 +219,46 @@ function eq(
     bStack.pop();
 
     return result;
+}
+
+/**
+ * The entries of 2 sets or maps, in any order, with a deep equality of each key (and value for a map).
+ * Each entry of `b` matches 1 entry of `a` only, so `Set{{a:1}, {a:1}}` is not equal to `Set{{a:1}, {a:2}}`.
+ */
+function collectionEquals(
+    a: Set<unknown> | Map<unknown, unknown>,
+    b: Set<unknown> | Map<unknown, unknown>,
+    isMap: boolean,
+    aStack: Array<unknown>,
+    bStack: Array<unknown>,
+    customTesters: Array<any>,
+    hasKey: any,
+): boolean {
+    if (a.size !== b.size) {
+        return false;
+    }
+    const bEntries = [...b.entries()];
+    const matched = new Set<number>();
+    for (const [aKey, aValue] of a.entries()) {
+        const index = bEntries.findIndex(([bKey, bValue], i) =>
+            !matched.has(i)
+            && eq(aKey, bKey, aStack, bStack, customTesters, hasKey)
+            && (!isMap || eq(aValue, bValue, aStack, bStack, customTesters, hasKey)));
+        if (index === -1) {
+            return false;
+        }
+        matched.add(index);
+    }
+    return true;
+}
+
+function bytesEquals(a: ArrayBufferLike | DataView, b: ArrayBufferLike | DataView): boolean {
+    const toBytes = (value: ArrayBufferLike | DataView) => ArrayBuffer.isView(value)
+        ? new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
+        : new Uint8Array(value);
+    const aBytes = toBytes(a);
+    const bBytes = toBytes(b);
+    return aBytes.length === bBytes.length && aBytes.every((byte, index) => byte === bBytes[index]);
 }
 
 function keys(
@@ -252,7 +308,7 @@ function hasKey(obj: any, key: string) {
     return Object.prototype.hasOwnProperty.call(obj, key);
 }
 
-export function isA(typeName: string, value: unknown) {
+function isA(typeName: string, value: unknown) {
     return Object.prototype.toString.apply(value) === '[object ' + typeName + ']';
 }
 
@@ -263,65 +319,5 @@ function isDomNode(obj: any): boolean {
         typeof obj.nodeType === 'number' &&
         typeof obj.nodeName === 'string' &&
         typeof obj.isEqualNode === 'function'
-    );
-}
-
-export function fnNameFor(func: Function) {
-    if (func.name) {
-        return func.name;
-    }
-
-    const matches = functionToString
-        .call(func)
-        .match(/^(?:async)?\s*function\s*\*?\s*([\w$]+)\s*\(/);
-    return matches ? matches[1] : '<anonymous>';
-}
-
-export function isUndefined(obj: any) {
-    return obj === void 0;
-}
-
-function getPrototype(obj: object) {
-    if (Object.getPrototypeOf) {
-        return Object.getPrototypeOf(obj);
-    }
-
-    if (obj.constructor.prototype == obj) {
-        return null;
-    }
-
-    return obj.constructor.prototype;
-}
-
-export function hasProperty(obj: object | null, property: string): boolean {
-    if (!obj) {
-        return false;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(obj, property)) {
-        return true;
-    }
-
-    return hasProperty(getPrototype(obj), property);
-}
-
-// SENTINEL constants are from https://github.com/facebook/immutable-js
-const IS_KEYED_SENTINEL = '@@__IMMUTABLE_KEYED__@@';
-const IS_SET_SENTINEL = '@@__IMMUTABLE_SET__@@';
-const IS_ORDERED_SENTINEL = '@@__IMMUTABLE_ORDERED__@@';
-
-export function isImmutableUnorderedKeyed(maybeKeyed: any) {
-    return !!(
-        maybeKeyed &&
-        maybeKeyed[IS_KEYED_SENTINEL] &&
-        !maybeKeyed[IS_ORDERED_SENTINEL]
-    );
-}
-
-export function isImmutableUnorderedSet(maybeSet: any) {
-    return !!(
-        maybeSet &&
-        maybeSet[IS_SET_SENTINEL] &&
-        !maybeSet[IS_ORDERED_SENTINEL]
     );
 }
