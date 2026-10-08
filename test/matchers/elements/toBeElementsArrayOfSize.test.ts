@@ -196,6 +196,11 @@ Received      : 2`
             elementArrayOf5 = await chainableElementArrayFactory('elements', 5, browser)
         })
 
+        // The tests that wait use fake timers: the number of tries does not depend on the speed of the runner
+        afterEach(() => {
+            vi.useRealTimers()
+        })
+
         test('does not refresh the element array with the wait 0', async () => {
             vi.mocked(browser.$$)
                 .mockResolvedValueOnce(elementArrayOf2)
@@ -213,8 +218,13 @@ Received      : 2`
         })
 
         test('refresh once the elements array using parent $$ and update actual element with newly fetched elements', async () => {
+            vi.useFakeTimers()
             vi.mocked(browser.$$).mockResolvedValue(elementArrayOf5)
-            const result = await thisContext.toBeElementsArrayOfSize(elements, 5, { wait: 95, interval: 50 })
+
+            // tries at 0 ms with the received list (2 elements), then at 50 ms with the refetched list (5 elements)
+            const assertion = thisContext.toBeElementsArrayOfSize(elements, 5, { wait: 95, interval: 50 })
+            await vi.advanceTimersByTimeAsync(100)
+            const result = await assertion
 
             expect(result.pass).toBe(true)
             expect(elements).toBe(elements) // Original actual elements array but altered
@@ -225,11 +235,15 @@ Received      : 2`
         })
 
         test('refresh multiple time actual elements but does not update it since it failed', async () => {
+            vi.useFakeTimers()
             vi.mocked(browser.$$)
                 .mockResolvedValueOnce(elementArrayOf2)
                 .mockResolvedValue(elementArrayOf5)
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 198, interval: 20 })
+            // tries at 0, 20, ..., 180 ms: the first one with the received list, the 9 others refetch it
+            const assertion = thisContext.toBeElementsArrayOfSize(elements, 10, { wait: 198, interval: 20 })
+            await vi.advanceTimersByTimeAsync(200)
+            const result = await assertion
 
             expect(result.pass).toBe(false)
             expect(elements.length).toBe(2)
