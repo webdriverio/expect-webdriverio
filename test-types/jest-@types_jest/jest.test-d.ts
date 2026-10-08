@@ -96,6 +96,17 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
         })
     })
 
+    describe('BrowsingContext (tab, window, frame)', () => {
+        const context = {} as unknown as WebdriverIO.BrowsingContext
+
+        it('should support the browser matchers', async () => {
+            expectTypeOf(expect(context).toHaveUrl('https://example.com')).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(context).not.toHaveTitle(expect.stringContaining('WebdriverIO'))).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(context).toHaveLocalStorageItem('key', 'value')).toEqualTypeOf<Promise<void>>()
+            expectTypeOf(expect(context).toHaveClipboardText('text')).toEqualTypeOf<Promise<void>>()
+        })
+    })
+
     describe('element', () => {
 
         describe('toBeDisabled', () => {

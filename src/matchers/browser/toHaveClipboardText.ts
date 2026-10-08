@@ -4,6 +4,7 @@ import type { CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import type { WdioMatcherContext } from '../../types.js'
+import { isBrowsingContext } from '../../util/multiRemoteUtils.js'
 
 /** The permission warning is logged once per worker: its cause is the browser, so it does not change between assertions or retries */
 let permissionWarningLogged = false
@@ -12,7 +13,7 @@ let permissionWarningLogged = false
  * Browser
  */
 export async function toHaveClipboardText(
-    browser: WebdriverIO.Browser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
@@ -28,7 +29,7 @@ export async function toHaveClipboardText(
 
 export async function toHaveClipboardText(
     this: WdioMatcherContext,
-    browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext | WebdriverIO.MultiRemoteBrowser,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ): Promise<ExpectWebdriverIO.AssertionResult> {
@@ -75,11 +76,13 @@ export async function toHaveClipboardText(
 }
 
 const compareClipboardText = async (
-    browser: WebdriverIO.Browser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): Promise<CompareResult<string>> => {
-    await browser.setPermissions({ name: 'clipboard-read' }, 'granted')
+    // A browsing context has no session command: the permission is for the whole session
+    const session = isBrowsingContext(browser) ? browser.browser : browser
+    await session.setPermissions({ name: 'clipboard-read' }, 'granted')
         // chances are that some browsers don't support the clipboard API yet
         .catch((err) => {
             if (!permissionWarningLogged) {

@@ -3,6 +3,7 @@ import { browser, multiRemoteBrowser } from '@wdio/globals'
 import { toHaveLocalStorageItem } from '../../../src/matchers/browser/toHaveLocalStorageItem.js'
 import stripAnsi from 'strip-ansi'
 import  { expect as wdioExpect } from '../../../src/index.js'
+import { browserFactory, browsingContextFactory } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -219,5 +220,22 @@ Expect multi-remote<chrome, firefox> to have localStorage item multiKey
   }`
             )
         })
+    })
+})
+
+describe('toHaveLocalStorageItem on a browsing context (tab, window, frame)', () => {
+    it('reads the local storage in the context, and names the frame in the message', async () => {
+        const contextBrowser = Object.assign(browserFactory(), { requestedCapabilities: { browserName: 'chrome' } }) as unknown as WebdriverIO.Browser
+        const frame = browsingContextFactory({ browser: contextBrowser, isFrame: true, url: 'https://example.com/frame.html' })
+        vi.mocked(frame.execute).mockResolvedValue('frameValue')
+
+        const matchers = { toHaveLocalStorageItem }
+        const pass = await matchers.toHaveLocalStorageItem(frame, 'key', 'frameValue', { wait: 0 })
+        const fail = await matchers.toHaveLocalStorageItem(frame, 'key', 'otherValue', { wait: 0 })
+
+        expect(pass.pass).toBe(true)
+        expect(fail.pass).toBe(false)
+        expect(stripAnsi(fail.message()).split('\n')[0]).toContain("chrome's frame (https://example.com/frame.html)")
+        expect(contextBrowser.execute).not.toHaveBeenCalled()
     })
 })

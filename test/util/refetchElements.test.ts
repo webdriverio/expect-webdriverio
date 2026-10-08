@@ -2,11 +2,25 @@ import { vi, test, describe, beforeEach, expect } from 'vitest'
 import { $$ } from '@wdio/globals'
 
 import { refetchElements } from '../../src/util/refetchElements.js'
-import { browserFactory, chainableElementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
+import { browserFactory, browsingContextFactory, chainableElementArrayFactory, elementFactory } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
 describe(refetchElements, () => {
+    test('queries a list of a browsing context again in that context, not in its browser', async () => {
+        const contextBrowser = browserFactory()
+        const frame = browsingContextFactory({ browser: contextBrowser, isFrame: true })
+        const elements = await frame.$$('li').getElements()
+        // The list mock replaces the `$$` of its parent: read it after the list is made
+        const contextQuery = vi.mocked(frame.$$)
+
+        const actual = await refetchElements(elements)
+
+        expect(actual.length).toBe(2)
+        expect(contextQuery).toHaveBeenCalledExactlyOnceWith('li')
+        expect(contextBrowser.$$).not.toHaveBeenCalled()
+    })
+
     describe('given WebdriverIO.ElementArray type', () => {
         let elements: WebdriverIO.ElementArray
 

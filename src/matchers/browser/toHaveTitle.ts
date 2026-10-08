@@ -9,7 +9,7 @@ import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetri
  */
 export async function toHaveTitle(
     this: ExpectWebdriverIO.MatcherContext,
-    browser: WebdriverIO.Browser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
@@ -26,7 +26,7 @@ export async function toHaveTitle(
 
 export async function toHaveTitle(
     this: ExpectWebdriverIO.MatcherContext,
-    browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext | WebdriverIO.MultiRemoteBrowser,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -73,7 +73,7 @@ export async function toHaveTitle(
 }
 
 const compareTitle = async (
-    browser: WebdriverIO.Browser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): Promise<CompareResult<string>> => {

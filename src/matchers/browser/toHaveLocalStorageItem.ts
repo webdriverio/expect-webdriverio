@@ -10,7 +10,7 @@ import type { WdioMatcherContext } from '../../types.js'
  * Browser or Multi-Remote Browser: only check that the item exists
  */
 export async function toHaveLocalStorageItem(
-    browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext | WebdriverIO.MultiRemoteBrowser,
     key: string,
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
@@ -18,7 +18,7 @@ export async function toHaveLocalStorageItem(
  * Browser
  */
 export async function toHaveLocalStorageItem(
-    browser: WebdriverIO.Browser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     key: string,
     expectedValue: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
     options?: ExpectWebdriverIO.StringOptions
@@ -36,7 +36,7 @@ export async function toHaveLocalStorageItem(
 
 export async function toHaveLocalStorageItem(
     this: WdioMatcherContext,
-    browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext | WebdriverIO.MultiRemoteBrowser,
     key: string,
     expectedValue?: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
@@ -93,7 +93,7 @@ export async function toHaveLocalStorageItem(
 }
 
 const compareStorageItem = async (
-    browser: WebdriverIO.Browser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     key: string,
     expected: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | undefined,
     options: ExpectWebdriverIO.StringOptions
