@@ -524,7 +524,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
                         expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                     })
 
-                    test('does not compare against the unsupported array, so no misleading deprecation warning nor error', async () => {
+                    test('does not compare against the unsupported array, so no warning nor error', async () => {
                         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
                         const result = await thisContext.matcherFn(multiRemoteBrowser, [validText, wdioExpect.oneOf(validText)], { trim: false, wait: 500, interval: 10 })

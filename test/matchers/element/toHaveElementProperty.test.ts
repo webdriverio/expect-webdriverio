@@ -121,8 +121,7 @@ Received: {"foo": "bar"}`
         })
 
         test('assymeric match with vitest asymmetrics matcher', async () => {
-            // Casting since we use vitest asymmetrics matcher instead of wdio one and TypeScript show a deprecation
-            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', expect.stringContaining('phone') as AsymmetricMatcher<string>)
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', expect.stringContaining('phone'))
             expect(result.pass).toBe(true)
         })
 
