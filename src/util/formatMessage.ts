@@ -88,7 +88,8 @@ export const enhanceError = (
     if (isBrowsingContext(subject)) {
         // The URL tells which tab or frame failed. It is the one of the last navigation, not a new read.
         const prefix = subject.isMobile ? 'mobile' : subject.browser.requestedCapabilities?.browserName ?? 'browser'
-        const url = context.showContextUrl === false ? '' : ` (${subject.url})`
+        // `url` is '' for a frame found by its element, until WebdriverIO navigates it or reads its URL
+        const url = context.showContextUrl === false || !subject.url ? '' : ` (${subject.url})`
         subject = `${prefix}'s ${subject.isFrame ? 'frame' : 'window'}${url}`
     } else if (isBrowser(subject)) {
         if (isMultiRemoteBrowser(subject)) {

@@ -874,6 +874,13 @@ describe('the subject of a browsing context', () => {
         expect(firstLine(browsingContext(false))).toEqual("Expect browser's window (https://example.com/) to have title")
     })
 
+    test('does not show empty parentheses when the URL is not known yet', () => {
+        // WebdriverIO keeps `url: ''` for a frame found by its element, until `navigate()` or `getUrl()`
+        const frame = Object.assign(browsingContext(true, 'chrome'), { url: '' })
+
+        expect(firstLine(frame)).toEqual("Expect chrome's frame to have title")
+    })
+
     test('does not show the URL with showContextUrl: false', () => {
         expect(firstLine(browsingContext(true, 'chrome'), { isNot: false, showContextUrl: false })).toEqual("Expect chrome's frame to have title")
     })
