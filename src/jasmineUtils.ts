@@ -325,9 +325,25 @@ function contentOf(value: any, className: string): string | Array<[unknown, unkn
             if (typeof value.getUint8 !== 'function') {
                 return undefined;
             }
-            return value.buffer.detached ? new Uint8Array(0) : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+            if (ArrayBuffer.isView(value)) {
+                // a real data view throws on `byteOffset` and `byteLength` only when it is out of the bounds of
+                // its resized buffer: then it has no bytes, as a data view of a detached buffer
+                try {
+                    return viewBytes(value as DataView);
+                } catch {
+                    return new Uint8Array(0);
+                }
+            }
+            // a proxy: without a handler, it throws
+            return viewBytes(value);
     }
     return undefined;
+}
+
+function viewBytes(view: DataView): Uint8Array {
+    return (view.buffer as ArrayBuffer & { detached?: boolean }).detached
+        ? new Uint8Array(0)
+        : new Uint8Array(view.buffer, view.byteOffset, view.byteLength);
 }
 
 function bytesEquals(aBytes: Uint8Array, bBytes: Uint8Array): boolean {

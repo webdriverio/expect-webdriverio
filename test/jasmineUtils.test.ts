@@ -44,6 +44,21 @@ describe('equals: the matrix of cases', () => {
     const sameSymbol = Symbol('same')
     const sameFunction = () => 1
     const bytes = (...values: number[]) => new Uint8Array(values).buffer
+    // Resizable array buffers are ES2024, which is not in the TypeScript library of the project
+    type ResizableArrayBufferConstructor = new (length: number, options: { maxByteLength: number }) => ArrayBuffer & { resize(length: number): void }
+    const resizable = (length: number) => new (ArrayBuffer as unknown as ResizableArrayBufferConstructor)(length, { maxByteLength: 8 })
+    // A data view out of the bounds of its resizable buffer, after a resize: its `byteOffset` and `byteLength` throw
+    const outOfBoundsView = () => {
+        const buffer = resizable(8)
+        const view = new DataView(buffer, 4)
+        buffer.resize(2)
+        return view
+    }
+    const lengthTrackingView = (...values: number[]) => {
+        const buffer = resizable(values.length)
+        new Uint8Array(buffer).set(values)
+        return new DataView(buffer)
+    }
     // An object with only a type tag, on its class: it has no own keys
     const tagged = (tag: string) => new (class { get [Symbol.toStringTag]() { return tag } })()
     const detached = (...values: number[]) => {
@@ -175,6 +190,10 @@ describe('equals: the matrix of cases', () => {
         ['a detached and a filled array buffer', detached(1, 2), bytes(1, 2), false],
         ['data views of detached array buffers', detachedView(1), detachedView(2), true],
         ['a data view of a detached and of a filled array buffer', detachedView(1), new DataView(bytes(1)), false],
+        // a data view out of the bounds of a resized buffer has no bytes, as a data view of a detached buffer
+        ['data views out of the bounds of a resized buffer', outOfBoundsView(), outOfBoundsView(), true],
+        ['a data view out of bounds and a filled data view', outOfBoundsView(), new DataView(bytes(1)), false],
+        ['a length-tracking data view of a resizable buffer', lengthTrackingView(1, 2), new DataView(bytes(1, 2)), true],
         // Jest asymmetric matchers
         ['Jest any(Number)', 1, jestExpect.any(Number), true],
         ['Jest any(Number) on a string', 'a', jestExpect.any(Number), false],
