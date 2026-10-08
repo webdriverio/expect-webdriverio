@@ -5,13 +5,17 @@ describe('Browsing context (tab, window, frame)', () => {
     const origin = 'https://guinea-pig.webdriver.io'
     let page: WebdriverIO.BrowsingContext
 
-    /** Adds a same-origin frame of `two.html` to the window, and gives its browsing context */
+    /**
+     * Adds a same-origin frame of `two.html` to the window, and gives its browsing context.
+     * Waits for the `load` event: before it, the frame shows its first document, `about:blank`.
+     */
     const addFrame = async () => {
-        await page.execute(() => {
+        await page.execute(() => new Promise<void>((resolve) => {
             const iframe = document.createElement('iframe')
+            iframe.addEventListener('load', () => resolve(), { once: true })
             iframe.src = './two.html'
             document.body.appendChild(iframe)
-        })
+        }))
         return page.frame(page.$('iframe'))
     }
 

@@ -14,11 +14,13 @@ describe('Browsing context (window and frame)', () => {
     })
 
     it('asserts on a frame, with its own document', async () => {
-        await page.execute(() => {
+        // Wait for the `load` event: before it, the frame shows its first document, `about:blank`
+        await page.execute(() => new Promise<void>((resolve) => {
             const iframe = document.createElement('iframe')
+            iframe.addEventListener('load', () => resolve(), { once: true })
             iframe.src = './two.html'
             document.body.appendChild(iframe)
-        })
+        }))
         const frame = await page.frame(page.$('iframe'))
 
         await expect(frame).toHaveTitle('two')
