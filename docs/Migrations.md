@@ -66,6 +66,25 @@ An array of expected values on a single element fails the assertion with `toHave
 
 `expect.oneOf()` now trims the actual value by default (`trim: true`), as a single expected value does. Pass `{ trim: false }` to compare the text as is.
 
+## `toHaveElementClass` compares each class
+
+`toHaveElementClass` compares each class of the element, also with an asymmetric matcher. Before, an asymmetric matcher was compared with the full `class` attribute. To compare the full attribute, use `toHaveAttribute('class', ...)`. The classes are now split on any whitespace, as in HTML, and the string options (`ignoreCase`, `trim`, `containing`...) also apply to `expect.oneOf()`.
+
+An array of expected values on a single element fails the assertion, as with the other matchers. Before, it meant "has any of these classes". On `$$()`, an array stays one expected value for each element.
+
+```diff
+  // <button class="btn active">
+  // Has any of the classes
+- await expect($('button')).toHaveElementClass(['btn', 'large'])
++ await expect($('button')).toHaveElementClass(expect.oneOf('btn', 'large'))
+  // Has all the classes: 1 assertion for each class
++ await expect($('button')).toHaveElementClass('btn')
++ await expect($('button')).toHaveElementClass('active')
+  // The full attribute
+- await expect($('button')).toHaveElementClass(expect.stringContaining('btn act'))
++ await expect($('button')).toHaveAttribute('class', expect.stringContaining('btn act'))
+```
+
 ## Multi-remote `$$()` and `select()`
 
 Multi-remote `$$()` and `select()` need WebdriverIO v10. Remove `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELECT`: they are not supported anymore.

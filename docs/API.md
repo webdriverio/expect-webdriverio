@@ -419,16 +419,24 @@ await expect(myInput).not.toHaveAttribute('disabled', expect.anything(), { wait:
 
 ### toHaveElementClass
 
-Checks if an element has a single class name. Can also be called with an array as a parameter when the element can have multiple class names.
+Checks if one of the classes of an element matches the expected value: a class name, a regular expression or an asymmetric matcher. Each class is compared, also with an asymmetric matcher. To compare the full `class` attribute, use `toHaveAttribute('class', ...)`.
 
 ##### Usage
 
 ```js
 const box = await $('#purplebox')
 await expect(box).toHaveElementClass('box', { message: 'Not a box!' })
-await expect(box).toHaveElementClass(['box', 'purple'], { message: 'Not a purple box!' })
-await expect(box).toHaveElementClass(expect.stringContaining('purple'), { message: 'Not a purple box!' })
+await expect(box).toHaveElementClass(expect.stringContaining('purp'), { message: 'Not a purple box!' })
+
+// has any of the classes
+await expect(box).toHaveElementClass(expect.oneOf('purple', 'red'))
+
+// has all the classes: 1 assertion for each class
+await expect(box).toHaveElementClass('box')
+await expect(box).toHaveElementClass('purple')
 ```
+
+An array of expected values works only with `$$()`: one expected value for each element. On a single element, it fails the assertion.
 
 ### toHaveElementProperty
 

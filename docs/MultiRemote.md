@@ -110,7 +110,7 @@ await expect(title).toHaveAttribute('data-locale', expect.multiRemote({ chrome: 
 await expect(title).toHaveWidth(expect.multiRemote({ chrome: 100, firefox: { gte: 90 } }))
 ```
 
-An array expected value is only supported by the matchers accepting one for a single element (e.g. `toHaveElementClass(['btn', 'btn-large'])`); otherwise it fails the assertion.
+An array expected value fails the assertion on a multi-remote `$()`, as on a single element of one browser: use `expect.oneOf()` for "one of these values".
 
 ### Multiple Elements `$$()`
 
