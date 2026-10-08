@@ -30,7 +30,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     singleElementCompare,
     context: { isNot = false, iteration },
     supportsArrayContaining = false,
-    strictConfiguration = { allowEmptyElements: false, allowArrayWithSingleElement: false }
+    strictConfiguration = { allowEmptyElements: false }
 } :{
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements | unknown
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | unknown
@@ -41,11 +41,10 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     supportsArrayContaining?: boolean | 'arrayOnly',
     /**
      * - allowEmptyElements: an empty element set passes instead of failing (e.g. `.not.toExist()`)
-     * - allowArrayWithSingleElement: a single element is compared against an array (e.g. classes)
      * - allowObjectExpectedValue: the expected value itself can be a plain object (e.g. styles), so for multi-remote a plain
      *   object is always a literal and per-instance values require `expect.multiRemote()`
      */
-    strictConfiguration?: { allowEmptyElements?: boolean, allowArrayWithSingleElement?: boolean, allowObjectExpectedValue?: boolean }
+    strictConfiguration?: { allowEmptyElements?: boolean, allowObjectExpectedValue?: boolean }
 }
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValuesWithArray<Actual>>> {
     const isSome = isSomeWrapper(unresolvedElements)
@@ -137,7 +136,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
-    { allowEmptyElements = false, allowArrayWithSingleElement = false, allowObjectExpectedValue = false } = {}
+    { allowEmptyElements = false, allowObjectExpectedValue = false } = {}
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const { selector, other, multiRemoteSelector } = await awaitElementOrArray(unresolvedElements)
 
@@ -176,8 +175,8 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     // --- Single element case ---
     if (isElement(selector)) {
 
-        // Array of expected values is unsupported for a single element, unless allowed.
-        const forceFailure = (!allowArrayWithSingleElement && Array.isArray(expectedValues)) || isUnexpectedPerInstanceValues
+        // An array of expected values is not supported for a single element: it fails the assertion, as in every matcher
+        const forceFailure = Array.isArray(expectedValues) || isUnexpectedPerInstanceValues
 
         const compareResult = await singleElementCompare(selector, forceFailure ? undefined : expectedValues as MaybeArray<Expected>)
         const success = forceFailure ? !!isNot : compareResult.success
@@ -193,7 +192,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             expectedValues,
             singleElementCompare,
             { isNot, isSome },
-            { allowArrayWithSingleElement, allowObjectExpectedValue }
+            { allowObjectExpectedValue }
         )
     }
 
@@ -263,7 +262,7 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
     singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
     { isNot, isSome }: { isNot: boolean; isSome: boolean },
-    { allowArrayWithSingleElement, allowObjectExpectedValue }: { allowArrayWithSingleElement: boolean, allowObjectExpectedValue: boolean }
+    { allowObjectExpectedValue }: { allowObjectExpectedValue: boolean }
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const isSingleElement = isMultiRemoteElement(multiRemoteSelector)
     const instances = isSingleElement ? multiRemoteSelector.instances : multiRemoteSelector.parent.instances
@@ -274,8 +273,8 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     const expectedPerInstance: MultiRemoteValues<unknown> = perInstanceValues ?? Object.fromEntries(instances.map((name) => [name, expectedValues]))
     const instanceNamesMismatch = !!perInstanceValues && !hasSameInstanceNames(perInstanceValues, instances)
 
-    // For $(), an array is only supported by matchers comparing a single element against an array (e.g. classes)
-    const unsupportedArray = isSingleElement && !allowArrayWithSingleElement && Object.values(expectedPerInstance).some(Array.isArray)
+    // For $(), an array is not supported: it fails the assertion, as for a single element of one browser
+    const unsupportedArray = isSingleElement && Object.values(expectedPerInstance).some(Array.isArray)
     // For $$(), an expected array must have one entry per element of that instance
     const lengthMismatch = !isSingleElement && instances.some((name) => {
         const value = expectedPerInstance[name]
