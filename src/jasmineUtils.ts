@@ -167,18 +167,12 @@ function eq(
         // compare the content here, and the own keys (usually none) below
         var aContent = contentOf(a, className),
             bContent = contentOf(b, className);
-        // a value of the type and an object with only its type tag are not equal
-        if ((aContent === undefined) !== (bContent === undefined)) {
+        // a value of the type and an object with only its type tag are not equal, and so are 2 kinds of content
+        if (aContent?.kind !== bContent?.kind) {
             return false;
         }
-        if (aContent !== undefined && bContent !== undefined) {
-            if (className == '[object Set]' || className == '[object Map]') {
-                if (!collectionEquals(aContent as Array<[unknown, unknown]>, bContent as Array<[unknown, unknown]>, className == '[object Map]', aStack, bStack, customTesters, hasKey)) {
-                    return false;
-                }
-            } else if (className == '[object URL]' ? aContent !== bContent : !bytesEquals(aContent as Uint8Array, bContent as Uint8Array)) {
-                return false;
-            }
+        if (aContent !== undefined && bContent !== undefined && !contentEquals(aContent, bContent, aStack, bStack, customTesters, hasKey)) {
+            return false;
         }
 
         var size = 0;
@@ -317,6 +311,12 @@ const intrinsics = {
     viewByteLength: getter(DataView.prototype, 'byteLength'),
 };
 
+/** The content of a URL, a set, a map or binary data, with its kind: the kind selects the comparison */
+type Content =
+    | { kind: 'href', href: string }
+    | { kind: 'set' | 'map', entries: Array<[unknown, unknown]> }
+    | { kind: 'bytes', bytes: Uint8Array };
+
 /**
  * The content of a URL (its `href`), a set or map (its entries) or binary data (its bytes), or `undefined` when the
  * value has only the type tag (`Symbol.toStringTag`): then it is a plain object, and only its own keys are compared.
@@ -326,34 +326,36 @@ const intrinsics = {
  *   the content. Without the API (a method of its prototype, or a string `href`), it has only the type tag.
  * A detached buffer, or a data view out of the bounds of a resized buffer, has no bytes.
  */
-function contentOf(value: any, className: string): string | Array<[unknown, unknown]> | Uint8Array | undefined {
+function contentOf(value: any, className: string): Content | undefined {
     if (!types.isProxy(value)) {
-        if (className == '[object URL]' && value instanceof URL) {
-            return intrinsics.urlHref.call(value);
+        // the kind comes from the value, not from its type tag: a subclass can have its own tag
+        if (value instanceof URL) {
+            return { kind: 'href', href: intrinsics.urlHref.call(value) };
         }
         if (types.isSet(value)) {
-            return [...intrinsics.setEntries.call(value)];
+            return { kind: 'set', entries: [...intrinsics.setEntries.call(value)] };
         }
         if (types.isMap(value)) {
-            return [...intrinsics.mapEntries.call(value)];
+            return { kind: 'map', entries: [...intrinsics.mapEntries.call(value)] };
         }
         if (types.isArrayBuffer(value)) {
-            return intrinsics.bufferByteLength.call(value) === 0 || intrinsics.bufferDetached.call(value) ? new Uint8Array(0) : new Uint8Array(value);
+            const empty = intrinsics.bufferByteLength.call(value) === 0 || intrinsics.bufferDetached.call(value);
+            return { kind: 'bytes', bytes: empty ? new Uint8Array(0) : new Uint8Array(value) };
         }
         if (types.isSharedArrayBuffer(value)) {
-            return new Uint8Array(value);
+            return { kind: 'bytes', bytes: new Uint8Array(value) };
         }
         if (types.isDataView(value)) {
             // a real data view throws on `byteOffset` and `byteLength` only when it is out of the bounds of
             // its resized buffer: then it has no bytes, as a data view of a detached buffer
             const buffer = intrinsics.viewBuffer.call(value);
             if (types.isArrayBuffer(buffer) && intrinsics.bufferDetached.call(buffer)) {
-                return new Uint8Array(0);
+                return { kind: 'bytes', bytes: new Uint8Array(0) };
             }
             try {
-                return new Uint8Array(buffer, intrinsics.viewByteOffset.call(value), intrinsics.viewByteLength.call(value));
+                return { kind: 'bytes', bytes: new Uint8Array(buffer, intrinsics.viewByteOffset.call(value), intrinsics.viewByteLength.call(value)) };
             } catch {
-                return new Uint8Array(0);
+                return { kind: 'bytes', bytes: new Uint8Array(0) };
             }
         }
     }
@@ -363,32 +365,52 @@ function contentOf(value: any, className: string): string | Array<[unknown, unkn
 /**
  * The content of a proxy or of another object with the type tag, read through its API.
  */
-function apiContentOf(value: any, className: string): string | Array<[unknown, unknown]> | Uint8Array | undefined {
+function apiContentOf(value: any, className: string): Content | undefined {
     switch (className) {
         case '[object URL]': {
             const href = 'href' in value ? value.href : undefined;
-            return typeof href === 'string' ? href : undefined;
+            return typeof href === 'string' ? { kind: 'href', href } : undefined;
         }
         case '[object Set]':
         case '[object Map]':
-            return typeof value.entries === 'function' ? [...value.entries()] : undefined;
+            return typeof value.entries === 'function'
+                ? { kind: className == '[object Set]' ? 'set' : 'map', entries: [...value.entries()] }
+                : undefined;
         case '[object ArrayBuffer]':
         case '[object SharedArrayBuffer]':
             if (typeof value.slice !== 'function') {
                 return undefined;
             }
             if (value.byteLength === 0 || value.detached) {
-                return new Uint8Array(0);
+                return { kind: 'bytes', bytes: new Uint8Array(0) };
             }
             // `Uint8Array` reads a proxy as a list with no `length`: a copy with `slice()` gives the bytes
-            return new Uint8Array(value.slice(0));
+            return { kind: 'bytes', bytes: new Uint8Array(value.slice(0)) };
         case '[object DataView]':
             if (typeof value.getUint8 !== 'function') {
                 return undefined;
             }
-            return value.buffer.detached ? new Uint8Array(0) : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+            return { kind: 'bytes', bytes: value.buffer.detached ? new Uint8Array(0) : new Uint8Array(value.buffer, value.byteOffset, value.byteLength) };
     }
     return undefined;
+}
+
+function contentEquals(
+    a: Content,
+    b: Content,
+    aStack: Array<unknown>,
+    bStack: Array<unknown>,
+    customTesters: Array<any>,
+    hasKey: any,
+): boolean {
+    switch (a.kind) {
+        case 'href':
+            return a.href === (b as typeof a).href;
+        case 'bytes':
+            return bytesEquals(a.bytes, (b as typeof a).bytes);
+        default:
+            return collectionEquals(a.entries, (b as typeof a).entries, a.kind == 'map', aStack, bStack, customTesters, hasKey);
+    }
 }
 
 function bytesEquals(aBytes: Uint8Array, bBytes: Uint8Array): boolean {

@@ -65,6 +65,16 @@ describe('equals: the matrix of cases', () => {
         // @ts-expect-error a subclass that gives other values than the entries
         entries() { return this.values() }
     }
+    // A subclass with its own type tag: a real value, read through its internal slots
+    const withTag = <T extends abstract new (...args: any[]) => object>(Base: T, tag: string) => {
+        abstract class Tagged extends Base {
+            get [Symbol.toStringTag]() { return tag }
+        }
+        return Tagged as unknown as T
+    }
+    const TaggedSet = withTag(Set, 'TaggedSet')
+    const TaggedMap = withTag(Map, 'TaggedMap')
+    const TaggedUrl = withTag(URL, 'TaggedUrl')
     // An object with only a type tag, on its class: it has no own keys
     const tagged = (tag: string) => new (class { get [Symbol.toStringTag]() { return tag } })()
     const detached = (...values: number[]) => {
@@ -186,6 +196,13 @@ describe('equals: the matrix of cases', () => {
         ['an array buffer and an object with only its type tag', bytes(1, 2), tagged('ArrayBuffer'), false],
         ['a data view and an object with only its type tag', new DataView(bytes(1)), tagged('DataView'), false],
         ['2 objects with only the type tag of a set', tagged('Set'), tagged('Set'), true],
+        // a subclass with its own type tag is compared by its content, as its built-in type
+        ['sets of a subclass with its own type tag', new TaggedSet([1]), new TaggedSet([1]), true],
+        ['sets of a subclass with its own type tag and other entries', new TaggedSet([1]), new TaggedSet([2]), false],
+        ['maps of a subclass with its own type tag', new TaggedMap([['a', 1]]), new TaggedMap([['a', 1]]), true],
+        ['maps of a subclass with its own type tag and other entries', new TaggedMap([['a', 1]]), new TaggedMap([['a', 2]]), false],
+        ['URLs of a subclass with its own type tag', new TaggedUrl('https://a.test/'), new TaggedUrl('https://a.test/'), true],
+        ['URLs of a subclass with its own type tag and another href', new TaggedUrl('https://a.test/'), new TaggedUrl('https://b.test/'), false],
         // the content of a real value comes from its internal slots: an own property cannot hide it
         ['array buffers with other bytes and a shadowed slice()', shadowed(bytes(1, 2), 'slice'), shadowed(bytes(9, 9), 'slice'), false],
         ['array buffers with the same bytes and a shadowed slice()', shadowed(bytes(1, 2), 'slice'), shadowed(bytes(1, 2), 'slice'), true],
