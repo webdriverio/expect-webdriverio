@@ -3,7 +3,7 @@ import { $, $$ } from '@wdio/globals'
 
 import { toHaveElementProperty } from '../../../src/matchers/element/toHaveElementProperty.js'
 import stripAnsi from 'strip-ansi'
-import { jasmine } from '../../__mocks__/jasmine.js'
+import { jasmine } from '../../__fixtures__/jasmine.js'
 import { waitUntil } from '../../../src/utils.js'
 import { expect as wdioExpect } from '../../../src/index.js'
 

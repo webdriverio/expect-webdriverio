@@ -1,8 +1,7 @@
 import { describe, test, expect } from 'vitest'
 import jestExpect from 'expect'
 import { equals } from '../src/jasmineUtils.js'
-import { jasmine } from './__mocks__/jasmine.js'
-import jasmineRequire from 'jasmine-core'
+import { jasmine } from './__fixtures__/jasmine.js'
 import { oneOf } from '../src/matchers/asymmetrics/oneOf.js'
 
 describe('jasmineUtils', () => {
@@ -35,7 +34,7 @@ describe('jasmineUtils', () => {
 })
 
 describe('equals: the matrix of cases', () => {
-    const j = jasmineRequire.core(jasmineRequire)
+    const j = jasmine
     const circular = () => {
         const value: Record<string, unknown> = { a: 1 }
         value.self = value

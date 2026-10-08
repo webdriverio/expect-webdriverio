@@ -3,7 +3,7 @@ import { INVERTED_COLOR, printDiffOrStringify } from 'jest-matcher-utils'
 import { enhanceError, enhanceErrorBe } from '../../src/util/formatMessage.js'
 import stripAnsi from 'strip-ansi'
 import { $Factory, browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, elementFactory, setWdioKind } from '../__mocks__/@wdio/globals.js'
-import { jasmine } from '../__mocks__/jasmine.js'
+import { jasmine } from '../__fixtures__/jasmine.js'
 
 const multiRemoteBrowsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
 

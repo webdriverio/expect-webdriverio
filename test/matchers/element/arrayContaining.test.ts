@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { expect as wdioExpect } from '../../../src/index.js'
 import { elementArrayFactory } from '../../__mocks__/@wdio/globals.js'
-import { jasmine } from '../../__mocks__/jasmine.js'
+import { jasmine } from '../../__fixtures__/jasmine.js'
 
 vi.mock('@wdio/globals')
 
