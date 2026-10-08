@@ -1,5 +1,5 @@
 import { expect, wdioCustomMatchers, setDefaultOptions, SoftAssertionService } from 'expect-webdriverio'
-import { some, multiRemote } from 'expect-webdriverio/api'
+import { some, multiRemote, wdioCustomMatcherNames } from 'expect-webdriverio/api'
 
 declare const el: WebdriverIO.Element
 declare const els: WebdriverIO.ElementArray
@@ -20,6 +20,9 @@ export async function check() {
 
     // @ts-expect-error `beforeTest` takes a `@wdio/types` test: fails when `@wdio/types` does not resolve
     new SoftAssertionService().beforeTest(1)
+
+    // @ts-expect-error the list has only the names of the matchers
+    wdioCustomMatcherNames.includes('toBeCustom')
 
     return wdioCustomMatchers
 }

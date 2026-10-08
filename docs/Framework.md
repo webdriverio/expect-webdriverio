@@ -315,3 +315,17 @@ it('some elements are displayed', async () => {
 
 - `$$()` is supported, awaited or not, and filtered (`Element[]`), including by the snapshot matchers.
 - [Multi-remote](MultiRemote.md) is not supported: the Browser Runner runs tests in a single browser session, and stops with `No "browserName" defined in capability object` when given multi-remote capabilities. Use a Node.js runner framework instead, such as Mocha, Jasmine or Cucumber.
+
+#### Matcher names for adapters and tools
+
+A framework adapter, a lint rule or a runner that must know the matchers before `expect` exists can import their names from `expect-webdriverio/api`, instead of a copy of the list:
+
+```ts
+import { wdioCustomMatcherNames, asymmetricMatcherNames, inverseAsymmetricMatcherNames } from 'expect-webdriverio/api'
+
+wdioCustomMatcherNames        // ['toBeChecked', ..., 'toMatchSnapshot']: the names of `wdioCustomMatchers`, not the matchers of the `expect` package
+asymmetricMatcherNames        // ['any', ..., 'oneOf', 'multiRemote']: all the asymmetric matchers on `expect`, of the `expect` package and of expect-webdriverio
+inverseAsymmetricMatcherNames // ['arrayContaining', ..., 'stringMatching']: all the asymmetric matchers on `expect.not`
+```
+
+Each matcher returns a promise, except `toMatchSnapshot` and `toMatchInlineSnapshot` when the received value is not an element, a list of elements or a promise. The lists do not have the matchers that you add with `expect.extend()`, or the `some` modifier.

@@ -6,3 +6,4 @@ import { multiRemote as wdioMultiRemote } from '../matchers/asymmetrics/multiRem
  */
 export const some = wdioSome
 export const multiRemote = wdioMultiRemote
+export { wdioCustomMatcherNames, asymmetricMatcherNames, inverseAsymmetricMatcherNames } from './matcherNames.js'
