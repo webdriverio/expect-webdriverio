@@ -65,22 +65,16 @@ describe(toHaveElementClass, () => {
             expect(result3.pass).toBe(true)
         })
 
-        test('success with multiple asymmetric matcher', async () => {
-            const result = await thisContext.toHaveElementClass(el, [expect.stringContaining('some-class'), expect.stringContaining('another-class')])
+        test('success with expect.oneOf() of asymmetric matchers', async () => {
+            const result = await thisContext.toHaveElementClass(el, oneOf(expect.stringContaining('some-class'), expect.stringContaining('another-class')))
 
             expect(result.pass).toBe(true)
         })
 
-        test('failure with multiple asymmetric matcher', async () => {
-            const result = await thisContext.toHaveElementClass(el, [expect.stringContaining('notsome-class'), expect.stringContaining('notanother-class')], { wait: 0 })
+        test('failure with expect.oneOf() of asymmetric matchers', async () => {
+            const result = await thisContext.toHaveElementClass(el, oneOf(expect.stringContaining('notsome-class'), expect.stringContaining('notanother-class')), { wait: 0 })
 
             expect(result.pass).toBe(false)
-            expect(stripAnsi(result.message())).toEqual(`\
-Expect $(\`sel\`) to have class
-
-Expected: [StringContaining "notsome-class", StringContaining "notanother-class"]
-Received: "some-class another-class yet-another-class"`
-            )
         })
 
         test('success with RegExp when class name is present', async () => {
@@ -89,10 +83,19 @@ Received: "some-class another-class yet-another-class"`
             expect(result.pass).toBe(true)
         })
 
-        test('success if array matches with class', async () => {
-            const result = await thisContext.toHaveElementClass(el, ['some-class', 'yet-another-class'])
+        test('success when it has any of the classes, with expect.oneOf()', async () => {
+            const result = await thisContext.toHaveElementClass(el, oneOf('not-a-class', 'yet-another-class'))
 
             expect(result.pass).toBe(true)
+        })
+
+        test('success when it has all the classes, with 1 assertion for each class', async () => {
+            const results = [
+                await thisContext.toHaveElementClass(el, 'some-class'),
+                await thisContext.toHaveElementClass(el, 'yet-another-class'),
+            ]
+
+            expect(results.map((result) => result.pass)).toEqual([true, true])
         })
 
         test('failure if the classes do not match', async () => {
@@ -107,22 +110,37 @@ Expected: "someclass"
 Received: "some-class another-class yet-another-class"`)
         })
 
-        test('failure if array does not match with class', async () => {
-            const result = await thisContext.toHaveElementClass(el, ['someclass', 'anotherclass'])
+        test('failure when it has none of the classes of expect.oneOf()', async () => {
+            const result = await thisContext.toHaveElementClass(el, oneOf('someclass', 'anotherclass'), { wait: 0 })
 
             expect(result.pass).toBe(false)
         })
 
         test('not - success - pass should be false', async () => {
-            const result = await thisNotContext.toHaveElementClass(el, ['not-class', 'not-another-class'])
+            const result = await thisNotContext.toHaveElementClass(el, oneOf('not-class', 'not-another-class'))
 
             expect(result.pass).toBe(false) // success, boolean is inverted later
         })
 
         test('not - failure - pass should be true', async () => {
-            const result = await thisNotContext.toHaveElementClass(el, ['some-class', 'not-another-class'], { wait: 0 })
+            const result = await thisNotContext.toHaveElementClass(el, oneOf('some-class', 'not-another-class'), { wait: 0 })
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later
+        })
+
+        // As in the other matchers, an array of expected values on a single element fails the assertion, without retries:
+        // use `expect.oneOf()` for "has any", and 1 assertion for each class for "has all"
+        test.for([false, true])('fails with an array of expected values, even if each one matches (isNot: %s)', async (isNot) => {
+            const result = await (isNot ? thisNotContext : thisContext).toHaveElementClass(el, ['some-class', 'another-class'], { wait: 1000 })
+
+            expect(result.pass).toBe(isNot) // with `.not`, `true` is a failure
+            expect(el.getAttribute).toHaveBeenCalledTimes(1)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) ${isNot ? 'not ' : ''}to have class
+
+Expected${isNot ? ' [not]' : ''}: ["some-class", "another-class"]
+Received${isNot ? '      ' : ''}: "some-class another-class yet-another-class"`
+            )
         })
 
         // Each class is compared, for plain values and asymmetric matchers alike. For the full attribute, use
@@ -188,11 +206,6 @@ Received: "some-class another-class yet-another-class"`)
 
             test('should pass if expect.oneOf() ignores the case', async () => {
                 const result = await thisContext.toHaveElementClass(el, oneOf('sOme-ClAsS', 'not-a-class'), { wait: 0, ignoreCase: true })
-                expect(result.pass).toBe(true)
-            })
-
-            test('should pass if array ignores the case', async () => {
-                const result = await thisContext.toHaveElementClass(el, ['sOme-ClAsS', 'anOther-ClAsS'], { wait: 0, ignoreCase: true })
                 expect(result.pass).toBe(true)
             })
         })

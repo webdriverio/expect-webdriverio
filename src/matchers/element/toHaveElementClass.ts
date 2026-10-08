@@ -55,8 +55,6 @@ export async function toHaveElementClass(
                 expectedValues: expectedWithOptions,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, attribute, expectedValue, options),
                 context: { isNot, iteration },
-                // TODO: an array on $() means "has any of these classes", to review in https://github.com/webdriverio/expect-webdriverio/issues/2266
-                strictConfiguration: { allowArrayWithSingleElement: true }
             })
         },
         isNot,
