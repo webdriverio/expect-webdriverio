@@ -15,19 +15,26 @@ describe('Global Options', () => {
     })
 
     it('should allow setting and using global wait option', async () => {
-        // One multi-remote assertion queries every browser, which takes ~800ms on Windows runners,
-        // so measure that cost with an explicit `wait: 1` that does not depend on the global option
-        const baselineStart = Date.now()
-        await expect(expect(multiRemoteBrowser.$('non-existent-element-' + Date.now())).toBeDisplayed({ wait: 1 })).rejects.toThrow()
-        const baseline = Date.now() - baselineStart
+        await multiRemoteBrowser.url('https://guinea-pig.webdriver.io/')
+        // The page counts the reads of `body.probe`: each try of the matcher reads it once in Chrome and twice in
+        // Firefox. So the count shows how many times the matcher tried, without a time measure (the unit tests in
+        // `test/options.test.ts` check the timing with fake timers)
+        const countReads = async (assertion: () => Promise<unknown>) => {
+            await multiRemoteBrowser.execute(() => {
+                const page = window as Window & { reads?: number }
+                page.reads = 0
+                Object.defineProperty(document.body, 'probe', { configurable: true, get: () => { page.reads = (page.reads ?? 0) + 1; return 'value' } })
+            })
+            await expect(assertion()).rejects.toThrow()
+            return multiRemoteBrowser.execute(() => (window as Window & { reads?: number }).reads)
+        }
 
-        const start = Date.now()
-        await expect(expect(multiRemoteBrowser.$('non-existent-element-' + Date.now())).toBeDisplayed()).rejects.toThrow()
-        const duration = Date.now() - start
+        const withExplicitWait = await countReads(() => expect(multiRemoteBrowser.$('body')).toHaveElementProperty('probe', 'other value', { wait: 1 }))
+        const withGlobalWait = await countReads(() => expect(multiRemoteBrowser.$('body')).toHaveElementProperty('probe', 'other value'))
 
-        // Ensure failure was as fast as the baseline: ignoring the global option would wait at
-        // least the wdio.conf.ts default (1000ms)
-        expect(duration).toBeLessThan(baseline + 500)
+        // 1 try with the global `wait: 1`, as with an explicit `wait: 1`. With the wdio.conf.ts default (1000 ms, every
+        // 100 ms), the matcher would try about 10 times
+        expect(withGlobalWait).toEqual(withExplicitWait)
     })
 
     after(() => {
