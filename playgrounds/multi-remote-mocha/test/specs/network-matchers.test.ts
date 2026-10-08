@@ -93,6 +93,28 @@ describe('Network Matchers', () => {
     it('should throw an error when asserting not be requested', async () => {
         await expect(expect(mocks.getInstance('chrome')).not.toBeRequested()).rejects.toThrow()
     })
+
+    it('should assert the call of each browser with its own value, with postData and response', async () => {
+        // `mock.calls[n].body` is the upstream response, not the override of `respond()`
+        await expect(mocks).toBeRequestedWith(expect.multiRemote({
+            chrome: { method: 'POST', postData: { title: 'foo', description: 'bar' }, response: (response) => typeof response === 'string' && response.length > 0 },
+            firefox: { method: 'POST', postData: expect.objectContaining({ title: 'foo' }) },
+        }))
+        await expect(mocks).not.toBeRequestedWith(expect.multiRemote({
+            chrome: { postData: { title: 'bar' } },
+            firefox: { method: 'GET' },
+        }), { wait: 0 })
+    })
+
+    it('should fail with the call of each browser for its own value', async () => {
+        await expect(expect(mocks).toBeRequestedWith(expect.multiRemote({
+            chrome: { method: 'POST', postData: { title: 'foo', description: 'bar' } },
+            firefox: { method: 'POST', postData: { title: 'bar' } },
+        }), { wait: 0 })).rejects.toThrow(/Expect multi-remote<chrome, firefox> mocks to be called with/)
+        // The values must name exactly the browsers
+        await expect(expect(mocks).toBeRequestedWith(expect.multiRemote({ chrome: { method: 'POST' } })))
+            .rejects.toThrow(/"firefox": Object {/)
+    })
 })
 
 describe('Multi-remote Network Matchers', () => {
