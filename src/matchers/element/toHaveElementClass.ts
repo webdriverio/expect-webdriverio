@@ -3,7 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
-import { compareText, enhanceError, isAsymmetricMatcher, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import { compareText, enhanceError, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const actualClass = await el.getAttribute(attribute)
@@ -16,15 +16,9 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
         return { success: false, actual: actualClass }
     }
 
-    /**
-     * if value is an asymmetric matcher, no need to split class names
-     * into an array and compare each of them
-     */
-    if (isAsymmetricMatcher(value)) {
-        return compareText(actualClass, value, options)
-    }
-
-    const classes = actualClass.split(' ')
+    // HTML separates the classes with any whitespace. Each class is compared, for plain values and asymmetric matchers
+    // alike: for the full attribute, use `toHaveAttribute('class', ...)`
+    const classes = actualClass.split(/\s+/).filter(Boolean)
     const values = Array.isArray(value) ? value : [value]
     const isValueInClasses = classes.some((clazz) => values.some((expected) => compareText(clazz, expected, options).success))
 

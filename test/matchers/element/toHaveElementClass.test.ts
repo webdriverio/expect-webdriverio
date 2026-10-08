@@ -5,6 +5,7 @@ import type { AssertionResult } from 'expect-webdriverio'
 import stripAnsi from 'strip-ansi'
 
 import { multiRemote } from '../../../src/api/index.js'
+import { oneOf } from '../../../src/matchers/asymmetrics/oneOf.js'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
 import { mockMultiRemoteElementsCommand, mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 vi.mock('@wdio/globals')
@@ -52,12 +53,16 @@ describe(toHaveElementClass, () => {
             })
         })
 
-        test('success when including surrounding spaces and asymmetric matcher', async () => {
-            const result = await thisContext.toHaveElementClass(el, expect.stringContaining('some-class '))
-            expect(result.pass).toBe(true)
+        test('failure when an asymmetric matcher needs the spaces between the classes', async () => {
+            // each class is compared: no class has a space in it
+            const result = await thisContext.toHaveElementClass(el, expect.stringContaining('some-class '), { wait: 0 })
+            expect(result.pass).toBe(false)
 
-            const result2 = await thisContext.toHaveElementClass(el, expect.stringContaining(' another-class '))
-            expect(result2.pass).toBe(true)
+            const result2 = await thisContext.toHaveElementClass(el, expect.stringContaining(' another-class '), { wait: 0 })
+            expect(result2.pass).toBe(false)
+
+            const result3 = await thisContext.toHaveElementClass(el, expect.stringContaining('another-class'), { wait: 0 })
+            expect(result3.pass).toBe(true)
         })
 
         test('success with multiple asymmetric matcher', async () => {
@@ -118,6 +123,40 @@ Received: "some-class another-class yet-another-class"`)
             const result = await thisNotContext.toHaveElementClass(el, ['some-class', 'not-another-class'], { wait: 0 })
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later
+        })
+
+        // Each class is compared, for plain values and asymmetric matchers alike. For the full attribute, use
+        // `toHaveAttribute('class', ...)`
+        describe('compares each class', () => {
+            test.each([
+                ['expect.oneOf() with one of the classes', oneOf('another-class', 'not-a-class'), true],
+                ['expect.oneOf() with none of the classes', oneOf('not-a-class', 'other'), false],
+                ['expect.stringMatching() of a class that is not the first', expect.stringMatching(/^another/), true],
+                ['expect.stringContaining() of a part of a class', expect.stringContaining('other-cl'), true],
+                ['expect.stringContaining() of 2 classes and the space between them', expect.stringContaining('some-class another'), false],
+            ])('%s', async (_name, expected, pass) => {
+                const result = await thisContext.toHaveElementClass(el, expected, { wait: 0 })
+
+                expect(result.pass).toBe(pass)
+            })
+
+            test.each([
+                ['a tab', 'some-class\tanother-class'],
+                ['a new line', 'some-class\nanother-class'],
+                ['several spaces', '  some-class   another-class  '],
+            ])('splits the classes on %s', async (_name, attribute) => {
+                vi.mocked(el.getAttribute).mockResolvedValue(attribute)
+
+                const result = await thisContext.toHaveElementClass(el, 'another-class', { wait: 0 })
+
+                expect(result.pass).toBe(true)
+            })
+
+            test('not - expect.oneOf() with none of the classes passes', async () => {
+                const result = await thisNotContext.toHaveElementClass(el, oneOf('not-a-class', 'other'), { wait: 0 })
+
+                expect(result.pass).toBe(false) // success, boolean is inverted later
+            })
         })
 
         describe('options', () => {
@@ -226,12 +265,16 @@ Received: "some-class another-class yet-another-class"` )
             })
         })
 
-        test('success when including surrounding spaces and asymmetric matcher', async () => {
-            const result = await thisContext.toHaveElementClass(elements, expect.stringContaining('some-class '))
-            expect(result.pass).toBe(true)
+        test('failure when an asymmetric matcher needs the spaces between the classes', async () => {
+            // each class is compared: no class has a space in it
+            const result = await thisContext.toHaveElementClass(elements, expect.stringContaining('some-class '), { wait: 0 })
+            expect(result.pass).toBe(false)
 
-            const result2 = await thisContext.toHaveElementClass(elements, expect.stringContaining(' another-class '))
-            expect(result2.pass).toBe(true)
+            const result2 = await thisContext.toHaveElementClass(elements, expect.stringContaining(' another-class '), { wait: 0 })
+            expect(result2.pass).toBe(false)
+
+            const result3 = await thisContext.toHaveElementClass(elements, expect.stringContaining('another-class'), { wait: 0 })
+            expect(result3.pass).toBe(true)
         })
 
         test('success with multiple asymmetric matcher', async () => {
