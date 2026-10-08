@@ -320,7 +320,10 @@ function contentOf(value: any, className: string): string | Array<[unknown, unkn
             if (typeof value.slice !== 'function') {
                 return undefined;
             }
-            return value.byteLength === 0 || value.detached ? new Uint8Array(0) : new Uint8Array(value);
+            if (value.byteLength === 0 || value.detached) {
+                return new Uint8Array(0);
+            }
+            return bufferBytes(value);
         case '[object DataView]':
             if (typeof value.getUint8 !== 'function') {
                 return undefined;
@@ -338,6 +341,15 @@ function contentOf(value: any, className: string): string | Array<[unknown, unkn
             return viewBytes(value);
     }
     return undefined;
+}
+
+/**
+ * The bytes of an array buffer. `Uint8Array` reads a proxy as a list with no `length`, so 0 bytes:
+ * a proxy that reads on the real buffer (as Vue `reactive()`) gives its bytes with `slice()`, a copy.
+ */
+function bufferBytes(buffer: ArrayBufferLike): Uint8Array {
+    const bytes = new Uint8Array(buffer);
+    return bytes.length === buffer.byteLength ? bytes : new Uint8Array(buffer.slice(0));
 }
 
 function viewBytes(view: DataView): Uint8Array {

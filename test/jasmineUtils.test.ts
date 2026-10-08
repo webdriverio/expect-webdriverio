@@ -279,6 +279,8 @@ describe('equals: sets, maps and other built-in objects', () => {
         ['a set', reactive(new Set([1])), new Set([1]), new Set([2])],
         ['a map', reactive(new Map([['a', 1]])), new Map([['a', 1]]), new Map([['a', 2]])],
         ['a URL', reactive(new URL('https://a.test/')), new URL('https://a.test/'), new URL('https://b.test/')],
+        ['an array buffer', reactive(new Uint8Array([1, 2]).buffer), new Uint8Array([1, 2]).buffer, new ArrayBuffer(0)],
+        ['a data view', reactive(new DataView(new Uint8Array([1]).buffer)), new DataView(new Uint8Array([1]).buffer), new DataView(new Uint8Array([2]).buffer)],
     ])('compares a readable proxy of %s by its content', (_name, proxy, same, other) => {
         expect(equals(proxy, same)).toBe(true)
         expect(equals(same, proxy)).toBe(true)
