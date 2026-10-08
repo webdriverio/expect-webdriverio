@@ -17,9 +17,10 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
         return { success: false, actual: actualClass }
     }
 
-    // HTML separates the classes with any whitespace. Each class is compared, for plain values and asymmetric matchers
+    // HTML separates the classes with ASCII whitespace only (space, tab, new line, form feed, carriage return): a
+    // non-breaking space is part of a class name. Each class is compared, for plain values and asymmetric matchers
     // alike: for the full attribute, use `toHaveAttribute('class', ...)`
-    const classes = actualClass.split(/\s+/).filter(Boolean)
+    const classes = actualClass.split(/[\t\n\f\r ]+/).filter(Boolean)
     const values = Array.isArray(value) ? value : [value]
     // `compareTextOrOneOf()` lets `expect.oneOf()` apply the string options itself, so that they apply once
     const isValueInClasses = classes.some((clazz) => values.some((expected) => compareTextOrOneOf(clazz, expected, options).success))

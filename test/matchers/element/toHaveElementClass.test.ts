@@ -162,12 +162,26 @@ Received${isNot ? '      ' : ''}: "some-class another-class yet-another-class"`
                 ['a tab', 'some-class\tanother-class'],
                 ['a new line', 'some-class\nanother-class'],
                 ['several spaces', '  some-class   another-class  '],
+                ['a form feed', 'some-class\fanother-class'],
+                ['a carriage return', 'some-class\ranother-class'],
             ])('splits the classes on %s', async (_name, attribute) => {
                 vi.mocked(el.getAttribute).mockResolvedValue(attribute)
 
                 const result = await thisContext.toHaveElementClass(el, 'another-class', { wait: 0 })
 
                 expect(result.pass).toBe(true)
+            })
+
+            // HTML separates the classes only with ASCII whitespace: a non-breaking space is part of the class name
+            test.each([
+                ['btn', false],
+                ['btn\u00a0active', true],
+            ])('keeps a non-breaking space in the class name: %s', async (expected, pass) => {
+                vi.mocked(el.getAttribute).mockResolvedValue('btn\u00a0active')
+
+                const result = await thisContext.toHaveElementClass(el, expected, { wait: 0 })
+
+                expect(result.pass).toBe(pass)
             })
 
             test('not - expect.oneOf() with none of the classes passes', async () => {

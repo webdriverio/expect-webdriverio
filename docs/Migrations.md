@@ -68,7 +68,7 @@ An array of expected values on a single element fails the assertion with `toHave
 
 ## `toHaveElementClass` compares each class
 
-`toHaveElementClass` compares each class of the element, also with an asymmetric matcher. Before, an asymmetric matcher was compared with the full `class` attribute. To compare the full attribute, use `toHaveAttribute('class', ...)`. The classes are now split on any whitespace, as in HTML, and the string options (`ignoreCase`, `trim`, `containing`...) also apply to `expect.oneOf()`.
+`toHaveElementClass` compares each class of the element, also with an asymmetric matcher. Before, an asymmetric matcher was compared with the full `class` attribute. To compare the full attribute, use `toHaveAttribute('class', ...)`. The classes are now split on ASCII whitespace (space, tab, new line, form feed and carriage return), as in HTML, and the string options (`ignoreCase`, `trim`, `containing`...) also apply to `expect.oneOf()`.
 
 An array of expected values on a single element fails the assertion, as with the other matchers. Before, it meant "has any of these classes". On `$$()`, an array stays one expected value for each element.
 
