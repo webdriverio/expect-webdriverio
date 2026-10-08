@@ -1483,7 +1483,7 @@ declare module 'expect-webdriverio/api' {
 
     /**
      * The asymmetric matchers on `expect`: the ones of the `expect` package, and `oneOf` and `multiRemote`.
-     * Not the asymmetric form of each matcher that `expect.extend()` adds: the matchers of expect-webdriverio are async, so this form does not work for them.
+     * Not the asymmetric form of each matcher that `expect.extend()` adds: it does not work for the matchers of expect-webdriverio (they are async, and the snapshot matchers compare or write a snapshot).
      */
     export const asymmetricMatcherNames: readonly ('any' | 'anything' | WdioInverseAsymmetricMatcherName | keyof WdioCustomAsymmetricMatchers)[]
 
