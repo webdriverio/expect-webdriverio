@@ -3,7 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
-import { compareText, enhanceError, waitUntil, wrapExpectedWithArray } from '../../utils.js'
+import { compareTextOrOneOf, enhanceError, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
@@ -21,7 +21,8 @@ async function singleElementCompare(el: WebdriverIO.Element, attribute: string, 
     // alike: for the full attribute, use `toHaveAttribute('class', ...)`
     const classes = actualClass.split(/\s+/).filter(Boolean)
     const values = Array.isArray(value) ? value : [value]
-    const isValueInClasses = classes.some((clazz) => values.some((expected) => compareText(clazz, expected, options).success))
+    // `compareTextOrOneOf()` lets `expect.oneOf()` apply the string options itself, so that they apply once
+    const isValueInClasses = classes.some((clazz) => values.some((expected) => compareTextOrOneOf(clazz, expected, options).success))
 
     return {
         success: isValueInClasses,

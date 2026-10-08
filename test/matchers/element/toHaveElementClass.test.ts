@@ -204,6 +204,16 @@ Received${isNot ? '      ' : ''}: "some-class another-class yet-another-class"`
                 expect(result.pass).toBe(true)
             })
 
+            test('applies the string options once with expect.oneOf(), as with a plain value', async () => {
+                vi.mocked(el.getAttribute).mockResolvedValue('aa')
+
+                // `replace` changes "aa" into "a" once: a second time would give ""
+                const plain = await thisContext.toHaveElementClass(el, 'a', { wait: 0, replace: ['a', ''] })
+                const withOneOf = await thisContext.toHaveElementClass(el, oneOf('a'), { wait: 0, replace: ['a', ''] })
+
+                expect([plain.pass, withOneOf.pass]).toEqual([true, true])
+            })
+
             test('should pass if expect.oneOf() ignores the case', async () => {
                 const result = await thisContext.toHaveElementClass(el, oneOf('sOme-ClAsS', 'not-a-class'), { wait: 0, ignoreCase: true })
                 expect(result.pass).toBe(true)
