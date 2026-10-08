@@ -218,15 +218,40 @@ describe('equals: the matrix of cases', () => {
 })
 
 describe('equals: sets, maps and other built-in objects', () => {
-    // A proxy without a handler cannot be read (its `size`, `entries()` or `href` throws): the error is shown, as in Jest
+    // A proxy without a handler cannot be read (its `size`, `entries()`, `href` or `buffer` throws): the error is shown, as in Jest
     test.each([
         ['a set', new Proxy(new Set([1]), {}), new Set([2])],
         ['a map', new Proxy(new Map([['a', 1]]), {}), new Map([['a', 2]])],
         ['a URL', new Proxy(new URL('https://a.test/'), {}), new URL('https://b.test/')],
         ['an array buffer', new Proxy(new Uint8Array([1, 2]).buffer, {}), new ArrayBuffer(0)],
+        ['a data view', new Proxy(new DataView(new Uint8Array([1]).buffer), {}), new DataView(new Uint8Array([1]).buffer)],
     ])('throws a TypeError for a proxy of %s', (_name, proxy, other) => {
         expect(() => equals(proxy, other)).toThrow(TypeError)
         expect(() => equals(other, proxy)).toThrow(TypeError)
+    })
+
+    test('does not throw for a proxy compared with itself', () => {
+        const proxy = new Proxy(new Set([1]), {})
+
+        expect(equals(proxy, proxy)).toBe(true)
+    })
+
+    // A proxy that reads the methods and getters on the real object, as Vue `reactive()`, is compared by its content
+    const reactive = <T extends object>(target: T) => new Proxy(target, {
+        get: (object, key) => {
+            const value = Reflect.get(object, key, object)
+            return typeof value === 'function' ? value.bind(object) : value
+        },
+    })
+    test.each([
+        ['a set', reactive(new Set([1])), new Set([1]), new Set([2])],
+        ['a map', reactive(new Map([['a', 1]])), new Map([['a', 1]]), new Map([['a', 2]])],
+        ['a URL', reactive(new URL('https://a.test/')), new URL('https://a.test/'), new URL('https://b.test/')],
+    ])('compares a readable proxy of %s by its content', (_name, proxy, same, other) => {
+        expect(equals(proxy, same)).toBe(true)
+        expect(equals(same, proxy)).toBe(true)
+        expect(equals(proxy, other)).toBe(false)
+        expect(equals(other, proxy)).toBe(false)
     })
 
     // A custom tester that returns `undefined` counts the comparisons without a change to the result
