@@ -186,6 +186,11 @@ Received: "some-class another-class yet-another-class"`)
                 expect(result.pass).toBe(true)
             })
 
+            test('should pass if expect.oneOf() ignores the case', async () => {
+                const result = await thisContext.toHaveElementClass(el, oneOf('sOme-ClAsS', 'not-a-class'), { wait: 0, ignoreCase: true })
+                expect(result.pass).toBe(true)
+            })
+
             test('should pass if array ignores the case', async () => {
                 const result = await thisContext.toHaveElementClass(el, ['sOme-ClAsS', 'anOther-ClAsS'], { wait: 0, ignoreCase: true })
                 expect(result.pass).toBe(true)
