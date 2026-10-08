@@ -1,7 +1,8 @@
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
 import { expectTypeOf } from 'vitest'
 import { expect as wdioExpect } from 'expect-webdriverio'
-import { some } from 'expect-webdriverio/api'
+import { some, wdioCustomMatcherNames, type asymmetricMatcherNames, type inverseAsymmetricMatcherNames } from 'expect-webdriverio/api'
+import type * as sourceNames from '../../src/api/matcherNames.js'
 import { multiRemoteBrowser } from '@wdio/globals'
 
 describe('WebDriverIO Expect Type Assertions under Mocha', () => {
@@ -1393,6 +1394,20 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expect(number).toEqual(expect.closeTo(1.0001, 0.0001))
             // New from jest 30, should work!
             expect(['apple', 'banana', 'cherry']).toEqual(expect.arrayOf(expect.any(String)))
+        })
+    })
+
+    describe('Matcher names: `import { wdioCustomMatcherNames } from \'expect-webdriverio/api\'`', () => {
+        // `test/api.test.ts` checks the source lists against `expect` at runtime, and these lines check the public types against the source lists
+        it('has the names of the source lists', () => {
+            expectTypeOf<(typeof wdioCustomMatcherNames)[number]>().toEqualTypeOf<(typeof sourceNames.wdioCustomMatcherNames)[number]>()
+            expectTypeOf<(typeof asymmetricMatcherNames)[number]>().toEqualTypeOf<(typeof sourceNames.asymmetricMatcherNames)[number]>()
+            expectTypeOf<(typeof inverseAsymmetricMatcherNames)[number]>().toEqualTypeOf<(typeof sourceNames.inverseAsymmetricMatcherNames)[number]>()
+        })
+
+        it('is read-only', () => {
+            // @ts-expect-error the list is read-only
+            wdioCustomMatcherNames.push('toBeCustom')
         })
     })
 

@@ -315,3 +315,19 @@ it('some elements are displayed', async () => {
 
 - `$$()` is supported, awaited or not, and filtered (`Element[]`), including by the snapshot matchers.
 - [Multi-remote](MultiRemote.md) is not supported: the Browser Runner runs tests in a single browser session, and stops with `No "browserName" defined in capability object` when given multi-remote capabilities. Use a Node.js runner framework instead, such as Mocha, Jasmine or Cucumber.
+
+#### Matcher names for adapters and tools
+
+A framework adapter, a lint rule or a runner that must know the matchers before `expect` exists can import their names from `expect-webdriverio/api`, instead of a copy of the list:
+
+```ts
+import { wdioCustomMatcherNames, asymmetricMatcherNames, inverseAsymmetricMatcherNames } from 'expect-webdriverio/api'
+
+wdioCustomMatcherNames        // ['toBeChecked', ..., 'toMatchSnapshot']: the names of `wdioCustomMatchers`, not the matchers of the `expect` package
+asymmetricMatcherNames        // ['any', ..., 'oneOf', 'multiRemote']: the asymmetric matchers of the `expect` package and of expect-webdriverio
+inverseAsymmetricMatcherNames // ['arrayContaining', ..., 'stringMatching']: the same, on `expect.not`
+```
+
+Each matcher returns a promise, except `toMatchSnapshot` and `toMatchInlineSnapshot` when the received value is not an element, a list of elements or a promise. The lists do not have the matchers that you add with `expect.extend()`, or the `some` modifier.
+
+`expect.extend()` also adds each matcher to `expect` and `expect.not` as an asymmetric matcher, and the asymmetric lists do not have these. The asymmetric form of the matchers of `wdioCustomMatcherNames` does not work, so do not add them to the asymmetric lists: the matchers are async (`expect.toHaveTitle('x').asymmetricMatch(browser)` gives `undefined`), except `toMatchSnapshot` and `toMatchInlineSnapshot`, which compare or write a snapshot of the current test, not an equality. A sync matcher that you add with `expect.extend()` works as an asymmetric matcher.

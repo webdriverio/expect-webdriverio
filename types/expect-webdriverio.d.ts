@@ -1447,6 +1447,12 @@ declare module 'expect-webdriverio' {
  * Expose the expect-wdio API without the burden of initialization.
  * Required since importing from 'expect-webdriverio' can trigger double initialization.
  */
+/**
+ * The asymmetric matchers of the `expect` package that also exist on `expect.not`.
+ * Written by hand: `keyof import('expect').AsymmetricMatchers` also gives the matchers that users add to it.
+ */
+type WdioInverseAsymmetricMatcherName = 'arrayContaining' | 'arrayOf' | 'closeTo' | 'objectContaining' | 'stringContaining' | 'stringMatching'
+
 declare module 'expect-webdriverio/api' {
     /**
      * Quantifier modifier. Wraps a `$$()` result so that the matcher passes
@@ -1468,4 +1474,21 @@ declare module 'expect-webdriverio/api' {
      * await expect(multiRemoteBrowser.$('h1')).toHaveStyle(multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
      */
     export function multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
+
+    /**
+     * The names of `wdioCustomMatchers`: the matchers that expect-webdriverio adds with `expect.extend()`, not the ones of the `expect` package.
+     * Each one returns a promise, except `toMatchSnapshot` and `toMatchInlineSnapshot` when the received value is not an element, a list of elements or a promise.
+     */
+    export const wdioCustomMatcherNames: readonly (keyof WdioCustomMatchers<void, unknown>)[]
+
+    /**
+     * The asymmetric matchers on `expect`: the ones of the `expect` package, and `oneOf` and `multiRemote`.
+     * Not the asymmetric form of each matcher that `expect.extend()` adds: it does not work for the matchers of expect-webdriverio (they are async, and the snapshot matchers compare or write a snapshot).
+     */
+    export const asymmetricMatcherNames: readonly ('any' | 'anything' | WdioInverseAsymmetricMatcherName | keyof WdioCustomAsymmetricMatchers)[]
+
+    /**
+     * The asymmetric matchers on `expect.not`, without the asymmetric form of the matchers that `expect.extend()` adds.
+     */
+    export const inverseAsymmetricMatcherNames: readonly WdioInverseAsymmetricMatcherName[]
 }
