@@ -755,6 +755,32 @@ Expect mock to be called with
   }`)
     })
 
+    test('shows the expected and received status code', async () => {
+        const mock: any = new TestMock()
+        mock.calls.push({ ...mockPost })
+
+        const result = await thisContext.toBeRequestedWith(mock, {
+            url: mockPost.request.url,
+            statusCode: [200, 204],
+        }, { wait: 0 })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect mock to be called with
+
+- Expected  - 4
++ Received  + 1
+
+  Object {
+-   "statusCode": Array [
+-     200,
+-     204,
+-   ],
++   "statusCode": 201,
+    "url": "https://my-app/api/add-tags",
+  }`)
+    })
+
 })
 
 describe('toBeRequestedWith on multi-remote mocks', () => {
