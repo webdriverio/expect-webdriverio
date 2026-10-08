@@ -32,6 +32,10 @@ describe('Global Options', () => {
         const withExplicitWait = await countReads(() => expect(multiRemoteBrowser.$('body')).toHaveElementProperty('probe', 'other value', { wait: 1 }))
         const withGlobalWait = await countReads(() => expect(multiRemoteBrowser.$('body')).toHaveElementProperty('probe', 'other value'))
 
+        // The matcher read the property in each browser: a failure before the read (0 reads) checks nothing
+        for (const reads of withExplicitWait) {
+            expect(reads).toBeGreaterThan(0)
+        }
         // 1 try with the global `wait: 1`, as with an explicit `wait: 1`. With the wdio.conf.ts default (1000 ms, every
         // 100 ms), the matcher would try about 10 times
         expect(withGlobalWait).toEqual(withExplicitWait)
