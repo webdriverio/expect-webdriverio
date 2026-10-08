@@ -127,6 +127,9 @@ The deep equality of the matchers (for example in `expect.multiRemote()`, or in 
 ```ts
 // Jasmine, an element of a frame: `state.tags` is a real `Set`, compared in any order
 await expect(frame.$('body')).toHaveElementProperty('state', jasmine.objectContaining({ tags: new Set(['a', 'b']) }))
+
+// Mocha or Jest, multi-remote: a real `Set` from each instance (`tags` is `{ chrome: Set, firefox: Set }`)
+expect(tags).toEqual(expect.multiRemote({ chrome: new Set(['a', 'b']), firefox: new Set(['a', 'b']) }))
 ```
 
 These values keep their content out of their own keys, so before, 2 different ones were equal: an assertion on them passed by mistake, and now fails. With WebdriverIO v10 and BiDi, `browser.execute()` returns real `Set` and `Map` values, and so does `getProperty()` for an element of a frame or of another tab (in the current context, it gives `{}`). A proxy without a handler of one of these values now throws a `TypeError`, as in Jest. An object that has only the type tag (`Symbol.toStringTag`) of one of these types is compared as a plain object, and is not equal to a real value of the type. A detached buffer, or a data view out of the bounds of a resized buffer, has no bytes.
