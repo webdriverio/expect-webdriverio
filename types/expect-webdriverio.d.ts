@@ -94,8 +94,9 @@ type MultiRemoteMocks = WebdriverIO.MultiRemoteMock | Promise<WebdriverIO.MultiR
 /**
  * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
  */
-type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser ? Fn : never
-type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT extends WebdriverIO.Browser ? FnBrowser : ActualT extends WebdriverIO.MultiRemoteBrowser ? FnMultiRemote : never
+// A browsing context (tab, window or frame) is a browser subject, for one browser
+type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser | WebdriverIO.BrowsingContext ? Fn : never
+type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT extends WebdriverIO.Browser | WebdriverIO.BrowsingContext ? FnBrowser : ActualT extends WebdriverIO.MultiRemoteBrowser ? FnMultiRemote : never
 /**
  * Enables distinct function signatures for single elements versus arrays of elements.
  *

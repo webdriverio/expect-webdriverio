@@ -2,6 +2,7 @@ import { vi, test, expect, describe, beforeEach } from 'vitest'
 import { browser, multiRemoteBrowser } from '@wdio/globals'
 
 import { toHaveClipboardText } from '../../../src/matchers/browser/toHaveClipboardText'
+import { browserFactory, browsingContextFactory } from '../../__mocks__/@wdio/globals'
 import stripAnsi from 'strip-ansi'
 
 vi.mock('@wdio/globals')
@@ -16,6 +17,20 @@ describe(toHaveClipboardText, () => {
     beforeEach(async () => {
         thisContext = { toHaveClipboardText }
         thisNotContext = { isNot: true, toHaveClipboardText }
+    })
+
+    describe('Browsing context (tab, window, frame)', () => {
+        test('sets the clipboard permission on the browser of the context, and reads the clipboard in the context', async () => {
+            const contextBrowser = browserFactory()
+            const context = browsingContextFactory({ browser: contextBrowser })
+            vi.mocked(context.execute).mockResolvedValue('some clipboard text')
+
+            const result = await thisContext.toHaveClipboardText(context, 'some clipboard text', { wait: 0 })
+
+            expect(result.pass).toBe(true)
+            expect(contextBrowser.setPermissions).toHaveBeenCalledWith({ name: 'clipboard-read' }, 'granted')
+            expect(contextBrowser.execute).not.toHaveBeenCalled()
+        })
     })
 
     describe('Single Browser', () => {

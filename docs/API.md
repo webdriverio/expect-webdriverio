@@ -220,6 +220,24 @@ You can find all unicode references in the [HTML spec](https://html.spec.whatwg.
 
 Browser matchers support the multi-remote browser, with a single expected value or one per instance, see [Multi-remote Support](MultiRemote.md#browser-matchers).
 
+### Browsing contexts (tab, window, frame)
+
+The browser matchers also accept a WebdriverIO v10 browsing context: a tab, a window or a frame that `browser.url()`, `browser.newWindow()`, `browser.browsingContexts()` or `context.frame()` give in a WebDriver BiDi session. They read the document of that context, not the one of the current context of the session.
+
+```js
+const page = await browser.url('https://webdriver.io/')
+await expect(page).toHaveTitle(expect.stringContaining('WebdriverIO'))
+
+const frame = await page.frame(page.$('iframe'))
+await expect(frame).toHaveUrl(expect.stringContaining('/embed'))
+await expect(frame).toHaveLocalStorageItem('key') // the local storage of the frame's origin
+```
+
+- A failure message names the browser, the window or the frame, and its URL, e.g. `Expect chrome's frame (https://webdriver.io/embed) to have title`. It is the URL of the last navigation of the context (`context.url`). `toHaveUrl` does not show it, because the `Received` line already shows the URL.
+- The title of a frame document without `<title>` is `''`.
+- `toHaveClipboardText` sets the clipboard permission for the whole session. In a cross-origin frame, the permissions policy of the page can block `clipboard-read`.
+- A browsing context is of one browser: there are no per-instance values.
+
 ### toHaveUrl
 
 Checks if browser is on a specific page.

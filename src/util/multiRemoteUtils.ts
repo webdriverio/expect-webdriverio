@@ -1,5 +1,5 @@
 import { isAsymmetricMatcher } from '../utils.js'
-import type { WdioMultiRemoteMockMaybePromise } from '../types.js'
+import type { WdioBrowsingContext, WdioMultiRemoteMockMaybePromise } from '../types.js'
 import { getWdioKind } from './wdioKind.js'
 
 export const isMultiRemoteValues = (value: unknown, existingInstanceNames?: string[]): value is MultiRemoteValues<unknown> =>  {
@@ -107,14 +107,16 @@ export const isInstanceMocks = (mocks: WebdriverIO.Mock | InstanceMocks): mocks 
 export const hasMultiRemoteFlag = (obj: unknown): boolean =>
     (obj as { isMultiRemote?: unknown } | null | undefined)?.isMultiRemote === true
 
-export const isMultiRemoteBrowser = (browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser): browser is WebdriverIO.MultiRemoteBrowser =>
+export const isMultiRemoteBrowser = (browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext | WebdriverIO.MultiRemoteBrowser): browser is WebdriverIO.MultiRemoteBrowser =>
     getWdioKind(browser) === 'browser' && hasMultiRemoteFlag(browser)
 
 /**
- * A browser, multi-remote or not, or a browsing context (a tab, a window or a frame).
- * TODO(#2298) decide if a browsing context is a browser subject
+ * A browser, multi-remote or not, or a browsing context (a tab, a window or a frame), which is a browser subject of one browser
  */
 export const isBrowser = (obj: unknown): obj is WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser => {
     const kind = getWdioKind(obj)
     return kind === 'browser' || kind === 'browsing-context'
 }
+
+/** A browsing context: a tab, a window or a frame, with its own commands, but no session command such as `setPermissions` */
+export const isBrowsingContext = (obj: unknown): obj is WdioBrowsingContext => getWdioKind(obj) === 'browsing-context'

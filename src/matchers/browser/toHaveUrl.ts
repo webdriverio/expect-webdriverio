@@ -9,7 +9,7 @@ import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetri
  */
 export async function toHaveUrl(
     this: ExpectWebdriverIO.MatcherContext,
-    browser: WebdriverIO.Browser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options?: ExpectWebdriverIO.StringOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
@@ -26,7 +26,7 @@ export async function toHaveUrl(
 
 export async function toHaveUrl(
     this: ExpectWebdriverIO.MatcherContext,
-    browser: WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext | WebdriverIO.MultiRemoteBrowser,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
 ) {
@@ -56,7 +56,7 @@ export async function toHaveUrl(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(subject, expected, actual, { isNot, browserTargetType: 'window' }, verb, expectation, '', options)
+    const message = enhanceError(subject, expected, actual, { isNot, browserTargetType: 'window', showContextUrl: false }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: () => message
@@ -73,7 +73,7 @@ export async function toHaveUrl(
 }
 
 const compareUrl = async (
-    browser: WebdriverIO.Browser,
+    browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
     options: ExpectWebdriverIO.StringOptions
 ): Promise<CompareResult<string>> => {

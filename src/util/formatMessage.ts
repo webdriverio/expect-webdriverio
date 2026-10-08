@@ -5,7 +5,7 @@ import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOr
 import { toJsonString } from './stringUtil.js'
 import { getLoadedWdioKind } from './wdioKind.js'
 import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
-import { isBrowser, isMultiRemoteBrowser } from './multiRemoteUtils.js'
+import { isBrowser, isBrowsingContext, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
@@ -70,7 +70,7 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, browserTargetType?: 'browser' | 'window' },
+    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, browserTargetType?: 'browser' | 'window', showContextUrl?: boolean },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
@@ -85,7 +85,12 @@ export const enhanceError = (
         actual = labelMultiRemoteValues(actual)
     }
 
-    if (isBrowser(subject)) {
+    if (isBrowsingContext(subject)) {
+        // The URL tells which tab or frame failed. It is the one of the last navigation, not a new read.
+        const prefix = subject.isMobile ? 'mobile' : subject.browser.requestedCapabilities?.browserName ?? 'browser'
+        const url = context.showContextUrl === false ? '' : ` (${subject.url})`
+        subject = `${prefix}'s ${subject.isFrame ? 'frame' : 'window'}${url}`
+    } else if (isBrowser(subject)) {
         if (isMultiRemoteBrowser(subject)) {
             subject = formatMultiRemoteInstanceNames(subject.instances)
         } else if (subject.isMobile) {

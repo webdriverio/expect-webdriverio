@@ -4,7 +4,7 @@ import { toHaveUrl } from '../../src/matchers/browser/toHaveUrl.js'
 import { toHaveTitle } from '../../src/matchers/browser/toHaveTitle.js'
 import { matcherNameLastWords } from '../__fixtures__/utils'
 import stripAnsi from 'strip-ansi'
-import { multiRemoteBrowser } from '../__mocks__/@wdio/globals.js'
+import { browserFactory, browsingContextFactory, multiRemoteBrowser } from '../__mocks__/@wdio/globals.js'
 import { expect as wdioExpect } from '../../src/index.js'
 
 vi.mock('@wdio/globals')
@@ -563,3 +563,39 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
     })
 })
 
+describe('Browser matchers on a browsing context (tab, window, frame)', () => {
+    const chrome = () => Object.assign(browserFactory(), { requestedCapabilities: { browserName: 'chrome' } }) as unknown as WebdriverIO.Browser
+    const frameOf = (contextBrowser: WebdriverIO.Browser) => browsingContextFactory({ browser: contextBrowser, isFrame: true, url: 'https://example.com/frame.html' })
+    const matchers: ExpectWebdriverIO.MatcherContext & { toHaveUrl: typeof toHaveUrl, toHaveTitle: typeof toHaveTitle } = { toHaveUrl, toHaveTitle }
+
+    test('toHaveUrl reads the URL of the frame, and its message does not repeat the URL', async () => {
+        const contextBrowser = chrome()
+        const frame = frameOf(contextBrowser)
+
+        const result = await matchers.toHaveUrl(frame, 'https://example.com/other.html', { wait: 0 })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message()).split('\n')[0]).toEqual("Expect chrome's frame to have url")
+        expect(frame.getUrl).toHaveBeenCalled()
+        expect(contextBrowser.getUrl).not.toHaveBeenCalled()
+    })
+
+    test('toHaveTitle reads the title of the frame, and its message names the frame and its URL', async () => {
+        const contextBrowser = chrome()
+        const frame = frameOf(contextBrowser)
+
+        const result = await matchers.toHaveTitle(frame, 'Other title', { wait: 0 })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message()).split('\n')[0]).toEqual("Expect chrome's frame (https://example.com/frame.html) to have title")
+        expect(frame.getTitle).toHaveBeenCalled()
+        expect(contextBrowser.getTitle).not.toHaveBeenCalled()
+    })
+
+    test('passes through expect() on a window', async () => {
+        const window = browsingContextFactory({ browser: chrome() })
+
+        await wdioExpect(window).toHaveTitle('Example Domain', { wait: 0 })
+        await wdioExpect(window).toHaveUrl('https://example.com/', { wait: 0 })
+    })
+})

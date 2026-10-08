@@ -94,6 +94,10 @@ const element = Object.defineProperty({
 
 A copy of the element list of one browser, such as `[...elements]`, is still an array of elements, because each element keeps its brand. A copy of a multi-remote `$$()` is not recognized (see above).
 
+## Browser matchers on a browsing context
+
+The browser matchers (`toHaveUrl`, `toHaveTitle`, `toHaveLocalStorageItem`, `toHaveClipboardText`) accept a WebdriverIO v10 browsing context: a tab, a window or a frame, see [Browsing contexts](API.md#browsing-contexts-tab-window-frame). Their failure message names the window or the frame and its URL, e.g. `Expect chrome's frame (https://example.com/frame.html) to have title`, not `browser's window`.
+
 ## Jasmine types with `@wdio/jasmine-framework`
 
 The `expect-webdriverio/jasmine-wdio-expect-async` entry point is removed. In WebdriverIO v10, `@wdio/jasmine-framework` keeps the Jasmine synchronous matchers synchronous, and has the types of its global `expect`. Use them in `tsconfig.json`:

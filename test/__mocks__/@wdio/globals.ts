@@ -321,6 +321,28 @@ export const browserFactory = (elementArrayLength = 2): WebdriverIO.Browser => {
 
 export const browser = browserFactory()
 
+/**
+ * Mocks a WebdriverIO v10 `BrowsingContext`: a tab, a window or a frame of `browser`.
+ * Like WebdriverIO, it has its own `$`, `$$`, `execute`, `getUrl` and `getTitle`, but no session command (`setPermissions`).
+ */
+export const browsingContextFactory = (
+    { browser = browserFactory(), isFrame = false, url = 'https://example.com/' }: { browser?: WebdriverIO.Browser, isFrame?: boolean, url?: string } = {}
+): WebdriverIO.BrowsingContext => {
+    const context = setWdioKind({
+        contextId: isFrame ? 'frame-1' : 'context-1',
+        browser,
+        isFrame,
+        url,
+        $: vi.fn((selector: string) => $Factory(elementFactory(selector))),
+        $$: vi.fn(),
+        execute: vi.fn(),
+        getUrl: vi.fn(async () => url),
+        getTitle: vi.fn(async () => 'Example Domain'),
+    }, 'browsing-context')
+    context.$$.mockImplementation((selector: string) => chainableElementArrayFactory(selector, 2, context as unknown as WebdriverIO.Browser))
+    return context as unknown as WebdriverIO.BrowsingContext
+}
+
 export class CustomMultiRemoteDriver {
     // Multi remote properties
     [key: string]: unknown

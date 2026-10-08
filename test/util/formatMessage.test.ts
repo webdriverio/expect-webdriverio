@@ -854,14 +854,28 @@ describe('the subject of an unbranded copy of an element list', () => {
 })
 
 describe('the subject of a browsing context', () => {
-    test.each([undefined, 'window' as const])('names a browsing context like its browser (browserTargetType: %s)', (browserTargetType) => {
-        const message = (kind: 'browser' | 'browsing-context') => stripAnsi(enhanceError(
-            setWdioKind({ requestedCapabilities: { browserName: 'chrome' } }, kind),
-            'a', 'b', { isNot: false, browserTargetType }, 'have', 'title'
-        ))
+    const browsingContext = (isFrame: boolean, browserName?: string) => setWdioKind({
+        isFrame,
+        url: isFrame ? 'https://example.com/frame.html' : 'https://example.com/',
+        browser: setWdioKind({ requestedCapabilities: browserName ? { browserName } : {} }, 'browser'),
+    }, 'browsing-context')
+    const firstLine = (subject: unknown, context: Parameters<typeof enhanceError>[3] = { isNot: false }) =>
+        stripAnsi(enhanceError(subject, 'a', 'b', context, 'have', 'title')).split('\n')[0]
 
-        expect(message('browsing-context')).toEqual(message('browser'))
-        expect(message('browser')).toContain(browserTargetType === 'window' ? "Expect chrome's window to have title" : 'Expect chrome to have title')
+    test.each([undefined, 'window' as const])('names the browser, the window and its URL (browserTargetType: %s)', (browserTargetType) => {
+        expect(firstLine(browsingContext(false, 'chrome'), { isNot: false, browserTargetType })).toEqual("Expect chrome's window (https://example.com/) to have title")
+    })
+
+    test('names a frame', () => {
+        expect(firstLine(browsingContext(true, 'chrome'))).toEqual("Expect chrome's frame (https://example.com/frame.html) to have title")
+    })
+
+    test('names the browser "browser" without a browser name', () => {
+        expect(firstLine(browsingContext(false))).toEqual("Expect browser's window (https://example.com/) to have title")
+    })
+
+    test('does not show the URL with showContextUrl: false', () => {
+        expect(firstLine(browsingContext(true, 'chrome'), { isNot: false, showContextUrl: false })).toEqual("Expect chrome's frame to have title")
     })
 })
 
