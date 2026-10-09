@@ -191,6 +191,15 @@ The types are emitted from the source to `lib/**/*.d.ts`, and `types/expect-webd
 + /// <reference types="expect-webdriverio" />
 ```
 
+The types of the `ExpectWebdriverIO` namespace are also named exports of the package. A default import of the types does not compile anymore: import them by name, or use the global namespace.
+
+```diff
+- import type ExpectWebdriverIO from 'expect-webdriverio'
+- const options: ExpectWebdriverIO.StringOptions = { ignoreCase: true }
++ import type { StringOptions } from 'expect-webdriverio'
++ const options: StringOptions = { ignoreCase: true }
+```
+
 ## Removed deprecated APIs
 
 v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#migration-guide-v5-to-v6) below.

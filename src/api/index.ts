@@ -1,3 +1,5 @@
+// The global `ExpectWebdriverIO` namespace and types, for a user who imports only this entry point
+import '../publicTypes/expectWebdriverIO.js'
 import { some as wdioSome } from '../matchers/modifiers/some.js'
 import { multiRemote as wdioMultiRemote } from '../matchers/asymmetrics/multiRemote.js'
 
