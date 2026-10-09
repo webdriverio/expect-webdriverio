@@ -30,7 +30,7 @@ type Result = { pass: boolean, message: () => string }
 type Outcome = { result: string, message: string }
 
 /** The received part of a failure message: the `Received` line, or the `+` lines of a diff (not its `+ Received` header) */
-const receivedPart = (message: string) => message.split('\n').filter((line) => /^Received/.test(line) || (/^\+/.test(line) && !/^\+ Received/.test(line))).join('\n')
+const receivedPart = (message: string) => message.split('\n').filter((line) => line.startsWith('Received') || (line.startsWith('+') && !line.startsWith('+ Received'))).join('\n')
 
 const outcome = async (run: () => Promise<Result>): Promise<Outcome> => {
     try {
