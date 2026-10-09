@@ -130,8 +130,14 @@ git grep --untracked -nE "[Mm]ultiremote" -- ':!AGENTS.md' \
 - A test must fail on the original defect before the fix. Do not hide flakes
   with retries, longer timeouts, or weaker assertions. Fix the cause.
 - A change to a failure message needs the message before and after in the PR.
-- A change to a public matcher or option updates `docs/` and `types/` in the
-  same PR.
+- Keep the docs in sync, in the same PR as the code. A change to a matcher, an
+  option, a behavior (what passes or fails) or a failure message updates:
+  - `docs/API.md`, and the guide of the area (see "Read when relevant");
+  - the public types and their type tests;
+  - `docs/Migrations.md`, in the section of the next major version, when the
+    change can break a user's test or types.
+
+  The WebdriverIO website copies `docs/` as is: no generated docs.
 - Fill in "How you tested" in the PR template with the commands you ran.
 - American English. Match the existing code style; do not reformat unrelated
   files.
