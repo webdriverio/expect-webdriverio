@@ -51,41 +51,46 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
 
     if (supportsArrayContaining && !isSome && isArrayContainingMatcher(expectedValues)) {
-        const { selector, elements, other } = await awaitElementOrArray(unresolvedElements)
-        if (isMultiRemoteElementArray(elements)) {
-            return multiRemoteArrayContainingStrategy(elements, expectedValues, singleElementCompare, iteration)
-        }
-        if (elements) {
-            if (iteration > 0 && isStrictlyElementArray(elements)) {
-                await refreshElementArray(elements)
-            }
-
-            // Reuse each matcher's value extraction, including command-specific options.
-            const settled = await Promise.allSettled(Array.from(elements).map(async (element, index) => {
-                return singleElementCompare(element, undefined, index)
-            }))
-            const actual = settled.map((result) => {
-                if (result.status === 'rejected') {
-                    throw result.reason
-                }
-                return result.value.actual
-            })
-            return {
-                subject: elements,
-                actual,
-                success: equals(actual, expectedValues),
-                abort: elements.length === 0 && !isStrictlyElementArray(elements),
-            }
-        }
-        if (!isElement(selector) || supportsArrayContaining === 'arrayOnly') {
-            return { subject: selector ?? other, actual: undefined, success: !!isNot, abort: true }
-        }
-        // A scalar element may itself have an array-valued property.
-        // SAFETY: Opted-in matchers accept asymmetric expectations; only the collection's sample type differs from Expected.
-        return { subject: selector, ...await singleElementCompare(selector, expectedValues as MaybeArray<Expected>) }
+        return arrayContainingStrategy(unresolvedElements, expectedValues, singleElementCompare, { isNot, iteration }, supportsArrayContaining)
     }
 
     return multipleElementResultsStrategy(actualReceived, expectedValues as MaybeArrayOrMultiRemoteValues<Expected> | undefined, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)
+}
+
+type SingleElementCompare<Actual, Expected> = (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>
+
+/**
+ * `arrayContaining` compares the values of all the elements at once (`equals(actual, expected)`), not each element:
+ * - an empty `$$()` can pass, e.g. `arrayContaining([])`;
+ * - `.not` comes only from `equals`, not from the elements;
+ * - for `$()`, it compares an array-valued property of one element, unless `arrayOnly`.
+ */
+const arrayContainingStrategy = async <Actual, Expected>(
+    unresolvedElements: unknown,
+    expectedValues: unknown,
+    singleElementCompare: SingleElementCompare<Actual, Expected>,
+    { isNot, iteration }: { isNot: boolean, iteration: number },
+    supportsArrayContaining: true | 'arrayOnly'
+): Promise<StrategyResult<MaybeArrayOrMultiRemoteValuesWithArray<Actual>>> => {
+    const { selector, elements, other } = await awaitElementOrArray(unresolvedElements)
+    if (isMultiRemoteElementArray(elements)) {
+        return multiRemoteArrayContainingStrategy(elements, expectedValues, singleElementCompare, iteration)
+    }
+    if (elements) {
+        const actual = await compareWithoutExpected(await refreshOnRetry(elements, iteration), singleElementCompare)
+        return {
+            subject: elements,
+            actual,
+            success: equals(actual, expectedValues),
+            abort: elements.length === 0 && !isStrictlyElementArray(elements),
+        }
+    }
+    if (!isElement(selector) || supportsArrayContaining === 'arrayOnly') {
+        return { subject: selector ?? other, actual: undefined, success: isNot, abort: true }
+    }
+    // A scalar element may itself have an array-valued property.
+    // SAFETY: Opted-in matchers accept asymmetric expectations; only the collection's sample type differs from Expected.
+    return { subject: selector, ...await singleElementCompare(selector, expectedValues as MaybeArray<Expected>) }
 }
 
 /**
@@ -94,10 +99,10 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
 const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
     elements: WebdriverIO.MultiRemoteElementArray,
     expectedValues: unknown,
-    singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
+    singleElementCompare: SingleElementCompare<Actual, Expected>,
     iteration: number
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValuesWithArray<Actual>>> => {
-    const currentElements = iteration > 0 ? await refreshElementArray(elements) : elements
+    const currentElements = await refreshOnRetry(elements, iteration)
 
     if (currentElements.length === 0) {
         // See empty case of `multipleElementResultsStrategy`: retry, the elements are fetched again
@@ -107,9 +112,7 @@ const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
     const { instances } = currentElements.parent
     const elementsPerInstance = getElementsPerInstance(currentElements, instances)
     const actual: MultiRemoteValues<Actual[]> = Object.fromEntries(await Promise.all(instances.map(async (instance) => {
-        // Reuse each matcher's value extraction, including command-specific options.
-        const results = await Promise.all(elementsPerInstance[instance].map((element, index) => singleElementCompare(element, undefined, index)))
-        return [instance, results.map((result) => result.actual)]
+        return [instance, await compareWithoutExpected(elementsPerInstance[instance], singleElementCompare)]
     })))
 
     return {
@@ -118,6 +121,36 @@ const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
         success: instances.every((instance) => equals(actual[instance], expectedValues)),
         expected: Object.fromEntries(instances.map((instance) => [instance, expectedValues])),
     }
+}
+
+/**
+ * The value of each element, for the strategies that compare the whole collection.
+ * Reuses each matcher's value extraction, including command-specific options. The error of the first element that
+ * throws is thrown, in the order of the elements.
+ */
+const compareWithoutExpected = async <Actual, Expected>(
+    elements: ArrayLike<WebdriverIO.Element>,
+    singleElementCompare: SingleElementCompare<Actual, Expected>
+): Promise<Actual[]> => {
+    const settled = await Promise.allSettled(Array.from(elements).map((element, index) => singleElementCompare(element, undefined, index)))
+    return settled.map((result) => {
+        if (result.status === 'rejected') {
+            throw result.reason
+        }
+        return result.value.actual
+    })
+}
+
+/**
+ * On a retry, fetch the elements of a `$$()` again.
+ * WARNING: the element array is synchronized in place with the new elements, so the user's array changes!
+ * A plain array cannot be fetched again, so it does not change.
+ */
+const refreshOnRetry = async <T>(elements: T, iteration: number): Promise<T> => {
+    if (iteration > 0 && (isStrictlyElementArray(elements) || isMultiRemoteElementArray(elements))) {
+        return await refreshElementArray(elements) as T
+    }
+    return elements
 }
 
 /**
@@ -134,7 +167,7 @@ const multiRemoteArrayContainingStrategy = async <Actual, Expected>(
 export const multipleElementResultsStrategy = async <Actual, Expected>(
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements | unknown,
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
-    singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
+    singleElementCompare: SingleElementCompare<Actual, Expected>,
     { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
     { allowEmptyElements = false, allowObjectExpectedValue = false } = {}
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
@@ -142,12 +175,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
 
     // Only these arrays can be refetched
     const isRefetchable = isStrictlyElementArray(selector) || isMultiRemoteElementArray(selector)
-
-    let currentElements: unknown = selector
-    if (iteration > 0 && isRefetchable) {
-        // WARNING: This synchronize the element's array with the latest refetched elements and so altering selector state!
-        currentElements = await refreshElementArray(selector)
-    }
+    const currentElements: unknown = await refreshOnRetry(selector, iteration)
 
     const subject = multiRemoteSelector ?? selector ?? other
 
@@ -260,7 +288,7 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     subject: unknown,
     multiRemoteSelector: WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray,
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
-    singleElementCompare: (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>,
+    singleElementCompare: SingleElementCompare<Actual, Expected>,
     { isNot, isSome }: { isNot: boolean; isSome: boolean },
     { allowObjectExpectedValue }: { allowObjectExpectedValue: boolean }
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
