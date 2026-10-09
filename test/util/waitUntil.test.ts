@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, test, vi, expect } from 'vitest'
 import { waitUntil } from '../../src/util/waitUntil'
+import { MatcherUsageError } from '../../src/util/matcherUsageError.js'
 
 /** Runs `waitUntil()` on fake timers: the retries and the `wait` limit do not depend on the speed of the machine */
 const waitUntilOnFakeTimers = async (...args: Parameters<typeof waitUntil>) => {
@@ -196,6 +197,17 @@ describe(waitUntil, () => {
                 await expect(() => waitUntilOnFakeTimers(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
 
             })
+        })
+    })
+
+    describe('when condition throws a MatcherUsageError', () => {
+        test.each([false, true])('throws it at once, without a retry (isNot=%s)', async (isNot) => {
+            const condition = vi.fn().mockRejectedValue(new MatcherUsageError('wrong use'))
+            const start = Date.now()
+
+            await expect(waitUntilOnFakeTimers(condition, isNot, { wait: 2000, interval: 50 })).rejects.toThrow(new MatcherUsageError('wrong use'))
+            expect(condition).toHaveBeenCalledTimes(1)
+            expect(Date.now()).toBe(start)
         })
     })
 

@@ -102,13 +102,3 @@ export function getAsymmetricMatcherValue<T>(
     // Jasmine anything, truthy, falsy, empty, notEmpty asymmetric matchers do not have a sample or expected value. So cannot throw an error here. Return undefined to indicate that there is no value to extract.
     return undefined
 }
-
-/**
- * A list matcher on one element (`$()`, not `$$()`): the `'arrayOnly'` route of the strategy compared nothing and gave no
- * actual value. The value of one element is a string, so it can never match, and with `.not` it would always pass.
- */
-export function throwIfListMatcherOnOneElement(matcherName: string, expected: unknown, actual: unknown): void {
-    if (isListMatcher(expected) && actual === undefined) {
-        throw new Error(`${matcherName} with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements`)
-    }
-}

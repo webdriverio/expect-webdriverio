@@ -14,7 +14,6 @@ import { expect } from 'expect'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
-import { throwIfListMatcherOnOneElement } from '../../util/asymmetricMatcherUtil.js'
 
 async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const attributeValue = await el.getAttribute(attribute)
@@ -44,6 +43,7 @@ export async function toHaveAttributeAndValue(this: WdioMatcherContext, received
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 supportsArrayContaining: 'arrayOnly',
+                matcherName,
                 expectedValues: expectedValue,
                 singleElementCompare: (element, values: string | RegExp | AsymmetricMatcher<string> | undefined) => {
                     return conditionAttributeValueMatchWithExpected(element, attribute, values, options)
@@ -54,8 +54,6 @@ export async function toHaveAttributeAndValue(this: WdioMatcherContext, received
         isNot,
         { wait: options.wait, interval: options.interval }
     )
-
-    throwIfListMatcherOnOneElement(matcherName, expectedValue, attr)
 
     const expected = expectedValues ?? wrapExpectedWithArray(el, attr, expectedValue)
     const message = enhanceError(el, withStringOptions(expected, verdict, options, attr), attr, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, attribute, options)

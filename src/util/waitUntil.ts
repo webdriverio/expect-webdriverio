@@ -1,5 +1,6 @@
 import { DEFAULT_OPTIONS } from '../constants.js'
 import type { StrategyResult } from './executeCommand.js'
+import { MatcherUsageError } from './matcherUsageError.js'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -43,6 +44,10 @@ export const waitUntil = async <T>(
                 await sleep(interval)
             } catch (err) {
                 error = err as Error
+                // A wrong use of the matcher never becomes correct by waiting
+                if (err instanceof MatcherUsageError) {
+                    throw err
+                }
                 await sleep(interval)
             }
         }
