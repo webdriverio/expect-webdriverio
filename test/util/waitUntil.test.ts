@@ -1,14 +1,27 @@
-import { describe, test, vi, expect } from 'vitest'
+import { afterEach, beforeEach, describe, test, vi, expect } from 'vitest'
 import { waitUntil } from '../../src/util/waitUntil'
 
+/** Runs `waitUntil()` on fake timers: the retries and the `wait` limit do not depend on the speed of the machine */
+const waitUntilOnFakeTimers = async (...args: Parameters<typeof waitUntil>) => {
+    const [result] = await Promise.all([waitUntil(...args), vi.runAllTimersAsync()])
+    return result
+}
+
 describe(waitUntil, () => {
+    beforeEach(() => {
+        vi.useFakeTimers()
+    })
+    afterEach(() => {
+        vi.useRealTimers()
+    })
+
     describe('given we should wait for the condition to be met (modifier `.not` is not used)', () => {
         const isNot = undefined
         describe('should be pass=true for normal success', () => {
             test('should return true when condition is met', async () => {
                 const condition = vi.fn().mockResolvedValue({ success: true, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 1000, interval: 100 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 1000, interval: 100 })
 
                 expect(result).toEqual({ success: true, subject: 'test', actual: 'test' })
             })
@@ -16,7 +29,7 @@ describe(waitUntil, () => {
             test('should return true with wait 0', async () => {
                 const condition = vi.fn().mockResolvedValue({ success: true, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 0 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 0 })
 
                 expect(result).toEqual({ success: true, subject: 'test', actual: 'test' })
             })
@@ -24,7 +37,7 @@ describe(waitUntil, () => {
             test('should return true when condition is met within wait time', async () => {
                 const condition = vi.fn().mockResolvedValueOnce({ success: false, subject: 'test', actual: 'test' }).mockResolvedValueOnce({ success: false, subject: 'test', actual: 'test' }).mockResolvedValueOnce({ success: true, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 990, interval: 50 })
 
                 expect(result).toEqual({ success: true, subject: 'test', actual: 'test' })
                 expect(condition).toHaveBeenCalledTimes(3)
@@ -33,7 +46,7 @@ describe(waitUntil, () => {
             test('should return true when condition errors but still is met within wait time', async () => {
                 const condition = vi.fn().mockRejectedValueOnce(new Error('Test error')).mockRejectedValueOnce(new Error('Test error')).mockResolvedValueOnce({ success: true, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 990, interval: 50 })
 
                 expect(result).toEqual({ success: true, subject: 'test', actual: 'test' })
                 expect(condition).toHaveBeenCalledTimes(3)
@@ -42,7 +55,7 @@ describe(waitUntil, () => {
             test('should use default options when not provided', async () => {
                 const condition = vi.fn().mockResolvedValue({ success: true, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition)
+                const result = await waitUntilOnFakeTimers(condition)
 
                 expect(result).toEqual({ success: true, subject: 'test', actual: 'test' })
             })
@@ -53,7 +66,7 @@ describe(waitUntil, () => {
             test('should return false when condition is not met within wait time', async () => {
                 const condition = vi.fn().mockResolvedValue({ success: false, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 200, interval: 50 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 200, interval: 50 })
 
                 expect(result).toEqual({ success: false, subject: 'test', actual: 'test' })
             })
@@ -61,7 +74,7 @@ describe(waitUntil, () => {
             test('should return false when condition is not met and wait is 0', async () => {
                 const condition = vi.fn().mockResolvedValue({ success: false, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 0 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 0 })
 
                 expect(result).toEqual({ success: false, subject: 'test', actual: 'test' })
             })
@@ -69,7 +82,7 @@ describe(waitUntil, () => {
             test('should return false if condition throws but still return false', async () => {
                 const condition = vi.fn().mockRejectedValueOnce(new Error('Always failing')).mockRejectedValueOnce(new Error('Always failing')).mockResolvedValue({ success: false, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 180, interval: 50 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 180, interval: 50 })
 
                 expect(result).toEqual({ success: false, subject: 'test', actual: 'test' })
                 expect(condition).toHaveBeenCalledTimes(4)
@@ -82,13 +95,13 @@ describe(waitUntil, () => {
             test('should throw with wait', async () => {
                 const condition = vi.fn().mockRejectedValue(error)
 
-                await expect(() => waitUntil(condition, isNot, { wait: 200, interval: 50 })).rejects.toThrowError('failing')
+                await expect(() => waitUntilOnFakeTimers(condition, isNot, { wait: 200, interval: 50 })).rejects.toThrowError('failing')
             })
 
             test('should throw with wait 0', async () => {
                 const condition = vi.fn().mockRejectedValue(error)
 
-                await expect(() => waitUntil(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
+                await expect(() => waitUntilOnFakeTimers(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
 
             })
         })
@@ -100,7 +113,7 @@ describe(waitUntil, () => {
             test('should return false when condition is met', async () => {
                 const condition = vi.fn().mockResolvedValue({ success: false, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 1000, interval: 100 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 1000, interval: 100 })
 
                 expect(result).toEqual({ success: false, subject: 'test', actual: 'test' })
             })
@@ -108,7 +121,7 @@ describe(waitUntil, () => {
             test('should return false with wait 0', async () => {
                 const condition = vi.fn().mockResolvedValue({ success: false, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 0 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 0 })
 
                 expect(result).toEqual({ success: false, subject: 'test', actual: 'test' })
             })
@@ -116,7 +129,7 @@ describe(waitUntil, () => {
             test('should return false when condition is met within wait time', async () => {
                 const condition = vi.fn().mockResolvedValueOnce({ success: true, subject: 'test', actual: 'test' }).mockResolvedValueOnce({ success: true, subject: 'test', actual: 'test' }).mockResolvedValueOnce({ success: false, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 990, interval: 50 })
 
                 expect(result).toEqual({ success: false, subject: 'test', actual: 'test' }) // success for .not, boolean is inverted later by jest's expect library
                 expect(condition).toHaveBeenCalledTimes(3)
@@ -125,7 +138,7 @@ describe(waitUntil, () => {
             test('should return false when condition errors but still is met within wait time', async () => {
                 const condition = vi.fn().mockRejectedValueOnce(new Error('Test error')).mockRejectedValueOnce(new Error('Test error')).mockResolvedValueOnce({ success: false, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 990, interval: 50 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 990, interval: 50 })
 
                 expect(result).toEqual({ success: false, subject: 'test', actual: 'test' })
                 expect(condition).toHaveBeenCalledTimes(3)
@@ -134,7 +147,7 @@ describe(waitUntil, () => {
             test('should use default options when not provided', async () => {
                 const condition = vi.fn().mockResolvedValue({ success: false, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot)
+                const result = await waitUntilOnFakeTimers(condition, isNot)
 
                 expect(result).toEqual({ success: false, subject: 'test', actual: 'test' })
             })
@@ -145,7 +158,7 @@ describe(waitUntil, () => {
             test('should return true when condition is not met within wait time', async () => {
                 const condition = vi.fn().mockResolvedValue({ success: true, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 200, interval: 50 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 200, interval: 50 })
 
                 expect(result).toEqual({ success: true, subject: 'test', actual: 'test' })
             })
@@ -153,7 +166,7 @@ describe(waitUntil, () => {
             test('should return true when condition is not met and wait is 0', async () => {
                 const condition = vi.fn().mockResolvedValue({ success: true, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 0 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 0 })
 
                 expect(result).toEqual({ success: true, subject: 'test', actual: 'test' })
             })
@@ -161,7 +174,7 @@ describe(waitUntil, () => {
             test('should return true if condition throws but still return true', async () => {
                 const condition = vi.fn().mockRejectedValueOnce(new Error('Always failing')).mockRejectedValueOnce(new Error('Always failing')).mockResolvedValue({ success: true, subject: 'test', actual: 'test' })
 
-                const result = await waitUntil(condition, isNot, { wait: 190, interval: 50 })
+                const result = await waitUntilOnFakeTimers(condition, isNot, { wait: 190, interval: 50 })
 
                 expect(result).toEqual({ success: true, subject: 'test', actual: 'test' })
                 expect(condition).toHaveBeenCalledTimes(4)
@@ -174,13 +187,13 @@ describe(waitUntil, () => {
             test('should throw with wait', async () => {
                 const condition = vi.fn().mockRejectedValue(error)
 
-                await expect(() => waitUntil(condition, isNot, { wait: 200, interval: 50 })).rejects.toThrowError('failing')
+                await expect(() => waitUntilOnFakeTimers(condition, isNot, { wait: 200, interval: 50 })).rejects.toThrowError('failing')
             })
 
             test('should throw with wait 0', async () => {
                 const condition = vi.fn().mockRejectedValue(error)
 
-                await expect(() => waitUntil(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
+                await expect(() => waitUntilOnFakeTimers(condition, isNot, { wait: 0 })).rejects.toThrowError('failing')
 
             })
         })
@@ -195,7 +208,7 @@ describe(waitUntil, () => {
                 actual: 'test',
             })
 
-            const result = await waitUntil(condition, false, { wait: 5000, interval: 50 })
+            const result = await waitUntilOnFakeTimers(condition, false, { wait: 5000, interval: 50 })
 
             expect(result).toEqual({ success: false, subject: 'test', actual: 'test', abort: true })
             expect(condition).toHaveBeenCalledTimes(1)
@@ -209,7 +222,7 @@ describe(waitUntil, () => {
                 actual: 'test',
             })
 
-            const result = await waitUntil(condition, true, { wait: 5000, interval: 50 })
+            const result = await waitUntilOnFakeTimers(condition, true, { wait: 5000, interval: 50 })
 
             expect(result).toEqual({ success: true, subject: 'test', actual: 'test', abort: true })
             expect(condition).toHaveBeenCalledTimes(1)
