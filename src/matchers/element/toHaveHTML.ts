@@ -37,7 +37,8 @@ export async function toHaveHTML(
         async (iteration) => {
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                supportsArrayContaining: true,
+                supportsArrayContaining: 'arrayOnly',
+                matcherName,
                 expectedValues: expectedWithOptions,
                 singleElementCompare: (element, expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
                 context: { isNot, iteration },

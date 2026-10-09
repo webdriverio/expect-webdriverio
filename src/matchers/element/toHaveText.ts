@@ -4,7 +4,6 @@ import {
     enhanceError,
     waitUntil,
 } from '../../utils.js'
-import { isListMatcher } from '../../util/asymmetricMatcherUtil.js'
 import type { MaybeArray, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
@@ -41,6 +40,7 @@ export async function toHaveText(
                 unresolvedElements: received,
                 expectedValues: expectedValue,
                 supportsArrayContaining: 'arrayOnly',
+                matcherName,
                 singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string> | undefined) => {
                     return compareElement(element, values, options)
                 },
@@ -50,10 +50,6 @@ export async function toHaveText(
         isNot,
         { wait: options.wait, interval: options.interval }
     )
-
-    if (isListMatcher(expectedValue) && actualText === undefined) {
-        throw new Error('toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements')
-    }
 
     const finalExpected = expected ?? fillSingleExpectedForElementArray(subject, expectedValue)
     const message = enhanceError(subject, withStringOptions(finalExpected, verdict, options, actualText), actualText, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, '', options)

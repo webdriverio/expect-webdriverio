@@ -133,7 +133,9 @@ export async function toHaveElementProperty(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                supportsArrayContaining: true,
+                // A property value can be an array, but the value of `toHaveValue` is a string
+                supportsArrayContaining: allowObjectExpectedValue ? true : 'arrayOnly',
+                matcherName,
                 expectedValues: value,
                 singleElementCompare: (element, expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined) => {
                     return condition(element, property, expectedValue, options)

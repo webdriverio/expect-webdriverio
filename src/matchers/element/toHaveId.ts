@@ -62,7 +62,7 @@ export async function toHaveId(
         options,
     })
 
-    const result: ExpectWebdriverIO.AssertionResult = await toHaveAttributeAndValue.call(this, el, 'id', expectedValue, options)
+    const result: ExpectWebdriverIO.AssertionResult = await toHaveAttributeAndValue.call({ ...this, matcherName }, el, 'id', expectedValue, options)
 
     await options.afterAssertion?.({
         matcherName,

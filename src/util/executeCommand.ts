@@ -5,6 +5,7 @@ import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, Mayb
 import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from './elementsUtil.js'
 import { getElementsPerInstance, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
+import { MatcherUsageError } from './matcherUsageError.js'
 
 export type CompareResult<Actual> = {
     success: boolean
@@ -49,6 +50,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     singleElementCompare,
     context: { isNot = false, iteration },
     supportsArrayContaining = false,
+    matcherName = 'This matcher',
     strictConfiguration = { allowEmptyElements: false }
 } :{
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements | unknown
@@ -58,6 +60,8 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     context: { isNot?: boolean, iteration: number },
     /** Compare collection snapshots using singleElementCompare(element, undefined). 'arrayOnly' rejects scalar subjects. */
     supportsArrayContaining?: boolean | 'arrayOnly',
+    /** The name of the matcher, for the error of a list matcher on one element with `'arrayOnly'` */
+    matcherName?: string,
     /**
      * - allowEmptyElements: an empty element set passes instead of failing (e.g. `.not.toExist()`)
      * - allowObjectExpectedValue: the expected value itself can be a plain object (e.g. styles), so for multi-remote a plain
@@ -70,7 +74,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
 
     if (supportsArrayContaining && !isSome && isListMatcher(expectedValues)) {
-        return arrayContainingStrategy(unresolvedElements, expectedValues, singleElementCompare, { isNot, iteration }, supportsArrayContaining)
+        return arrayContainingStrategy(unresolvedElements, expectedValues, singleElementCompare, { isNot, iteration, matcherName }, supportsArrayContaining)
     }
 
     return multipleElementResultsStrategy(actualReceived, expectedValues as MaybeArrayOrMultiRemoteValues<Expected> | undefined, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)
@@ -88,7 +92,7 @@ const arrayContainingStrategy = async <Actual, Expected>(
     unresolvedElements: unknown,
     expectedValues: unknown,
     singleElementCompare: SingleElementCompare<Actual, Expected>,
-    { isNot, iteration }: { isNot: boolean, iteration: number },
+    { isNot, iteration, matcherName }: { isNot: boolean, iteration: number, matcherName: string },
     supportsArrayContaining: true | 'arrayOnly'
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValuesWithArray<Actual>>> => {
     const { selector, elements, other } = await awaitElementOrArray(unresolvedElements)
@@ -104,7 +108,11 @@ const arrayContainingStrategy = async <Actual, Expected>(
             abort: elements.length === 0 && !isStrictlyElementArray(elements),
         }
     }
-    if (!isElement(selector) || supportsArrayContaining === 'arrayOnly') {
+    // The value of one element is a string: a list matcher can never match it, and with `.not` it would always pass
+    if (supportsArrayContaining === 'arrayOnly') {
+        throw new MatcherUsageError(`${matcherName} with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements`)
+    }
+    if (!isElement(selector)) {
         return { subject: selector ?? other, actual: undefined, success: isNot, abort: true }
     }
     // A scalar element may itself have an array-valued property.

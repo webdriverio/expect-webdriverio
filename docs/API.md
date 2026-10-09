@@ -352,7 +352,9 @@ Each attempt reads one value per element concurrently and applies the asymmetric
 
 String comparison options such as `trim`, `ignoreCase`, and `containing` do not transform the collected values or nested matchers. Getter options still apply, such as `includeSelectorTag` for HTML and `asString` for properties. Class matching collects each element's complete class attribute, not individual class tokens.
 
-This collection comparison does not change boolean assertions, style or size assertions, or `some()`'s per-element matching. A single element's array-valued property can still be matched directly with `toHaveElementProperty`.
+This collection comparison does not change boolean assertions, style or size assertions, or `some()`'s per-element matching.
+
+On a single element `$()`, a list matcher throws an error, also with `.not`: `toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements`. The value of one element is a string, so a list matcher can never match it. Only `toHaveElementProperty` compares a list matcher with the property of a single element, because a property value can be an array.
 
 ### toBeDisplayed
 
