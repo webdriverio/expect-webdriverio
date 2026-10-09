@@ -898,6 +898,8 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have property prop
             { name: 'an equal object', property: { a: 1, b: [2] }, expected: { a: 1, b: [2] }, pass: true },
             { name: 'an object with an asymmetric matcher in it', property: { a: 1, b: 'x' }, expected: { a: wdioExpect.any(Number), b: 'x' }, pass: true },
             { name: 'another object', property: { a: 1 }, expected: { a: 2 }, pass: false },
+            { name: 'an object with a property that is undefined, ignored as in toEqual', property: { a: 1, b: undefined }, expected: { a: 1 }, pass: true },
+            { name: 'a class instance and a plain object with the same properties', property: new (class Dataset { id = '1' })(), expected: { id: '1' }, pass: true },
             { name: 'a boolean', property: true, expected: true, pass: true },
             { name: 'another boolean', property: false, expected: true, pass: false },
         ])('compares $name', async ({ property, expected, pass }) => {

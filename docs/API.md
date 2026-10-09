@@ -218,6 +218,16 @@ Give `eq` alone, or a range with `gte`, `lte` or both. The types reject `{}` and
 
 `expect.oneOf()` with numbers is one of these numbers, which a range cannot say: `toHaveWidth(expect.oneOf(100, 200))` passes for 100 or 200, and fails for 150.
 
+##### Deep Equality
+
+Objects are compared with the deep equality of Jest's `toEqual`, the same in every matcher: `toHaveSize`, `toHaveElementProperty` (a property that is not a string), `expect.multiRemote()`, and the asymmetric matchers such as `expect.objectContaining()`.
+
+- An asymmetric matcher works anywhere in the value, e.g. `toHaveSize({ width: expect.any(Number), height: 32 })`.
+- A property that is `undefined` is ignored: `{ a: 1, b: undefined }` equals `{ a: 1 }`. For a strict comparison, use `expect(await elem.getProperty('dataset')).toStrictEqual({ a: 1 })`.
+- A class instance equals a plain object with the same properties.
+- URLs, sets, maps, dates and binary data are compared by their content, see [Deep equality of URLs, sets, maps and binary data](Migrations.md#deep-equality-of-urls-sets-maps-and-binary-data).
+- `NaN` equals `NaN`. `+0` and `-0` are not equal.
+
 ### Handling HTML Entities
 
 An HTML entity is a piece of text (“string”) that begins with an ampersand (`&`) and ends with a semicolon (`;`). Entities are frequently used to display reserved characters (which would otherwise be interpreted as HTML code), and invisible characters (like non-breaking spaces, e.g. `&nbsp;`).
@@ -469,7 +479,7 @@ An array of expected values works only with `$$()`: one expected value for each 
 
 ### toHaveElementProperty
 
-Checks if an element has a certain property and value. A string property is compared with the [string options](#string-options). Another property (a number, a boolean, an object) is compared with deep equality, also with an asymmetric matcher in it, or with `expect.oneOf()` with numbers.
+Checks if an element has a certain property and value. A string property is compared with the [string options](#string-options). Another property (a number, a boolean, an object) is compared with [deep equality](#deep-equality), also with an asymmetric matcher in it, or with `expect.oneOf()` with numbers.
 
 ##### Usage
 
@@ -807,7 +817,7 @@ await expect(logo).toHaveHeight({ gte: 32, lte: 34 })
 
 ### toHaveSize
 
-Checks if element has a specific size. Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), or `expect.oneOf()` with numbers. The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only.
+Checks if element has a specific size, with [deep equality](#deep-equality). Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), or `expect.oneOf()` with numbers. The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only.
 
 ##### Usage
 

@@ -112,7 +112,12 @@ await expect($('#elem')).toHaveStyle({ color: 'red' })   // passes
 
 ## Objects are compared with deep equality in `toHaveSize` and `toHaveElementProperty`
 
-`toHaveSize` compares with the same deep equality as the other matchers, so an asymmetric matcher works: `toHaveSize(expect.objectContaining({ width: 32 }))`. `toHaveElementProperty` compares a property that is not a string with deep equality: `toHaveElementProperty('dataset', { id: '1' })`. Before, both always failed, and always passed with `.not`.
+Both matchers now use the deep equality of the other matchers, the one of Jest's `toEqual` (see [Deep Equality](API.md#deep-equality)):
+
+- `toHaveSize`: an asymmetric matcher works, e.g. `toHaveSize(expect.objectContaining({ width: 32 }))`. Before, `toHaveSize` used the `deep-eql` package, which does not know asymmetric matchers: the assertion always failed, and always passed with `.not`. `deep-eql` also counted a property that is `undefined`, which is now ignored, as in `toEqual`.
+- `toHaveElementProperty` compares a property that is not a string with deep equality, e.g. `toHaveElementProperty('dataset', { id: '1' })`. Before, it used `===`, so an object never matched: the assertion always failed, and always passed with `.not`.
+
+`expect-webdriverio` does not depend on `deep-eql` anymore.
 
 ## List matchers on multiple elements
 
