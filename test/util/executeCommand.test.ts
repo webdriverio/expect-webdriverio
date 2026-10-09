@@ -646,6 +646,25 @@ describe('executeCommand', () => {
                 expect(retry.actual).toEqual({ chrome: ['item0', 'item1'], firefox: ['item0', 'item1'] })
             })
 
+            it('throws the error of the first element when several elements throw, as for one browser', async () => {
+                const result = executeCommandWithStrategy({
+                    unresolvedElements: createMultiRemoteElementArrayMock(browsers(), 'sel', 2),
+                    expectedValues: expect.arrayContaining(['item1']),
+                    supportsArrayContaining: 'arrayOnly',
+                    singleElementCompare: async (_el, _expected, index) => {
+                        // The second element throws first
+                        if (index === 0) {
+                            await Promise.resolve()
+                            await Promise.resolve()
+                        }
+                        throw new Error(`element ${index}`)
+                    },
+                    context: { isNot: false, iteration: 0 },
+                })
+
+                await expect(result).rejects.toThrow('element 0')
+            })
+
             it('retries (no abort) when empty since the MultiRemoteElementArray can be refetched', async () => {
                 const compare = vi.fn()
 
