@@ -438,8 +438,9 @@ const minifyRequestMock = (
         url: requestMock.request.url,
         method: requestMock.request.method,
         statusCode: requestMock.response.status,
-        requestHeaders: requestMock.request.headers,
-        responseHeaders: requestMock.response.headers,
+        // by name, as `headersMatcher()` compares them
+        requestHeaders: reduceHeaders(requestMock.request.headers),
+        responseHeaders: reduceHeaders(requestMock.response.headers),
         postData: resolveBodyForDisplay(requestMock.postData, requestedWith.postData, parseCache),
         response: resolveBodyForDisplay(requestMock.body, requestedWith.response, parseCache),
     }
