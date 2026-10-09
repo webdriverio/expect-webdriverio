@@ -48,3 +48,25 @@ describe('the failure message of an empty $$()', () => {
         expect(stripAnsi(notResult.message())).toContain(`Expected [not]: ${expected}\nReceived      : undefined`)
     })
 })
+
+/** The string options apply to each expected value, so the message names them, as for a `$$()` with elements */
+describe('the string options in the failure message of an empty $$()', () => {
+    const options = { ignoreCase: true, wait: 0 }
+    const matchers: [string, Run][] = [
+        ['toHaveText', (context, elements) => toHaveText.call(context, elements as never, 'Hello', options)],
+        ['toHaveHTML', (context, elements) => toHaveHTML.call(context, elements as never, 'Hello', options)],
+        ['toHaveComputedLabel', (context, elements) => toHaveComputedLabel.call(context, elements as never, 'Hello', options)],
+        ['toHaveComputedRole', (context, elements) => toHaveComputedRole.call(context, elements as never, 'Hello', options)],
+        ['toHaveAttribute', (context, elements) => toHaveAttribute.call(context, elements as never, 'name', 'Hello', options)],
+        ['toHaveElementClass', (context, elements) => toHaveElementClass.call(context, elements as never, 'Hello', options)],
+        ['toHaveElementProperty', (context, elements) => toHaveElementProperty.call(context, elements as never, 'name', 'Hello', options)],
+    ]
+
+    test.each(matchers)('%s', async (_name, run) => {
+        const result = await run({}, elementArrayFactory('sel', 0))
+        const notResult = await run({ isNot: true }, elementArrayFactory('sel', 0))
+
+        expect(stripAnsi(result.message())).toContain('Expected: [ignoringCase<"Hello">]\nReceived: undefined')
+        expect(stripAnsi(notResult.message())).toContain('Expected [not]: [ignoringCase<"Hello">]\nReceived      : undefined')
+    })
+})

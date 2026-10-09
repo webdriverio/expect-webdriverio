@@ -3352,7 +3352,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text
   
-  Expected: ["Hello"]
+  Expected: [ignoringCase<"Hello">]
   Received: undefined
 
 ### toHaveText | empty $$() | values Hello, World | .not "Hello" | ignoreCase
@@ -3363,7 +3363,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [ignoringCase<"Hello">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values Hello, World | "Hello" | containing
@@ -3374,7 +3374,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text containing
   
-  Expected: ["Hello"]
+  Expected: [containing<"Hello">]
   Received: undefined
 
 ### toHaveText | empty $$() | values Hello, World | .not "Hello" | containing
@@ -3385,7 +3385,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text containing
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [containing<"Hello">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values Hello, World | "hello" | no option
@@ -3418,7 +3418,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text
   
-  Expected: ["hello"]
+  Expected: [ignoringCase<"hello">]
   Received: undefined
 
 ### toHaveText | empty $$() | values Hello, World | .not "hello" | ignoreCase
@@ -3429,7 +3429,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text
   
-  Expected [not]: ["hello"]
+  Expected [not]: [ignoringCase<"hello">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values Hello, World | "hello" | containing
@@ -3440,7 +3440,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text containing
   
-  Expected: ["hello"]
+  Expected: [containing<"hello">]
   Received: undefined
 
 ### toHaveText | empty $$() | values Hello, World | .not "hello" | containing
@@ -3451,7 +3451,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text containing
   
-  Expected [not]: ["hello"]
+  Expected [not]: [containing<"hello">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values Hello, World | /^Hel/ | no option
@@ -3484,7 +3484,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text
   
-  Expected: [/^Hel/]
+  Expected: [/^Hel/i]
   Received: undefined
 
 ### toHaveText | empty $$() | values Hello, World | .not /^Hel/ | ignoreCase
@@ -3495,7 +3495,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text
   
-  Expected [not]: [/^Hel/]
+  Expected [not]: [/^Hel/i]
   Received      : undefined
 
 ### toHaveText | empty $$() | values Hello, World | /^Hel/ | containing
@@ -3682,7 +3682,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text
   
-  Expected: ["Hello", "World"]
+  Expected: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received: undefined
 
 ### toHaveText | empty $$() | values Hello, World | .not ["Hello", "World"] | ignoreCase
@@ -3693,7 +3693,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values Hello, World | ["Hello", "World"] | containing
@@ -3704,7 +3704,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text containing
   
-  Expected: ["Hello", "World"]
+  Expected: [containing<"Hello">, containing<"World">]
   Received: undefined
 
 ### toHaveText | empty $$() | values Hello, World | .not ["Hello", "World"] | containing
@@ -3715,7 +3715,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text containing
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [containing<"Hello">, containing<"World">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values Hello, World | arrayContaining(["Hello"]) | no option
@@ -3931,7 +3931,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text
   
-  Expected: ["Hello"]
+  Expected: [ignoringCase<"Hello">]
   Received: undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | .not "Hello" | ignoreCase
@@ -3942,7 +3942,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [ignoringCase<"Hello">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | "Hello" | containing
@@ -3953,7 +3953,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text containing
   
-  Expected: ["Hello"]
+  Expected: [containing<"Hello">]
   Received: undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | .not "Hello" | containing
@@ -3964,7 +3964,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text containing
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [containing<"Hello">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | "hello" | no option
@@ -3997,7 +3997,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text
   
-  Expected: ["hello"]
+  Expected: [ignoringCase<"hello">]
   Received: undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | .not "hello" | ignoreCase
@@ -4008,7 +4008,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text
   
-  Expected [not]: ["hello"]
+  Expected [not]: [ignoringCase<"hello">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | "hello" | containing
@@ -4019,7 +4019,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text containing
   
-  Expected: ["hello"]
+  Expected: [containing<"hello">]
   Received: undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | .not "hello" | containing
@@ -4030,7 +4030,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text containing
   
-  Expected [not]: ["hello"]
+  Expected [not]: [containing<"hello">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | /^Hel/ | no option
@@ -4063,7 +4063,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text
   
-  Expected: [/^Hel/]
+  Expected: [/^Hel/i]
   Received: undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | .not /^Hel/ | ignoreCase
@@ -4074,7 +4074,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text
   
-  Expected [not]: [/^Hel/]
+  Expected [not]: [/^Hel/i]
   Received      : undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | /^Hel/ | containing
@@ -4261,7 +4261,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text
   
-  Expected: ["Hello", "World"]
+  Expected: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received: undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | .not ["Hello", "World"] | ignoreCase
@@ -4272,7 +4272,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | ["Hello", "World"] | containing
@@ -4283,7 +4283,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have text containing
   
-  Expected: ["Hello", "World"]
+  Expected: [containing<"Hello">, containing<"World">]
   Received: undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | .not ["Hello", "World"] | containing
@@ -4294,7 +4294,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have text containing
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [containing<"Hello">, containing<"World">]
   Received      : undefined
 
 ### toHaveText | empty $$() | values "  hello  ", Hello | arrayContaining(["Hello"]) | no option
@@ -14885,7 +14885,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML
   
-  Expected: ["Hello"]
+  Expected: [ignoringCase<"Hello">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | .not "Hello" | ignoreCase
@@ -14896,7 +14896,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [ignoringCase<"Hello">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | "Hello" | containing
@@ -14907,7 +14907,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML containing
   
-  Expected: ["Hello"]
+  Expected: [containing<"Hello">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | .not "Hello" | containing
@@ -14918,7 +14918,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML containing
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [containing<"Hello">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | "Hello" | includeSelectorTag: false
@@ -14973,7 +14973,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML
   
-  Expected: ["hello"]
+  Expected: [ignoringCase<"hello">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | .not "hello" | ignoreCase
@@ -14984,7 +14984,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML
   
-  Expected [not]: ["hello"]
+  Expected [not]: [ignoringCase<"hello">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | "hello" | containing
@@ -14995,7 +14995,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML containing
   
-  Expected: ["hello"]
+  Expected: [containing<"hello">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | .not "hello" | containing
@@ -15006,7 +15006,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML containing
   
-  Expected [not]: ["hello"]
+  Expected [not]: [containing<"hello">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | "hello" | includeSelectorTag: false
@@ -15061,7 +15061,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML
   
-  Expected: [/^Hel/]
+  Expected: [/^Hel/i]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | .not /^Hel/ | ignoreCase
@@ -15072,7 +15072,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML
   
-  Expected [not]: [/^Hel/]
+  Expected [not]: [/^Hel/i]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | /^Hel/ | containing
@@ -15325,7 +15325,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML
   
-  Expected: ["Hello", "World"]
+  Expected: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | .not ["Hello", "World"] | ignoreCase
@@ -15336,7 +15336,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | ["Hello", "World"] | containing
@@ -15347,7 +15347,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML containing
   
-  Expected: ["Hello", "World"]
+  Expected: [containing<"Hello">, containing<"World">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | .not ["Hello", "World"] | containing
@@ -15358,7 +15358,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML containing
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [containing<"Hello">, containing<"World">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values Hello, World | ["Hello", "World"] | includeSelectorTag: false
@@ -15657,7 +15657,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML
   
-  Expected: ["Hello"]
+  Expected: [ignoringCase<"Hello">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | .not "Hello" | ignoreCase
@@ -15668,7 +15668,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [ignoringCase<"Hello">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | "Hello" | containing
@@ -15679,7 +15679,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML containing
   
-  Expected: ["Hello"]
+  Expected: [containing<"Hello">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | .not "Hello" | containing
@@ -15690,7 +15690,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML containing
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [containing<"Hello">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | "Hello" | includeSelectorTag: false
@@ -15745,7 +15745,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML
   
-  Expected: ["hello"]
+  Expected: [ignoringCase<"hello">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | .not "hello" | ignoreCase
@@ -15756,7 +15756,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML
   
-  Expected [not]: ["hello"]
+  Expected [not]: [ignoringCase<"hello">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | "hello" | containing
@@ -15767,7 +15767,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML containing
   
-  Expected: ["hello"]
+  Expected: [containing<"hello">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | .not "hello" | containing
@@ -15778,7 +15778,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML containing
   
-  Expected [not]: ["hello"]
+  Expected [not]: [containing<"hello">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | "hello" | includeSelectorTag: false
@@ -15833,7 +15833,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML
   
-  Expected: [/^Hel/]
+  Expected: [/^Hel/i]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | .not /^Hel/ | ignoreCase
@@ -15844,7 +15844,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML
   
-  Expected [not]: [/^Hel/]
+  Expected [not]: [/^Hel/i]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | /^Hel/ | containing
@@ -16097,7 +16097,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML
   
-  Expected: ["Hello", "World"]
+  Expected: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | .not ["Hello", "World"] | ignoreCase
@@ -16108,7 +16108,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | ["Hello", "World"] | containing
@@ -16119,7 +16119,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have HTML containing
   
-  Expected: ["Hello", "World"]
+  Expected: [containing<"Hello">, containing<"World">]
   Received: undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | .not ["Hello", "World"] | containing
@@ -16130,7 +16130,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have HTML containing
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [containing<"Hello">, containing<"World">]
   Received      : undefined
 
 ### toHaveHTML | empty $$() | values "  hello  ", Hello | ["Hello", "World"] | includeSelectorTag: false
@@ -27719,7 +27719,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label
   
-  Expected: ["Hello"]
+  Expected: [ignoringCase<"Hello">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | .not "Hello" | ignoreCase
@@ -27730,7 +27730,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [ignoringCase<"Hello">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | "Hello" | containing
@@ -27741,7 +27741,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label containing
   
-  Expected: ["Hello"]
+  Expected: [containing<"Hello">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | .not "Hello" | containing
@@ -27752,7 +27752,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label containing
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [containing<"Hello">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | "hello" | no option
@@ -27785,7 +27785,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label
   
-  Expected: ["hello"]
+  Expected: [ignoringCase<"hello">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | .not "hello" | ignoreCase
@@ -27796,7 +27796,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label
   
-  Expected [not]: ["hello"]
+  Expected [not]: [ignoringCase<"hello">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | "hello" | containing
@@ -27807,7 +27807,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label containing
   
-  Expected: ["hello"]
+  Expected: [containing<"hello">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | .not "hello" | containing
@@ -27818,7 +27818,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label containing
   
-  Expected [not]: ["hello"]
+  Expected [not]: [containing<"hello">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | /^Hel/ | no option
@@ -27851,7 +27851,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label
   
-  Expected: [/^Hel/]
+  Expected: [/^Hel/i]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | .not /^Hel/ | ignoreCase
@@ -27862,7 +27862,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label
   
-  Expected [not]: [/^Hel/]
+  Expected [not]: [/^Hel/i]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | /^Hel/ | containing
@@ -28049,7 +28049,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label
   
-  Expected: ["Hello", "World"]
+  Expected: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | .not ["Hello", "World"] | ignoreCase
@@ -28060,7 +28060,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | ["Hello", "World"] | containing
@@ -28071,7 +28071,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label containing
   
-  Expected: ["Hello", "World"]
+  Expected: [containing<"Hello">, containing<"World">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | .not ["Hello", "World"] | containing
@@ -28082,7 +28082,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label containing
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [containing<"Hello">, containing<"World">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values Hello, World | arrayContaining(["Hello"]) | no option
@@ -28298,7 +28298,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label
   
-  Expected: ["Hello"]
+  Expected: [ignoringCase<"Hello">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | .not "Hello" | ignoreCase
@@ -28309,7 +28309,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [ignoringCase<"Hello">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | "Hello" | containing
@@ -28320,7 +28320,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label containing
   
-  Expected: ["Hello"]
+  Expected: [containing<"Hello">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | .not "Hello" | containing
@@ -28331,7 +28331,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label containing
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [containing<"Hello">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | "hello" | no option
@@ -28364,7 +28364,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label
   
-  Expected: ["hello"]
+  Expected: [ignoringCase<"hello">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | .not "hello" | ignoreCase
@@ -28375,7 +28375,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label
   
-  Expected [not]: ["hello"]
+  Expected [not]: [ignoringCase<"hello">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | "hello" | containing
@@ -28386,7 +28386,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label containing
   
-  Expected: ["hello"]
+  Expected: [containing<"hello">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | .not "hello" | containing
@@ -28397,7 +28397,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label containing
   
-  Expected [not]: ["hello"]
+  Expected [not]: [containing<"hello">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | /^Hel/ | no option
@@ -28430,7 +28430,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label
   
-  Expected: [/^Hel/]
+  Expected: [/^Hel/i]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | .not /^Hel/ | ignoreCase
@@ -28441,7 +28441,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label
   
-  Expected [not]: [/^Hel/]
+  Expected [not]: [/^Hel/i]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | /^Hel/ | containing
@@ -28628,7 +28628,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label
   
-  Expected: ["Hello", "World"]
+  Expected: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | .not ["Hello", "World"] | ignoreCase
@@ -28639,7 +28639,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | ["Hello", "World"] | containing
@@ -28650,7 +28650,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed label containing
   
-  Expected: ["Hello", "World"]
+  Expected: [containing<"Hello">, containing<"World">]
   Received: undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | .not ["Hello", "World"] | containing
@@ -28661,7 +28661,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed label containing
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [containing<"Hello">, containing<"World">]
   Received      : undefined
 
 ### toHaveComputedLabel | empty $$() | values "  hello  ", Hello | arrayContaining(["Hello"]) | no option
@@ -38132,7 +38132,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role
   
-  Expected: ["Hello"]
+  Expected: [ignoringCase<"Hello">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | .not "Hello" | ignoreCase
@@ -38143,7 +38143,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [ignoringCase<"Hello">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | "Hello" | containing
@@ -38154,7 +38154,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role containing
   
-  Expected: ["Hello"]
+  Expected: [containing<"Hello">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | .not "Hello" | containing
@@ -38165,7 +38165,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role containing
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [containing<"Hello">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | "hello" | no option
@@ -38198,7 +38198,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role
   
-  Expected: ["hello"]
+  Expected: [ignoringCase<"hello">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | .not "hello" | ignoreCase
@@ -38209,7 +38209,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role
   
-  Expected [not]: ["hello"]
+  Expected [not]: [ignoringCase<"hello">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | "hello" | containing
@@ -38220,7 +38220,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role containing
   
-  Expected: ["hello"]
+  Expected: [containing<"hello">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | .not "hello" | containing
@@ -38231,7 +38231,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role containing
   
-  Expected [not]: ["hello"]
+  Expected [not]: [containing<"hello">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | /^Hel/ | no option
@@ -38264,7 +38264,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role
   
-  Expected: [/^Hel/]
+  Expected: [/^Hel/i]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | .not /^Hel/ | ignoreCase
@@ -38275,7 +38275,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role
   
-  Expected [not]: [/^Hel/]
+  Expected [not]: [/^Hel/i]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | /^Hel/ | containing
@@ -38462,7 +38462,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role
   
-  Expected: ["Hello", "World"]
+  Expected: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | .not ["Hello", "World"] | ignoreCase
@@ -38473,7 +38473,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | ["Hello", "World"] | containing
@@ -38484,7 +38484,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role containing
   
-  Expected: ["Hello", "World"]
+  Expected: [containing<"Hello">, containing<"World">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | .not ["Hello", "World"] | containing
@@ -38495,7 +38495,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role containing
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [containing<"Hello">, containing<"World">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values Hello, World | arrayContaining(["Hello"]) | no option
@@ -38711,7 +38711,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role
   
-  Expected: ["Hello"]
+  Expected: [ignoringCase<"Hello">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | .not "Hello" | ignoreCase
@@ -38722,7 +38722,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [ignoringCase<"Hello">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | "Hello" | containing
@@ -38733,7 +38733,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role containing
   
-  Expected: ["Hello"]
+  Expected: [containing<"Hello">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | .not "Hello" | containing
@@ -38744,7 +38744,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role containing
   
-  Expected [not]: ["Hello"]
+  Expected [not]: [containing<"Hello">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | "hello" | no option
@@ -38777,7 +38777,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role
   
-  Expected: ["hello"]
+  Expected: [ignoringCase<"hello">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | .not "hello" | ignoreCase
@@ -38788,7 +38788,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role
   
-  Expected [not]: ["hello"]
+  Expected [not]: [ignoringCase<"hello">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | "hello" | containing
@@ -38799,7 +38799,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role containing
   
-  Expected: ["hello"]
+  Expected: [containing<"hello">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | .not "hello" | containing
@@ -38810,7 +38810,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role containing
   
-  Expected [not]: ["hello"]
+  Expected [not]: [containing<"hello">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | /^Hel/ | no option
@@ -38843,7 +38843,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role
   
-  Expected: [/^Hel/]
+  Expected: [/^Hel/i]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | .not /^Hel/ | ignoreCase
@@ -38854,7 +38854,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role
   
-  Expected [not]: [/^Hel/]
+  Expected [not]: [/^Hel/i]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | /^Hel/ | containing
@@ -39041,7 +39041,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role
   
-  Expected: ["Hello", "World"]
+  Expected: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | .not ["Hello", "World"] | ignoreCase
@@ -39052,7 +39052,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [ignoringCase<"Hello">, ignoringCase<"World">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | ["Hello", "World"] | containing
@@ -39063,7 +39063,7 @@ getter calls: -
 message:
   Expect $$(`sel`) to have computed role containing
   
-  Expected: ["Hello", "World"]
+  Expected: [containing<"Hello">, containing<"World">]
   Received: undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | .not ["Hello", "World"] | containing
@@ -39074,7 +39074,7 @@ getter calls: -
 message:
   Expect $$(`sel`) not to have computed role containing
   
-  Expected [not]: ["Hello", "World"]
+  Expected [not]: [containing<"Hello">, containing<"World">]
   Received      : undefined
 
 ### toHaveComputedRole | empty $$() | values "  hello  ", Hello | arrayContaining(["Hello"]) | no option

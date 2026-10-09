@@ -165,6 +165,15 @@ When `$$()` finds no element, the failure message shows the expected value in an
   Received: undefined
 ```
 
+With a string option, each value names it, as for a `$$()` with elements. Before, the label named it, and `toHaveText` did not name it:
+
+```diff
+- Expected (ignoringCase): "Coffee"
+- Received:                undefined
++ Expected: [ignoringCase<"Coffee">]
++ Received: undefined
+```
+
 ## Multi-remote `$$()` and `select()`
 
 Multi-remote `$$()` and `select()` need WebdriverIO v10. Remove `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELECT`: they are not supported anymore.

@@ -62,11 +62,18 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
  * The expected value of a failure message, where each string, RegExp or asymmetric matcher gets the string options and
  * the verdict of its element or instance. `verdict` has the shape of the actual value: a boolean for one element or
  * browser, an array for `$$()`, and per-instance values for multi-remote. Without a verdict (e.g. a structural failure),
- * the expected value does not change.
+ * the expected value does not change, except when there is no actual value (`noElementVerdict()`).
  */
 export const withStringOptions = (expected: unknown, verdict: unknown, options: StringOptions | undefined, actual?: unknown): unknown =>
     // One string value stays a string: Jest's string diff shows what changed, and `enhanceError()` names the options in the label
-    typeof verdict === 'boolean' && typeof expected === 'string' ? expected : wrapLeaves(expected, verdict, options, actual)
+    typeof verdict === 'boolean' && typeof expected === 'string' ? expected : wrapLeaves(expected, verdict ?? noElementVerdict(expected, actual), options, actual)
+
+/**
+ * No verdict and no actual value, e.g. an empty `$$()`: no element matched. Each expected value still gets the string
+ * options in the message, as for a `$$()` with elements.
+ */
+const noElementVerdict = (expected: unknown, actual: unknown): unknown =>
+    actual === undefined && Array.isArray(expected) ? expected.map(() => false) : undefined
 
 const wrapLeaves = (expected: unknown, verdict: unknown, options: StringOptions | undefined, actual: unknown): unknown => {
     if (typeof verdict === 'boolean') {
