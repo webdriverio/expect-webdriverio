@@ -8,6 +8,7 @@ import { toHaveHeight } from '../../src/matchers/element/toHaveHeight.js'
 import { toHaveChildren } from '../../src/matchers/element/toHaveChildren.js'
 import { toBeElementsArrayOfSize } from '../../src/matchers/elements/toBeElementsArrayOfSize.js'
 import { toBeRequestedTimes } from '../../src/matchers/mock/toBeRequestedTimes.js'
+import { toHaveSize } from '../../src/matchers/element/toHaveSize.js'
 import { chainableElementArrayFactory, elementArrayFactory, setWdioKind } from '../__mocks__/@wdio/globals.js'
 import { jasmine } from '../__fixtures__/jasmine.js'
 
@@ -17,6 +18,11 @@ vi.mock('@wdio/globals')
  * An asymmetric matcher in the number matchers, as in `toEqual`, e.g. `expect.closeTo()` for a size that the browser
  * rounds: `toHaveWidth(expect.closeTo(150.2, 0))`.
  */
+/** A custom matcher of Jasmine, which compares with the `matchersUtil` that `equals()` gives as the second argument */
+const equalsWithMatchersUtil = (expected: number) => ({
+    asymmetricMatch: (actual: unknown, matchersUtil: { equals: (a: unknown, b: unknown) => boolean }) => matchersUtil.equals(actual, expected),
+})
+
 describe('asymmetric matchers in the number matchers', () => {
     let el: WebdriverIO.Element
 
@@ -42,6 +48,7 @@ describe('asymmetric matchers in the number matchers', () => {
             { name: 'expect.not.closeTo()', expected: () => wdioExpect.not.closeTo(152, 0), pass: true },
             { name: 'expect.any(Number)', expected: () => wdioExpect.any(Number), pass: true },
             { name: 'jasmine.any(Number)', expected: () => jasmine.any(Number), pass: true },
+            { name: 'a custom matcher that uses its matchersUtil', expected: () => equalsWithMatchersUtil(150), pass: true },
         ])('compares with $name', async ({ expected, pass }) => {
             expect((await run(false, expected())).pass).toBe(pass)
             expect((await run(true, expected())).pass).toBe(pass) // inverted later because of `.not`
@@ -62,6 +69,14 @@ Expect $(\`sel\`) to have width
 
 Expected: NumberCloseTo 152 (0 digits)
 Received: 150`)
+    })
+
+    test('gives the matchersUtil to a custom matcher in a field of toHaveSize', async () => {
+        vi.mocked(el.getSize).mockResolvedValue({ width: 150, height: 50 } as never)
+
+        const result = await toHaveSize.call({}, el as never, { width: equalsWithMatchersUtil(150), height: 50 } as never, { wait: 0 })
+
+        expect(result.pass).toBe(true)
     })
 
     test('in the values of $$() and of expect.multiRemote()', async () => {

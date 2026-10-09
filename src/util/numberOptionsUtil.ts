@@ -5,6 +5,7 @@ import { isAsymmetricMatcher, isListMatcher } from './asymmetricMatcherUtil.js'
 import { stringify } from 'jest-matcher-utils'
 import type { NumberMatcher as PublicNumberMatcher } from '../publicTypes/options.js'
 import type { ExpectedOf } from '../publicTypes/expectWebdriverIO.js'
+import { equals } from '../jasmineUtils.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
 export const isDefinedNotNumber = (value: unknown) => value !== undefined && !isNumber(value)
@@ -82,7 +83,7 @@ export function validateNumberMatcherArray(
 type NumberBounds = { eq?: number, gte?: number, lte?: number, oneOf?: number[], matcher?: NumberAsymmetricMatcher }
 
 /** An asymmetric matcher of Jest or Jasmine, e.g. `expect.closeTo()`, `expect.any(Number)` or `jasmine.any(Number)` */
-type NumberAsymmetricMatcher = { asymmetricMatch(actual: unknown): boolean, toAsymmetricMatcher?: () => string, jasmineToString?: (prettyPrint: (value: unknown) => string) => string }
+type NumberAsymmetricMatcher = { asymmetricMatch(actual: unknown, matchersUtil?: unknown): boolean, toAsymmetricMatcher?: () => string, jasmineToString?: (prettyPrint: (value: unknown) => string) => string }
 
 /**
  * Using a class to univerally handle number matching and stringification the same way everywhere and with Global Apis like equal() toString() and toJSON()
@@ -108,8 +109,9 @@ export class NumberMatcher extends AsymmetricMatcher<number | NumberBounds> {
             return this.sample.oneOf.includes(actual)
         }
 
+        // Through `equals()`, as in `toEqual`: it gives the `matchersUtil` that a Jasmine matcher uses as its second argument
         if (this.sample.matcher) {
-            return this.sample.matcher.asymmetricMatch(actual)
+            return equals(actual, this.sample.matcher)
         }
 
         if (isNumber(this.sample.eq)) {
