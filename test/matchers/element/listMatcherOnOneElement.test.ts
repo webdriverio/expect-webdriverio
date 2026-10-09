@@ -64,4 +64,12 @@ describe('a list matcher on one element', () => {
         await wdioExpect(element).toHaveElementProperty('labels', wdioExpect.arrayContaining(['Home']), { wait: 0 })
         await expect(wdioExpect(element).not.toHaveElementProperty('labels', wdioExpect.arrayContaining(['Home']), { wait: 0 })).rejects.toThrow()
     })
+
+    test('toHaveElementProperty compares a list matcher with a property that is undefined, and does not throw', async () => {
+        const element = await $('#menu')
+        vi.mocked(element.getProperty).mockResolvedValue(undefined as never)
+
+        await wdioExpect(element).not.toHaveElementProperty('labels', wdioExpect.arrayContaining(['Home']), { wait: 0 })
+        await expect(wdioExpect(element).toHaveElementProperty('labels', wdioExpect.arrayContaining(['Home']), { wait: 0 })).rejects.toThrow('Expect $(`#menu`) to have property labels')
+    })
 })
