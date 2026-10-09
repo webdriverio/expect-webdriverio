@@ -29,6 +29,11 @@ const comparedByPrintedValue = (actual: unknown, compared: unknown, found = new 
     return found
 }
 
+/** Whether there is a compared value to show: `compared` is small, while `actual` can be a large property value */
+const hasComparedString = (compared: unknown): boolean =>
+    typeof compared === 'string'
+    || (typeof compared === 'object' && compared !== null && Object.values(compared).some(hasComparedString))
+
 // eslint-disable-next-line no-control-regex -- the color codes of Jest's diff
 const COLORS = /\u001b\[[0-9;]*m/g
 // A received value in Jest's diff: `+`, the indentation, the value with an optional quoted key, and a comma
@@ -42,6 +47,10 @@ const QUOTED_KEY = /^"(?:[^"\\]|\\.)*": /
  * It reads the text that Jest prints: `test/matchers/comparedAs.test.ts` fails if a Jest upgrade changes that format.
  */
 export const withComparedValues = (diff: string, actual: unknown, compared: unknown): string => {
+    // A failure message is also built when the assertion passes: do not walk `actual` when there is nothing to show
+    if (!hasComparedString(compared)) {
+        return diff
+    }
     const comparedValues = comparedByPrintedValue(actual, compared)
     if (![...comparedValues.values()].some((value) => value !== undefined)) {
         return diff
