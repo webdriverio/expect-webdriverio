@@ -1,12 +1,14 @@
 /**
- * The name of the non-default string options in a failure message, in camel case: the position option (as `compareText`
- * checks them, only one applies), then the modifiers. E.g. `containingIgnoringCase`, `matchingAtIndex<2>Untrimmed`.
- * It is '' with the default options only, so the expected value is printed as is.
+ * The name of the string options in a failure message, in camel case: the position option (as `compareText` checks them,
+ * only one applies), then the options that alter the actual value before the comparison: `trimmed`, `ignoringCase` and
+ * `replacing`. E.g. `containingTrimmedIgnoringCase`. It is '' when no option applies, so the expected value is printed as is.
+ * - `trimmed`: `trim` is on by default, so it is named only when it changed the actual value (`trimmed: true`), not when
+ *   the value has no spaces at the start or the end, or when the value is not known.
  * - `forRegExp`: for a RegExp expected value, the position options do not apply, and `ignoreCase` is the `i` flag of the
- *   RegExp, so only `trim: false` and `replace` are named.
+ *   RegExp, so only `trimmed` and `replacing` are named.
  * - `asString` is not named: it converts the actual value, it does not change how it is compared.
  */
-export const stringOptionsName = (options: ExpectWebdriverIO.StringOptions, { forRegExp = false } = {}): string => {
+export const stringOptionsName = (options: ExpectWebdriverIO.StringOptions, { forRegExp = false, trimmed = false } = {}): string => {
     const words: string[] = []
     if (!forRegExp) {
         if (options.containing) {
@@ -19,8 +21,8 @@ export const stringOptionsName = (options: ExpectWebdriverIO.StringOptions, { fo
             words.push(`matchingAtIndex<${options.atIndex}>`)
         }
     }
-    if (options.trim === false) {
-        words.push('untrimmed')
+    if (trimmed && options.trim !== false) {
+        words.push('trimmed')
     }
     if (options.ignoreCase && !forRegExp) {
         words.push('ignoringCase')
@@ -31,3 +33,7 @@ export const stringOptionsName = (options: ExpectWebdriverIO.StringOptions, { fo
     }
     return words.map((word, index) => index === 0 ? word : word[0].toUpperCase() + word.slice(1)).join('')
 }
+
+/** Whether the default `trim` changes this actual value */
+export const isTrimmedByOptions = (actual: unknown, options: ExpectWebdriverIO.StringOptions): boolean =>
+    options.trim !== false && typeof actual === 'string' && actual.trim() !== actual

@@ -60,7 +60,7 @@ export async function toHaveClipboardText(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(subject, withStringOptions(expected, verdict, options), actual, this, verb, expectation, '', options)
+    const message = enhanceError(subject, withStringOptions(expected, verdict, options, actual), actual, { ...this, stringOptions: options }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: () => message

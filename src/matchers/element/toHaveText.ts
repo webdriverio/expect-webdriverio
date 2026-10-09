@@ -56,7 +56,7 @@ export async function toHaveText(
     }
 
     const finalExpected = expected ?? fillSingleExpectedForElementArray(subject, expectedValue)
-    const message = enhanceError(subject, withStringOptions(finalExpected, verdict, options), actualText, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
+    const message = enhanceError(subject, withStringOptions(finalExpected, verdict, options, actualText), actualText, { isNot, isSome, matchingIndexes, stringOptions: options }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

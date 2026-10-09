@@ -51,9 +51,9 @@ export async function toHaveComputedRole(
 
     const message = enhanceError(
         el,
-        withStringOptions(expected ?? wrapExpectedWithArray(el, actualRole, expectedValue), verdict, options),
+        withStringOptions(expected ?? wrapExpectedWithArray(el, actualRole, expectedValue), verdict, options, actualRole),
         actualRole,
-        { isNot, isSome, matchingIndexes },
+        { isNot, isSome, matchingIndexes, stringOptions: options },
         verb,
         expectation,
         '',

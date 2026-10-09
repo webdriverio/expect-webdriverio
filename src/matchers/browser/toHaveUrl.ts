@@ -57,7 +57,7 @@ export async function toHaveUrl(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(subject, withStringOptions(expected, verdict, options), actual, { isNot, browserTargetType: 'window', showContextUrl: false }, verb, expectation, '', options)
+    const message = enhanceError(subject, withStringOptions(expected, verdict, options, actual), actual, { isNot, browserTargetType: 'window', showContextUrl: false, stringOptions: options }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: () => message

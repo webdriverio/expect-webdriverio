@@ -17,12 +17,23 @@ describe(StringOptionsMatcher, () => {
         { sample: /foo/, options: {}, printed: '/foo/' },
         { sample: /foo/g, options: { ignoreCase: true }, printed: '/foo/gi' },
         { sample: /foo/i, options: { ignoreCase: true }, printed: '/foo/i' },
-        { sample: /foo/, options: { trim: false, atStart: true }, printed: 'untrimmed</foo/>' },
+        { sample: /foo/, options: { trim: false, atStart: true }, printed: '/foo/' },
         { sample: new OneOfMatcher('a', 'b').withOptions({ ignoreCase: true }), options: { ignoreCase: true }, printed: 'ignoringCaseOneOf<"a", "b">' },
         { sample: wdioExpect.stringContaining('Foo'), options: { ignoreCase: true }, printed: 'StringContaining "Foo"' },
         { sample: jasmine.stringMatching(/Foo/), options: {}, printed: '<jasmine.stringMatching(/Foo/)>' },
     ])('prints $sample with $options as $printed', ({ sample, options, printed }) => {
         expect(new StringOptionsMatcher(sample as never, options, true).toAsymmetricMatcher()).toBe(printed)
+    })
+
+    test.each([
+        { sample: 'Foo', options: {}, actual: '  foo  ', printed: 'trimmed<"Foo">' },
+        { sample: 'Foo', options: {}, actual: 'foo', printed: '"Foo"' },
+        { sample: 'Foo', options: { trim: false }, actual: '  foo  ', printed: '"Foo"' },
+        { sample: 'Foo', options: { ignoreCase: true }, actual: '  foo  ', printed: 'trimmedIgnoringCase<"Foo">' },
+        { sample: /foo/, options: {}, actual: '  foo  ', printed: 'trimmed</foo/>' },
+        { sample: new OneOfMatcher('a', 'b'), options: {}, actual: '  a  ', printed: 'trimmedOneOf<"a", "b">' },
+    ])('names trimmed only when the default trim changed the actual value $actual: $printed', ({ sample, options, actual, printed }) => {
+        expect(new StringOptionsMatcher(sample as never, options, true, actual).toAsymmetricMatcher()).toBe(printed)
     })
 })
 

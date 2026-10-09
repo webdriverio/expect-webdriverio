@@ -147,7 +147,7 @@ export async function toHaveElementProperty(
     )
 
     const expected = expectedValues ?? wrapExpectedWithArray(elements, actualProppertyValue, value)
-    const message = enhanceError(elements, withStringOptions(expected, verdict, options), actualProppertyValue, { isNot, isSome, matchingIndexes }, verb, expectation, property, options)
+    const message = enhanceError(elements, withStringOptions(expected, verdict, options, actualProppertyValue), actualProppertyValue, { isNot, isSome, matchingIndexes, stringOptions: options }, verb, expectation, property, options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

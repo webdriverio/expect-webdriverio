@@ -52,9 +52,9 @@ export async function toHaveComputedLabel(
 
     const message = enhanceError(
         el,
-        withStringOptions(expected ?? wrapExpectedWithArray(el, actualLabel, expectedValue), verdict, options),
+        withStringOptions(expected ?? wrapExpectedWithArray(el, actualLabel, expectedValue), verdict, options, actualLabel),
         actualLabel,
-        { isNot, isSome, matchingIndexes },
+        { isNot, isSome, matchingIndexes, stringOptions: options },
         verb,
         expectation,
         '',

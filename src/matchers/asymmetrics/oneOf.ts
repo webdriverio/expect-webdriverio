@@ -42,13 +42,14 @@ export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | RegExp |
     }
 
     // Allow pretty-print in failure messages without quote for a better generic message
-    public toAsymmetricMatcher() {
+    /** `trimmed`: the default `trim` changed the actual value, so the name says it */
+    public toAsymmetricMatcher(trimmed = false) {
         const formattedSamples = this.sample
             .map((s) => (s instanceof RegExp ? s.toString() : `"${s}"`))
             .join(', ')
 
         // e.g. `oneOf<"a", "b">`, `containingIgnoringCaseOneOf<"a", "b">`
-        const name = stringOptionsName(this.options)
+        const name = stringOptionsName(this.options, { trimmed })
         return `${name ? name + 'OneOf' : 'oneOf'}<${formattedSamples}>`
     }
 }

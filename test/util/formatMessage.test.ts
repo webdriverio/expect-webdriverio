@@ -111,8 +111,8 @@ Received      : "Test Same"`
                     expect(actualFailureMessage).toEqual(`\
 Expect window to have title containing
 
-Expected (containing): "Test Expected Value"
-Received:              "Test Actual Value"`)
+Expected: "Test Expected Value"
+Received: "Test Actual Value"`)
                 })
             })
 
@@ -138,8 +138,8 @@ Received:              "Test Actual Value"`)
                     expect(actualFailureMessage).toEqual(`\
 Expect window not to have title containing
 
-Expected [not] (containing): "same value"
-Received                   : "same value"`)
+Expected [not]: "same value"
+Received      : "same value"`)
                 })
             })
         })

@@ -57,7 +57,7 @@ export async function toHaveTitle(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(subject, withStringOptions(expected, verdict, options), actual, { isNot, browserTargetType: 'window' }, verb, expectation, '', options)
+    const message = enhanceError(subject, withStringOptions(expected, verdict, options, actual), actual, { isNot, browserTargetType: 'window', stringOptions: options }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass: success,
         message: () => message

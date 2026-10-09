@@ -72,9 +72,9 @@ export async function toHaveLocalStorageItem(
 
     const message = enhanceError(
         subject,
-        withStringOptions(expectedValues, verdict, options),
+        withStringOptions(expectedValues, verdict, options, actual),
         actual,
-        this,
+        { ...this, stringOptions: options },
         verb,
         expectation,
         key,

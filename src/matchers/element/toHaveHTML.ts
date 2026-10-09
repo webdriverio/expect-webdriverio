@@ -49,7 +49,7 @@ export async function toHaveHTML(
     )
 
     const expectedValues = expected ?? wrapExpectedWithArray(elements, actualHTML, expectedWithOptions)
-    const message = enhanceError(elements, withStringOptions(expectedValues, verdict, options), actualHTML, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
+    const message = enhanceError(elements, withStringOptions(expectedValues, verdict, options, actualHTML), actualHTML, { isNot, isSome, matchingIndexes, stringOptions: options }, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

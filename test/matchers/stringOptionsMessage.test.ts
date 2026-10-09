@@ -39,8 +39,8 @@ describe('failure messages with string options', () => {
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`items\`)[0] to have text
 
-Expected (ignoringCase): "Other"
-Received:                "  Hello World  "`)
+Expected (trimmedIgnoringCase): "Other"
+Received:                       "  Hello World  "`)
         })
 
         const html = '<ul>\n  <li>Tea</li>\n  <li>Coffee</li>\n</ul>'
@@ -90,13 +90,13 @@ Expect $$(\`items\`)[0] to have HTML
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`items\`)[0] to have text
 
-Expected: "Other"
-Received: "  Hello World  "`)
+Expected (trimmed): "Other"
+Received:           "  Hello World  "`)
         })
 
         test.each([
             { name: 'ignoreCase adds the i flag', options: { ignoreCase: true }, expected: '/foo/i' },
-            { name: 'trim: false is named', options: { trim: false }, expected: 'untrimmed</foo/>' },
+            { name: 'trim: false alters nothing, so it is not named', options: { trim: false }, expected: '/foo/' },
             { name: 'a position does not apply', options: { containing: true }, expected: '/foo/' },
         ])('shows a RegExp as is: $name', async ({ options, expected }) => {
             const [element] = elementsWith('getText', ['bar'])
@@ -120,9 +120,9 @@ Expect $$(\`items\`) to have HTML
 + Received  + 2
 
   Array [
--   "div",
+-   trimmed<"div">,
 +   "   <div>foo</div>   ",
-    "<div>foo</div>",
+    trimmed<"<div>foo</div>">,
 -   "toto",
 +   undefined,
   ]`)

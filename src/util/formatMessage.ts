@@ -6,7 +6,7 @@ import { toJsonString } from './stringUtil.js'
 import { getLoadedWdioKind } from './wdioKind.js'
 import { isJasmineStringAsymmetricMatcher } from './asymmetricMatcherUtil.js'
 import { toArray } from './arrayUtil.js'
-import { stringOptionsName } from './stringOptionsName.js'
+import { isTrimmedByOptions, stringOptionsName } from './stringOptionsName.js'
 import { isBrowser, isBrowsingContext, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
@@ -72,13 +72,13 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, matchingIndexes?: number[], browserTargetType?: 'browser' | 'window', showContextUrl?: boolean },
+    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, matchingIndexes?: number[], stringOptions?: ExpectWebdriverIO.StringOptions, browserTargetType?: 'browser' | 'window', showContextUrl?: boolean },
     verb: string,
     expectation: string,
-    expectedValueArgument2 = '',
-    options: ExpectWebdriverIO.StringOptions = {}): string => {
-    const { message: userMessage = '', containing = false } = options
-    let message = userMessage
+    expectedValueArgument2 = '', {
+        message = '',
+        containing = false
+    } = {}): string => {
     const { isNot, useNotInLabel = true } = context
 
     // Label the per-instance values `Multi-remote values {` instead of `Object {` in the printed diff
@@ -119,9 +119,12 @@ export const enhanceError = (
     }
 
     const isNotInLabel = useNotInLabel && isNot
-    // One string value keeps the string diff of Jest, so its non-default string options are named in the label, e.g.
-    // `Expected (ignoringCase)`. In a list or per-instance values, each expected value names them (`StringOptionsMatcher`).
-    const optionsName = typeof expected === 'string' ? stringOptionsName(options) : ''
+    // One string value keeps the string diff of Jest, so the string options that alter the actual value are named in the
+    // label, e.g. `Expected (trimmedIgnoringCase)`. In a list or per-instance values, each expected value names them
+    // (`StringOptionsMatcher`). Only for the matchers that compare with the string options (`stringOptions`).
+    const optionsName = typeof expected === 'string' && context.stringOptions
+        ? stringOptionsName(context.stringOptions, { trimmed: isTrimmedByOptions(actual, context.stringOptions) })
+        : ''
     const label =  {
         expected: `${isNotInLabel ? 'Expected [not]' : 'Expected'}${optionsName ? ` (${optionsName})` : ''}`,
         received: isNotInLabel ? 'Received      ' : 'Received'

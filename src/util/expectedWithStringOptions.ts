@@ -3,7 +3,7 @@ import { WdioAsymmetricMatchers } from '../matchers/asymmetrics/asymmetricsUtils
 import { isOneOfMatcher } from '../matchers/asymmetrics/oneOf.js'
 import { isAsymmetricMatcher, isListMatcher } from './asymmetricMatcherUtil.js'
 import { isMultiRemoteMatcher } from './multiRemoteUtils.js'
-import { stringOptionsName } from './stringOptionsName.js'
+import { isTrimmedByOptions, stringOptionsName } from './stringOptionsName.js'
 
 type ExpectedLeaf = string | RegExp | AsymmetricMatcher<unknown> | JasmineAsymmetricMatcher<unknown>
 
@@ -16,7 +16,8 @@ type ExpectedLeaf = string | RegExp | AsymmetricMatcher<unknown> | JasmineAsymme
  *   difference, and a sticky or global RegExp is not tested a second time.
  */
 export class StringOptionsMatcher extends WdioAsymmetricMatchers<ExpectedLeaf> {
-    constructor(sample: ExpectedLeaf, private readonly options: ExpectWebdriverIO.StringOptions, private readonly verdict: boolean) {
+    /** `actual`: the actual value of the element or instance, to name `trimmed` only when the default `trim` changed it */
+    constructor(sample: ExpectedLeaf, private readonly options: ExpectWebdriverIO.StringOptions, private readonly verdict: boolean, private readonly actual?: unknown) {
         super(sample)
     }
 
@@ -25,20 +26,21 @@ export class StringOptionsMatcher extends WdioAsymmetricMatchers<ExpectedLeaf> {
     }
 
     public toAsymmetricMatcher(): string {
-        const { sample, options } = this
+        const { sample, options, actual } = this
+        const trimmed = isTrimmedByOptions(actual, options)
         if (typeof sample === 'string') {
-            const name = stringOptionsName(options)
+            const name = stringOptionsName(options, { trimmed })
             return name ? `${name}<${stringify(sample)}>` : stringify(sample)
         }
         if (sample instanceof RegExp) {
             // `ignoreCase` is the `i` flag of the RegExp
             const regExp = options.ignoreCase && !sample.ignoreCase ? new RegExp(sample.source, `${sample.flags}i`) : sample
-            const name = stringOptionsName(options, { forRegExp: true })
+            const name = stringOptionsName(options, { forRegExp: true, trimmed })
             return name ? `${name}<${regExp}>` : `${regExp}`
         }
         // An asymmetric matcher is printed as without the verdict: `expect.oneOf()` prints its own options
         if (isOneOfMatcher(sample)) {
-            return sample.toAsymmetricMatcher()
+            return sample.toAsymmetricMatcher(isTrimmedByOptions(actual, sample.options))
         }
         if ('jasmineToString' in sample && typeof sample.jasmineToString === 'function') {
             return sample.jasmineToString(stringify)
@@ -61,19 +63,19 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
  * browser, an array for `$$()`, and per-instance values for multi-remote. Without a verdict (e.g. a structural failure),
  * the expected value does not change.
  */
-export const withStringOptions = (expected: unknown, verdict: unknown, options: ExpectWebdriverIO.StringOptions | undefined): unknown =>
+export const withStringOptions = (expected: unknown, verdict: unknown, options: ExpectWebdriverIO.StringOptions | undefined, actual?: unknown): unknown =>
     // One string value stays a string: Jest's string diff shows what changed, and `enhanceError()` names the options in the label
-    typeof verdict === 'boolean' && typeof expected === 'string' ? expected : wrapLeaves(expected, verdict, options)
+    typeof verdict === 'boolean' && typeof expected === 'string' ? expected : wrapLeaves(expected, verdict, options, actual)
 
-const wrapLeaves = (expected: unknown, verdict: unknown, options: ExpectWebdriverIO.StringOptions | undefined): unknown => {
+const wrapLeaves = (expected: unknown, verdict: unknown, options: ExpectWebdriverIO.StringOptions | undefined, actual: unknown): unknown => {
     if (typeof verdict === 'boolean') {
-        return isExpectedLeaf(expected) ? new StringOptionsMatcher(expected, options ?? {}, verdict) : expected
+        return isExpectedLeaf(expected) ? new StringOptionsMatcher(expected, options ?? {}, verdict, actual) : expected
     }
     if (Array.isArray(verdict) && Array.isArray(expected)) {
-        return expected.map((value, index) => wrapLeaves(value, verdict[index], options))
+        return expected.map((value, index) => wrapLeaves(value, verdict[index], options, Array.isArray(actual) ? actual[index] : undefined))
     }
     if (isPlainObject(verdict) && isPlainObject(expected)) {
-        return Object.fromEntries(Object.entries(expected).map(([name, value]) => [name, wrapLeaves(value, verdict[name], options)]))
+        return Object.fromEntries(Object.entries(expected).map(([name, value]) => [name, wrapLeaves(value, verdict[name], options, isPlainObject(actual) ? actual[name] : undefined)]))
     }
     return expected
 }

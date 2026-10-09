@@ -547,9 +547,9 @@ Expect $$(\`sel\`) to have HTML
 + Received  + 2
 
   Array [
--   "div",
+-   trimmed<"div">,
 +   "   <div>foo</div>   ",
-    "<div>foo</div>",
+    trimmed<"<div>foo</div>">,
 -   "toto",
 +   undefined,
   ]`

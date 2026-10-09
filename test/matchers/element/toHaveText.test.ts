@@ -31,8 +31,8 @@ describe(toHaveText, async () => {
         expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have text
 
-Expected (ignoringCaseReplacing): "Other"
-Received:                         "  Hello World  "`)
+Expected (trimmedIgnoringCaseReplacing): "Other"
+Received:                                "  Hello World  "`)
     })
 
     test('trims by default, for one element and for several elements, also with oneOf', async () => {
@@ -415,8 +415,8 @@ Received      : "WebdriverIO"`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect ${selectorName} not to have text
 
-Expected [not] (untrimmed): " WebdriverIO "
-Received                  : " WebdriverIO "`
+Expected [not]: " WebdriverIO "
+Received      : " WebdriverIO "`
             )
         })
 
@@ -1475,8 +1475,8 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have text
 + Received  + 1
 
   Multi-remote values {
-    "chrome": "Valid Text",
--   "firefox": "Other",
+    "chrome": trimmed<"Valid Text">,
+-   "firefox": trimmed<"Other">,
 +   "firefox": " Valid Text ",
   }`
                 )
@@ -1498,12 +1498,12 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have text
 
   Multi-remote values {
     "chrome": Array [
-      "Valid Text",
-      "Valid Text",
+      trimmed<"Valid Text">,
+      trimmed<"Valid Text">,
     ],
     "firefox": Array [
-      "Valid Text",
--     "Other",
+      trimmed<"Valid Text">,
+-     trimmed<"Other">,
 +     " Valid Text ",
     ],
   }`

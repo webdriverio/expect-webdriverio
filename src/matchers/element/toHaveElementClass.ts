@@ -64,7 +64,8 @@ export async function toHaveElementClass(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, withStringOptions(expected ?? wrapExpectedWithArray(el, attr, expectedWithOptions), verdict, options), attr, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
+    // Each class is compared, and a class has no spaces: the message never names `trimmed` from the full attribute
+    const message = enhanceError(el, withStringOptions(expected ?? wrapExpectedWithArray(el, attr, expectedWithOptions), verdict, options), attr, { isNot, isSome, matchingIndexes, stringOptions: { ...options, trim: false } }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

@@ -44,7 +44,7 @@ describe('.not on multiple elements highlights the elements that matched', () =>
         result.message()
 
         expect(result.pass).toBe(true)
-        expect(highlighted()).toEqual(['"foo"', '"  foo  "'])
+        expect(highlighted()).toEqual(['trimmed<"foo">', '"  foo  "'])
     })
 
     test('with replace, not the element whose value is equal before the replacement', async () => {

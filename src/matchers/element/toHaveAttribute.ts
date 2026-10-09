@@ -55,7 +55,7 @@ export async function toHaveAttributeAndValue(this: WdioMatcherContext, received
     )
 
     const expected = expectedValues ?? wrapExpectedWithArray(el, attr, expectedValue)
-    const message = enhanceError(el, withStringOptions(expected, verdict, options), attr, { isNot, isSome, matchingIndexes }, verb, expectation, attribute, options)
+    const message = enhanceError(el, withStringOptions(expected, verdict, options, attr), attr, { isNot, isSome, matchingIndexes, stringOptions: options }, verb, expectation, attribute, options)
 
     return {
         pass,
