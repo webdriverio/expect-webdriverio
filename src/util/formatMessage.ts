@@ -71,7 +71,7 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, browserTargetType?: 'browser' | 'window', showContextUrl?: boolean },
+    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, matchingIndexes?: number[], browserTargetType?: 'browser' | 'window', showContextUrl?: boolean },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
@@ -136,7 +136,7 @@ export const enhanceError = (
     if (isNotInLabel && isElementOrArrayLike(subject) && Array.isArray(expected) && Array.isArray(actual) && expected.length === actual.length) {
         // With multiple elements + `.not`, since `printDiffOrStringify` shows only diff and we need to highlight what matched, we do custom formatting
         // Using FORCE_COLOR=1 npx vitest + console.log() can show colors in the test output console
-        const { expectedFormatted, receivedFormatted } = printArrayWithMatchingItemInRed(expected, actual)
+        const { expectedFormatted, receivedFormatted } = printArrayWithMatchingItemInRed(expected, actual, context.matchingIndexes)
         diffString = `\
 ${label.expected}: ${expectedFormatted}
 ${label.received}: ${receivedFormatted}`
@@ -173,14 +173,11 @@ ${diffString}`
 const printArrayWithMatchingItemInRed = (
     expectedArray: unknown[],
     actualArray: unknown[],
+    matchingIndexes?: number[],
 ): { expectedFormatted: string, receivedFormatted: string } => {
-    // Find matching indices
-    const matchingIndices: number[] = []
-    for (let i = 0; i < expectedArray.length; i++) {
-        if (equals(expectedArray[i], actualArray[i])) {
-            matchingIndices.push(i)
-        }
-    }
+    // The indexes come from the matcher's own comparison, with its string options. Comparing again here cannot follow
+    // it, and would test a sticky or global RegExp a second time: `equals()` is only a fallback.
+    const matchingIndices = matchingIndexes ?? expectedArray.flatMap((item, i) => equals(item, actualArray[i]) ? [i] : [])
 
     // For .not, matching items are the problem - highlight them in red on both sides
     const expectedFormatted = `[${expectedArray

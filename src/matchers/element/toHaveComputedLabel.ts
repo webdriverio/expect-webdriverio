@@ -35,7 +35,7 @@ export async function toHaveComputedLabel(
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: actualLabel, subject: el, context: { isSome } = {}, expected } = await waitUntil(
+    const { success: pass, actual: actualLabel, subject: el, context: { isSome, matchingIndexes } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -53,7 +53,7 @@ export async function toHaveComputedLabel(
         el,
         expected ?? wrapExpectedWithArray(el, actualLabel, expectedValue),
         actualLabel,
-        { isNot, isSome },
+        { isNot, isSome, matchingIndexes },
         verb,
         expectation,
         '',
