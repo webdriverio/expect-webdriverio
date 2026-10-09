@@ -75,7 +75,7 @@ Coverage is on by default, with global thresholds. When you run one file, add
 | One matcher or util | its test file: `pnpm exec vitest --run --coverage.enabled=false <test file>` |
 | Public types (`types/`, `jest.d.ts`, `jasmine*.d.ts`) | `pnpm run build && pnpm run test:types` (`ts:package` installs the packed build) |
 | Failure messages | the unit tests that assert the message, and one playground run |
-| Multi-remote | the unit tests, and `playgrounds/multi-remote-mocha` |
+| Multi-remote | the unit tests, and `pnpm run test:multi-remote` in `playgrounds/mocha` |
 | Snapshot matchers | `test/snapshot.test.ts`, and the Mocha, Jasmine and Browser Runner playgrounds |
 | Docs only (`docs/`, `README.md`) | the multi-remote naming check, and check the links |
 | Before you push | `pnpm run checks:all` |

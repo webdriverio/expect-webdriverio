@@ -18,6 +18,7 @@
   },
   "include": [
     "test/**/*.ts",
-    "wdio.conf.ts"
+    "wdio.conf.ts",
+    "wdio.multi-remote.conf.ts"
   ]
 }

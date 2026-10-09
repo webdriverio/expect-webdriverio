@@ -1,1 +1,3 @@
 .temp/
+# The multi-remote baselines are saved in each run, so that every OS compares its own screenshots
+visual-snapshot/multi-remote/

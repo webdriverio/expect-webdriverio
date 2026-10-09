@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Playground project for testing expect-webdriverio",
+  "description": "Playground project for testing expect-webdriverio, on one browser and on a multi-remote browser",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "wdio run wdio.conf.ts",
+    "test:multi-remote": "wdio run wdio.multi-remote.conf.ts",
     "lint": "eslint .",
-    "checks:all": "pnpm run typecheck && pnpm run lint && pnpm test",
-    "snapshots:update": "pnpm run test --spec snapshot.test.ts --updateSnapshots && pnpm run test --spec visual-snapshot.test.ts --update-visual-baseline"
+    "checks:all": "pnpm run typecheck && pnpm run lint && pnpm test && pnpm run test:multi-remote",
+    "snapshots:update": "pnpm run test --spec test/specs/snapshot.test.ts --updateSnapshots && pnpm run test --spec test/specs/visual-snapshot.test.ts --update-visual-baseline"
   },
   "devDependencies": {
     "@wdio/mocha-framework": "^10.0.1",
-    "eslint-plugin-mocha": "^11.3.0"
+    "eslint-plugin-mocha": "^11.3.0",
+    "strip-ansi": "^7.2.0"
   },
   "peerDependencies": {
     "@wdio/cli": "^10.0.2",

@@ -1,3 +1,0 @@
-.temp/
-# The baselines are saved in each run, so that every OS compares its own screenshots
-visual-snapshot/baseline/

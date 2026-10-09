@@ -2,7 +2,6 @@ packages:
   - jasmine
   - jest
   - mocha
-  - multi-remote-mocha
   - browser-runner
 
 # The WebdriverIO packages depend on `expect-webdriverio`: use the local package, not a release

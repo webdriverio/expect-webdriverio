@@ -167,34 +167,6 @@ importers:
       eslint-plugin-mocha:
         specifier: ^11.3.0
         version: 11.3.0(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))
-
-  multi-remote-mocha:
-    dependencies:
-      '@wdio/cli':
-        specifier: ^10.0.2
-        version: 10.0.2(@types/node@25.9.2)(@wdio/visual-service@10.2.1(expect-webdriverio@+)(webdriverio@10.0.2(supports-color@8.1.1)(yauzl@2.10.0)))(expect-webdriverio@+)(supports-color@8.1.1)(yauzl@2.10.0)
-      '@wdio/globals':
-        specifier: ^10.0.2
-        version: 10.0.2(expect-webdriverio@+)(webdriverio@10.0.2(supports-color@8.1.1)(yauzl@2.10.0))
-      '@wdio/local-runner':
-        specifier: ^10.0.2
-        version: 10.0.2(@wdio/visual-service@10.2.1(expect-webdriverio@+)(webdriverio@10.0.2(supports-color@8.1.1)(yauzl@2.10.0)))(supports-color@8.1.1)(tsx@4.23.15)(webdriverio@10.0.2(supports-color@8.1.1)(yauzl@2.10.0))(yauzl@2.10.0)
-      '@wdio/spec-reporter':
-        specifier: ^10.0.1
-        version: 10.0.1
-      '@wdio/visual-service':
-        specifier: '*'
-        version: 10.2.1(expect-webdriverio@+)(webdriverio@10.0.2(supports-color@8.1.1)(yauzl@2.10.0))
-    devDependencies:
-      '@wdio/mocha-framework':
-        specifier: ^10.0.1
-        version: 10.0.1(supports-color@8.1.1)(yauzl@2.10.0)
-      eslint-plugin-mocha:
-        specifier: ^11.3.0
-        version: 11.3.0(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))
-      expect-webdriverio:
-        specifier: link:../..
-        version: link:../..
       strip-ansi:
         specifier: ^7.2.0
         version: 7.2.0
