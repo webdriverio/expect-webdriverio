@@ -72,6 +72,23 @@ describe('OneOfMatcher', () => {
 
             expect(matcher.toAsymmetricMatcher()).toBe('matchingAtIndex<1>OneOf<"apple">')
         })
+
+        it.each([
+            { options: { trim: true, ignoreCase: false, containing: false, wait: 100 }, name: 'oneOf' },
+            { options: { ignoreCase: true }, name: 'ignoringCaseOneOf' },
+            { options: { trim: false }, name: 'untrimmedOneOf' },
+            { options: { replace: ['a', 'b'] as [string, string] }, name: 'replacingOneOf' },
+            { options: { replace: [] as unknown as [string, string] }, name: 'oneOf' },
+            { options: { containing: true, ignoreCase: true }, name: 'containingIgnoringCaseOneOf' },
+            { options: { atStart: true, trim: false }, name: 'startingWithUntrimmedOneOf' },
+            { options: { atIndex: 2, ignoreCase: true }, name: 'matchingAtIndex<2>IgnoringCaseOneOf' },
+            { options: { ignoreCase: true, replace: ['a', 'b'] as [string, string] }, name: 'ignoringCaseReplacingOneOf' },
+            { options: { trim: false, ignoreCase: true, replace: ['a', 'b'] as [string, string] }, name: 'untrimmedIgnoringCaseReplacingOneOf' },
+        ])('should print only the non-default string options: $name', ({ options, name }) => {
+            const matcher = new OneOfMatcher('apple', 'banana').withOptions(options)
+
+            expect(matcher.toAsymmetricMatcher()).toBe(`${name}<"apple", "banana">`)
+        })
     })
 
     describe('isOneOfMatcher', () => {
