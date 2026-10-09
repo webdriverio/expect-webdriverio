@@ -1035,15 +1035,7 @@ declare global {
          */
         const wdioCustomMatchers: MatchersObject
 
-        interface AssertionResult extends Options.AssertionResult {}
-        type AsyncAssertionResult = Options.AsyncAssertionResult
-        interface AssertionHookParams extends Options.AssertionHookParams {}
-        interface AfterAssertionHookParams extends Options.AfterAssertionHookParams {}
-        interface DefaultOptions extends Options.DefaultOptions {}
-        interface CommandOptions extends Options.CommandOptions {}
-        interface HTMLOptions extends Options.HTMLOptions {}
-        interface StringOptions extends Options.StringOptions {}
-        interface ToBeDisplayedOptions extends Options.ToBeDisplayedOptions {}
+        // AssertionResult, AsyncAssertionResult, the hook parameters and the options: in `./options.ts`
         type NumberMatcher = Options.NumberMatcher
 
         type RequestedWith = {

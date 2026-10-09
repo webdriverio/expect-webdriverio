@@ -11,4 +11,14 @@ declare namespace ExpectWebdriverIO {
         toBeCustomWdio(): R;
         toBeCustomPromiseWdio: T extends ChainablePromiseElement ? (expected?: string | ExpectWebdriverIO.PartialMatcher<string> | Promise<ExpectWebdriverIO.PartialMatcher<string>>) => Promise<R> : never;
     }
+    // A field added to a base option interface must reach every option type that extends it
+    interface DefaultOptions {
+        customDefaultOption?: string
+    }
+    interface CommandOptions {
+        customCommandOption?: string
+    }
+    interface AssertionHookParams {
+        customHookParam?: string
+    }
 }

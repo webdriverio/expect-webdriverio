@@ -885,6 +885,21 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableElement).toBeCustomPromiseWdio).parameter(0).extract<number>().toBeNever()
             })
 
+            it('should give a field added to a base option interface to the option types that extend it', async () => {
+                expectTypeOf<ExpectWebdriverIO.CommandOptions['customDefaultOption']>().toEqualTypeOf<string | undefined>()
+                expectTypeOf<ExpectWebdriverIO.StringOptions['customDefaultOption']>().toEqualTypeOf<string | undefined>()
+                expectTypeOf<ExpectWebdriverIO.StringOptions['customCommandOption']>().toEqualTypeOf<string | undefined>()
+                expectTypeOf<ExpectWebdriverIO.HTMLOptions['customCommandOption']>().toEqualTypeOf<string | undefined>()
+                expectTypeOf<ExpectWebdriverIO.ToBeDisplayedOptions['customCommandOption']>().toEqualTypeOf<string | undefined>()
+                expectTypeOf<ExpectWebdriverIO.AfterAssertionHookParams['customHookParam']>().toEqualTypeOf<string | undefined>()
+                // The hooks of the options get the added field
+                expectTypeOf<Parameters<NonNullable<ExpectWebdriverIO.StringOptions['beforeAssertion']>>[0]['customHookParam']>().toEqualTypeOf<string | undefined>()
+
+                expectTypeOf(expect(element).toHaveText('text', { customCommandOption: 'value' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toBeDisplayed({ customCommandOption: 'value' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveTitle('title', { customDefaultOption: 'value' })).toEqualTypeOf<Promise<void>>()
+            })
+
             it('should support custom asymmetric matcher', async () => {
                 expectTypeOf(expect.toBeCustomWdio()).toEqualTypeOf<ExpectWebdriverIO.PartialMatcher<string>>()
                 expectTypeOf(expect.not.toBeCustomWdio()).toEqualTypeOf<ExpectWebdriverIO.PartialMatcher<string>>()
