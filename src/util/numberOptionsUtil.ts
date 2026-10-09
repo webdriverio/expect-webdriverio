@@ -1,8 +1,11 @@
 import { AsymmetricMatcher } from 'expect'
 import { isMultiRemoteMatcher } from './multiRemoteUtils.js'
 import { isOneOfMatcher } from '../matchers/asymmetrics/oneOf.js'
+import { isAsymmetricMatcher, isListMatcher } from './asymmetricMatcherUtil.js'
+import { stringify } from 'jest-matcher-utils'
 import type { NumberMatcher as PublicNumberMatcher } from '../publicTypes/options.js'
 import type { ExpectedOf } from '../publicTypes/expectWebdriverIO.js'
+import { equals } from '../jasmineUtils.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
 export const isDefinedNotNumber = (value: unknown) => value !== undefined && !isNumber(value)
@@ -32,6 +35,11 @@ export function validateNumberMatcher(
             throw new Error(`Invalid NumberMatcher. Received: ${JSON.stringify(expectedValue)}`)
         }
         return new NumberMatcher({ oneOf: values })
+    }
+    // Another asymmetric matcher, as in `toEqual`, e.g. `expect.closeTo(150, 0)` for a size that the browser rounds. Not
+    // per-instance values (`expect.multiRemote()`) or a list matcher: a wrong use, which throws below
+    if (isAsymmetricMatcher(expectedValue) && !isMultiRemoteMatcher(expectedValue) && !isListMatcher(expectedValue)) {
+        return new NumberMatcher({ matcher: expectedValue })
     }
     // Left: a range. The type guard of `expect.oneOf()` names its class, so the public `oneOf` type stays in the union
     const range = expectedValue as PublicNumberMatcher | undefined
@@ -72,7 +80,10 @@ export function validateNumberMatcherArray(
 }
 
 /** The bounds of a valid `PublicNumberMatcher`, after `validateNumberMatcher()` */
-type NumberBounds = { eq?: number, gte?: number, lte?: number, oneOf?: number[] }
+type NumberBounds = { eq?: number, gte?: number, lte?: number, oneOf?: number[], matcher?: NumberAsymmetricMatcher }
+
+/** An asymmetric matcher of Jest or Jasmine, e.g. `expect.closeTo()`, `expect.any(Number)` or `jasmine.any(Number)` */
+type NumberAsymmetricMatcher = { asymmetricMatch(actual: unknown, matchersUtil?: unknown): boolean, toAsymmetricMatcher?: () => string, jasmineToString?: (prettyPrint: (value: unknown) => string) => string }
 
 /**
  * Using a class to univerally handle number matching and stringification the same way everywhere and with Global Apis like equal() toString() and toJSON()
@@ -96,6 +107,11 @@ export class NumberMatcher extends AsymmetricMatcher<number | NumberBounds> {
 
         if (this.sample.oneOf) {
             return this.sample.oneOf.includes(actual)
+        }
+
+        // Through `equals()`, as in `toEqual`: it gives the `matchersUtil` that a Jasmine matcher uses as its second argument
+        if (this.sample.matcher) {
+            return equals(actual, this.sample.matcher)
         }
 
         if (isNumber(this.sample.eq)) {
@@ -124,6 +140,11 @@ export class NumberMatcher extends AsymmetricMatcher<number | NumberBounds> {
 
         if (this.sample.oneOf) {
             return `oneOf<${this.sample.oneOf.join(', ')}>`
+        }
+
+        if (this.sample.matcher) {
+            const { matcher } = this.sample
+            return matcher.toAsymmetricMatcher?.() ?? matcher.jasmineToString?.(stringify) ?? stringify(matcher)
         }
 
         if (isNumber(this.sample.eq)) {

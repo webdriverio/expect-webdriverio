@@ -206,7 +206,7 @@ await expect($$('li')).toHaveText(['Foo', 'Bar'], { ignoreCase: true })
 
 ##### Number Matcher
 
-Number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`, `toBeRequestedTimes`, and each field of `toHaveSize`) take a number, a `NumberMatcher`, or `expect.oneOf()` with numbers as the expected value, and the command options as the next argument, e.g. `toHaveWidth({ gte: 32 }, { wait: 0 })`.
+Number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`, `toBeRequestedTimes`, and each field of `toHaveSize`) take a number, a `NumberMatcher`, `expect.oneOf()` with numbers, or an asymmetric matcher as the expected value, and the command options as the next argument, e.g. `toHaveWidth({ gte: 32 }, { wait: 0 })`.
 
 | Name | Type | Details |
 | ---- | ---- | ------- |
@@ -217,6 +217,8 @@ Number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsA
 Give `eq` alone, or a range with `gte`, `lte` or both. The types reject `{}` and `eq` with `gte` or `lte`.
 
 `expect.oneOf()` with numbers is one of these numbers, which a range cannot say: `toHaveWidth(expect.oneOf(100, 200))` passes for 100 or 200, and fails for 150.
+
+An asymmetric matcher compares the number as in `toEqual`, e.g. `expect.closeTo(150.4, 0)` for a size that the browser rounds, and `expect.not.closeTo()`. A list matcher (`expect.arrayContaining()`…) throws, and `expect.multiRemote()` is only for the multi-remote elements and mocks.
 
 ##### Deep Equality
 
@@ -798,6 +800,9 @@ await expect(logo).toHaveWidth({ gte: 32, lte: 34 })
 
 // One of these widths, and nothing between
 await expect(logo).toHaveWidth(expect.oneOf(32, 64))
+
+// A width that the browser rounds
+await expect(logo).toHaveWidth(expect.closeTo(32.4, 0))
 ```
 
 ### toHaveHeight
@@ -821,7 +826,7 @@ await expect(logo).toHaveHeight({ gte: 32, lte: 34 })
 
 ### toHaveSize
 
-Checks if element has a specific size, with [deep equality](#deep-equality). Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), or `expect.oneOf()` with numbers. The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only. An invalid field value throws, as in `toHaveWidth`, e.g. `{}`, `gte` greater than `lte`, a string or `NaN`. A range is converted only in the fields of the size, not inside an asymmetric matcher: for one field with a range, write `{ width: { gte: 30 }, height: expect.any(Number) }`.
+Checks if element has a specific size, with [deep equality](#deep-equality). Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), or `expect.oneOf()` with numbers. The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only. An invalid field value throws, as in `toHaveWidth`, e.g. `{}`, `gte` greater than `lte`, a string, `NaN` or a list matcher. A range is converted only in the fields of the size, not inside an asymmetric matcher: for one field with a range, write `{ width: { gte: 30 }, height: expect.any(Number) }`.
 
 ##### Usage
 

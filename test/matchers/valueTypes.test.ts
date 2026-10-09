@@ -150,6 +150,8 @@ describe('the number matchers compare each value the same way', () => {
         'oneOf with it': (actual) => wdioExpect.oneOf(actual + 5, actual), 'oneOf without it': (actual) => wdioExpect.oneOf(actual + 5, actual + 6),
         'invalid {}': () => ({}), 'invalid { foo }': () => ({ foo: 1 }), 'invalid range': () => ({ gte: 5, lte: 1 }), 'invalid string': (actual) => String(actual),
         'invalid NaN': () => NaN, 'invalid oneOf of strings': (actual) => wdioExpect.oneOf(String(actual)), 'invalid empty oneOf': () => wdioExpect.oneOf(),
+        'closeTo near': (actual) => wdioExpect.closeTo(actual + 0.2, 0), 'closeTo far': (actual) => wdioExpect.closeTo(actual + 2, 0),
+        'not.closeTo': (actual) => wdioExpect.not.closeTo(actual, 0), 'any(Number)': () => wdioExpect.any(Number), 'invalid list matcher': (actual) => wdioExpect.arrayContaining([actual]),
     }
 
     test('each matcher gives the result of toHaveWidth', async () => {
@@ -180,6 +182,9 @@ describe('the number matchers compare each value the same way', () => {
         { expected: wdioExpect.oneOf(1, 3), result: 'fail' },
         { expected: {}, result: 'throws Invalid NumberMatcher. ' },
         { expected: '2', result: 'throws Invalid NumberMatcher. ' },
+        { expected: wdioExpect.closeTo(2.2, 0), result: 'pass' },
+        { expected: wdioExpect.closeTo(4, 0), result: 'fail' },
+        { expected: wdioExpect.arrayContaining([2]), result: 'throws Invalid NumberMatcher. ' },
     ])('the reference: a width of 2 with $expected: $result', async ({ expected, result }) => {
         expect((await outcome(() => matchers[0].run(2, expected, false))).result).toBe(result)
     })
