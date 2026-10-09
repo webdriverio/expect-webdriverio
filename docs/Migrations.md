@@ -182,6 +182,15 @@ expect(tags).toEqual(expect.multiRemote({ chrome: new Set(['a', 'b']), firefox: 
 
 These values keep their content out of their own keys, so before, 2 different ones were equal: an assertion on them passed by mistake, and now fails. With WebdriverIO v10 and BiDi, `browser.execute()` returns real `Set` and `Map` values, and so does `getProperty()` for an element of a frame or of another tab (in the current context, it gives `{}`). A proxy without a handler of one of these values now throws a `TypeError`, as in Jest. An object that has only the type tag (`Symbol.toStringTag`) of one of these types is compared as a plain object, and is not equal to a real value of the type. A detached buffer, or a data view out of the bounds of a resized buffer, has no bytes.
 
+## The public types come from `lib/`
+
+The types are emitted from the source to `lib/**/*.d.ts`, and `types/expect-webdriverio.d.ts` does not exist anymore. Use the entry points of the package: `expect-webdriverio`, `expect-webdriverio/jest`, `expect-webdriverio/jasmine` or `expect-webdriverio/expect-global`, not a file path.
+
+```diff
+- /// <reference path="./node_modules/expect-webdriverio/types/expect-webdriverio.d.ts" />
++ /// <reference types="expect-webdriverio" />
+```
+
 ## Removed deprecated APIs
 
 v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#migration-guide-v5-to-v6) below.
