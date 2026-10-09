@@ -3,6 +3,7 @@ import { executeCommandWithStrategy, multipleElementResultsStrategy } from '../.
 import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../__mocks__/@wdio/globals'
 import { $ } from '@wdio/globals'
 import { multiRemote, some } from '../../src/api/index.js'
+import { refreshElementArray, synchronizeElementArray } from '../../src/util/refetchElements.js'
 
 vi.mock('@wdio/globals')
 
@@ -619,6 +620,65 @@ describe('executeCommand', () => {
 
                 expect(result.success).toBe(false)
                 expect(result.actual).toEqual({ chrome: ['item0', 'item1', 'item2'], firefox: ['item0', 'item1'] })
+            })
+
+            it('compares the elements fetched again on a retry, not on the first try', async () => {
+                const elements = createMultiRemoteElementArrayMock(browsers(), 'sel', 1)
+                const refetched = createMultiRemoteElementArrayMock(browsers(), 'sel', 2)
+                vi.mocked(refreshElementArray).mockClear().mockImplementationOnce(async (subject) => {
+                    synchronizeElementArray(subject, refetched as typeof subject)
+                    return subject
+                })
+                const run = (iteration: number) => executeCommandWithStrategy({
+                    unresolvedElements: elements,
+                    expectedValues: expect.arrayContaining(['item1']),
+                    supportsArrayContaining: 'arrayOnly',
+                    singleElementCompare: async (_el, _expected, index) => ({ success: false, actual: `item${index}` }),
+                    context: { isNot: false, iteration },
+                })
+
+                expect((await run(0)).success).toBe(false)
+                expect(refreshElementArray).not.toHaveBeenCalled()
+
+                const retry = await run(1)
+                expect(refreshElementArray).toHaveBeenCalledExactlyOnceWith(elements)
+                expect(retry.success).toBe(true)
+                expect(retry.actual).toEqual({ chrome: ['item0', 'item1'], firefox: ['item0', 'item1'] })
+            })
+
+            it('throws the error of the first element when several elements throw, as for one browser', async () => {
+                const result = executeCommandWithStrategy({
+                    unresolvedElements: createMultiRemoteElementArrayMock(browsers(), 'sel', 2),
+                    expectedValues: expect.arrayContaining(['item1']),
+                    supportsArrayContaining: 'arrayOnly',
+                    singleElementCompare: async (_el, _expected, index) => {
+                        // The second element throws first
+                        if (index === 0) {
+                            await Promise.resolve()
+                            await Promise.resolve()
+                        }
+                        throw new Error(`element ${index}`)
+                    },
+                    context: { isNot: false, iteration: 0 },
+                })
+
+                await expect(result).rejects.toThrow('element 0')
+            })
+
+            it('retries (no abort) when empty since the MultiRemoteElementArray can be refetched', async () => {
+                const compare = vi.fn()
+
+                const result = await executeCommandWithStrategy({
+                    unresolvedElements: createMultiRemoteElementArrayMock(browsers(), 'sel', 0),
+                    expectedValues: expect.arrayContaining([]),
+                    supportsArrayContaining: 'arrayOnly',
+                    singleElementCompare: compare,
+                    context: { isNot: false, iteration: 0 },
+                })
+
+                expect(result).toEqual(expect.objectContaining({ success: false, actual: undefined }))
+                expect(result.abort).toBeFalsy()
+                expect(compare).not.toHaveBeenCalled()
             })
         })
     })
