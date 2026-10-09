@@ -7,8 +7,8 @@ import { validateNumberMatcherArray } from '../../util/numberOptionsUtil.js'
 import {
     enhanceError,
     waitUntil,
-    wrapExpectedWithArray
 } from '../../utils.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
 
 async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher | undefined): Promise<CompareResult<number | null>> {
@@ -90,7 +90,7 @@ export async function toHaveChildren(
         { wait: options.wait, interval: options.interval }
     )
 
-    const expectedArray = expected ?? wrapExpectedWithArray(subject, children, expectedNumber)
+    const expectedArray = expected ?? fillSingleExpectedForElementArray(subject, expectedNumber)
     const message = enhanceError(subject, expectedArray, children, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
     const result: AssertionResult = {
         pass,

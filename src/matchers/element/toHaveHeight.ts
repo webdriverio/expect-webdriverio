@@ -1,6 +1,6 @@
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
-import { wrapExpectedWithArray } from '../../util/elementsUtil.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
@@ -76,7 +76,7 @@ export async function toHaveHeight(
         { wait: options.wait, interval: options.interval }
     )
 
-    const expectedValues = expected ?? wrapExpectedWithArray(elements, actualHeight, expectedNumber)
+    const expectedValues = expected ?? fillSingleExpectedForElementArray(elements, expectedNumber)
     const message = enhanceError(
         elements,
         expectedValues,

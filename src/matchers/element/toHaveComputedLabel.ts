@@ -5,8 +5,8 @@ import {
     compareTextOrOneOf,
     enhanceError,
     waitUntil,
-    wrapExpectedWithArray
 } from '../../utils.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
@@ -35,7 +35,7 @@ export async function toHaveComputedLabel(
         options,
     })
 
-    expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
+    const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
     const { success: pass, actual: actualLabel, subject: el, context: { isSome, matchingIndexes } = {}, expected, verdict, compared } = await waitUntil(
         async (iteration) => {
@@ -43,7 +43,7 @@ export async function toHaveComputedLabel(
                 unresolvedElements: received,
                 supportsArrayContaining: 'arrayOnly',
                 matcherName,
-                expectedValues: expectedValue,
+                expectedValues: expectedWithOptions,
                 singleElementCompare: (element, expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
                 context: { isNot, iteration },
             })
@@ -54,7 +54,7 @@ export async function toHaveComputedLabel(
 
     const message = enhanceError(
         el,
-        withStringOptions(expected ?? wrapExpectedWithArray(el, actualLabel, expectedValue), verdict, options, actualLabel),
+        withStringOptions(expected ?? fillSingleExpectedForElementArray(el, expectedWithOptions), verdict, options, actualLabel),
         actualLabel,
         { isNot, isSome, matchingIndexes, stringOptions: options, compared },
         verb,

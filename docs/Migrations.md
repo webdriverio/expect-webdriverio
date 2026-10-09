@@ -35,6 +35,8 @@ The `matcherName` given to the `beforeAssertion` and `afterAssertion` hooks is n
 | `toHaveValue` | `toHaveElementProperty` | `toHaveValue` |
 | `toBeRequested` | `toBeRequestedTimes` | `toBeRequested` |
 
+The `expectedValue` given to `afterAssertion` is now the value that you gave, the same as for `beforeAssertion`. Before, `toHaveText`, `toHaveComputedLabel`, `toHaveComputedRole` and `toHaveElementProperty` gave it after the string options changed it, e.g. `ignoringCaseOneOf<"a", "b">` for `expect.oneOf('a', 'b')` with `ignoreCase`.
+
 ## `toHaveText` on multiple elements
 
 The strict strategy of the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is now the only one. The flag, `setFeatureFlags()`, the `featureFlags` option and the `ExpectWebdriverIO.FeatureFlags` type are removed. The internal `utils.compareTextWithArray()` and `utils.getFeatureFlagValue()` are also removed.
@@ -150,6 +152,18 @@ The failure messages of the string matchers changed, see [String Options](API.md
 - A Jasmine asymmetric matcher is printed as a matcher (`<jasmine.anything>`), not as a string (`"<jasmine.anything>"`).
 
 If a test checks the exact failure message, update it.
+
+## The expected value of an empty `$$()`
+
+When `$$()` finds no element, the failure message shows the expected value in an array, as for a `$$()` with elements: a `$$()` expects a list of values. Before, only `toHaveText` did it; the other element matchers showed the value alone.
+
+```diff
+  Expect $$(`li`) to have HTML
+
+- Expected: "Coffee"
++ Expected: ["Coffee"]
+  Received: undefined
+```
 
 ## Multi-remote `$$()` and `select()`
 

@@ -494,7 +494,7 @@ Expect ${selectorName} to have size
             expect(stripAnsi(result.message())).toEqual(`\
 Expect [] to have size
 
-Expected: {"height": 32, "width": 32}
+Expected: [{"height": 32, "width": 32}]
 Received: undefined`)
         })
     })
