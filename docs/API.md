@@ -657,17 +657,21 @@ await expect($('#elem')).toHaveId('elem')
 
 Checks if an element has specific `CSS` properties. By default, values must match exactly. Only the `CSS` properties you specify are validated; other properties on the element are ignored. Each value is compared as in `toHaveText`: the [string options](#string-options) apply to each value (`trim` removes surrounding spaces from the actual value only and leaves the expected value unchanged), and a value can be a RegExp, an asymmetric matcher or `expect.oneOf()`. The failure message shows each CSS value as is, and the value that the matcher compared.
 
+The actual value is the one of [`getCSSProperty()`](https://webdriver.io/docs/api/element/getCSSProperty), which WebdriverIO normalizes: lowercase and trimmed, a color as `rgba(r,g,b,a)` with no spaces (not `white`, `#fff` or `rgb(255, 255, 255)`), and only the first font of `font-family`. Write the expected value in this form, or use `ignoreCase` for the case.
+
 ##### Usage
 
 ```js
-await expect($('#elem')).toHaveStyle({
-  'font-family': 'Faktum',
-  'font-weight': '500',
-  'font-size': '12px',
+// The <h1> of a page: color `rgb(255, 255, 255)`, font-family `"Helvetica Neue", Helvetica, Arial`
+await expect($('h1')).toHaveStyle({
+  'color': 'rgba(255,255,255,1)',
+  'font-family': 'helvetica neue',
+  'font-weight': '700',
+  'font-size': '16px',
 })
-await expect($('#elem')).toHaveStyle({
-  'font-family': expect.stringContaining('Faktum'),
-  'color': expect.oneOf('rgba(0, 0, 0, 1)', 'rgba(255, 255, 255, 1)'),
+await expect($('h1')).toHaveStyle({ 'font-family': 'Helvetica Neue' }, { ignoreCase: true })
+await expect($('h1')).toHaveStyle({
+  'color': expect.oneOf('rgba(0,0,0,1)', 'rgba(255,255,255,1)'),
   'font-size': /^1[0-9]px$/,
 })
 ```
