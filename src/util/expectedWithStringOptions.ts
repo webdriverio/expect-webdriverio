@@ -1,7 +1,7 @@
 import { stringify } from 'jest-matcher-utils'
 import { WdioAsymmetricMatchers } from '../matchers/asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../matchers/asymmetrics/oneOf.js'
-import { isArrayContainingMatcher, isAsymmetricMatcher } from './asymmetricMatcherUtil.js'
+import { isAsymmetricMatcher, isListMatcher } from './asymmetricMatcherUtil.js'
 import { isMultiRemoteMatcher } from './multiRemoteUtils.js'
 import { stringOptionsName } from './stringOptionsName.js'
 
@@ -50,7 +50,7 @@ export class StringOptionsMatcher extends WdioAsymmetricMatchers<ExpectedLeaf> {
 /** A string, a RegExp, or an asymmetric matcher for one value (not for a list, nor the per-instance values) */
 const isExpectedLeaf = (value: unknown): value is ExpectedLeaf =>
     typeof value === 'string' || value instanceof RegExp
-    || (isAsymmetricMatcher(value) && !isArrayContainingMatcher(value) && !isMultiRemoteMatcher(value) && !(value instanceof StringOptionsMatcher))
+    || (isAsymmetricMatcher(value) && !isListMatcher(value) && !isMultiRemoteMatcher(value) && !(value instanceof StringOptionsMatcher))
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === 'object' && value !== null && Object.getPrototypeOf(value) === Object.prototype

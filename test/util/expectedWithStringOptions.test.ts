@@ -60,6 +60,7 @@ describe(withStringOptions, () => {
         { name: 'a number', expected: 42, verdict: true },
         { name: 'null', expected: null, verdict: false },
         { name: 'a list matcher', expected: wdioExpect.arrayContaining(['Foo']), verdict: true },
+        { name: 'expect.arrayOf()', expected: wdioExpect.arrayOf('Foo'), verdict: true },
         { name: 'expect.multiRemote()', expected: wdioExpect.multiRemote({ chrome: 'Foo' }), verdict: true },
         { name: 'an array without a verdict for each element', expected: ['Foo'], verdict: true },
     ])('does not change $name', ({ expected, verdict }) => {
