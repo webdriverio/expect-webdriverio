@@ -505,6 +505,22 @@ Received: ""`
             expect(result.pass).toBe(true)
         })
 
+        test('throws at once for 2 position options together, also on an empty $$() that would wait', async () => {
+            vi.useFakeTimers()
+            try {
+                const start = Date.now()
+
+                await Promise.all([
+                    expect(wdioExpect(chainableElementArrayFactory('li', 0)).toHaveText('ed', { containing: true, atStart: true, wait: 2000 }))
+                        .rejects.toThrow('The string options containing and atStart cannot be used together'),
+                    vi.runAllTimersAsync(),
+                ])
+                expect(Date.now()).toBe(start)
+            } finally {
+                vi.useRealTimers()
+            }
+        })
+
         test.each([false, true])('throws at once for 2 position options together, with .not: %s', async (isNot) => {
             vi.useFakeTimers()
             try {

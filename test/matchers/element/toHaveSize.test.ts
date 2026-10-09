@@ -662,6 +662,12 @@ Expect $(\`sel\`) to have size
             expect(perInstance.pass).toBe(true)
         })
 
+        test('converts a range in a size made by a class, as in a plain object', async () => {
+            const result = await thisContext.toHaveSize(el, new (class ExpectedSize { width = { gte: 30 }; height = 20 })() as never, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
         test('throws on an invalid range, as toHaveWidth', async () => {
             await expect(thisContext.toHaveSize(el, { width: { gte: 40, lte: 30 }, height: 20 } as never, { wait: 0 }))
                 .rejects.toThrow("Invalid NumberMatcher range: 'gte' (40) cannot be greater than 'lte' (30).")

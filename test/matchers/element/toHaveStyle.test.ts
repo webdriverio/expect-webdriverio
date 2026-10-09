@@ -605,6 +605,20 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have style
             vi.mocked(el.getCSSProperty).mockImplementation(async (property: string) => ({ value: css[property], parsed: {} }))
         })
 
+        test('applies the string options to expect.oneOf() in the styles of $$() and of expect.multiRemote()', async () => {
+            const elements = await $$('sel')
+            elements.forEach((element) => vi.mocked(element.getCSSProperty).mockResolvedValue({ value: 'block', parsed: {} }))
+            const multiRemoteElements = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel', 1)
+            multiRemoteElements.forEach((element) => ['chrome', 'firefox'].forEach((name) =>
+                vi.mocked(element.getInstance(name).getCSSProperty).mockResolvedValue({ value: 'block', parsed: {} })))
+
+            const result = await thisContext.toHaveStyle(elements, elements.map(() => ({ display: wdioExpect.oneOf('BLOCK') })) as never, { wait: 0, ignoreCase: true })
+            const perInstance = await thisContext.toHaveStyle(multiRemoteElements, multiRemote({ chrome: [{ display: wdioExpect.oneOf('BLOCK') }], firefox: [{ display: 'block' }] }), { wait: 0, ignoreCase: true })
+
+            expect(result.pass).toBe(true)
+            expect(perInstance.pass).toBe(true)
+        })
+
         test('applies replace before a position option', async () => {
             const result = await thisContext.toHaveStyle(el, { color: 'GRE' }, { wait: 0, containing: true, replace: ['RED', 'GREEN'] })
 

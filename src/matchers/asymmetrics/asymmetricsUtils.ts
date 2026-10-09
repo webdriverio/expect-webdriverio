@@ -1,5 +1,6 @@
 import { AsymmetricMatcher } from 'expect'
 import { isAsymmetricMatcher } from '../../util/asymmetricMatcherUtil.js'
+import { assertOnePositionOption } from '../../util/compareText.js'
 import type { StringOptions } from '../../publicTypes/options.js'
 
 /**
@@ -8,8 +9,11 @@ import type { StringOptions } from '../../publicTypes/options.js'
  */
 export const buildWdioAsymmetricMatchersWithOptions = <T>(expectedValue: T, options: StringOptions | undefined): T => {
     if (options) {
+        // Each string matcher applies its options here first: a wrong use throws before any element is read
+        assertOnePositionOption(options)
+        // Also in the values of `$$()`, e.g. the styles of `toHaveStyle([{ display: expect.oneOf('block') }])`
         if (Array.isArray(expectedValue)) {
-            return expectedValue.map((value) => buildOneAsymmetricMatcherWithOptions(value, options)) as unknown as T
+            return expectedValue.map((value) => buildWdioAsymmetricMatchersWithOptions(value, options)) as unknown as T
         }
         // Multi-remote per-instance values, e.g. `{ chrome: expect.oneOf(...), firefox: [expect.oneOf(...)] }`
         if (isPlainObject(expectedValue)) {

@@ -13,6 +13,7 @@ import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatc
 import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
 import { multiRemote } from '../asymmetrics/multiRemote.js'
+import { isAsymmetricMatcher } from '../../util/asymmetricMatcherUtil.js'
 
 export type Size = Pick<RectReturn, 'width' | 'height'>
 /** A number or a `NumberMatcher` for each field, or an asymmetric matcher, e.g. `expect.objectContaining()` */
@@ -22,6 +23,10 @@ const SIZE_FIELDS = ['width', 'height']
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === 'object' && value !== null && Object.getPrototypeOf(value) === Object.prototype
+
+/** A size: a plain object or a class instance, not an asymmetric matcher (e.g. `expect.objectContaining()`) */
+const isSizeObject = (value: unknown): value is Record<string, unknown> =>
+    typeof value === 'object' && value !== null && !Array.isArray(value) && !isAsymmetricMatcher(value)
 
 /**
  * A number range on a field, e.g. `{ width: { gte: 50 }, height: 50 }`, becomes a `NumberMatcher`, as in `toHaveWidth`:
@@ -34,7 +39,7 @@ const withNumberMatcherFields = (expected: unknown): unknown => {
     if (isMultiRemoteMatcher(expected)) {
         return multiRemote(Object.fromEntries(Object.entries(expected.sample).map(([name, value]) => [name, withNumberMatcherFields(value)])))
     }
-    if (isPlainObject(expected)) {
+    if (isSizeObject(expected)) {
         return Object.fromEntries(Object.entries(expected).map(([field, value]) =>
             [field, SIZE_FIELDS.includes(field) && isPlainObject(value) ? validateNumberMatcher(value as PublicNumberMatcher) : value]))
     }
