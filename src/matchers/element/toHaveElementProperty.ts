@@ -14,6 +14,7 @@ import {
 } from '../../utils.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
+import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -128,7 +129,7 @@ export async function toHaveElementProperty(
 
     value = buildWdioAsymmetricMatchersWithOptions(value, options)
 
-    const { success: pass, actual: actualProppertyValue, subject: elements, context: { isSome, matchingIndexes } = {}, expected: expectedValues } = await waitUntil(
+    const { success: pass, actual: actualProppertyValue, subject: elements, context: { isSome, matchingIndexes } = {}, expected: expectedValues, verdict } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -146,7 +147,7 @@ export async function toHaveElementProperty(
     )
 
     const expected = expectedValues ?? wrapExpectedWithArray(elements, actualProppertyValue, value)
-    const message = enhanceError(elements, expected, actualProppertyValue, { isNot, isSome, matchingIndexes }, verb, expectation, property, options)
+    const message = enhanceError(elements, withStringOptions(expected, verdict, options, actualProppertyValue), actualProppertyValue, { isNot, isSome, matchingIndexes, stringOptions: options }, verb, expectation, property, options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

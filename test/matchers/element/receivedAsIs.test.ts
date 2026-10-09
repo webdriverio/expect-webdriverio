@@ -59,6 +59,6 @@ describe.each([
         vi.mocked(elements[1][getter]).mockResolvedValue('other' as never)
 
         await expect(assert(wdioExpect(elements) as never, { wait: 0 })).rejects.toThrow()
-        expect(vi.mocked(INVERTED_COLOR).mock.calls.map(([value]) => value)).toEqual(['"foo"', '"  foo  "'])
+        expect(vi.mocked(INVERTED_COLOR).mock.calls.map(([value]) => value)).toEqual(['trimmed<"foo">', '"  foo  "'])
     })
 })

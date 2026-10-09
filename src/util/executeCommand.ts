@@ -18,6 +18,12 @@ export type StrategyResult<Actual, Subject = WebdriverIO.Element | WebdriverIO.E
      *   (string options, each class...): the failure message of `.not` highlights them
      */
     context?: { isSome: boolean, matchingIndexes?: number[] };
+    /**
+     * Whether each element or instance matched, with the matcher's own comparison, in the shape of `actual`: a boolean
+     * for one element or browser, an array for `$$()`, per-instance values for multi-remote. Not set on a structural
+     * failure. The failure message uses it to show an element that passed as no difference.
+     */
+    verdict?: unknown;
 } & CompareResult<Actual | MultiRemoteValues<Actual> | undefined>
 
 /**
@@ -214,7 +220,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         const compareResult = await singleElementCompare(selector, forceFailure ? undefined : expectedValues as MaybeArray<Expected>)
         const success = forceFailure ? !!isNot : compareResult.success
 
-        return { subject, success, actual: compareResult.actual, abort: forceFailure, context: { isSome } }
+        return { subject, success, actual: compareResult.actual, abort: forceFailure, context: { isSome }, verdict: forceFailure ? undefined : compareResult.success }
     }
 
     // --- Multi-remote $() single element & $$() multiple elements cases ---
@@ -272,11 +278,12 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
      * evaluate element results — the arrays can never match as-is.
      */
     const matchingIndexes = results.flatMap(({ success }, index) => success ? [index] : [])
+    const verdict = results.map(({ success }) => success)
     if (lengthMismatch) {
-        return { subject, success: !!isNot, actual, context: { isSome, matchingIndexes } }
+        return { subject, success: !!isNot, actual, context: { isSome, matchingIndexes }, verdict }
     }
 
-    return { subject, success: computeSuccess([results], { isNot, isSome }), actual, context: { isSome, matchingIndexes } }
+    return { subject, success: computeSuccess([results], { isNot, isSome }), actual, context: { isSome, matchingIndexes }, verdict }
 }
 
 /**
@@ -316,6 +323,7 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     })
 
     const actualPerInstance: MultiRemoteValuesWithArray<Actual> = {}
+    const verdictPerInstance: MultiRemoteValues<boolean | boolean[]> = {}
     const resultsPerInstance = await Promise.all(instances.map(async (instance) => {
         const isExpected = instance in expectedPerInstance
         const instanceValue = expectedPerInstance[instance]
@@ -335,10 +343,12 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
         const actuals = results.map(({ actual }) => actual)
         if (isSingleElement) {
             actualPerInstance[instance] = actuals[0]
+            verdictPerInstance[instance] = results[0]?.success
         } else {
             // Pad for display when that instance expects more entries than it has elements
-            const expectedLength = Array.isArray(instanceValue) ? instanceValue.length : 0
-            actualPerInstance[instance] = [...actuals, ...Array(Math.max(expectedLength - actuals.length, 0)).fill(undefined)]
+            const padding = Math.max((Array.isArray(instanceValue) ? instanceValue.length : 0) - actuals.length, 0)
+            actualPerInstance[instance] = [...actuals, ...Array(padding).fill(undefined)]
+            verdictPerInstance[instance] = [...results.map(({ success }) => success), ...Array(padding).fill(false)]
         }
         return results
     }))
@@ -353,10 +363,10 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
         return { subject, success: !!isNot, abort: true, actual: actualPerInstance, context: { isSome }, expected }
     }
     if (lengthMismatch) {
-        return { subject, success: !!isNot, actual: actualPerInstance, context: { isSome }, expected }
+        return { subject, success: !!isNot, actual: actualPerInstance, context: { isSome }, expected, verdict: verdictPerInstance }
     }
 
-    return { subject, success: computeSuccess(resultsPerInstance, { isNot, isSome }), actual: actualPerInstance, context: { isSome }, expected }
+    return { subject, success: computeSuccess(resultsPerInstance, { isNot, isSome }), actual: actualPerInstance, context: { isSome }, expected, verdict: verdictPerInstance }
 }
 
 /**

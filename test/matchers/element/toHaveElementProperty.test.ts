@@ -174,7 +174,7 @@ Received      : "iphone"`)
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property myPropertyName
 
-Expected: "<jasmine.anything>"
+Expected: <jasmine.anything>
 Received: null`
                 )
             })
@@ -830,7 +830,7 @@ Received      : ["iphone", null]`)
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`sel\`) not to have property myPropertyName
 
-Expected [not]: ["<jasmine.anything>", "<jasmine.anything>"]
+Expected [not]: [<jasmine.anything>, <jasmine.anything>]
 Received      : ["iphone", null]`)
                 })
             })

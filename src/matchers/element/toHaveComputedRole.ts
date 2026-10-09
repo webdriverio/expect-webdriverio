@@ -8,6 +8,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
+import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 
 async function singleElementCompare(
     element: WebdriverIO.Element,
@@ -34,7 +35,7 @@ export async function toHaveComputedRole(
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: actualRole, subject: el, context: { isSome, matchingIndexes } = {}, expected } = await waitUntil(
+    const { success: pass, actual: actualRole, subject: el, context: { isSome, matchingIndexes } = {}, expected, verdict } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -50,9 +51,9 @@ export async function toHaveComputedRole(
 
     const message = enhanceError(
         el,
-        expected ?? wrapExpectedWithArray(el, actualRole, expectedValue),
+        withStringOptions(expected ?? wrapExpectedWithArray(el, actualRole, expectedValue), verdict, options, actualRole),
         actualRole,
-        { isNot, isSome, matchingIndexes },
+        { isNot, isSome, matchingIndexes, stringOptions: options },
         verb,
         expectation,
         '',

@@ -186,6 +186,22 @@ This option can be applied in addition to the command options when strings are b
 | <code><var>atEnd</var></code> | boolean | expect actual value to end with the expected value |
 | <code><var>atIndex</var></code> | number | expect actual value to have the expected value at the given index |
 
+In a failure message, `Received` shows the actual value as is (not trimmed, lowercased or replaced), and `Expected` names the string options that alter the actual value before the comparison. The position comes first (`containing`, `startingWith`, `endingWith`, `matchingAtIndex<n>`), then `trimmed`, `ignoringCase` and `replacing`. `trim` is on by default, so `trimmed` is named only when the actual value had spaces at the start or the end; `trim: false` alters nothing, so it is not named. When no option applies, the expected value is printed as is. For one string value, the name is in the label (`Expected (ignoringCase)`), so that Jest's diff still shows the changed characters, or the changed lines of a multiline value. In a list or per-instance values, each expected value has the name (`ignoringCase<"Foo">`). A RegExp is printed with its flags (`ignoreCase` adds `i`), and `expect.oneOf()` adds `OneOf` to the name. An element or a multi-remote instance that passed, also only because of the options, is a line with no change in the diff.
+
+```ts
+await expect($('h1')).toHaveText('Other', { ignoreCase: true, containing: true })
+// Expected (containingTrimmedIgnoringCase): "Other"
+// Received:                                 "  Hello World  "
+
+await expect($$('li')).toHaveText(['Foo', 'Bar'], { ignoreCase: true })
+// texts: "foo", "baz"
+//   Array [
+//     ignoringCase<"Foo">,
+// -   ignoringCase<"Bar">,
+// +   "baz",
+//   ]
+```
+
 ##### Number Matcher
 
 Number matchers take a number or a `NumberMatcher` as the expected value, and the command options as the next argument, e.g. `toHaveWidth({ gte: 32 }, { wait: 0 })`.

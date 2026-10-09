@@ -165,8 +165,8 @@ Received      : " Valid Text "`
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect browser's window to have ${matcherNameLastWords(matcherFn.name)}
 
-Expected: " Valid Text "
-Received: " Wrong Text "`
+Expected (trimmed): " Valid Text "
+Received:           " Wrong Text "`
                     )
                 })
             })
@@ -336,8 +336,8 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 + Received  + 2
 
   Multi-remote values {
--   "chrome": untrimmedOneOf<" Wrong Text ", " Wrong Text ">,
--   "firefox": untrimmedOneOf<" Wrong Text ", " Wrong Text ">,
+-   "chrome": oneOf<" Wrong Text ", " Wrong Text ">,
+-   "firefox": oneOf<" Wrong Text ", " Wrong Text ">,
 +   "chrome": " Valid Text ",
 +   "firefox": " Valid Text ",
   }`
@@ -419,7 +419,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 + Received  + 2
 
   Multi-remote values {
--   "chrome": untrimmedOneOf<" Wrong Text ", " Wrong Text ">,
+-   "chrome": oneOf<" Wrong Text ", " Wrong Text ">,
 -   "firefox": StringContaining " Wrong Text ",
 +   "chrome": " Valid Text ",
 +   "firefox": " Valid Text ",
@@ -539,11 +539,11 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
   Multi-remote values {
 -   "chrome": Array [
 -     " Valid Text ",
--     untrimmedOneOf<" Valid Text ">,
+-     oneOf<" Valid Text ">,
 -   ],
 -   "firefox": Array [
 -     " Valid Text ",
--     untrimmedOneOf<" Valid Text ">,
+-     oneOf<" Valid Text ">,
 -   ],
 +   "chrome": " Valid Text ",
 +   "firefox": " Valid Text ",

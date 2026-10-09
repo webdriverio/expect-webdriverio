@@ -94,6 +94,18 @@ await expect($$('li')).toHaveText(expect.arrayOf(expect.stringMatching(/^(Tea|Co
 await expect($$('li')).toHaveText(jasmine.arrayWithExactContents(['Coffee', 'Tea']))
 ```
 
+## Failure messages with string options
+
+The failure messages of the string matchers changed, see [String Options](API.md#string-options):
+
+- `Expected` names the string options that alter the actual value: in the label for one string value (`Expected (ignoringCase): "Foo"`), and on each value in a list or per-instance values (`ignoringCase<"Foo">`, `containingIgnoringCaseOneOf<"a", "b">`). The default `trim` is named (`trimmed`) only when the actual value had spaces at the start or the end. Before, only the position option of `expect.oneOf()` was named.
+- `Received` shows the actual value as is, also in `toHaveAttribute` and `toHaveElementProperty`. Before, these 2 matchers showed it trimmed, lowercased or replaced.
+- On `$$()` and multi-remote, an element or instance that passed, also only because of the string options, is a line with no change in the diff.
+- With `.not` on `$$()`, the elements that matched are highlighted, as the matcher compared them. Before, the elements that matched only because of the string options were not highlighted.
+- A Jasmine asymmetric matcher is printed as a matcher (`<jasmine.anything>`), not as a string (`"<jasmine.anything>"`).
+
+If a test checks the exact failure message, update it.
+
 ## Multi-remote `$$()` and `select()`
 
 Multi-remote `$$()` and `select()` need WebdriverIO v10. Remove `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELECT`: they are not supported anymore.
