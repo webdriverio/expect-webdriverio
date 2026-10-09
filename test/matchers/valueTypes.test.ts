@@ -29,6 +29,9 @@ vi.mock('@wdio/globals')
 type Result = { pass: boolean, message: () => string }
 type Outcome = { result: string, message: string }
 
+/** The received part of a failure message: the `Received` line, or the `+` lines of a diff (not its `+ Received` header) */
+const receivedPart = (message: string) => message.split('\n').filter((line) => /^Received/.test(line) || (/^\+/.test(line) && !/^\+ Received/.test(line))).join('\n')
+
 const outcome = async (run: () => Promise<Result>): Promise<Outcome> => {
     try {
         const { pass, message } = await run()
@@ -93,8 +96,8 @@ describe('the string matchers compare each value the same way', () => {
                             compared++
                             if (result !== reference.result) {
                                 differences.push(`${matcher.name}: ${result} (toHaveText: ${reference.result}) for ${input}`)
-                            } else if (result === (isNot ? 'pass' : 'fail') && !message.includes(JSON.stringify(actual))) {
-                                differences.push(`${matcher.name}: the message does not show ${JSON.stringify(actual)} for ${input}`)
+                            } else if (result === (isNot ? 'pass' : 'fail') && !receivedPart(message).includes(JSON.stringify(actual))) {
+                                differences.push(`${matcher.name}: the received part of the message does not show ${JSON.stringify(actual)} for ${input}`)
                             }
                         }
                     }
@@ -105,6 +108,14 @@ describe('the string matchers compare each value the same way', () => {
         expect(compared).toBeGreaterThan(10_000)
         expect(differences).toEqual([])
     }, 120_000)
+
+    // With `.not` and an equal value, the expected part also shows the value: the received part must show it too
+    test.each(matchers.map(({ name, run }) => ({ name, run })))('$name shows the actual value in the received part, also when it equals the expected value', async ({ run }) => {
+        const { message } = await outcome(() => run('Hello', 'Hello', { wait: 0 }, true))
+
+        expect(receivedPart(message)).toContain('"Hello"')
+        expect(receivedPart(message)).not.toBe('')
+    })
 
     // A sample of the reference, written by hand, so that all the matchers cannot agree on a wrong result
     test.each([
