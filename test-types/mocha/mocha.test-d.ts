@@ -605,10 +605,15 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).not.toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).not.toHaveSize({ height: 100, width: 100 }, { message: 'Custom error message' })).toEqualTypeOf<Promise<void>>()
 
-                // TODO one day support NumberMatcher directly in toHaveSize, but for now it is not supported
-                // expectTypeOf(expect(element).toHaveSize({ gte: 100 })).toEqualTypeOf<Promise<void>>()
-                // expectTypeOf(expect(element).toHaveSize({ gte: 100, lte: 200 })).toEqualTypeOf<Promise<void>>()
-                // expectTypeOf(expect(element).not.toHaveSize({ gte: 100 })).toEqualTypeOf<Promise<void>>()
+                // A NumberMatcher on each field, and an asymmetric matcher, as in the other matchers
+                expectTypeOf(expect(element).toHaveSize({ height: 100, width: { gte: 100, lte: 200 } })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).not.toHaveSize({ height: { eq: 100 }, width: { lte: 200 } })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveSize(expect.objectContaining({ width: 100 }))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveSize([{ height: { gte: 1 }, width: 100 }])).toEqualTypeOf<Promise<void>>()
+                // @ts-expect-error a field is a number or a NumberMatcher
+                await expect(element).toHaveSize({ height: 100, width: '100' })
+                // @ts-expect-error an empty NumberMatcher, as in toHaveWidth
+                await expect(element).toHaveSize({ height: 100, width: {} })
 
                 expectTypeOf(expect(chainableElement).toHaveSize({ height: 100, width: 100 })).toEqualTypeOf<Promise<void>>()
 

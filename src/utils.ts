@@ -1,4 +1,3 @@
-import deepEql from 'deep-eql'
 import type { ParsedCSSValue } from 'webdriverio'
 
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MultiRemoteValuesWithArray, WdioMatcherContext } from './types.js'
@@ -7,6 +6,7 @@ import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
+import { equals } from './jasmineUtils.js'
 import { isOneOfMatcher } from './matchers/asymmetrics/oneOf.js'
 import { compareText } from './util/compareText.js'
 
@@ -85,7 +85,8 @@ export const compareObject = <T>(actual: T, expected: unknown): CompareResult<T>
 
     return {
         actual,
-        success: deepEql(actual, expected),
+        // `equals()`, as the other matchers: an asymmetric matcher, e.g. `expect.objectContaining()`, also in a field
+        success: equals(actual, expected),
     }
 }
 

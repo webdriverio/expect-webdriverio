@@ -3,6 +3,8 @@ import type * as Options from './options.js'
 type StringValue = string | RegExp | ExpectWebdriverIO.PartialMatcher<string>
 /** One CSS value of `toHaveStyle`: a string value, as in `toHaveText` */
 type StyleValue = MaybeOneOf<StringValue>
+/** The size of `toHaveSize`: a number or a `NumberMatcher` for each field, or an asymmetric matcher, e.g. `expect.objectContaining()` */
+type SizeValue = { height: number | ExpectWebdriverIO.NumberMatcher, width: number | ExpectWebdriverIO.NumberMatcher } | ExpectWebdriverIO.PartialMatcher<unknown>
 
 /**
  * An element matcher with one expected value: one signature for each of `$()`, `$$()`, multi-remote `$()` and multi-remote `$$()`.
@@ -690,25 +692,25 @@ declare global {
         toHaveSize: FnWhenElementOrArrayLike<ActualT, {
             /** Element $() API */
             (
-                size: { height: number; width: number },
+                size: SizeValue,
                 options?: ExpectWebdriverIO.CommandOptions
             ) : Promise<void>
         }, {
             /** Elements $$() API */
             (
-                size: MaybeArray<{ height: number; width: number }>,
+                size: MaybeArray<SizeValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ) : Promise<void>
         }, {
             /** Element MultiRemoteBrowser.$() API */
             (
-                size: SingleOrMultiRemoteMatcher<{ height: number; width: number }>,
+                size: SingleOrMultiRemoteMatcher<SizeValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>
         }, {
             /** Elements MultiRemoteBrowser.$$() API */
             (
-                size: MaybeArrayOrMultiRemoteMatcher<{ height: number; width: number }>,
+                size: MaybeArrayOrMultiRemoteMatcher<SizeValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>
         }>

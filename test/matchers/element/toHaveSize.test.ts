@@ -7,6 +7,7 @@ import stripAnsi from 'strip-ansi'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
 import { multiRemote } from '../../../src/api/index.js'
 import { waitUntil } from '../../../src/utils.js'
+import { expect as wdioExpect } from '../../../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -604,6 +605,65 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have size
 -     },
     },
   }`)
+        })
+    })
+
+    // As the other matchers: an asymmetric matcher, and a `NumberMatcher` for each field, as in `toHaveWidth`
+    describe('asymmetric matchers and number ranges', () => {
+        let el: WebdriverIO.Element
+
+        beforeEach(async () => {
+            el = await $('sel')
+            vi.mocked(el.getSize).mockResolvedValue({ width: 32, height: 20 } as unknown as Size & number)
+        })
+
+        test.each([
+            { name: 'expect.objectContaining()', size: () => wdioExpect.objectContaining({ width: 32 }), pass: true },
+            { name: 'expect.objectContaining() that does not match', size: () => wdioExpect.objectContaining({ width: 1 }), pass: false },
+            { name: 'a range on a field', size: () => ({ width: { gte: 30, lte: 40 }, height: 20 }), pass: true },
+            { name: 'eq on a field', size: () => ({ width: { eq: 32 }, height: { gte: 1 } }), pass: true },
+            { name: 'a range that does not match', size: () => ({ width: { lte: 10 }, height: 20 }), pass: false },
+        ])('compares $name', async ({ size, pass }) => {
+            const result = await thisContext.toHaveSize(el, size() as never, { wait: 0 })
+            const negated = await thisNotContext.toHaveSize(el, size() as never, { wait: 0 })
+
+            expect(result.pass).toBe(pass)
+            expect(negated.pass).toBe(pass) // inverted later because of `.not`
+        })
+
+        test('shows a range on a field in the failure message', async () => {
+            const result = await thisContext.toHaveSize(el, { width: { lte: 10 }, height: 20 } as never, { wait: 0 })
+
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have size
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "height": 20,
+-   "width": <= 10,
++   "width": 32,
+  }`)
+        })
+
+        test('compares a range on a field for each element of $$() and each multi-remote instance', async () => {
+            const elements = await $$('sel')
+            elements.forEach((element) => vi.mocked(element.getSize).mockResolvedValue({ width: 32, height: 20 } as unknown as Size & number))
+            const multiRemoteElement = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel')
+            vi.mocked(multiRemoteElement.getInstance('chrome').getSize).mockResolvedValue({ width: 32, height: 20 } as unknown as Size & number)
+            vi.mocked(multiRemoteElement.getInstance('firefox').getSize).mockResolvedValue({ width: 64, height: 20 } as unknown as Size & number)
+
+            const result = await thisContext.toHaveSize(elements, [{ width: { gte: 30 }, height: 20 }, { width: 32, height: { lte: 20 } }] as never, { wait: 0 })
+            const perInstance = await thisContext.toHaveSize(multiRemoteElement, multiRemote({ chrome: { width: { lte: 40 }, height: 20 }, firefox: { width: { gte: 60 }, height: 20 } }) as never, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+            expect(perInstance.pass).toBe(true)
+        })
+
+        test('throws on an invalid range, as toHaveWidth', async () => {
+            await expect(thisContext.toHaveSize(el, { width: { gte: 40, lte: 30 }, height: 20 } as never, { wait: 0 }))
+                .rejects.toThrow("Invalid NumberMatcher range: 'gte' (40) cannot be greater than 'lte' (30).")
         })
     })
 })
