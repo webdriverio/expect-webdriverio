@@ -830,6 +830,25 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
         })
 
+        // One of these numbers, which a range cannot say
+        describe('expect.oneOf() with numbers', () => {
+            it('should be accepted by each matcher with a number', async () => {
+                expectTypeOf(expect(element).toHaveWidth(expect.oneOf(100, 200))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveHeight(expect.oneOf(100, 200))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveChildren(expect.oneOf(2, 3))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toBeElementsArrayOfSize(expect.oneOf(2, 3))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(networkMock).toBeRequestedTimes(expect.oneOf(1, 2))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveSize({ width: expect.oneOf(100, 200), height: 20 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveElementProperty('count', expect.oneOf(1, 2))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(elementArray).toHaveWidth([expect.oneOf(100, 200), 300])).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should reject a oneOf of strings in a number matcher', async () => {
+                // @ts-expect-error a number matcher needs numbers
+                await expect(element).toHaveWidth(expect.oneOf('100', '200'))
+            })
+        })
+
         // An array of expected values is for `$$()`, one value for each element: each matcher rejects it on `$()`
         describe('an array of expected values on a single element', () => {
             it('should be a type error in each matcher with an expected value', async () => {
@@ -1194,7 +1213,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(elementArray).toHaveElementProperty('checked', [true, false])).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(multiRemoteElement).toHaveElementProperty('dataset', { id: '1' })).toEqualTypeOf<Promise<void>>()
 
-                    //@ts-expect-error: TODO one day support oneOf with number
+                    //@ts-expect-error: a oneOf of numbers and strings together is not supported
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.oneOf(1, 'val2'))).toEqualTypeOf<Promise<void>>()
 
                     expectTypeOf(expect(element).not.toHaveElementProperty('prop')).toEqualTypeOf<Promise<void>>()
