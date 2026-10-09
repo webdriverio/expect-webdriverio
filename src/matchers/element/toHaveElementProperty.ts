@@ -15,6 +15,7 @@ import {
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import { throwIfListMatcherOnOneElement } from '../../util/asymmetricMatcherUtil.js'
 
 async function condition(
     el: WebdriverIO.Element,
@@ -133,7 +134,8 @@ export async function toHaveElementProperty(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                supportsArrayContaining: true,
+                // A property value can be an array, but the value of `toHaveValue` is a string
+                supportsArrayContaining: allowObjectExpectedValue ? true : 'arrayOnly',
                 expectedValues: value,
                 singleElementCompare: (element, expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined) => {
                     return condition(element, property, expectedValue, options)
@@ -145,6 +147,8 @@ export async function toHaveElementProperty(
         isNot,
         { wait: options.wait, interval: options.interval }
     )
+
+    throwIfListMatcherOnOneElement(matcherName, value, actualProppertyValue)
 
     const expected = expectedValues ?? wrapExpectedWithArray(elements, actualProppertyValue, value)
     const message = enhanceError(elements, withStringOptions(expected, verdict, options, actualProppertyValue), actualProppertyValue, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, property, options)

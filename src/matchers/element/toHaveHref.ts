@@ -62,7 +62,7 @@ export async function toHaveHref(
         options,
     })
 
-    const result = await toHaveAttributeAndValue.call(this, el, 'href', expectedValue, options)
+    const result = await toHaveAttributeAndValue.call({ ...this, matcherName }, el, 'href', expectedValue, options)
 
     await options.afterAssertion?.({
         matcherName,

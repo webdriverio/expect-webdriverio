@@ -14,6 +14,7 @@ import { expect } from 'expect'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import { throwIfListMatcherOnOneElement } from '../../util/asymmetricMatcherUtil.js'
 
 async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const attributeValue = await el.getAttribute(attribute)
@@ -34,7 +35,7 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
 }
 
 export async function toHaveAttributeAndValue(this: WdioMatcherContext, received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements, attribute: string, expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
-    const { expectation = 'attribute', verb = 'have', isNot } = this
+    const { expectation = 'attribute', verb = 'have', isNot, matcherName = 'toHaveAttribute' } = this
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
@@ -42,7 +43,7 @@ export async function toHaveAttributeAndValue(this: WdioMatcherContext, received
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                supportsArrayContaining: true,
+                supportsArrayContaining: 'arrayOnly',
                 expectedValues: expectedValue,
                 singleElementCompare: (element, values: string | RegExp | AsymmetricMatcher<string> | undefined) => {
                     return conditionAttributeValueMatchWithExpected(element, attribute, values, options)
@@ -53,6 +54,8 @@ export async function toHaveAttributeAndValue(this: WdioMatcherContext, received
         isNot,
         { wait: options.wait, interval: options.interval }
     )
+
+    throwIfListMatcherOnOneElement(matcherName, expectedValue, attr)
 
     const expected = expectedValues ?? wrapExpectedWithArray(el, attr, expectedValue)
     const message = enhanceError(el, withStringOptions(expected, verdict, options, attr), attr, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, attribute, options)
@@ -141,7 +144,7 @@ export async function toHaveAttribute(
 
     const expectedValue = value ?? expect.anything()
 
-    const result = await toHaveAttributeAndValue.call(this, received, attribute, expectedValue, options)
+    const result = await toHaveAttributeAndValue.call({ ...this, matcherName }, received, attribute, expectedValue, options)
 
     await options.afterAssertion?.({
         matcherName,

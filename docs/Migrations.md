@@ -94,6 +94,13 @@ await expect($$('li')).toHaveText(expect.arrayOf(expect.stringMatching(/^(Tea|Co
 await expect($$('li')).toHaveText(jasmine.arrayWithExactContents(['Coffee', 'Tea']))
 ```
 
+On a single element `$()`, a list matcher now throws an error, also with `.not`, in `toHaveHTML`, `toHaveAttribute` (also `toHaveId`, `toHaveHref` and `toHaveLink`), `toHaveElementClass`, `toHaveComputedLabel`, `toHaveComputedRole` and `toHaveValue`, as in `toHaveText`. Before, the assertion always failed, and with `.not`, it always passed. `toHaveElementProperty` still compares it with the property of the element, which can be an array. Use `$$()` to compare the values of a list of elements.
+
+```ts
+await expect($('li')).not.toHaveHTML(expect.arrayContaining(['<li>Home</li>']))
+// Error: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
+```
+
 ## Failure messages with string options
 
 The failure messages of the string matchers changed, see [String Options](API.md#string-options):

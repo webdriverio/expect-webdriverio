@@ -29,7 +29,7 @@ export type WdioMatcherContext = ExpectWebdriverIO.MatcherContext & {
     allowEmptyElements?: boolean
     /** Browser Runner: the stack line of the `toMatchInlineSnapshot()` call in the browser */
     errorStack?: string
-    /** `toHaveElementProperty`: the expected value can be a plain object (false for `toHaveValue`) */
+    /** `toHaveElementProperty`: the value can be a plain object or an array (false for `toHaveValue`, whose value is a string) */
     allowObjectExpectedValue?: boolean
     /** The `expect` library context has more properties (`utils`, `equals`, `promise`, ...) */
     [key: string]: unknown

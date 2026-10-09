@@ -6,6 +6,7 @@ import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { compareTextOrOneOf, enhanceError, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import { throwIfListMatcherOnOneElement } from '../../util/asymmetricMatcherUtil.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const actualClass = await el.getAttribute(attribute)
@@ -54,7 +55,7 @@ export async function toHaveElementClass(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                supportsArrayContaining: true,
+                supportsArrayContaining: 'arrayOnly',
                 expectedValues: expectedWithOptions,
                 singleElementCompare: (element, expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, attribute, expectedValue, options),
                 context: { isNot, iteration },
@@ -63,6 +64,8 @@ export async function toHaveElementClass(
         isNot,
         { wait: options.wait, interval: options.interval }
     )
+
+    throwIfListMatcherOnOneElement(matcherName, expectedWithOptions, attr)
 
     // Each class is compared, and a class has no spaces: the message never names `trimmed` from the full attribute
     const message = enhanceError(el, withStringOptions(expected ?? wrapExpectedWithArray(el, attr, expectedWithOptions), verdict, options), attr, { isNot, isSome, matchingIndexes, stringOptions: { ...options, trim: false } }, verb, expectation, '', options)

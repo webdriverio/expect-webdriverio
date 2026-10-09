@@ -9,6 +9,7 @@ import {
 } from '../../utils.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import { throwIfListMatcherOnOneElement } from '../../util/asymmetricMatcherUtil.js'
 
 async function singleElementCompare(
     element: WebdriverIO.Element,
@@ -39,7 +40,7 @@ export async function toHaveComputedRole(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                supportsArrayContaining: true,
+                supportsArrayContaining: 'arrayOnly',
                 expectedValues: expectedValue,
                 singleElementCompare: (element, expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined) => singleElementCompare(element, expectedValue, options),
                 context: { isNot, iteration },
@@ -48,6 +49,8 @@ export async function toHaveComputedRole(
         isNot,
         { wait: options.wait, interval: options.interval }
     )
+
+    throwIfListMatcherOnOneElement(matcherName, expectedValue, actualRole)
 
     const message = enhanceError(
         el,
