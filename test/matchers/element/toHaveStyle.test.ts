@@ -5,6 +5,7 @@ import type { ParsedCSSValue } from 'webdriverio'
 import stripAnsi from 'strip-ansi'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
 import { multiRemote } from '../../../src/api/index.js'
+import { expect as wdioExpect } from '../../../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -591,6 +592,63 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have style
 +     "firefox": "colorValue",
     },
   }`)
+        })
+    })
+
+    // Each value is a string value: the same compare and the same message as `toHaveText`
+    describe('each value as in toHaveText', () => {
+        let el: WebdriverIO.Element
+        const css: Record<string, string> = { 'color': '  RED  ', 'font-size': '12px' }
+
+        beforeEach(async () => {
+            el = await $('sel')
+            vi.mocked(el.getCSSProperty).mockImplementation(async (property: string) => ({ value: css[property], parsed: {} }))
+        })
+
+        test('applies replace before a position option', async () => {
+            const result = await thisContext.toHaveStyle(el, { color: 'GRE' }, { wait: 0, containing: true, replace: ['RED', 'GREEN'] })
+
+            expect(result.pass).toBe(true)
+        })
+
+        test.each([
+            { name: 'a RegExp', value: /re/i },
+            { name: 'expect.stringContaining()', value: wdioExpect.stringContaining('RE') },
+            { name: 'expect.oneOf()', value: wdioExpect.oneOf('blue', 'red') },
+        ])('accepts $name as a value', async ({ value }) => {
+            const result = await thisContext.toHaveStyle(el, { color: value as never }, { wait: 0, ignoreCase: true })
+            const negated = await thisNotContext.toHaveStyle(el, { color: value as never }, { wait: 0, ignoreCase: true })
+
+            expect(result.pass).toBe(true)
+            expect(negated.pass).toBe(true) // failure, inverted later because of `.not`
+        })
+
+        test('shows the value as is, the compared value, and the options on the expected value', async () => {
+            const result = await thisContext.toHaveStyle(el, { 'color': 'blue', 'font-size': '12px' }, { wait: 0, ignoreCase: true })
+
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have style
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+-   "color": trimmedIgnoringCase<"blue">,
++   "color": "  RED  ", (compared as "red")
+    "font-size": ignoringCase<"12px">,
+  }`)
+        })
+
+        test.each([
+            { name: 'containing', options: { containing: true }, compared: 'RED', expected: 'containingTrimmed<"blue">' },
+            { name: 'ignoreCase and atStart', options: { ignoreCase: true, atStart: true }, compared: 'red', expected: 'startingWithTrimmedIgnoringCase<"blue">' },
+            { name: 'replace', options: { replace: ['RED', 'GREEN'] as [string, string] }, compared: 'GREEN', expected: 'trimmedReplacing<"blue">' },
+        ])('shows the value as is with $name, not the changed value', async ({ options, compared, expected }) => {
+            const result = await thisContext.toHaveStyle(el, { color: 'blue' }, { wait: 0, ...options })
+
+            expect(stripAnsi(result.message())).toContain(`\
+-   "color": ${expected},
++   "color": "  RED  ", (compared as "${compared}")`)
         })
     })
 })

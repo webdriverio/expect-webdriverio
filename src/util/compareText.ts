@@ -1,6 +1,7 @@
 import { expect } from 'expect'
 
 import type { CompareResult } from './executeCommand.js'
+import { MatcherUsageError } from './matcherUsageError.js'
 import {
     getStringAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isInversedStringMatchingMatcher,
     isStringContainingMatcherLike, isStringMatchingMatcherLike,
@@ -21,6 +22,13 @@ export const compareText = (
         replace,
     }: StringOptions
 ): CompareResult<string> => {
+    // One position only: before, `containing` won over the others with no message
+    const positions = Object.entries({ containing, atStart, atEnd, atIndex: atIndex !== undefined }).flatMap(([name, isSet]) => isSet ? [name] : [])
+    if (positions.length > 1) {
+        const names = `${positions.slice(0, -1).join(', ')} and ${positions.at(-1)}`
+        throw new MatcherUsageError(`The string options ${names} cannot be used together: use only one of containing, atStart, atEnd and atIndex`)
+    }
+
     if (typeof actual !== 'string' || expected === null || expected === undefined) {
         return {
             actual,

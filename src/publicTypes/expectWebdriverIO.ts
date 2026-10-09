@@ -1,6 +1,8 @@
 import type * as Options from './options.js'
 
 type StringValue = string | RegExp | ExpectWebdriverIO.PartialMatcher<string>
+/** One CSS value of `toHaveStyle`: a string value, as in `toHaveText` */
+type StyleValue = MaybeOneOf<StringValue>
 
 /**
  * An element matcher with one expected value: one signature for each of `$()`, `$$()`, multi-remote `$()` and multi-remote `$$()`.
@@ -717,25 +719,25 @@ declare global {
         toHaveStyle: FnWhenElementOrArrayLike<ActualT, {
             /** Element $() API */
             (
-                style: { [key: string]: string },
+                style: { [key: string]: StyleValue },
                 options?: ExpectWebdriverIO.StringOptions
             ) : Promise<void>
         }, {
             /** Elements $$() API */
             (
-                style: MaybeArray<{ [key: string]: string }>,
+                style: MaybeArray<{ [key: string]: StyleValue }>,
                 options?: ExpectWebdriverIO.StringOptions
             ) : Promise<void>
         }, {
             /** Element MultiRemoteBrowser.$() API */
             (
-                style: SingleOrMultiRemoteMatcher<{ [key: string]: string }>,
+                style: SingleOrMultiRemoteMatcher<{ [key: string]: StyleValue }>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }, {
             /** Elements MultiRemoteBrowser.$$() API */
             (
-                style: MaybeArrayOrMultiRemoteMatcher<{ [key: string]: string }>,
+                style: MaybeArrayOrMultiRemoteMatcher<{ [key: string]: StyleValue }>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }>
