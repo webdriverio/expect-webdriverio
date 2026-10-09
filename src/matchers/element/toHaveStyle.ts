@@ -9,8 +9,13 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
+import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
+import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 
-async function condition(el: WebdriverIO.Element, style: { [key: string]: string; } | undefined, options: StringOptions): Promise<CompareResult<{ [key: string]: string | undefined; } | undefined>> {
+/** Each CSS value is a string value, as in `toHaveText` */
+type StyleRecord = { [key: string]: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> }
+
+async function condition(el: WebdriverIO.Element, style: StyleRecord | undefined, options: StringOptions): Promise<CompareResult<Record<string, unknown> | undefined>> {
     if (style === undefined) {
         return { success: false, actual: undefined }
     }
@@ -23,7 +28,7 @@ async function condition(el: WebdriverIO.Element, style: { [key: string]: string
  */
 export async function toHaveStyle(
     received: WdioElementMaybePromise,
-    expectedValue: { [key: string]: string; },
+    expectedValue: StyleRecord,
     options?: StringOptions
 ): Promise<AssertionResult>
 
@@ -32,7 +37,7 @@ export async function toHaveStyle(
  */
 export async function toHaveStyle(
     received: WdioElementsMaybePromise,
-    expectedValue: MaybeArray<{ [key: string]: string; }>,
+    expectedValue: MaybeArray<StyleRecord>,
     options?: StringOptions
 ): Promise<AssertionResult>
 
@@ -42,14 +47,14 @@ export async function toHaveStyle(
  */
 export async function toHaveStyle(
     received: WdioMultiRemoteElements,
-    expectedValue: MaybeArray<{ [key: string]: string; }> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<{ [key: string]: string; }>>,
+    expectedValue: MaybeArray<StyleRecord> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<StyleRecord>>,
     options?: StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveStyle(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArray<{ [key: string]: string; }> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<{ [key: string]: string; }>>,
+    expectedValue: MaybeArray<StyleRecord> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<StyleRecord>>,
     options: StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'style', verb = 'have', isNot, matcherName = 'toHaveStyle' } = this
@@ -60,13 +65,16 @@ export async function toHaveStyle(
         options,
     })
 
-    const { success: pass, actual: actualStyle, subject: el, context: { isSome, matchingIndexes } = {}, expected: expectedValues } = await waitUntil(
+    // Apply the string options to `expect.oneOf()`, also in the values of a style
+    const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
+
+    const { success: pass, actual: actualStyle, subject: el, context: { isSome, matchingIndexes } = {}, expected: expectedValues, verdict, compared } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                expectedValues: expectedValue,
-                // TODO try to make the type work without casting expectedValues to { [key: string]: string; } | undefined
-                singleElementCompare: (element, expectedValues) => condition(element, expectedValues as { [key: string]: string; } | undefined, options),
+                expectedValues: expectedWithOptions,
+                // TODO try to make the type work without casting expectedValues to StyleRecord | undefined
+                singleElementCompare: (element, expectedValues) => condition(element, expectedValues as StyleRecord | undefined, options),
                 context: { isNot, iteration },
                 strictConfiguration: { allowObjectExpectedValue: true }
             })
@@ -75,8 +83,8 @@ export async function toHaveStyle(
         { wait: options.wait, interval: options.interval }
     )
 
-    const expected = expectedValues ?? wrapExpectedWithArray(el, actualStyle, expectedValue)
-    const message = enhanceError(el, expected, actualStyle, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
+    const expected = expectedValues ?? wrapExpectedWithArray(el, actualStyle, expectedWithOptions)
+    const message = enhanceError(el, withStringOptions(expected, verdict, options, actualStyle), actualStyle, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, '', options)
 
     const result: AssertionResult = {
         pass,

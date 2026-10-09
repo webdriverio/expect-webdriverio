@@ -14,9 +14,6 @@ importers:
       '@vitest/snapshot':
         specifier: ^5.0.2
         version: 5.0.3
-      deep-eql:
-        specifier: ^5.0.2
-        version: 5.0.2
       expect:
         specifier: ^30.5.2
         version: 30.5.2
@@ -36,9 +33,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.13
         version: 4.1.13
-      '@types/deep-eql':
-        specifier: ^4.0.2
-        version: 4.0.2
       '@types/jasmine':
         specifier: ^6.0.0
         version: 6.0.0
@@ -1981,10 +1975,6 @@ packages:
   decamelize@6.0.1:
     resolution: {integrity: sha512-G7Cqgaelq68XHJNGlZ7lrNQyhZGsFqpwtGFexqUv4IQdjKoSYF7ipZ9UuTJZUSQXFj/XaoBLuEVIVqr8EJngEQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-
-  deep-eql@5.0.2:
-    resolution: {integrity: sha512-h5k/5U50IJJFpzfL6nO9jaaumfjO/f2NjK/oYB2Djzm4p9L+3T9qWpZqZ2hAbLPuuYq9wrU08WQyBTL5GbPk5Q==}
-    engines: {node: '>=6'}
 
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
@@ -5572,8 +5562,6 @@ snapshots:
       supports-color: 8.1.1
 
   decamelize@6.0.1: {}
-
-  deep-eql@5.0.2: {}
 
   deep-is@0.1.4: {}
 

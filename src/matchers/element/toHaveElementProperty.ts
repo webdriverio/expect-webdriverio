@@ -7,7 +7,6 @@ import { expect } from 'expect'
 import {
     compareText,
     enhanceError,
-    isAsymmetricMatcher,
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
@@ -15,6 +14,9 @@ import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetri
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
+
+/** A property value that is not a string: compared with `equals()`, deeply. An array means one value for each element of `$$()` */
+type PropertyObject = { [key: string]: unknown }
 
 async function condition(
     el: WebdriverIO.Element,
@@ -27,10 +29,8 @@ async function condition(
     const propertyValue = await el.getProperty(property)
 
     if (propertyValue === null || propertyValue === undefined || (!(expectedValue instanceof RegExp) && typeof propertyValue !== 'string' && !asString)) {
-        if (isAsymmetricMatcher(expectedValue)) {
-            return { success: equals(propertyValue, expectedValue), actual: propertyValue }
-        }
-        return { success: propertyValue === expectedValue, actual: propertyValue }
+        // `equals()`, as the other matchers: an object deeply, also with an asymmetric matcher in it
+        return { success: equals(propertyValue, expectedValue), actual: propertyValue }
     } else if (isOneOfMatcher(expectedValue)) {
         return { success: expectedValue.asymmetricMatch(propertyValue), actual: propertyValue }
     }
@@ -59,7 +59,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementsMaybePromise,
     property: string,
-    value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>, null>,
+    value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null>, null>,
     options?: StringOptions
 ): Promise<AssertionResult>
 
@@ -70,7 +70,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
-    value: MaybeOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher> | number,
+    value: MaybeOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject> | number,
     options?: StringOptions
 ): Promise<AssertionResult>
 
@@ -82,7 +82,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WebdriverIO.MultiRemoteElement,
     property: string,
-    value: SingleOrMultiRemoteMatcher<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>,
+    value: SingleOrMultiRemoteMatcher<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null>,
     options?: StringOptions
 ): Promise<AssertionResult>
 
@@ -93,7 +93,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WebdriverIO.MultiRemoteElementArray,
     property: string,
-    value: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>>,
+    value: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null>>,
     options?: StringOptions
 ): Promise<AssertionResult>
 
@@ -103,7 +103,7 @@ export async function toHaveElementProperty(
 export async function toHaveElementProperty(
     received: WdioMultiRemoteElements,
     property: string,
-    value: SingleOrMultiRemoteMatcher<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>,
+    value: SingleOrMultiRemoteMatcher<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null>,
     options?: StringOptions
 ): Promise<AssertionResult>
 
@@ -111,7 +111,7 @@ export async function toHaveElementProperty(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     property: string,
-    value?: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>> | undefined,
+    value?: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null>> | undefined,
     options: StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     // A property value can itself be an object, so a plain object is a literal unless the caller knows better (e.g. `toHaveValue`)

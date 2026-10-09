@@ -505,8 +505,41 @@ Received: ""`
             expect(result.pass).toBe(true)
         })
 
+        test('throws at once for 2 position options together, also on an empty $$() that would wait', async () => {
+            vi.useFakeTimers()
+            try {
+                const start = Date.now()
+
+                await Promise.all([
+                    expect(wdioExpect(chainableElementArrayFactory('li', 0)).toHaveText('ed', { containing: true, atStart: true, wait: 2000 }))
+                        .rejects.toThrow('The string options containing and atStart cannot be used together'),
+                    vi.runAllTimersAsync(),
+                ])
+                expect(Date.now()).toBe(start)
+            } finally {
+                vi.useRealTimers()
+            }
+        })
+
+        test.each([false, true])('throws at once for 2 position options together, with .not: %s', async (isNot) => {
+            vi.useFakeTimers()
+            try {
+                const start = Date.now()
+                const expectation = isNot ? wdioExpect(el).not : wdioExpect(el)
+
+                await Promise.all([
+                    expect(expectation.toHaveText('ed', { containing: true, atStart: true, wait: 2000 }))
+                        .rejects.toThrow('The string options containing and atStart cannot be used together: use only one of containing, atStart, atEnd and atIndex'),
+                    vi.runAllTimersAsync(),
+                ])
+                expect(Date.now()).toBe(start)
+            } finally {
+                vi.useRealTimers()
+            }
+        })
+
         test('failures if all the values of oneOf does not match with text', async () => {
-            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'notMatching'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+            const result = await thisContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'notMatching'),  { ignoreCase: true, trim: true, atStart: true, wait: 0 })
 
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
@@ -518,7 +551,7 @@ Received: "WebdriverIO"`
         })
 
         test('not - failures if all the values of oneOf does not match with text', async () => {
-            const result = await thisNotContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'WebdriverIO'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+            const result = await thisNotContext.toHaveText(el, wdioExpect.oneOf('WDIO', 'WebdriverIO'),  { ignoreCase: true, trim: true, atStart: true, wait: 0 })
 
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(stripAnsi(result.message())).toEqual(`\
@@ -1305,7 +1338,7 @@ Received      : ["webdriverio", "webdriverio", undefined]`
                 vi.mocked((elements)[0].getText).mockResolvedValue('WDIO')
                 vi.mocked((elements)[1].getText).mockResolvedValue('WebdriverIO')
 
-                const result = await thisContext.toHaveText(elements, wdioExpect.oneOf('WDIO', 'notMatching'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+                const result = await thisContext.toHaveText(elements, wdioExpect.oneOf('WDIO', 'notMatching'),  { ignoreCase: true, trim: true, atStart: true, wait: 0 })
 
                 expect(result.pass).toBe(false)
                 expect(stripAnsi(result.message())).toEqual(`\
@@ -1328,7 +1361,7 @@ Expect $$(\`elements\`) to have text
                 vi.mocked((elements)[0].getText).mockResolvedValue('WDIO')
                 vi.mocked((elements)[1].getText).mockResolvedValue('WebdriverIO')
 
-                const result = await thisNotContext.toHaveText(elements, wdioExpect.oneOf('WDIO', 'WebdriverIO'),  { ignoreCase: true, trim: true, atStart: true, atEnd: true, atIndex: 1, wait: 0 })
+                const result = await thisNotContext.toHaveText(elements, wdioExpect.oneOf('WDIO', 'WebdriverIO'),  { ignoreCase: true, trim: true, atStart: true, wait: 0 })
 
                 expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
                 expect(stripAnsi(result.message())).toEqual(`\

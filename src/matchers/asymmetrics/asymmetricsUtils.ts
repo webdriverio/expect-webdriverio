@@ -1,5 +1,6 @@
 import { AsymmetricMatcher } from 'expect'
 import { isAsymmetricMatcher } from '../../util/asymmetricMatcherUtil.js'
+import { assertOnePositionOption } from '../../util/compareText.js'
 import type { StringOptions } from '../../publicTypes/options.js'
 
 /**
@@ -8,16 +9,41 @@ import type { StringOptions } from '../../publicTypes/options.js'
  */
 export const buildWdioAsymmetricMatchersWithOptions = <T>(expectedValue: T, options: StringOptions | undefined): T => {
     if (options) {
-        if (Array.isArray(expectedValue)) {
-            return expectedValue.map((value) => buildOneAsymmetricMatcherWithOptions(value, options)) as unknown as T
-        }
-        // Multi-remote per-instance values, e.g. `{ chrome: expect.oneOf(...), firefox: [expect.oneOf(...)] }`
-        if (isPlainObject(expectedValue)) {
-            return Object.fromEntries(Object.entries(expectedValue).map(([key, value]) => [key, buildWdioAsymmetricMatchersWithOptions(value, options)])) as T
-        }
-        return buildOneAsymmetricMatcherWithOptions(expectedValue, options)
+        // Each string matcher applies its options here first: a wrong use throws before any element is read
+        assertOnePositionOption(options)
+        return withOptions(expectedValue, options, new WeakMap()) as T
     }
     return expectedValue
+}
+
+/**
+ * Apply the options in the values of `$$()` (e.g. the styles of `toHaveStyle([{ display: expect.oneOf('block') }])`) and
+ * in per-instance values (e.g. `{ chrome: expect.oneOf(...), firefox: [expect.oneOf(...)] }`). `built` keeps the copy of
+ * each array and object: a value that refers back to itself, e.g. an object property, keeps its shape for `equals()`.
+ */
+const withOptions = (expectedValue: unknown, options: StringOptions, built: WeakMap<object, unknown>): unknown => {
+    if (!Array.isArray(expectedValue) && !isPlainObject(expectedValue)) {
+        return buildOneAsymmetricMatcherWithOptions(expectedValue, options)
+    }
+    if (built.has(expectedValue)) {
+        return built.get(expectedValue)
+    }
+    if (Array.isArray(expectedValue)) {
+        const copy: unknown[] = []
+        built.set(expectedValue, copy)
+        // One entry at a time: a spread has a limit on the number of arguments
+        for (const value of expectedValue) {
+            copy.push(withOptions(value, options, built))
+        }
+        return copy
+    }
+    const copy: Record<string, unknown> = {}
+    built.set(expectedValue, copy)
+    for (const [key, value] of Object.entries(expectedValue)) {
+        // An own property, also for a `__proto__` key (e.g. from `JSON.parse()`), which an assignment would take as the prototype
+        Object.defineProperty(copy, key, { value: withOptions(value, options, built), enumerable: true, configurable: true, writable: true })
+    }
+    return copy
 }
 
 /** Only rebuild plain objects: class instances (e.g. `Date`) and asymmetric matchers must be kept as is */

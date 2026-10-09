@@ -9,9 +9,47 @@ import {
     waitUntil,
     wrapExpectedWithArray,
 } from '../../utils.js'
-import type { AssertionResult, CommandOptions } from '../../publicTypes/options.js'
+import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
+import { isNumber, validateNumberMatcher } from '../../util/numberOptionsUtil.js'
+import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
+import { isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
+import { multiRemote } from '../asymmetrics/multiRemote.js'
+import { isAsymmetricMatcher } from '../../util/asymmetricMatcherUtil.js'
 
 export type Size = Pick<RectReturn, 'width' | 'height'>
+/** A number or a `NumberMatcher` for each field, or an asymmetric matcher, e.g. `expect.objectContaining()` */
+type ExpectedSize = { width: number | PublicNumberMatcher, height: number | PublicNumberMatcher } | AsymmetricMatcher<unknown>
+
+const SIZE_FIELDS = ['width', 'height']
+
+/** A size: a plain object or a class instance, not an asymmetric matcher (e.g. `expect.objectContaining()`) */
+const isSizeObject = (value: unknown): value is Record<string, unknown> =>
+    typeof value === 'object' && value !== null && !Array.isArray(value) && !isAsymmetricMatcher(value)
+
+/**
+ * A field, as the value of `toHaveWidth`: a number or an asymmetric matcher stays as is, a range or `expect.oneOf()` with
+ * numbers becomes a `NumberMatcher`, and another value throws, e.g. a string or `NaN`
+ */
+const withNumberMatcher = (value: unknown): unknown =>
+    isNumber(value) || (isAsymmetricMatcher(value) && !isOneOfMatcher(value)) ? value : validateNumberMatcher(value as PublicNumberMatcher)
+
+/**
+ * A number range on a field, e.g. `{ width: { gte: 50 }, height: 50 }`, becomes a `NumberMatcher`, as in `toHaveWidth`:
+ * in one size, in the sizes of `$$()`, and in the values of `expect.multiRemote()`
+ */
+const withNumberMatcherFields = (expected: unknown): unknown => {
+    if (Array.isArray(expected)) {
+        return expected.map(withNumberMatcherFields)
+    }
+    if (isMultiRemoteMatcher(expected)) {
+        return multiRemote(Object.fromEntries(Object.entries(expected.sample).map(([name, value]) => [name, withNumberMatcherFields(value)])))
+    }
+    if (isSizeObject(expected)) {
+        return Object.fromEntries(Object.entries(expected).map(([field, value]) =>
+            [field, SIZE_FIELDS.includes(field) ? withNumberMatcher(value) : value]))
+    }
+    return expected
+}
 async function condition(el: WebdriverIO.Element, size: Size | undefined): Promise<CompareResult<Size | null>> {
     const actualSize = await el.getSize()
 
@@ -23,7 +61,7 @@ async function condition(el: WebdriverIO.Element, size: Size | undefined): Promi
  */
 export async function toHaveSize(
     received: WdioElementMaybePromise,
-    expectedValue: Size,
+    expectedValue: ExpectedSize,
     options?: CommandOptions
 ): Promise<AssertionResult>
 
@@ -32,7 +70,7 @@ export async function toHaveSize(
  */
 export async function toHaveSize(
     received: WdioElementsMaybePromise,
-    expectedValue: MaybeArray<Size>,
+    expectedValue: MaybeArray<ExpectedSize>,
     options?: CommandOptions
 ): Promise<AssertionResult>
 
@@ -42,14 +80,14 @@ export async function toHaveSize(
  */
 export async function toHaveSize(
     received: WdioMultiRemoteElements,
-    expectedValue: MaybeArray<Size> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<Size>>,
+    expectedValue: MaybeArray<ExpectedSize> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<ExpectedSize>>,
     options?: CommandOptions
 ): Promise<AssertionResult>
 
 export async function toHaveSize(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArray<Size> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<Size>>,
+    expectedValue: MaybeArray<ExpectedSize> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<ExpectedSize>>,
     options: CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'size', verb = 'have', isNot, matcherName = 'toHaveSize' } = this
@@ -60,12 +98,14 @@ export async function toHaveSize(
         options,
     })
 
+    const expectedSize = withNumberMatcherFields(expectedValue)
+
     const { success: pass, actual: actualSize, subject: el, context: { isSome, matchingIndexes } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                expectedValues: expectedValue,
-                singleElementCompare: (element, expectedSize: Size | undefined) => condition(element, expectedSize),
+                expectedValues: expectedSize,
+                singleElementCompare: (element, size: Size | undefined) => condition(element, size),
                 context: { isNot, iteration },
                 strictConfiguration: { allowObjectExpectedValue: true }
             })
@@ -76,7 +116,7 @@ export async function toHaveSize(
 
     const message = enhanceError(
         el,
-        expected ?? wrapExpectedWithArray(el, actualSize, expectedValue),
+        expected ?? wrapExpectedWithArray(el, actualSize, expectedSize),
         actualSize,
         { isNot, isSome, matchingIndexes },
         verb,

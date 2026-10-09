@@ -1,5 +1,6 @@
 import { AsymmetricMatcher } from 'expect'
 import { isMultiRemoteMatcher } from './multiRemoteUtils.js'
+import { isOneOfMatcher } from '../matchers/asymmetrics/oneOf.js'
 import type { NumberMatcher as PublicNumberMatcher } from '../publicTypes/options.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
@@ -21,6 +22,14 @@ export function validateNumberMatcher(
     }
     if (isNumber(expectedValue)) {
         return new NumberMatcher({ eq: expectedValue })
+    }
+    // `expect.oneOf(100, 200)`: one of these numbers, which a range cannot say
+    if (isOneOfMatcher(expectedValue)) {
+        const { values } = expectedValue
+        if (values.length === 0 || !values.every(isNumber)) {
+            throw new Error(`Invalid NumberMatcher. Received: ${JSON.stringify(expectedValue)}`)
+        }
+        return new NumberMatcher({ oneOf: values })
     }
     if (
         !isDefinedNumberOrNonEmptyObject(expectedValue)
@@ -59,7 +68,7 @@ export function validateNumberMatcherArray(
 }
 
 /** The bounds of a valid `PublicNumberMatcher`, after `validateNumberMatcher()` */
-type NumberBounds = { eq?: number, gte?: number, lte?: number }
+type NumberBounds = { eq?: number, gte?: number, lte?: number, oneOf?: number[] }
 
 /**
  * Using a class to univerally handle number matching and stringification the same way everywhere and with Global Apis like equal() toString() and toJSON()
@@ -79,6 +88,10 @@ export class NumberMatcher extends AsymmetricMatcher<number | NumberBounds> {
 
         if (isNumber(this.sample)) {
             return actual === this.sample
+        }
+
+        if (this.sample.oneOf) {
+            return this.sample.oneOf.includes(actual)
         }
 
         if (isNumber(this.sample.eq)) {
@@ -103,6 +116,10 @@ export class NumberMatcher extends AsymmetricMatcher<number | NumberBounds> {
     toAsymmetricMatcher(): string {
         if (isNumber(this.sample)) {
             return `${this.sample}`
+        }
+
+        if (this.sample.oneOf) {
+            return `oneOf<${this.sample.oneOf.join(', ')}>`
         }
 
         if (isNumber(this.sample.eq)) {

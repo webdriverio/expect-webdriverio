@@ -90,20 +90,12 @@ Received: 5`
             expect(result.pass).toBe(true)
         })
 
-        // TODO Need deep equality to support array and object properly
-        test('success with when property value is a plain bject, bug?', async () => {
+        test('success when the property value is an equal plain object', async () => {
             vi.mocked(el.getProperty).mockResolvedValue( { foo: 'bar' } )
 
-            // @ts-expect-error -- object not working for now, to support later
             const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', { foo: 'bar' } )
 
-            expect(result.pass).toBe(false)
-            expect(stripAnsi(result.message())).toEqual(`\
-Expect $(\`sel\`) to have property myPropertyName
-
-Expected: {"foo": "bar"}
-Received: {"foo": "bar"}`
-            )
+            expect(result.pass).toBe(true)
         })
 
         test('failure and unsupported type when property value is an array', async () => {
@@ -891,6 +883,63 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have property prop
 
             expect(result.pass).toBe(true)
             expect(swapped.pass).toBe(false)
+        })
+    })
+
+    // A property that is not a string is compared with `equals()`, as the other matchers: an object, deeply
+    describe('a property that is not a string', () => {
+        let el: WebdriverIO.Element
+
+        beforeEach(async () => {
+            el = await $('sel')
+        })
+
+        // The copy of the expected value keeps each own key, also `__proto__`, and has no size limit
+        test.each([
+            { name: 'an own __proto__ key', value: () => JSON.parse('{"__proto__":{"id":1},"a":1}') },
+            { name: 'a very large array', value: () => ({ rows: Array(500_000).fill(1) }) },
+        ])('compares an object with $name as the property', async ({ value }) => {
+            vi.mocked(el.getProperty).mockResolvedValue(value() as never)
+
+            const result = await { toHaveElementProperty }.toHaveElementProperty(el, 'data', value() as never, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
+        // `equals()` handles a value that refers back to itself: the options are applied to it without an endless walk
+        test('compares an object that refers back to itself, on $() and on $$()', async () => {
+            const circular: Record<string, unknown> = { id: '1' }
+            circular.self = circular
+            const elements = await $$('sel')
+            for (const element of [el, ...elements]) {
+                vi.mocked(element.getProperty).mockResolvedValue(circular as never)
+            }
+
+            const result = await { toHaveElementProperty }.toHaveElementProperty(el, 'data', circular as never, { wait: 0 })
+            const listResult = await { toHaveElementProperty }.toHaveElementProperty(elements, 'data', elements.map(() => circular) as never, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+            expect(listResult.pass).toBe(true)
+        })
+
+        test.each([
+            { name: 'an equal object', property: { a: 1, b: [2] }, expected: { a: 1, b: [2] }, pass: true },
+            { name: 'an object with an asymmetric matcher in it', property: { a: 1, b: 'x' }, expected: { a: wdioExpect.any(Number), b: 'x' }, pass: true },
+            { name: 'another object', property: { a: 1 }, expected: { a: 2 }, pass: false },
+            { name: 'an object with a property that is undefined, ignored as in toEqual', property: { a: 1, b: undefined }, expected: { a: 1 }, pass: true },
+            { name: 'a class instance and a plain object with the same properties', property: new (class Dataset { id = '1' })(), expected: { id: '1' }, pass: true },
+            { name: 'a boolean', property: true, expected: true, pass: true },
+            { name: 'NaN, equal to NaN as in toEqual', property: NaN, expected: NaN, pass: true },
+            { name: '0 and -0, not equal as in toEqual', property: -0, expected: 0, pass: false },
+            { name: 'another boolean', property: false, expected: true, pass: false },
+        ])('compares $name', async ({ property, expected, pass }) => {
+            vi.mocked(el.getProperty).mockResolvedValue(property as never)
+
+            const result = await { toHaveElementProperty }.toHaveElementProperty(el, 'p', expected as never, { wait: 0 })
+            const negated = await { isNot: true, toHaveElementProperty }.toHaveElementProperty(el, 'p', expected as never, { wait: 0 })
+
+            expect(result.pass).toBe(pass)
+            expect(negated.pass).toBe(pass) // inverted later because of `.not`
         })
     })
 })

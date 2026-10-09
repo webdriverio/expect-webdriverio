@@ -1,6 +1,14 @@
 import type * as Options from './options.js'
 
 type StringValue = string | RegExp | ExpectWebdriverIO.PartialMatcher<string>
+/** One CSS value of `toHaveStyle`: a string value, as in `toHaveText` */
+type StyleValue = MaybeOneOf<StringValue>
+/** A number of the number matchers: a number, a range (`NumberMatcher`), or one of these numbers (`expect.oneOf(100, 200)`) */
+type NumberValue = number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.OneOfNumbersPartialMatcher
+/** The size of `toHaveSize`: a number or a `NumberMatcher` for each field, or an asymmetric matcher, e.g. `expect.objectContaining()` */
+/** A property value that is not a string: compared with `equals()`, deeply. An array means one value for each element of `$$()` */
+type PropertyObject = { [key: string]: unknown }
+type SizeValue = { height: NumberValue, width: NumberValue } | ExpectWebdriverIO.PartialMatcher<unknown>
 
 /**
  * An element matcher with one expected value: one signature for each of `$()`, `$$()`, multi-remote `$()` and multi-remote `$$()`.
@@ -131,6 +139,13 @@ declare global {
 
     interface WdioCustomAsymmetricMatchers {
         oneOf(...values: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>): ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>
+        /**
+         * One of these numbers, in the number matchers, e.g. a width of 100 or 200 and nothing between, which a range cannot say.
+         *
+         * @example
+         * await expect(element).toHaveWidth(expect.oneOf(100, 200))
+         */
+        oneOf(...values: number[]): ExpectWebdriverIO.OneOfNumbersPartialMatcher
 
         /**
          * One expected value per multi-remote instance, keyed by instance name. Every instance must be listed.
@@ -270,10 +285,10 @@ declare global {
          * or its own number of times with `expect.multiRemote({ chrome: 1, firefox: 2 })`.
          */
         toBeRequestedTimes: FnWhenMock<ActualT, (
-            times: number | ExpectWebdriverIO.NumberMatcher,
+            times: NumberValue,
             options?: ExpectWebdriverIO.CommandOptions
         ) => Promise<void>, (
-            times: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+            times: SingleOrMultiRemoteMatcher<NumberValue>,
             options?: ExpectWebdriverIO.CommandOptions
         ) => Promise<void>>
 
@@ -461,7 +476,7 @@ declare global {
             (
                 property: string,
                 // TODO support `oneOf` for number!
-                value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything> | number,
+                value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>;
         }, {
@@ -477,7 +492,7 @@ declare global {
             /** Assert both property name AND a specific expected value */
             (
                 property: string,
-                value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>, null>,
+                value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher | null>, null>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>;
         }, {
@@ -487,7 +502,7 @@ declare global {
             ): Promise<void>
             (
                 property: string,
-                value: SingleOrMultiRemoteMatcher<MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything> | number>,
+                value: SingleOrMultiRemoteMatcher<MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }, {
@@ -497,7 +512,7 @@ declare global {
             ): Promise<void>
             (
                 property: string,
-                value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>, null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>>,
+                value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher | null>, null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher | null>>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }>
@@ -523,7 +538,7 @@ declare global {
              * When called with an expected child count or number matcher.
              */
             (
-                expectedValue: number | ExpectWebdriverIO.NumberMatcher,
+                expectedValue: NumberValue,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>;
         }, {
@@ -538,21 +553,21 @@ declare global {
              * When called with an expected child count or number matcher.
              */
             (
-                expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
+                expectedValue: MaybeArray<NumberValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>;
         }, {
             /** Element MultiRemoteBrowser.$() API */
             (): Promise<void>
             (
-                expectedValue: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+                expectedValue: SingleOrMultiRemoteMatcher<NumberValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>
         }, {
             /** Elements MultiRemoteBrowser.$$() API */
             (): Promise<void>
             (
-                expectedValue: MaybeArrayOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+                expectedValue: MaybeArrayOrMultiRemoteMatcher<NumberValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>
         }>
@@ -619,25 +634,25 @@ declare global {
         toHaveWidth: FnWhenElementOrArrayLike<ActualT, {
             /** Element $() API */
             (
-                width: number | ExpectWebdriverIO.NumberMatcher,
+                width: NumberValue,
                 options?: ExpectWebdriverIO.CommandOptions
             ) : Promise<void>
         }, {
             /** Elements $$() API */
             (
-                width: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
+                width: MaybeArray<NumberValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ) : Promise<void>
         }, {
             /** Element MultiRemoteBrowser.$() API */
             (
-                width: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+                width: SingleOrMultiRemoteMatcher<NumberValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>
         }, {
             /** Elements MultiRemoteBrowser.$$() API */
             (
-                width: MaybeArrayOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+                width: MaybeArrayOrMultiRemoteMatcher<NumberValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>
         }>
@@ -657,25 +672,25 @@ declare global {
         toHaveHeight: FnWhenElementOrArrayLike<ActualT, {
             /** Element $() API */
             (
-                height: number | ExpectWebdriverIO.NumberMatcher,
+                height: NumberValue,
                 options?: ExpectWebdriverIO.CommandOptions
             ) : Promise<void>
         }, {
             /** Elements $$() API */
             (
-                height: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
+                height: MaybeArray<NumberValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ) : Promise<void>
         }, {
             /** Element MultiRemoteBrowser.$() API */
             (
-                height: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+                height: SingleOrMultiRemoteMatcher<NumberValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>
         }, {
             /** Elements MultiRemoteBrowser.$$() API */
             (
-                height: MaybeArrayOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+                height: MaybeArrayOrMultiRemoteMatcher<NumberValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>
         }>
@@ -688,25 +703,25 @@ declare global {
         toHaveSize: FnWhenElementOrArrayLike<ActualT, {
             /** Element $() API */
             (
-                size: { height: number; width: number },
+                size: SizeValue,
                 options?: ExpectWebdriverIO.CommandOptions
             ) : Promise<void>
         }, {
             /** Elements $$() API */
             (
-                size: MaybeArray<{ height: number; width: number }>,
+                size: MaybeArray<SizeValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ) : Promise<void>
         }, {
             /** Element MultiRemoteBrowser.$() API */
             (
-                size: SingleOrMultiRemoteMatcher<{ height: number; width: number }>,
+                size: SingleOrMultiRemoteMatcher<SizeValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>
         }, {
             /** Elements MultiRemoteBrowser.$$() API */
             (
-                size: MaybeArrayOrMultiRemoteMatcher<{ height: number; width: number }>,
+                size: MaybeArrayOrMultiRemoteMatcher<SizeValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>
         }>
@@ -717,25 +732,25 @@ declare global {
         toHaveStyle: FnWhenElementOrArrayLike<ActualT, {
             /** Element $() API */
             (
-                style: { [key: string]: string },
+                style: { [key: string]: StyleValue },
                 options?: ExpectWebdriverIO.StringOptions
             ) : Promise<void>
         }, {
             /** Elements $$() API */
             (
-                style: MaybeArray<{ [key: string]: string }>,
+                style: MaybeArray<{ [key: string]: StyleValue }>,
                 options?: ExpectWebdriverIO.StringOptions
             ) : Promise<void>
         }, {
             /** Element MultiRemoteBrowser.$() API */
             (
-                style: SingleOrMultiRemoteMatcher<{ [key: string]: string }>,
+                style: SingleOrMultiRemoteMatcher<{ [key: string]: StyleValue }>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }, {
             /** Elements MultiRemoteBrowser.$$() API */
             (
-                style: MaybeArrayOrMultiRemoteMatcher<{ [key: string]: string }>,
+                style: MaybeArrayOrMultiRemoteMatcher<{ [key: string]: StyleValue }>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }>
@@ -755,7 +770,7 @@ declare global {
          */
         toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, {
             (
-                size: number | ExpectWebdriverIO.NumberMatcher,
+                size: NumberValue,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>,
         }, {
@@ -764,7 +779,7 @@ declare global {
              * A single size applies to every instance, or pass one size per instance, e.g. `expect.multiRemote({ chrome: 2, firefox: { gte: 1 } })`.
              */
             (
-                size: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
+                size: SingleOrMultiRemoteMatcher<NumberValue>,
                 options?: ExpectWebdriverIO.CommandOptions
             ): Promise<void>,
         }>
@@ -1088,6 +1103,11 @@ declare global {
          * Allow to match one of the specified value.
          */
         type OneOfPartialMatcher<T> = ExpectWebdriverIO.PartialMatcher<T[]>
+        /**
+         * `expect.oneOf()` with numbers. `PartialMatcher` omits `sample`, so `values` makes it distinct from the other
+         * asymmetric matchers: a number matcher accepts it, and still rejects e.g. `expect.stringContaining()`.
+         */
+        type OneOfNumbersPartialMatcher = ExpectWebdriverIO.OneOfPartialMatcher<number> & { readonly values: number[] }
 
         /**
          * One expected value per multi-remote instance, see `expect.multiRemote()`.

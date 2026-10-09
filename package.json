@@ -83,7 +83,6 @@
   },
   "dependencies": {
     "@vitest/snapshot": "^5.0.2",
-    "deep-eql": "^5.0.2",
     "expect": "^30.5.2",
     "jest-matcher-utils": "^30.5.2"
   },
@@ -92,7 +91,6 @@
     "@jest/globals": "^30.5.2",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/debug": "^4.1.13",
-    "@types/deep-eql": "^4.0.2",
     "@types/jasmine": "^6.0.0",
     "@types/jest": "^30.0.0",
     "@types/mocha": "^10.0.10",

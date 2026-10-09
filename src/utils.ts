@@ -1,4 +1,3 @@
-import deepEql from 'deep-eql'
 import type { ParsedCSSValue } from 'webdriverio'
 
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MultiRemoteValuesWithArray, WdioMatcherContext } from './types.js'
@@ -7,8 +6,9 @@ import type { CompareResult } from './util/executeCommand.js'
 import { executeCommandWithStrategy } from './util/executeCommand.js'
 import { enhanceError, enhanceErrorBe } from './util/formatMessage.js'
 import { waitUntil } from './util/waitUntil.js'
+import { equals } from './jasmineUtils.js'
 import { isOneOfMatcher } from './matchers/asymmetrics/oneOf.js'
-import { compareText, replaceActual } from './util/compareText.js'
+import { compareText } from './util/compareText.js'
 
 // The public `utils` export keeps the helpers that moved to leaf modules, to remove the circular imports
 export {
@@ -85,80 +85,37 @@ export const compareObject = <T>(actual: T, expected: unknown): CompareResult<T>
 
     return {
         actual,
-        success: deepEql(actual, expected),
+        // `equals()`, as the other matchers: an asymmetric matcher, e.g. `expect.objectContaining()`, also in a field
+        success: equals(actual, expected),
     }
 }
 
+/** One CSS value of `toHaveStyle`: a string value, as in `toHaveText` */
+type StyleValue = MaybeOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>
+
+/**
+ * Each CSS value is compared as a string value, as in `toHaveText`: the string options, a RegExp, an asymmetric matcher
+ * or `expect.oneOf()`. The actual values stay as is, and the compared values and the verdict of each property are apart.
+ */
 export const compareStyle = async (
     actualEl: WebdriverIO.Element,
-    style: { [key: string]: string },
-    {
-        ignoreCase = false,
-        trim = true,
-        containing = false,
-        atStart = false,
-        atEnd = false,
-        atIndex,
-        replace,
-    }: StringOptions
-): Promise<CompareResult<Record<string, string | undefined>>> => {
-    let success = true
-    const actual: Record<string, string | undefined> = {}
+    style: { [key: string]: StyleValue },
+    options: StringOptions
+): Promise<CompareResult<Record<string, unknown>>> => {
+    const actual: Record<string, unknown> = {}
+    const compared: Record<string, unknown> = {}
+    const verdict: Record<string, boolean> = {}
 
     for (const key in style) {
-        const css: ParsedCSSValue = await actualEl.getCSSProperty(key)
+        const { value }: ParsedCSSValue = await actualEl.getCSSProperty(key)
+        const result = compareTextOrOneOf(String(value ?? ''), style[key], options)
 
-        let actualVal: string = String(css.value || '')
-        let expectedVal: string = style[key]
-
-        // e.g. per-instance styles passed as a plain object instead of `expect.multiRemote()`: a mismatch, not a crash
-        if (typeof expectedVal !== 'string') {
-            actual[key] = css.value
-            success = false
-            continue
-        }
-
-        // As in `compareText()`: `trim` changes the actual value only
-        if (trim) {
-            actualVal = actualVal.trim()
-        }
-        if (ignoreCase) {
-            actualVal = actualVal.toLowerCase()
-            expectedVal = expectedVal.toLowerCase()
-        }
-
-        /**
-         * every property must match - accumulate with `&&` so an earlier mismatch cannot be
-         * overwritten by a later property that happens to match
-         */
-        let matches: boolean
-        if (containing) {
-            matches = actualVal.includes(expectedVal)
-            actual[key] = actualVal
-        } else if (atStart) {
-            matches = actualVal.startsWith(expectedVal)
-            actual[key] = actualVal
-        } else if (atEnd) {
-            matches = actualVal.endsWith(expectedVal)
-            actual[key] = actualVal
-        } else if (atIndex !== undefined) {
-            matches = actualVal.substring(atIndex, actualVal.length).startsWith(expectedVal)
-            actual[key] = actualVal
-        } else if (replace){
-            const replacedActual = replaceActual(replace, actualVal)
-            matches = replacedActual === expectedVal
-            actual[key] = replacedActual
-        } else {
-            matches = actualVal === expectedVal
-            actual[key] = css.value
-        }
-        success = success && matches
+        actual[key] = value
+        compared[key] = result.compared
+        verdict[key] = result.success
     }
 
-    return {
-        actual,
-        success,
-    }
+    return { success: Object.values(verdict).every(Boolean), actual, compared, verdict }
 }
 
 export {

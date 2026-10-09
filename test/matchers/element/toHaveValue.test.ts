@@ -142,7 +142,7 @@ Expect multi-remote<chrome, firefox>.$(\`input\`) to have property value
     })
 
     test('does not change toHaveElementProperty, where a plain object stays a literal property value', async () => {
-        // @ts-expect-error a plain object is a literal property value, per-instance values require expect.multiRemote()
+        // A plain object is a literal property value (compared with `equals()`): per-instance values require expect.multiRemote()
         const result = await thisContext.toHaveElementProperty(multiRemoteElement(), 'value', { chrome: 'A', firefox: 'B' }, { wait: 0 })
 
         expect(result.pass).toBe(false)

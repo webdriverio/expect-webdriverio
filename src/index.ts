@@ -48,7 +48,8 @@ function createSharedExpectSetup(): SharedExpectSetup {
     // Register normal matchers like `expect(element).toBeDisplayed()`
     wdioExpect.extend(filteredWdioMatchers)
     // Register asymmetric matchers like `expect.oneOf(...)`
-    wdioExpect.oneOf = oneOf
+    // One function for the 2 signatures of the public type (strings, numbers)
+    wdioExpect.oneOf = oneOf as ExpectWebdriverIO.Expect['oneOf']
     wdioExpect.multiRemote = multiRemote
 
     // Register soft assertions. `configurable: true` isn't for redefinition by us (this

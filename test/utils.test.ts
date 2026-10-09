@@ -9,6 +9,7 @@ import { executeCommandWithStrategy } from '../src/util/executeCommand'
 import { enhanceErrorBe } from '../src/util/formatMessage'
 import { expect as wdioExpect } from '../src/index.js'
 import { oneOf } from '../src/matchers/asymmetrics/oneOf.js'
+import { MatcherUsageError } from '../src/util/matcherUsageError.js'
 
 vi.mock('@wdio/globals')
 
@@ -85,6 +86,27 @@ describe('utils', () => {
     })
 
     describe(compareText, () => {
+        // Only one position: before, `containing` won over `atStart`, `atEnd` and `atIndex` with no message
+        test.each([
+            { options: { containing: true, atStart: true }, names: 'containing and atStart' },
+            { options: { atStart: true, atEnd: true }, names: 'atStart and atEnd' },
+            { options: { atEnd: true, atIndex: 0 }, names: 'atEnd and atIndex' },
+            { options: { containing: true, atStart: true, atEnd: true, atIndex: 1 }, names: 'containing, atStart, atEnd and atIndex' },
+        ])('throws a MatcherUsageError for $names together', ({ options, names }) => {
+            const run = () => compareText('red', 'ed', options)
+
+            expect(run).toThrow(MatcherUsageError)
+            expect(run).toThrow(`The string options ${names} cannot be used together: use only one of containing, atStart, atEnd and atIndex`)
+        })
+
+        test.each([
+            { containing: false, atStart: true },
+            { atStart: false, atEnd: false, atIndex: undefined, containing: true },
+            { atIndex: 0 },
+        ])('accepts one position option, also with the others set to false: %o', (options) => {
+            expect(() => compareText('red', 'r', options)).not.toThrow()
+        })
+
         test('should pass when strings match', () => {
             expect(compareText('foo', 'foo', {}).success).toBe(true)
         })
@@ -335,6 +357,11 @@ describe('utils', () => {
     })
 
     describe(compareObject, () => {
+        test('uses the deep equality of the matchers: an asymmetric matcher, and an undefined property ignored', () => {
+            expect(compareObject({ width: 32, height: 20 }, wdioExpect.objectContaining({ width: 32 })).success).toBe(true)
+            expect(compareObject({ width: 32, height: 20 }, { width: 32, height: 20, x: undefined }).success).toBe(true)
+        })
+
         test('should pass if the objects are equal', () => {
             expect(compareObject({ 'foo': 'bar' }, { 'foo': 'bar' }).success).toBe(true)
         })

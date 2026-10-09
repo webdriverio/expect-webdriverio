@@ -186,6 +186,8 @@ This option can be applied in addition to the command options when strings are b
 | <code><var>atEnd</var></code> | boolean | expect actual value to end with the expected value |
 | <code><var>atIndex</var></code> | number | expect actual value to have the expected value at the given index |
 
+Use one position option only: `containing`, `atStart`, `atEnd` or `atIndex`. With 2 or more, the matcher throws at once, also with `.not`: `The string options containing and atStart cannot be used together: use only one of containing, atStart, atEnd and atIndex`. `replace` applies before the position option.
+
 In a failure message, `Received` shows the actual value as is (not trimmed, lowercased or replaced), and `Expected` names the string options that alter the actual value before the comparison. The position comes first (`containing`, `startingWith`, `endingWith`, `matchingAtIndex<n>`), then `trimmed`, `ignoringCase` and `replacing`. `trim` is on by default, so `trimmed` is named only when the actual value had spaces at the start or the end; `trim: false` alters nothing, so it is not named. When no option applies, the expected value is printed as is. For one string value, the name is in the label (`Expected (ignoringCase)`), so that Jest's diff still shows the changed characters, or the changed lines of a multiline value. In a list or per-instance values, each expected value has the name (`ignoringCase<"Foo">`). A RegExp is printed with its flags (`ignoreCase` adds `i`), and `expect.oneOf()` adds `OneOf` to the name. An element or a multi-remote instance that passed, also only because of the options, is a line with no change in the diff. When the options changed the actual value, the message also shows the value that the matcher compared: after `Received` for one value, and after each received value that failed in the diff of a list or per-instance values. It is not shown for a multiline value, or when the same received value was compared in 2 ways (e.g. with a string and with a RegExp).
 
 ```ts
@@ -204,7 +206,7 @@ await expect($$('li')).toHaveText(['Foo', 'Bar'], { ignoreCase: true })
 
 ##### Number Matcher
 
-Number matchers take a number or a `NumberMatcher` as the expected value, and the command options as the next argument, e.g. `toHaveWidth({ gte: 32 }, { wait: 0 })`.
+Number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`, `toBeRequestedTimes`, and each field of `toHaveSize`) take a number, a `NumberMatcher`, or `expect.oneOf()` with numbers as the expected value, and the command options as the next argument, e.g. `toHaveWidth({ gte: 32 }, { wait: 0 })`.
 
 | Name | Type | Details |
 | ---- | ---- | ------- |
@@ -213,6 +215,18 @@ Number matchers take a number or a `NumberMatcher` as the expected value, and th
 | <code><var>gte</var></code> | number | greater than or equals |
 
 Give `eq` alone, or a range with `gte`, `lte` or both. The types reject `{}` and `eq` with `gte` or `lte`.
+
+`expect.oneOf()` with numbers is one of these numbers, which a range cannot say: `toHaveWidth(expect.oneOf(100, 200))` passes for 100 or 200, and fails for 150.
+
+##### Deep Equality
+
+Objects are compared with the deep equality of Jest's `toEqual`, the same in every matcher: `toHaveSize`, `toHaveElementProperty` (a property that is not a string), `expect.multiRemote()`, and the asymmetric matchers such as `expect.objectContaining()`.
+
+- An asymmetric matcher works anywhere in the value, e.g. `toHaveSize({ width: expect.any(Number), height: 32 })`.
+- A property that is `undefined` is ignored: `{ a: 1, b: undefined }` equals `{ a: 1 }`. For a strict comparison, use `expect(await elem.getProperty('dataset')).toStrictEqual({ a: 1 })`.
+- A class instance equals a plain object with the same properties.
+- URLs, sets, maps, dates and binary data are compared by their content, see [Deep equality of URLs, sets, maps and binary data](Migrations.md#deep-equality-of-urls-sets-maps-and-binary-data).
+- `NaN` equals `NaN`. `+0` and `-0` are not equal.
 
 ### Handling HTML Entities
 
@@ -465,7 +479,7 @@ An array of expected values works only with `$$()`: one expected value for each 
 
 ### toHaveElementProperty
 
-Checks if an element has a certain property and value
+Checks if an element has a certain property and value. A string property is compared with the [string options](#string-options). Another property (a number, a boolean, an object) is compared with [deep equality](#deep-equality), also with an asymmetric matcher in it, or with `expect.oneOf()` with numbers.
 
 ##### Usage
 
@@ -473,6 +487,8 @@ Checks if an element has a certain property and value
 const elem = await $('#elem')
 await expect(elem).toHaveElementProperty('height', 23)
 await expect(elem).not.toHaveElementProperty('height', 0)
+await expect(elem).toHaveElementProperty('checked', true)
+await expect(elem).toHaveElementProperty('dataset', { id: '1', count: expect.any(String) })
 ```
 
 Checks if an element has a certain property.
@@ -639,15 +655,24 @@ await expect($('#elem')).toHaveId('elem')
 
 ### toHaveStyle
 
-Checks if an element has specific `CSS` properties. By default, values must match exactly. Only the `CSS` properties you specify are validated; other properties on the element are ignored. The [string options](#string-options) apply to each value: `trim` removes surrounding spaces from the actual value only and leaves the expected value unchanged.
+Checks if an element has specific `CSS` properties. By default, values must match exactly. Only the `CSS` properties you specify are validated; other properties on the element are ignored. Each value is compared as in `toHaveText`: the [string options](#string-options) apply to each value (`trim` removes surrounding spaces from the actual value only and leaves the expected value unchanged), and a value can be a RegExp, an asymmetric matcher or `expect.oneOf()`. The failure message shows each CSS value as is, and the value that the matcher compared.
+
+The actual value is the one of [`getCSSProperty()`](https://webdriver.io/docs/api/element/getCSSProperty), which WebdriverIO normalizes: lowercase and trimmed, a color as `rgba(r,g,b,a)` with no spaces (not `white`, `#fff` or `rgb(255, 255, 255)`), and only the first font of `font-family`. A value without unit is a number, compared as its text: `font-weight: '700'`, `opacity: '0'`. Write the expected value in this form, or use `ignoreCase` for the case. As in `toHaveText`, `replace` applies first, then `ignoreCase` and the position option.
 
 ##### Usage
 
 ```js
-await expect($('#elem')).toHaveStyle({
-  'font-family': 'Faktum',
-  'font-weight': '500',
-  'font-size': '12px',
+// The <h1> of a page: color `rgb(255, 255, 255)`, font-family `"Helvetica Neue", Helvetica, Arial`
+await expect($('h1')).toHaveStyle({
+  'color': 'rgba(255,255,255,1)',
+  'font-family': 'helvetica neue',
+  'font-weight': '700',
+  'font-size': '16px',
+})
+await expect($('h1')).toHaveStyle({ 'font-family': 'Helvetica Neue' }, { ignoreCase: true })
+await expect($('h1')).toHaveStyle({
+  'color': expect.oneOf('rgba(0,0,0,1)', 'rgba(255,255,255,1)'),
+  'font-size': /^1[0-9]px$/,
 })
 ```
 
@@ -770,6 +795,9 @@ await expect(logo).toHaveWidth({ eq: 32 })
 await expect(logo).toHaveWidth({ gte: 32 })
 await expect(logo).toHaveWidth({ lte: 34 })
 await expect(logo).toHaveWidth({ gte: 32, lte: 34 })
+
+// One of these widths, and nothing between
+await expect(logo).toHaveWidth(expect.oneOf(32, 64))
 ```
 
 ### toHaveHeight
@@ -793,8 +821,7 @@ await expect(logo).toHaveHeight({ gte: 32, lte: 34 })
 
 ### toHaveSize
 
-Checks if element has a specific size.
-**Note:** gte and lte are not supported yet.
+Checks if element has a specific size, with [deep equality](#deep-equality). Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), or `expect.oneOf()` with numbers. The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only. An invalid field value throws, as in `toHaveWidth`, e.g. `{}`, `gte` greater than `lte`, a string or `NaN`. A range is converted only in the fields of the size, not inside an asymmetric matcher: for one field with a range, write `{ width: { gte: 30 }, height: expect.any(Number) }`.
 
 ##### Usage
 
@@ -802,6 +829,8 @@ Checks if element has a specific size.
 await browser.url('http://github.com')
 const logo = await $('[aria-label="Homepage"] .octicon-mark-github')
 await expect(logo).toHaveSize({ width: 32, height: 32 })
+await expect(logo).toHaveSize({ width: { gte: 30, lte: 34 }, height: expect.oneOf(32, 64) })
+await expect(logo).toHaveSize(expect.objectContaining({ width: 32 }))
 ```
 
 ### toBeElementsArrayOfSize

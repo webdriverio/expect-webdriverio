@@ -1,11 +1,24 @@
 import { expect } from 'expect'
 
 import type { CompareResult } from './executeCommand.js'
+import { MatcherUsageError } from './matcherUsageError.js'
 import {
     getStringAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isInversedStringMatchingMatcher,
     isStringContainingMatcherLike, isStringMatchingMatcherLike,
 } from './asymmetricMatcherUtil.js'
 import type { StringOptions } from '../publicTypes/options.js'
+
+/**
+ * One position option only: `containing`, `atStart`, `atEnd` or `atIndex`. Before, `containing` won over the others with
+ * no message. A wrong use of the matcher, so a `MatcherUsageError`, which `waitUntil()` throws at once.
+ */
+export const assertOnePositionOption = ({ containing, atStart, atEnd, atIndex }: StringOptions = {}): void => {
+    const positions = Object.entries({ containing, atStart, atEnd, atIndex: atIndex !== undefined }).flatMap(([name, isSet]) => isSet ? [name] : [])
+    if (positions.length > 1) {
+        const names = `${positions.slice(0, -1).join(', ')} and ${positions.at(-1)}`
+        throw new MatcherUsageError(`The string options ${names} cannot be used together: use only one of containing, atStart, atEnd and atIndex`)
+    }
+}
 
 // TODO one day turn this into at least a asymetrics class to better report in failure messages the string case we are in (containing, atStart, atEnd, atIndex, etc) and the expected value(s)
 export const compareText = (
@@ -21,6 +34,8 @@ export const compareText = (
         replace,
     }: StringOptions
 ): CompareResult<string> => {
+    assertOnePositionOption({ containing, atStart, atEnd, atIndex })
+
     if (typeof actual !== 'string' || expected === null || expected === undefined) {
         return {
             actual,
