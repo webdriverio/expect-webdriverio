@@ -27,7 +27,9 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
     }
 
     // TODO fix OneOfMatcher typing to not require casting here!
-    return compareText(attributeValue, expectedValue as string | RegExp | AsymmetricMatcher<string> | undefined, options)
+    const { success } = compareText(attributeValue, expectedValue as string | RegExp | AsymmetricMatcher<string> | undefined, options)
+    // Failure messages show the actual value as is, not trimmed, lowercased or replaced by the string options
+    return { success, actual: attributeValue }
 }
 
 export async function toHaveAttributeAndValue(this: WdioMatcherContext, received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements, attribute: string, expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {

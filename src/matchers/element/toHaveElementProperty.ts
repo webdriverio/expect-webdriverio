@@ -35,7 +35,10 @@ async function condition(
     }
 
     // To review the cast to be more type safe but for now let's keep the existing behavior to ensure no regression
-    return compareText(propertyValue.toString(), expectedValue as string | RegExp | AsymmetricMatcher<string> | null | undefined, options)
+    const actual = propertyValue.toString()
+    const { success } = compareText(actual, expectedValue as string | RegExp | AsymmetricMatcher<string> | null | undefined, options)
+    // Failure messages show the actual value as is, not trimmed, lowercased or replaced by the string options
+    return { success, actual }
 }
 
 /**
