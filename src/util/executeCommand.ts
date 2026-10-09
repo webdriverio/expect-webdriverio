@@ -6,7 +6,12 @@ import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElem
 import { getElementsPerInstance, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 
-export type CompareResult<Actual> = { success: boolean; actual: Actual }
+export type CompareResult<Actual> = {
+    success: boolean
+    actual: Actual
+    /** The value that the matcher compared, after the string options (`trim`, `ignoreCase`, `replace`), if it is one value */
+    compared?: unknown
+}
 export type MultiRemoteCompareResult<Actual> = { success: boolean; actual: Actual, multiRemoteBrowserName: string }
 export type StrategyResult<Actual, Subject = WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.Element[] | WebdriverIO.Browser | unknown, Expected = unknown> = {
     subject: Subject;
@@ -220,7 +225,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
         const compareResult = await singleElementCompare(selector, forceFailure ? undefined : expectedValues as MaybeArray<Expected>)
         const success = forceFailure ? !!isNot : compareResult.success
 
-        return { subject, success, actual: compareResult.actual, abort: forceFailure, context: { isSome }, verdict: forceFailure ? undefined : compareResult.success }
+        return { subject, success, actual: compareResult.actual, abort: forceFailure, context: { isSome }, verdict: forceFailure ? undefined : compareResult.success, compared: forceFailure ? undefined : compareResult.compared }
     }
 
     // --- Multi-remote $() single element & $$() multiple elements cases ---

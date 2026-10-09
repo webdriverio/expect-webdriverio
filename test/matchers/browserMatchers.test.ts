@@ -166,7 +166,7 @@ Received      : " Valid Text "`
 Expect browser's window to have ${matcherNameLastWords(matcherFn.name)}
 
 Expected (trimmed): " Valid Text "
-Received:           " Wrong Text "`
+Received:           " Wrong Text " (compared as "Wrong Text")`
                     )
                 })
             })

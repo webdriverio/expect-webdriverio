@@ -70,8 +70,8 @@ export const compareTextOrOneOf = (
     }
 
     const compareResults = compareText(actualText, expectedText, options)
-    // Failure messages show the actual text as is, not trimmed, lowercased or replaced by the string options
-    return { ...compareResults, actual: actualText }
+    // Failure messages show the actual text as is, not trimmed, lowercased or replaced by the string options, and the compared value apart
+    return { success: compareResults.success, actual: actualText, compared: compareResults.actual }
 }
 
 export const compareObject = <T>(actual: T, expected: unknown): CompareResult<T> => {

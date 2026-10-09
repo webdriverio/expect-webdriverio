@@ -33,7 +33,7 @@ export async function toHaveHTML(
 
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: actualHTML, subject: elements, context: { isSome, matchingIndexes } = {}, expected, verdict } = await waitUntil(
+    const { success: pass, actual: actualHTML, subject: elements, context: { isSome, matchingIndexes } = {}, expected, verdict, compared } = await waitUntil(
         async (iteration) => {
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -49,7 +49,7 @@ export async function toHaveHTML(
     )
 
     const expectedValues = expected ?? wrapExpectedWithArray(elements, actualHTML, expectedWithOptions)
-    const message = enhanceError(elements, withStringOptions(expectedValues, verdict, options, actualHTML), actualHTML, { isNot, isSome, matchingIndexes, stringOptions: options }, verb, expectation, '', options)
+    const message = enhanceError(elements, withStringOptions(expectedValues, verdict, options, actualHTML), actualHTML, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
