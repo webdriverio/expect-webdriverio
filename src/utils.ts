@@ -17,6 +17,7 @@ export {
     isStringContainingMatcherLike, isStringMatchingMatcherLike,
 } from './util/asymmetricMatcherUtil.js'
 import type { AsyncAssertionResult, CommandOptions, StringOptions } from './publicTypes/options.js'
+import type { ExpectedOf } from './publicTypes/expectWebdriverIO.js'
 export { compareText } from './util/compareText.js'
 export { toArray } from './util/arrayUtil.js'
 
@@ -58,7 +59,8 @@ async function executeCommandBe(
 
 export const compareTextOrOneOf = (
     actualText: string,
-    expectedText: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
+    // The type of the public string matchers: a matcher accepts what this function compares (type tests in test-types/)
+    expectedText: MaybeArrayOrOneOf<ExpectedOf<'string'>> | undefined,
     options: StringOptions
 ): CompareResult<string> => {
     // An array is an index-based expected value of `$$()`, never one value
@@ -90,16 +92,13 @@ export const compareObject = <T>(actual: T, expected: unknown): CompareResult<T>
     }
 }
 
-/** One CSS value of `toHaveStyle`: a string value, as in `toHaveText` */
-type StyleValue = MaybeOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>>
-
 /**
  * Each CSS value is compared as a string value, as in `toHaveText`: the string options, a RegExp, an asymmetric matcher
  * or `expect.oneOf()`. The actual values stay as is, and the compared values and the verdict of each property are apart.
  */
 export const compareStyle = async (
     actualEl: WebdriverIO.Element,
-    style: { [key: string]: StyleValue },
+    style: { [key: string]: ExpectedOf<'style'> },
     options: StringOptions
 ): Promise<CompareResult<Record<string, unknown>>> => {
     const actual: Record<string, unknown> = {}

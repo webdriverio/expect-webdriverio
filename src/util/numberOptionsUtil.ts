@@ -2,6 +2,7 @@ import { AsymmetricMatcher } from 'expect'
 import { isMultiRemoteMatcher } from './multiRemoteUtils.js'
 import { isOneOfMatcher } from '../matchers/asymmetrics/oneOf.js'
 import type { NumberMatcher as PublicNumberMatcher } from '../publicTypes/options.js'
+import type { ExpectedOf } from '../publicTypes/expectWebdriverIO.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
 export const isDefinedNotNumber = (value: unknown) => value !== undefined && !isNumber(value)
@@ -14,7 +15,8 @@ const NUMBER_MATCHER_KEYS = ['eq', 'gte', 'lte']
  * If `supportDefaultAsGteThen1` is true, `undefined` is treated as `{ gte: 1 }`.
  */
 export function validateNumberMatcher(
-    expectedValue: number | PublicNumberMatcher | undefined,
+    // The type of the public number matchers: a matcher accepts what this function compares (type tests in test-types/)
+    expectedValue: ExpectedOf<'number'> | undefined,
     { supportDefaultAsGteThen1 }: { supportDefaultAsGteThen1?: boolean } = {}
 ): NumberMatcher {
     if (supportDefaultAsGteThen1 && expectedValue === undefined) {
@@ -31,16 +33,18 @@ export function validateNumberMatcher(
         }
         return new NumberMatcher({ oneOf: values })
     }
+    // Left: a range. The type guard of `expect.oneOf()` names its class, so the public `oneOf` type stays in the union
+    const range = expectedValue as PublicNumberMatcher | undefined
     if (
-        !isDefinedNumberOrNonEmptyObject(expectedValue)
-            || Object.keys(expectedValue).some((key) => !NUMBER_MATCHER_KEYS.includes(key))
-            || isDefinedNotNumber(expectedValue.eq) || isDefinedNotNumber(expectedValue.gte) || isDefinedNotNumber(expectedValue.lte)
-            || (expectedValue.eq === undefined && expectedValue.gte === undefined && expectedValue.lte === undefined)
+        !isDefinedNumberOrNonEmptyObject(range)
+            || Object.keys(range).some((key) => !NUMBER_MATCHER_KEYS.includes(key))
+            || isDefinedNotNumber(range.eq) || isDefinedNotNumber(range.gte) || isDefinedNotNumber(range.lte)
+            || (range.eq === undefined && range.gte === undefined && range.lte === undefined)
     ) {
         throw new Error(`Invalid NumberMatcher. Received: ${JSON.stringify(expectedValue)}`)
     }
 
-    const { eq, gte, lte } = expectedValue
+    const { eq, gte, lte } = range
 
     if (isNumber(gte) && isNumber(lte) && gte > lte) {
         throw new Error(`Invalid NumberMatcher range: 'gte' (${gte}) cannot be greater than 'lte' (${lte}).`)
@@ -50,8 +54,8 @@ export function validateNumberMatcher(
 }
 
 export function validateNumberMatcherArray(
-    expectedValues: MaybeArray<number | PublicNumberMatcher>
-        | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | PublicNumberMatcher>> | undefined,
+    expectedValues: MaybeArray<ExpectedOf<'number'>>
+        | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<ExpectedOf<'number'>>> | undefined,
     { supportDefaultAsGteThen1 }: { supportDefaultAsGteThen1?: boolean } = {}
 ): MaybeArray<NumberMatcher> | MultiRemoteValues<MaybeArray<NumberMatcher>> {
     // Per-instance numbers require `expect.multiRemote()`: a plain object is always a `NumberMatcher`
