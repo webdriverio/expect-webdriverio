@@ -336,8 +336,8 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 + Received  + 2
 
   Multi-remote values {
--   "chrome": oneOf<" Wrong Text ", " Wrong Text ">,
--   "firefox": oneOf<" Wrong Text ", " Wrong Text ">,
+-   "chrome": untrimmedOneOf<" Wrong Text ", " Wrong Text ">,
+-   "firefox": untrimmedOneOf<" Wrong Text ", " Wrong Text ">,
 +   "chrome": " Valid Text ",
 +   "firefox": " Valid Text ",
   }`
@@ -419,7 +419,7 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 + Received  + 2
 
   Multi-remote values {
--   "chrome": oneOf<" Wrong Text ", " Wrong Text ">,
+-   "chrome": untrimmedOneOf<" Wrong Text ", " Wrong Text ">,
 -   "firefox": StringContaining " Wrong Text ",
 +   "chrome": " Valid Text ",
 +   "firefox": " Valid Text ",
@@ -539,11 +539,11 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
   Multi-remote values {
 -   "chrome": Array [
 -     " Valid Text ",
--     oneOf<" Valid Text ">,
+-     untrimmedOneOf<" Valid Text ">,
 -   ],
 -   "firefox": Array [
 -     " Valid Text ",
--     oneOf<" Valid Text ">,
+-     untrimmedOneOf<" Valid Text ">,
 -   ],
 +   "chrome": " Valid Text ",
 +   "firefox": " Valid Text ",

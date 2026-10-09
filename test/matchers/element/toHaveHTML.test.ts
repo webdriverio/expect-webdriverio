@@ -302,7 +302,7 @@ Received: ""`)
                 expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have HTML
 
-Expected: oneOf<"ThIs Is ExAmPlE", /Webdriv/i>
+Expected: ignoringCaseOneOf<"ThIs Is ExAmPlE", /Webdriv/i>
 Received: "This is example HTML"`
                 )
             })
