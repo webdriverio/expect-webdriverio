@@ -724,14 +724,15 @@ Expect mock to be called with
 Expect mock to be called with
 
 - Expected  - 1
-+ Received  + 4
++ Received  + 5
 
   Object {
 -   "requestHeaders": "ObjectContaining {\\"Authorization\\":\\"test\\"}",
-+   "requestHeaders": Array [
-+     Object {},
-+     "... 2 more items",
-+   ],
++   "requestHeaders": Object {
++     "Accept": "*",
++     "Authorization": "Bearer ..2222222",
++     "foo": "bar",
++   },
   }`)
     })
 
@@ -753,6 +754,55 @@ Expect mock to be called with
   Object {
 -   "url": "StringMatching /\\\\/api\\\\/foo1$/",
 +   "url": "https://my-app/api/add-tags",
+  }`)
+    })
+
+    test('shows the received response headers by name', async () => {
+        const mock: any = new TestMock()
+        mock.calls.push({ ...mockPost, response: { ...mockPost.response, headers: [{ name: 'Content-Type', value: { type: 'string', value: 'application/json' } }] } })
+
+        const result = await thisContext.toBeRequestedWith(mock, {
+            responseHeaders: { 'Content-Type': 'text/html' },
+        }, { wait: 0 })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect mock to be called with
+
+- Expected  - 1
++ Received  + 1
+
+  Object {
+    "responseHeaders": Object {
+-     "Content-Type": "text/html",
++     "Content-Type": "application/json",
+    },
+  }`)
+    })
+
+    test('shows the expected and received status code', async () => {
+        const mock: any = new TestMock()
+        mock.calls.push({ ...mockPost })
+
+        const result = await thisContext.toBeRequestedWith(mock, {
+            url: mockPost.request.url,
+            statusCode: [200, 204],
+        }, { wait: 0 })
+
+        expect(result.pass).toBe(false)
+        expect(stripAnsi(result.message())).toEqual(`\
+Expect mock to be called with
+
+- Expected  - 4
++ Received  + 1
+
+  Object {
+-   "statusCode": Array [
+-     200,
+-     204,
+-   ],
++   "statusCode": 201,
+    "url": "https://my-app/api/add-tags",
   }`)
     })
 

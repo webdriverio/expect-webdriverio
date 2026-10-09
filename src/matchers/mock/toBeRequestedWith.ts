@@ -470,8 +470,10 @@ const minifyRequestMock = (
     const r: Record<string, unknown> = {
         url: requestMock.request.url,
         method: requestMock.request.method,
-        requestHeaders: requestMock.request.headers,
-        responseHeaders: requestMock.response.headers,
+        statusCode: requestMock.response.status,
+        // by name, as `headersMatcher()` compares them
+        requestHeaders: reduceHeaders(requestMock.request.headers),
+        responseHeaders: reduceHeaders(requestMock.response.headers),
         postData: resolveBodyForDisplay(requestMock.postData, requestedWith.postData, parseCache),
         response: resolveBodyForDisplay(requestMock.body, requestedWith.response, parseCache),
     }
@@ -489,6 +491,7 @@ const minifyRequestedWith = (r: ExpectWebdriverIO.RequestedWith) => {
     const result = {
         url: requestedWithParamToString(r.url),
         method: r.method,
+        statusCode: r.statusCode,
         requestHeaders: requestedWithParamToString(r.requestHeaders, shortenJson),
         responseHeaders: requestedWithParamToString(r.responseHeaders, shortenJson),
         postData: requestedWithParamToString(r.postData, shortenJson),

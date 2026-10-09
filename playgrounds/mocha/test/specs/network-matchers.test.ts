@@ -147,4 +147,17 @@ describe('Network Matchers', () => {
             expect(mock).toBeRequestedWith({ response: { definitely: 'not-this' } })
         ).rejects.toThrow()
     })
+
+    it('should show the received request headers by name when they do not match', async () => {
+        await expect(
+            expect(mock).toBeRequestedWith({ requestHeaders: { Authorization: 'bar' } }, { wait: 0 })
+        ).rejects.toThrow(/"Authorization": "foo"/)
+    })
+
+    it('should show the expected and received status code when it does not match', async () => {
+        // The received status code is the upstream one, as for the response body
+        await expect(
+            expect(mock).toBeRequestedWith({ method: 'POST', statusCode: 599 }, { wait: 0 })
+        ).rejects.toThrow(/"statusCode": 599,[\s\S]*"statusCode": \d{3},/)
+    })
 })
