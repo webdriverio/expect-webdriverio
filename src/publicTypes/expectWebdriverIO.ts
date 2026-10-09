@@ -3,8 +3,12 @@ import type * as Options from './options.js'
 type StringValue = string | RegExp | ExpectWebdriverIO.PartialMatcher<string>
 /** One CSS value of `toHaveStyle`: a string value, as in `toHaveText` */
 type StyleValue = MaybeOneOf<StringValue>
-/** A number of the number matchers: a number, a range (`NumberMatcher`), or one of these numbers (`expect.oneOf(100, 200)`) */
-type NumberValue = number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.OneOfNumbersPartialMatcher
+/**
+ * A number of the number matchers: a number, a range (`NumberMatcher`), one of these numbers (`expect.oneOf(100, 200)`), or
+ * an asymmetric matcher, e.g. `expect.closeTo(150, 0)`. `PartialMatcher` omits `sample`, so the types accept any
+ * asymmetric matcher, as for the string matchers.
+ */
+type NumberValue = number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.OneOfNumbersPartialMatcher | ExpectWebdriverIO.PartialMatcher<number>
 /** The size of `toHaveSize`: a number or a `NumberMatcher` for each field, or an asymmetric matcher, e.g. `expect.objectContaining()` */
 type SizeValue = { height: NumberValue, width: NumberValue } | ExpectWebdriverIO.PartialMatcher<unknown>
 /** A property value that is not a string: compared with `equals()`, deeply. An array means one value for each element of `$$()` */

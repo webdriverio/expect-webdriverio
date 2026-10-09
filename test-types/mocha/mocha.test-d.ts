@@ -843,9 +843,13 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(elementArray).toHaveWidth([expect.oneOf(100, 200), 300])).toEqualTypeOf<Promise<void>>()
             })
 
-            it('should reject a oneOf of strings in a number matcher', async () => {
-                // @ts-expect-error a number matcher needs numbers
-                await expect(element).toHaveWidth(expect.oneOf('100', '200'))
+            it('should accept an asymmetric matcher, e.g. expect.closeTo() for a size that the browser rounds', async () => {
+                expectTypeOf(expect(element).toHaveWidth(expect.closeTo(150, 0))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveSize({ width: expect.closeTo(150, 0), height: 20 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(networkMock).toBeRequestedTimes(expect.not.closeTo(2, 0))).toEqualTypeOf<Promise<void>>()
+                // `PartialMatcher` omits `sample`, so the types accept any asymmetric matcher, also a oneOf of strings:
+                // the runtime throws `Invalid NumberMatcher` (unit tests)
+                expectTypeOf(expect(element).toHaveWidth(expect.oneOf('100', '200'))).toEqualTypeOf<Promise<void>>()
             })
         })
 
@@ -1143,7 +1147,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         })
 
         it('should have ts errors with per-instance values on a single mock', async () => {
-            // @ts-expect-error per-instance values are for multi-remote mocks only
+            // The number matchers accept any asymmetric matcher (`PartialMatcher` omits `sample`), so the runtime
+            // fails per-instance values on a single mock (unit tests)
             expectTypeOf(expect(networkMock).toBeRequestedTimes(expect.multiRemote({ chrome: 1 }))).toEqualTypeOf<Promise<void>>()
             // @ts-expect-error per-instance values are for multi-remote mocks only
             expectTypeOf(expect(promiseNetworkMock).toBeRequestedWith(expect.multiRemote({ chrome: { method: 'GET' } }))).toEqualTypeOf<Promise<void>>()
