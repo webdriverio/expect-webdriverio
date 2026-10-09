@@ -21,6 +21,8 @@ src/matchers/asymmetrics expect.multiRemote(), oneOf
 src/matchers/modifiers   some
 src/matchers/snapshot.ts toMatchSnapshot, toMatchInlineSnapshot
 src/matchers.ts          the list of registered matchers
+src/matchers/descriptors.ts    the matchers made from a WebdriverIO getter, as data (string getters today)
+src/matchers/getterMatcher.ts  the factories that make these matchers from their descriptors
 src/util/                wait strategy, element and multi-remote helpers, failure messages
 src/utils.ts             the public `utils` export, which imports src/util/: modules of src/util/ must not import it
                          (oxlint `import/no-cycle` fails on a circular import)
