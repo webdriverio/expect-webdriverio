@@ -894,6 +894,18 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have property prop
             el = await $('sel')
         })
 
+        // The copy of the expected value keeps each own key, also `__proto__`, and has no size limit
+        test.each([
+            { name: 'an own __proto__ key', value: () => JSON.parse('{"__proto__":{"id":1},"a":1}') },
+            { name: 'a very large array', value: () => ({ rows: Array(500_000).fill(1) }) },
+        ])('compares an object with $name as the property', async ({ value }) => {
+            vi.mocked(el.getProperty).mockResolvedValue(value() as never)
+
+            const result = await { toHaveElementProperty }.toHaveElementProperty(el, 'data', value() as never, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+        })
+
         // `equals()` handles a value that refers back to itself: the options are applied to it without an endless walk
         test('compares an object that refers back to itself, on $() and on $$()', async () => {
             const circular: Record<string, unknown> = { id: '1' }

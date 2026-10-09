@@ -31,13 +31,17 @@ const withOptions = (expectedValue: unknown, options: StringOptions, built: Weak
     if (Array.isArray(expectedValue)) {
         const copy: unknown[] = []
         built.set(expectedValue, copy)
-        copy.push(...expectedValue.map((value) => withOptions(value, options, built)))
+        // One entry at a time: a spread has a limit on the number of arguments
+        for (const value of expectedValue) {
+            copy.push(withOptions(value, options, built))
+        }
         return copy
     }
     const copy: Record<string, unknown> = {}
     built.set(expectedValue, copy)
     for (const [key, value] of Object.entries(expectedValue)) {
-        copy[key] = withOptions(value, options, built)
+        // An own property, also for a `__proto__` key (e.g. from `JSON.parse()`), which an assignment would take as the prototype
+        Object.defineProperty(copy, key, { value: withOptions(value, options, built), enumerable: true, configurable: true, writable: true })
     }
     return copy
 }
