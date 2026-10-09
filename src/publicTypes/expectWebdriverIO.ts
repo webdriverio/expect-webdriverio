@@ -6,9 +6,21 @@ type StyleValue = MaybeOneOf<StringValue>
 /** A number of the number matchers: a number, a range (`NumberMatcher`), or one of these numbers (`expect.oneOf(100, 200)`) */
 type NumberValue = number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.OneOfNumbersPartialMatcher
 /** The size of `toHaveSize`: a number or a `NumberMatcher` for each field, or an asymmetric matcher, e.g. `expect.objectContaining()` */
+type SizeValue = { height: NumberValue, width: NumberValue } | ExpectWebdriverIO.PartialMatcher<unknown>
 /** A property value that is not a string: compared with `equals()`, deeply. An array means one value for each element of `$$()` */
 type PropertyObject = { [key: string]: unknown }
-type SizeValue = { height: NumberValue, width: NumberValue } | ExpectWebdriverIO.PartialMatcher<unknown>
+
+/**
+ * The expected value of each value type. The public types of the matchers and the compare functions use the same types,
+ * so that a matcher accepts what its compare function compares.
+ */
+export type ExpectedValues = {
+    string: StringValue
+    number: NumberValue
+    style: StyleValue
+    size: SizeValue
+}
+export type ExpectedOf<V extends keyof ExpectedValues> = ExpectedValues[V]
 
 /**
  * An element matcher with one expected value: one signature for each of `$()`, `$$()`, multi-remote `$()` and multi-remote `$$()`.
@@ -138,7 +150,7 @@ declare global {
     type FnWhenMock<ActualT, Fn, FnMultiRemote = Fn> = ActualT extends MultiRemoteMocks ? FnMultiRemote : ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
 
     interface WdioCustomAsymmetricMatchers {
-        oneOf(...values: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>): ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>
+        oneOf(...values: Array<StringValue | null>): ExpectWebdriverIO.OneOfPartialMatcher<StringValue | null>
         /**
          * One of these numbers, in the number matchers, e.g. a width of 100 or 200 and nothing between, which a range cannot say.
          *
@@ -174,7 +186,7 @@ declare global {
             * `WebdriverIO.Browser` -> `getUrl`
             */
             (
-                url: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+                url: StringValue,
                 options?: ExpectWebdriverIO.StringOptions
             ) => Promise<void>,
 
@@ -182,7 +194,7 @@ declare global {
             * `WebdriverIO.MultiRemoteBrowser` -> `getUrl`
             */
             (
-                url: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+                url: MultiRemoteValuesOrOneOf<StringValue>,
                 options?: ExpectWebdriverIO.StringOptions
             ) => Promise<void>
         >
@@ -195,7 +207,7 @@ declare global {
             * `WebdriverIO.Browser` -> `getTitle`
             */
             (
-                title: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+                title: StringValue,
                 options?: ExpectWebdriverIO.StringOptions
             ) => Promise<void>,
 
@@ -203,7 +215,7 @@ declare global {
             * `WebdriverIO.MultiRemoteBrowser` -> `getTitle`
             */
             (
-                title: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+                title: MultiRemoteValuesOrOneOf<StringValue>,
                 options?: ExpectWebdriverIO.StringOptions
             ) => Promise<void>
         >
@@ -216,7 +228,7 @@ declare global {
             * `WebdriverIO.Browser` -> `getClipboard`
             */
             (
-                clipboardText: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+                clipboardText: MaybeOneOf<StringValue>,
                 options?: ExpectWebdriverIO.StringOptions
             ) => Promise<void>,
 
@@ -224,7 +236,7 @@ declare global {
             * `WebdriverIO.MultiRemoteBrowser` -> `getClipboard`
             */
             (
-                clipboardText: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+                clipboardText: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
                 options?: ExpectWebdriverIO.StringOptions
             ) => Promise<void>
         >
@@ -244,7 +256,7 @@ declare global {
                 (key: string): Promise<void>
                 (
                     key: string,
-                    expectedValue: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+                    expectedValue: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
                     options?: ExpectWebdriverIO.StringOptions
                 ): Promise<void>
             },
@@ -260,7 +272,7 @@ declare global {
                 (key: string): Promise<void>
                 (
                     key: string,
-                    expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+                    expectedValue: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
                     options?: ExpectWebdriverIO.StringOptions
                 ): Promise<void>
             }
@@ -376,7 +388,7 @@ declare global {
             /** Assert both attribute name AND a specific expected value */
             (
                 attribute: string,
-                value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>> | ExpectWebdriverIO.PartialMatcherAnything,
+                value: MaybeOneOf<StringValue> | ExpectWebdriverIO.PartialMatcherAnything,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>;
         }, {
@@ -389,7 +401,7 @@ declare global {
             /** Assert both attribute name AND a specific expected value */
             (
                 attribute: string,
-                value: MaybeArrayOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+                value: MaybeArrayOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>;
         }, {
@@ -399,7 +411,7 @@ declare global {
             ): Promise<void>
             (
                 attribute: string,
-                value: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+                value: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }, {
@@ -409,7 +421,7 @@ declare global {
             ): Promise<void>
             (
                 attribute: string,
-                value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
+                value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }
@@ -439,25 +451,25 @@ declare global {
         toHaveElementClass: FnWhenElementOrArrayLike<ActualT, {
             /** Element $() API */
             (
-                className: string | RegExp | ExpectWebdriverIO.PartialMatcher<string>,
+                className: StringValue,
                 options?: ExpectWebdriverIO.StringOptions
             ) :Promise<void>
         }, {
             /** Elements $$() API */
             (
-                className: MaybeArray<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+                className: MaybeArray<StringValue>,
                 options?: ExpectWebdriverIO.StringOptions
             ) :Promise<void>
         }, {
             /** Element MultiRemoteBrowser.$() API */
             (
-                className: MultiRemoteValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+                className: MultiRemoteValuesOrOneOf<StringValue>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }, {
             /** Elements MultiRemoteBrowser.$$() API */
             (
-                className: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string>>,
+                className: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<StringValue>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }>
@@ -476,7 +488,7 @@ declare global {
             (
                 property: string,
                 // TODO support `oneOf` for number!
-                value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number,
+                value: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>;
         }, {
@@ -502,7 +514,7 @@ declare global {
             ): Promise<void>
             (
                 property: string,
-                value: SingleOrMultiRemoteMatcher<MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number>,
+                value: SingleOrMultiRemoteMatcher<MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }, {
