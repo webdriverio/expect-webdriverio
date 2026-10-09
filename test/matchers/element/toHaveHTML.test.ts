@@ -7,7 +7,7 @@ import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteEle
 import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 
 vi.mock('@wdio/globals')
-import { expect as wdioExpect } from 'expect-webdriverio'
+import { expect as wdioExpect } from '../../../src/index.js'
 
 describe(toHaveHTML, () => {
 
