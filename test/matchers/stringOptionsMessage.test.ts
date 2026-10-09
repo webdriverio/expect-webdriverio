@@ -134,7 +134,7 @@ Expect $$(\`items\`) to have HTML
 
   Array [
 -   trimmed<"div">,
-+   "   <div>foo</div>   ",
++   "   <div>foo</div>   ", (compared as "<div>foo</div>")
     trimmed<"<div>foo</div>">,
 -   "toto",
 +   undefined,
@@ -214,7 +214,7 @@ Expect multi-remote<chrome, firefox> to have title
   Multi-remote values {
     "chrome": ignoringCase<"Hello">,
 -   "firefox": ignoringCase<"Hello">,
-+   "firefox": "Bye",
++   "firefox": "Bye", (compared as "bye")
   }`)
         })
     })

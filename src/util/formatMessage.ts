@@ -8,6 +8,7 @@ import { isJasmineStringAsymmetricMatcher } from './asymmetricMatcherUtil.js'
 import { toArray } from './arrayUtil.js'
 import { isTrimmedByOptions, stringOptionsName } from './stringOptionsName.js'
 import { isBrowser, isBrowsingContext, isMultiRemoteBrowser } from './multiRemoteUtils.js'
+import { comparedAs, isComparedValueShown, withComparedValues } from './comparedAs.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
@@ -146,7 +147,7 @@ export const enhanceError = (
     if (isNotInLabel && isElementOrArrayLike(subject) && Array.isArray(expected) && Array.isArray(actual) && expected.length === actual.length) {
         // With multiple elements + `.not`, since `printDiffOrStringify` shows only diff and we need to highlight what matched, we do custom formatting
         // Using FORCE_COLOR=1 npx vitest + console.log() can show colors in the test output console
-        const { expectedFormatted, receivedFormatted } = printArrayWithMatchingItemInRed(expected, actual, context.matchingIndexes)
+        const { expectedFormatted, receivedFormatted } = printArrayWithMatchingItemInRed(expected, actual, context.matchingIndexes, context.compared)
         diffString = `\
 ${label.expected}: ${expectedFormatted}
 ${receivedLineLabel}: ${receivedFormatted}`
@@ -160,12 +161,15 @@ ${receivedLineLabel}: ${printReceived(actual)}`
         diffString = printDiffOrStringify(expected, actual, label.expected, isNotInLabel ? receivedLineLabel : label.received, true)
     }
 
-    // The value that the matcher compared, when the string options changed it. Only where `Received` is one line: one
-    // value on one line, not a multiline value (Jest shows a line diff) nor the diff of `$$()` or multi-remote values.
+    // The value that the matcher compared, when the string options changed it: after `Received` for one value, and after
+    // each received value that failed in the diff of `$$()` or multi-remote values
     const { compared } = context
-    if (typeof actual === 'string' && typeof compared === 'string' && compared !== actual && !actual.includes('\n') && !compared.includes('\n')) {
-        const comparedAs = ` (compared as ${printReceived(compared)})`
-        diffString = diffString.split('\n').map((line) => /^Received *:/.test(line) ? line + comparedAs : line).join('\n')
+    if (typeof actual === 'string') {
+        if (isComparedValueShown(actual, compared)) {
+            diffString = diffString.split('\n').map((line) => /^Received *:/.test(line) ? line + comparedAs(compared) : line).join('\n')
+        }
+    } else {
+        diffString = withComparedValues(diffString, actual, compared)
     }
 
     if (message) {
@@ -192,6 +196,7 @@ const printArrayWithMatchingItemInRed = (
     expectedArray: unknown[],
     actualArray: unknown[],
     matchingIndexes?: number[],
+    compared?: unknown,
 ): { expectedFormatted: string, receivedFormatted: string } => {
     // The indexes come from the matcher's own comparison, with its string options. Comparing again here cannot follow
     // it, and would test a sticky or global RegExp a second time: `equals()` is only a fallback.
@@ -211,9 +216,10 @@ const printArrayWithMatchingItemInRed = (
     const receivedFormatted = `[${actualArray
         .map((item, i) => {
             const stringified = stringify(item)
-            // Problematic items (matched) in red, others in green
+            // Problematic items (matched) in red, with the value that the matcher compared, others in green
+            const itemCompared = Array.isArray(compared) ? compared[i] : undefined
             return matchingIndices.includes(i)
-                ? RECEIVED_COLOR(INVERTED_COLOR(stringified))
+                ? RECEIVED_COLOR(INVERTED_COLOR(stringified)) + (isComparedValueShown(item, itemCompared) ? comparedAs(itemCompared) : '')
                 : EXPECTED_COLOR(stringified)
         })
         .join(', ')}]`

@@ -1477,7 +1477,7 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have text
   Multi-remote values {
     "chrome": trimmed<"Valid Text">,
 -   "firefox": trimmed<"Other">,
-+   "firefox": " Valid Text ",
++   "firefox": " Valid Text ", (compared as "Valid Text")
   }`
                 )
             })
@@ -1504,7 +1504,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have text
     "firefox": Array [
       trimmed<"Valid Text">,
 -     trimmed<"Other">,
-+     " Valid Text ",
++     " Valid Text ", (compared as "Valid Text")
     ],
   }`
                 )

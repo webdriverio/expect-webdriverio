@@ -9,7 +9,10 @@ import { refreshElementArray } from './refetchElements.js'
 export type CompareResult<Actual> = {
     success: boolean
     actual: Actual
-    /** The value that the matcher compared, after the string options (`trim`, `ignoreCase`, `replace`), if it is one value */
+    /**
+     * The value that the matcher compared, after the string options (`trim`, `ignoreCase`, `replace`), if it is one value.
+     * In a strategy result, it has the shape of `actual`: one value, an array for `$$()`, per-instance values for multi-remote.
+     */
     compared?: unknown
 }
 export type MultiRemoteCompareResult<Actual> = { success: boolean; actual: Actual, multiRemoteBrowserName: string }
@@ -284,11 +287,12 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
      */
     const matchingIndexes = results.flatMap(({ success }, index) => success ? [index] : [])
     const verdict = results.map(({ success }) => success)
+    const compared = results.map(({ compared }) => compared)
     if (lengthMismatch) {
-        return { subject, success: !!isNot, actual, context: { isSome, matchingIndexes }, verdict }
+        return { subject, success: !!isNot, actual, context: { isSome, matchingIndexes }, verdict, compared }
     }
 
-    return { subject, success: computeSuccess([results], { isNot, isSome }), actual, context: { isSome, matchingIndexes }, verdict }
+    return { subject, success: computeSuccess([results], { isNot, isSome }), actual, context: { isSome, matchingIndexes }, verdict, compared }
 }
 
 /**
@@ -329,6 +333,7 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
 
     const actualPerInstance: MultiRemoteValuesWithArray<Actual> = {}
     const verdictPerInstance: MultiRemoteValues<boolean | boolean[]> = {}
+    const comparedPerInstance: MultiRemoteValues<unknown> = {}
     const resultsPerInstance = await Promise.all(instances.map(async (instance) => {
         const isExpected = instance in expectedPerInstance
         const instanceValue = expectedPerInstance[instance]
@@ -349,11 +354,13 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
         if (isSingleElement) {
             actualPerInstance[instance] = actuals[0]
             verdictPerInstance[instance] = results[0]?.success
+            comparedPerInstance[instance] = results[0]?.compared
         } else {
             // Pad for display when that instance expects more entries than it has elements
             const padding = Math.max((Array.isArray(instanceValue) ? instanceValue.length : 0) - actuals.length, 0)
             actualPerInstance[instance] = [...actuals, ...Array(padding).fill(undefined)]
             verdictPerInstance[instance] = [...results.map(({ success }) => success), ...Array(padding).fill(false)]
+            comparedPerInstance[instance] = results.map(({ compared }) => compared)
         }
         return results
     }))
@@ -368,10 +375,10 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
         return { subject, success: !!isNot, abort: true, actual: actualPerInstance, context: { isSome }, expected }
     }
     if (lengthMismatch) {
-        return { subject, success: !!isNot, actual: actualPerInstance, context: { isSome }, expected, verdict: verdictPerInstance }
+        return { subject, success: !!isNot, actual: actualPerInstance, context: { isSome }, expected, verdict: verdictPerInstance, compared: comparedPerInstance }
     }
 
-    return { subject, success: computeSuccess(resultsPerInstance, { isNot, isSome }), actual: actualPerInstance, context: { isSome }, expected, verdict: verdictPerInstance }
+    return { subject, success: computeSuccess(resultsPerInstance, { isNot, isSome }), actual: actualPerInstance, context: { isSome }, expected, verdict: verdictPerInstance, compared: comparedPerInstance }
 }
 
 /**
