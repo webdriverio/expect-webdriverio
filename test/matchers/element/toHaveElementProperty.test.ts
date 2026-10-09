@@ -894,6 +894,22 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have property prop
             el = await $('sel')
         })
 
+        // `equals()` handles a value that refers back to itself: the options are applied to it without an endless walk
+        test('compares an object that refers back to itself, on $() and on $$()', async () => {
+            const circular: Record<string, unknown> = { id: '1' }
+            circular.self = circular
+            const elements = await $$('sel')
+            for (const element of [el, ...elements]) {
+                vi.mocked(element.getProperty).mockResolvedValue(circular as never)
+            }
+
+            const result = await { toHaveElementProperty }.toHaveElementProperty(el, 'data', circular as never, { wait: 0 })
+            const listResult = await { toHaveElementProperty }.toHaveElementProperty(elements, 'data', elements.map(() => circular) as never, { wait: 0 })
+
+            expect(result.pass).toBe(true)
+            expect(listResult.pass).toBe(true)
+        })
+
         test.each([
             { name: 'an equal object', property: { a: 1, b: [2] }, expected: { a: 1, b: [2] }, pass: true },
             { name: 'an object with an asymmetric matcher in it', property: { a: 1, b: 'x' }, expected: { a: wdioExpect.any(Number), b: 'x' }, pass: true },
