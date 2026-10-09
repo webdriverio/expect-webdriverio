@@ -1,4 +1,3 @@
-import { expect } from './index.js'
 import { SoftAssertService } from './softAssert.js'
 import type { SyncExpectationResult } from 'expect'
 
@@ -7,8 +6,9 @@ const isPossibleMatcher = (propName: string) => propName.startsWith('to') && pro
 /**
  * Creates a soft assertion wrapper using lazy evaluation
  * Only creates matchers when they're actually accessed
+ * `expect` is the configured instance of `index.ts`, given as a parameter so that this module does not import `index.ts`
  */
-const createSoftExpect = <T = unknown>(actual: T): ExpectWebdriverIO.Matchers<Promise<void> | void, T> => {
+const createSoftExpect = <T = unknown>(expect: ExpectWebdriverIO.Expect, actual: T): ExpectWebdriverIO.Matchers<Promise<void> | void, T> => {
     const softService = SoftAssertService.getInstance()
 
     // Use a simple proxy that creates matchers on-demand
@@ -18,17 +18,17 @@ const createSoftExpect = <T = unknown>(actual: T): ExpectWebdriverIO.Matchers<Pr
 
             // Handle .not specially
             if (propName === 'not') {
-                return createSoftNotProxy(actual, softService)
+                return createSoftNotProxy(expect, actual, softService)
             }
 
             // Handle resolves/rejects (rarely used in WebdriverIO)
             if (propName === 'resolves' || propName === 'rejects') {
-                return createSoftChainProxy(actual, propName, softService)
+                return createSoftChainProxy(expect, actual, propName, softService)
             }
 
             if (isPossibleMatcher(propName)) {
                 // Support basic & wdio (and more) matchers that start with "to"
-                return createSoftMatcher(actual, propName, softService)
+                return createSoftMatcher(expect, actual, propName, softService)
             }
 
             // For any other properties, return undefined
@@ -40,11 +40,11 @@ const createSoftExpect = <T = unknown>(actual: T): ExpectWebdriverIO.Matchers<Pr
 /**
  * Creates a soft .not proxy
  */
-const createSoftNotProxy = <T>(actual: T, softService: SoftAssertService) => {
+const createSoftNotProxy = <T>(expect: ExpectWebdriverIO.Expect, actual: T, softService: SoftAssertService) => {
     return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void> | void, T>, {
         get(_target, prop) {
             const propName = String(prop)
-            return isPossibleMatcher(propName) ? createSoftMatcher(actual, propName, softService, 'not') : undefined
+            return isPossibleMatcher(propName) ? createSoftMatcher(expect, actual, propName, softService, 'not') : undefined
         }
     })
 }
@@ -52,11 +52,11 @@ const createSoftNotProxy = <T>(actual: T, softService: SoftAssertService) => {
 /**
  * Creates a soft chain proxy (resolves/rejects)
  */
-const createSoftChainProxy = <T>(actual: T, chainType: string, softService: SoftAssertService) => {
+const createSoftChainProxy = <T>(expect: ExpectWebdriverIO.Expect, actual: T, chainType: string, softService: SoftAssertService) => {
     return new Proxy({} as ExpectWebdriverIO.Matchers<Promise<void> | void, T>, {
         get(_target, prop) {
             const propName = String(prop)
-            return isPossibleMatcher(propName) ? createSoftMatcher(actual, propName, softService, chainType) : undefined
+            return isPossibleMatcher(propName) ? createSoftMatcher(expect, actual, propName, softService, chainType) : undefined
         }
     })
 }
@@ -65,6 +65,7 @@ const createSoftChainProxy = <T>(actual: T, chainType: string, softService: Soft
  * Creates a single soft matcher function
  */
 const createSoftMatcher = <T>(
+    expect: ExpectWebdriverIO.Expect,
     actual: T,
     matcherName: string,
     softService: SoftAssertService,

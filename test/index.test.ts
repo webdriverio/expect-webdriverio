@@ -7,3 +7,26 @@ test('index', () => {
 
     expect(Object.keys(wdioCustomMatchers).length).toEqual(37)
 })
+
+test('the public utils keep their members, also when a helper moves to another module', () => {
+    expect(Object.keys(utils).sort()).toEqual([
+        'compareObject',
+        'compareStyle',
+        'compareText',
+        'compareTextOrOneOf',
+        'enhanceError',
+        'executeCommandBe',
+        'getAsymmetricMatcherValue',
+        'getStringAsymmetricMatcherValue',
+        'isArrayContainingMatcher',
+        'isAsymmetricMatcher',
+        'isInversedStringContainingMatcher',
+        'isInversedStringMatchingMatcher',
+        'isJasmineStringAsymmetricMatcher',
+        'isStringContainingMatcherLike',
+        'isStringMatchingMatcherLike',
+        'toArray',
+        'waitUntil',
+        'wrapExpectedWithArray',
+    ])
+})

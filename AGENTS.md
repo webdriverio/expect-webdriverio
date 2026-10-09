@@ -22,6 +22,8 @@ src/matchers/modifiers   some
 src/matchers/snapshot.ts toMatchSnapshot, toMatchInlineSnapshot
 src/matchers.ts          the list of registered matchers
 src/util/                wait strategy, element and multi-remote helpers, failure messages
+src/utils.ts             the public `utils` export, which imports src/util/: modules of src/util/ must not import it
+                         (oxlint `import/no-cycle` fails on a circular import)
 src/softExpect.ts        soft assertions (and softAssert*.ts)
 types/*.d.ts             hand-written public types (not generated)
 jest.d.ts, jasmine*.d.ts framework augmentations of the public types
