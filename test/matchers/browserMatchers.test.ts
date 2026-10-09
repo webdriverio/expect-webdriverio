@@ -83,8 +83,8 @@ describe('Browser Matchers', () => {
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect browser's window to have ${matcherNameLastWords(matcherFn.name)}
 
-Expected: untrimmed<" Valid Text ">
-Received: " Wrong Text "`)
+Expected (untrimmed): " Valid Text "
+Received:             " Wrong Text "`)
                     expect(browserFn).toHaveBeenCalledTimes(1)
                 })
 
@@ -102,8 +102,8 @@ Received: " Wrong Text "`)
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect browser's window not to have ${matcherNameLastWords(matcherFn.name)}
 
-Expected [not]: untrimmed<" Valid Text ">
-Received      : " Valid Text "`
+Expected [not] (untrimmed): " Valid Text "
+Received                  : " Valid Text "`
                     )
                 })
 
@@ -143,8 +143,8 @@ Received      : " Valid Text "`
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect browser's window not to have ${matcherNameLastWords(matcherFn.name)}
 
-Expected [not]: untrimmed<" Valid Text ">
-Received      : " Valid Text "`
+Expected [not] (untrimmed): " Valid Text "
+Received                  : " Valid Text "`
                     )
                 })
 

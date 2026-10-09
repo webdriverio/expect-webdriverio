@@ -98,7 +98,7 @@ await expect($$('li')).toHaveText(jasmine.arrayWithExactContents(['Coffee', 'Tea
 
 The failure messages of the string matchers changed, see [String Options](API.md#string-options):
 
-- `Expected` names the non-default string options, e.g. `ignoringCase<"Foo">` or `containingIgnoringCaseOneOf<"a", "b">`. Before, only the position option of `expect.oneOf()` was named.
+- `Expected` names the non-default string options: in the label for one string value (`Expected (ignoringCase): "Foo"`), and on each value in a list or per-instance values (`ignoringCase<"Foo">`, `containingIgnoringCaseOneOf<"a", "b">`). Before, only the position option of `expect.oneOf()` was named.
 - `Received` shows the actual value as is, also in `toHaveAttribute` and `toHaveElementProperty`. Before, these 2 matchers showed it trimmed, lowercased or replaced.
 - On `$$()` and multi-remote, an element or instance that passed, also only because of the string options, is a line with no change in the diff.
 - With `.not` on `$$()`, the elements that matched are highlighted, as the matcher compared them. Before, the elements that matched only because of the string options were not highlighted.

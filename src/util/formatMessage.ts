@@ -6,6 +6,7 @@ import { toJsonString } from './stringUtil.js'
 import { getLoadedWdioKind } from './wdioKind.js'
 import { isJasmineStringAsymmetricMatcher } from './asymmetricMatcherUtil.js'
 import { toArray } from './arrayUtil.js'
+import { stringOptionsName } from './stringOptionsName.js'
 import { isBrowser, isBrowsingContext, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
@@ -74,10 +75,10 @@ export const enhanceError = (
     context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, matchingIndexes?: number[], browserTargetType?: 'browser' | 'window', showContextUrl?: boolean },
     verb: string,
     expectation: string,
-    expectedValueArgument2 = '', {
-        message = '',
-        containing = false
-    } = {}): string => {
+    expectedValueArgument2 = '',
+    options: ExpectWebdriverIO.StringOptions = {}): string => {
+    const { message: userMessage = '', containing = false } = options
+    let message = userMessage
     const { isNot, useNotInLabel = true } = context
 
     // Label the per-instance values `Multi-remote values {` instead of `Object {` in the printed diff
@@ -118,10 +119,15 @@ export const enhanceError = (
     }
 
     const isNotInLabel = useNotInLabel && isNot
+    // One string value keeps the string diff of Jest, so its non-default string options are named in the label, e.g.
+    // `Expected (ignoringCase)`. In a list or per-instance values, each expected value names them (`StringOptionsMatcher`).
+    const optionsName = typeof expected === 'string' ? stringOptionsName(options) : ''
     const label =  {
-        expected: isNotInLabel ? 'Expected [not]' : 'Expected',
+        expected: `${isNotInLabel ? 'Expected [not]' : 'Expected'}${optionsName ? ` (${optionsName})` : ''}`,
         received: isNotInLabel ? 'Received      ' : 'Received'
     }
+    // The labels of the 2 lines that this function prints itself, aligned as Jest aligns its own
+    const receivedLineLabel = label.received.padEnd(label.expected.length)
 
     let diffString = ''
 
@@ -139,13 +145,13 @@ export const enhanceError = (
         const { expectedFormatted, receivedFormatted } = printArrayWithMatchingItemInRed(expected, actual, context.matchingIndexes)
         diffString = `\
 ${label.expected}: ${expectedFormatted}
-${label.received}: ${receivedFormatted}`
+${receivedLineLabel}: ${receivedFormatted}`
     } else if (equals(actual, expected)) {
         // Using `printDiffOrStringify()` with equals values output `Received: serializes to the same string`, so we need to tweak.
         diffString =
             `\
 ${label.expected}: ${printExpected(expected)}
-${label.received}: ${printReceived(actual)}`
+${receivedLineLabel}: ${printReceived(actual)}`
     } else {
         diffString = printDiffOrStringify(expected, actual, label.expected, label.received, true)
     }

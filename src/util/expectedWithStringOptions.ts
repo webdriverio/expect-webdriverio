@@ -61,15 +61,19 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
  * browser, an array for `$$()`, and per-instance values for multi-remote. Without a verdict (e.g. a structural failure),
  * the expected value does not change.
  */
-export const withStringOptions = (expected: unknown, verdict: unknown, options: ExpectWebdriverIO.StringOptions | undefined): unknown => {
+export const withStringOptions = (expected: unknown, verdict: unknown, options: ExpectWebdriverIO.StringOptions | undefined): unknown =>
+    // One string value stays a string: Jest's string diff shows what changed, and `enhanceError()` names the options in the label
+    typeof verdict === 'boolean' && typeof expected === 'string' ? expected : wrapLeaves(expected, verdict, options)
+
+const wrapLeaves = (expected: unknown, verdict: unknown, options: ExpectWebdriverIO.StringOptions | undefined): unknown => {
     if (typeof verdict === 'boolean') {
         return isExpectedLeaf(expected) ? new StringOptionsMatcher(expected, options ?? {}, verdict) : expected
     }
     if (Array.isArray(verdict) && Array.isArray(expected)) {
-        return expected.map((value, index) => withStringOptions(value, verdict[index], options))
+        return expected.map((value, index) => wrapLeaves(value, verdict[index], options))
     }
     if (isPlainObject(verdict) && isPlainObject(expected)) {
-        return Object.fromEntries(Object.entries(expected).map(([name, value]) => [name, withStringOptions(value, verdict[name], options)]))
+        return Object.fromEntries(Object.entries(expected).map(([name, value]) => [name, wrapLeaves(value, verdict[name], options)]))
     }
     return expected
 }

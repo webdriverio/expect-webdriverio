@@ -41,8 +41,13 @@ describe(withStringOptions, () => {
         return value
     }
 
-    test('wraps one expected value with the verdict of one element or browser', () => {
-        expect(printed(withStringOptions('Foo', true, options))).toBe('ignoringCase<"Foo">:true')
+    test('keeps one string value of one element or browser as is, for the string diff of Jest', () => {
+        expect(withStringOptions('Foo', true, options)).toBe('Foo')
+    })
+
+    test('wraps one RegExp or asymmetric matcher of one element or browser with its verdict', () => {
+        expect(printed(withStringOptions(/foo/, false, options))).toBe('/foo/i:false')
+        expect(printed(withStringOptions(wdioExpect.stringContaining('foo'), true, options))).toBe('StringContaining "foo":true')
     })
 
     test('wraps each expected value of $$() with the verdict of its element, also the padded ones', () => {

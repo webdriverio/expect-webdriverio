@@ -31,7 +31,7 @@ describe('failure messages with string options', () => {
     }
 
     describe('on one element', () => {
-        test('shows the non-default options in Expected, and the actual value as is', async () => {
+        test('names the non-default options in the label, and shows the actual value as is', async () => {
             const [element] = elementsWith('getText', ['  Hello World  '])
 
             const result = await toHaveText.call(thisContext, element, 'Other', { ...wait, ignoreCase: true })
@@ -39,8 +39,47 @@ describe('failure messages with string options', () => {
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $$(\`items\`)[0] to have text
 
-Expected: ignoringCase<"Other">
-Received: "  Hello World  "`)
+Expected (ignoringCase): "Other"
+Received:                "  Hello World  "`)
+        })
+
+        const html = '<ul>\n  <li>Tea</li>\n  <li>Coffee</li>\n</ul>'
+        const expectedHtml = '<ul>\n  <li>Tea</li>\n  <li>Milk</li>\n</ul>'
+
+        test('keeps the line diff of Jest for a multiline value', async () => {
+            const [element] = elementsWith('getHTML', [html])
+
+            const result = await toHaveHTML.call(thisContext, element, expectedHtml, wait)
+
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`items\`)[0] to have HTML
+
+- Expected  - 1
++ Received  + 1
+
+  <ul>
+    <li>Tea</li>
+-   <li>Milk</li>
++   <li>Coffee</li>
+  </ul>`)
+        })
+
+        test('keeps the line diff of Jest for a multiline value, and names the non-default options in its header', async () => {
+            const [element] = elementsWith('getHTML', [html])
+
+            const result = await toHaveHTML.call(thisContext, element, expectedHtml, { ...wait, ignoreCase: true })
+
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`items\`)[0] to have HTML
+
+- Expected (ignoringCase)  - 1
++ Received                 + 1
+
+  <ul>
+    <li>Tea</li>
+-   <li>Milk</li>
++   <li>Coffee</li>
+  </ul>`)
         })
 
         test('shows Expected as before with the default options only', async () => {
@@ -171,36 +210,56 @@ Expect multi-remote<chrome, firefox> to have title
         const options = { wait: 0, ignoreCase: true }
 
         test.each([
-            { name: 'toHaveText', getter: 'getText', run: (e: WebdriverIO.Element) => toHaveText.call(thisContext, e, 'foo', options) },
-            { name: 'toHaveHTML', getter: 'getHTML', run: (e: WebdriverIO.Element) => toHaveHTML.call(thisContext, e, 'foo', options) },
-            { name: 'toHaveAttribute', getter: 'getAttribute', run: (e: WebdriverIO.Element) => toHaveAttribute.call(thisContext, e as never, 'data-x', 'foo', options) },
-            { name: 'toHaveElementProperty', getter: 'getProperty', run: (e: WebdriverIO.Element) => toHaveElementProperty.call(thisContext, e as never, 'value', 'foo', options) },
-            { name: 'toHaveElementClass', getter: 'getAttribute', run: (e: WebdriverIO.Element) => toHaveElementClass.call(thisContext, e, 'foo', options) },
-            { name: 'toHaveComputedLabel', getter: 'getComputedLabel', run: (e: WebdriverIO.Element) => toHaveComputedLabel.call(thisContext, e, 'foo', options) },
-            { name: 'toHaveComputedRole', getter: 'getComputedRole', run: (e: WebdriverIO.Element) => toHaveComputedRole.call(thisContext, e, 'foo', options) },
-        ] as const)('$name on one element', async ({ getter, run }) => {
-            const [element] = elementArrayFactory('items', 1)
-            vi.mocked(element[getter]).mockResolvedValue('bar' as never)
+            { name: 'toHaveText', getter: 'getText', run: (e: WebdriverIO.ElementArray) => toHaveText.call(thisContext, e, ['foo', 'bar'], options) },
+            { name: 'toHaveHTML', getter: 'getHTML', run: (e: WebdriverIO.ElementArray) => toHaveHTML.call(thisContext, e, ['foo', 'bar'], options) },
+            { name: 'toHaveAttribute', getter: 'getAttribute', run: (e: WebdriverIO.ElementArray) => toHaveAttribute.call(thisContext, e as never, 'data-x', ['foo', 'bar'] as never, options) },
+            { name: 'toHaveElementProperty', getter: 'getProperty', run: (e: WebdriverIO.ElementArray) => toHaveElementProperty.call(thisContext, e as never, 'value', ['foo', 'bar'] as never, options) },
+            { name: 'toHaveElementClass', getter: 'getAttribute', run: (e: WebdriverIO.ElementArray) => toHaveElementClass.call(thisContext, e, ['foo', 'bar'], options) },
+            { name: 'toHaveComputedLabel', getter: 'getComputedLabel', run: (e: WebdriverIO.ElementArray) => toHaveComputedLabel.call(thisContext, e, ['foo', 'bar'], options) },
+            { name: 'toHaveComputedRole', getter: 'getComputedRole', run: (e: WebdriverIO.ElementArray) => toHaveComputedRole.call(thisContext, e, ['foo', 'bar'], options) },
+        ] as const)('$name on a list names the options on each value, and the element that passed is no difference', async ({ getter, run }) => {
+            const elements = elementArrayFactory('items', 2)
+            vi.mocked(elements[0][getter]).mockResolvedValue('FOO' as never)
+            vi.mocked(elements[1][getter]).mockResolvedValue('baz' as never)
 
-            const result = await run(element)
+            const result = await run(elements)
 
-            expect(result.pass).toBe(false)
-            expect(stripAnsi(result.message())).toContain('Expected: ignoringCase<"foo">\nReceived: "bar"')
+            expect(stripAnsi(result.message())).toContain(`\
+  Array [
+    ignoringCase<"foo">,
+-   ignoringCase<"bar">,
++   "baz",
+  ]`)
         })
 
         test.each([
-            { name: 'toHaveTitle', mock: (b: WebdriverIO.Browser) => vi.mocked(b.getTitle).mockResolvedValue('bar'), run: (b: WebdriverIO.Browser) => toHaveTitle.call(thisContext, b as never, 'foo', options) },
-            { name: 'toHaveUrl', mock: (b: WebdriverIO.Browser) => vi.mocked(b.getUrl).mockResolvedValue('bar'), run: (b: WebdriverIO.Browser) => toHaveUrl.call(thisContext, b as never, 'foo', options) },
-            { name: 'toHaveClipboardText', mock: (b: WebdriverIO.Browser) => vi.mocked(b.execute).mockResolvedValue('bar'), run: (b: WebdriverIO.Browser) => toHaveClipboardText.call(thisContext, b as never, 'foo', options) },
-            { name: 'toHaveLocalStorageItem', mock: (b: WebdriverIO.Browser) => vi.mocked(b.execute).mockResolvedValue('bar'), run: (b: WebdriverIO.Browser) => toHaveLocalStorageItem.call(thisContext, b as never, 'key', 'foo', options) },
-        ])('$name on one browser', async ({ mock, run }) => {
-            const browser = browserFactory()
-            mock(browser)
+            { name: 'toHaveTitle', mock: (b: WebdriverIO.Browser, value: string) => vi.mocked(b.getTitle).mockResolvedValue(value), run: (b: WebdriverIO.MultiRemoteBrowser) => toHaveTitle.call(thisContext, b, 'foo', options) },
+            { name: 'toHaveUrl', mock: (b: WebdriverIO.Browser, value: string) => vi.mocked(b.getUrl).mockResolvedValue(value), run: (b: WebdriverIO.MultiRemoteBrowser) => toHaveUrl.call(thisContext, b, 'foo', options) },
+            { name: 'toHaveClipboardText', mock: (b: WebdriverIO.Browser, value: string) => vi.mocked(b.execute).mockResolvedValue(value), run: (b: WebdriverIO.MultiRemoteBrowser) => toHaveClipboardText.call(thisContext, b, 'foo', options) },
+            { name: 'toHaveLocalStorageItem', mock: (b: WebdriverIO.Browser, value: string) => vi.mocked(b.execute).mockResolvedValue(value), run: (b: WebdriverIO.MultiRemoteBrowser) => toHaveLocalStorageItem.call(thisContext, b, 'key', 'foo', options) },
+        ])('$name on a multi-remote browser names the options on each value, and the instance that passed is no difference', async ({ mock, run }) => {
+            const chrome = browserFactory()
+            const firefox = browserFactory()
+            mock(chrome, 'FOO')
+            mock(firefox, 'baz')
 
-            const result = await run(browser)
+            const result = await run(multiRemoteBrowserFactory({ chrome, firefox }))
 
-            expect(result.pass).toBe(false)
-            expect(stripAnsi(result.message())).toContain('Expected: ignoringCase<"foo">\nReceived: "bar"')
+            expect(stripAnsi(result.message())).toContain(`\
+  Multi-remote values {
+    "chrome": ignoringCase<"foo">,
+-   "firefox": ignoringCase<"foo">,
++   "firefox": "baz",
+  }`)
+        })
+
+        test.each([
+            { name: 'one element', run: () => { const [e] = elementArrayFactory('items', 1); vi.mocked(e.getText).mockResolvedValue('bar'); return toHaveText.call(thisContext, e, 'foo', options) } },
+            { name: 'one browser', run: () => { const b = browserFactory(); vi.mocked(b.getTitle).mockResolvedValue('bar'); return toHaveTitle.call(thisContext, b as never, 'foo', options) } },
+        ])('names the options in the label on $name', async ({ run }) => {
+            const result = await run()
+
+            expect(stripAnsi(result.message())).toContain('Expected (ignoringCase): "foo"\nReceived:                "bar"')
         })
     })
 })

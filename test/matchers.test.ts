@@ -163,8 +163,8 @@ Received: "selected"`
             await expect(() => expectLib(el).not.toHaveText(' Valid Text ', { trim: false, wait: 1 })).rejects.toThrow(`\
 Expect $(\`selector\`) not to have text
 
-Expected [not]: untrimmed<" Valid Text ">
-Received      : " Valid Text "`
+Expected [not] (untrimmed): " Valid Text "
+Received                  : " Valid Text "`
             )
 
             await expect(() => expectLib(el).not.toHaveHTML('<Html/>')).rejects.toThrow(`\
