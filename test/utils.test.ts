@@ -1,6 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest'
 import { compareObject, compareText, executeCommandBe, getAsymmetricMatcherValue, isArrayContainingMatcher, isAsymmetricMatcher, isInversedStringContainingMatcher, isStringContainingMatcherLike, waitUntil } from '../src/utils'
 import { jasmine } from './__fixtures__/jasmine.js'
+import { isListMatcher } from '../src/util/asymmetricMatcherUtil.js'
 import type { CommandOptions } from 'expect-webdriverio'
 import { $, $$ } from '@wdio/globals'
 import stripAnsi from 'strip-ansi'
@@ -54,6 +55,32 @@ describe('utils', () => {
             jasmine.objectContaining({ value: 'value' }),
         ])('does not mistake other expected values for collection matchers: %s', (matcher) => {
             expect(isArrayContainingMatcher(matcher)).toBe(false)
+        })
+    })
+
+    describe('isListMatcher', () => {
+        test.each([
+            expect.arrayContaining(['value']),
+            expect.not.arrayContaining(['value']),
+            jasmine.arrayContaining(['value']),
+            jasmine.arrayWithExactContents(['value']),
+            wdioExpect.arrayOf(wdioExpect.any(String)),
+            wdioExpect.not.arrayOf(wdioExpect.any(String)),
+        ])('recognizes the matchers of a whole list: %s', (matcher) => {
+            expect(isListMatcher(matcher)).toBe(true)
+        })
+
+        test.each([
+            undefined, null, false, [],
+            { sample: ['value'] },
+            { asymmetricMatch: true, toString: () => 'ArrayOf' },
+            { asymmetricMatch: () => true, toString: () => 'CustomMatcher', sample: ['value'] },
+            expect.objectContaining({ value: 'value' }),
+            wdioExpect.oneOf('value', 'other'),
+            jasmine.objectContaining({ value: 'value' }),
+            jasmine.setContaining(new Set(['value'])),
+        ])('does not mistake other expected values for list matchers: %s', (matcher) => {
+            expect(isListMatcher(matcher)).toBe(false)
         })
     })
 

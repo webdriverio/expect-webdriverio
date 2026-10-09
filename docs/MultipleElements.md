@@ -39,6 +39,8 @@ Results of `toHaveText` on `$$('li')` for three lists:
 | `['Coffee', 'Tea']` | same count, each element has the text at its index | passes | fails | fails |
 | `expect.oneOf('Tea', 'Coffee')` | each element has one of the texts; a text can be missing | passes | passes | fails |
 | `expect.arrayContaining(['Tea', 'Coffee'])` | each text is on at least one element; elements with other texts are allowed | passes | fails | passes |
+| `jasmine.arrayWithExactContents(['Tea', 'Coffee'])` (Jasmine) | the same texts in any order, with no other text | passes | fails | fails |
+| `expect.arrayOf(expect.stringMatching(/^(Tea\|Coffee)$/))` | every element has one of the texts; also passes with no element | passes | passes | fails |
 | `some(elements)` with `'Tea'` | at least one element has the text | passes | passes | passes |
 
 ## Alternative

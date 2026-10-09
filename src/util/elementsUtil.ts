@@ -1,4 +1,4 @@
-import { isArrayContainingMatcher } from './asymmetricMatcherUtil.js'
+import { isListMatcher } from './asymmetricMatcherUtil.js'
 import { hasMultiRemoteFlag } from './multiRemoteUtils.js'
 import { getLoadedWdioKind, getWdioKind } from './wdioKind.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../types.js'
@@ -12,14 +12,14 @@ import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, Wdio
  * @returns An array containing the expected result if conditions are met, otherwise returns the expected result as-is.
  */
 export const wrapExpectedWithArray = (elements: WebdriverIO.Element | WdioElements | unknown, actual: unknown, expected: unknown) => {
-    if (Array.isArray(elements) && Array.isArray(actual) && !Array.isArray(expected) && !isArrayContainingMatcher(expected)) {
+    if (Array.isArray(elements) && Array.isArray(actual) && !Array.isArray(expected) && !isListMatcher(expected)) {
         expected = Array(actual.length).fill(expected)
     }
     return expected
 }
 
 export const fillSingleExpectedForElementArray = (subject: WebdriverIO.Element | WdioElements | unknown, value: unknown): unknown[] | unknown => {
-    if (isElementArrayLike(subject) && !Array.isArray(value) && !isArrayContainingMatcher(value)) {
+    if (isElementArrayLike(subject) && !Array.isArray(value) && !isListMatcher(value)) {
         // When subject has no elements, we should at least represent one for proper failure message!
         const fillerlength = subject.length > 0 ? subject.length : 1
         return Array(fillerlength).fill(value)

@@ -121,7 +121,7 @@ Every instance is compared on **its own** elements: browsers may find a differen
 - Per-instance values, each being a single value or an index-based array.
 - `.not`: every element of every instance must **not** match.
 - `some()`: at least one element must match in **every** instance.
-- `expect.arrayContaining()`: each instance's collection of values must satisfy it.
+- `expect.arrayContaining()`, `expect.arrayOf()` and `jasmine.arrayWithExactContents()`: each instance's collection of values must satisfy it.
 - An instance without any element fails the assertion. When no instance has any element, the regular empty rules apply (e.g. `.not.toExist()` passes).
 
 ```ts

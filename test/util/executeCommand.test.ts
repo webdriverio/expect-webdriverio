@@ -4,6 +4,8 @@ import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementA
 import { $ } from '@wdio/globals'
 import { multiRemote, some } from '../../src/api/index.js'
 import { refreshElementArray, synchronizeElementArray } from '../../src/util/refetchElements.js'
+import { jasmine } from '../__fixtures__/jasmine.js'
+import { expect as wdioExpect } from '../../src/index.js'
 
 vi.mock('@wdio/globals')
 
@@ -620,6 +622,22 @@ describe('executeCommand', () => {
 
                 expect(result.success).toBe(false)
                 expect(result.actual).toEqual({ chrome: ['item0', 'item1', 'item2'], firefox: ['item0', 'item1'] })
+            })
+
+            it.each([
+                { name: 'jasmine.arrayWithExactContents()', matcher: () => jasmine.arrayWithExactContents(['item1', 'item0']), control: () => jasmine.arrayWithExactContents(['item1']) },
+                { name: 'expect.arrayOf()', matcher: () => wdioExpect.arrayOf(wdioExpect.stringMatching(/^item/)), control: () => wdioExpect.arrayOf('item0') },
+            ])('compares every instance own collection with $name', async ({ matcher, control }) => {
+                const run = (expectedValues: unknown) => executeCommandWithStrategy({
+                    unresolvedElements: createMultiRemoteElementArrayMock(browsers(), 'sel', 2),
+                    expectedValues,
+                    supportsArrayContaining: 'arrayOnly',
+                    singleElementCompare: async (_el, _expected, index) => ({ success: false, actual: `item${index}` }),
+                    context: { isNot: false, iteration: 0 },
+                })
+
+                expect((await run(matcher())).success).toBe(true)
+                expect((await run(control())).success).toBe(false)
             })
 
             it('compares the elements fetched again on a retry, not on the first try', async () => {
