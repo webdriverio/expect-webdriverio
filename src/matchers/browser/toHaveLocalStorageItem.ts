@@ -5,6 +5,7 @@ import type { CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import type { WdioMatcherContext } from '../../types.js'
+import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 
 /**
  * Browser or Multi-Remote Browser: only check that the item exists
@@ -54,7 +55,7 @@ export async function toHaveLocalStorageItem(
     // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expected, options)
 
-    const { actual, success: pass, subject, expected: expectedValues } = await waitUntil(
+    const { actual, success: pass, subject, expected: expectedValues, verdict } = await waitUntil(
         async () => {
             return await executeBrowserCommand({
                 browser,
@@ -71,7 +72,7 @@ export async function toHaveLocalStorageItem(
 
     const message = enhanceError(
         subject,
-        expectedValues,
+        withStringOptions(expectedValues, verdict, options),
         actual,
         this,
         verb,

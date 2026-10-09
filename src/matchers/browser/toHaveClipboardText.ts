@@ -5,6 +5,7 @@ import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import type { WdioMatcherContext } from '../../types.js'
 import { isBrowsingContext } from '../../util/multiRemoteUtils.js'
+import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 
 /** The permission warning is logged once per worker: its cause is the browser, so it does not change between assertions or retries */
 let permissionWarningLogged = false
@@ -44,7 +45,7 @@ export async function toHaveClipboardText(
     // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { actual, success: pass, subject, expected } = await waitUntil(
+    const { actual, success: pass, subject, expected, verdict } = await waitUntil(
         async () => {
             return await executeBrowserCommand({
                 browser,
@@ -59,7 +60,7 @@ export async function toHaveClipboardText(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(subject, expected, actual, this, verb, expectation, '', options)
+    const message = enhanceError(subject, withStringOptions(expected, verdict, options), actual, this, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: () => message

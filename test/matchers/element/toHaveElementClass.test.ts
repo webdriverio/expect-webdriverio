@@ -498,27 +498,24 @@ Expect ${selectorName} to have class
             { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel'), message: `\
 Expect multi-remote<chrome, firefox>.$(\`sel\`) to have class
 
-- Expected  - 2
-+ Received  + 2
+- Expected  - 1
++ Received  + 1
 
   Multi-remote values {
--   "chrome": "some",
+    "chrome": "some",
 -   "firefox": "some",
-+   "chrome": "some attribute",
 +   "firefox": "other",
   }` },
             { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2), message: `\
 Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have class
 
-- Expected  - 4
-+ Received  + 4
+- Expected  - 2
++ Received  + 2
 
   Multi-remote values {
     "chrome": Array [
--     "some",
--     "some",
-+     "some attribute",
-+     "some attribute",
+      "some",
+      "some",
     ],
     "firefox": Array [
 -     "some",

@@ -5,6 +5,7 @@ import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { compareTextOrOneOf, enhanceError, waitUntil, wrapExpectedWithArray } from '../../utils.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
+import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, attribute: string, value: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const actualClass = await el.getAttribute(attribute)
@@ -49,7 +50,7 @@ export async function toHaveElementClass(
     // Apply the string options (`ignoreCase`, `trim`, `containing`...) to `expect.oneOf()`, as the other matchers do
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: attr, subject: el, context: { isSome, matchingIndexes } = {}, expected } = await waitUntil(
+    const { success: pass, actual: attr, subject: el, context: { isSome, matchingIndexes } = {}, expected, verdict } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -63,7 +64,7 @@ export async function toHaveElementClass(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, expected ?? wrapExpectedWithArray(el, attr, expectedWithOptions), attr, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
+    const message = enhanceError(el, withStringOptions(expected ?? wrapExpectedWithArray(el, attr, expectedWithOptions), verdict, options), attr, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

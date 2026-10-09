@@ -83,7 +83,7 @@ describe('Browser Matchers', () => {
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect browser's window to have ${matcherNameLastWords(matcherFn.name)}
 
-Expected: " Valid Text "
+Expected: untrimmed<" Valid Text ">
 Received: " Wrong Text "`)
                     expect(browserFn).toHaveBeenCalledTimes(1)
                 })
@@ -102,7 +102,7 @@ Received: " Wrong Text "`)
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect browser's window not to have ${matcherNameLastWords(matcherFn.name)}
 
-Expected [not]: " Valid Text "
+Expected [not]: untrimmed<" Valid Text ">
 Received      : " Valid Text "`
                     )
                 })
@@ -143,7 +143,7 @@ Received      : " Valid Text "`
                     expect(stripAnsi(result.message())).toEqual(`\
 Expect browser's window not to have ${matcherNameLastWords(matcherFn.name)}
 
-Expected [not]: " Valid Text "
+Expected [not]: untrimmed<" Valid Text ">
 Received      : " Valid Text "`
                     )
                 })
@@ -294,9 +294,9 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 + Received  + 1
 
   Multi-remote values {
--   "chrome": " Valid Text ",
+-   "chrome": untrimmed<" Valid Text ">,
 +   "chrome": " Wrong Text ",
-    "firefox": " Valid Text ",
+    "firefox": untrimmed<" Valid Text ">,
   }`
                         )
                     })
@@ -354,9 +354,9 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 + Received  + 1
 
   Multi-remote values {
--   "chrome": " Wrong Text ",
+-   "chrome": untrimmed<" Wrong Text ">,
 +   "chrome": " Valid Text ",
-    "firefox": " Valid Text ",
+    "firefox": untrimmed<" Valid Text ">,
   }`
                         )
                     })
@@ -445,8 +445,8 @@ Expect multi-remote<chrome, firefox> to have ${matcherNameLastWords(matcherFn.na
 + Received  + 1
 
   Multi-remote values {
-    "chrome": " Valid Text ",
--   "firefox": " Wrong Text ",
+    "chrome": untrimmed<" Valid Text ">,
+-   "firefox": untrimmed<" Wrong Text ">,
 +   "firefox": " Valid Text ",
   }`
                         )

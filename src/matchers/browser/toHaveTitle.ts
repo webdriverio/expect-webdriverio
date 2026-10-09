@@ -3,6 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import type {  CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
+import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 
 /**
  * Browser
@@ -41,7 +42,7 @@ export async function toHaveTitle(
     // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { actual, success, subject, expected } = await waitUntil(
+    const { actual, success, subject, expected, verdict } = await waitUntil(
         async () => {
             return await executeBrowserCommand({
                 browser,
@@ -56,7 +57,7 @@ export async function toHaveTitle(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(subject, expected, actual, { isNot, browserTargetType: 'window' }, verb, expectation, '', options)
+    const message = enhanceError(subject, withStringOptions(expected, verdict, options), actual, { isNot, browserTargetType: 'window' }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass: success,
         message: () => message

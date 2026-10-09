@@ -13,6 +13,7 @@ import {
 import { expect } from 'expect'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
+import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 
 async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
     const attributeValue = await el.getAttribute(attribute)
@@ -37,7 +38,7 @@ export async function toHaveAttributeAndValue(this: WdioMatcherContext, received
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: attr, subject: el, context: { isSome, matchingIndexes } = {}, expected: expectedValues } = await waitUntil(
+    const { success: pass, actual: attr, subject: el, context: { isSome, matchingIndexes } = {}, expected: expectedValues, verdict } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -54,7 +55,7 @@ export async function toHaveAttributeAndValue(this: WdioMatcherContext, received
     )
 
     const expected = expectedValues ?? wrapExpectedWithArray(el, attr, expectedValue)
-    const message = enhanceError(el, expected, attr, { isNot, isSome, matchingIndexes }, verb, expectation, attribute, options)
+    const message = enhanceError(el, withStringOptions(expected, verdict, options), attr, { isNot, isSome, matchingIndexes }, verb, expectation, attribute, options)
 
     return {
         pass,

@@ -8,6 +8,7 @@ import {
     wrapExpectedWithArray
 } from '../../utils.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
+import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 
 async function singleElementCompare(
     element: WebdriverIO.Element,
@@ -35,7 +36,7 @@ export async function toHaveComputedLabel(
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: actualLabel, subject: el, context: { isSome, matchingIndexes } = {}, expected } = await waitUntil(
+    const { success: pass, actual: actualLabel, subject: el, context: { isSome, matchingIndexes } = {}, expected, verdict } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -51,7 +52,7 @@ export async function toHaveComputedLabel(
 
     const message = enhanceError(
         el,
-        expected ?? wrapExpectedWithArray(el, actualLabel, expectedValue),
+        withStringOptions(expected ?? wrapExpectedWithArray(el, actualLabel, expectedValue), verdict, options),
         actualLabel,
         { isNot, isSome, matchingIndexes },
         verb,

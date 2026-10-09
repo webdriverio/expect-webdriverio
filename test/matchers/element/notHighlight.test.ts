@@ -36,7 +36,7 @@ describe('.not on multiple elements highlights the elements that matched', () =>
         result.message()
 
         expect(result.pass).toBe(true) // failure, inverted later because of `.not`
-        expect(highlighted()).toEqual(['"bar"', '"BAR"'])
+        expect(highlighted()).toEqual(['ignoringCase<"bar">', '"BAR"'])
     })
 
     test('with the default trim', async () => {
@@ -53,7 +53,7 @@ describe('.not on multiple elements highlights the elements that matched', () =>
         result.message()
 
         expect(result.pass).toBe(true)
-        expect(highlighted()).toEqual(['"a"', '"b"'])
+        expect(highlighted()).toEqual(['replacing<"a">', '"b"'])
     })
 
     test('with toHaveElementClass, which compares each class', async () => {
@@ -78,6 +78,6 @@ describe('.not on multiple elements highlights the elements that matched', () =>
         }
 
         await expect(assert(wdioExpect(elements).not, { ...options, ignoreCase: true })).rejects.toThrow()
-        expect(highlighted()).toEqual(['"BAR"', '"bar"'])
+        expect(highlighted()).toEqual(['ignoringCase<"BAR">', '"bar"'])
     })
 })

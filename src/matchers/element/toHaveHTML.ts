@@ -10,6 +10,7 @@ import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { AssertionResult } from 'expect-webdriverio'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
+import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 
 async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.HTMLOptions): Promise<CompareResult<string>> {
     const actualHTML = await el.getHTML(options)
@@ -32,7 +33,7 @@ export async function toHaveHTML(
 
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: actualHTML, subject: elements, context: { isSome, matchingIndexes } = {}, expected } = await waitUntil(
+    const { success: pass, actual: actualHTML, subject: elements, context: { isSome, matchingIndexes } = {}, expected, verdict } = await waitUntil(
         async (iteration) => {
             const result = await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -48,7 +49,7 @@ export async function toHaveHTML(
     )
 
     const expectedValues = expected ?? wrapExpectedWithArray(elements, actualHTML, expectedWithOptions)
-    const message = enhanceError(elements, expectedValues, actualHTML, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
+    const message = enhanceError(elements, withStringOptions(expectedValues, verdict, options), actualHTML, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
