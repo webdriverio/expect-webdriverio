@@ -824,6 +824,47 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize([1, 2])).toExtend<Promise<void>>()
             })
         })
+
+        // An array of expected values is for `$$()`, one value for each element: each matcher rejects it on `$()`
+        describe('an array of expected values on a single element', () => {
+            it('should be a type error in each matcher with an expected value', async () => {
+                // @ts-expect-error
+                await expect(element).toHaveText(['a', 'b'])
+                // @ts-expect-error
+                await expect(chainableElement).toHaveText(['a', 'b'])
+                // @ts-expect-error
+                await expect(element).not.toHaveText(['a', 'b'])
+                // @ts-expect-error
+                await expect(element).toHaveHTML(['<a/>'])
+                // @ts-expect-error
+                await expect(element).toHaveComputedLabel(['a'])
+                // @ts-expect-error
+                await expect(element).toHaveComputedRole(['a'])
+                // @ts-expect-error
+                await expect(element).toHaveAttribute('data-x', ['a'])
+                // @ts-expect-error
+                await expect(element).toHaveId(['a'])
+                // @ts-expect-error
+                await expect(element).toHaveHref(['a'])
+                // @ts-expect-error
+                await expect(element).toHaveValue(['a'])
+                // @ts-expect-error
+                await expect(element).toHaveElementProperty('p', ['a'])
+                // @ts-expect-error
+                await expect(element).toHaveSize([{ width: 1, height: 1 }])
+                // @ts-expect-error
+                await expect(element).toHaveStyle([{ color: 'red' }])
+                // @ts-expect-error
+                await expect(element).toHaveChildren([1])
+            })
+
+            it('should be a type error on a multi-remote $(), also for each instance', async () => {
+                // @ts-expect-error
+                await expect(multiRemoteElement).toHaveText(['a', 'b'])
+                // @ts-expect-error
+                await expect(multiRemoteElement).toHaveText({ chrome: ['a', 'b'] })
+            })
+        })
     })
 
     describe('Custom matchers', () => {
