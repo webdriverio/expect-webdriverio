@@ -400,6 +400,18 @@ Received      : ["Test Expected Value 1", "Test Actual Value 2"]`
                     expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '"Test Expected Value 1"')
                 })
 
+                test('highlights the matching indexes of the matcher, without comparing the values again', () => {
+                    // e.g. `ignoreCase`: the second element matched, but its value is not equal to the expected one
+                    const expected = ['foo', 'bar']
+                    const actual = ['foo', 'BAR']
+
+                    enhanceError(elements, expected, actual, { isNot, isSome: false, matchingIndexes: [1] }, 'have', 'text')
+
+                    expect(INVERTED_COLOR).toHaveBeenCalledTimes(2)
+                    expect(INVERTED_COLOR).toHaveBeenNthCalledWith(1, '"bar"')
+                    expect(INVERTED_COLOR).toHaveBeenNthCalledWith(2, '"BAR"')
+                })
+
                 test('Second elements failure then only second values are highlighted as failure', () => {
                     const expected = ['Test Expected Value 1', 'Test Expected Value 2']
                     const actual = ['Test Actual Value 1', 'Test Expected Value 2']

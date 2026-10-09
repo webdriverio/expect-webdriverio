@@ -49,7 +49,7 @@ export async function toHaveElementClass(
     // Apply the string options (`ignoreCase`, `trim`, `containing`...) to `expect.oneOf()`, as the other matchers do
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: attr, subject: el, context: { isSome } = {}, expected } = await waitUntil(
+    const { success: pass, actual: attr, subject: el, context: { isSome, matchingIndexes } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -63,7 +63,7 @@ export async function toHaveElementClass(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(el, expected ?? wrapExpectedWithArray(el, attr, expectedWithOptions), attr, { isNot, isSome }, verb, expectation, '', options)
+    const message = enhanceError(el, expected ?? wrapExpectedWithArray(el, attr, expectedWithOptions), attr, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: (): string => message

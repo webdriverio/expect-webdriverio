@@ -12,7 +12,12 @@ export type StrategyResult<Actual, Subject = WebdriverIO.Element | WebdriverIO.E
     subject: Subject;
     expected?: Expected;
     abort?: boolean;
-    context?: { isSome: boolean };
+    /**
+     * - isSome: `some()` was used
+     * - matchingIndexes: for `$$()`, the indexes of the elements that matched, with the matcher's own comparison
+     *   (string options, each class...): the failure message of `.not` highlights them
+     */
+    context?: { isSome: boolean, matchingIndexes?: number[] };
 } & CompareResult<Actual | MultiRemoteValues<Actual> | undefined>
 
 /**
@@ -266,11 +271,12 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
      * Length mismatch is an immediate structural failure (positive) / pass (.not): no need to
      * evaluate element results — the arrays can never match as-is.
      */
+    const matchingIndexes = results.flatMap(({ success }, index) => success ? [index] : [])
     if (lengthMismatch) {
-        return { subject, success: !!isNot, actual, context: { isSome } }
+        return { subject, success: !!isNot, actual, context: { isSome, matchingIndexes } }
     }
 
-    return { subject, success: computeSuccess([results], { isNot, isSome }), actual, context: { isSome } }
+    return { subject, success: computeSuccess([results], { isNot, isSome }), actual, context: { isSome, matchingIndexes } }
 }
 
 /**

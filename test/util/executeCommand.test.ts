@@ -46,7 +46,7 @@ describe('executeCommand', () => {
                 context: { isNot: false, iteration: 0 },
             })
             expect(result.success).toBe(true)
-            expect(result.context).toEqual({ isSome: true })
+            expect(result.context).toEqual({ isSome: true, matchingIndexes: [0] })
         })
     })
 

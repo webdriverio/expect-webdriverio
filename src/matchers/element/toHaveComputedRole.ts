@@ -34,7 +34,7 @@ export async function toHaveComputedRole(
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { success: pass, actual: actualRole, subject: el, context: { isSome } = {}, expected } = await waitUntil(
+    const { success: pass, actual: actualRole, subject: el, context: { isSome, matchingIndexes } = {}, expected } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -52,7 +52,7 @@ export async function toHaveComputedRole(
         el,
         expected ?? wrapExpectedWithArray(el, actualRole, expectedValue),
         actualRole,
-        { isNot, isSome },
+        { isNot, isSome, matchingIndexes },
         verb,
         expectation,
         '',
