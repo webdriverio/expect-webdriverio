@@ -23,7 +23,7 @@
   "exports": {
     ".": [
       {
-        "types": "./types/expect-webdriverio.d.ts",
+        "types": "./lib/index.d.ts",
         "import": "./lib/index.js"
       },
       "./lib/index.js"
@@ -41,13 +41,13 @@
     "./expect-global": "./types/expect-global.d.ts",
     "./api": [
       {
-        "types": "./types/expect-webdriverio.d.ts",
+        "types": "./lib/api/index.d.ts",
         "import": "./lib/api/index.js"
       },
       "./lib/api/index.js"
     ]
   },
-  "types": "./types/expect-webdriverio.d.ts",
+  "types": "./lib/index.d.ts",
   "typeScriptVersion": "6.0.3",
   "engines": {
     "node": ">=22.19.0"

@@ -1,5 +1,6 @@
 import { SoftAssertService } from './softAssert.js'
 import type { SyncExpectationResult } from 'expect'
+import type { AsyncAssertionResult } from './publicTypes/options.js'
 
 const isPossibleMatcher = (propName: string) => propName.startsWith('to') && propName.length > 2
 
@@ -71,7 +72,7 @@ const createSoftMatcher = <T>(
     softService: SoftAssertService,
     prefix?: string
 ) => {
-    return (...args: unknown[]): ExpectWebdriverIO.AsyncAssertionResult | SyncExpectationResult  => {
+    return (...args: unknown[]): AsyncAssertionResult | SyncExpectationResult  => {
         try {
             // Build the expectation chain
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,7 +87,7 @@ const createSoftMatcher = <T>(
             }
 
             // In case of matchers failures we jump into the catch block below
-            const assertionResult: ExpectWebdriverIO.AsyncAssertionResult | SyncExpectationResult  = expectChain[matcherName](...args)
+            const assertionResult: AsyncAssertionResult | SyncExpectationResult  = expectChain[matcherName](...args)
 
             // Handle async matchers, and allow to not be a promise for basic non-async matchers
             if ( assertionResult instanceof Promise) {

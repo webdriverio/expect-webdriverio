@@ -10,8 +10,9 @@ import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
-async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string>> {
+async function compareElement(el: WebdriverIO.Element, expectedText: MaybeArray<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.OneOfPartialMatcher<string>> | undefined, options: StringOptions): Promise<CompareResult<string>> {
     const actualText = await el.getText()
 
     return compareTextOrOneOf(actualText, expectedText, options)
@@ -22,7 +23,7 @@ export async function toHaveText(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>
         | MultiRemoteValues<MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string>>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    options: StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'text', verb = 'have', isNot, matcherName = 'toHaveText' } = this
 
@@ -53,7 +54,7 @@ export async function toHaveText(
 
     const finalExpected = expected ?? fillSingleExpectedForElementArray(subject, expectedValue)
     const message = enhanceError(subject, withStringOptions(finalExpected, verdict, options, actualText), actualText, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, '', options)
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }

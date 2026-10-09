@@ -9,11 +9,12 @@ import {
 } from '../../utils.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
 async function singleElementCompare(
     element: WebdriverIO.Element,
     label: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined,
-    options: ExpectWebdriverIO.StringOptions
+    options: StringOptions
 ) {
     const actualLabel = await element.getComputedLabel()
     return compareTextOrOneOf(actualLabel, label, options)
@@ -24,7 +25,7 @@ export async function toHaveComputedLabel(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    options: StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'computed label', verb = 'have', isNot, matcherName = 'toHaveComputedLabel' } = this
 
@@ -62,7 +63,7 @@ export async function toHaveComputedLabel(
         options
     )
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }

@@ -5,6 +5,7 @@ import {
     getStringAsymmetricMatcherValue, isAsymmetricMatcher, isInversedStringContainingMatcher, isInversedStringMatchingMatcher,
     isStringContainingMatcherLike, isStringMatchingMatcherLike,
 } from './asymmetricMatcherUtil.js'
+import type { StringOptions } from '../publicTypes/options.js'
 
 // TODO one day turn this into at least a asymetrics class to better report in failure messages the string case we are in (containing, atStart, atEnd, atIndex, etc) and the expected value(s)
 export const compareText = (
@@ -18,7 +19,7 @@ export const compareText = (
         atEnd = false,
         atIndex,
         replace,
-    }: ExpectWebdriverIO.StringOptions
+    }: StringOptions
 ): CompareResult<string> => {
     if (typeof actual !== 'string' || expected === null || expected === undefined) {
         return {

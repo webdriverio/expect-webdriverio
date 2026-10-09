@@ -7,6 +7,7 @@ import {
     enhanceError,
     waitUntil,
 } from '../../utils.js'
+import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
 
 async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined) {
     const actualWidth = await el.getSize('width')
@@ -22,34 +23,34 @@ async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher 
  */
 export async function toHaveWidth(
     received: WdioElementMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
-    options?: ExpectWebdriverIO.CommandOptions
-):Promise<ExpectWebdriverIO.AssertionResult>
+    expectedValue: number | PublicNumberMatcher,
+    options?: CommandOptions
+):Promise<AssertionResult>
 
 /**
  * Elements $$()
  */
 export async function toHaveWidth(
     received: WdioElementsMaybePromise,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
-    options?: ExpectWebdriverIO.CommandOptions
-):Promise<ExpectWebdriverIO.AssertionResult>
+    expectedValue: MaybeArray<number | PublicNumberMatcher>,
+    options?: CommandOptions
+):Promise<AssertionResult>
 
 /**
  * Multi-remote $() or $$(): one expected value for every instance, or one per instance
  */
 export async function toHaveWidth(
     received: WdioMultiRemoteElements,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
-    options?: ExpectWebdriverIO.CommandOptions
-):Promise<ExpectWebdriverIO.AssertionResult>
+    expectedValue: MaybeArray<number | PublicNumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | PublicNumberMatcher>>,
+    options?: CommandOptions
+):Promise<AssertionResult>
 
 export async function toHaveWidth(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
-    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
-):Promise<ExpectWebdriverIO.AssertionResult> {
+    expectedValue: MaybeArray<number | PublicNumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | PublicNumberMatcher>>,
+    options: CommandOptions = DEFAULT_OPTIONS
+):Promise<AssertionResult> {
     const { expectation = 'width', verb = 'have', isNot, matcherName = 'toHaveWidth' } = this
 
     await options.beforeAssertion?.({
@@ -85,7 +86,7 @@ export async function toHaveWidth(
         options,
     )
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }

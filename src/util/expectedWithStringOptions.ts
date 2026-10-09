@@ -4,6 +4,7 @@ import { isOneOfMatcher } from '../matchers/asymmetrics/oneOf.js'
 import { isAsymmetricMatcher, isListMatcher } from './asymmetricMatcherUtil.js'
 import { isMultiRemoteMatcher } from './multiRemoteUtils.js'
 import { isTrimmedByOptions, stringOptionsName } from './stringOptionsName.js'
+import type { StringOptions } from '../publicTypes/options.js'
 
 type ExpectedLeaf = string | RegExp | AsymmetricMatcher<unknown> | JasmineAsymmetricMatcher<unknown>
 
@@ -17,7 +18,7 @@ type ExpectedLeaf = string | RegExp | AsymmetricMatcher<unknown> | JasmineAsymme
  */
 export class StringOptionsMatcher extends WdioAsymmetricMatchers<ExpectedLeaf> {
     /** `actual`: the actual value of the element or instance, to name `trimmed` only when the default `trim` changed it */
-    constructor(sample: ExpectedLeaf, private readonly options: ExpectWebdriverIO.StringOptions, private readonly verdict: boolean, private readonly actual?: unknown) {
+    constructor(sample: ExpectedLeaf, private readonly options: StringOptions, private readonly verdict: boolean, private readonly actual?: unknown) {
         super(sample)
     }
 
@@ -63,11 +64,11 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
  * browser, an array for `$$()`, and per-instance values for multi-remote. Without a verdict (e.g. a structural failure),
  * the expected value does not change.
  */
-export const withStringOptions = (expected: unknown, verdict: unknown, options: ExpectWebdriverIO.StringOptions | undefined, actual?: unknown): unknown =>
+export const withStringOptions = (expected: unknown, verdict: unknown, options: StringOptions | undefined, actual?: unknown): unknown =>
     // One string value stays a string: Jest's string diff shows what changed, and `enhanceError()` names the options in the label
     typeof verdict === 'boolean' && typeof expected === 'string' ? expected : wrapLeaves(expected, verdict, options, actual)
 
-const wrapLeaves = (expected: unknown, verdict: unknown, options: ExpectWebdriverIO.StringOptions | undefined, actual: unknown): unknown => {
+const wrapLeaves = (expected: unknown, verdict: unknown, options: StringOptions | undefined, actual: unknown): unknown => {
     if (typeof verdict === 'boolean') {
         return isExpectedLeaf(expected) ? new StringOptionsMatcher(expected, options ?? {}, verdict, actual) : expected
     }

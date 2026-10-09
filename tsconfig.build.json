@@ -3,6 +3,8 @@
   "compilerOptions": {
     "module": "nodenext", // Required to trap missing extension on import
     "outDir": "./lib/",
+    "declaration": true,
+    "removeComments": false, // Keep the JSDoc in the published declarations
     "rootDir": "./src",
     "tsBuildInfoFile": "./lib/tsconfig.build.tsbuildinfo",
     "moduleResolution": "nodenext" // Required to trap missing extension on import

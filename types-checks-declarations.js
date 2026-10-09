@@ -15,10 +15,7 @@ const dir = 'test-types/declarations'
 const modes = [['nodenext', 'nodenext'], ['preserve', 'bundler']]
 
 // Errors in our files that we accept, each with its reason (all strings must match)
-const knownErrors = [
-    // The whole `ExpectWebdriverIO` namespace is the module. Listing each member instead is easy to forget: see the generated types RFC
-    ['types/expect-webdriverio.d.ts', 'error TS1203: Export assignment cannot be used when targeting ECMAScript modules'],
-]
+const knownErrors = []
 
 const entries = readdirSync(dir)
     .map((file) => file.match(/^tsconfig\.(.+)\.json$/)?.[1])

@@ -1,7 +1,7 @@
-import type { HTMLOptions, StringOptions } from 'expect-webdriverio'
 import { compareText } from '../../util/compareText.js'
 import { WdioAsymmetricMatchers } from './asymmetricsUtils.js'
 import { stringOptionsName } from '../../util/stringOptionsName.js'
+import type { HTMLOptions, StringOptions } from '../../publicTypes/options.js'
 
 const ONE_OF_TAG = 'expect-webdriverio.oneOf'
 const ONE_OF_SYMBOL = Symbol.for(ONE_OF_TAG)

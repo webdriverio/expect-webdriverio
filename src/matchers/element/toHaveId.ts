@@ -1,7 +1,7 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
-import type { AssertionResult } from 'expect-webdriverio'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
 /**
  * Element $() API
@@ -9,7 +9,7 @@ import type { AssertionResult } from 'expect-webdriverio'
 export async function toHaveId(
     el: WdioElementMaybePromise,
     expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -18,7 +18,7 @@ export async function toHaveId(
 export async function toHaveId(
     el: WdioElementsMaybePromise,
     expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -27,7 +27,7 @@ export async function toHaveId(
 export async function toHaveId(
     el: WebdriverIO.MultiRemoteElement,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -36,7 +36,7 @@ export async function toHaveId(
 export async function toHaveId(
     el: WebdriverIO.MultiRemoteElementArray,
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -45,14 +45,14 @@ export async function toHaveId(
 export async function toHaveId(
     el: WdioMultiRemoteElements,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveId(
     this: WdioMatcherContext,
     el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    options: StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { matcherName = 'toHaveId' } = this
 
@@ -62,7 +62,7 @@ export async function toHaveId(
         options,
     })
 
-    const result: ExpectWebdriverIO.AssertionResult = await toHaveAttributeAndValue.call({ ...this, matcherName }, el, 'id', expectedValue, options)
+    const result: AssertionResult = await toHaveAttributeAndValue.call({ ...this, matcherName }, el, 'id', expectedValue, options)
 
     await options.afterAssertion?.({
         matcherName,

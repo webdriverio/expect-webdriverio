@@ -9,6 +9,7 @@ import {
     waitUntil,
     wrapExpectedWithArray,
 } from '../../utils.js'
+import type { AssertionResult, CommandOptions } from '../../publicTypes/options.js'
 
 export type Size = Pick<RectReturn, 'width' | 'height'>
 async function condition(el: WebdriverIO.Element, size: Size | undefined): Promise<CompareResult<Size | null>> {
@@ -23,8 +24,8 @@ async function condition(el: WebdriverIO.Element, size: Size | undefined): Promi
 export async function toHaveSize(
     received: WdioElementMaybePromise,
     expectedValue: Size,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 /**
  * Elements $$()
@@ -32,8 +33,8 @@ export async function toHaveSize(
 export async function toHaveSize(
     received: WdioElementsMaybePromise,
     expectedValue: MaybeArray<Size>,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 /**
  * Multi-remote $() or $$(): one size for every instance, or one size per instance with `expect.multiRemote()`
@@ -42,14 +43,14 @@ export async function toHaveSize(
 export async function toHaveSize(
     received: WdioMultiRemoteElements,
     expectedValue: MaybeArray<Size> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<Size>>,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 export async function toHaveSize(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArray<Size> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<Size>>,
-    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+    options: CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'size', verb = 'have', isNot, matcherName = 'toHaveSize' } = this
 
@@ -84,7 +85,7 @@ export async function toHaveSize(
         options
     )
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }

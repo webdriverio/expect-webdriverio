@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": { "types": [] },
-  "files": ["../../types/expect-webdriverio.d.ts"]
+  "files": ["../../lib/index.d.ts"]
 }

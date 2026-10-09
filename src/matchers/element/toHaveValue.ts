@@ -1,7 +1,7 @@
 import { toHaveElementProperty } from './toHaveElementProperty.js'
 import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import type { AssertionResult } from 'expect-webdriverio'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
 /**
  * Element $() API
@@ -9,7 +9,7 @@ import type { AssertionResult } from 'expect-webdriverio'
 export function toHaveValue(
     el: WdioElementMaybePromise,
     value: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -18,7 +18,7 @@ export function toHaveValue(
 export function toHaveValue(
     el: WdioElementsMaybePromise,
     value: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -27,14 +27,14 @@ export function toHaveValue(
 export function toHaveValue(
     el: WdioMultiRemoteElements,
     value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 export function toHaveValue(
     this: WdioMatcherContext,
     el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    options: StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult>{
     // The value is a string, so a plain object is the multi-remote per-instance shorthand, not a literal value
     return (toHaveElementProperty as ToHaveElementPropertyFn).call({ matcherName: 'toHaveValue', ...this, allowObjectExpectedValue: false }, el, 'value', value, options)
@@ -44,6 +44,6 @@ export function toHaveValue(
 type ToHaveElementPropertyFn = (
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     property: string,
-    value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | null> | ExpectWebdriverIO.StringOptions | undefined,
-    options?: ExpectWebdriverIO.StringOptions
+    value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | null> | StringOptions | undefined,
+    options?: StringOptions
 ) => Promise<AssertionResult>

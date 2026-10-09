@@ -1,7 +1,7 @@
 import { toHaveAttributeAndValue } from './toHaveAttribute.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
-import type { AssertionResult } from 'expect-webdriverio'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
 /**
  * Elemment $() APi
@@ -9,7 +9,7 @@ import type { AssertionResult } from 'expect-webdriverio'
 export async function toHaveHref(
     el: WdioElementMaybePromise,
     expectedValue: MaybeOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -18,7 +18,7 @@ export async function toHaveHref(
 export async function toHaveHref(
     el: WdioElementsMaybePromise,
     expectedValue: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -27,7 +27,7 @@ export async function toHaveHref(
 export async function toHaveHref(
     el: WebdriverIO.MultiRemoteElement,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -36,7 +36,7 @@ export async function toHaveHref(
 export async function toHaveHref(
     el: WebdriverIO.MultiRemoteElementArray,
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -45,14 +45,14 @@ export async function toHaveHref(
 export async function toHaveHref(
     el: WdioMultiRemoteElements,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveHref(
     this: WdioMatcherContext,
     el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | WdioAsymmetricMatcher<string>>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    options: StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { matcherName = 'toHaveHref' } = this
 

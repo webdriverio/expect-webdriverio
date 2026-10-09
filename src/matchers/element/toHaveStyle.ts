@@ -8,8 +8,9 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
-async function condition(el: WebdriverIO.Element, style: { [key: string]: string; } | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<{ [key: string]: string | undefined; } | undefined>> {
+async function condition(el: WebdriverIO.Element, style: { [key: string]: string; } | undefined, options: StringOptions): Promise<CompareResult<{ [key: string]: string | undefined; } | undefined>> {
     if (style === undefined) {
         return { success: false, actual: undefined }
     }
@@ -23,8 +24,8 @@ async function condition(el: WebdriverIO.Element, style: { [key: string]: string
 export async function toHaveStyle(
     received: WdioElementMaybePromise,
     expectedValue: { [key: string]: string; },
-    options?: ExpectWebdriverIO.StringOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: StringOptions
+): Promise<AssertionResult>
 
 /**
  * Elements $$()
@@ -32,8 +33,8 @@ export async function toHaveStyle(
 export async function toHaveStyle(
     received: WdioElementsMaybePromise,
     expectedValue: MaybeArray<{ [key: string]: string; }>,
-    options?: ExpectWebdriverIO.StringOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: StringOptions
+): Promise<AssertionResult>
 
 /**
  * Multi-remote $() or $$(): one style for every instance, or one style per instance with `expect.multiRemote()`
@@ -42,15 +43,15 @@ export async function toHaveStyle(
 export async function toHaveStyle(
     received: WdioMultiRemoteElements,
     expectedValue: MaybeArray<{ [key: string]: string; }> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<{ [key: string]: string; }>>,
-    options?: ExpectWebdriverIO.StringOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: StringOptions
+): Promise<AssertionResult>
 
 export async function toHaveStyle(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArray<{ [key: string]: string; }> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<{ [key: string]: string; }>>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-): Promise<ExpectWebdriverIO.AssertionResult> {
+    options: StringOptions = DEFAULT_OPTIONS
+): Promise<AssertionResult> {
     const { expectation = 'style', verb = 'have', isNot, matcherName = 'toHaveStyle' } = this
 
     await options.beforeAssertion?.({
@@ -77,7 +78,7 @@ export async function toHaveStyle(
     const expected = expectedValues ?? wrapExpectedWithArray(el, actualStyle, expectedValue)
     const message = enhanceError(el, expected, actualStyle, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }

@@ -1,4 +1,4 @@
-/// <reference types="./types/expect-webdriverio.d.ts"/>
+/// <reference path="./lib/index.d.ts"/>
 
 /**
  * Augment the Jest namespace to include the WebDriverIO custom matchers only.

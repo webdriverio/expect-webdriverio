@@ -107,6 +107,13 @@
         "local/enforce-options-list": "error",
         "import/no-cycle": ["error", { "ignoreTypes": true }]
       }
+    },
+    {
+      // TODO: the global declarations moved from the hand-written declaration file still use `import()` types
+      "files": ["src/publicTypes/*.ts"],
+      "rules": {
+        "typescript/consistent-type-imports": "off"
+      }
     }
   ]
 }

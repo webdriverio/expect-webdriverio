@@ -9,6 +9,7 @@ import {
     enhanceError,
     waitUntil,
 } from '../../utils.js'
+import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
 
 async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher | undefined): Promise<CompareResult<number | null>> {
     const actualHeight = await el.getSize('height')
@@ -24,33 +25,33 @@ async function condition(el: WebdriverIO.Element, expectedNumber: NumberMatcher 
  */
 export async function toHaveHeight(
     received: WdioElementMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    expectedValue: number | PublicNumberMatcher,
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 /**
  * Elements $$()
  */
 export async function toHaveHeight(
     received: WdioElementsMaybePromise,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    expectedValue: MaybeArray<number | PublicNumberMatcher>,
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 /**
  * Multi-remote $() or $$(): one expected value for every instance, or one per instance
  */
 export async function toHaveHeight(
     received: WdioMultiRemoteElements,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
-    options?: ExpectWebdriverIO.CommandOptions
-):Promise<ExpectWebdriverIO.AssertionResult>
+    expectedValue: MaybeArray<number | PublicNumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | PublicNumberMatcher>>,
+    options?: CommandOptions
+):Promise<AssertionResult>
 
 export async function toHaveHeight(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
-    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+    expectedValue: MaybeArray<number | PublicNumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | PublicNumberMatcher>>,
+    options: CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'height', verb = 'have', isNot, matcherName = 'toHaveHeight' } = this
 
@@ -87,7 +88,7 @@ export async function toHaveHeight(
         options,
     )
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }

@@ -9,6 +9,7 @@ import { toArray } from './arrayUtil.js'
 import { isTrimmedByOptions, stringOptionsName } from './stringOptionsName.js'
 import { isBrowser, isBrowsingContext, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 import { comparedAs, isComparedValueShown, withComparedValues } from './comparedAs.js'
+import type { CommandOptions, StringOptions } from '../publicTypes/options.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
@@ -73,7 +74,7 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, matchingIndexes?: number[], stringOptions?: ExpectWebdriverIO.StringOptions, compared?: unknown, browserTargetType?: 'browser' | 'window', showContextUrl?: boolean },
+    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, matchingIndexes?: number[], stringOptions?: StringOptions, compared?: unknown, browserTargetType?: 'browser' | 'window', showContextUrl?: boolean },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
@@ -231,7 +232,7 @@ export const enhanceErrorBe = (
     subject: WebdriverIO.Element | WdioElements | unknown,
     actuals: boolean[] | boolean | MultiRemoteValuesWithArray<boolean> | undefined,
     context: { isNot?: boolean, isSome: boolean, verb: string, expectation: string },
-    options: ExpectWebdriverIO.CommandOptions
+    options: CommandOptions
 ) => {
     const { isNot = false, verb, expectation } = context
     let expected

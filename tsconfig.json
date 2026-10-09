@@ -19,6 +19,10 @@
     "strictNullChecks": true,
     "moduleResolution": "bundler", // Can use bundler and omit file extension in test code.
     "allowSyntheticDefaultImports": true,
+    // `@wdio/globals` imports our types: use the source, so that no build is necessary and the globals are not declared two times
+    "paths": {
+      "expect-webdriverio": ["./src/index.ts"]
+    },
     "types": [
       "node",
       "@wdio/globals/types"

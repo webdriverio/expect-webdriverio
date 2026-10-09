@@ -1,20 +1,21 @@
 import { getGlobalSingleton } from './util/globalSingleton.js'
+import type { DefaultOptions, ToBeDisplayedOptions } from './publicTypes/options.js'
 
 interface SharedConstants {
-    DEFAULT_OPTIONS: Required<ExpectWebdriverIO.DefaultOptions>
-    DEFAULT_OPTIONS_TO_BE_DISPLAYED: Required<Omit<ExpectWebdriverIO.ToBeDisplayedOptions, 'message' | 'some'>>
-    defaultOptionsList: Required<ExpectWebdriverIO.DefaultOptions>[]
+    DEFAULT_OPTIONS: Required<DefaultOptions>
+    DEFAULT_OPTIONS_TO_BE_DISPLAYED: Required<Omit<ToBeDisplayedOptions, 'message' | 'some'>>
+    defaultOptionsList: Required<DefaultOptions>[]
 }
 
 function createSharedConstants(): SharedConstants {
-    const DEFAULT_OPTIONS: Required<ExpectWebdriverIO.DefaultOptions> = {
+    const DEFAULT_OPTIONS: Required<DefaultOptions> = {
         wait: 2000,
         interval: 100,
         beforeAssertion: async () => {},
         afterAssertion: async () => {},
     }
 
-    const DEFAULT_OPTIONS_TO_BE_DISPLAYED: Required<Omit<ExpectWebdriverIO.ToBeDisplayedOptions, 'message' | 'some'>> = {
+    const DEFAULT_OPTIONS_TO_BE_DISPLAYED: Required<Omit<ToBeDisplayedOptions, 'message' | 'some'>> = {
         ...DEFAULT_OPTIONS,
         withinViewport: false,
         contentVisibilityAuto: true,

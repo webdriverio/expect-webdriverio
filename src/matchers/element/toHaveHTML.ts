@@ -8,11 +8,11 @@ import {
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../../types.js'
-import type { AssertionResult } from 'expect-webdriverio'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import type { AssertionResult, HTMLOptions } from '../../publicTypes/options.js'
 
-async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.HTMLOptions): Promise<CompareResult<string>> {
+async function singleElementCompare(el: WebdriverIO.Element, html: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: HTMLOptions): Promise<CompareResult<string>> {
     const actualHTML = await el.getHTML(options)
     return compareTextOrOneOf(actualHTML, html, options)
 }
@@ -21,7 +21,7 @@ export async function toHaveHTML(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options: ExpectWebdriverIO.HTMLOptions = DEFAULT_OPTIONS
+    options: HTMLOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'HTML', verb = 'have', isNot, matcherName = 'toHaveHTML' } = this
 
@@ -52,7 +52,7 @@ export async function toHaveHTML(
     const expectedValues = expected ?? wrapExpectedWithArray(elements, actualHTML, expectedWithOptions)
     const message = enhanceError(elements, withStringOptions(expectedValues, verdict, options, actualHTML), actualHTML, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, '', options)
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }
