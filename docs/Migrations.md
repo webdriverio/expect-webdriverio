@@ -95,6 +95,25 @@ await expect($('#elem')).toHaveStyle({ color: ' red ' }) // passed, now fails
 await expect($('#elem')).toHaveStyle({ color: 'red' })   // passes
 ```
 
+## One position string option
+
+`containing`, `atStart`, `atEnd` and `atIndex` cannot be used together anymore: the matcher throws at once, also with `.not`. Before, `containing` won and the others were ignored, with no message.
+
+```diff
+- await expect($('h1')).toHaveText('Web', { containing: true, atStart: true })
++ await expect($('h1')).toHaveText('Web', { atStart: true })
+```
+
+## `toHaveStyle` compares each value as `toHaveText`
+
+- `replace` applies before a position option (`containing`, `atStart`…). Before, `replace` was ignored with a position option.
+- A value can be a RegExp, an asymmetric matcher or `expect.oneOf()`.
+- The failure message shows each CSS value as is, the value that the matcher compared, and the string options on each expected value: `+   "color": "  RED  ", (compared as "red")`. Before, with a position option or `replace`, it showed the changed value.
+
+## Objects are compared with deep equality in `toHaveSize` and `toHaveElementProperty`
+
+`toHaveSize` compares with the same deep equality as the other matchers, so an asymmetric matcher works: `toHaveSize(expect.objectContaining({ width: 32 }))`. `toHaveElementProperty` compares a property that is not a string with deep equality: `toHaveElementProperty('dataset', { id: '1' })`. Before, both always failed, and always passed with `.not`.
+
 ## List matchers on multiple elements
 
 On `$$()`, `expect.arrayOf()` and Jasmine's `jasmine.arrayWithExactContents()` compare the values of all the elements at once, as `expect.arrayContaining()` does. Before, they were compared with the value of each element, so the assertion always failed, and with `.not`, it always passed.

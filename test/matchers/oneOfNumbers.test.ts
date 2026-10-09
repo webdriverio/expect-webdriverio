@@ -7,7 +7,10 @@ import { toHaveWidth } from '../../src/matchers/element/toHaveWidth.js'
 import { toHaveSize } from '../../src/matchers/element/toHaveSize.js'
 import { toHaveElementProperty } from '../../src/matchers/element/toHaveElementProperty.js'
 import { toBeElementsArrayOfSize } from '../../src/matchers/elements/toBeElementsArrayOfSize.js'
-import { elementArrayFactory } from '../__mocks__/@wdio/globals.js'
+import { toHaveHeight } from '../../src/matchers/element/toHaveHeight.js'
+import { toHaveChildren } from '../../src/matchers/element/toHaveChildren.js'
+import { toBeRequestedTimes } from '../../src/matchers/mock/toBeRequestedTimes.js'
+import { elementArrayFactory, setWdioKind } from '../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -45,7 +48,7 @@ describe('expect.oneOf() with numbers', () => {
 
         beforeEach(async () => {
             el = await $('sel')
-            vi.mocked(el.getSize).mockImplementation(async (property?: string) => (property === 'width' ? 200 : { width: 200, height: 20 }) as never)
+            vi.mocked(el.getSize).mockImplementation(async (property?: string) => (property === 'width' || property === 'height' ? 200 : { width: 200, height: 20 }) as never)
             vi.mocked(el.getProperty).mockResolvedValue(2 as never)
         })
 
@@ -53,6 +56,10 @@ describe('expect.oneOf() with numbers', () => {
             { name: 'toHaveWidth', run: (isNot: boolean, values: number[]) => toHaveWidth.call({ isNot }, el as never, oneOf(...values) as never, { wait: 0 }) },
             { name: 'toHaveSize, on a field', run: (isNot: boolean, values: number[]) => toHaveSize.call({ isNot }, el as never, { width: oneOf(...values), height: 20 } as never, { wait: 0 }) },
             { name: 'toHaveElementProperty, on a number property', run: (isNot: boolean, values: number[]) => toHaveElementProperty.call({ isNot }, el as never, 'count', oneOf(...values.map((value) => value / 100)) as never, { wait: 0 }) },
+            { name: 'toHaveHeight', run: (isNot: boolean, values: number[]) => toHaveHeight.call({ isNot }, el as never, oneOf(...values) as never, { wait: 0 }) },
+            // The mocks give 2 children, 2 elements and 2 calls
+            { name: 'toHaveChildren', run: (isNot: boolean, values: number[]) => toHaveChildren.call({ isNot }, el as never, oneOf(...values.map((value) => value / 100)) as never, { wait: 0 }) },
+            { name: 'toBeRequestedTimes', run: (isNot: boolean, values: number[]) => toBeRequestedTimes.call({ isNot }, setWdioKind({ calls: [{}, {}] }, 'mock') as never, oneOf(...values.map((value) => value / 100)) as never, { wait: 0 }) },
             { name: 'toBeElementsArrayOfSize', run: (isNot: boolean, values: number[]) => toBeElementsArrayOfSize.call({ isNot }, elementArrayFactory('sel', 2) as never, oneOf(...values.map((value) => value / 100)) as never, { wait: 0 }) },
         ])('$name', async ({ run }) => {
             expect((await run(false, [100, 200])).pass).toBe(true)
