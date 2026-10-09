@@ -101,7 +101,7 @@ The failure messages of the string matchers changed, see [String Options](API.md
 - `Expected` names the string options that alter the actual value: in the label for one string value (`Expected (ignoringCase): "Foo"`), and on each value in a list or per-instance values (`ignoringCase<"Foo">`, `containingIgnoringCaseOneOf<"a", "b">`). The default `trim` is named (`trimmed`) only when the actual value had spaces at the start or the end. Before, only the position option of `expect.oneOf()` was named.
 - `Received` shows the actual value as is, also in `toHaveAttribute` and `toHaveElementProperty`. Before, these 2 matchers showed it trimmed, lowercased or replaced.
 - On `$$()` and multi-remote, an element or instance that passed, also only because of the string options, is a line with no change in the diff.
-- For one value on one line, when the string options changed the actual value, `Received` also shows the compared value: `Received: "  Hello World  " (compared as "hello world")`.
+- When the string options changed the actual value, the message also shows the compared value: after `Received` for one value on one line, `Received: "  Hello World  " (compared as "hello world")`, and after each received value that failed in the diff of `$$()` and multi-remote, `+   "  Baz  ", (compared as "baz")`.
 - With `.not` on `$$()`, the elements that matched are highlighted, as the matcher compared them. Before, the elements that matched only because of the string options were not highlighted.
 - A Jasmine asymmetric matcher is printed as a matcher (`<jasmine.anything>`), not as a string (`"<jasmine.anything>"`).
 

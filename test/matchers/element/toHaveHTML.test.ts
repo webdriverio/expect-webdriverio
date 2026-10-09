@@ -548,7 +548,7 @@ Expect $$(\`sel\`) to have HTML
 
   Array [
 -   trimmed<"div">,
-+   "   <div>foo</div>   ",
++   "   <div>foo</div>   ", (compared as "<div>foo</div>")
     trimmed<"<div>foo</div>">,
 -   "toto",
 +   undefined,

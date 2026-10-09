@@ -56,11 +56,12 @@ export async function executeBrowserCommand<Actual, Expected>( {
             return { actual, success: isNot, abort: true, subject: browser, expected }
         }
         const verdict = Object.fromEntries(arrayResults.map((result) => [result.multiRemoteBrowserName, result.success]))
+        const compared = Object.fromEntries(arrayResults.map((result) => [result.multiRemoteBrowserName, 'compared' in result ? result.compared : undefined]))
         // Strict on every instance: with `.not`, no instance may match. `success` is inverted by `waitUntil` for `.not`,
         // so it must stay true while at least one instance still matches.
         const success = isNot ? arrayResults.some(result => result.success) : arrayResults.every(result => result.success)
 
-        return { actual, success, subject: browser, expected, verdict }
+        return { actual, success, subject: browser, expected, verdict, compared }
     }
 
     // Per-instance values or an array (unsupported, use `expect.oneOf()`) can never match a single browser
