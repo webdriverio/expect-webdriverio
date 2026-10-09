@@ -43,6 +43,19 @@ Expected (trimmedIgnoringCase): "Other"
 Received:                       "  Hello World  "`)
         })
 
+        test('aligns the Received label with the Expected label of .not', async () => {
+            const [element] = elementsWith('getText', ['  Hello  '])
+
+            const result = await toHaveText.call({ isNot: true }, element, 'hello', { ...wait, ignoreCase: true })
+
+            expect(result.pass).toBe(true) // failure, inverted later because of `.not`
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`items\`)[0] not to have text
+
+Expected [not] (trimmedIgnoringCase): "hello"
+Received                            : "  Hello  "`)
+        })
+
         const html = '<ul>\n  <li>Tea</li>\n  <li>Coffee</li>\n</ul>'
         const expectedHtml = '<ul>\n  <li>Tea</li>\n  <li>Milk</li>\n</ul>'
 

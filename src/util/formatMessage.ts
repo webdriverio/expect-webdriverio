@@ -129,7 +129,8 @@ export const enhanceError = (
         expected: `${isNotInLabel ? 'Expected [not]' : 'Expected'}${optionsName ? ` (${optionsName})` : ''}`,
         received: isNotInLabel ? 'Received      ' : 'Received'
     }
-    // The labels of the 2 lines that this function prints itself, aligned as Jest aligns its own
+    // The Received label aligned with the Expected label, with the colon after the padding, as `Expected [not]` and
+    // `Received      ` already are: for the 2 lines that this function prints itself, and for Jest's diff with `.not`
     const receivedLineLabel = label.received.padEnd(label.expected.length)
 
     let diffString = ''
@@ -156,7 +157,7 @@ ${receivedLineLabel}: ${receivedFormatted}`
 ${label.expected}: ${printExpected(expected)}
 ${receivedLineLabel}: ${printReceived(actual)}`
     } else {
-        diffString = printDiffOrStringify(expected, actual, label.expected, label.received, true)
+        diffString = printDiffOrStringify(expected, actual, label.expected, isNotInLabel ? receivedLineLabel : label.received, true)
     }
 
     if (message) {
