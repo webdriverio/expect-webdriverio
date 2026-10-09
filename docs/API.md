@@ -639,7 +639,7 @@ await expect($('#elem')).toHaveId('elem')
 
 ### toHaveStyle
 
-Checks if an element has specific `CSS` properties. By default, values must match exactly. Only the `CSS` properties you specify are validated; other properties on the element are ignored.
+Checks if an element has specific `CSS` properties. By default, values must match exactly. Only the `CSS` properties you specify are validated; other properties on the element are ignored. The [string options](#string-options) apply to each value: `trim` changes the actual value only, so an expected value with spaces does not match.
 
 ##### Usage
 

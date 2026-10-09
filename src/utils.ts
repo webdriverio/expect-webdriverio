@@ -118,9 +118,9 @@ export const compareStyle = async (
             continue
         }
 
+        // As in `compareText()`: `trim` changes the actual value only
         if (trim) {
             actualVal = actualVal.trim()
-            expectedVal = expectedVal.trim()
         }
         if (ignoreCase) {
             actualVal = actualVal.toLowerCase()

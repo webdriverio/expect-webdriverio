@@ -167,6 +167,18 @@ Received: {"0": "Wrong Value", "1": "Wrong Value", "10": "Wrong Value", "2": "Wr
             expect(el.getCSSProperty).toHaveBeenCalledTimes(3)
         })
 
+        // As in `toHaveText`: the options change the actual value, and the expected value is compared as written
+        test.each([
+            { name: 'an exact value', expected: ' red ', options: {} },
+            { name: 'containing', expected: ' re', options: { containing: true } },
+        ])('fails when the expected value has spaces: trim applies to the actual value only, with $name', async ({ expected, options }) => {
+            vi.mocked(el.getCSSProperty).mockResolvedValue({ value: 'red', parsed: {} })
+
+            const result = await thisContext.toHaveStyle(el, { color: expected }, { wait: 0, ...options })
+
+            expect(result.pass).toBe(false)
+        })
+
         test('success if style matches with containing', async () => {
             const result = await thisContext.toHaveStyle(
                 el,
