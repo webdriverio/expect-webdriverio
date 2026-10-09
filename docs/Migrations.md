@@ -85,6 +85,16 @@ An array of expected values on a single element fails the assertion, as with the
 + await expect($('button')).toHaveAttribute('class', expect.stringContaining('btn act'))
 ```
 
+## `toHaveStyle` trims the actual value only
+
+As in the other string matchers, `trim` changes the actual CSS value only. Before, `toHaveStyle` also trimmed the expected value, so an expected value with spaces matched.
+
+```ts
+// CSS value: 'red'
+await expect($('#elem')).toHaveStyle({ color: ' red ' }) // passed, now fails
+await expect($('#elem')).toHaveStyle({ color: 'red' })   // passes
+```
+
 ## List matchers on multiple elements
 
 On `$$()`, `expect.arrayOf()` and Jasmine's `jasmine.arrayWithExactContents()` compare the values of all the elements at once, as `expect.arrayContaining()` does. Before, they were compared with the value of each element, so the assertion always failed, and with `.not`, it always passed.
