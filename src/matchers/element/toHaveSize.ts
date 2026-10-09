@@ -11,7 +11,6 @@ import {
 } from '../../utils.js'
 import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
 import { isNumber, validateNumberMatcher } from '../../util/numberOptionsUtil.js'
-import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 import { isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
 import { multiRemote } from '../asymmetrics/multiRemote.js'
 import { isAsymmetricMatcher } from '../../util/asymmetricMatcherUtil.js'
@@ -27,11 +26,12 @@ const isSizeObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === 'object' && value !== null && !Array.isArray(value) && !isAsymmetricMatcher(value)
 
 /**
- * A field, as the value of `toHaveWidth`: a number or an asymmetric matcher stays as is, a range or `expect.oneOf()` with
- * numbers becomes a `NumberMatcher`, and another value throws, e.g. a string or `NaN`
+ * A field, as the value of `toHaveWidth`: a number stays as is, and `validateNumberMatcher()` takes the rest: a range,
+ * `expect.oneOf()` with numbers and an asymmetric matcher become a `NumberMatcher`, and another value throws, e.g. a string,
+ * `NaN` or a list matcher
  */
 const withNumberMatcher = (value: unknown): unknown =>
-    isNumber(value) || (isAsymmetricMatcher(value) && !isOneOfMatcher(value)) ? value : validateNumberMatcher(value as PublicNumberMatcher)
+    isNumber(value) ? value : validateNumberMatcher(value as PublicNumberMatcher)
 
 /**
  * A number range on a field, e.g. `{ width: { gte: 50 }, height: 50 }`, becomes a `NumberMatcher`, as in `toHaveWidth`:
