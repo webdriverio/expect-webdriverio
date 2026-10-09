@@ -55,7 +55,7 @@ export async function toHaveLocalStorageItem(
     // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expected, options)
 
-    const { actual, success: pass, subject, expected: expectedValues, verdict } = await waitUntil(
+    const { actual, success: pass, subject, expected: expectedValues, verdict, compared } = await waitUntil(
         async () => {
             return await executeBrowserCommand({
                 browser,
@@ -74,7 +74,7 @@ export async function toHaveLocalStorageItem(
         subject,
         withStringOptions(expectedValues, verdict, options, actual),
         actual,
-        { ...this, stringOptions: options },
+        { ...this, stringOptions: options, compared },
         verb,
         expectation,
         key,
@@ -109,7 +109,5 @@ const compareStorageItem = async (
         return { actual, success: false }
     }
 
-    const compareResult = compareTextOrOneOf(actual, expected, options)
-
-    return { actual, success: compareResult.success }
+    return compareTextOrOneOf(actual, expected, options)
 }

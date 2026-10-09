@@ -32,7 +32,7 @@ describe(toHaveText, async () => {
 Expect $(\`sel\`) to have text
 
 Expected (trimmedIgnoringCaseReplacing): "Other"
-Received:                                "  Hello World  "`)
+Received:                                "  Hello World  " (compared as "hello there")`)
     })
 
     test('trims by default, for one element and for several elements, also with oneOf', async () => {

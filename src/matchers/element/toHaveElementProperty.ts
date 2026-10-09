@@ -37,9 +37,9 @@ async function condition(
 
     // To review the cast to be more type safe but for now let's keep the existing behavior to ensure no regression
     const actual = propertyValue.toString()
-    const { success } = compareText(actual, expectedValue as string | RegExp | AsymmetricMatcher<string> | null | undefined, options)
-    // Failure messages show the actual value as is, not trimmed, lowercased or replaced by the string options
-    return { success, actual }
+    const { success, actual: compared } = compareText(actual, expectedValue as string | RegExp | AsymmetricMatcher<string> | null | undefined, options)
+    // Failure messages show the actual value as is, not trimmed, lowercased or replaced by the string options, and the compared value apart
+    return { success, actual, compared }
 }
 
 /**
@@ -129,7 +129,7 @@ export async function toHaveElementProperty(
 
     value = buildWdioAsymmetricMatchersWithOptions(value, options)
 
-    const { success: pass, actual: actualProppertyValue, subject: elements, context: { isSome, matchingIndexes } = {}, expected: expectedValues, verdict } = await waitUntil(
+    const { success: pass, actual: actualProppertyValue, subject: elements, context: { isSome, matchingIndexes } = {}, expected: expectedValues, verdict, compared } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
@@ -147,7 +147,7 @@ export async function toHaveElementProperty(
     )
 
     const expected = expectedValues ?? wrapExpectedWithArray(elements, actualProppertyValue, value)
-    const message = enhanceError(elements, withStringOptions(expected, verdict, options, actualProppertyValue), actualProppertyValue, { isNot, isSome, matchingIndexes, stringOptions: options }, verb, expectation, property, options)
+    const message = enhanceError(elements, withStringOptions(expected, verdict, options, actualProppertyValue), actualProppertyValue, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, property, options)
 
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,

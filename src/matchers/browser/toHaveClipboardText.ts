@@ -45,7 +45,7 @@ export async function toHaveClipboardText(
     // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
-    const { actual, success: pass, subject, expected, verdict } = await waitUntil(
+    const { actual, success: pass, subject, expected, verdict, compared } = await waitUntil(
         async () => {
             return await executeBrowserCommand({
                 browser,
@@ -60,7 +60,7 @@ export async function toHaveClipboardText(
         { wait: options.wait, interval: options.interval }
     )
 
-    const message = enhanceError(subject, withStringOptions(expected, verdict, options, actual), actual, { ...this, stringOptions: options }, verb, expectation, '', options)
+    const message = enhanceError(subject, withStringOptions(expected, verdict, options, actual), actual, { ...this, stringOptions: options, compared }, verb, expectation, '', options)
     const result: ExpectWebdriverIO.AssertionResult = {
         pass,
         message: () => message

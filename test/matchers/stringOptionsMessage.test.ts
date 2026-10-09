@@ -40,7 +40,7 @@ describe('failure messages with string options', () => {
 Expect $$(\`items\`)[0] to have text
 
 Expected (trimmedIgnoringCase): "Other"
-Received:                       "  Hello World  "`)
+Received:                       "  Hello World  " (compared as "hello world")`)
         })
 
         test('aligns the Received label with the Expected label of .not', async () => {
@@ -53,7 +53,7 @@ Received:                       "  Hello World  "`)
 Expect $$(\`items\`)[0] not to have text
 
 Expected [not] (trimmedIgnoringCase): "hello"
-Received                            : "  Hello  "`)
+Received                            : "  Hello  " (compared as "hello")`)
         })
 
         const html = '<ul>\n  <li>Tea</li>\n  <li>Coffee</li>\n</ul>'
@@ -104,7 +104,7 @@ Expect $$(\`items\`)[0] to have HTML
 Expect $$(\`items\`)[0] to have text
 
 Expected (trimmed): "Other"
-Received:           "  Hello World  "`)
+Received:           "  Hello World  " (compared as "Hello World")`)
         })
 
         test.each([

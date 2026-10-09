@@ -72,7 +72,7 @@ export const enhanceError = (
     subject: string | WebdriverIO.Element | WdioElements | WebdriverIO.Browser | WebdriverIO.MultiRemoteBrowser | unknown,
     expected: unknown,
     actual: unknown,
-    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, matchingIndexes?: number[], stringOptions?: ExpectWebdriverIO.StringOptions, browserTargetType?: 'browser' | 'window', showContextUrl?: boolean },
+    context: { isNot?: boolean, useNotInLabel?: boolean, isSome?: boolean, matchingIndexes?: number[], stringOptions?: ExpectWebdriverIO.StringOptions, compared?: unknown, browserTargetType?: 'browser' | 'window', showContextUrl?: boolean },
     verb: string,
     expectation: string,
     expectedValueArgument2 = '', {
@@ -158,6 +158,14 @@ ${label.expected}: ${printExpected(expected)}
 ${receivedLineLabel}: ${printReceived(actual)}`
     } else {
         diffString = printDiffOrStringify(expected, actual, label.expected, isNotInLabel ? receivedLineLabel : label.received, true)
+    }
+
+    // The value that the matcher compared, when the string options changed it. Only where `Received` is one line: one
+    // value on one line, not a multiline value (Jest shows a line diff) nor the diff of `$$()` or multi-remote values.
+    const { compared } = context
+    if (typeof actual === 'string' && typeof compared === 'string' && compared !== actual && !actual.includes('\n') && !compared.includes('\n')) {
+        const comparedAs = ` (compared as ${printReceived(compared)})`
+        diffString = diffString.split('\n').map((line) => /^Received *:/.test(line) ? line + comparedAs : line).join('\n')
     }
 
     if (message) {
