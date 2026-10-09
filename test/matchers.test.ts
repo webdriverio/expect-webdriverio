@@ -102,13 +102,10 @@ describe('Custom Wdio Matchers Integration Tests', async () => {
             await expectLib(el).toHaveText(expectLib.stringContaining('Valid'))
         })
 
-        // TODO to support one day?
-        test.skip('toHave works with arrayContaining asymmetric matcher', async () => {
-            await expectLib(el).toHaveText(
-                expectLib.arrayContaining([
-                    expectLib.stringContaining('Valid'),
-                    expectLib.stringContaining('Valid')
-                ]))
+        // A list matcher compares the values of a list of elements, not of one element
+        test('toHaveText rejects arrayContaining on one element', async () => {
+            await expect(expectLib(el).toHaveText(expectLib.arrayContaining([expectLib.stringContaining('Valid')])))
+                .rejects.toThrow('toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements')
         })
     })
 
@@ -398,56 +395,6 @@ Received: 100`)
 
     })
 
-    // Skipped since even though logically correct, this is not too user-friendly and breaks today's current expected behaviour, see https://github.com/webdriverio/expect-webdriverio/issues/2013
-    describe.skip('Matcher eventually passing', async () => {
-
-        test('when element eventually is displayed, matcher and .not matcher should be consistent', async () => {
-            const el = await $('selector')
-            vi.mocked(el.isDisplayed)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(true)
-
-            // Passes when element becomes displayed
-            await expectLib(el).toBeDisplayed({ wait: 300, interval: 5 })
-
-            vi.mocked(el.isDisplayed)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(false)
-                .mockResolvedValueOnce(true)
-
-            // Should not pass with the same scenario to be consistent
-            await expect(() => expectLib(el).not.toBeDisplayed({ wait: 300, interval: 5 })).rejects.toThrow(`\
-Expect $(\`selector\`) not to be displayed
-
-Expected: "not displayed"
-Received: "displayed"`)
-
-            expect(el.isDisplayed).toHaveBeenCalledTimes(6)
-        })
-
-        test('when element eventually is not displayed, matcher and .not matcher should be consistent', async () => {
-            const el = await $('selector')
-            vi.mocked(el.isDisplayed)
-                .mockResolvedValue(false)
-
-            // Does not pass since element never becomes displayed
-            await expect(expectLib(el).toBeDisplayed({ wait: 300, interval: 100 })).rejects.toThrow(`\
-Expect $(\`selector\`) to be displayed
-
-Expected: "displayed"
-Received: "not displayed"`)
-
-            vi.mocked(el.isDisplayed)
-                .mockResolvedValue(false)
-
-            // Should pass with the same scenario to be consistent
-            await expectLib(el).not.toBeDisplayed({ wait: 300, interval: 100 })
-
-            expect(el.isDisplayed).toHaveBeenCalledTimes(6)
-        })
-    })
-
     describe('Matchers should cover real life scenarios', async () => {
         test('Using toBeDisplayed and not.toBeDisplayed before and after a component is being discarded should work easily', async () => {
             const el = await $('selector')
@@ -543,13 +490,14 @@ Received: "not displayed"`)
             await expectLib(elements).not.toHaveText([expectLib.stringContaining('Test'), expectLib.stringContaining('Test')])
         })
 
-        // TODO to support one day?
-        test.skip('toHave works with arrayContaining asymmetric matcher', async () => {
+        test('toHave works with arrayContaining asymmetric matcher', async () => {
             await expectLib(elements).toHaveText(
                 expectLib.arrayContaining([
                     expectLib.stringContaining('Valid'),
                     expectLib.stringContaining('Valid')
                 ]))
+            await expect(expectLib(elements).toHaveText(expectLib.arrayContaining([expectLib.stringContaining('Missing')]), { wait: 0 }))
+                .rejects.toThrow('Missing')
         })
     })
 })
