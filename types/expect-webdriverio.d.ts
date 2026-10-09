@@ -111,7 +111,7 @@ type FnWhenElementArrayLike<ActualT, Fn, FnMultiRemoteElements = Fn> = ActualT e
 /**
  * Same as the other but because of Jasmine and it's expectAsync typing which does not force T to be a promise, then we need to account for `WebdriverIO.Mock
  */
-type FnWhenMock<ActualT, Fn> = ActualT extends MockPromise | WebdriverIO.Mock | MultiRemoteMocks ? Fn : never
+type FnWhenMock<ActualT, Fn, FnMultiRemote = Fn> = ActualT extends MultiRemoteMocks ? FnMultiRemote : ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
 
 interface WdioCustomAsymmetricMatchers {
     oneOf(...values: Array<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>): ExpectWebdriverIO.OneOfPartialMatcher<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | null>
@@ -250,18 +250,26 @@ interface WdioNetworkMatchers<_R, ActualT> {
 
     /**
      * Check that `WebdriverIO.Mock` was called N times.
-     * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must be called N times.
+     * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must be called N times,
+     * or its own number of times with `expect.multiRemote({ chrome: 1, firefox: 2 })`.
      */
     toBeRequestedTimes: FnWhenMock<ActualT, (
         times: number | ExpectWebdriverIO.NumberMatcher,
+        options?: ExpectWebdriverIO.CommandOptions
+    ) => Promise<void>, (
+        times: SingleOrMultiRemoteMatcher<number | ExpectWebdriverIO.NumberMatcher>,
         options?: ExpectWebdriverIO.CommandOptions
     ) => Promise<void>>
 
     /**
      * Check that `WebdriverIO.Mock` was called with the specific parameters.
-     * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must have such a call.
+     * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must have such a call,
+     * or a call with its own parameters with `expect.multiRemote({ chrome: { ... }, firefox: { ... } })`.
      */
-    toBeRequestedWith: FnWhenMock<ActualT, (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+    toBeRequestedWith: FnWhenMock<ActualT,
+        (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>,
+        (requestedWith: SingleOrMultiRemoteMatcher<ExpectWebdriverIO.RequestedWith>, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>
+    >
 }
 
 /**

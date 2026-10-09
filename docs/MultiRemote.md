@@ -156,7 +156,17 @@ await expect(mocks).toBeRequestedTimes({ gte: 1 })
 await expect(mocks).toBeRequestedWith({ method: 'GET', statusCode: 200 })
 ```
 
-There is **one expected value for every instance**: per-instance values with `expect.multiRemote()` are not supported.
+For one expected value per instance, use `expect.multiRemote()`. A plain object is not per-instance values: for `toBeRequestedTimes` it is a `NumberMatcher`, and for `toBeRequestedWith` it is the expected request.
+
+```ts
+await expect(mocks).toBeRequestedTimes(expect.multiRemote({ chrome: 2, firefox: { gte: 1 } }))
+await expect(mocks).toBeRequestedWith(expect.multiRemote({
+    chrome: { method: 'GET' },
+    firefox: { method: 'POST', postData: { name: 'foo' } },
+}))
+```
+
+As for the other matchers, the values must name exactly the instances of the `MultiRemoteMock`, else the assertion fails at once, without retry, also with `.not`. A single mock with `expect.multiRemote()` fails too.
 
 `mock()` gives a `MultiRemoteMock`, which knows the instance of each mock. Failure messages name each mock after its instance, also after `select()`. An array of mocks is rejected.
 
@@ -228,7 +238,6 @@ Expect multi-remote<chrome, firefox>.$(`h1`) to have text
 
 ## Limitations
 
-- Network matchers support one expected value for every instance only, and may name a mock after the wrong instance, see [Network Matchers](#network-matchers).
 - A plain `MultiRemoteElement[]` is not supported: it is not recognized as elements, so the assertion fails. Pass the `MultiRemoteElementArray` of `$$()`, `custom$$()` or `react$$()`. You get a plain `MultiRemoteElement[]` from `[...elements]`, `Array.from(elements)` or `elements.concat()` on a `MultiRemoteElementArray`.
 
   If you need to assert on a `MultiRemoteElement[]`, [open an issue](https://github.com/webdriverio/expect-webdriverio/issues/new) with your use case.

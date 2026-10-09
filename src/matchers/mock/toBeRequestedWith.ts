@@ -3,7 +3,7 @@ import type { local } from 'webdriver'
 import { waitUntil, enhanceError, isAsymmetricMatcher, getAsymmetricMatcherValue } from '../../utils.js'
 import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
-import { awaitMocks, isInstanceMocks } from '../../util/multiRemoteUtils.js'
+import { awaitMocks, getPerInstanceValues, hasSameInstanceNames, isInstanceMocks } from '../../util/multiRemoteUtils.js'
 import { formatMultiRemoteInstanceNames, labelMultiRemoteValues } from '../../util/formatMessage.js'
 import type { WdioMatcherContext, WdioMultiRemoteMockMaybePromise } from '../../types.js'
 
@@ -36,18 +36,19 @@ export async function toBeRequestedWith(
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 /**
- * Multi-remote mocks (`multiRemoteBrowser.mock()`): every instance's mock must have a matching call
+ * Multi-remote mocks (`multiRemoteBrowser.mock()`): every instance's mock must have a matching call,
+ * or a call matching its own value with `expect.multiRemote({ chrome: { ... }, firefox: { ... } })`
  */
 export async function toBeRequestedWith(
     received: WdioMultiRemoteMockMaybePromise,
-    expectedValue?: ExpectWebdriverIO.RequestedWith,
+    expectedValue?: ExpectWebdriverIO.RequestedWith | ExpectWebdriverIO.MultiRemotePartialMatcher<ExpectWebdriverIO.RequestedWith>,
     options?: ExpectWebdriverIO.CommandOptions
 ): Promise<ExpectWebdriverIO.AssertionResult>
 
 export async function toBeRequestedWith(
     this: WdioMatcherContext,
     received: WebdriverIO.Mock | WdioMultiRemoteMockMaybePromise,
-    expectedValue: ExpectWebdriverIO.RequestedWith = {},
+    expectedValue: ExpectWebdriverIO.RequestedWith | ExpectWebdriverIO.MultiRemotePartialMatcher<ExpectWebdriverIO.RequestedWith> = {},
     options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'called with', verb = 'be', isNot, matcherName = 'toBeRequestedWith' } = this
@@ -62,22 +63,47 @@ export async function toBeRequestedWith(
     // postData/body string is JSON.parsed at most once per assertion instead of once per read
     const parseCache: Map<string, ParsedJson> = new Map()
 
+    // Per-instance values require `expect.multiRemote()`: a plain object is always a `RequestedWith`
+    const perInstanceValues = getPerInstanceValues(expectedValue, { allowObjectExpectedValue: true }) as MultiRemoteValues<ExpectWebdriverIO.RequestedWith> | undefined
+    const minifiedPerInstanceValues = perInstanceValues && labelMultiRemoteValues(
+        Object.fromEntries(Object.entries(perInstanceValues).map(([name, value]) => [name, minifyRequestedWith(value)]))
+    )
+    // On a structural failure, the last call of a mock shows the fields of every per-instance value
+    const allFields = perInstanceValues && mergeDefinedFields(Object.values(perInstanceValues))
+    const lastCall = (mock: WebdriverIO.Mock, requestedWith = allFields) =>
+        minifyRequestMock((mock.calls as RequestMock[]).at(-1), requestedWith, parseCache) || 'was not called'
+
     const mocks = await awaitMocks(received)
     let pass: boolean
     let message: string
 
     if (isInstanceMocks(mocks)) {
         const { names, mocks: instanceMocks } = mocks
-        const results = await Promise.all(instanceMocks.map((mock) => checkRequestedWith(mock, expectedValue, options, !!isNot, parseCache)))
-        // `pass` means "a matching call was found", `.not` being inverted downstream: strict on every instance,
-        // so with `.not` no instance may have a matching call
-        pass = isNot ? results.some((result) => result.pass) : results.every((result) => result.pass)
-        const expected = Object.fromEntries(names.map((name) => [name, minifyRequestedWith(expectedValue)]))
-        const actual = Object.fromEntries(results.map((result, index) => [names[index], result.actual]))
-        const payloadNeverCollected = results.some((result) => !result.pass && result.payloadNeverCollected)
-        message = enhanceError(`${formatMultiRemoteInstanceNames(names)} mocks`, labelMultiRemoteValues(expected), labelMultiRemoteValues(actual), this, verb, expectation, '', options)
-            + (!pass && !isNot && payloadNeverCollected ? payloadCollectionHint(expectedValue) : '')
+        const expected = perInstanceValues ?? Object.fromEntries(names.map((name) => [name, expectedValue as ExpectWebdriverIO.RequestedWith]))
+        const label = `${formatMultiRemoteInstanceNames(names)} mocks`
+
+        if (perInstanceValues && !hasSameInstanceNames(perInstanceValues, names)) {
+            // Per-instance values must name exactly the instances: no retry can fix it
+            pass = !!isNot
+            const actual = Object.fromEntries(instanceMocks.map((mock, index) => [names[index], lastCall(mock, perInstanceValues[names[index]])]))
+            message = enhanceError(label, minifiedPerInstanceValues, labelMultiRemoteValues(actual), this, verb, expectation, '', options)
+        } else {
+            const results = await Promise.all(instanceMocks.map((mock, index) => checkRequestedWith(mock, expected[names[index]], options, !!isNot, parseCache)))
+            // `pass` means "a matching call was found", `.not` being inverted downstream: strict on every instance,
+            // so with `.not` no instance may have a matching call
+            pass = isNot ? results.some((result) => result.pass) : results.every((result) => result.pass)
+            const minifiedExpected = minifiedPerInstanceValues ?? labelMultiRemoteValues(Object.fromEntries(names.map((name) => [name, minifyRequestedWith(expected[name])])))
+            const actual = Object.fromEntries(results.map((result, index) => [names[index], result.actual]))
+            const payloadNeverCollected = names.filter((_, index) => !results[index].pass && results[index].payloadNeverCollected)
+            message = enhanceError(label, minifiedExpected, labelMultiRemoteValues(actual), this, verb, expectation, '', options)
+                + (!pass && !isNot && payloadNeverCollected.length > 0 ? payloadCollectionHint(mergeDefinedFields(payloadNeverCollected.map((name) => expected[name]))) : '')
+        }
+    } else if (perInstanceValues) {
+        // Per-instance values can never match a single mock
+        pass = !!isNot
+        message = enhanceError('mock', minifiedPerInstanceValues, lastCall(mocks), this, verb, expectation, '', options)
     } else {
+        expectedValue = expectedValue as ExpectWebdriverIO.RequestedWith
         const result = await checkRequestedWith(mocks, expectedValue, options, !!isNot, parseCache)
         pass = result.pass
         message = enhanceError(
@@ -106,6 +132,13 @@ export async function toBeRequestedWith(
 
     return result
 }
+
+/**
+ * The fields of several expected values, in one value. Unlike `Object.assign()`, a field set to `undefined` in one value
+ * does not remove the field of another value.
+ */
+const mergeDefinedFields = (values: ExpectWebdriverIO.RequestedWith[]): ExpectWebdriverIO.RequestedWith =>
+    Object.assign({}, ...values.map((value) => Object.fromEntries(Object.entries(value).filter(([, field]) => field !== undefined))))
 
 /**
  * Whether the mock has a call matching the expected value, with the (minified) last call for the failure message.

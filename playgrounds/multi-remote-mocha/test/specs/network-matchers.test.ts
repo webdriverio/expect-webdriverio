@@ -93,6 +93,28 @@ describe('Network Matchers', () => {
     it('should throw an error when asserting not be requested', async () => {
         await expect(expect(mocks.getInstance('chrome')).not.toBeRequested()).rejects.toThrow()
     })
+
+    it('should assert the call of each browser with its own value, with postData and response', async () => {
+        // `mock.calls[n].body` is the upstream response, not the override of `respond()`
+        await expect(mocks).toBeRequestedWith(expect.multiRemote({
+            chrome: { method: 'POST', postData: { title: 'foo', description: 'bar' }, response: (response) => typeof response === 'string' && response.length > 0 },
+            firefox: { method: 'POST', postData: expect.objectContaining({ title: 'foo' }) },
+        }))
+        await expect(mocks).not.toBeRequestedWith(expect.multiRemote({
+            chrome: { postData: { title: 'bar' } },
+            firefox: { method: 'GET' },
+        }), { wait: 0 })
+    })
+
+    it('should fail with the call of each browser for its own value', async () => {
+        await expect(expect(mocks).toBeRequestedWith(expect.multiRemote({
+            chrome: { method: 'POST', postData: { title: 'foo', description: 'bar' } },
+            firefox: { method: 'POST', postData: { title: 'bar' } },
+        }), { wait: 0 })).rejects.toThrow(/Expect multi-remote<chrome, firefox> mocks to be called with/)
+        // The values must name exactly the browsers
+        await expect(expect(mocks).toBeRequestedWith(expect.multiRemote({ chrome: { method: 'POST' } })))
+            .rejects.toThrow(/"firefox": Object {/)
+    })
 })
 
 describe('Multi-remote Network Matchers', () => {
@@ -119,5 +141,38 @@ describe('Multi-remote Network Matchers', () => {
             .rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)> mocks to be called 0 times/)
         await expect(expect(mocks).not.toBeRequested({ wait: 0 }))
             .rejects.toThrow(/not to be called/)
+    })
+})
+
+describe('Multi-remote Network Matchers with one expected value per browser', () => {
+    let mocks: WebdriverIO.MultiRemoteMock
+
+    before(async () => {
+        mocks = await multiRemoteBrowser.mock('https://guinea-pig.webdriver.io/')
+        await multiRemoteBrowser.url('https://guinea-pig.webdriver.io/')
+        // Only Chrome loads the page a second time
+        await multiRemoteBrowser.getInstance('chrome').url('https://guinea-pig.webdriver.io/')
+    })
+
+    after(async () => {
+        await Promise.all(mocks.instances.map((name) => mocks.getInstance(name).restore()))
+    })
+
+    it('should assert each browser with its own value', async () => {
+        await expect(mocks).toBeRequestedTimes(expect.multiRemote({ chrome: 2, firefox: 1 }))
+        await expect(mocks).toBeRequestedTimes(expect.multiRemote({ chrome: { gte: 2 }, firefox: { lte: 1 } }))
+        await expect(mocks).toBeRequestedWith(expect.multiRemote({
+            chrome: { method: 'GET', url: 'https://guinea-pig.webdriver.io/' },
+            firefox: { method: 'GET', url: expect.stringContaining('guinea-pig') },
+        }))
+        await expect(mocks).not.toBeRequestedTimes(expect.multiRemote({ chrome: 1, firefox: 2 }), { wait: 0 })
+    })
+
+    it('should fail with the value of each browser', async () => {
+        await expect(expect(mocks).toBeRequestedTimes(expect.multiRemote({ chrome: 1, firefox: 1 }), { wait: 0 }))
+            .rejects.toThrow(/"chrome": 1,\n\+ {3}"chrome": 2,/)
+        // The values must name exactly the browsers
+        await expect(expect(mocks).toBeRequestedTimes(expect.multiRemote({ chrome: 2, safari: 1 })))
+            .rejects.toThrow(/"safari": 1/)
     })
 })

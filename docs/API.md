@@ -2,7 +2,7 @@
 
 When you're writing tests, you often need to check that values meet certain conditions. `expect` gives you access to a number of "matchers" that let you validate different things on the `browser`, an `element` or `mock` object.
 
-**Note**: Browser, element, network and snapshot matchers also support [multi-remote](MultiRemote.md), checking every browser instance with a single expected value or, for browser and element matchers, one per instance.
+**Note**: Browser, element, network and snapshot matchers also support [multi-remote](MultiRemote.md), checking every browser instance with a single expected value or, for browser, element and network matchers, one per instance.
 
 Examples that do not open a page or show their HTML assume the [guinea pig test page](https://guinea-pig.webdriver.io/) is open:
 
@@ -872,7 +872,7 @@ await expect($$('#someElem').filter(el => el.isExisting())).toHaveAttribute('cla
 
 ## Network Matchers
 
-Network matchers also support the mocks of a multi-remote `mock()`, with one expected value for every browser instance, see [Multi-remote Support](MultiRemote.md#network-matchers).
+Network matchers also support the mocks of a multi-remote `mock()`, with one expected value for every browser instance or, with `expect.multiRemote()`, one per instance, see [Multi-remote Support](MultiRemote.md#network-matchers).
 
 ### toBeRequested
 
