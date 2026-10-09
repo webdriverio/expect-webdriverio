@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": { "types": [] },
-  "files": ["module.ts"]
+  "files": ["module.ts", "custom.ts", "namespace.ts", "use-module.ts"]
 }

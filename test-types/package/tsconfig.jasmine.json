@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": { "types": ["@types/jasmine", "expect-webdriverio/jasmine"] },
-  "files": ["jasmine.ts"]
+  "files": ["jasmine.ts", "custom.ts", "namespace.ts", "use-jasmine.ts"]
 }

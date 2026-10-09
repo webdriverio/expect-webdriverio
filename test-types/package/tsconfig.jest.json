@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": { "types": ["@types/jest", "expect-webdriverio/jest"] },
-  "files": ["jest.ts"]
+  "files": ["jest.ts", "custom.ts", "namespace.ts", "use-jest.ts"]
 }
