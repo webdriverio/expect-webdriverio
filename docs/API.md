@@ -657,7 +657,7 @@ await expect($('#elem')).toHaveId('elem')
 
 Checks if an element has specific `CSS` properties. By default, values must match exactly. Only the `CSS` properties you specify are validated; other properties on the element are ignored. Each value is compared as in `toHaveText`: the [string options](#string-options) apply to each value (`trim` removes surrounding spaces from the actual value only and leaves the expected value unchanged), and a value can be a RegExp, an asymmetric matcher or `expect.oneOf()`. The failure message shows each CSS value as is, and the value that the matcher compared.
 
-The actual value is the one of [`getCSSProperty()`](https://webdriver.io/docs/api/element/getCSSProperty), which WebdriverIO normalizes: lowercase and trimmed, a color as `rgba(r,g,b,a)` with no spaces (not `white`, `#fff` or `rgb(255, 255, 255)`), and only the first font of `font-family`. Write the expected value in this form, or use `ignoreCase` for the case.
+The actual value is the one of [`getCSSProperty()`](https://webdriver.io/docs/api/element/getCSSProperty), which WebdriverIO normalizes: lowercase and trimmed, a color as `rgba(r,g,b,a)` with no spaces (not `white`, `#fff` or `rgb(255, 255, 255)`), and only the first font of `font-family`. A value without unit is a number, compared as its text: `font-weight: '700'`, `opacity: '0'`. Write the expected value in this form, or use `ignoreCase` for the case. As in `toHaveText`, `replace` applies first, then `ignoreCase` and the position option.
 
 ##### Usage
 
@@ -821,7 +821,7 @@ await expect(logo).toHaveHeight({ gte: 32, lte: 34 })
 
 ### toHaveSize
 
-Checks if element has a specific size, with [deep equality](#deep-equality). Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), or `expect.oneOf()` with numbers. The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only.
+Checks if element has a specific size, with [deep equality](#deep-equality). Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), or `expect.oneOf()` with numbers. The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only. An invalid range throws, as in `toHaveWidth`. A range is converted only in the fields of the size, not inside an asymmetric matcher: for one field with a range, write `{ width: { gte: 30 }, height: expect.any(Number) }`.
 
 ##### Usage
 

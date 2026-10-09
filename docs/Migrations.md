@@ -97,7 +97,7 @@ await expect($('#elem')).toHaveStyle({ display: 'block' })   // passes
 
 ## One position string option
 
-`containing`, `atStart`, `atEnd` and `atIndex` cannot be used together anymore: the matcher throws at once, also with `.not`. Before, `containing` won and the others were ignored, with no message.
+`containing`, `atStart`, `atEnd` and `atIndex` cannot be used together anymore: the matcher throws at once, also with `.not`, and so does `utils.compareText()`. Before, `containing` won and the others were ignored, with no message.
 
 ```diff
 - await expect($('h1')).toHaveText('Web', { containing: true, atStart: true })
@@ -106,7 +106,8 @@ await expect($('#elem')).toHaveStyle({ display: 'block' })   // passes
 
 ## `toHaveStyle` compares each value as `toHaveText`
 
-- `replace` applies before a position option (`containing`, `atStart`…). Before, `replace` was ignored with a position option.
+- `replace` applies first, then `ignoreCase` and the position option (`containing`, `atStart`…). Before, `replace` was ignored with a position option, and applied after `ignoreCase`, so `replace: ['B', 'X']` did not change `block`.
+- A CSS value without unit, which WebdriverIO gives as a number, is compared as its text. Before, `0` became `''`: `toHaveStyle({ opacity: '0' })` always failed, and `{ opacity: '' }` passed.
 - A value can be a RegExp, an asymmetric matcher or `expect.oneOf()`.
 - The failure message shows each CSS value as is, the value that the matcher compared, and the string options on each expected value: `+   "color": "  RED  ", (compared as "red")`. Before, with a position option or `replace`, it showed the changed value.
 
@@ -115,7 +116,9 @@ await expect($('#elem')).toHaveStyle({ display: 'block' })   // passes
 Both matchers now use the deep equality of the other matchers, the one of Jest's `toEqual` (see [Deep Equality](API.md#deep-equality)):
 
 - `toHaveSize`: an asymmetric matcher works, e.g. `toHaveSize(expect.objectContaining({ width: 32 }))`. Before, `toHaveSize` used the `deep-eql` package, which does not know asymmetric matchers: the assertion always failed, and always passed with `.not`. `deep-eql` also counted a property that is `undefined`, which is now ignored, as in `toEqual`.
-- `toHaveElementProperty` compares a property that is not a string with deep equality, e.g. `toHaveElementProperty('dataset', { id: '1' })`. Before, it used `===`, so an object never matched: the assertion always failed, and always passed with `.not`.
+- `toHaveElementProperty` compares a property that is not a string with deep equality, e.g. `toHaveElementProperty('dataset', { id: '1' })`. Before, it used `===`, so an object never matched: the assertion always failed, and always passed with `.not`. As in `toEqual`, `NaN` now equals `NaN`, and `0` does not equal `-0` (with `===`, it did).
+- `toHaveSize`: an invalid range in a field (`{ width: {} }`, `gte` greater than `lte`) throws, as in `toHaveWidth`. Before, the assertion failed, and passed with `.not`.
+- `utils.compareObject()` uses the same deep equality.
 
 `expect-webdriverio` does not depend on `deep-eql` anymore.
 

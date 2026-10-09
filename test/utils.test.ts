@@ -357,6 +357,11 @@ describe('utils', () => {
     })
 
     describe(compareObject, () => {
+        test('uses the deep equality of the matchers: an asymmetric matcher, and an undefined property ignored', () => {
+            expect(compareObject({ width: 32, height: 20 }, wdioExpect.objectContaining({ width: 32 })).success).toBe(true)
+            expect(compareObject({ width: 32, height: 20 }, { width: 32, height: 20, x: undefined }).success).toBe(true)
+        })
+
         test('should pass if the objects are equal', () => {
             expect(compareObject({ 'foo': 'bar' }, { 'foo': 'bar' }).success).toBe(true)
         })

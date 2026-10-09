@@ -621,6 +621,8 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have size
             { name: 'expect.objectContaining()', size: () => wdioExpect.objectContaining({ width: 32 }), pass: true },
             { name: 'expect.objectContaining() that does not match', size: () => wdioExpect.objectContaining({ width: 1 }), pass: false },
             { name: 'an asymmetric matcher in a field', size: () => ({ width: wdioExpect.any(Number), height: 20 }), pass: true },
+            { name: 'a range with an asymmetric matcher in the other field', size: () => ({ width: { gte: 30 }, height: wdioExpect.any(Number) }), pass: true },
+            { name: 'a range inside expect.objectContaining(), which is not converted', size: () => wdioExpect.objectContaining({ width: { gte: 30 } }), pass: false },
             { name: 'a range on a field', size: () => ({ width: { gte: 30, lte: 40 }, height: 20 }), pass: true },
             { name: 'eq on a field', size: () => ({ width: { eq: 32 }, height: { gte: 1 } }), pass: true },
             { name: 'a range that does not match', size: () => ({ width: { lte: 10 }, height: 20 }), pass: false },

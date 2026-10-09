@@ -619,6 +619,19 @@ Expect multi-remote<chrome, firefox>.$(\`sel\`) to have style
             expect(perInstance.pass).toBe(true)
         })
 
+        test.each([
+            { name: 'a CSS value 0 without unit, which WebdriverIO gives as a number', css: 0, expected: '0', pass: true },
+            { name: 'a CSS value 700 without unit', css: 700, expected: '700', pass: true },
+            { name: 'replace before ignoreCase: BLOCK becomes XLOCK, then xlock', css: 'BLOCK', expected: 'xlock', options: { replace: ['B', 'X'] as [string, string], ignoreCase: true }, pass: true },
+            { name: 'replace before ignoreCase: not block', css: 'BLOCK', expected: 'block', options: { replace: ['B', 'X'] as [string, string], ignoreCase: true }, pass: false },
+        ])('compares $name', async ({ css, expected, options, pass }) => {
+            vi.mocked(el.getCSSProperty).mockResolvedValue({ value: css, parsed: {} } as never)
+
+            const result = await thisContext.toHaveStyle(el, { display: expected }, { wait: 0, ...options })
+
+            expect(result.pass).toBe(pass)
+        })
+
         test('applies replace before a position option', async () => {
             const result = await thisContext.toHaveStyle(el, { color: 'GRE' }, { wait: 0, containing: true, replace: ['RED', 'GREEN'] })
 
