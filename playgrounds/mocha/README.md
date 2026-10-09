@@ -15,6 +15,7 @@ Because Mocha is the standard framework for `expect-webdriverio`, all features w
 
 - `test/specs/` - E2E test files covering various feature sets (basic matchers, soft expectations, snapshots, visual comparisons).
 - `wdio.conf.ts` - WebDriverIO configuration demonstrating how to wire up the `SoftAssertionService`, the Visual service, and global `expect-webdriverio` options.
+- `test/multi-remote-specs/` and `wdio.multi-remote.conf.ts` - the multi-remote tests, see [Multi-remote](#multi-remote).
 - `visual-snapshot/` - Directory for storing and comparing visual screenshot baselines and temp images.
 - Uses local build from `/expect-webdriverio/lib/index.js`.
 
@@ -34,3 +35,13 @@ The example tests cover:
 - Runs Chrome in headless mode
 - Tests against webdriver.io website
 - Imports expect-webdriverio from the local build directory
+
+## Multi-remote
+
+`pnpm run test:multi-remote` runs `test/multi-remote-specs/` on a multi-remote browser (Chrome and Firefox), with `wdio.multi-remote.conf.ts`. `pnpm test` runs only the single-browser specs, and `pnpm run checks:all` runs both.
+
+Give `--spec` the path from the playground, e.g. `--spec test/specs/snapshot.test.ts`: a file name alone also finds the multi-remote spec with the same name.
+
+See [Multi-remote Support](../../docs/MultiRemote.md) for the supported behaviors.
+
+The multi-remote `visual-snapshot.test.ts` tests run the `@wdio/visual-service` matchers on the multi-remote browser and its elements. Their baselines are not committed: each run saves them in `visual-snapshot/multi-remote/baseline/`, so that every OS compares its own screenshots. The element visual snapshots need `@wdio/visual-service` 10.2.1 or later ([webdriverio/visual-testing#1238](https://github.com/webdriverio/visual-testing/issues/1238)).

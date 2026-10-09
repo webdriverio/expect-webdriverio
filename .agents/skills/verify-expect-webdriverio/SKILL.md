@@ -22,7 +22,7 @@ as the proof.
 | The change affects | Run | Not the proof |
 |--------------------|-----|---------------|
 | A matcher, its options, or its failure message | `mocha` (Jasmine or Jest if the change is framework specific) | A unit test |
-| Multi-remote browsers, `$()` or `$$()` | `multi-remote-mocha` | The `mocha` playground |
+| Multi-remote browsers, `$()` or `$$()` | `mocha`, `test:multi-remote` script | The `mocha` `test` script (one browser) |
 | Snapshot matchers | `mocha`, `jasmine` and `browser-runner` | One framework only |
 | Browser Runner (matcher code in the browser) | `browser-runner` | A local runner playground |
 | Framework augmentations (`jest.d.ts`, `jasmine*.d.ts`) | `pnpm run test:types`, then that framework's playground `pnpm run typecheck` | A runtime run |
@@ -53,13 +53,13 @@ From `playgrounds/`, one workspace package at a time:
 ```sh
 cd playgrounds
 pnpm --filter ./mocha test
-pnpm --filter ./multi-remote-mocha test
+pnpm --filter ./mocha run test:multi-remote
 pnpm --filter ./jasmine test
 pnpm --filter ./jest test
 pnpm --filter ./browser-runner test
 ```
 
-To run one spec: `pnpm --filter ./mocha test --spec test/specs/basic-matchers.test.ts` (no `--`: pnpm passes it to `wdio`).
+To run one spec: `pnpm --filter ./mocha test --spec test/specs/basic-matchers.test.ts` (no `--`: pnpm passes it to `wdio`). A multi-remote spec: `pnpm --filter ./mocha run test:multi-remote --spec test/multi-remote-specs/basic-matchers.test.ts`.
 
 Visual snapshots can fail when the test website changes. Update them only when
 the change is about snapshots, with `pnpm run snapshots:update` (in `playgrounds/`), and

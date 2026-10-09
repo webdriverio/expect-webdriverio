@@ -17,11 +17,11 @@ export const config: WebdriverIO.MultiRemoteConfig = {
     // ==================
     //
     specs: [
-        './test/specs/**/*.test.ts',
-        //'./test/specs/**/basic-matchers.test.ts',
-        //'./test/specs/**/network-matchers.test.ts',
-        //'./test/specs/**/options.test.ts',
-        //'./test/specs/**/wdio-matchers.test.ts'
+        './test/multi-remote-specs/**/*.test.ts',
+        //'./test/multi-remote-specs/**/basic-matchers.test.ts',
+        //'./test/multi-remote-specs/**/network-matchers.test.ts',
+        //'./test/multi-remote-specs/**/options.test.ts',
+        //'./test/multi-remote-specs/**/wdio-matchers.test.ts'
     ],
 
     maxInstances: 10,
@@ -79,9 +79,10 @@ export const config: WebdriverIO.MultiRemoteConfig = {
         [
             'visual',
             {
-                baselineFolder: join(process.cwd(), 'visual-snapshot/baseline'),
+                // Not committed: each run saves the baselines, so that every OS compares its own screenshots
+                baselineFolder: join(process.cwd(), 'visual-snapshot/multi-remote/baseline'),
                 formatImageName: '{tag}-{logName}-{width}x{height}',
-                screenshotPath: join(process.cwd(), 'visual-snapshot/.temp'),
+                screenshotPath: join(process.cwd(), 'visual-snapshot/multi-remote/.temp'),
                 savePerInstance: true,
                 autoSaveBaseline: true,
                 compareOptions: {

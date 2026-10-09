@@ -9,7 +9,7 @@
     "preinstall": "cd .. && pnpm run compile",
     "setup": "pnpm install",
     "typecheck": "pnpm -r run typecheck",
-    "test": "pnpm -r --workspace-concurrency=1 run test",
+    "test": "pnpm -r --workspace-concurrency=1 run test && pnpm --filter ./mocha run test:multi-remote",
     "lint": "pnpm -r run lint",
     "checks:all": "pnpm run typecheck && pnpm run lint && pnpm test",
     "snapshots:update": "pnpm --filter ./mocha run snapshots:update"
