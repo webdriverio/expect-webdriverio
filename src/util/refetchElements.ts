@@ -9,13 +9,22 @@ import { isMultiRemoteElementArray, isStrictlyElementArray } from './elementsUti
 export const refetchElements = async <T extends WdioElements | WebdriverIO.MultiRemoteElementArray>(
     elements: T,
 ): Promise<T> => {
-    if (elements
-        && (isStrictlyElementArray(elements) || isMultiRemoteElementArray(elements))
-        && elements.parent && elements.foundWith && elements.foundWith in elements.parent) {
+    if (elements && (isStrictlyElementArray(elements) || isMultiRemoteElementArray(elements))) {
+        // WebdriverIO v10 exposes the real provenance of a derived list through
+        // refetch(). Replaying the public selector metadata here would discard
+        // filter()/filterSeries()/slice() and could introduce unrelated elements.
+        const replay = (elements as T & { refetch?: () => Promise<T> }).refetch
+        if (typeof replay === 'function') {
+            return await replay.call(elements)
+        }
 
-        const browser = elements.parent
-        const $$ = browser[elements.foundWith as keyof typeof browser] as Function
-        return await $$.call(browser, elements.selector, ...elements.props)
+        // Compatibility with older WebdriverIO versions whose original query
+        // lists do not yet have the public refetch() API (including v9).
+        if (elements.parent && elements.foundWith && elements.foundWith in elements.parent) {
+            const browser = elements.parent
+            const $ = browser[elements.foundWith as keyof typeof browser] as Function
+            return await $.call(browser, elements.selector, ...elements.props)
+        }
     }
     return elements
 }
