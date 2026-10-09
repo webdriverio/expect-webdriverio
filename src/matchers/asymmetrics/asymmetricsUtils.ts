@@ -1,5 +1,5 @@
 import { AsymmetricMatcher } from 'expect'
-import { isAsymmetricMatcher } from '../../utils.js'
+import { isAsymmetricMatcher } from '../../util/asymmetricMatcherUtil.js'
 
 /**
  * Build asymmetric matchers with options for WebdriverIO.

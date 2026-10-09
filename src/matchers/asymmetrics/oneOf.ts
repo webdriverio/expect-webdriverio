@@ -1,5 +1,5 @@
 import type { HTMLOptions, StringOptions } from 'expect-webdriverio'
-import { compareText } from '../../utils.js'
+import { compareText } from '../../util/compareText.js'
 import { WdioAsymmetricMatchers } from './asymmetricsUtils.js'
 
 const ONE_OF_TAG = 'expect-webdriverio.oneOf'

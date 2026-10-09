@@ -1,4 +1,4 @@
-import { isArrayContainingMatcher } from '../utils.js'
+import { isArrayContainingMatcher } from './asymmetricMatcherUtil.js'
 import { hasMultiRemoteFlag } from './multiRemoteUtils.js'
 import { getLoadedWdioKind, getWdioKind } from './wdioKind.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElements, WdioElementsMaybePromise, WdioMultiRemoteElements } from '../types.js'

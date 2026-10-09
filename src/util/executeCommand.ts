@@ -1,5 +1,5 @@
 import { equals } from '../jasmineUtils.js'
-import { isArrayContainingMatcher } from '../utils.js'
+import { isArrayContainingMatcher } from './asymmetricMatcherUtil.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
 import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from './elementsUtil.js'

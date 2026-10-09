@@ -4,7 +4,8 @@ import type { MultiRemoteValuesWithArray, WdioElements, WdioMultiRemoteElements 
 import { isArrayOfElement, isElementArrayLike, isElementOrArrayLike, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isMultiRemoteElementLike, isStrictlyElementArray } from './elementsUtil.js'
 import { toJsonString } from './stringUtil.js'
 import { getLoadedWdioKind } from './wdioKind.js'
-import { isJasmineStringAsymmetricMatcher, toArray } from '../utils.js'
+import { isJasmineStringAsymmetricMatcher } from './asymmetricMatcherUtil.js'
+import { toArray } from './arrayUtil.js'
 import { isBrowser, isBrowsingContext, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined

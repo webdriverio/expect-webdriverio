@@ -1,4 +1,4 @@
-import { isAsymmetricMatcher } from '../utils.js'
+import { isAsymmetricMatcher } from './asymmetricMatcherUtil.js'
 import type { WdioMultiRemoteMockMaybePromise } from '../types.js'
 import { getWdioKind } from './wdioKind.js'
 

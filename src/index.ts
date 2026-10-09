@@ -57,7 +57,7 @@ function createSharedExpectSetup(): SharedExpectSetup {
     // object, in which case a second, un-deduped setup pass would otherwise throw.
     Object.defineProperty(wdioExpect, 'soft', {
         configurable: true,
-        value: <T = unknown>(actual: T) => createSoftExpect(actual)
+        value: <T = unknown>(actual: T) => createSoftExpect(wdioExpect, actual)
     })
 
     // Add soft assertions utility methods
