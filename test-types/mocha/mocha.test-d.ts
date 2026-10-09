@@ -1188,6 +1188,11 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.any(Number))).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.oneOf('val1', 'val2'))).toEqualTypeOf<Promise<void>>()
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.oneOf('val1', null))).toEqualTypeOf<Promise<void>>()
+                    // A property that is not a string, compared with equals(): a boolean, an object, also with an asymmetric matcher in it
+                    expectTypeOf(expect(element).toHaveElementProperty('checked', true)).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(element).toHaveElementProperty('dataset', { id: '1', count: expect.any(Number) })).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(elementArray).toHaveElementProperty('checked', [true, false])).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expect(multiRemoteElement).toHaveElementProperty('dataset', { id: '1' })).toEqualTypeOf<Promise<void>>()
 
                     //@ts-expect-error: TODO one day support oneOf with number
                     expectTypeOf(expect(element).toHaveElementProperty('prop', expect.oneOf(1, 'val2'))).toEqualTypeOf<Promise<void>>()
@@ -1198,10 +1203,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(element).not.toHaveElementProperty('prop', expect.stringContaining('val'))).toEqualTypeOf<Promise<void>>()
                 })
 
-                it('should have ts errors but to support one day???', async () => {
-                    // @ts-expect-error
+                it('should reject an array on $(), and accept an object', async () => {
+                    // @ts-expect-error an array is one value for each element of $$()
                     expectTypeOf(expect(element).toHaveElementProperty('prop', ['test'])).toEqualTypeOf<Promise<void>>()
-                    // @ts-expect-error
                     expectTypeOf(expect(element).toHaveElementProperty('prop', {})).toEqualTypeOf<Promise<void>>()
                 })
             })
@@ -1234,10 +1238,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                     expectTypeOf(expect(multiRemoteElements).toHaveElementProperty).toBeCallableWith('prop', null, { wait: 1 })
                 })
 
-                it('should have ts errors but to support one day???', async () => {
-                    // @ts-expect-error
+                it('should reject an array for an element, and accept an object', async () => {
+                    // @ts-expect-error an array of arrays is not supported
                     expectTypeOf(expect(elements).toHaveElementProperty('prop', [[]])).toEqualTypeOf<Promise<void>>()
-                    // @ts-expect-error
                     expectTypeOf(expect(elements).toHaveElementProperty('prop', [{}])).toEqualTypeOf<Promise<void>>()
                 })
             })

@@ -4,6 +4,8 @@ type StringValue = string | RegExp | ExpectWebdriverIO.PartialMatcher<string>
 /** One CSS value of `toHaveStyle`: a string value, as in `toHaveText` */
 type StyleValue = MaybeOneOf<StringValue>
 /** The size of `toHaveSize`: a number or a `NumberMatcher` for each field, or an asymmetric matcher, e.g. `expect.objectContaining()` */
+/** A property value that is not a string: compared with `equals()`, deeply. An array means one value for each element of `$$()` */
+type PropertyObject = { [key: string]: unknown }
 type SizeValue = { height: number | ExpectWebdriverIO.NumberMatcher, width: number | ExpectWebdriverIO.NumberMatcher } | ExpectWebdriverIO.PartialMatcher<unknown>
 
 /**
@@ -465,7 +467,7 @@ declare global {
             (
                 property: string,
                 // TODO support `oneOf` for number!
-                value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything> | number,
+                value: MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject> | number,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>;
         }, {
@@ -481,7 +483,7 @@ declare global {
             /** Assert both property name AND a specific expected value */
             (
                 property: string,
-                value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>, null>,
+                value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | null>, null>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>;
         }, {
@@ -491,7 +493,7 @@ declare global {
             ): Promise<void>
             (
                 property: string,
-                value: SingleOrMultiRemoteMatcher<MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything> | number>,
+                value: SingleOrMultiRemoteMatcher<MaybeOneOf<string | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject> | number>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }, {
@@ -501,7 +503,7 @@ declare global {
             ): Promise<void>
             (
                 property: string,
-                value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>, null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null>>,
+                value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | null>, null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | null>>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }>
