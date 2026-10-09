@@ -325,7 +325,7 @@ await expect($$('a')).toHaveAttribute('href', expect.arrayContaining([expect.str
 await expect($$('button')).not.toHaveComputedLabel(expect.arrayContaining(['Delete']))
 ```
 
-The other list matchers also compare the complete array: `expect.arrayOf()` (every value matches) and Jasmine's `jasmine.arrayWithExactContents()` (the same values in any order, with no other value).
+The other list matchers also compare the complete array: `expect.arrayOf()` (every value matches) and Jasmine's `jasmine.arrayWithExactContents()` (the same count, and each value in any order; Jasmine does not count a repeated expected value). See the comparison tables for [Jest](Framework.md#matching-a-list-of-elements) and [Jasmine](Framework.md#matching-a-list-of-elements-1).
 
 ```js
 await expect($$('ul > li')).toHaveText(expect.arrayOf(expect.stringMatching(/^(Tea|Coffee)$/)))

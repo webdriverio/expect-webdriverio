@@ -169,6 +169,40 @@ Unlike `@types/jest`, `@jest/globals` does not export a global namespace that ca
 This limitation is a known [upstream issue](https://github.com/jestjs/jest/issues/12424) tracked in Jest.
 
 
+##### Matching a list of elements
+
+On `$$()`, the expected value decides how the texts (or other values) of the elements are compared. These are the matchers of the `expect` package, so they are the same with Mocha. Results with `toHaveText` on `$$('li')`:
+
+| Expected value | Passes when | Order | Other elements | String options (`trim`, `ignoreCase`…) |
+| --- | --- | --- | --- | --- |
+| `['Coffee', 'Tea']` | each element has the text at its index | fixed | no: same count | applied |
+| `'Tea'` | every element has the text | - | no | applied |
+| `expect.oneOf('Tea', 'Coffee')` | each element has one of the texts; a text can be missing | any | no | applied |
+| `expect.arrayContaining(['Tea', 'Coffee'])` | each text is on at least one element | any | allowed | not applied |
+| `expect.not.arrayContaining(['Milk'])` | at least one of the texts is on no element | any | allowed | not applied |
+| `expect.arrayOf(expect.stringMatching(/^(Tea\|Coffee)$/))` | every element matches the matcher; also passes with no element | any | no | not applied |
+| `some($$('li'))` with `'Tea'` | at least one element has the text | any | allowed | applied |
+
+A list matcher (`arrayContaining`, `arrayOf`) compares the raw values of all the elements at once. The string options do not change these values: use a nested matcher, e.g. `expect.stringMatching(/tea/i)`.
+
+```ts
+// <li>Coffee</li> <li>Tea</li>
+await expect($$('li')).toHaveText(['Coffee', 'Tea'])                       // passes
+await expect($$('li')).toHaveText(['Tea', 'Coffee'])                       // fails: the order is different
+await expect($$('li')).toHaveText(expect.oneOf('Tea', 'Coffee'))           // passes
+await expect($$('li')).toHaveText(expect.arrayContaining(['Tea']))         // passes: Coffee is allowed
+await expect($$('li')).toHaveText(expect.not.arrayContaining(['Milk']))    // passes
+await expect($$('li')).toHaveText(expect.arrayOf(expect.stringMatching(/^(Tea|Coffee)$/))) // passes
+await expect(some($$('li'))).toHaveText('Tea')                             // passes
+
+// <li>Tea</li> <li>Tea</li>
+await expect($$('li')).toHaveText(expect.arrayContaining(['Tea', 'Coffee'])) // fails: Coffee is missing
+
+// <li> Coffee </li> <li> Tea </li>
+await expect($$('li')).toHaveText(['Coffee', 'Tea'])                       // passes: the default trim applies
+await expect($$('li')).toHaveText(expect.arrayContaining(['Coffee']))      // fails: the value is " Coffee "
+```
+
 #### Jasmine
 When paired with [Jasmine](https://jasmine.github.io/), [`@wdio/jasmine-framework`](https://www.npmjs.com/package/@wdio/jasmine-framework) is required to ensure proper runtime configuration. The adapter registers the WDIO matchers with `addAsyncMatchers` and sets a hybrid global `expect`:
 - Jasmine synchronous matchers (`toBe`, `toEqual`, ...) stay synchronous and return `void`.
@@ -275,6 +309,33 @@ describe('My tests', async () => {
         await expectAsync(browser).toHaveUrl(wdioExpect.stringContaining('WebdriverIO'))
     })
 })
+```
+
+##### Matching a list of elements
+
+On `$$()`, Jasmine's list matchers compare the values of all the elements at once. Results with `toHaveText` on `$$('li')`:
+
+| Expected value | Passes when | Order | Other elements | String options (`trim`, `ignoreCase`…) |
+| --- | --- | --- | --- | --- |
+| `['Coffee', 'Tea']` | each element has the text at its index | fixed | no: same count | applied |
+| `jasmine.arrayContaining(['Tea', 'Coffee'])` | each text is on at least one element | any | allowed | not applied |
+| `jasmine.arrayWithExactContents(['Tea', 'Coffee'])` | same count, and each text is on at least one element | any | no | not applied |
+
+`jasmine.arrayWithExactContents()` does not count a text that it has 2 times: `['Tea', 'Tea']` passes on `Coffee`, `Tea`, because the count is the same and `Tea` is in the list. This is how Jasmine compares. For an exact list with repeated texts, use an array in the order of the elements.
+
+The other list matchers of [Jest](#matching-a-list-of-elements), e.g. `expect.arrayOf()`, are on the `expect` of `expect-webdriverio`.
+
+```ts
+// <li>Coffee</li> <li>Tea</li>
+await expect($$('li')).toHaveText(['Coffee', 'Tea'])                                  // passes
+await expect($$('li')).toHaveText(['Tea', 'Coffee'])                                  // fails: the order is different
+await expect($$('li')).toHaveText(jasmine.arrayWithExactContents(['Tea', 'Coffee']))  // passes: any order
+await expect($$('li')).toHaveText(jasmine.arrayContaining(['Tea']))                   // passes: Coffee is allowed
+await expect($$('li')).toHaveText(jasmine.arrayWithExactContents(['Tea']))            // fails: Coffee is not expected
+await expect($$('li')).toHaveText(jasmine.arrayWithExactContents(['Tea', 'Tea']))     // passes: see above
+
+// <li> Coffee </li> <li> Tea </li>
+await expect($$('li')).toHaveText(jasmine.arrayWithExactContents(['Tea', 'Coffee']))  // fails: the values are " Coffee " and " Tea "
 ```
 
 #### Cucumber
