@@ -1,11 +1,12 @@
 import { executeCommandBe } from '../../utils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../../types.js'
+import type { CommandOptions } from '../../publicTypes/options.js'
 
 export async function toBeSelected(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+    options: CommandOptions = DEFAULT_OPTIONS
 ) {
     this.expectation = this.expectation || 'selected'
     const { matcherName = 'toBeSelected' } = this
@@ -26,7 +27,7 @@ export async function toBeSelected(
     return result
 }
 
-export async function toBeChecked (this: WdioMatcherContext, received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS) {
+export async function toBeChecked (this: WdioMatcherContext, received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, options: CommandOptions = DEFAULT_OPTIONS) {
     this.expectation = 'checked'
     this.matcherName ??= 'toBeChecked'
 

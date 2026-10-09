@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": { "types": [] },
-  "files": ["../../lib/index.d.ts"]
+  "files": ["../../lib/api/index.d.ts"]
 }

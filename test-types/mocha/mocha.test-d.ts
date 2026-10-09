@@ -824,6 +824,47 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(chainableArray).toBeElementsArrayOfSize([1, 2])).toExtend<Promise<void>>()
             })
         })
+
+        // An array of expected values is for `$$()`, one value for each element: each matcher rejects it on `$()`
+        describe('an array of expected values on a single element', () => {
+            it('should be a type error in each matcher with an expected value', async () => {
+                // @ts-expect-error
+                await expect(element).toHaveText(['a', 'b'])
+                // @ts-expect-error
+                await expect(chainableElement).toHaveText(['a', 'b'])
+                // @ts-expect-error
+                await expect(element).not.toHaveText(['a', 'b'])
+                // @ts-expect-error
+                await expect(element).toHaveHTML(['<a/>'])
+                // @ts-expect-error
+                await expect(element).toHaveComputedLabel(['a'])
+                // @ts-expect-error
+                await expect(element).toHaveComputedRole(['a'])
+                // @ts-expect-error
+                await expect(element).toHaveAttribute('data-x', ['a'])
+                // @ts-expect-error
+                await expect(element).toHaveId(['a'])
+                // @ts-expect-error
+                await expect(element).toHaveHref(['a'])
+                // @ts-expect-error
+                await expect(element).toHaveValue(['a'])
+                // @ts-expect-error
+                await expect(element).toHaveElementProperty('p', ['a'])
+                // @ts-expect-error
+                await expect(element).toHaveSize([{ width: 1, height: 1 }])
+                // @ts-expect-error
+                await expect(element).toHaveStyle([{ color: 'red' }])
+                // @ts-expect-error
+                await expect(element).toHaveChildren([1])
+            })
+
+            it('should be a type error on a multi-remote $(), also for each instance', async () => {
+                // @ts-expect-error
+                await expect(multiRemoteElement).toHaveText(['a', 'b'])
+                // @ts-expect-error
+                await expect(multiRemoteElement).toHaveText({ chrome: ['a', 'b'] })
+            })
+        })
     })
 
     describe('Custom matchers', () => {
@@ -842,6 +883,21 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
                 expectTypeOf(expect('test').toBeCustomPromiseWdio).toBeNever()
                 expectTypeOf(expect(chainableElement).toBeCustomPromiseWdio).parameter(0).extract<number>().toBeNever()
+            })
+
+            it('should give a field added to a base option interface to the option types that extend it', async () => {
+                expectTypeOf<ExpectWebdriverIO.CommandOptions['customDefaultOption']>().toEqualTypeOf<string | undefined>()
+                expectTypeOf<ExpectWebdriverIO.StringOptions['customDefaultOption']>().toEqualTypeOf<string | undefined>()
+                expectTypeOf<ExpectWebdriverIO.StringOptions['customCommandOption']>().toEqualTypeOf<string | undefined>()
+                expectTypeOf<ExpectWebdriverIO.HTMLOptions['customCommandOption']>().toEqualTypeOf<string | undefined>()
+                expectTypeOf<ExpectWebdriverIO.ToBeDisplayedOptions['customCommandOption']>().toEqualTypeOf<string | undefined>()
+                expectTypeOf<ExpectWebdriverIO.AfterAssertionHookParams['customHookParam']>().toEqualTypeOf<string | undefined>()
+                // The hooks of the options get the added field
+                expectTypeOf<Parameters<NonNullable<ExpectWebdriverIO.StringOptions['beforeAssertion']>>[0]['customHookParam']>().toEqualTypeOf<string | undefined>()
+
+                expectTypeOf(expect(element).toHaveText('text', { customCommandOption: 'value' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toBeDisplayed({ customCommandOption: 'value' })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveTitle('title', { customDefaultOption: 'value' })).toEqualTypeOf<Promise<void>>()
             })
 
             it('should support custom asymmetric matcher', async () => {

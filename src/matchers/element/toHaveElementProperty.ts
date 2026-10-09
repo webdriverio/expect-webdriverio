@@ -1,4 +1,3 @@
-import type { AssertionResult } from 'expect-webdriverio'
 import { equals } from '../../jasmineUtils.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
@@ -15,12 +14,13 @@ import {
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
 async function condition(
     el: WebdriverIO.Element,
     property: string,
     expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined, // TODO: review if an array of expected values should be supported for this matcher similarly as other matchers
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    options: StringOptions = DEFAULT_OPTIONS
 ): Promise<CompareResult<unknown>> {
     const { asString = false } = options
 
@@ -60,7 +60,7 @@ export async function toHaveElementProperty(
     received: WdioElementsMaybePromise,
     property: string,
     value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>, null>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -71,7 +71,7 @@ export async function toHaveElementProperty(
     received: WdioElementMaybePromise,
     property: string,
     value: MaybeOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher> | number,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 // Implementation signature broadened to accept union types safely
@@ -83,7 +83,7 @@ export async function toHaveElementProperty(
     received: WebdriverIO.MultiRemoteElement,
     property: string,
     value: SingleOrMultiRemoteMatcher<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -94,7 +94,7 @@ export async function toHaveElementProperty(
     received: WebdriverIO.MultiRemoteElementArray,
     property: string,
     value: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -104,7 +104,7 @@ export async function toHaveElementProperty(
     received: WdioMultiRemoteElements,
     property: string,
     value: SingleOrMultiRemoteMatcher<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveElementProperty(
@@ -112,7 +112,7 @@ export async function toHaveElementProperty(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     property: string,
     value?: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | null>> | undefined,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    options: StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     // A property value can itself be an object, so a plain object is a literal unless the caller knows better (e.g. `toHaveValue`)
     const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty', allowObjectExpectedValue = true } = this
@@ -151,7 +151,7 @@ export async function toHaveElementProperty(
     const expected = expectedValues ?? wrapExpectedWithArray(elements, actualProppertyValue, value)
     const message = enhanceError(elements, withStringOptions(expected, verdict, options, actualProppertyValue), actualProppertyValue, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, property, options)
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }

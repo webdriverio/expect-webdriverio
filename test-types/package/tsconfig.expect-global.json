@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": { "types": ["expect-webdriverio/expect-global"] },
-  "files": ["expect-global.ts"]
+  "files": ["expect-global.ts", "custom.ts", "namespace.ts", "use-expect-global.ts"]
 }

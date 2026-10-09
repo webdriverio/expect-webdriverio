@@ -4,12 +4,13 @@ import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { awaitMocks, getPerInstanceValues, hasSameInstanceNames, isInstanceMocks } from '../../util/multiRemoteUtils.js'
 import { formatMultiRemoteInstanceNames, labelMultiRemoteValues } from '../../util/formatMessage.js'
 import type { WdioMatcherContext, WdioMultiRemoteMockMaybePromise } from '../../types.js'
+import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
 
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock,
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    expectedValue: number | PublicNumberMatcher,
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 /**
  * Multi-remote mocks (`multiRemoteBrowser.mock()`): every instance's mock must be called the expected number of times,
@@ -17,16 +18,16 @@ export async function toBeRequestedTimes(
  */
 export async function toBeRequestedTimes(
     received: WdioMultiRemoteMockMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    expectedValue: number | PublicNumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | PublicNumberMatcher>,
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 export async function toBeRequestedTimes(
     this: WdioMatcherContext,
     received: WebdriverIO.Mock | WdioMultiRemoteMockMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
-    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
-): Promise<ExpectWebdriverIO.AssertionResult> {
+    expectedValue: number | PublicNumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | PublicNumberMatcher>,
+    options: CommandOptions = DEFAULT_OPTIONS
+): Promise<AssertionResult> {
     const {
         verb = 'be', isNot, matcherName = 'toBeRequestedTimes',
         expectation = `called${typeof expectedValue === 'number' ? ' ' + expectedValue : '' } time${expectedValue !== 1 ? 's' : ''}`,
@@ -39,11 +40,11 @@ export async function toBeRequestedTimes(
     })
 
     // Per-instance numbers require `expect.multiRemote()`: a plain object is always a `NumberMatcher`
-    const perInstanceValues = getPerInstanceValues(expectedValue, { allowObjectExpectedValue: true }) as MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> | undefined
+    const perInstanceValues = getPerInstanceValues(expectedValue, { allowObjectExpectedValue: true }) as MultiRemoteValues<number | PublicNumberMatcher> | undefined
     const expectedNumbers = perInstanceValues
         ? Object.fromEntries(Object.entries(perInstanceValues).map(([name, value]) => [name, validateNumberMatcher(value)]))
         : undefined
-    const expectedNumber = expectedNumbers ? undefined : validateNumberMatcher(expectedValue as number | ExpectWebdriverIO.NumberMatcher)
+    const expectedNumber = expectedNumbers ? undefined : validateNumberMatcher(expectedValue as number | PublicNumberMatcher)
 
     const mocks = await awaitMocks(received)
     let message: string
@@ -88,7 +89,7 @@ export async function toBeRequestedTimes(
         message = enhanceError('mock', expectedNumbers ? labelMultiRemoteValues(expectedNumbers) : expectedNumber, result.actual, this, verb, expectation, '', options)
     }
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }

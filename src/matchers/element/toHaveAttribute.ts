@@ -1,4 +1,3 @@
-import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
@@ -14,8 +13,9 @@ import { expect } from 'expect'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
-async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: ExpectWebdriverIO.StringOptions): Promise<CompareResult<string | null>> {
+async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element, attribute: string, expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined, options: StringOptions): Promise<CompareResult<string | null>> {
     const attributeValue = await el.getAttribute(attribute)
 
     if (typeof attributeValue !== 'string' || expectedValue === undefined || expectedValue === null) {
@@ -33,7 +33,7 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
     return { success, actual: attributeValue, compared }
 }
 
-export async function toHaveAttributeAndValue(this: WdioMatcherContext, received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements, attribute: string, expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS) {
+export async function toHaveAttributeAndValue(this: WdioMatcherContext, received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements, attribute: string, expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: StringOptions = DEFAULT_OPTIONS) {
     const { expectation = 'attribute', verb = 'have', isNot, matcherName = 'toHaveAttribute' } = this
 
     expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
@@ -80,7 +80,7 @@ export async function toHaveAttribute(
     received: WdioElementMaybePromise,
     attribute: string,
     value: MaybeOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -90,7 +90,7 @@ export async function toHaveAttribute(
     received: WdioElementsMaybePromise,
     attribute: string,
     value: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -101,7 +101,7 @@ export async function toHaveAttribute(
     received: WebdriverIO.MultiRemoteElement,
     attribute: string,
     value: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -112,7 +112,7 @@ export async function toHaveAttribute(
     received: WebdriverIO.MultiRemoteElementArray,
     attribute: string,
     value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 /**
@@ -122,7 +122,7 @@ export async function toHaveAttribute(
     received: WdioMultiRemoteElements,
     attribute: string,
     value: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
-    options?: ExpectWebdriverIO.StringOptions
+    options?: StringOptions
 ): Promise<AssertionResult>
 
 export async function toHaveAttribute(
@@ -130,7 +130,7 @@ export async function toHaveAttribute(
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements,
     attribute: string,
     value?: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    options: StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { matcherName = 'toHaveAttribute' } = this
 

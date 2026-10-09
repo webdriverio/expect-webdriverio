@@ -1,7 +1,7 @@
 const SOME_TAG = 'expect-webdriverio.some'
 const SOME_SYMBOL = Symbol.for(SOME_TAG)
 
-export class SomeElementsWrapper<T> {
+export class SomeElementsWrapper<T> implements WdioSome<T> {
     readonly [SOME_SYMBOL] = true
     constructor(public readonly elements: T) {}
 }
@@ -10,6 +10,6 @@ export function some<T>(elements: T): SomeElementsWrapper<T> {
     return new SomeElementsWrapper(elements)
 }
 
-export function isSomeWrapper(value: unknown): value is SomeElementsWrapper<unknown> {
+export function isSomeWrapper(value: unknown): value is WdioSome<unknown> {
     return value instanceof SomeElementsWrapper || (value as SomeElementsWrapper<unknown>)?.[SOME_SYMBOL] === true
 }

@@ -1,6 +1,5 @@
 import type { ExpectationResult, MatcherContext } from 'expect'
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
-import type { SomeElementsWrapper } from './matchers/modifiers/some.js'
 
 export type WdioElementMaybePromise =
     WebdriverIO.Element |
@@ -43,4 +42,4 @@ export type MaybeArray<T> = T | T[]
 export type MaybeArrayOrMultiRemoteValuesWithArray<T> = MaybeArray<T> | MultiRemoteValuesWithArray<T>
 export type MultiRemoteValuesWithArray<T> = MultiRemoteValues<T | T[]>
 export type MultiRemoteValues<T> = Record<string, T>
-export type MaybeSome<T> = T | SomeElementsWrapper<T>
+export type MaybeSome<T> = T | WdioSome<T>

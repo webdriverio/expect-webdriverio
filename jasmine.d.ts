@@ -1,4 +1,4 @@
-/// <reference types="./types/expect-webdriverio.d.ts"/>
+/// <reference path="./lib/index.d.ts"/>
 
 /**
  * Augment the Jasmine namespace to include the WDIO custom async matchers only.

@@ -25,7 +25,8 @@ src/util/                wait strategy, element and multi-remote helpers, failur
 src/utils.ts             the public `utils` export, which imports src/util/: modules of src/util/ must not import it
                          (oxlint `import/no-cycle` fails on a circular import)
 src/softExpect.ts        soft assertions (and softAssert*.ts)
-types/*.d.ts             hand-written public types (not generated)
+src/publicTypes/         public types and the global `ExpectWebdriverIO` namespace; `tsc` emits them to lib/**/*.d.ts
+types/expect-global.d.ts the global `expect` (hand-written)
 jest.d.ts, jasmine*.d.ts framework augmentations of the public types
 test/                    Vitest unit tests, mirror src/ (browser mocked in test/__mocks__)
 test-types/              type tests, one project per framework augmentation; declarations/ and package/ check the published files;
@@ -73,7 +74,7 @@ Coverage is on by default, with global thresholds. When you run one file, add
 | Change | Minimum local proof |
 |--------|---------------------|
 | One matcher or util | its test file: `pnpm exec vitest --run --coverage.enabled=false <test file>` |
-| Public types (`types/`, `jest.d.ts`, `jasmine*.d.ts`) | `pnpm run build && pnpm run test:types` (`ts:package` installs the packed build) |
+| Public types (`src/publicTypes/`, `src/api/`, `types/`, `jest.d.ts`, `jasmine*.d.ts`) | `pnpm run build && pnpm run test:types` (`ts:package` installs the packed build) |
 | Failure messages | the unit tests that assert the message, and one playground run |
 | Multi-remote | the unit tests, and `pnpm run test:multi-remote` in `playgrounds/mocha` |
 | Snapshot matchers | `test/snapshot.test.ts`, and the Mocha, Jasmine and Browser Runner playgrounds |

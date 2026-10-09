@@ -16,6 +16,7 @@ export {
     isInversedStringContainingMatcher, isInversedStringMatchingMatcher, isJasmineStringAsymmetricMatcher,
     isStringContainingMatcherLike, isStringMatchingMatcherLike,
 } from './util/asymmetricMatcherUtil.js'
+import type { AsyncAssertionResult, CommandOptions, StringOptions } from './publicTypes/options.js'
 export { compareText } from './util/compareText.js'
 export { toArray } from './util/arrayUtil.js'
 
@@ -23,8 +24,8 @@ async function executeCommandBe(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     command: (el: WebdriverIO.Element) => Promise<boolean>,
-    options: ExpectWebdriverIO.CommandOptions = {}
-): ExpectWebdriverIO.AsyncAssertionResult {
+    options: CommandOptions = {}
+): AsyncAssertionResult {
     // Every `toBe*` matcher sets `expectation` before it calls this function
     const { isNot, verb = 'be', expectation = '', allowEmptyElements = false } = this
 
@@ -58,7 +59,7 @@ async function executeCommandBe(
 export const compareTextOrOneOf = (
     actualText: string,
     expectedText: MaybeArrayOrOneOf<string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string>> | undefined,
-    options: ExpectWebdriverIO.StringOptions
+    options: StringOptions
 ): CompareResult<string> => {
     // An array is an index-based expected value of `$$()`, never one value
     if (expectedText === undefined || Array.isArray(expectedText)) {
@@ -99,7 +100,7 @@ export const compareStyle = async (
         atEnd = false,
         atIndex,
         replace,
-    }: ExpectWebdriverIO.StringOptions
+    }: StringOptions
 ): Promise<CompareResult<Record<string, string | undefined>>> => {
     let success = true
     const actual: Record<string, string | undefined> = {}

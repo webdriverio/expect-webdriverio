@@ -5,7 +5,7 @@ import { wdioCustomMatchers } from '../src/index.js'
 
 // Each registered matcher needs a public type and a type test for each framework augmentation
 const matcherNames = Object.keys(wdioCustomMatchers)
-const publicTypes = readFileSync('types/expect-webdriverio.d.ts', 'utf8')
+const publicTypes = readFileSync('src/publicTypes/expectWebdriverIO.ts', 'utf8')
 // Comments do not count as a type test. `//` after a space only, so that a URL in a string stays
 const withoutComments = (code: string) => code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|\s)\/\/.*$/gm, '$1')
 const typeTests = readdirSync('test-types', { recursive: true, encoding: 'utf8' })

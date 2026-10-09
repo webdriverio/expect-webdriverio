@@ -1,5 +1,6 @@
 import { AsymmetricMatcher } from 'expect'
 import { isMultiRemoteMatcher } from './multiRemoteUtils.js'
+import type { NumberMatcher as PublicNumberMatcher } from '../publicTypes/options.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
 export const isDefinedNotNumber = (value: unknown) => value !== undefined && !isNumber(value)
@@ -12,7 +13,7 @@ const NUMBER_MATCHER_KEYS = ['eq', 'gte', 'lte']
  * If `supportDefaultAsGteThen1` is true, `undefined` is treated as `{ gte: 1 }`.
  */
 export function validateNumberMatcher(
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher | undefined,
+    expectedValue: number | PublicNumberMatcher | undefined,
     { supportDefaultAsGteThen1 }: { supportDefaultAsGteThen1?: boolean } = {}
 ): NumberMatcher {
     if (supportDefaultAsGteThen1 && expectedValue === undefined) {
@@ -40,13 +41,13 @@ export function validateNumberMatcher(
 }
 
 export function validateNumberMatcherArray(
-    expectedValues: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>
-        | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>> | undefined,
+    expectedValues: MaybeArray<number | PublicNumberMatcher>
+        | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | PublicNumberMatcher>> | undefined,
     { supportDefaultAsGteThen1 }: { supportDefaultAsGteThen1?: boolean } = {}
 ): MaybeArray<NumberMatcher> | MultiRemoteValues<MaybeArray<NumberMatcher>> {
     // Per-instance numbers require `expect.multiRemote()`: a plain object is always a `NumberMatcher`
     if (isMultiRemoteMatcher(expectedValues)) {
-        const perInstanceValues = expectedValues.sample as MultiRemoteValues<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>
+        const perInstanceValues = expectedValues.sample as MultiRemoteValues<MaybeArray<number | PublicNumberMatcher>>
         return Object.fromEntries(Object.entries(perInstanceValues).map(([instance, value]) =>
             [instance, validateNumberMatcherArray(value) as MaybeArray<NumberMatcher>]
         ))
@@ -54,10 +55,10 @@ export function validateNumberMatcherArray(
     if (Array.isArray(expectedValues)) {
         return expectedValues.map((value) => validateNumberMatcher(value, { supportDefaultAsGteThen1 }))
     }
-    return validateNumberMatcher(expectedValues as number | ExpectWebdriverIO.NumberMatcher | undefined, { supportDefaultAsGteThen1 })
+    return validateNumberMatcher(expectedValues as number | PublicNumberMatcher | undefined, { supportDefaultAsGteThen1 })
 }
 
-/** The bounds of a valid `ExpectWebdriverIO.NumberMatcher`, after `validateNumberMatcher()` */
+/** The bounds of a valid `PublicNumberMatcher`, after `validateNumberMatcher()` */
 type NumberBounds = { eq?: number, gte?: number, lte?: number }
 
 /**

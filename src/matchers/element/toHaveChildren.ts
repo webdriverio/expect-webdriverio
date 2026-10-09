@@ -1,4 +1,3 @@
-import type { AssertionResult } from 'expect-webdriverio'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
@@ -10,6 +9,7 @@ import {
     waitUntil,
     wrapExpectedWithArray
 } from '../../utils.js'
+import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
 
 async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher | undefined): Promise<CompareResult<number | null>> {
     const children = await el.$$('./*').getElements()
@@ -38,8 +38,8 @@ export async function toHaveChildren(
  */
 export async function toHaveChildren(
     received: WdioElementMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
-    options?: ExpectWebdriverIO.CommandOptions
+    expectedValue: number | PublicNumberMatcher,
+    options?: CommandOptions
 ): Promise<AssertionResult>
 
 /**
@@ -48,8 +48,8 @@ export async function toHaveChildren(
  */
 export async function toHaveChildren(
     received: WdioElementsMaybePromise,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher>,
-    options?: ExpectWebdriverIO.CommandOptions
+    expectedValue: MaybeArray<number | PublicNumberMatcher>,
+    options?: CommandOptions
 ): Promise<AssertionResult>
 
 /**
@@ -57,15 +57,15 @@ export async function toHaveChildren(
  */
 export async function toHaveChildren(
     received: WdioMultiRemoteElements,
-    expectedValue: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
-    options?: ExpectWebdriverIO.CommandOptions
+    expectedValue: MaybeArray<number | PublicNumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | PublicNumberMatcher>>,
+    options?: CommandOptions
 ): Promise<AssertionResult>
 
 export async function toHaveChildren(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    expectedValue?: MaybeArray<number | ExpectWebdriverIO.NumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | ExpectWebdriverIO.NumberMatcher>>,
-    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+    expectedValue?: MaybeArray<number | PublicNumberMatcher> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<number | PublicNumberMatcher>>,
+    options: CommandOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     const { expectation = 'children', verb = 'have', isNot, matcherName = 'toHaveChildren' } = this
 
@@ -92,7 +92,7 @@ export async function toHaveChildren(
 
     const expectedArray = expected ?? wrapExpectedWithArray(subject, children, expectedNumber)
     const message = enhanceError(subject, expectedArray, children, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }

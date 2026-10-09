@@ -9,11 +9,12 @@ import {
 } from '../../utils.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
 async function singleElementCompare(
     element: WebdriverIO.Element,
     role: MaybeArrayOrOneOf<string | RegExp | AsymmetricMatcher<string>> | undefined,
-    options: ExpectWebdriverIO.StringOptions
+    options: StringOptions
 ) {
     const actualRole = await element.getComputedRole()
     return compareTextOrOneOf(actualRole, role, options)
@@ -23,7 +24,7 @@ export async function toHaveComputedRole(
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
+    options: StringOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'computed role', verb = 'have', isNot, matcherName = 'toHaveComputedRole' } = this
 
@@ -61,7 +62,7 @@ export async function toHaveComputedRole(
         options
     )
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }

@@ -1,4 +1,4 @@
-/// <reference types="../types/expect-webdriverio.d.ts" />
+import './publicTypes/expectWebdriverIO.js'
 import { expect as expectLib } from 'expect'
 import type { RawMatcherFn } from './types.js'
 import * as wdioMatchers from './matchers.js'
@@ -94,10 +94,10 @@ export const wdioCustomMatchers = sharedExpectSetup.wdioCustomMatchers
 export const expect = sharedExpectSetup.wdioExpect
 
 // Default options for the expect-webdriverio library
-export const getDefaultOptions = (): ExpectWebdriverIO.DefaultOptions => DEFAULT_OPTIONS
-export const setDefaultOptions = (options: Partial<ExpectWebdriverIO.DefaultOptions>): void => {
+export const getDefaultOptions = (): DefaultOptions => DEFAULT_OPTIONS
+export const setDefaultOptions = (options: Partial<DefaultOptions>): void => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (Object.entries(options) as [keyof ExpectWebdriverIO.DefaultOptions, any][]).forEach(([key, value]) => {
+    (Object.entries(options) as [keyof DefaultOptions, any][]).forEach(([key, value]) => {
         defaultOptionsList.forEach((option) => {
             if (key in option) {
                 option[key] = value
@@ -121,3 +121,35 @@ export { SoftAssertionService, type SoftAssertionServiceOptions } from './softAs
  * export utils
  */
 export * as utils from './utils.js'
+
+/**
+ * The types of the global `ExpectWebdriverIO` namespace, also as exports of the module
+ */
+export type AfterAssertionHookParams = ExpectWebdriverIO.AfterAssertionHookParams
+export type AssertionHookParams = ExpectWebdriverIO.AssertionHookParams
+export type AssertionResult = ExpectWebdriverIO.AssertionResult
+export type AsymmetricMatchers = ExpectWebdriverIO.AsymmetricMatchers
+export type AsyncAssertionResult = ExpectWebdriverIO.AsyncAssertionResult
+export type CommandOptions = ExpectWebdriverIO.CommandOptions
+export type DefaultOptions = ExpectWebdriverIO.DefaultOptions
+export type Expect = ExpectWebdriverIO.Expect
+export type HTMLOptions = ExpectWebdriverIO.HTMLOptions
+export type InverseAsymmetricMatchers = ExpectWebdriverIO.InverseAsymmetricMatchers
+export type JsonCompatible = ExpectWebdriverIO.JsonCompatible
+export type MatcherContext = ExpectWebdriverIO.MatcherContext
+export type Matchers<R extends void | Promise<void>, T> = ExpectWebdriverIO.Matchers<R, T>
+export type MatchersAndInverse<R extends void | Promise<void>, ActualT> = ExpectWebdriverIO.MatchersAndInverse<R, ActualT>
+export type MultiRemotePartialMatcher<T> = ExpectWebdriverIO.MultiRemotePartialMatcher<T>
+export type NumberMatcher = ExpectWebdriverIO.NumberMatcher
+export type OneOfPartialMatcher<T> = ExpectWebdriverIO.OneOfPartialMatcher<T>
+export type PartialMatcher<T> = ExpectWebdriverIO.PartialMatcher<T>
+export type PartialMatcherAnything = ExpectWebdriverIO.PartialMatcherAnything
+export type PromiseMatchers<T = unknown> = ExpectWebdriverIO.PromiseMatchers<T>
+export type RequestedWith = ExpectWebdriverIO.RequestedWith
+export type SnapshotServiceArgs = ExpectWebdriverIO.SnapshotServiceArgs
+export type SoftFailure = ExpectWebdriverIO.SoftFailure
+export type StringOptions = ExpectWebdriverIO.StringOptions
+export type ToBeDisplayedOptions = ExpectWebdriverIO.ToBeDisplayedOptions
+export type jsonArray = ExpectWebdriverIO.jsonArray
+export type jsonObject = ExpectWebdriverIO.jsonObject
+export type jsonPrimitive = ExpectWebdriverIO.jsonPrimitive

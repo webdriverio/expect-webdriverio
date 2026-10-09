@@ -6,27 +6,28 @@ import type { NumberMatcher } from '../../util/numberOptionsUtil.js'
 import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { awaitElementArray, isMultiRemoteElementArray, isStrictlyElementArray } from '../../util/elementsUtil.js'
 import { getElementsPerInstance, hasSameInstanceNames, isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
+import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    expectedValue: number | PublicNumberMatcher,
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 /**
  * Multi-Remote `$$()`: the size is checked per browser instance.
  */
 export async function toBeElementsArrayOfSize(
     received: WebdriverIO.MultiRemoteElementArray | Promise<WebdriverIO.MultiRemoteElementArray>,
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    expectedValue: number | PublicNumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | PublicNumberMatcher>,
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 export async function toBeElementsArrayOfSize(
     this: WdioMatcherContext,
     received: WdioElementsMaybePromise | WebdriverIO.MultiRemoteElementArray | Promise<WebdriverIO.MultiRemoteElementArray>,
-    expectedValue: number | ExpectWebdriverIO.NumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | ExpectWebdriverIO.NumberMatcher>,
-    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+    expectedValue: number | PublicNumberMatcher | ExpectWebdriverIO.MultiRemotePartialMatcher<number | PublicNumberMatcher>,
+    options: CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'elements array of size', verb = 'be', isNot, matcherName = 'toBeElementsArrayOfSize' } = this
 
@@ -46,7 +47,7 @@ export async function toBeElementsArrayOfSize(
         return result
     }
 
-    const expectedNumber = validateNumberMatcher(expectedValue as number | ExpectWebdriverIO.NumberMatcher)
+    const expectedNumber = validateNumberMatcher(expectedValue as number | PublicNumberMatcher)
     const originalLength =  elements ? elements.length : undefined
 
     const { success: pass } = await waitUntil(
@@ -76,7 +77,7 @@ export async function toBeElementsArrayOfSize(
     const actual = originalLength
     const message = enhanceError(elements ?? other, expectedNumber, actual, this, verb, expectation, '', options)
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }
@@ -99,9 +100,9 @@ export async function toBeElementsArrayOfSize(
 const multiRemoteElementsArrayOfSize = async (
     received: WebdriverIO.MultiRemoteElementArray,
     expectedValue: unknown,
-    options: ExpectWebdriverIO.CommandOptions,
+    options: CommandOptions,
     { context, verb, expectation }: { context: ExpectWebdriverIO.MatcherContext, verb: string, expectation: string }
-): Promise<ExpectWebdriverIO.AssertionResult> => {
+): Promise<AssertionResult> => {
     const { isNot } = context
     const perInstanceSizes = getPerInstanceSizes(expectedValue)
     const { instances } = received.parent
@@ -114,7 +115,7 @@ const multiRemoteElementsArrayOfSize = async (
             [name, validateNumberMatcher(value)]
         ))
     } else {
-        const numberMatcher = validateNumberMatcher(expectedValue as number | ExpectWebdriverIO.NumberMatcher)
+        const numberMatcher = validateNumberMatcher(expectedValue as number | PublicNumberMatcher)
         expected = Object.fromEntries(instances.map((name) => [name, numberMatcher]))
     }
 
@@ -153,8 +154,8 @@ const multiRemoteElementsArrayOfSize = async (
 }
 
 /** One size per instance with `expect.multiRemote()`, or `undefined` for a single size shared by every instance */
-const getPerInstanceSizes = (value: unknown): MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> | undefined => {
-    return isMultiRemoteMatcher(value) ? value.sample as MultiRemoteValues<number | ExpectWebdriverIO.NumberMatcher> : undefined
+const getPerInstanceSizes = (value: unknown): MultiRemoteValues<number | PublicNumberMatcher> | undefined => {
+    return isMultiRemoteMatcher(value) ? value.sample as MultiRemoteValues<number | PublicNumberMatcher> : undefined
 }
 
 const countElementsPerInstance = (elements: WebdriverIO.MultiRemoteElementArray, instances: string[]): MultiRemoteValues<number> => {

@@ -6,6 +6,7 @@ import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import type { WdioMatcherContext } from '../../types.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
 /**
  * Browser or Multi-Remote Browser: only check that the item exists
@@ -13,7 +14,7 @@ import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 export async function toHaveLocalStorageItem(
     browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext | WebdriverIO.MultiRemoteBrowser,
     key: string,
-): Promise<ExpectWebdriverIO.AssertionResult>
+): Promise<AssertionResult>
 
 /**
  * Browser
@@ -22,8 +23,8 @@ export async function toHaveLocalStorageItem(
     browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     key: string,
     expectedValue: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything,
-    options?: ExpectWebdriverIO.StringOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: StringOptions
+): Promise<AssertionResult>
 
 /**
  * Multi-Remote Browser
@@ -32,16 +33,16 @@ export async function toHaveLocalStorageItem(
     browser: WebdriverIO.MultiRemoteBrowser,
     key: string,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
-    options?: ExpectWebdriverIO.StringOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: StringOptions
+): Promise<AssertionResult>
 
 export async function toHaveLocalStorageItem(
     this: WdioMatcherContext,
     browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext | WebdriverIO.MultiRemoteBrowser,
     key: string,
     expectedValue?: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-): Promise<ExpectWebdriverIO.AssertionResult> {
+    options: StringOptions = DEFAULT_OPTIONS
+): Promise<AssertionResult> {
     const { expectation = 'localStorage item', verb = 'have', isNot, matcherName = 'toHaveLocalStorageItem' } = this
 
     await options.beforeAssertion?.({
@@ -80,7 +81,7 @@ export async function toHaveLocalStorageItem(
         key,
         options
     )
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: () => message
     }
@@ -97,7 +98,7 @@ const compareStorageItem = async (
     browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     key: string,
     expected: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | undefined,
-    options: ExpectWebdriverIO.StringOptions
+    options: StringOptions
 ): Promise<CompareResult<string | null>> => {
     const actual = await browser.execute(
         (storageKey) => {

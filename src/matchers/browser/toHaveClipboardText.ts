@@ -6,6 +6,7 @@ import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetri
 import type { WdioMatcherContext } from '../../types.js'
 import { isBrowsingContext } from '../../util/multiRemoteUtils.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
 /** The permission warning is logged once per worker: its cause is the browser, so it does not change between assertions or retries */
 let permissionWarningLogged = false
@@ -16,8 +17,8 @@ let permissionWarningLogged = false
 export async function toHaveClipboardText(
     browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     expectedValue: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: StringOptions
+): Promise<AssertionResult>
 
 /**
  * Multi-Remote Browser
@@ -25,15 +26,15 @@ export async function toHaveClipboardText(
 export async function toHaveClipboardText(
     browser: WebdriverIO.MultiRemoteBrowser,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options?: ExpectWebdriverIO.StringOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: StringOptions
+): Promise<AssertionResult>
 
 export async function toHaveClipboardText(
     this: WdioMatcherContext,
     browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext | WebdriverIO.MultiRemoteBrowser,
     expectedValue: MultiRemoteValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
-    options: ExpectWebdriverIO.StringOptions = DEFAULT_OPTIONS
-): Promise<ExpectWebdriverIO.AssertionResult> {
+    options: StringOptions = DEFAULT_OPTIONS
+): Promise<AssertionResult> {
     const { expectation = 'clipboard text', verb = 'have', isNot, matcherName = 'toHaveClipboardText' } = this
 
     await options.beforeAssertion?.({
@@ -61,7 +62,7 @@ export async function toHaveClipboardText(
     )
 
     const message = enhanceError(subject, withStringOptions(expected, verdict, options, actual), actual, { ...this, stringOptions: options, compared }, verb, expectation, '', options)
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: () => message
     }
@@ -79,7 +80,7 @@ export async function toHaveClipboardText(
 const compareClipboardText = async (
     browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext,
     expectedValue: string | RegExp | AsymmetricMatcher<string> | undefined,
-    options: ExpectWebdriverIO.StringOptions
+    options: StringOptions
 ): Promise<CompareResult<string>> => {
     // A browsing context has no session command: the permission is for the whole session
     const session = isBrowsingContext(browser) ? browser.browser : browser

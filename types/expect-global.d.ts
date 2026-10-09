@@ -1,4 +1,4 @@
-/// <reference types="./expect-webdriverio.d.ts"/>
+/// <reference path="../lib/index.d.ts"/>
 
 /**
  * Global declaration file for WebdriverIO's Expect library to force the expect.

@@ -1,7 +1,7 @@
-import type { StringOptions } from 'expect-webdriverio'
 import { equals } from '../../jasmineUtils.js'
 import { hasSameInstanceNames, isMultiRemoteValues, MULTI_REMOTE_MATCHER_SYMBOL } from '../../util/multiRemoteUtils.js'
 import { buildWdioAsymmetricMatchersWithOptions, WdioAsymmetricMatchers } from './asymmetricsUtils.js'
+import type { StringOptions } from '../../publicTypes/options.js'
 
 /**
  * `expect.multiRemote()` holds one expected value per multi-remote instance, e.g. `{ chrome: 'A', firefox: 'B' }`.

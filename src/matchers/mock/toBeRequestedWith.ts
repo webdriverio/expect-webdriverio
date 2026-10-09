@@ -6,6 +6,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import { awaitMocks, getPerInstanceValues, hasSameInstanceNames, isInstanceMocks } from '../../util/multiRemoteUtils.js'
 import { formatMultiRemoteInstanceNames, labelMultiRemoteValues } from '../../util/formatMessage.js'
 import type { WdioMatcherContext, WdioMultiRemoteMockMaybePromise } from '../../types.js'
+import type { AssertionResult, CommandOptions } from '../../publicTypes/options.js'
 
 const STR_LIMIT = 80
 const KEY_LIMIT = 12
@@ -32,8 +33,8 @@ function reduceHeaders(headers: local.NetworkHeader[]) {
 export async function toBeRequestedWith(
     received: WebdriverIO.Mock,
     expectedValue?: ExpectWebdriverIO.RequestedWith,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 /**
  * Multi-remote mocks (`multiRemoteBrowser.mock()`): every instance's mock must have a matching call,
@@ -42,14 +43,14 @@ export async function toBeRequestedWith(
 export async function toBeRequestedWith(
     received: WdioMultiRemoteMockMaybePromise,
     expectedValue?: ExpectWebdriverIO.RequestedWith | ExpectWebdriverIO.MultiRemotePartialMatcher<ExpectWebdriverIO.RequestedWith>,
-    options?: ExpectWebdriverIO.CommandOptions
-): Promise<ExpectWebdriverIO.AssertionResult>
+    options?: CommandOptions
+): Promise<AssertionResult>
 
 export async function toBeRequestedWith(
     this: WdioMatcherContext,
     received: WebdriverIO.Mock | WdioMultiRemoteMockMaybePromise,
     expectedValue: ExpectWebdriverIO.RequestedWith | ExpectWebdriverIO.MultiRemotePartialMatcher<ExpectWebdriverIO.RequestedWith> = {},
-    options: ExpectWebdriverIO.CommandOptions = DEFAULT_OPTIONS
+    options: CommandOptions = DEFAULT_OPTIONS
 ) {
     const { expectation = 'called with', verb = 'be', isNot, matcherName = 'toBeRequestedWith' } = this
 
@@ -118,7 +119,7 @@ export async function toBeRequestedWith(
         ) + (!pass && !isNot && result.payloadNeverCollected ? payloadCollectionHint(expectedValue) : '')
     }
 
-    const result: ExpectWebdriverIO.AssertionResult = {
+    const result: AssertionResult = {
         pass,
         message: (): string => message
     }
@@ -147,7 +148,7 @@ const mergeDefinedFields = (values: ExpectWebdriverIO.RequestedWith[]): ExpectWe
 const checkRequestedWith = async (
     received: WebdriverIO.Mock,
     expectedValue: ExpectWebdriverIO.RequestedWith,
-    options: ExpectWebdriverIO.CommandOptions,
+    options: CommandOptions,
     isNot: boolean,
     parseCache: Map<string, ParsedJson>
 ): Promise<{ pass: boolean, actual: unknown, payloadNeverCollected: boolean }> => {

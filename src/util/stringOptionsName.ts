@@ -1,3 +1,5 @@
+import type { StringOptions } from '../publicTypes/options.js'
+
 /**
  * The name of the string options in a failure message, in camel case: the position option (as `compareText` checks them,
  * only one applies), then the options that alter the actual value before the comparison: `trimmed`, `ignoringCase` and
@@ -8,7 +10,7 @@
  *   RegExp, so only `trimmed` and `replacing` are named.
  * - `asString` is not named: it converts the actual value, it does not change how it is compared.
  */
-export const stringOptionsName = (options: ExpectWebdriverIO.StringOptions, { forRegExp = false, trimmed = false } = {}): string => {
+export const stringOptionsName = (options: StringOptions, { forRegExp = false, trimmed = false } = {}): string => {
     const words: string[] = []
     if (!forRegExp) {
         if (options.containing) {
@@ -35,5 +37,5 @@ export const stringOptionsName = (options: ExpectWebdriverIO.StringOptions, { fo
 }
 
 /** Whether the default `trim` changes this actual value */
-export const isTrimmedByOptions = (actual: unknown, options: ExpectWebdriverIO.StringOptions): boolean =>
+export const isTrimmedByOptions = (actual: unknown, options: StringOptions): boolean =>
     options.trim !== false && typeof actual === 'string' && actual.trim() !== actual
