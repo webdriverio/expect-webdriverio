@@ -96,7 +96,9 @@
         "vitest/no-standalone-expect": "off",
         "vitest/require-mock-type-parameters": "off",
         "vitest/require-to-throw-message": "off",
-        "vitest/valid-title": "off"
+        "vitest/valid-title": "off",
+        // The package name resolves to the compiled lib/, which can be older than src/: unit tests import src/
+        "no-restricted-imports": ["error", { "paths": [{ "name": "expect-webdriverio", "allowTypeImports": true, "message": "Import from src/: the package name loads the compiled lib/." }] }]
       }
     },
     {
