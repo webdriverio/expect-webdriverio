@@ -2,9 +2,9 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import {
     compareTextOrOneOf,
     enhanceError,
-    isArrayContainingMatcher,
     waitUntil,
 } from '../../utils.js'
+import { isListMatcher } from '../../util/asymmetricMatcherUtil.js'
 import type { MaybeArray, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
@@ -50,8 +50,8 @@ export async function toHaveText(
         { wait: options.wait, interval: options.interval }
     )
 
-    if (isArrayContainingMatcher(expectedValue) && actualText === undefined) {
-        throw new Error('toHaveText with arrayContaining requires an array of elements')
+    if (isListMatcher(expectedValue) && actualText === undefined) {
+        throw new Error('toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements')
     }
 
     const finalExpected = expected ?? fillSingleExpectedForElementArray(subject, expectedValue)

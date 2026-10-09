@@ -29,6 +29,28 @@ export function isArrayContainingMatcher(expected: unknown): expected is Asymmet
     return false
 }
 
+/**
+ * Whether the expected value is a matcher for a whole list, not for one value: `arrayContaining` (also with `.not`, and
+ * Jasmine's), Jasmine's `arrayWithExactContents` and `expect.arrayOf` (also with `.not`).
+ * On `$$()`, the matchers that support it compare the values of all the elements with it at once.
+ */
+export function isListMatcher(expected: unknown): expected is AsymmetricMatcher<unknown[]> {
+    if (isArrayContainingMatcher(expected)) {
+        return true
+    }
+    if (!isAsymmetricMatcher(expected) || typeof expected.asymmetricMatch !== 'function') {
+        return false
+    }
+    if (typeof expected.toString === 'function' && /^(Not)?ArrayOf$/.test(expected.toString())) {
+        return true
+    }
+    if ('jasmineToString' in expected && typeof expected.jasmineToString === 'function') {
+        // Jasmine's formatter accepts a pretty-printer argument; its contents are irrelevant here.
+        return expected.jasmineToString(() => '') === '<jasmine.arrayWithExactContents()>'
+    }
+    return false
+}
+
 export function isStringContainingMatcherLike(expected: unknown): expected is WdioAsymmetricMatcher<string> | JasmineStringAsymmetricMatcher<string> {
     return !!expected && expected.constructor.name === 'StringContaining'
 }

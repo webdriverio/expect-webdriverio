@@ -42,6 +42,15 @@ describe.each(valueMatchers)('$name collection expectations', ({ name, getter })
             .rejects.toThrow('First')
     })
 
+    test('matches the whole list with jasmine.arrayWithExactContents() and expect.arrayOf()', async () => {
+        await wdioExpect(elements)[name](jasmine.arrayWithExactContents(['Extra', 'First', 'Second']), { wait: 0 })
+        await expect(wdioExpect(elements)[name](jasmine.arrayWithExactContents(['First', 'Second']), { wait: 0 }))
+            .rejects.toThrow('arrayWithExactContents')
+        await wdioExpect(elements)[name](wdioExpect.arrayOf(wdioExpect.any(String)), { wait: 0 })
+        await expect(wdioExpect(elements)[name](wdioExpect.arrayOf(wdioExpect.stringMatching(/^(First|Second)$/)), { wait: 0 }))
+            .rejects.toThrow('Extra')
+    })
+
     test('leaves raw values and nested matching under the asymmetric matcher control', async () => {
         vi.mocked(elements[0][getter]).mockResolvedValue('  First  ')
         const options = { wait: 0, trim: true, ignoreCase: true, replace: ['First', 'Changed'] } satisfies ExpectWebdriverIO.StringOptions

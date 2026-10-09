@@ -1,5 +1,5 @@
 import { equals } from '../jasmineUtils.js'
-import { isArrayContainingMatcher } from './asymmetricMatcherUtil.js'
+import { isListMatcher } from './asymmetricMatcherUtil.js'
 import { isSomeWrapper } from '../matchers/modifiers/some.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, MaybeArray, WdioElements, WdioMultiRemoteElements, MaybeArrayOrMultiRemoteValuesWithArray, MultiRemoteValuesWithArray } from '../types.js'
 import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from './elementsUtil.js'
@@ -50,7 +50,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     const isSome = isSomeWrapper(unresolvedElements)
     const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
 
-    if (supportsArrayContaining && !isSome && isArrayContainingMatcher(expectedValues)) {
+    if (supportsArrayContaining && !isSome && isListMatcher(expectedValues)) {
         return arrayContainingStrategy(unresolvedElements, expectedValues, singleElementCompare, { isNot, iteration }, supportsArrayContaining)
     }
 
@@ -340,7 +340,7 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     // Expected as displayed in the failure message, per instance, and for $$() one entry per element
     const expected = isSingleElement ? expectedPerInstance : Object.fromEntries(Object.entries(expectedPerInstance).map(([name, value]) => {
         const count = elementsPerInstance[name]?.length ?? 0
-        return [name, Array.isArray(value) || isArrayContainingMatcher(value) ? value : Array(Math.max(count, 1)).fill(value)]
+        return [name, Array.isArray(value) || isListMatcher(value) ? value : Array(Math.max(count, 1)).fill(value)]
     }))
 
     if (instanceNamesMismatch || unsupportedArray) {

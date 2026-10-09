@@ -255,9 +255,9 @@ describe('My tests', async () => {
 > Since `@wdio/jasmine-framework` 10.0.2, the types of this `expect` keep the Jest matchers, as at runtime.
 
 ##### Asymmetric matchers
-Jasmine's asymmetric matchers have improved, but certain limitations may still exist. 
-- `jasmine.stringContaining`, `jasmine.stringMatching`, `jasmine.any(Type)`, and `jasmine.anything()` work seamlessly across the board.
-- Network matchers support `jasmine.objectContaining`, whereas support in other areas (such as element matchers) might be limited.
+- `jasmine.any(Type)`, `jasmine.anything()`, `jasmine.is()`, `jasmine.stringContaining()`, `jasmine.stringMatching()`, `jasmine.truthy()`, `jasmine.falsy()`, `jasmine.empty()` and `jasmine.notEmpty()` work in the element matchers, also in an array of expected values on `$$()`.
+- On `$$()`, `jasmine.arrayContaining()` and `jasmine.arrayWithExactContents()` compare the values of all the elements at once, see [Matching a subset of element values](API.md#matching-a-subset-of-element-values).
+- Network matchers support `jasmine.objectContaining()`.
 - WDIO asymmetric matchers also work properly.
 
 ```ts

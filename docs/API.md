@@ -325,6 +325,13 @@ await expect($$('a')).toHaveAttribute('href', expect.arrayContaining([expect.str
 await expect($$('button')).not.toHaveComputedLabel(expect.arrayContaining(['Delete']))
 ```
 
+The other list matchers also compare the complete array: `expect.arrayOf()` (every value matches) and Jasmine's `jasmine.arrayWithExactContents()` (the same values in any order, with no other value).
+
+```js
+await expect($$('ul > li')).toHaveText(expect.arrayOf(expect.stringMatching(/^(Tea|Coffee)$/)))
+await expect($$('ul > li')).toHaveText(jasmine.arrayWithExactContents(['Coffee', 'Tea']))
+```
+
 Each attempt reads one value per element concurrently and applies the asymmetric matcher once to the complete array. Selector-backed collections are refetched on retries. Nested matchers, `.not`, and `expect.not.arrayContaining()` retain their normal matching rules. An empty collection matches `arrayContaining([])`; static empty arrays cannot be retried into a non-empty result.
 
 String comparison options such as `trim`, `ignoreCase`, and `containing` do not transform the collected values or nested matchers. Getter options still apply, such as `includeSelectorTag` for HTML and `asString` for properties. Class matching collects each element's complete class attribute, not individual class tokens.
@@ -1289,4 +1296,4 @@ await expect(mock).toBeRequestedWith({
 })
 ```
 
-`jasmine.arrayContaining()` is also supported for [element collection values](#matching-a-subset-of-element-values), including nested Jasmine matchers. Limitations with Jasmine collection and object matchers may still apply in other assertion contexts.
+`jasmine.arrayContaining()` and `jasmine.arrayWithExactContents()` are also supported for [element collection values](#matching-a-subset-of-element-values), including nested Jasmine matchers. Limitations with Jasmine collection and object matchers may still apply in other assertion contexts.

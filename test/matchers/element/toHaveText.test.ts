@@ -8,6 +8,7 @@ import stripAnsi from 'strip-ansi'
 import { expect as wdioExpect } from '../../../src/index.js'
 import { refreshElementArray } from '../../../src/util/refetchElements.js'
 import { some } from '../../../src/api/index.js'
+import { jasmine } from '../../__fixtures__/jasmine.js'
 
 import { mockMultiRemoteInstanceCommand } from '../../__fixtures__/utils.js'
 
@@ -143,7 +144,7 @@ Received: "  Hello World  "`)
                         // @ts-expect-error Invalid subjects must also be rejected at runtime.
                         expect(expectation.toHaveText(wdioExpect.arrayContaining([]), {
                             ...options, wait, beforeAssertion, afterAssertion,
-                        })).rejects.toThrow('toHaveText with arrayContaining requires an array of elements'),
+                        })).rejects.toThrow('toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements'),
                         vi.runAllTimersAsync(),
                     ])
 
@@ -153,6 +154,38 @@ Received: "  Hello World  "`)
                     expect(elements[0].getText).not.toHaveBeenCalled()
                 }
             }
+        })
+
+        test.each([
+            { name: 'jasmine.arrayWithExactContents() in another order', matcher: () => jasmine.arrayWithExactContents(['Remember me', 'Username', 'Password']), pass: true },
+            { name: 'jasmine.arrayWithExactContents() without a text', matcher: () => jasmine.arrayWithExactContents(['Username', 'Password']), pass: false },
+            { name: 'jasmine.arrayWithExactContents() with another text', matcher: () => jasmine.arrayWithExactContents(['Username', 'Password', 'Missing']), pass: false },
+            { name: 'expect.arrayOf() that every text matches', matcher: () => wdioExpect.arrayOf(wdioExpect.any(String)), pass: true },
+            { name: 'expect.arrayOf() that a text does not match', matcher: () => wdioExpect.arrayOf(wdioExpect.stringMatching(/^(Username|Password)$/)), pass: false },
+            { name: 'expect.not.arrayOf() that a text does not match', matcher: () => wdioExpect.not.arrayOf(wdioExpect.stringMatching(/^(Username|Password)$/)), pass: true },
+        ])('matches the whole list with $name', async ({ matcher, pass }) => {
+            const result = await thisContext.toHaveText(elements, matcher(), options)
+            const negated = await thisNotContext.toHaveText(elements, matcher(), options)
+
+            expect(result.pass).toBe(pass)
+            expect(negated.pass).toBe(pass) // inverted later because of `.not`
+        })
+
+        test('prints one jasmine.arrayWithExactContents() and the actual texts on failure', async () => {
+            const result = await thisContext.toHaveText(elements, jasmine.arrayWithExactContents(['Username', 'Password']), options)
+            const message = stripAnsi(result.message())
+
+            expect(result.pass).toBe(false)
+            expect(message.match(/arrayWithExactContents/g)).toHaveLength(1)
+            expect(message).toContain('Remember me')
+        })
+
+        test.each([
+            { name: 'jasmine.arrayWithExactContents()', matcher: () => jasmine.arrayWithExactContents(['Username']) },
+            { name: 'expect.arrayOf()', matcher: () => wdioExpect.arrayOf(wdioExpect.any(String)) },
+        ])('rejects a single element with $name, also with .not', async ({ matcher }) => {
+            await expect(thisContext.toHaveText(elements[0], matcher(), options)).rejects.toThrow('toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements')
+            await expect(thisNotContext.toHaveText(elements[0], matcher(), options)).rejects.toThrow('toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements')
         })
 
         test('prints one array matcher and the actual texts on failure', async () => {

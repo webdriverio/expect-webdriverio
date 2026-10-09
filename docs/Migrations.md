@@ -85,6 +85,15 @@ An array of expected values on a single element fails the assertion, as with the
 + await expect($('button')).toHaveAttribute('class', expect.stringContaining('btn act'))
 ```
 
+## List matchers on multiple elements
+
+On `$$()`, `expect.arrayOf()` and Jasmine's `jasmine.arrayWithExactContents()` compare the values of all the elements at once, as `expect.arrayContaining()` does. Before, they were compared with the value of each element, so the assertion always failed, and with `.not`, it always passed.
+
+```ts
+await expect($$('li')).toHaveText(expect.arrayOf(expect.stringMatching(/^(Tea|Coffee)$/)))
+await expect($$('li')).toHaveText(jasmine.arrayWithExactContents(['Coffee', 'Tea']))
+```
+
 ## Multi-remote `$$()` and `select()`
 
 Multi-remote `$$()` and `select()` need WebdriverIO v10. Remove `WDIO_ENABLE_MULTI_REMOTE_ELEMENT_ARRAY` and `WDIO_ENABLE_MULTI_REMOTE_SELECT`: they are not supported anymore.
