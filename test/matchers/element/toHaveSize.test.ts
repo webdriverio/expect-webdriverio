@@ -674,5 +674,16 @@ Expect $(\`sel\`) to have size
             await expect(thisContext.toHaveSize(el, { width: { gte: 40, lte: 30 }, height: 20 } as never, { wait: 0 }))
                 .rejects.toThrow("Invalid NumberMatcher range: 'gte' (40) cannot be greater than 'lte' (30).")
         })
+
+        // As toHaveWidth: a field is a number, a range, expect.oneOf() with numbers, or an asymmetric matcher
+        test.each([
+            { name: 'a string', width: '32' },
+            { name: 'NaN', width: NaN },
+            { name: 'expect.oneOf() with strings', width: wdioExpect.oneOf('32') },
+            { name: 'an empty expect.oneOf()', width: wdioExpect.oneOf() },
+        ])('throws on $name in a field, as toHaveWidth, also with .not', async ({ width }) => {
+            await expect(thisContext.toHaveSize(el, { width, height: 20 } as never, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
+            await expect(thisNotContext.toHaveSize(el, { width, height: 20 } as never, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
+        })
     })
 })

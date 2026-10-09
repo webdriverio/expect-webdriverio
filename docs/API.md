@@ -821,7 +821,7 @@ await expect(logo).toHaveHeight({ gte: 32, lte: 34 })
 
 ### toHaveSize
 
-Checks if element has a specific size, with [deep equality](#deep-equality). Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), or `expect.oneOf()` with numbers. The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only. An invalid range throws, as in `toHaveWidth`. A range is converted only in the fields of the size, not inside an asymmetric matcher: for one field with a range, write `{ width: { gte: 30 }, height: expect.any(Number) }`.
+Checks if element has a specific size, with [deep equality](#deep-equality). Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), or `expect.oneOf()` with numbers. The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only. An invalid field value throws, as in `toHaveWidth`, e.g. `{}`, `gte` greater than `lte`, a string or `NaN`. A range is converted only in the fields of the size, not inside an asymmetric matcher: for one field with a range, write `{ width: { gte: 30 }, height: expect.any(Number) }`.
 
 ##### Usage
 

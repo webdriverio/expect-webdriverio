@@ -10,7 +10,8 @@ import {
     wrapExpectedWithArray,
 } from '../../utils.js'
 import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
-import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
+import { isNumber, validateNumberMatcher } from '../../util/numberOptionsUtil.js'
+import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 import { isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
 import { multiRemote } from '../asymmetrics/multiRemote.js'
 import { isAsymmetricMatcher } from '../../util/asymmetricMatcherUtil.js'
@@ -21,12 +22,16 @@ type ExpectedSize = { width: number | PublicNumberMatcher, height: number | Publ
 
 const SIZE_FIELDS = ['width', 'height']
 
-const isPlainObject = (value: unknown): value is Record<string, unknown> =>
-    typeof value === 'object' && value !== null && Object.getPrototypeOf(value) === Object.prototype
-
 /** A size: a plain object or a class instance, not an asymmetric matcher (e.g. `expect.objectContaining()`) */
 const isSizeObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === 'object' && value !== null && !Array.isArray(value) && !isAsymmetricMatcher(value)
+
+/**
+ * A field, as the value of `toHaveWidth`: a number or an asymmetric matcher stays as is, a range or `expect.oneOf()` with
+ * numbers becomes a `NumberMatcher`, and another value throws, e.g. a string or `NaN`
+ */
+const withNumberMatcher = (value: unknown): unknown =>
+    isNumber(value) || (isAsymmetricMatcher(value) && !isOneOfMatcher(value)) ? value : validateNumberMatcher(value as PublicNumberMatcher)
 
 /**
  * A number range on a field, e.g. `{ width: { gte: 50 }, height: 50 }`, becomes a `NumberMatcher`, as in `toHaveWidth`:
@@ -41,7 +46,7 @@ const withNumberMatcherFields = (expected: unknown): unknown => {
     }
     if (isSizeObject(expected)) {
         return Object.fromEntries(Object.entries(expected).map(([field, value]) =>
-            [field, SIZE_FIELDS.includes(field) && isPlainObject(value) ? validateNumberMatcher(value as PublicNumberMatcher) : value]))
+            [field, SIZE_FIELDS.includes(field) ? withNumberMatcher(value) : value]))
     }
     return expected
 }
