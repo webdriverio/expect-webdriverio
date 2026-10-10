@@ -1,6 +1,8 @@
 import { DEFAULT_OPTIONS, DEFAULT_OPTIONS_TO_BE_DISPLAYED } from '../constants.js'
 import { expect } from 'expect'
-import { compareTextOrOneOf, enhanceError, executeCommandBe, isAsymmetricMatcher, waitUntil } from '../utils.js'
+import { compareText, compareTextOrOneOf, enhanceError, executeCommandBe, isAsymmetricMatcher, waitUntil } from '../utils.js'
+import { equals } from '../jasmineUtils.js'
+import { isOneOfMatcher } from './asymmetrics/oneOf.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext, WdioMultiRemoteElements } from '../types.js'
 import type { CompareResult } from '../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../util/executeCommand.js'
@@ -14,7 +16,7 @@ import type { AssertionResult, CommandOptions, StringOptions, ToBeDisplayedOptio
 import type { ExpectedOf } from '../publicTypes/expectWebdriverIO.js'
 
 type StringExpected = MaybeArrayOrOneOf<ExpectedOf<'string'>>
-type ReadString = (this: unknown, argument?: unknown) => Promise<string | null>
+type ReadValue = (this: unknown, argument?: unknown) => Promise<unknown>
 type ElementStringGetter = keyof typeof elementStringGetters
 /** The string matchers whose getter argument is given in the call, e.g. `toHaveAttribute(name, value)` */
 type ArgumentFromCall = { [Name in ElementStringGetter]: (typeof elementStringGetters)[Name] extends { argument: 'fromCall' } ? Name : never }[ElementStringGetter]
@@ -50,6 +52,23 @@ const compareClasses = (actual: string | null, expected: StringExpected | undefi
 }
 
 /**
+ * A property value: `equals()` for a value that is not a string (an object deeply, also with an asymmetric matcher in it),
+ * else as a string with the string options; `asString` compares the text of any value.
+ */
+const compareProperty = (actual: unknown, expected: unknown, options: StringOptions): CompareResult<unknown> => {
+    const { asString = false } = options
+    if (actual === null || actual === undefined || (!(expected instanceof RegExp) && typeof actual !== 'string' && !asString)) {
+        return { success: equals(actual, expected), actual }
+    } else if (isOneOfMatcher(expected)) {
+        return { success: expected.asymmetricMatch(actual), actual }
+    }
+    const text = (actual as { toString(): string }).toString()
+    const { success, actual: compared } = compareText(text, expected as string | RegExp | AsymmetricMatcher<string> | null | undefined, options)
+    // Failure messages show the actual value as is, not trimmed, lowercased or replaced by the string options, and the compared value apart
+    return { success, actual: text, compared }
+}
+
+/**
  * The body of the string matchers of `$()`, `$$()` and multi-remote elements, made from their descriptor in
  * `elementStringGetters`: the getter (with its argument) gives the actual value of each element, and the value type
  * compares it with the string options. `hookValue` is the expected value that the user gave, for the hooks.
@@ -66,6 +85,9 @@ async function matchStringGetter(
     const descriptor: ElementStringGetterDescriptor = elementStringGetters[name]
     const { getter, getterGetsOptions, argumentInMessage } = descriptor
     const isClass = descriptor.value === 'class'
+    const isProperty = descriptor.value === 'property'
+    // A property can be an object or an array: a plain object is a value, and a list matcher on `$()` compares the property
+    const allowObjectExpectedValue = isProperty && !descriptor.expectsString
     const { expectation = descriptor.expectation, verb = 'have', isNot, matcherName = name } = this
 
     await options.beforeAssertion?.({
@@ -81,14 +103,17 @@ async function matchStringGetter(
             return await executeCommandWithStrategy({
                 unresolvedElements: received,
                 expectedValues: expectedWithOptions,
-                supportsArrayContaining: 'arrayOnly',
+                supportsArrayContaining: allowObjectExpectedValue ? true : 'arrayOnly',
                 matcherName,
-                singleElementCompare: async (element, values: StringExpected | undefined): Promise<CompareResult<string | null>> => {
-                    const read = element[getter] as ReadString
+                singleElementCompare: async (element, values: StringExpected | undefined): Promise<CompareResult<unknown>> => {
+                    const read = element[getter] as ReadValue
                     const actualValue = await (getterGetsOptions ? read.call(element, options) : argument === undefined ? read.call(element) : read.call(element, argument))
-                    return isClass ? compareClasses(actualValue, values, options) : compareString(actualValue, values, options)
+                    return isProperty
+                        ? compareProperty(actualValue, values, options)
+                        : isClass ? compareClasses(actualValue as string | null, values, options) : compareString(actualValue as string | null, values, options)
                 },
                 context: { isNot, iteration },
+                ...(isProperty && { strictConfiguration: { allowObjectExpectedValue } }),
             })
         },
         isNot,
@@ -141,7 +166,8 @@ export const elementArgumentGetterMatcher = (name: ArgumentFromCall) => named(na
     this: WdioMatcherContext,
     received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements,
     argument: string,
-    value?: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<ExpectedOf<'string'> | WdioAnythingAsymmetricMatcher>,
+    // Internal: the public types (src/publicTypes/) type the value of each matcher
+    value?: unknown,
     options: StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
     return matchStringGetter.call(this, name, received, argument, [argument, value], value ?? expect.anything(), options)
