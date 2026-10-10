@@ -69,7 +69,7 @@ afterEach(() => {
 describe('golden master of the other getter matchers', () => {
     test('attribute matchers', async () => {
         const output = await matrix([
-            { name: 'toHaveAttribute', getter: 'getAttribute', args: ['name'], values: stringValues, expected: { ...mediumStringExpected, 'anything()': () => wdioExpect.anything() }, options: { 'no option': {}, 'ignoreCase': { ignoreCase: true } } },
+            { name: 'toHaveAttribute', getter: 'getAttribute', args: ['name'], values: stringValues, expected: { ...mediumStringExpected, 'anything()': () => wdioExpect.anything(), 'not.stringContaining("x")': () => wdioExpect.not.stringContaining('x') }, options: { 'no option': {}, 'ignoreCase': { ignoreCase: true } } },
             // No expected value: the attribute exists
             { name: 'toHaveAttribute', getter: 'getAttribute', args: ['name'], values: stringValues, expected: { 'no value': () => undefined }, options: { 'no option': {} } },
             { name: 'toHaveId', getter: 'getAttribute', values: stringValues, expected: fewStringExpected, options: { 'no option': {}, 'ignoreCase': { ignoreCase: true } }, subjects: fewSubjects },
