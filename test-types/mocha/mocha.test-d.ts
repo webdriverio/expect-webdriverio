@@ -891,6 +891,12 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 await expect(multiRemoteElement).toHaveText(['a', 'b'])
                 // @ts-expect-error
                 await expect(multiRemoteElement).toHaveText({ chrome: ['a', 'b'] })
+                // @ts-expect-error an array per instance is only for $$(), also with a getter argument
+                await expect(multiRemoteElement).toHaveAttribute('data-test', { chrome: ['a', 'b'] })
+                // @ts-expect-error
+                await expect(multiRemoteElement).toHaveId({ chrome: ['a', 'b'] })
+                // @ts-expect-error
+                await expect(multiRemoteElement).toHaveHref({ chrome: ['a', 'b'] })
             })
         })
     })

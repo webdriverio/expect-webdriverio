@@ -8,9 +8,10 @@
  * error. A type over all the keys of `WebdriverIO.Element` gives `any`, with no error: TypeScript stops on the size of the
  * type. So the descriptor types the name only (`keyof`), and this type checks the getters of the table, one by one.
  */
-type GettersGive<Table extends Record<string, { getter: keyof Target }>, Target, Value> = {
-    // `() =>`: the getter has no required argument, e.g. not `isEqual(element)`. An optional one is fine: `getHTML(options?)`
-    [Name in keyof Table]: Target[Table[Name]['getter']] extends () => Promise<Value>
+type GettersGive<Table extends Record<string, { getter: keyof Target, argument?: unknown }>, Target, Value> = {
+    // `() =>`: the getter has no required argument, e.g. not `isEqual(element)`. An optional one is fine: `getHTML(options?)`.
+    // With an `argument`, the getter takes one string and can give `null`, e.g. `getAttribute(name)` for a missing attribute
+    [Name in keyof Table]: Target[Table[Name]['getter']] extends (Table[Name] extends { argument: unknown } ? (argument: string) => Promise<Value | null> : () => Promise<Value>)
         ? Table[Name]
         : `${Name & string}: ${Table[Name]['getter'] & string} does not give the value type`
 }
@@ -22,6 +23,15 @@ export type ElementStringGetterDescriptor = {
     expectation: string
     /** The getter gets the options of the matcher, e.g. `getHTML({ includeSelectorTag: false })` */
     getterGetsOptions?: true
+    /**
+     * The argument of the getter: given in the call, before the expected value (`toHaveAttribute(name, value)`, and with no
+     * value, the attribute exists), or fixed (`toHaveId` is `getAttribute('id')`)
+     */
+    argument?: 'fromCall' | { fixed: string }
+    /** The failure message names the argument, e.g. `id` in `Expect $(`sel`) to have attribute id` */
+    argumentInMessage?: true
+    /** A class value: the attribute has classes separated by ASCII whitespace, and the matcher compares each class */
+    value?: 'class'
 }
 
 export type BrowserStringGetterDescriptor = {
@@ -39,6 +49,11 @@ export const elementStringGetters = {
     toHaveHTML: { getter: 'getHTML', expectation: 'HTML', getterGetsOptions: true },
     toHaveComputedLabel: { getter: 'getComputedLabel', expectation: 'computed label' },
     toHaveComputedRole: { getter: 'getComputedRole', expectation: 'computed role' },
+    toHaveAttribute: { getter: 'getAttribute', expectation: 'attribute', argument: 'fromCall', argumentInMessage: true },
+    toHaveId: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'id' }, argumentInMessage: true },
+    toHaveHref: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'href' }, argumentInMessage: true },
+    toHaveLink: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'href' }, argumentInMessage: true },
+    toHaveElementClass: { getter: 'getAttribute', expectation: 'class', argument: { fixed: 'class' }, value: 'class' },
 } as const satisfies Record<string, ElementStringGetterDescriptor>
 elementStringGetters satisfies GettersGive<typeof elementStringGetters, WebdriverIO.Element, string>
 
