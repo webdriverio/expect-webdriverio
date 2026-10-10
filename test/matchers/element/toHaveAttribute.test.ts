@@ -195,6 +195,20 @@ Received      : "Correct Value"`
             })
         })
 
+        test('a list of expected values shows a missing attribute as no attribute', async () => {
+            vi.mocked(el.getAttribute).mockResolvedValue(null as unknown as string)
+
+            const result = await thisContext.toHaveAttribute(el, 'attribute_name', ['Correct Value'])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $(\`sel\`) to have attribute attribute_name
+
+Expected: ["Correct Value"]
+Received: no attribute`
+            )
+        })
+
         test('fails when no elements are provided', async () => {
             const result = await thisContext.toHaveAttribute([], 'attribute_name', 'some value')
 
@@ -457,6 +471,25 @@ Expect $$(\`sel\`) to have attribute attribute_name
   Array [
     "Correct Value",
 +   "Correct Value",
+  ]`
+            )
+        })
+
+        test('given not enough expected value, a missing attribute of an element with no expected value shows no attribute', async () => {
+            vi.mocked(els[1].getAttribute).mockResolvedValue(null as unknown as string)
+
+            const result = await thisContext.toHaveAttribute(els, 'attribute_name', ['Correct Value'])
+
+            expect(result.pass).toBe(false)
+            expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have attribute attribute_name
+
+- Expected  - 0
++ Received  + 1
+
+  Array [
+    "Correct Value",
++   no attribute,
   ]`
             )
         })

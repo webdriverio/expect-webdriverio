@@ -61,9 +61,10 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements | unknown
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | unknown
     // A method signature, so its parameters stay bivariant: each matcher types the expected value it compares
-    singleElementCompare(awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number): Promise<CompareResult<Actual>>
+    // `wholeList` is true when a list matcher compares the values of all the elements at once: the compare gives the raw value
+    singleElementCompare(awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number, wholeList?: boolean): Promise<CompareResult<Actual>>
     context: { isNot?: boolean, iteration: number },
-    /** Compare collection snapshots using singleElementCompare(element, undefined). 'arrayOnly' rejects scalar subjects. */
+    /** Compare collection snapshots using singleElementCompare(element, undefined, index, true). 'arrayOnly' rejects scalar subjects. */
     supportsArrayContaining?: boolean | 'arrayOnly',
     /** The name of the matcher, for the error of a list matcher on one element with `'arrayOnly'` */
     matcherName?: string,
@@ -85,7 +86,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     return multipleElementResultsStrategy(actualReceived, expectedValues as MaybeArrayOrMultiRemoteValues<Expected> | undefined, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)
 }
 
-type SingleElementCompare<Actual, Expected> = (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number) => Promise<CompareResult<Actual>>
+type SingleElementCompare<Actual, Expected> = (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number, wholeList?: boolean) => Promise<CompareResult<Actual>>
 
 /**
  * `arrayContaining` compares the values of all the elements at once (`equals(actual, expected)`), not each element:
@@ -164,7 +165,7 @@ const compareWithoutExpected = async <Actual, Expected>(
     elements: ArrayLike<WebdriverIO.Element>,
     singleElementCompare: SingleElementCompare<Actual, Expected>
 ): Promise<Actual[]> => {
-    const settled = await Promise.allSettled(Array.from(elements).map((element, index) => singleElementCompare(element, undefined, index)))
+    const settled = await Promise.allSettled(Array.from(elements).map((element, index) => singleElementCompare(element, undefined, index, true)))
     return settled.map((result) => {
         if (result.status === 'rejected') {
             throw result.reason

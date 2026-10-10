@@ -761,7 +761,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | .not ["Hello", "World"] | no option
 result: fails
@@ -772,7 +772,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | ["Hello", "World"] | ignoreCase
 result: fails
@@ -783,7 +783,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | .not ["Hello", "World"] | ignoreCase
 result: fails
@@ -794,7 +794,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | arrayContaining(["Hello"]) | no option
 result: throws MatcherUsageError: toHaveAttribute with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
@@ -829,7 +829,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -840,7 +840,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -851,7 +851,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -862,7 +862,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -873,7 +873,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | .not { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -884,7 +884,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -895,7 +895,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | .not { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -906,7 +906,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | $() | values null, Hello | anything() | no option
 result: fails
@@ -1739,7 +1739,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | .not ["Hello", "World"] | no option
 result: fails
@@ -1750,7 +1750,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | ["Hello", "World"] | ignoreCase
 result: fails
@@ -1761,7 +1761,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | .not ["Hello", "World"] | ignoreCase
 result: fails
@@ -1772,7 +1772,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | arrayContaining(["Hello"]) | no option
 result: throws MatcherUsageError: toHaveAttribute with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
@@ -1807,7 +1807,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -1818,7 +1818,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -1829,7 +1829,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -1840,7 +1840,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -1851,7 +1851,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | .not { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -1862,7 +1862,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -1873,7 +1873,7 @@ message:
   Expect $(`sel`) to have attribute name
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | .not { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -1884,7 +1884,7 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no attribute
 
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | anything() | no option
 result: fails
@@ -3066,7 +3066,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -3079,7 +3079,7 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | $$() | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -3095,7 +3095,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -3108,7 +3108,7 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | $$() | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -3130,7 +3130,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -3143,7 +3143,7 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | $$() | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -3165,7 +3165,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -3178,7 +3178,7 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | $$() | values null, Hello | anything() | no option
 result: fails
@@ -5306,7 +5306,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -5319,7 +5319,7 @@ message:
   Expect some of $$(`sel`) not to have attribute name
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | some($$()) | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -5335,7 +5335,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -5348,7 +5348,7 @@ message:
   Expect some of $$(`sel`) not to have attribute name
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | some($$()) | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -5370,7 +5370,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -5383,7 +5383,7 @@ message:
   Expect some of $$(`sel`) not to have attribute name
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | some($$()) | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -5405,7 +5405,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -5418,7 +5418,7 @@ message:
   Expect some of $$(`sel`) not to have attribute name
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | some($$()) | values null, Hello | anything() | no option
 result: passes
@@ -6580,7 +6580,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -6593,7 +6593,7 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | not awaited $$() | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -6609,7 +6609,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -6622,7 +6622,7 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | not awaited $$() | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -6644,7 +6644,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -6657,7 +6657,7 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | not awaited $$() | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -6679,7 +6679,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -6692,7 +6692,7 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveAttribute("name") | not awaited $$() | values null, Hello | anything() | no option
 result: fails
@@ -7947,7 +7947,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -7971,7 +7971,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -7995,7 +7995,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -8019,7 +8019,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -11081,7 +11081,7 @@ message:
   Expect $(`sel`) to have attribute id
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no attribute
 
 ### toHaveId | $() | values null, Hello | .not ["Hello", "World"] | no option
 result: fails
@@ -11092,7 +11092,7 @@ message:
   Expect $(`sel`) not to have attribute id
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveId | $() | values null, Hello | ["Hello", "World"] | ignoreCase
 result: fails
@@ -11103,7 +11103,7 @@ message:
   Expect $(`sel`) to have attribute id
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no attribute
 
 ### toHaveId | $() | values null, Hello | .not ["Hello", "World"] | ignoreCase
 result: fails
@@ -11114,7 +11114,7 @@ message:
   Expect $(`sel`) not to have attribute id
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveId | $() | values null, Hello | arrayContaining(["Hello"]) | no option
 result: throws MatcherUsageError: toHaveId with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
@@ -12821,7 +12821,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -12845,7 +12845,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -12869,7 +12869,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -12893,7 +12893,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -13100,7 +13100,7 @@ message:
   Expect $(`sel`) to have attribute href
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no attribute
 
 ### toHaveHref | $() | values null, Hello | .not ["Hello", "World"] | no option
 result: fails
@@ -13111,7 +13111,7 @@ message:
   Expect $(`sel`) not to have attribute href
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveHref | $() | values null, Hello | arrayContaining(["Hello"]) | no option
 result: throws MatcherUsageError: toHaveHref with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
@@ -14001,7 +14001,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -14025,7 +14025,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -14220,7 +14220,7 @@ message:
   Expect $(`sel`) to have attribute href
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no attribute
 
 ### toHaveLink | $() | values null, Hello | .not ["Hello", "World"] | no option
 result: fails
@@ -14231,7 +14231,7 @@ message:
   Expect $(`sel`) not to have attribute href
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveLink | $() | values null, Hello | arrayContaining(["Hello"]) | no option
 result: throws MatcherUsageError: toHaveLink with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
@@ -15121,7 +15121,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -15145,7 +15145,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -15788,7 +15788,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | $() | values null, Hello | .not ["Hello", "World"] | no option
 result: fails
@@ -15799,7 +15799,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | $() | values null, Hello | ["Hello", "World"] | ignoreCase
 result: fails
@@ -15810,7 +15810,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: [ignoringCase<"Hello">, ignoringCase<"World">]
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | $() | values null, Hello | .not ["Hello", "World"] | ignoreCase
 result: fails
@@ -15821,7 +15821,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: [ignoringCase<"Hello">, ignoringCase<"World">]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | $() | values null, Hello | arrayContaining(["Hello"]) | no option
 result: throws MatcherUsageError: toHaveElementClass with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
@@ -15856,7 +15856,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | $() | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -15867,7 +15867,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | $() | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -15878,7 +15878,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | $() | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -15889,7 +15889,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | $() | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -15900,7 +15900,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | $() | values null, Hello | .not { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -15911,7 +15911,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | $() | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -15922,7 +15922,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | $() | values null, Hello | .not { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -15933,7 +15933,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | $() | values "btn Hello", "a\tWorld" | "Hello" | no option
 result: passes
@@ -16820,7 +16820,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | .not ["Hello", "World"] | no option
 result: fails
@@ -16831,7 +16831,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | ["Hello", "World"] | ignoreCase
 result: fails
@@ -16842,7 +16842,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: [ignoringCase<"Hello">, ignoringCase<"World">]
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | .not ["Hello", "World"] | ignoreCase
 result: fails
@@ -16853,7 +16853,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: [ignoringCase<"Hello">, ignoringCase<"World">]
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | arrayContaining(["Hello"]) | no option
 result: throws MatcherUsageError: toHaveElementClass with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
@@ -16888,7 +16888,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -16899,7 +16899,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -16910,7 +16910,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -16921,7 +16921,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -16932,7 +16932,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | .not { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -16943,7 +16943,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -16954,7 +16954,7 @@ message:
   Expect $(`sel`) to have class
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no attribute
 
 ### toHaveElementClass | not awaited $() | values null, Hello | .not { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -16965,7 +16965,7 @@ message:
   Expect $(`sel`) not to have class
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no attribute
 
 ### toHaveElementClass | not awaited $() | values "btn Hello", "a\tWorld" | "Hello" | no option
 result: passes
@@ -18200,7 +18200,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -18213,7 +18213,7 @@ message:
   Expect $$(`sel`) not to have class
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | $$() | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -18229,7 +18229,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -18242,7 +18242,7 @@ message:
   Expect $$(`sel`) not to have class
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | $$() | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -18264,7 +18264,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -18277,7 +18277,7 @@ message:
   Expect $$(`sel`) not to have class
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | $$() | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -18299,7 +18299,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -18312,7 +18312,7 @@ message:
   Expect $$(`sel`) not to have class
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | $$() | values "btn Hello", "a\tWorld" | "Hello" | no option
 result: fails
@@ -20589,7 +20589,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -20602,7 +20602,7 @@ message:
   Expect some of $$(`sel`) not to have class
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | some($$()) | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -20618,7 +20618,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -20631,7 +20631,7 @@ message:
   Expect some of $$(`sel`) not to have class
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | some($$()) | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -20653,7 +20653,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -20666,7 +20666,7 @@ message:
   Expect some of $$(`sel`) not to have class
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | some($$()) | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -20688,7 +20688,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -20701,7 +20701,7 @@ message:
   Expect some of $$(`sel`) not to have class
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | some($$()) | values "btn Hello", "a\tWorld" | "Hello" | no option
 result: passes
@@ -21946,7 +21946,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -21959,7 +21959,7 @@ message:
   Expect $$(`sel`) not to have class
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | not awaited $$() | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -21975,7 +21975,7 @@ message:
     Array [
   -   multiRemote<chrome: "Hello", firefox: "World">,
   -   multiRemote<chrome: "Hello", firefox: "World">,
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -21988,7 +21988,7 @@ message:
   Expect $$(`sel`) not to have class
   
   Expected [not]: [multiRemote<chrome: "Hello", firefox: "World">, multiRemote<chrome: "Hello", firefox: "World">]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | not awaited $$() | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -22010,7 +22010,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -22023,7 +22023,7 @@ message:
   Expect $$(`sel`) not to have class
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | not awaited $$() | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -22045,7 +22045,7 @@ message:
   -     "chrome": "Hello",
   -     "firefox": "World",
   -   },
-  +   null,
+  +   no attribute,
   +   "Hello",
     ]
 
@@ -22058,7 +22058,7 @@ message:
   Expect $$(`sel`) not to have class
   
   Expected [not]: [{"chrome": "Hello", "firefox": "World"}, {"chrome": "Hello", "firefox": "World"}]
-  Received      : [null, "Hello"]
+  Received      : [no attribute, "Hello"]
 
 ### toHaveElementClass | not awaited $$() | values "btn Hello", "a\tWorld" | "Hello" | no option
 result: fails
@@ -23429,7 +23429,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -23453,7 +23453,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -23477,7 +23477,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 
@@ -23501,7 +23501,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no attribute,
   +   "firefox": "Hello",
     }
 

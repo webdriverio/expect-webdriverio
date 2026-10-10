@@ -712,6 +712,26 @@ Expect $$(\`sel\`) to have property property
                 })
             })
 
+            describe('should fail if there is less expected values than elements and a property is missing', () => {
+                test('shows the missing property of an element with no expected value as no property', async () => {
+                    vi.mocked(els[1].getProperty).mockResolvedValue(undefined)
+
+                    const result = await thisContext.toHaveElementProperty(els, 'property', ['iphone'])
+
+                    expect(result.pass).toBe(false)
+                    expect(stripAnsi(result.message())).toEqual(`\
+Expect $$(\`sel\`) to have property property
+
+- Expected  - 0
++ Received  + 1
+
+  Array [
+    "iphone",
++   no property,
+  ]`)
+                })
+            })
+
             describe('should fail if there is more expected values than elements', () => {
                 test('failure', async () => {
                     const result = await thisContext.toHaveElementProperty(els, 'property', ['iphone', 'iphone', 'iphone'])
