@@ -512,15 +512,15 @@ time: 400 ms
 
 ### toHaveValue | $() | right on the 3rd try | wait 1000, interval 100
 result: passes
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
 getter calls: ["value"] x3
 time: 200 ms
 
 ### toHaveValue | $() | always wrong | wait 300, interval 100
 result: fails
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
 getter calls: ["value"] x4
 message:
   Expect $(`sel`) to have property value
@@ -531,15 +531,15 @@ time: 400 ms
 
 ### toHaveValue | $() | .not, right on the 3rd try | wait 1000, interval 100
 result: passes
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
 getter calls: ["value"] x3
 time: 200 ms
 
 ### toHaveValue | $() | .not, always wrong | wait 300, interval 100
 result: fails
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
 getter calls: ["value"] x4
 message:
   Expect $(`sel`) not to have property value
@@ -550,15 +550,15 @@ time: 400 ms
 
 ### toHaveValue | $$() | right on the 3rd try | wait 1000, interval 100
 result: passes
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
 getter calls: ["value"] x6
 time: 200 ms
 
 ### toHaveValue | $$() | always wrong | wait 300, interval 100
 result: fails
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
 getter calls: ["value"] x8
 message:
   Expect $$(`sel`) to have property value
@@ -576,15 +576,15 @@ time: 400 ms
 
 ### toHaveValue | $$() | .not, right on the 3rd try | wait 1000, interval 100
 result: passes
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
 getter calls: ["value"] x6
 time: 200 ms
 
 ### toHaveValue | $$() | .not, always wrong | wait 300, interval 100
 result: fails
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
 getter calls: ["value"] x8
 message:
   Expect $$(`sel`) not to have property value
@@ -595,15 +595,15 @@ time: 400 ms
 
 ### toHaveValue | multi-remote $() | right on the 3rd try | wait 1000, interval 100
 result: passes
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
 getter calls: ["value"] x6
 time: 200 ms
 
 ### toHaveValue | multi-remote $() | always wrong | wait 300, interval 100
 result: fails
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
 getter calls: ["value"] x8
 message:
   Expect multi-remote<chrome, firefox>.$(`sel`) to have property value
@@ -621,15 +621,15 @@ time: 400 ms
 
 ### toHaveValue | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
 result: passes
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
 getter calls: ["value"] x6
 time: 200 ms
 
 ### toHaveValue | multi-remote $() | .not, always wrong | wait 300, interval 100
 result: fails
-before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
-after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+before: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
 getter calls: ["value"] x8
 message:
   Expect multi-remote<chrome, firefox>.$(`sel`) not to have property value

@@ -38,12 +38,12 @@ describe(toHaveValue, () => {
                 expect(waitUntil).toHaveBeenCalledWith(expect.any(Function), undefined, { wait: 0, interval: undefined })
                 expect(beforeAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveValue',
-                    expectedValue: ['value', 'This is an example value'],
+                    expectedValue: 'This is an example value',
                     options: { beforeAssertion, afterAssertion, wait: 0 }
                 })
                 expect(afterAssertion).toHaveBeenCalledWith({
                     matcherName: 'toHaveValue',
-                    expectedValue: ['value', 'This is an example value'],
+                    expectedValue: 'This is an example value',
                     options: { beforeAssertion, afterAssertion, wait: 0 },
                     result
                 })
