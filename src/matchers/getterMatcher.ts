@@ -86,7 +86,7 @@ async function matchStringGetter(
     options: StringOptions
 ): Promise<AssertionResult> {
     const descriptor: ElementStringGetterDescriptor = elementStringGetters[name]
-    const { getter, getterGetsOptions, argumentInMessage } = descriptor
+    const { getter, getterGetsOptions, argumentInMessage, missing } = descriptor
     const isClass = descriptor.value === 'class'
     const isProperty = descriptor.value === 'property'
     // A property can be an object or an array: a plain object is a value, and a list matcher on `$()` compares the property
@@ -111,6 +111,14 @@ async function matchStringGetter(
                 singleElementCompare: async (element, values: StringExpected | undefined): Promise<CompareResult<unknown>> => {
                     const read = element[getter] as ReadValue
                     const actualValue = await (getterGetsOptions ? read.call(element, options) : argument === undefined ? read.call(element) : read.call(element, argument))
+                    // A value that does not exist never matches, also not a matcher that accepts no value: the assertion waits
+                    // for it. Only an expected `null` that the user wrote for one element matches it, e.g.
+                    // `toHaveElementProperty('p', ['iphone', null])`. The message shows its text, e.g. `no attribute`
+                    // With no expected value, a list matcher reads the list of the raw values: `null` stays `null` there, e.g.
+                    // `arrayContaining(['First', null])`
+                    if (missing && (actualValue === null || actualValue === undefined) && values !== undefined) {
+                        return { success: values === null, actual: new MissingValue(missing) }
+                    }
                     return isProperty
                         ? compareProperty(actualValue, values, options)
                         : isClass ? compareClasses(actualValue as string | null, values, options) : compareString(actualValue as string | null, values, options)

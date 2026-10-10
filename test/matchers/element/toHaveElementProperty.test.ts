@@ -167,7 +167,7 @@ Received      : "iphone"`)
 Expect $(\`sel\`) to have property myPropertyName
 
 Expected: <jasmine.anything>
-Received: null`
+Received: no property`
                 )
             })
 
@@ -185,7 +185,7 @@ Received: null`
 Expect $(\`sel\`) to have property myPropertyName
 
 Expected: Anything
-Received: ${actualValue}`
+Received: no property`
                 )
             })
 
@@ -243,7 +243,7 @@ Received: "iphone"`)
 Expect $(\`sel\`) to have property myPropertyName
 
 Expected: Anything
-Received: ${propertyValue}`
+Received: no property`
             )
         })
 
@@ -479,7 +479,7 @@ Expect $$(\`sel\`) to have property myPropertyName
   Array [
     Anything,
 -   Anything,
-+   null,
++   no property,
   ]`
                     )
                 })
@@ -596,8 +596,8 @@ Expect $$(\`sel\`) to have property property
   Array [
 -   "iphone",
 -   "iphone",
-+   null,
-+   null,
++   no property,
++   no property,
   ]`
                 )
             })
@@ -619,8 +619,8 @@ Expect $$(\`sel\`) to have property property
   Array [
 -   Anything,
 -   Anything,
-+   null,
-+   null,
++   no property,
++   no property,
   ]`
                 )
             })
@@ -767,8 +767,8 @@ Expect $$(\`sel\`) to have property myPropertyName
   Array [
 -   Anything,
 -   Any<String>,
-+   undefined,
-+   null,
++   no property,
++   no property,
   ]`
                     )
                 })
@@ -810,7 +810,7 @@ Expect $$(\`sel\`) to have property myPropertyName
 Expect $$(\`sel\`) not to have property myPropertyName
 
 Expected [not]: [Anything, Anything]
-Received      : ["iphone", null]`)
+Received      : ["iphone", no property]`)
                 })
 
                 test('not - should fails (pass=true) when property does exist by using not but with options and jasmine.anything()', async () => {
@@ -823,7 +823,7 @@ Received      : ["iphone", null]`)
 Expect $$(\`sel\`) not to have property myPropertyName
 
 Expected [not]: [<jasmine.anything>, <jasmine.anything>]
-Received      : ["iphone", null]`)
+Received      : ["iphone", no property]`)
                 })
             })
         })

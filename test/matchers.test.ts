@@ -350,7 +350,7 @@ Received: "some attribute"`)
 Expect $(\`selector\`) to have attribute notExistingAttribute
 
 Expected: Anything
-Received: null`)
+Received: no attribute`)
         })
 
         test('Ensure toHaveSize, toHaveHeight, toHaveWidth matchers throw and show proper failing message', async () => {

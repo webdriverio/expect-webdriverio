@@ -67,7 +67,7 @@ describe(toHaveAttribute, () => {
 Expect $(\`sel\`) to have attribute attribute_name
 
 Expected: Anything
-Received: null`
+Received: no attribute`
                     )
                 })
             })
@@ -156,7 +156,7 @@ Received: "Wrong"`
 Expect $(\`sel\`) to have attribute attribute_name
 
 Expected: Anything
-Received: ${attributeValue}`
+Received: no attribute`
                 )
             })
 
@@ -270,8 +270,8 @@ Expect $$(\`sel\`) to have attribute attribute_name
   Array [
 -   Anything,
 -   Anything,
-+   null,
-+   null,
++   no attribute,
++   no attribute,
   ]`
                     )
                 })
