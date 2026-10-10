@@ -1,5 +1,5 @@
-import { DEFAULT_OPTIONS } from '../constants.js'
-import { compareTextOrOneOf, enhanceError, waitUntil } from '../utils.js'
+import { DEFAULT_OPTIONS, DEFAULT_OPTIONS_TO_BE_DISPLAYED } from '../constants.js'
+import { compareTextOrOneOf, enhanceError, executeCommandBe, waitUntil } from '../utils.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../types.js'
 import type { CompareResult } from '../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../util/executeCommand.js'
@@ -7,8 +7,9 @@ import { executeBrowserCommand } from '../util/executeBrowserCommand.js'
 import { fillSingleExpectedForElementArray } from '../util/elementsUtil.js'
 import { withStringOptions } from '../util/expectedWithStringOptions.js'
 import { buildWdioAsymmetricMatchersWithOptions } from './asymmetrics/asymmetricsUtils.js'
-import { browserStringGetters, elementStringGetters } from './descriptors.js'
-import type { AssertionResult, StringOptions } from '../publicTypes/options.js'
+import { browserStringGetters, elementBooleanGetters, elementStringGetters } from './descriptors.js'
+import type { ElementBooleanGetterDescriptor } from './descriptors.js'
+import type { AssertionResult, CommandOptions, StringOptions, ToBeDisplayedOptions } from '../publicTypes/options.js'
 import type { ExpectedOf } from '../publicTypes/expectWebdriverIO.js'
 
 type StringExpected = MaybeArrayOrOneOf<ExpectedOf<'string'>>
@@ -128,6 +129,57 @@ export const browserStringGetterMatcher = (name: keyof typeof browserStringGette
         await options.afterAssertion?.({
             matcherName,
             expectedValue,
+            options,
+            result
+        })
+
+        return result
+    })
+}
+
+/**
+ * A boolean matcher of `$()`, `$$()` and multi-remote elements, made from its descriptor in `elementBooleanGetters`: the
+ * getter gives the state of each element, and `executeCommandBe()` checks that it is `true`.
+ */
+export const elementBooleanGetterMatcher = <Options extends CommandOptions>(name: keyof typeof elementBooleanGetters) => {
+    const { getter, expectation, verb, inverse, getterArgument, displayOptions, allowEmptyElements, aliasOf }: ElementBooleanGetterDescriptor = elementBooleanGetters[name]
+
+    return named(name, async function (
+        this: WdioMatcherContext,
+        received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
+        options: Options = (displayOptions ? DEFAULT_OPTIONS_TO_BE_DISPLAYED : DEFAULT_OPTIONS) as Options
+    ): Promise<AssertionResult> {
+        // `executeCommandBe()` reads the state, the verb and the empty list rule in the context. An alias replaces them
+        this.expectation = aliasOf ? expectation : this.expectation || expectation
+        if (verb !== undefined) {
+            this.verb = aliasOf ? verb : this.verb || verb
+        }
+        if (allowEmptyElements) {
+            this.allowEmptyElements = true
+        }
+        if (aliasOf) {
+            this.matcherName ??= name
+        }
+        const { matcherName = name } = this
+
+        await options.beforeAssertion?.({
+            matcherName,
+            options,
+        })
+
+        // `toBeDisplayed`: the display options, with their defaults, go to the getter, and the rest are the command options
+        const { withinViewport, contentVisibilityAuto, opacityProperty, visibilityProperty, ...commandOptions }: ToBeDisplayedOptions =
+            displayOptions ? { ...DEFAULT_OPTIONS_TO_BE_DISPLAYED, ...options } : options
+        const argument = displayOptions ? { withinViewport, contentVisibilityAuto, opacityProperty, visibilityProperty } : getterArgument
+
+        const result = await executeCommandBe.call(this, received, async (element) => {
+            const read = element?.[getter] as ((this: WebdriverIO.Element, argument?: object) => Promise<boolean>) | undefined
+            const state = argument === undefined ? read?.call(element) : read?.call(element, argument)
+            return inverse ? !await state : state as Promise<boolean>
+        }, displayOptions ? commandOptions : options)
+
+        await options.afterAssertion?.({
+            matcherName,
             options,
             result
         })
