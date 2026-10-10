@@ -14,6 +14,7 @@ import { buildWdioAsymmetricMatchersWithOptions } from './asymmetrics/asymmetric
 import { browserStringGetters, elementBooleanGetters, elementNumberGetters, elementStringGetters } from './descriptors.js'
 import type { BrowserStringGetterDescriptor, ElementBooleanGetterDescriptor, ElementNumberGetterDescriptor, ElementStringGetterDescriptor } from './descriptors.js'
 import { MissingValue } from '../util/missingValue.js'
+import { isBrowsingContext } from '../util/multiRemoteUtils.js'
 import type { AssertionResult, CommandOptions, StringOptions, ToBeDisplayedOptions } from '../publicTypes/options.js'
 import type { ExpectedOf } from '../publicTypes/expectWebdriverIO.js'
 
@@ -180,8 +181,28 @@ type BrowserStringGetter = keyof typeof browserStringGetters
 /** The browser matchers whose getter argument is given in the call, e.g. `toHaveCookie(name, value)` */
 type BrowserArgumentFromCall = { [Name in BrowserStringGetter]: (typeof browserStringGetters)[Name] extends { argument: 'fromCall' } ? Name : never }[BrowserStringGetter]
 
+/** The clipboard permission warning is logged once per worker: its cause is the browser, so it does not change between assertions or retries */
+let clipboardPermissionWarningLogged = false
+
 /** The value of the browser or the browsing context, or a `MissingValue` for a value that does not exist */
 const readBrowserValue = async (target: BrowserTarget, { getter, value, missing }: BrowserStringGetterDescriptor, argument: string | undefined): Promise<string | MissingValue> => {
+    if (value === 'localStorageItem') {
+        const item = await target.execute((storageKey) => localStorage.getItem(storageKey), argument as string)
+        return item === null ? new MissingValue(missing ?? 'no value') : item
+    }
+    if (value === 'clipboardText') {
+        // A browsing context has no session command: the permission is for the whole session
+        const session = isBrowsingContext(target) ? target.browser : target
+        await session.setPermissions({ name: 'clipboard-read' }, 'granted')
+            // chances are that some browsers don't support the clipboard API yet
+            .catch((err) => {
+                if (!clipboardPermissionWarningLogged) {
+                    clipboardPermissionWarningLogged = true
+                    console.warn(`expect-webdriverio: Couldn't set clipboard permissions: ${err}`)
+                }
+            })
+        return target.execute(() => window.navigator.clipboard.readText())
+    }
     if (value === 'cookie') {
         const cookies = await (target[getter] as (this: unknown, filter: { name?: string }) => Promise<Array<{ name: string, value: string }>>).call(target, { name: argument })
         const cookie = cookies.find((item) => item.name === argument)
@@ -259,7 +280,8 @@ async function matchBrowserStringGetter(
  * `toHaveTitle(expectedValue, options)`. The hooks get the expected value alone.
  */
 export const browserStringGetterMatcher = (name: Exclude<BrowserStringGetter, BrowserArgumentFromCall>) => named(name, async function (
-    this: ExpectWebdriverIO.MatcherContext,
+    // The context of Jest, or of a matcher that calls another one
+    this: ExpectWebdriverIO.MatcherContext | WdioMatcherContext,
     browser: BrowserTarget | WebdriverIO.MultiRemoteBrowser,
     expectedValue: MultiRemoteValuesOrOneOf<ExpectedOf<'string'>>,
     options: StringOptions = DEFAULT_OPTIONS
@@ -272,7 +294,8 @@ export const browserStringGetterMatcher = (name: Exclude<BrowserStringGetter, Br
  * With no expected value, the value exists (`expect.anything()`). The hooks get `[name, expectedValue]`.
  */
 export const browserArgumentGetterMatcher = (name: BrowserArgumentFromCall) => named(name, async function (
-    this: ExpectWebdriverIO.MatcherContext,
+    // The context of Jest, or of a matcher that calls another one
+    this: ExpectWebdriverIO.MatcherContext | WdioMatcherContext,
     browser: BrowserTarget | WebdriverIO.MultiRemoteBrowser,
     argument: string,
     // Internal: the public types (src/publicTypes/) type the value of each matcher
