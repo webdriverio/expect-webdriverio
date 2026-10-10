@@ -895,6 +895,10 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 await expect(multiRemoteElement).toHaveText({ chrome: ['a', 'b'] })
                 // @ts-expect-error an array per instance is only for $$(), also with a getter argument
                 await expect(multiRemoteElement).toHaveAttribute('data-test', { chrome: ['a', 'b'] })
+                // @ts-expect-error per-instance sizes require expect.multiRemote()
+                await expect(multiRemoteElement).toHaveSize({ chrome: { width: 1, height: 1 }, firefox: { width: 1, height: 1 } })
+                // @ts-expect-error a plain object is a NumberMatcher, not per-instance values
+                await expect(multiRemoteElement).toHaveWidth({ chrome: { gte: 1 }, firefox: { gte: 1 } })
                 // @ts-expect-error
                 await expect(multiRemoteElement).toHaveId({ chrome: ['a', 'b'] })
                 // @ts-expect-error

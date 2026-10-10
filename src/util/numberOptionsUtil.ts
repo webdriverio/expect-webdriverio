@@ -1,5 +1,6 @@
 import { AsymmetricMatcher } from 'expect'
 import { isMultiRemoteMatcher } from './multiRemoteUtils.js'
+import { multiRemote } from '../matchers/asymmetrics/multiRemote.js'
 import { isOneOfMatcher } from '../matchers/asymmetrics/oneOf.js'
 import { isAsymmetricMatcher, isListMatcher } from './asymmetricMatcherUtil.js'
 import { stringify } from 'jest-matcher-utils'
@@ -175,4 +176,36 @@ export class NumberMatcher extends AsymmetricMatcher<number | NumberBounds> {
     public jasmineToString() {
         return this.toString()
     }
+}
+
+const SIZE_FIELDS = ['width', 'height']
+
+/** A size: a plain object or a class instance, not an asymmetric matcher (e.g. `expect.objectContaining()`) */
+const isSizeObject = (value: unknown): value is Record<string, unknown> =>
+    typeof value === 'object' && value !== null && !Array.isArray(value) && !isAsymmetricMatcher(value)
+
+/**
+ * A field, as the value of `toHaveWidth`: a number stays as is, and `validateNumberMatcher()` takes the rest: a range,
+ * `expect.oneOf()` with numbers and an asymmetric matcher become a `NumberMatcher`, and another value throws, e.g. a string,
+ * `NaN` or a list matcher
+ */
+const withNumberMatcher = (value: unknown): unknown =>
+    isNumber(value) ? value : validateNumberMatcher(value as PublicNumberMatcher)
+
+/**
+ * A number range on a field, e.g. `{ width: { gte: 50 }, height: 50 }`, becomes a `NumberMatcher`, as in `toHaveWidth`:
+ * in one size, in the sizes of `$$()`, and in the values of `expect.multiRemote()`
+ */
+export const withNumberMatcherFields = (expected: unknown): unknown => {
+    if (Array.isArray(expected)) {
+        return expected.map(withNumberMatcherFields)
+    }
+    if (isMultiRemoteMatcher(expected)) {
+        return multiRemote(Object.fromEntries(Object.entries(expected.sample).map(([name, value]) => [name, withNumberMatcherFields(value)])))
+    }
+    if (isSizeObject(expected)) {
+        return Object.fromEntries(Object.entries(expected).map(([field, value]) =>
+            [field, SIZE_FIELDS.includes(field) ? withNumberMatcher(value) : value]))
+    }
+    return expected
 }

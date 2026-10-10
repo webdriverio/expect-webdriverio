@@ -61,7 +61,7 @@ describe(toHaveSize, async () => {
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            // @ts-expect-error testing invalid input
+            // An array on $() is rejected by the public types (test-types/)
             const result = await thisContext.toHaveSize(el, [expectedValue, expectedValue], { beforeAssertion, afterAssertion, wait: 500 })
 
             expect(result.pass).toBe(false)
@@ -573,7 +573,7 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have size
         test('does not treat a plain object as per-instance sizes', async () => {
             const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'sel')
 
-            // @ts-expect-error per-instance sizes require expect.multiRemote()
+            // Per-instance sizes require expect.multiRemote(): the public types reject a plain object (test-types/)
             const result = await thisContext.toHaveSize(element, { chrome: size, firefox: size }, { wait: 0 })
 
             expect(result.pass).toBe(false)
