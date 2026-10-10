@@ -60,6 +60,7 @@ not `pnpm run test -- --spec x`.
 | `lib/` | `pnpm run compile` |
 | `coverage/`, `types/coverage/` | Vitest coverage |
 | `**/__snapshots__/*.snap`, `test/*.snap` | the test run (`--updateSnapshots`), then review the diff |
+| `test/characterization/__golden__/` | the test run (`--updateSnapshots`). A diff is a change of behavior of the getter matchers: a refactor must keep these files the same |
 | `pnpm-lock.yaml`, `playgrounds/pnpm-lock.yaml` | pnpm |
 
 ## Test selection
@@ -74,6 +75,7 @@ Coverage is on by default, with global thresholds. When you run one file, add
 | Change | Minimum local proof |
 |--------|---------------------|
 | One matcher or util | its test file: `pnpm exec vitest --run --coverage.enabled=false <test file>` |
+| A getter matcher (string or boolean), the strategy, `waitUntil` or the messages | also the golden master: `pnpm exec vitest --run --coverage.enabled=false test/characterization/` |
 | Public types (`src/publicTypes/`, `src/api/`, `types/`, `jest.d.ts`, `jasmine*.d.ts`) | `pnpm run build && pnpm run test:types` (`ts:package` installs the packed build) |
 | Failure messages | the unit tests that assert the message, and one playground run |
 | Multi-remote | the unit tests, and `pnpm run test:multi-remote` in `playgrounds/mocha` |

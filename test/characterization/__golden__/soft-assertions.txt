@@ -1,0 +1,62 @@
+### toHaveText | soft
+toHaveText:
+  Expect $(`sel`) to have text
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toHaveHTML | soft
+toHaveHTML:
+  Expect $(`sel`) to have HTML
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toHaveComputedLabel | soft
+toHaveComputedLabel:
+  Expect $(`sel`) to have computed label
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toHaveComputedRole | soft
+toHaveComputedRole:
+  Expect $(`sel`) to have computed role
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toBeDisplayed | soft
+toBeDisplayed:
+  Expect $(`sel`) to be displayed
+  
+  Expected: "displayed"
+  Received: "not displayed"
+
+### toExist | soft
+toExist:
+  Expect $(`sel`) to exist
+  
+  Expected: "exist"
+  Received: "not exist"
+
+### toBeChecked | soft
+toBeChecked:
+  Expect $(`sel`) to be checked
+  
+  Expected: "checked"
+  Received: "not checked"
+
+### toHaveTitle | soft
+toHaveTitle:
+  Expect browser's window to have title
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toHaveUrl | soft
+toHaveUrl:
+  Expect browser's window to have url
+  
+  Expected: "Other"
+  Received: "Hello"
