@@ -162,7 +162,7 @@ await expect($('li')).not.toHaveHTML(expect.arrayContaining(['<li>Home</li>']))
 
 `toHaveStyle` throws an error with a list matcher, also on `$$()` and with `.not`: it reads only the CSS properties that the expected value names, and a list matcher names none. Before, it read the keys of the list matcher as CSS properties (`$$typeof`, `sample`…), and the assertion always failed, and with `.not`, it always passed. Give one style, or an array with one style for each element of `$$()`.
 
-With `some()`, a list matcher now throws an error, also with `.not`, in the same matchers and in `toHaveText` and `toHaveTagName`: `some()` checks each element alone, and the value of one element is not a list. Before, the assertion always failed, and with `.not`, it always passed. `toHaveElementProperty` still compares it with the property of each element. Remove `some()`: on `$$()`, `expect.arrayContaining()` already passes when one element has the value.
+With `some()`, a list matcher now throws an error, also with `.not` and in an array or in the values of `expect.multiRemote()`, in the same matchers and in `toHaveText` and `toHaveTagName`: `some()` checks each element alone, and the value of one element is not a list. Before, the assertion always failed, and with `.not`, it always passed. `toHaveElementProperty` still compares it with the property of each element. Remove `some()`: on `$$()`, `expect.arrayContaining()` already passes when one element has the value.
 
 ```ts
 await expect(some($$('li'))).not.toHaveText(expect.arrayContaining(['Home']))

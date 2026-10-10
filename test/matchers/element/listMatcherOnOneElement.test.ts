@@ -96,6 +96,36 @@ describe('a list matcher with some()', () => {
         })
     })
 
+    test('throws with a list matcher in an array of expected values, also with .not, without reading the values', async () => {
+        const elements = await $$('#menu li')
+        const expected = () => [wdioExpect.arrayContaining(['Home']), wdioExpect.arrayContaining(['About'])]
+
+        await expect(wdioExpect(some(elements)).toHaveText(expected() as never, { wait: 0 })).rejects.toThrow(error('toHaveText'))
+        await expect(wdioExpect(some(elements)).not.toHaveText(expected() as never, { wait: 0 })).rejects.toThrow(error('toHaveText'))
+        await expect(wdioExpect(some(elements)).not.toHaveText(['Home', wdioExpect.arrayOf(wdioExpect.any(String))] as never, { wait: 0 })).rejects.toThrow(error('toHaveText'))
+        elements.forEach((element) => expect(element.getText).not.toHaveBeenCalled())
+    })
+
+    test('throws with a list matcher in the values of expect.multiRemote(), also with .not', async () => {
+        const elements = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, '#menu li')
+        const expected = () => multiRemote({ chrome: wdioExpect.arrayContaining(['Home']), firefox: 'Home' })
+
+        await expect(wdioExpect(some(elements)).toHaveText(expected() as never, { wait: 0 })).rejects.toThrow(error('toHaveText'))
+        await expect(wdioExpect(some(elements)).not.toHaveText(expected() as never, { wait: 0 })).rejects.toThrow(error('toHaveText'))
+        await expect(wdioExpect(some(elements)).not.toHaveSize(multiRemote({ chrome: wdioExpect.arrayContaining([{ width: 1, height: 1 }]), firefox: { width: 1, height: 1 } }) as never, { wait: 0 }))
+            .rejects.toThrow(error('toHaveSize'))
+    })
+
+    test('still compares a value or a plain object that is not a list matcher, with some()', async () => {
+        const elements = await $$('#menu li')
+        vi.mocked(elements[0].getText).mockResolvedValue('Home')
+        vi.mocked(elements[1].getText).mockResolvedValue('About')
+        elements.forEach((element) => vi.mocked(element.getSize).mockResolvedValue({ width: 1, height: 1 } as never))
+
+        await wdioExpect(some(elements)).toHaveText(['Other', 'About'], { wait: 0 })
+        await wdioExpect(some(elements)).toHaveSize({ width: 1, height: 1 }, { wait: 0 })
+    })
+
     test('throws on a multi-remote $$()', async () => {
         const elements = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, '#menu li')
 

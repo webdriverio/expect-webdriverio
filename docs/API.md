@@ -1373,7 +1373,7 @@ await expect(some($$('elements'))).not.toHaveText(/forbiddenTextA|forbiddenTextB
 await expect(some($$('elements'))).toHaveText(['valueForIndex0', 'valueForIndex1']);
 ```
 
-A list matcher (`expect.arrayContaining()`, `expect.arrayOf()`, `jasmine.arrayWithExactContents()`) throws an error with `some()`, also with `.not`: `some()` checks each element alone, and the value of one element is not a list. Use the list matcher without `some()`: on `$$()`, it compares the values of all the elements, so `expect.arrayContaining(['Home'])` passes when one element has the value `Home`. Only `toHaveElementProperty` compares a list matcher with the property of each element, because a property value can be an array.
+A list matcher (`expect.arrayContaining()`, `expect.arrayOf()`, `jasmine.arrayWithExactContents()`) throws an error with `some()`, also with `.not`, and also in an array of expected values or in the values of `expect.multiRemote()`: `some()` checks each element alone, and the value of one element is not a list. Use the list matcher without `some()`: on `$$()`, it compares the values of all the elements, so `expect.arrayContaining(['Home'])` passes when one element has the value `Home`. Only `toHaveElementProperty` compares a list matcher with the property of each element, because a property value can be an array.
 
 **Note**: With [multi-remote](MultiRemote.md), `some()` requires at least one matching element in **every** browser instance.
 
