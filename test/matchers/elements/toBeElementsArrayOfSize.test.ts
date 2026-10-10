@@ -286,11 +286,15 @@ Received      : 2`
         })
 
         test('refresh once the element array with the wait option', async () => {
+            vi.useFakeTimers()
             vi.mocked(browser.$$)
                 .mockResolvedValueOnce(elementArrayOf2)
                 .mockResolvedValue(elementArrayOf5)
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { wait: 450, interval: 100 })
+            // tries at 0 ms with the received list, at 100 ms with a refetched list of 2, at 200 ms with a refetched list of 5
+            const assertion = thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { wait: 450, interval: 100 })
+            await vi.advanceTimersByTimeAsync(500)
+            const result = await assertion
 
             expect(result.pass).toBe(true)
             expect(elements.length).toBe(5)
@@ -304,11 +308,15 @@ Received      : 2`
         })
 
         test('refresh once the element array with the DEFAULT_OPTIONS wait value', async () => {
+            vi.useFakeTimers()
             vi.mocked(browser.$$)
                 .mockResolvedValueOnce(elementArrayOf2)
                 .mockResolvedValue(elementArrayOf5)
 
-            const result = await thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { beforeAssertion: undefined, afterAssertion: undefined })
+            // The default interval: tries at 0 ms, 100 ms (a refetched list of 2), 200 ms (a refetched list of 5)
+            const assertion = thisContext.toBeElementsArrayOfSize(elements, { gte: 5 }, { beforeAssertion: undefined, afterAssertion: undefined })
+            await vi.advanceTimersByTimeAsync(500)
+            const result = await assertion
 
             expect(result.pass).toBe(true)
             expect(refetchElements).toHaveBeenNthCalledWith(1, elements)

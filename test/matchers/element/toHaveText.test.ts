@@ -1454,6 +1454,11 @@ Received: "Invalid Text"`)
             })
 
             describe('when refreshing the elements', () => {
+                // Fake timers: the number of tries does not depend on the speed of the runner
+                afterEach(() => {
+                    vi.useRealTimers()
+                })
+
                 test('refresh elements from empty to 2', async () => {
                     const browser = browserFactory()
                     const emptyElements = await chainableElementArrayFactory('sel0', 0, browser)
@@ -1464,7 +1469,11 @@ Received: "Invalid Text"`)
                         .mockResolvedValueOnce(emptyElements)
                         .mockResolvedValueOnce(elements2)
 
-                    const result = await thisContext.toHaveText(emptyElements, ['Valid Text', 'Valid Text'], { wait: 250, interval: 100 })
+                    // The mock lists resolve with a timer: start the fake timers once they are awaited
+                    vi.useFakeTimers()
+                    const assertion = thisContext.toHaveText(emptyElements, ['Valid Text', 'Valid Text'], { wait: 250, interval: 100 })
+                    await vi.advanceTimersByTimeAsync(300)
+                    const result = await assertion
                     expect(browser.$$).toHaveBeenCalledWith('sel0')
                     expect(refreshElementArray).toHaveBeenCalled()
 
@@ -1481,7 +1490,11 @@ Received: "Invalid Text"`)
                         .mockResolvedValueOnce(elements2)
                         .mockResolvedValueOnce(elements1)
 
-                    const result = await thisContext.toHaveText(elements2, ['Valid Text'], { wait: 250, interval: 100 })
+                    // The mock lists resolve with a timer: start the fake timers once they are awaited
+                    vi.useFakeTimers()
+                    const assertion = thisContext.toHaveText(elements2, ['Valid Text'], { wait: 250, interval: 100 })
+                    await vi.advanceTimersByTimeAsync(300)
+                    const result = await assertion
                     expect(browser.$$).toHaveBeenCalledWith('sel0')
                     expect(refreshElementArray).toHaveBeenCalled()
 
