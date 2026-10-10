@@ -1166,8 +1166,7 @@ declare global {
         }
 
         class SoftAssertionService implements ServiceInstance {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            constructor(serviceOptions?: SoftAssertionServiceOptions, capabilities?: unknown, config?: any)
+            constructor(serviceOptions?: SoftAssertionServiceOptions)
             beforeTest(test: Test): void
             beforeStep(step: PickleStep, scenario: Scenario): void
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

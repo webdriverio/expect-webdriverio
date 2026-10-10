@@ -335,6 +335,8 @@ The types of the `ExpectWebdriverIO` namespace are also named exports of the pac
 + const options: StringOptions = { ignoreCase: true }
 ```
 
+`new SoftAssertionService()` takes only the service options. A direct call with the capabilities and the config fails with `TS2554`. The `services` entry `[SoftAssertionService, { … }]` does not change.
+
 ## The helper types are not global
 
 The types file of v7 was a global script, so all its helper types were global names: `Test`, `TestResult`, `Scenario`, `MaybeArray`, `MultiRemoteValues`, `AsymmetricMatcher`, `WdioCustomMatchers`… In v8, only the `ExpectWebdriverIO` namespace and 2 aliases of WebdriverIO types, `ChainablePromiseElement` and `ChainablePromiseArray`, are global. So a project can have its own global types with these names. Before, TypeScript failed with `Duplicate identifier 'Test'`.

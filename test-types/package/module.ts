@@ -3,6 +3,7 @@ import { some, multiRemote, wdioCustomMatcherNames } from 'expect-webdriverio/ap
 
 declare const el: WebdriverIO.Element
 declare const els: WebdriverIO.ElementArray
+declare const NsSoftAssertionService: typeof ExpectWebdriverIO.SoftAssertionService
 
 export async function check() {
     await expect(el).toHaveText('text')
@@ -20,6 +21,11 @@ export async function check() {
 
     // @ts-expect-error `beforeTest` takes a `@wdio/types` test: fails when `@wdio/types` does not resolve
     new SoftAssertionService().beforeTest(1)
+    new SoftAssertionService({ autoAssertOnTestEnd: false })
+    // @ts-expect-error the service takes only its options, not the capabilities and the config
+    new SoftAssertionService({}, {}, {})
+    // @ts-expect-error the global namespace type is the same as the export
+    new NsSoftAssertionService({}, {}, {})
 
     // @ts-expect-error the list has only the names of the matchers
     wdioCustomMatcherNames.includes('toBeCustom')
