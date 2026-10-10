@@ -23,6 +23,21 @@ jobs:
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
 
+            - name: Check that the base branch has required checks
+              # Without required checks (e.g. the ruleset `main` is disabled), `gh pr merge --auto` merges at once,
+              # before the checks of the PR: stop, and leave the PR to a person
+              if: contains(steps.metadata.outputs.package-ecosystem, 'npm')
+              env:
+                  BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  required=$(gh api "repos/${GITHUB_REPOSITORY}/rules/branches/${BASE_BRANCH}" --jq '[.[] | select(.type == "required_status_checks") | .parameters.required_status_checks[].context] | length')
+                  echo "Required checks on ${BASE_BRANCH}: ${required}"
+                  if [ "${required}" -eq 0 ]; then
+                      echo "::error::${BASE_BRANCH} has no required checks (is the ruleset disabled?): the PR is not merged automatically"
+                      exit 1
+                  fi
+
             - name: Auto-merge dependabot PRs
               # Don't merge updates to GitHub Actions versions automatically.
               # (Some repos may wish to limit by version range (major/minor/patch), or scope (dep vs dev-dep), too.)
