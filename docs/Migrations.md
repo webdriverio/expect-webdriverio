@@ -126,7 +126,7 @@ Both matchers now use the deep equality of the other matchers, the one of Jest's
 
 ## Asymmetric matchers and `expect.oneOf()` in the number matchers
 
-`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`, `toBeRequestedTimes` and each field of `toHaveSize` accept 2 more expected values. Before, they threw `Invalid NumberMatcher`, except `toHaveChildren`, which took them as no value (at least 1 child) with a deprecation warning:
+`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`, `toBeRequestedTimes` and each field of `toHaveSize` accept 2 more expected values. Before, the number matchers threw `Invalid NumberMatcher`, except `toHaveChildren`, which took them as no value (at least 1 child) with a deprecation warning. In a field of `toHaveSize`, these values failed the assertion, and passed with `.not`:
 
 - `expect.oneOf()` with numbers, e.g. `toHaveWidth(expect.oneOf(100, 200))`;
 - an asymmetric matcher, compared as in `toEqual`, e.g. `toHaveWidth(expect.closeTo(150.4, 0))` for a size that the browser rounds, `expect.not.closeTo()` or `expect.any(Number)`.
