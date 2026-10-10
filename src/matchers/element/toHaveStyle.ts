@@ -11,6 +11,9 @@ import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
+import { isListMatcher } from '../../util/asymmetricMatcherUtil.js'
+import { isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
+import { MatcherUsageError } from '../../util/matcherUsageError.js'
 
 /** Each CSS value is a string value, as in `toHaveText` */
 type StyleRecord = { [key: string]: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> }
@@ -64,6 +67,12 @@ export async function toHaveStyle(
         expectedValue,
         options,
     })
+
+    // A style is read only for the CSS properties of the expected value: a list matcher names none, so there is no style
+    // of an element to put in its list. Throw, also with `.not`, which would else always pass
+    if (isListMatcher(expectedValue) || (isMultiRemoteMatcher(expectedValue) && Object.values(expectedValue.sample).some(isListMatcher))) {
+        throw new MatcherUsageError(`${matcherName} does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element`)
+    }
 
     // Apply the string options to `expect.oneOf()`, also in the values of a style
     const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)

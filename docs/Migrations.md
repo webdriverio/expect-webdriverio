@@ -144,17 +144,21 @@ A list matcher (`expect.arrayContaining()`…) throws, also with `.not`, and `ex
 
 On `$$()`, `expect.arrayOf()` and Jasmine's `jasmine.arrayWithExactContents()` compare the values of all the elements at once, as `expect.arrayContaining()` does. Before, they were compared with the value of each element, so the assertion always failed, and with `.not`, it always passed.
 
+`toHaveSize` now also compares the list of the sizes of `$$()` with a list matcher, as `toHaveText` compares the list of the texts: `toHaveSize(expect.arrayContaining([{ width: 100, height: 50 }]))`. Before, it compared each size with the list matcher, so the assertion always failed, and with `.not`, it always passed.
+
 ```ts
 await expect($$('li')).toHaveText(expect.arrayOf(expect.stringMatching(/^(Tea|Coffee)$/)))
 await expect($$('li')).toHaveText(jasmine.arrayWithExactContents(['Coffee', 'Tea']))
 ```
 
-On a single element `$()`, a list matcher now throws an error, also with `.not`, in `toHaveHTML`, `toHaveAttribute` (also `toHaveId`, `toHaveHref` and `toHaveLink`), `toHaveElementClass`, `toHaveComputedLabel`, `toHaveComputedRole` and `toHaveValue`, as in `toHaveText`. Before, the assertion always failed, and with `.not`, it always passed. `toHaveElementProperty` still compares it with the property of the element, which can be an array. Use `$$()` to compare the values of a list of elements.
+On a single element `$()`, a list matcher now throws an error, also with `.not`, in `toHaveHTML`, `toHaveAttribute` (also `toHaveId`, `toHaveHref` and `toHaveLink`), `toHaveElementClass`, `toHaveComputedLabel`, `toHaveComputedRole`, `toHaveValue` and `toHaveSize`, as in `toHaveText`. Before, the assertion always failed, and with `.not`, it always passed. `toHaveElementProperty` still compares it with the property of the element, which can be an array. Use `$$()` to compare the values of a list of elements.
 
 ```ts
 await expect($('li')).not.toHaveHTML(expect.arrayContaining(['<li>Home</li>']))
 // Error: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
 ```
+
+`toHaveStyle` throws an error with a list matcher, also on `$$()` and with `.not`: it reads only the CSS properties that the expected value names, and a list matcher names none. Before, it read the keys of the list matcher as CSS properties (`$$typeof`, `sample`…), and the assertion always failed, and with `.not`, it always passed. Give one style, or an array with one style for each element of `$$()`.
 
 ## Failure messages with string options
 

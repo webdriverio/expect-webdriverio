@@ -335,50 +335,40 @@ message:
   Received      : undefined
 
 ### toHaveStyle | $() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
-message:
-  Expect $(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: {"$$typeof": undefined, "inverse": undefined, "sample": undefined}
+after: -
+getter calls: -
 
 ### toHaveStyle | $() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
+after: -
+getter calls: -
 
 ### toHaveStyle | $() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
-message:
-  Expect $(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: {"$$typeof": undefined, "inverse": undefined, "sample": undefined}
+after: -
+getter calls: -
 
 ### toHaveStyle | $() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
+after: -
+getter calls: -
 
 ### toHaveStyle | $() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x1
+getter calls: -
 
 ### toHaveStyle | $() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x1
+getter calls: -
 
 ### toHaveStyle | $() | values red block, blue block | { color: "red" } | no option
 result: passes
@@ -717,50 +707,40 @@ message:
   Received      : undefined
 
 ### toHaveStyle | $() | values red block, blue block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
-message:
-  Expect $(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: {"$$typeof": undefined, "inverse": undefined, "sample": undefined}
+after: -
+getter calls: -
 
 ### toHaveStyle | $() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
+after: -
+getter calls: -
 
 ### toHaveStyle | $() | values red block, blue block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
-message:
-  Expect $(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: {"$$typeof": undefined, "inverse": undefined, "sample": undefined}
+after: -
+getter calls: -
 
 ### toHaveStyle | $() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
+after: -
+getter calls: -
 
 ### toHaveStyle | $() | values red block, blue block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x1
+getter calls: -
 
 ### toHaveStyle | $() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x1
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, "  RED  " block | { color: "red" } | no option
 result: passes
@@ -1099,50 +1079,40 @@ message:
   Received      : undefined
 
 ### toHaveStyle | not awaited $() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
-message:
-  Expect $(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: {"$$typeof": undefined, "inverse": undefined, "sample": undefined}
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
-message:
-  Expect $(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: {"$$typeof": undefined, "inverse": undefined, "sample": undefined}
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x1
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x1
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, blue block | { color: "red" } | no option
 result: passes
@@ -1481,50 +1451,40 @@ message:
   Received      : undefined
 
 ### toHaveStyle | not awaited $() | values red block, blue block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
-message:
-  Expect $(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: {"$$typeof": undefined, "inverse": undefined, "sample": undefined}
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, blue block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
-message:
-  Expect $(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: {"$$typeof": undefined, "inverse": undefined, "sample": undefined}
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x1, ["sample"] x1, ["inverse"] x1
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, blue block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x1
+getter calls: -
 
 ### toHaveStyle | not awaited $() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x1
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, "  RED  " block | { color: "red" } | no option
 result: fails
@@ -2038,50 +1998,40 @@ message:
   Received      : [undefined, undefined]
 
 ### toHaveStyle | $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, blue block | { color: "red" } | no option
 result: fails
@@ -2567,50 +2517,40 @@ message:
   Received      : [undefined, undefined]
 
 ### toHaveStyle | $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | empty $$() | values red block, "  RED  " block | { color: "red" } | no option
 result: fails
@@ -3009,70 +2949,40 @@ message:
   Received      : undefined
 
 ### toHaveStyle | empty $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: undefined
 
 ### toHaveStyle | empty $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=true
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) not to have style
-  
-  Expected [not]: ArrayContaining [{"color": "red"}]
-  Received      : undefined
 
 ### toHaveStyle | empty $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: undefined
 
 ### toHaveStyle | empty $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) not to have style
-  
-  Expected [not]: ArrayContaining [{"color": "red"}]
-  Received      : undefined
 
 ### toHaveStyle | empty $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) to have style containing
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: undefined
 
 ### toHaveStyle | empty $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait] pass=true
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) not to have style containing
-  
-  Expected [not]: ArrayContaining [{"color": "red"}]
-  Received      : undefined
 
 ### toHaveStyle | empty $$() | values red block, blue block | { color: "red" } | no option
 result: fails
@@ -3471,70 +3381,40 @@ message:
   Received      : undefined
 
 ### toHaveStyle | empty $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: undefined
 
 ### toHaveStyle | empty $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=true
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) not to have style
-  
-  Expected [not]: ArrayContaining [{"color": "red"}]
-  Received      : undefined
 
 ### toHaveStyle | empty $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: undefined
 
 ### toHaveStyle | empty $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) not to have style
-  
-  Expected [not]: ArrayContaining [{"color": "red"}]
-  Received      : undefined
 
 ### toHaveStyle | empty $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) to have style containing
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: undefined
 
 ### toHaveStyle | empty $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait] pass=true
+after: -
 getter calls: -
-message:
-  Expect $$(`sel`) not to have style containing
-  
-  Expected [not]: ArrayContaining [{"color": "red"}]
-  Received      : undefined
 
 ### toHaveStyle | some($$()) | values red block, "  RED  " block | { color: "red" } | no option
 result: passes
@@ -3824,50 +3704,40 @@ message:
   Received      : [undefined, undefined]
 
 ### toHaveStyle | some($$()) | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect some of $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect some of $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, blue block | { color: "red" } | no option
 result: passes
@@ -4167,50 +4037,40 @@ message:
   Received      : [undefined, undefined]
 
 ### toHaveStyle | some($$()) | values red block, blue block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect some of $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, blue block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, blue block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect some of $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, blue block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, blue block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | some($$()) | values red block, blue block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, "  RED  " block | { color: "red" } | no option
 result: fails
@@ -4724,50 +4584,40 @@ message:
   Received      : [undefined, undefined]
 
 ### toHaveStyle | not awaited $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, blue block | { color: "red" } | no option
 result: fails
@@ -5253,50 +5103,40 @@ message:
   Received      : [undefined, undefined]
 
 ### toHaveStyle | not awaited $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect $$(`sel`) to have style
-  
-  Expected: ArrayContaining [{"color": "red"}]
-  Received: [{"$$typeof": undefined, "inverse": undefined, "sample": undefined}, {"$$typeof": undefined, "inverse": undefined, "sample": undefined}]
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | not awaited $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, "  RED  " block | { color: "red" } | no option
 result: fails
@@ -6029,92 +5869,40 @@ message:
     }
 
 ### toHaveStyle | multi-remote $() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect multi-remote<chrome, firefox>.$(`sel`) to have style
-  
-  - Expected  - 8
-  + Received  + 8
-  
-    Multi-remote values {
-  -   "chrome": ArrayContaining [
-  -     Object {
-  -       "color": "red",
-  +   "chrome": Object {
-  +     "$$typeof": undefined,
-  +     "inverse": undefined,
-  +     "sample": undefined,
-      },
-  -   ],
-  -   "firefox": ArrayContaining [
-  -     Object {
-  -       "color": "red",
-  +   "firefox": Object {
-  +     "$$typeof": undefined,
-  +     "inverse": undefined,
-  +     "sample": undefined,
-      },
-  -   ],
-    }
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect multi-remote<chrome, firefox>.$(`sel`) to have style
-  
-  - Expected  - 8
-  + Received  + 8
-  
-    Multi-remote values {
-  -   "chrome": ArrayContaining [
-  -     Object {
-  -       "color": "red",
-  +   "chrome": Object {
-  +     "$$typeof": undefined,
-  +     "inverse": undefined,
-  +     "sample": undefined,
-      },
-  -   ],
-  -   "firefox": ArrayContaining [
-  -     Object {
-  -       "color": "red",
-  +   "firefox": Object {
-  +     "$$typeof": undefined,
-  +     "inverse": undefined,
-  +     "sample": undefined,
-      },
-  -   ],
-    }
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, blue block | { color: "red" } | no option
 result: fails
@@ -6801,92 +6589,40 @@ message:
   Received      : {"chrome": {"color": "red"}, "firefox": {"color": "blue"}}
 
 ### toHaveStyle | multi-remote $() | values red block, blue block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect multi-remote<chrome, firefox>.$(`sel`) to have style
-  
-  - Expected  - 8
-  + Received  + 8
-  
-    Multi-remote values {
-  -   "chrome": ArrayContaining [
-  -     Object {
-  -       "color": "red",
-  +   "chrome": Object {
-  +     "$$typeof": undefined,
-  +     "inverse": undefined,
-  +     "sample": undefined,
-      },
-  -   ],
-  -   "firefox": ArrayContaining [
-  -     Object {
-  -       "color": "red",
-  +   "firefox": Object {
-  +     "$$typeof": undefined,
-  +     "inverse": undefined,
-  +     "sample": undefined,
-      },
-  -   ],
-    }
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, blue block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
-message:
-  Expect multi-remote<chrome, firefox>.$(`sel`) to have style
-  
-  - Expected  - 8
-  + Received  + 8
-  
-    Multi-remote values {
-  -   "chrome": ArrayContaining [
-  -     Object {
-  -       "color": "red",
-  +   "chrome": Object {
-  +     "$$typeof": undefined,
-  +     "inverse": undefined,
-  +     "sample": undefined,
-      },
-  -   ],
-  -   "firefox": ArrayContaining [
-  -     Object {
-  -       "color": "red",
-  +   "firefox": Object {
-  +     "$$typeof": undefined,
-  +     "inverse": undefined,
-  +     "sample": undefined,
-      },
-  -   ],
-    }
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x2, ["sample"] x2, ["inverse"] x2
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, blue block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | multi-remote $() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x2
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, "  RED  " block | { color: "red" } | no option
 result: fails
@@ -7873,112 +7609,40 @@ message:
     }
 
 ### toHaveStyle | multi-remote $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x4, ["sample"] x4, ["inverse"] x4
-message:
-  Expect multi-remote<chrome, firefox>.$$(`sel`) to have style
-  
-  - Expected  -  4
-  + Received  + 18
-  
-    Multi-remote values {
-  -   "chrome": ArrayContaining [
-  +   "chrome": Array [
-  +     Object {
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-  +     },
-        Object {
-  -       "color": "red",
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-        },
-      ],
-  -   "firefox": ArrayContaining [
-  +   "firefox": Array [
-        Object {
-  -       "color": "red",
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-  +     },
-  +     Object {
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-        },
-      ],
-    }
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x4, ["sample"] x4, ["inverse"] x4
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x4, ["sample"] x4, ["inverse"] x4
-message:
-  Expect multi-remote<chrome, firefox>.$$(`sel`) to have style
-  
-  - Expected  -  4
-  + Received  + 18
-  
-    Multi-remote values {
-  -   "chrome": ArrayContaining [
-  +   "chrome": Array [
-  +     Object {
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-  +     },
-        Object {
-  -       "color": "red",
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-        },
-      ],
-  -   "firefox": ArrayContaining [
-  +   "firefox": Array [
-        Object {
-  -       "color": "red",
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-  +     },
-  +     Object {
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-        },
-      ],
-    }
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x4, ["sample"] x4, ["inverse"] x4
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, "  RED  " block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x4
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, "  RED  " block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x4
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, blue block | { color: "red" } | no option
 result: fails
@@ -8875,109 +8539,37 @@ message:
     }
 
 ### toHaveStyle | multi-remote $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x4, ["sample"] x4, ["inverse"] x4
-message:
-  Expect multi-remote<chrome, firefox>.$$(`sel`) to have style
-  
-  - Expected  -  4
-  + Received  + 18
-  
-    Multi-remote values {
-  -   "chrome": ArrayContaining [
-  +   "chrome": Array [
-  +     Object {
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-  +     },
-        Object {
-  -       "color": "red",
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-        },
-      ],
-  -   "firefox": ArrayContaining [
-  +   "firefox": Array [
-        Object {
-  -       "color": "red",
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-  +     },
-  +     Object {
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-        },
-      ],
-    }
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: ["$$typeof"] x4, ["sample"] x4, ["inverse"] x4
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x4, ["sample"] x4, ["inverse"] x4
-message:
-  Expect multi-remote<chrome, firefox>.$$(`sel`) to have style
-  
-  - Expected  -  4
-  + Received  + 18
-  
-    Multi-remote values {
-  -   "chrome": ArrayContaining [
-  +   "chrome": Array [
-  +     Object {
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-  +     },
-        Object {
-  -       "color": "red",
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-        },
-      ],
-  -   "firefox": ArrayContaining [
-  +   "firefox": Array [
-        Object {
-  -       "color": "red",
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-  +     },
-  +     Object {
-  +       "$$typeof": undefined,
-  +       "inverse": undefined,
-  +       "sample": undefined,
-        },
-      ],
-    }
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: ["$$typeof"] x4, ["sample"] x4, ["inverse"] x4
+after: -
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, blue block | arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x4
+getter calls: -
 
 ### toHaveStyle | multi-remote $$() | values red block, blue block | .not arrayContaining([{ color: "red" }]) | containing
-result: throws TypeError: Cannot convert a Symbol value to a string
+result: throws MatcherUsageError: toHaveStyle does not support a list matcher (arrayContaining, arrayWithExactContents or arrayOf): give one style, or an array with one style for each element
 before: toHaveStyle expected=ArrayContaining [{"color": "red"}] options=[afterAssertion,beforeAssertion,containing,wait]
 after: -
-getter calls: ["$$typeof"] x4
+getter calls: -
