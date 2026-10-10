@@ -68,7 +68,7 @@ await expect(multiRemoteBrowser).toHaveTitle({ chrome: 'WebdriverIO', firefox: '
 await expect(multiRemoteBrowser.$('h1')).toHaveText({ chrome: 'Welcome', firefox: 'Bienvenue' })
 ```
 
-Number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren` and `toBeElementsArrayOfSize`) have no shorthand, since a plain object is a `NumberMatcher` (e.g. `{ gte: 1 }`): per-instance values require `expect.multiRemote()`.
+Number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`, `toHaveWindowCount` and `toBeRequestedTimes`) have no shorthand, since a plain object is a `NumberMatcher` (e.g. `{ gte: 1 }`): per-instance values require `expect.multiRemote()`.
 
 ```ts
 await expect(multiRemoteBrowser.$('h1')).toHaveWidth(expect.multiRemote({ chrome: 100, firefox: { gte: 90 } }))
@@ -85,7 +85,7 @@ Per-instance values are only allowed on multi-remote subjects: on a regular elem
 
 ## Browser Matchers
 
-`toHaveUrl`, `toHaveTitle`, `toHaveClipboardText`, `toHaveCookie`, `toHaveLocalStorageItem` and `toHaveSessionStorageItem` support the multi-remote browser, including a `select()` subset.
+`toHaveUrl`, `toHaveTitle`, `toHaveClipboardText`, `toHaveCookie`, `toHaveLocalStorageItem`, `toHaveSessionStorageItem` and `toHaveWindowCount` support the multi-remote browser, including a `select()` subset.
 
 ```ts
 await expect(multiRemoteBrowser).toHaveUrl('https://webdriver.io/')
