@@ -84,7 +84,7 @@ declare global {
     /**
      * Indicates that a value can be either one T, an array of T with oneOf of T, or a oneOf matcher of T.
      * For oneOf anything is excluded since it does not make any sense to have a oneOf with Anything matcher.
-     * TODO support number in oneOf until then we exclude it from the type to avoid confusion.
+     * Numbers are excluded: a string value; `expect.oneOf()` with numbers is `OneOfNumbersPartialMatcher`, for the number matchers.
      */
     type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything | number>>)[] | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything | number>>
 
@@ -491,7 +491,6 @@ declare global {
             /** Assert both property name AND a specific expected value */
             (
                 property: string,
-                // TODO support `oneOf` for number!
                 value: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>;
@@ -714,7 +713,6 @@ declare global {
         /**
          * `WebdriverIO.Element` -> `getSize` value
          * Element's size equals the size provided
-         * // TODO: add support for NumberMatcher on width and height
          */
         toHaveSize: FnWhenElementOrArrayLike<ActualT, {
             /** Element $() API */

@@ -73,7 +73,7 @@ export async function toHaveStyle(
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
                 expectedValues: expectedWithOptions,
-                // TODO try to make the type work without casting expectedValues to StyleRecord | undefined
+                // The strategy types the expected value of one element as a string value: a style is a record of them
                 singleElementCompare: (element, expectedValues) => condition(element, expectedValues as StyleRecord | undefined, options),
                 context: { isNot, iteration },
                 strictConfiguration: { allowObjectExpectedValue: true }

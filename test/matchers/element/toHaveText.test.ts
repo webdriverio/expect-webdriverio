@@ -1116,13 +1116,13 @@ Expect some of ${selectorName} to have text
 
         describe('Edge cases', () => {
 
-            // TODO review in next major version to trim by default for multiple elements as well, to be consistent with single element behavior
-            test('given exact text but with space in it should work by default', async () => {
+            // `trim` changes the actual value only, as in every string matcher: an expected value with spaces does not match
+            test('given exact text but with space in it should fail by default', async () => {
                 const element = $('sel')
 
                 const result = await thisContext.toHaveText(element, ' Valid Text ')
 
-                expect(result.pass).toBe(false) // to review in major version to be true
+                expect(result.pass).toBe(false)
             })
 
             test.each([

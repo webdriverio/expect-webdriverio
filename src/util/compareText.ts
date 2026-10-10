@@ -20,7 +20,6 @@ export const assertOnePositionOption = ({ containing, atStart, atEnd, atIndex }:
     }
 }
 
-// TODO one day turn this into at least a asymetrics class to better report in failure messages the string case we are in (containing, atStart, atEnd, atIndex, etc) and the expected value(s)
 export const compareText = (
     actual: string,
     expected: string | RegExp | WdioAsymmetricMatcher<string> | JasmineAsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | null | undefined,
