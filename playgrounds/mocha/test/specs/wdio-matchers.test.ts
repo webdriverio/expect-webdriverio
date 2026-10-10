@@ -33,6 +33,26 @@ describe('WebdriverIO Custom Matchers', () => {
         })
     })
 
+    describe('Cookie matcher', () => {
+        afterEach(async () => {
+            await browser.deleteCookies(['lang'])
+        })
+
+        it('should verify a cookie and its value', async () => {
+            await browser.setCookies({ name: 'lang', value: 'en' })
+
+            await expect(browser).toHaveCookie('lang')
+            await expect(browser).toHaveCookie('lang', 'en')
+            await expect(browser).toHaveCookie('lang', 'EN', { ignoreCase: true })
+            await expect(browser).not.toHaveCookie('lang', 'fr')
+            await expect(browser).not.toHaveCookie('tracking')
+        })
+
+        it('should show a missing cookie in the error message', async () => {
+            await expect(expect(browser).toHaveCookie('tracking', 'yes', { wait: 0 })).rejects.toThrow(/to have cookie tracking[\s\S]*Received: no cookie/)
+        })
+    })
+
     describe('Element existence matchers', () => {
         it('should verify element exists', async () => {
             const githubLink = $('#githubRepo')

@@ -303,6 +303,7 @@ export class Browser {
     setPermissions = vi.spyOn({ setPermissions: async () => {} }, 'setPermissions')
     getUrl = vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl')
     getTitle = vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle')
+    getCookies = vi.spyOn({ getCookies: async (_filter?: { name?: string }): Promise<Array<{ name: string, value: string }>> => [] }, 'getCookies')
 
     constructor(elementArrayLength = 2) {
         vi.mocked(this.$$).mockImplementation((selector: string) => {
@@ -340,6 +341,7 @@ export const browsingContextFactory = (
         execute: vi.fn(),
         getUrl: vi.fn(async () => url),
         getTitle: vi.fn(async () => 'Example Domain'),
+        getCookies: vi.fn(async (_filter?: { name?: string }): Promise<Array<{ name: string, value: string }>> => []),
     }, 'browsing-context')
     context.$$.mockImplementation((selector: string) => chainableElementArrayFactory(selector, 2, context as unknown as WebdriverIO.Browser))
     return context as unknown as WebdriverIO.BrowsingContext

@@ -94,6 +94,15 @@ describe('Jasmine type agumentations', () => {
                 })
             })
 
+            describe('toHaveCookie', () => {
+                it('should return Promise<void>', async () => {
+                    expectTypeOf(expectAsync(browser).toHaveCookie('lang')).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(browser).toHaveCookie('lang', 'en')).toEqualTypeOf<Promise<void>>()
+                    // @ts-expect-error omit the value to check that the cookie exists
+                    expectTypeOf(expectAsync(browser).toHaveCookie).toBeCallableWith('lang', undefined)
+                })
+            })
+
             describe('toHaveLocalStorageItem', () => {
                 it('should reject an explicit undefined value', async () => {
                     expectTypeOf(expectAsync(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()

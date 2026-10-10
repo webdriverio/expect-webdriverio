@@ -113,6 +113,22 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
         })
 
+        describe('toHaveCookie', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(browser).toHaveCookie('lang')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveCookie('lang', 'en')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveCookie('tracking')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveCookie('lang', expect.oneOf('en', 'fr'), { ignoreCase: true })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveCookie('lang', expect.multiRemote({ chrome: 'en', firefox: 'fr' }))).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should reject an explicit undefined value, and an element', async () => {
+                // @ts-expect-error omit the value to check that the cookie exists
+                expectTypeOf(expect(browser).toHaveCookie).toBeCallableWith('lang', undefined)
+                expectTypeOf(expect(element).toHaveCookie).toBeNever()
+            })
+        })
+
         describe('toHaveLocalStorageItem', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()

@@ -30,6 +30,7 @@ export const wdioCustomMatcherNames = [
     'toHaveClipboardText',
     'toHaveComputedLabel',
     'toHaveComputedRole',
+    'toHaveCookie',
     'toHaveElementClass',
     'toHaveElementProperty',
     'toHaveHTML',
