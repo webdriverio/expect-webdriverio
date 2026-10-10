@@ -4686,6 +4686,592 @@ message:
       ],
     }
 
+### toBeStable | $() | values true, true | positive | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toBeStable | $() | values true, true | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to be stable
+  
+  Expected: "not stable"
+  Received: "stable"
+
+### toBeStable | $() | values false, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+message:
+  Expect $(`sel`) to be stable
+  
+  Expected: "stable"
+  Received: "not stable"
+
+### toBeStable | $() | values false, false | .not | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+
+### toBeStable | $() | values true, false | positive | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toBeStable | $() | values true, false | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to be stable
+  
+  Expected: "not stable"
+  Received: "stable"
+
+### toBeStable | not awaited $() | values true, true | positive | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toBeStable | not awaited $() | values true, true | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to be stable
+  
+  Expected: "not stable"
+  Received: "stable"
+
+### toBeStable | not awaited $() | values false, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+message:
+  Expect $(`sel`) to be stable
+  
+  Expected: "stable"
+  Received: "not stable"
+
+### toBeStable | not awaited $() | values false, false | .not | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+
+### toBeStable | not awaited $() | values true, false | positive | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toBeStable | not awaited $() | values true, false | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to be stable
+  
+  Expected: "not stable"
+  Received: "stable"
+
+### toBeStable | $$() | values true, true | positive | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toBeStable | $$() | values true, true | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to be stable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not stable",
+  -   "not stable",
+  +   "stable",
+  +   "stable",
+    ]
+
+### toBeStable | $$() | values false, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to be stable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "stable",
+  -   "stable",
+  +   "not stable",
+  +   "not stable",
+    ]
+
+### toBeStable | $$() | values false, false | .not | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toBeStable | $$() | values true, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to be stable
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      "stable",
+  -   "stable",
+  +   "not stable",
+    ]
+
+### toBeStable | $$() | values true, false | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to be stable
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+  -   "not stable",
+  +   "stable",
+      "not stable",
+    ]
+
+### toBeStable | empty $$() | values true, true | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to be stable
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeStable | empty $$() | values true, true | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to be stable
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeStable | empty $$() | values false, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to be stable
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeStable | empty $$() | values false, false | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to be stable
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeStable | empty $$() | values true, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to be stable
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeStable | empty $$() | values true, false | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to be stable
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeStable | some($$()) | values true, true | positive | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toBeStable | some($$()) | values true, true | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect some of $$(`sel`) not to be stable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not stable",
+  -   "not stable",
+  +   "stable",
+  +   "stable",
+    ]
+
+### toBeStable | some($$()) | values false, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect some of $$(`sel`) to be stable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "stable",
+  -   "stable",
+  +   "not stable",
+  +   "not stable",
+    ]
+
+### toBeStable | some($$()) | values false, false | .not | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toBeStable | some($$()) | values true, false | positive | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toBeStable | some($$()) | values true, false | .not | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toBeStable | not awaited $$() | values true, true | positive | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toBeStable | not awaited $$() | values true, true | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to be stable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not stable",
+  -   "not stable",
+  +   "stable",
+  +   "stable",
+    ]
+
+### toBeStable | not awaited $$() | values false, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to be stable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "stable",
+  -   "stable",
+  +   "not stable",
+  +   "not stable",
+    ]
+
+### toBeStable | not awaited $$() | values false, false | .not | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toBeStable | not awaited $$() | values true, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to be stable
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      "stable",
+  -   "stable",
+  +   "not stable",
+    ]
+
+### toBeStable | not awaited $$() | values true, false | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to be stable
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+  -   "not stable",
+  +   "stable",
+      "not stable",
+    ]
+
+### toBeStable | multi-remote $() | values true, true | positive | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toBeStable | multi-remote $() | values true, true | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to be stable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "not stable",
+  -   "firefox": "not stable",
+  +   "chrome": "stable",
+  +   "firefox": "stable",
+    }
+
+### toBeStable | multi-remote $() | values false, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to be stable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "stable",
+  -   "firefox": "stable",
+  +   "chrome": "not stable",
+  +   "firefox": "not stable",
+    }
+
+### toBeStable | multi-remote $() | values false, false | .not | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toBeStable | multi-remote $() | values true, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to be stable
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": "stable",
+  -   "firefox": "stable",
+  +   "firefox": "not stable",
+    }
+
+### toBeStable | multi-remote $() | values true, false | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to be stable
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+  -   "chrome": "not stable",
+  +   "chrome": "stable",
+      "firefox": "not stable",
+    }
+
+### toBeStable | multi-remote $$() | values true, true | positive | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+
+### toBeStable | multi-remote $$() | values true, true | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to be stable
+  
+  - Expected  - 4
+  + Received  + 4
+  
+    Multi-remote values {
+      "chrome": Array [
+  -     "not stable",
+  -     "not stable",
+  +     "stable",
+  +     "stable",
+      ],
+      "firefox": Array [
+  -     "not stable",
+  -     "not stable",
+  +     "stable",
+  +     "stable",
+      ],
+    }
+
+### toBeStable | multi-remote $$() | values false, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to be stable
+  
+  - Expected  - 4
+  + Received  + 4
+  
+    Multi-remote values {
+      "chrome": Array [
+  -     "stable",
+  -     "stable",
+  +     "not stable",
+  +     "not stable",
+      ],
+      "firefox": Array [
+  -     "stable",
+  -     "stable",
+  +     "not stable",
+  +     "not stable",
+      ],
+    }
+
+### toBeStable | multi-remote $$() | values false, false | .not | no option
+result: passes
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x4
+
+### toBeStable | multi-remote $$() | values true, false | positive | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to be stable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        "stable",
+  -     "stable",
+  +     "not stable",
+      ],
+      "firefox": Array [
+  -     "stable",
+        "stable",
+  +     "not stable",
+      ],
+    }
+
+### toBeStable | multi-remote $$() | values true, false | .not | no option
+result: fails
+before: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeStable expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to be stable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+  -     "not stable",
+  +     "stable",
+        "not stable",
+      ],
+      "firefox": Array [
+  -     "not stable",
+  +     "stable",
+        "not stable",
+      ],
+    }
+
 ### toBeSelected | $() | values true, true | positive | no option
 result: passes
 before: toBeSelected expected=undefined options=[afterAssertion,beforeAssertion,wait]

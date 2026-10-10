@@ -333,6 +333,7 @@ describe('Jasmine type agumentations', () => {
                 expectTypeOf(expectAsync(element).toBeDisplayedInViewport()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expectAsync(element).toBeEnabled()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expectAsync(element).toBeFocused()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expectAsync(element).toBeStable()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expectAsync(element).toBeSelected()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expectAsync(element).toBeChecked()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expectAsync(element).not.toBeChecked({ wait: 1 })).toEqualTypeOf<Promise<void>>()

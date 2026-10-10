@@ -130,6 +130,34 @@ describe('WebdriverIO Custom Matchers', () => {
             const button = await $('.btn1')
             await expect(button).not.toBeDisabled()
         })
+
+        it('should verify element is stable', async () => {
+            await expect($('.btn1')).toBeStable()
+        })
+
+        it('should verify that an element that moves is not stable', async () => {
+            await browser.execute(() => {
+                const style = document.createElement('style')
+                style.id = 'moving-style'
+                style.textContent = '@keyframes move { from { transform: translateX(0) } to { transform: translateX(200px) } }'
+                const moving = document.createElement('div')
+                moving.id = 'moving'
+                moving.textContent = 'moving'
+                moving.style.animation = 'move 1s linear infinite'
+                document.head.append(style)
+                document.body.append(moving)
+            })
+
+            try {
+                await expect($('#moving')).not.toBeStable()
+                await expect(expect($('#moving')).toBeStable({ wait: 300 })).rejects.toThrow('to be stable')
+            } finally {
+                await browser.execute(() => {
+                    document.getElementById('moving')?.remove()
+                    document.getElementById('moving-style')?.remove()
+                })
+            }
+        })
     })
 
     describe('Element text matchers', () => {

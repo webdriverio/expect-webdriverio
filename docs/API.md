@@ -424,6 +424,19 @@ const elem = await $('#someElem')
 await expect(elem).toBeFocused()
 ```
 
+### toBeStable
+
+Checks if an element is stable: it does not move, e.g. at the end of a CSS animation. The matcher reads [`isStable()`](https://webdriver.io/docs/api/element/isStable) and waits until the element is stable, as long as the `wait` option allows. It works in a browser, not in a native mobile app. In a tab that is not active, `isStable()` throws an error, because the browser stops the animations there.
+
+##### Usage
+
+```js
+const menu = await $('.menu')
+await $('.open-menu').click()
+await expect(menu).toBeStable()
+await menu.$('a').click()
+```
+
 ### toHaveAttribute
 
 Checks if an element has a certain attribute with a specific value.
