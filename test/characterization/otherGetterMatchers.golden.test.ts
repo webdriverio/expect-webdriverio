@@ -85,6 +85,14 @@ describe('golden master of the other getter matchers', () => {
         await expect(output).toMatchFileSnapshot('./__golden__/attribute-matchers.txt')
     }, 300_000)
 
+    test('tag name matcher', async () => {
+        const output = await matrix([
+            { name: 'toHaveTagName', getter: 'getTagName', values: { 'button, a': ['button', 'a'], '"  BUTTON  ", button': ['  BUTTON  ', 'button'] }, expected: { '"button"': () => 'button', ...Object.fromEntries(Object.entries(mediumStringExpected).filter(([name]) => name !== '"Hello"')) }, options: { 'no option': {}, 'ignoreCase': { ignoreCase: true } } },
+        ])
+
+        await expect(output).toMatchFileSnapshot('./__golden__/tag-name-matcher.txt')
+    }, 300_000)
+
     test('property matchers', async () => {
         const output = await matrix([
             // A string property: compared as `toHaveText`. `true`: a list matcher on `$()` compares an array property

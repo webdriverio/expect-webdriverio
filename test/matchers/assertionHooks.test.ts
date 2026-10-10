@@ -4,6 +4,7 @@ import { toHaveText } from '../../src/matchers/element/toHaveText.js'
 import { toHaveHTML } from '../../src/matchers/element/toHaveHTML.js'
 import { toHaveComputedLabel } from '../../src/matchers/element/toHaveComputedLabel.js'
 import { toHaveComputedRole } from '../../src/matchers/element/toHaveComputedRole.js'
+import { toHaveTagName } from '../../src/matchers/element/toHaveTagName.js'
 import { toHaveAttribute } from '../../src/matchers/element/toHaveAttribute.js'
 import { toHaveElementClass } from '../../src/matchers/element/toHaveElementClass.js'
 import { toHaveElementProperty } from '../../src/matchers/element/toHaveElementProperty.js'
@@ -34,6 +35,7 @@ describe('the expected value given to the assertion hooks', () => {
         ['toHaveHTML', (expected, options) => toHaveHTML.call({}, element, expected as never, options)],
         ['toHaveComputedLabel', (expected, options) => toHaveComputedLabel.call({}, element, expected as never, options)],
         ['toHaveComputedRole', (expected, options) => toHaveComputedRole.call({}, element, expected as never, options)],
+        ['toHaveTagName', (expected, options) => toHaveTagName.call({}, element, expected as never, options)],
         ['toHaveAttribute', (expected, options) => toHaveAttribute.call({}, element as never, 'name', expected as never, options)],
         ['toHaveElementClass', (expected, options) => toHaveElementClass.call({}, element, expected as never, options)],
         ['toHaveElementProperty', (expected, options) => toHaveElementProperty.call({}, element as never, 'name', expected as never, options)],

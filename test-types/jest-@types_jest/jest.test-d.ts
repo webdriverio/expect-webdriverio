@@ -542,6 +542,7 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
 
                 expectTypeOf(expect(element).toHaveComputedRole('role')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveComputedRole(expect.stringContaining('role'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveTagName('button')).toEqualTypeOf<Promise<void>>()
             })
         })
 

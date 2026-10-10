@@ -1305,6 +1305,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
                 expectTypeOf(expect(element).toHaveComputedRole('role')).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toHaveComputedRole(expect.stringContaining('role'))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveTagName('button')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toHaveTagName(expect.oneOf('a', 'button'))).toEqualTypeOf<Promise<void>>()
             })
         })
 

@@ -60,6 +60,7 @@ export const elementStringGetters = {
     toHaveHTML: { getter: 'getHTML', expectation: 'HTML', getterGetsOptions: true },
     toHaveComputedLabel: { getter: 'getComputedLabel', expectation: 'computed label' },
     toHaveComputedRole: { getter: 'getComputedRole', expectation: 'computed role' },
+    toHaveTagName: { getter: 'getTagName', expectation: 'tag name' },
     toHaveAttribute: { getter: 'getAttribute', expectation: 'attribute', argument: 'fromCall', argumentInMessage: true },
     toHaveId: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'id' }, argumentInMessage: true },
     toHaveHref: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'href' }, argumentInMessage: true },
