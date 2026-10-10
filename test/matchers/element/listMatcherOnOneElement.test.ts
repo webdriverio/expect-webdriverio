@@ -144,6 +144,71 @@ describe('a list matcher with some()', () => {
     })
 })
 
+/**
+ * In an array of expected values, each value is for one element, and in `expect.multiRemote()` on a multi-remote `$()`, each
+ * value is for the element of one instance. The value of one element is not a list: a list matcher there can never match it.
+ * The matcher throws, also with `.not`, which would else always pass.
+ */
+describe('a list matcher as the expected value of one element', () => {
+    const error = (matcherName: string) => `${matcherName} with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) as the expected value of one element: the value of one element is not a list. Give the list matcher alone to compare the values of all the elements`
+    const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
+
+    describe.each(matchers)('$matcherName', ({ matcherName, getter, run }) => {
+        test.each(listMatchers)('throws with $name in an array on $$(), also with .not, without reading the values', async ({ matcher }) => {
+            const elements = await $$('#menu li')
+
+            await expect(run(wdioExpect(elements) as unknown as Expectation, [matcher(), 'About'])).rejects.toThrow(error(matcherName))
+            await expect(run(wdioExpect(elements).not as unknown as Expectation, [matcher(), 'About'])).rejects.toThrow(error(matcherName))
+            elements.forEach((element) => expect(element[getter]).not.toHaveBeenCalled())
+        })
+    })
+
+    test('throws in an array on $()', async () => {
+        const element = await $('#menu')
+
+        await expect(wdioExpect(element).not.toHaveText([wdioExpect.arrayContaining(['Home'])] as never, { wait: 0 })).rejects.toThrow(error('toHaveText'))
+    })
+
+    test('throws in an array on a multi-remote $$(), also in the values of expect.multiRemote()', async () => {
+        const elements = createMultiRemoteElementArrayMock(browsers(), '#menu li')
+
+        await expect(wdioExpect(elements).not.toHaveText([wdioExpect.arrayContaining(['Home']), 'About'] as never, { wait: 0 })).rejects.toThrow(error('toHaveText'))
+        await expect(wdioExpect(elements).not.toHaveText(multiRemote({ chrome: [wdioExpect.arrayContaining(['Home']), 'About'], firefox: ['Home', 'About'] }) as never, { wait: 0 }))
+            .rejects.toThrow(error('toHaveText'))
+    })
+
+    test('throws in the values of expect.multiRemote() on a multi-remote $(), also with .not, without reading the values', async () => {
+        const element = createMultiRemoteElementMock(browsers(), 'h1')
+        const expected = () => multiRemote({ chrome: wdioExpect.arrayContaining(['Home']), firefox: 'Accueil' })
+
+        await expect(wdioExpect(element).toHaveText(expected() as never, { wait: 0 })).rejects.toThrow(error('toHaveText'))
+        await expect(wdioExpect(element).not.toHaveText(expected() as never, { wait: 0 })).rejects.toThrow(error('toHaveText'))
+        await expect(wdioExpect(element).not.toHaveSize(multiRemote({ chrome: wdioExpect.arrayContaining([{ width: 1, height: 1 }]), firefox: { width: 1, height: 1 } }) as never, { wait: 0 }))
+            .rejects.toThrow(error('toHaveSize'))
+        for (const name of ['chrome', 'firefox']) {
+            expect(element.getInstance(name).getText).not.toHaveBeenCalled()
+        }
+    })
+
+    test('toHaveElementProperty still compares a list matcher with the property of each element', async () => {
+        const elements = await $$('#menu li')
+        vi.mocked(elements[0].getProperty).mockResolvedValue(['Home', 'About'] as never)
+        vi.mocked(elements[1].getProperty).mockResolvedValue(['Contact'] as never)
+
+        await wdioExpect(elements).toHaveElementProperty('labels', [wdioExpect.arrayContaining(['Home']), wdioExpect.arrayContaining(['Contact'])], { wait: 0 })
+        await expect(wdioExpect(elements).toHaveElementProperty('labels', [wdioExpect.arrayContaining(['Home']), wdioExpect.arrayContaining(['Missing'])], { wait: 0 }))
+            .rejects.toThrow('Expect $$(`#menu li`) to have property labels')
+    })
+
+    test('still compares an array of values that are not list matchers', async () => {
+        const elements = await $$('#menu li')
+        vi.mocked(elements[0].getText).mockResolvedValue('Home')
+        vi.mocked(elements[1].getText).mockResolvedValue('About')
+
+        await wdioExpect(elements).toHaveText(['Home', wdioExpect.stringContaining('Ab')], { wait: 0 })
+    })
+})
+
 /** The list of the sizes of `$$()`, as the list of the texts of `toHaveText` */
 describe('toHaveSize with a list matcher on $$()', () => {
     const sizes = [{ width: 100, height: 50 }, { width: 150, height: 50 }]

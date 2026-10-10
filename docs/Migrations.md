@@ -170,6 +170,13 @@ await expect(some($$('li'))).not.toHaveText(expect.arrayContaining(['Home']))
 await expect($$('li')).not.toHaveText(expect.arrayContaining(['Home']))
 ```
 
+A list matcher as the expected value of one element now throws an error too, also with `.not`, in the same matchers: in an array of expected values, and in the values of `expect.multiRemote()` on a multi-remote `$()`. Before, it was compared with the value of one element, so the assertion always failed, and with `.not`, it always passed. `toHaveElementProperty` still compares it with the property of each element.
+
+```ts
+await expect($$('li')).not.toHaveText([expect.arrayContaining(['Home']), 'About'])
+// Error: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) as the expected value of one element: …
+```
+
 ## Failure messages with string options
 
 The failure messages of the string matchers changed, see [String Options](API.md#string-options):
