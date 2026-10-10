@@ -333,12 +333,20 @@ Received:                                "  Hello World  " (compared as "hello t
             vi.mocked(el.getText).mockResolvedValue('WebdriverIO')
         })
 
+        afterEach(() => {
+            vi.useRealTimers()
+        })
+
         test('wait for success', async () => {
             vi.mocked(el.getText).mockResolvedValueOnce('').mockResolvedValueOnce('').mockResolvedValueOnce('webdriverio')
             const beforeAssertion = vi.fn()
             const afterAssertion = vi.fn()
 
-            const result = await thisContext.toHaveText(el, 'WebdriverIO', { ignoreCase: true, beforeAssertion, afterAssertion })
+            // Fake timers: the default wait does not end early on a slow runner
+            vi.useFakeTimers()
+            const assertion = thisContext.toHaveText(el, 'WebdriverIO', { ignoreCase: true, beforeAssertion, afterAssertion })
+            await vi.runAllTimersAsync()
+            const result = await assertion
 
             expect(result.pass).toBe(true)
             expect(el.getText).toHaveBeenCalledTimes(3)
