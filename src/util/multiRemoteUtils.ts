@@ -1,6 +1,7 @@
 import { isAsymmetricMatcher } from './asymmetricMatcherUtil.js'
 import type { WdioMultiRemoteMockMaybePromise } from '../types.js'
 import { getWdioKind } from './wdioKind.js'
+import type { MultiRemoteValues } from '../publicTypes/expectWebdriverIO.js'
 
 export const isMultiRemoteValues = (value: unknown, existingInstanceNames?: string[]): value is MultiRemoteValues<unknown> =>  {
     if (value && typeof value === 'object' && !Array.isArray(value) && !isAsymmetricMatcher(value) && !(value instanceof RegExp) && Object.keys(value).length > 0) {

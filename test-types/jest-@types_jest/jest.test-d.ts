@@ -649,7 +649,7 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
 
             describe('expect.soft', () => {
                 it('should return void if actual is non-promise type', async () => {
-                    expectTypeOf(expect.soft(actualString)).toExtend<WdioCustomMatchers<void, string>>()
+                    expectTypeOf(expect.soft(actualString)).toExtend<ExpectWebdriverIO.Matchers<void, string>>()
                     expectTypeOf(expect.soft(actualString).toBe('Test Page')).toEqualTypeOf<void>()
                     expectTypeOf(expect.soft(actualString).not.toBe('Test Page')).toEqualTypeOf<void>()
                     expectTypeOf(expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<void>()

@@ -4,6 +4,9 @@ import { expect as wdioExpect } from 'expect-webdriverio'
 import { some, wdioCustomMatcherNames, type asymmetricMatcherNames, type inverseAsymmetricMatcherNames } from 'expect-webdriverio/api'
 import type * as sourceNames from '../../src/api/matcherNames.js'
 import { multiRemoteBrowser } from '@wdio/globals'
+import type { Inverse } from 'expect'
+import type { ChainablePromiseArray as WdioChainablePromiseArray, ChainablePromiseElement as WdioChainablePromiseElement } from 'webdriverio'
+import './customMatchers/customMatchers-docs-example.js'
 
 describe('WebDriverIO Expect Type Assertions under Mocha', () => {
     const chainableElement = {} as unknown as ChainablePromiseElement
@@ -1097,7 +1100,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
         const booleanPromise: Promise<boolean> = Promise.resolve(true)
 
         it('should have expect return Matchers with a Promise', async () => {
-            expectTypeOf(expect(booleanPromise)).toExtend<ExpectWebdriverIO.Matchers<void, Promise<boolean>> & ExpectLibInverse<ExpectWebdriverIO.Matchers<void, Promise<boolean>>> & ExpectWebdriverIO.PromiseMatchers<boolean>>()
+            expectTypeOf(expect(booleanPromise)).toExtend<ExpectWebdriverIO.Matchers<void, Promise<boolean>> & Inverse<ExpectWebdriverIO.Matchers<void, Promise<boolean>>> & ExpectWebdriverIO.PromiseMatchers<boolean>>()
             expectTypeOf(expect(booleanPromise).not).toExtend<ExpectWebdriverIO.Matchers<void, Promise<boolean>>>()
         })
 
@@ -1487,7 +1490,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
             describe('expect.soft', () => {
                 it('should return void if actual is non-promise type', async () => {
-                    expectTypeOf(expect.soft(actualString)).toExtend<WdioCustomMatchers<void, string>>()
+                    expectTypeOf(expect.soft(actualString)).toExtend<ExpectWebdriverIO.Matchers<void, string>>()
                     expectTypeOf(expect.soft(actualString).toBe('Test Page')).toEqualTypeOf<void>()
                     expectTypeOf(expect.soft(actualString).not.toBe('Test Page')).toEqualTypeOf<void>()
                     expectTypeOf(expect.soft(actualString).not.toBe(expect.stringContaining('Test Page'))).toEqualTypeOf<void>()
@@ -1593,9 +1596,9 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
     describe('Wdio custom some modifier', () => {
         it('should have some work with elements what ever the type', async () => {
-            expectTypeOf(some([element])).toEqualTypeOf<WdioSome<WebdriverIO.Element[]>>()
-            expectTypeOf(some(chainableArray)).toEqualTypeOf<WdioSome<typeof chainableArray>>()
-            expectTypeOf(some(Promise.resolve([element]))).toEqualTypeOf<WdioSome<Promise<WebdriverIO.Element[]>>>()
+            expectTypeOf(some([element])).toEqualTypeOf<{ readonly elements: WebdriverIO.Element[] }>()
+            expectTypeOf(some(chainableArray)).toEqualTypeOf<{ readonly elements: typeof chainableArray }>()
+            expectTypeOf(some(Promise.resolve([element]))).toEqualTypeOf<{ readonly elements: Promise<WebdriverIO.Element[]> }>()
         })
 
         it('should not work with element', () => {
@@ -1639,5 +1642,181 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             expectTypeOf(wdioExpect(1).toBeWithinRangeExpect(0, 2)).toEqualTypeOf<void>()
             expectTypeOf(wdioExpect.toBeCustomWdio()).toEqualTypeOf<ExpectWebdriverIO.PartialMatcher<string>>()
         })
+    })
+})
+
+// The public types are the `ExpectWebdriverIO` namespace (and its named exports). The helper types of the types file are
+// not global, so they cannot conflict with the global types of a project. Only the 2 WebdriverIO aliases stay global,
+// because custom matcher types use them.
+declare global {
+    // A project can have its own global types with these names
+    type Test = { id: number, name: string }
+    type MaybeArray<T> = { list: T[] }
+    type AsymmetricMatcher<T> = { sample: T }
+}
+
+describe('Global type names', () => {
+    it('keeps ChainablePromiseElement and ChainablePromiseArray global, the same as the types of webdriverio', () => {
+        expectTypeOf<ChainablePromiseElement>().toEqualTypeOf<WdioChainablePromiseElement>()
+        expectTypeOf<ChainablePromiseArray>().toEqualTypeOf<WdioChainablePromiseArray>()
+    })
+
+    it('lets a project have its own global types with the names of the helper types', () => {
+        expectTypeOf<Test>().toEqualTypeOf<{ id: number, name: string }>()
+        expectTypeOf<MaybeArray<string>>().toEqualTypeOf<{ list: string[] }>()
+        expectTypeOf<AsymmetricMatcher<string>>().toEqualTypeOf<{ sample: string }>()
+    })
+})
+
+// The other helper types of expect-webdriverio are not global
+// @ts-expect-error not a global name
+export type NotGlobal1 = ServiceInstance
+// @ts-expect-error not a global name
+export type NotGlobal3 = TestResult
+// @ts-expect-error not a global name
+export type NotGlobal4 = PickleStep
+// @ts-expect-error not a global name
+export type NotGlobal5 = Scenario
+// @ts-expect-error not a global name
+export type NotGlobal6 = SnapshotResult
+// @ts-expect-error not a global name
+export type NotGlobal7 = SnapshotUpdateState
+// @ts-expect-error not a global name
+export type NotGlobal8 = ExpectLibAsymmetricMatchers
+// @ts-expect-error not a global name
+export type NotGlobal9 = ExpectLibAsymmetricMatcher<never>
+// @ts-expect-error not a global name
+export type NotGlobal10 = ExpectLibMatchers<never, never>
+// @ts-expect-error not a global name
+export type NotGlobal11 = ExpectLibExpect
+// @ts-expect-error not a global name
+export type NotGlobal12 = ExpectLibInverse<never>
+// @ts-expect-error not a global name
+export type NotGlobal13 = ExpectLibExpectationResult
+// @ts-expect-error not a global name
+export type NotGlobal14 = ExpectLibMatcherContext
+// @ts-expect-error not a global name
+export type NotGlobal15 = MatchersObject
+// @ts-expect-error not a global name
+export type NotGlobal16 = ExpectLibAnything
+// @ts-expect-error not a global name
+export type NotGlobal17 = RawMatcherFn
+// @ts-expect-error not a global name
+export type NotGlobal18 = WdioSome<never>
+// @ts-expect-error not a global name
+export type NotGlobal20 = MaybeSome<never>
+// @ts-expect-error not a global name
+export type NotGlobal21 = MaybeArrayOrOneOf<never>
+// @ts-expect-error not a global name
+export type NotGlobal22 = MaybeOneOf<never>
+// @ts-expect-error not a global name
+export type NotGlobal23 = MultiRemoteValues<never>
+// @ts-expect-error not a global name
+export type NotGlobal24 = MultiRemoteValuesOrOneOf<never>
+// @ts-expect-error not a global name
+export type NotGlobal25 = MaybeArrayOrMultiRemoteValues<never>
+// @ts-expect-error not a global name
+export type NotGlobal26 = MaybeArrayOrMultiRemoteValuesOrOneOf<never>
+// @ts-expect-error not a global name
+export type NotGlobal27 = MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<never>
+// @ts-expect-error not a global name
+export type NotGlobal28 = ArrayOrMultiRemoteValues<never>
+// @ts-expect-error not a global name
+export type NotGlobal29 = SingleOrMultiRemoteMatcher<never>
+// @ts-expect-error not a global name
+export type NotGlobal30 = MaybeArrayOrMultiRemoteMatcher<never>
+// @ts-expect-error not a global name
+export type NotGlobal31 = WdioPromiseLike
+// @ts-expect-error not a global name
+export type NotGlobal32 = WdioElementOrPromiseLike
+// @ts-expect-error not a global name
+export type NotGlobal33 = ElementPromise
+// @ts-expect-error not a global name
+export type NotGlobal34 = ElementArrayPromise
+// @ts-expect-error not a global name
+export type NotGlobal35 = ArrayOfElementsPromise
+// @ts-expect-error not a global name
+export type NotGlobal36 = ElementOrMaybeSomeArrayLike
+// @ts-expect-error not a global name
+export type NotGlobal37 = ElementLike
+// @ts-expect-error not a global name
+export type NotGlobal38 = ElementArrayLike
+// @ts-expect-error not a global name
+export type NotGlobal39 = MaybeSomeElementArrayLike
+// @ts-expect-error not a global name
+export type NotGlobal40 = MultiRemoteElementOrElements
+// @ts-expect-error not a global name
+export type NotGlobal41 = MockPromise
+// @ts-expect-error not a global name
+export type NotGlobal42 = MultiRemoteMocks
+// @ts-expect-error not a global name
+export type NotGlobal43 = FnWhenBrowser<never, never>
+// @ts-expect-error not a global name
+export type NotGlobal44 = FnWhenBrowserOrMultiRemote<never, never, never>
+// @ts-expect-error not a global name
+export type NotGlobal45 = FnWhenElementOrArrayLike<never, never>
+// @ts-expect-error not a global name
+export type NotGlobal46 = FnWhenElementArrayLike<never, never>
+// @ts-expect-error not a global name
+export type NotGlobal47 = FnWhenMock<never, never>
+// @ts-expect-error not a global name
+export type NotGlobal48 = WdioCustomAsymmetricMatchers
+// @ts-expect-error not a global name
+export type NotGlobal49 = WdioBrowserMatchers<never, never>
+// @ts-expect-error not a global name
+export type NotGlobal50 = WdioNetworkMatchers<never, never>
+// @ts-expect-error not a global name
+export type NotGlobal51 = WdioElementOrArrayMatchers<never>
+// @ts-expect-error not a global name
+export type NotGlobal52 = WdioElementArrayOnlyMatchers<never>
+// @ts-expect-error not a global name
+export type NotGlobal53 = WdioJestOverloadedMatchers<never, never>
+// @ts-expect-error not a global name
+export type NotGlobal54 = WdioCustomMatchers<never, never>
+// @ts-expect-error not a global name
+export type NotGlobal55 = WdioMatchers<never, never>
+// @ts-expect-error not a global name
+export type NotGlobal56 = WdioCustomExpect
+// @ts-expect-error not a global name
+export type NotGlobal57 = WdioExpect
+// @ts-expect-error not a global name
+export type NotGlobal58 = WdioAsymmetricMatchers
+// @ts-expect-error not a global name
+export type NotGlobal59 = WdioAsymmetricMatcher<never>
+// @ts-expect-error not a global name
+export type NotGlobal60 = WdioOneOfAsymmetricMatcher<never>
+// @ts-expect-error not a global name
+export type NotGlobal61 = JasmineBaseAsymmetricMatcher
+// @ts-expect-error not a global name
+export type NotGlobal62 = JasmineAsymmetricMatcher<never>
+// @ts-expect-error not a global name
+export type NotGlobal63 = JasmineStringContainingAsymmetricMatcher<never>
+// @ts-expect-error not a global name
+export type NotGlobal64 = JasmineStringMatchingAsymmetricMatcher<never>
+// @ts-expect-error not a global name
+export type NotGlobal65 = JasmineStringAsymmetricMatcher<never>
+// @ts-expect-error not a global name
+export type NotGlobal66 = JasmineAnythingAsymmetricMatcher
+// @ts-expect-error not a global name
+export type NotGlobal68 = WdioAnythingAsymmetricMatcher
+
+declare const docsChainableElement: ChainablePromiseElement
+declare const docsElement: WebdriverIO.Element
+
+describe('the custom matcher example of docs/CustomMatchers.md', () => {
+    it('types a matcher for any value', () => {
+        expectTypeOf(wdioExpect(5).toBeWithinRange(1, 10)).toEqualTypeOf<void>()
+        expectTypeOf(wdioExpect(5).not.toBeWithinRange(1, 10)).toEqualTypeOf<void>()
+    })
+
+    it('types an async matcher for elements only', () => {
+        expectTypeOf(wdioExpect(docsChainableElement).toHaveDataState('open')).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(wdioExpect(docsElement).toHaveDataState(wdioExpect.stringContaining('op'), { wait: 0 })).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(wdioExpect('text').toHaveDataState).toBeNever()
+    })
+
+    it('types the asymmetric form', () => {
+        expectTypeOf(wdioExpect.toBeWithinRange(1, 10)).toEqualTypeOf<ExpectWebdriverIO.PartialMatcher<number>>()
+        expectTypeOf(wdioExpect({ size: 5 }).toEqual({ size: wdioExpect.toBeWithinRange(1, 10) })).toEqualTypeOf<void>()
     })
 })

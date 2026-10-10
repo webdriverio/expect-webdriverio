@@ -40,1004 +40,1009 @@ type ElementValueMatcher<ActualT, Expected, Options> = FnWhenElementOrArrayLike<
     (expected: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<Expected>, options?: Options) => Promise<void>
 >
 
-declare global {
-    /* eslint-disable @typescript-eslint/consistent-type-imports*/
-    type ServiceInstance =  import('@wdio/types').Services.ServiceInstance
-    type Test = import('@wdio/types').Frameworks.Test
-    type TestResult = import('@wdio/types').Frameworks.TestResult
-    type PickleStep = import('@wdio/types').Frameworks.PickleStep
-    type Scenario = import('@wdio/types').Frameworks.Scenario
+// The helper types of the public types. They are not global, so they cannot conflict with the global types of a project:
+// the public types are the `ExpectWebdriverIO` namespace below (and its named exports in `src/index.ts`). They are
+// exported for `src/` only: the entry points of the package do not export them.
+/* eslint-disable @typescript-eslint/consistent-type-imports*/
+export type ServiceInstance =  import('@wdio/types').Services.ServiceInstance
+export type Test = import('@wdio/types').Frameworks.Test
+export type TestResult = import('@wdio/types').Frameworks.TestResult
+export type PickleStep = import('@wdio/types').Frameworks.PickleStep
+export type Scenario = import('@wdio/types').Frameworks.Scenario
 
-    type SnapshotResult = import('@vitest/snapshot').SnapshotResult
-    type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
+export type SnapshotResult = import('@vitest/snapshot').SnapshotResult
+export type SnapshotUpdateState = import('@vitest/snapshot').SnapshotUpdateState
 
-    type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
-    type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
+export type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
+export type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
+export type ExpectLibMatchers<R extends void | Promise<void>, T> = import('expect').Matchers<R, T>
+export type ExpectLibExpect = import('expect').Expect
+export type ExpectLibInverse<Matchers> = import('expect').Inverse<Matchers>
+export type ExpectLibExpectationResult = import('expect').ExpectationResult
+export type ExpectLibMatcherContext = import('expect').MatcherContext
+export type MatchersObject = Parameters<typeof import('expect').expect.extend>[0]
+export type ExpectLibAnything = ReturnType<typeof import('expect').expect.any> | ReturnType<typeof import('expect').expect.anything>
 
-    type ExpectLibAsymmetricMatchers = import('expect').AsymmetricMatchers
-    type ExpectLibAsymmetricMatcher<T> = import('expect').AsymmetricMatcher<T>
-    type ExpectLibMatchers<R extends void | Promise<void>, T> = import('expect').Matchers<R, T>
-    type ExpectLibExpect = import('expect').Expect
-    type ExpectLibInverse<Matchers> = import('expect').Inverse<Matchers>
-    type ExpectLibExpectationResult = import('expect').ExpectationResult
-    type ExpectLibMatcherContext = import('expect').MatcherContext
-    type MatchersObject = Parameters<typeof import('expect').expect.extend>[0]
-    type ExpectLibAnything = ReturnType<typeof import('expect').expect.any> | ReturnType<typeof import('expect').expect.anything>
+// Extracted from the expect library, this is the type of the matcher function used in the expect library.
+export type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult;
+}
 
-    // Extracted from the expect library, this is the type of the matcher function used in the expect library.
-    type RawMatcherFn<Context extends ExpectLibMatcherContext = ExpectLibMatcherContext> = {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (this: Context, actual: any, ...expected: Array<any>): ExpectLibExpectationResult;
-    }
+export interface WdioSome<T> {
+    readonly elements: T
+}
 
-    interface WdioSome<T> {
-        readonly elements: T
-    }
+/**
+ * Indicates that a value can be either one T or an array of T.
+ */
+export type MaybeArray<T> = T | T[]
 
+export type MaybeSome<T> = T | WdioSome<T>
+
+/**
+ * Indicates that a value can be either one T, an array of T with oneOf of T, or a oneOf matcher of T.
+ * For oneOf anything is excluded since it does not make any sense to have a oneOf with Anything matcher.
+ * Numbers are excluded: a string value; `expect.oneOf()` with numbers is `OneOfNumbersPartialMatcher`, for the number matchers.
+ */
+export type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything | number>>)[] | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything | number>>
+
+/**
+ * Indicates that a value can be either one T, or oneOf matchers of T.
+ * For oneOf anything is excluded since it does not make any sense to have a oneOf with Anything matcher.
+ */
+export type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>
+
+export type MultiRemoteValues<T> = Record<string, T>
+export type MultiRemoteValuesOrOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<T> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.MultiRemotePartialMatcher<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>
+export type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
+export type MaybeArrayOrMultiRemoteValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
+export type MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>> | ExpectWebdriverIO.OneOfPartialMatcher<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>>
+export type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
+/** Multi-remote $(): one expected value for every instance, or one per instance with `expect.multiRemote()` (e.g. numbers, styles) */
+export type SingleOrMultiRemoteMatcher<T> = T | ExpectWebdriverIO.MultiRemotePartialMatcher<T>
+/** Multi-remote $$(): one expected value (or one per element) for every instance, or the same per instance with `expect.multiRemote()` (e.g. numbers, styles) */
+export type MaybeArrayOrMultiRemoteMatcher<T> = MaybeArray<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T>>
+
+/**
+ * Real Promise and wdio chainable promise types.
+ */
+export type WdioPromiseLike<T = unknown> = PromiseLike<T> | ChainablePromiseElement | ChainablePromiseArray
+export type WdioElementOrPromiseLike<T = unknown> = WdioPromiseLike<T> | WebdriverIO.Element
+export type ElementPromise = Promise<WebdriverIO.Element>
+export type ElementArrayPromise = Promise<WebdriverIO.ElementArray>
+export type ArrayOfElementsPromise = Promise<WebdriverIO.Element[]>
+
+/**
+ * Note we are defining types outside of the namespace as done in jest library until we can make every typing work correctly.
+ * Once we have all types working, we could check to bring those back into the `ExpectWebdriverIO` namespace.
+ */
+
+/**
+ * Type helpers to be able to targets specific types mostly used in conjunctions with the Type of the `actual` parameter of the `expect`
+ */
+export type ElementOrMaybeSomeArrayLike = ElementLike | MaybeSomeElementArrayLike
+export type ElementLike = WebdriverIO.Element | ChainablePromiseElement
+export type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElementArray
+export type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElementArray>
+export type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray
+export type MockPromise = Promise<WebdriverIO.Mock>
+/** Multi-remote `mock()`, one mock per instance: every instance's mock must satisfy the network matcher */
+export type MultiRemoteMocks = WebdriverIO.MultiRemoteMock | Promise<WebdriverIO.MultiRemoteMock>
+
+/**
+ * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
+ */
+// A browsing context (tab, window or frame) is a browser subject, for one browser
+export type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser | WebdriverIO.BrowsingContext ? Fn : never
+export type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT extends WebdriverIO.Browser | WebdriverIO.BrowsingContext ? FnBrowser : ActualT extends WebdriverIO.MultiRemoteBrowser ? FnMultiRemote : never
+/**
+ * Enables distinct function signatures for single elements versus arrays of elements.
+ *
+ * Note on Union Types: Passing a union type (e.g., `Element | Element[]`) may cause
+ * overload resolution failures, preventing the IDE and compiler from inferring the correct signature.
+ *
+ * Fix: If type inference issues arise, split the implementation into separate interfaces
+ */
+export type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement, FnMultiRemoteElement = FnElement, FnMultiRemoteElements = FnArray> = ActualT extends WebdriverIO.MultiRemoteElementArray ? FnMultiRemoteElements : ActualT extends WebdriverIO.MultiRemoteElement ? FnMultiRemoteElement : ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement : never
+export type FnWhenElementArrayLike<ActualT, Fn, FnMultiRemoteElements = Fn> = ActualT extends WebdriverIO.MultiRemoteElementArray ? FnMultiRemoteElements : ActualT extends MaybeSomeElementArrayLike ? Fn : never
+
+/**
+ * Same as the other but because of Jasmine and it's expectAsync typing which does not force T to be a promise, then we need to account for `WebdriverIO.Mock
+ */
+export type FnWhenMock<ActualT, Fn, FnMultiRemote = Fn> = ActualT extends MultiRemoteMocks ? FnMultiRemote : ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
+
+export interface WdioCustomAsymmetricMatchers {
+    oneOf(...values: Array<StringValue | null>): ExpectWebdriverIO.OneOfPartialMatcher<StringValue | null>
     /**
-     * Indicates that a value can be either one T or an array of T.
-     */
-    type MaybeArray<T> = T | T[]
-
-    type MaybeSome<T> = T | WdioSome<T>
-
-    /**
-     * Indicates that a value can be either one T, an array of T with oneOf of T, or a oneOf matcher of T.
-     * For oneOf anything is excluded since it does not make any sense to have a oneOf with Anything matcher.
-     * Numbers are excluded: a string value; `expect.oneOf()` with numbers is `OneOfNumbersPartialMatcher`, for the number matchers.
-     */
-    type MaybeArrayOrOneOf<T> = T | (T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything | number>>)[] | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything | number>>
-
-    /**
-     * Indicates that a value can be either one T, or oneOf matchers of T.
-     * For oneOf anything is excluded since it does not make any sense to have a oneOf with Anything matcher.
-     */
-    type MaybeOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<Exclude<T, ExpectWebdriverIO.PartialMatcherAnything>>
-
-    type MultiRemoteValues<T> = Record<string, T>
-    type MultiRemoteValuesOrOneOf<T> = T | ExpectWebdriverIO.OneOfPartialMatcher<T> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.MultiRemotePartialMatcher<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>
-    type MaybeArrayOrMultiRemoteValues<T> = MaybeArray<T> | MultiRemoteValues<T>
-    type MaybeArrayOrMultiRemoteValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | ExpectWebdriverIO.OneOfPartialMatcher<T>
-    type MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<T> = MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>> | MultiRemoteValues<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>> | ExpectWebdriverIO.OneOfPartialMatcher<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T | ExpectWebdriverIO.OneOfPartialMatcher<T>>>
-    type ArrayOrMultiRemoteValues<T> = T[] | MultiRemoteValues<T>
-    /** Multi-remote $(): one expected value for every instance, or one per instance with `expect.multiRemote()` (e.g. numbers, styles) */
-    type SingleOrMultiRemoteMatcher<T> = T | ExpectWebdriverIO.MultiRemotePartialMatcher<T>
-    /** Multi-remote $$(): one expected value (or one per element) for every instance, or the same per instance with `expect.multiRemote()` (e.g. numbers, styles) */
-    type MaybeArrayOrMultiRemoteMatcher<T> = MaybeArray<T> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArray<T>>
-
-    /**
-     * Real Promise and wdio chainable promise types.
-     */
-    type WdioPromiseLike<T = unknown> = PromiseLike<T> | ChainablePromiseElement | ChainablePromiseArray
-    type WdioElementOrPromiseLike<T = unknown> = WdioPromiseLike<T> | WebdriverIO.Element
-    type ElementPromise = Promise<WebdriverIO.Element>
-    type ElementArrayPromise = Promise<WebdriverIO.ElementArray>
-    type ArrayOfElementsPromise = Promise<WebdriverIO.Element[]>
-
-    /**
-     * Note we are defining types outside of the namespace as done in jest library until we can make every typing work correctly.
-     * Once we have all types working, we could check to bring those back into the `ExpectWebdriverIO` namespace.
-     */
-
-    /**
-     * Type helpers to be able to targets specific types mostly used in conjunctions with the Type of the `actual` parameter of the `expect`
-     */
-    type ElementOrMaybeSomeArrayLike = ElementLike | MaybeSomeElementArrayLike
-    type ElementLike = WebdriverIO.Element | ChainablePromiseElement
-    type ElementArrayLike = WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElementArray
-    type MaybeSomeElementArrayLike = MaybeSome<WebdriverIO.ElementArray | ChainablePromiseArray | WebdriverIO.Element[] | ArrayOfElementsPromise | ElementArrayPromise | WebdriverIO.MultiRemoteElementArray>
-    type MultiRemoteElementOrElements = WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray
-    type MockPromise = Promise<WebdriverIO.Mock>
-    /** Multi-remote `mock()`, one mock per instance: every instance's mock must satisfy the network matcher */
-    type MultiRemoteMocks = WebdriverIO.MultiRemoteMock | Promise<WebdriverIO.MultiRemoteMock>
-
-    /**
-     * Type helpers allowing to use the function when the expect(actual: T) is of the expected type T.
-     */
-    // A browsing context (tab, window or frame) is a browser subject, for one browser
-    type FnWhenBrowser<ActualT, Fn> = ActualT extends WebdriverIO.Browser | WebdriverIO.BrowsingContext ? Fn : never
-    type FnWhenBrowserOrMultiRemote<ActualT, FnBrowser, FnMultiRemote> = ActualT extends WebdriverIO.Browser | WebdriverIO.BrowsingContext ? FnBrowser : ActualT extends WebdriverIO.MultiRemoteBrowser ? FnMultiRemote : never
-    /**
-     * Enables distinct function signatures for single elements versus arrays of elements.
+     * One of these numbers, in the number matchers, e.g. a width of 100 or 200 and nothing between, which a range cannot say.
      *
-     * Note on Union Types: Passing a union type (e.g., `Element | Element[]`) may cause
-     * overload resolution failures, preventing the IDE and compiler from inferring the correct signature.
+     * @example
+     * await expect(element).toHaveWidth(expect.oneOf(100, 200))
+     */
+    oneOf(...values: number[]): ExpectWebdriverIO.OneOfNumbersPartialMatcher
+
+    /**
+     * One expected value per multi-remote instance, keyed by instance name. Every instance must be listed.
+     * Required for per-instance values of number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`)
+     * and of matchers whose expected value is itself an object (`toHaveStyle`, `toHaveSize`, `toHaveElementProperty`),
+     * and the explicit form of the plain object shorthand for the other matchers.
      *
-     * Fix: If type inference issues arise, split the implementation into separate interfaces
+     * @example
+     * await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: 'Titre' }))
+     * await expect(multiRemoteBrowser.$('h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
      */
-    type FnWhenElementOrArrayLike<ActualT, FnElement, FnArray = FnElement, FnMultiRemoteElement = FnElement, FnMultiRemoteElements = FnArray> = ActualT extends WebdriverIO.MultiRemoteElementArray ? FnMultiRemoteElements : ActualT extends WebdriverIO.MultiRemoteElement ? FnMultiRemoteElement : ActualT extends MaybeSomeElementArrayLike ? FnArray : ActualT extends ElementLike ? FnElement : never
-    type FnWhenElementArrayLike<ActualT, Fn, FnMultiRemoteElements = Fn> = ActualT extends WebdriverIO.MultiRemoteElementArray ? FnMultiRemoteElements : ActualT extends MaybeSomeElementArrayLike ? Fn : never
+    multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
+}
+
+/**
+ * Matchers dedicated to Wdio Browser or multi-remote Browser.
+ * When asserting on a browser's properties requiring to be awaited, the return type is a Promise.
+ * When actual is not a browser, the return type is never, so the function cannot be used.
+ */
+export interface WdioBrowserMatchers<_R, ActualT>{
+    /**
+     * Browser`s url
+     */
+    toHaveUrl: FnWhenBrowserOrMultiRemote<ActualT,
+        /**
+        * `WebdriverIO.Browser` -> `getUrl`
+        */
+        (
+            url: StringValue,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getUrl`
+        */
+        (
+            url: MultiRemoteValuesOrOneOf<StringValue>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
 
     /**
-     * Same as the other but because of Jasmine and it's expectAsync typing which does not force T to be a promise, then we need to account for `WebdriverIO.Mock
+     * Browser`s title
      */
-    type FnWhenMock<ActualT, Fn, FnMultiRemote = Fn> = ActualT extends MultiRemoteMocks ? FnMultiRemote : ActualT extends MockPromise | WebdriverIO.Mock ? Fn : never
-
-    interface WdioCustomAsymmetricMatchers {
-        oneOf(...values: Array<StringValue | null>): ExpectWebdriverIO.OneOfPartialMatcher<StringValue | null>
+    toHaveTitle: FnWhenBrowserOrMultiRemote<ActualT,
         /**
-         * One of these numbers, in the number matchers, e.g. a width of 100 or 200 and nothing between, which a range cannot say.
-         *
-         * @example
-         * await expect(element).toHaveWidth(expect.oneOf(100, 200))
-         */
-        oneOf(...values: number[]): ExpectWebdriverIO.OneOfNumbersPartialMatcher
+        * `WebdriverIO.Browser` -> `getTitle`
+        */
+        (
+            title: StringValue,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
 
         /**
-         * One expected value per multi-remote instance, keyed by instance name. Every instance must be listed.
-         * Required for per-instance values of number matchers (`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`)
-         * and of matchers whose expected value is itself an object (`toHaveStyle`, `toHaveSize`, `toHaveElementProperty`),
-         * and the explicit form of the plain object shorthand for the other matchers.
-         *
-         * @example
-         * await expect(multiRemoteBrowser).toHaveTitle(expect.multiRemote({ chrome: 'Title', firefox: 'Titre' }))
-         * await expect(multiRemoteBrowser.$('h1')).toHaveStyle(expect.multiRemote({ chrome: { color: 'red' }, firefox: { color: 'blue' } }))
-         */
-        multiRemote<T>(values: MultiRemoteValues<T>): ExpectWebdriverIO.MultiRemotePartialMatcher<T>
-    }
+        * `WebdriverIO.MultiRemoteBrowser` -> `getTitle`
+        */
+        (
+            title: MultiRemoteValuesOrOneOf<StringValue>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
 
     /**
-     * Matchers dedicated to Wdio Browser or multi-remote Browser.
-     * When asserting on a browser's properties requiring to be awaited, the return type is a Promise.
-     * When actual is not a browser, the return type is never, so the function cannot be used.
+     * `WebdriverIO.Browser` -> `execute`
      */
-    interface WdioBrowserMatchers<_R, ActualT>{
+    toHaveClipboardText: FnWhenBrowserOrMultiRemote<ActualT,
         /**
-         * Browser`s url
-         */
-        toHaveUrl: FnWhenBrowserOrMultiRemote<ActualT,
-            /**
-            * `WebdriverIO.Browser` -> `getUrl`
-            */
-            (
-                url: StringValue,
-                options?: ExpectWebdriverIO.StringOptions
-            ) => Promise<void>,
-
-            /**
-            * `WebdriverIO.MultiRemoteBrowser` -> `getUrl`
-            */
-            (
-                url: MultiRemoteValuesOrOneOf<StringValue>,
-                options?: ExpectWebdriverIO.StringOptions
-            ) => Promise<void>
-        >
+        * `WebdriverIO.Browser` -> `getClipboard`
+        */
+        (
+            clipboardText: MaybeOneOf<StringValue>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>,
 
         /**
-         * Browser`s title
-         */
-        toHaveTitle: FnWhenBrowserOrMultiRemote<ActualT,
-            /**
-            * `WebdriverIO.Browser` -> `getTitle`
-            */
-            (
-                title: StringValue,
-                options?: ExpectWebdriverIO.StringOptions
-            ) => Promise<void>,
-
-            /**
-            * `WebdriverIO.MultiRemoteBrowser` -> `getTitle`
-            */
-            (
-                title: MultiRemoteValuesOrOneOf<StringValue>,
-                options?: ExpectWebdriverIO.StringOptions
-            ) => Promise<void>
-        >
-
-        /**
-         * `WebdriverIO.Browser` -> `execute`
-         */
-        toHaveClipboardText: FnWhenBrowserOrMultiRemote<ActualT,
-            /**
-            * `WebdriverIO.Browser` -> `getClipboard`
-            */
-            (
-                clipboardText: MaybeOneOf<StringValue>,
-                options?: ExpectWebdriverIO.StringOptions
-            ) => Promise<void>,
-
-            /**
-            * `WebdriverIO.MultiRemoteBrowser` -> `getClipboard`
-            */
-            (
-                clipboardText: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
-                options?: ExpectWebdriverIO.StringOptions
-            ) => Promise<void>
-        >
-
-        /**
-         * `WebdriverIO.Browser` -> `execute`
-         */
-        toHaveLocalStorageItem: FnWhenBrowserOrMultiRemote<ActualT,
-            /**
-            * `WebdriverIO.Browser` -> `getLocalStorageItem`
-            */
-            {
-                /**
-                 * Only check that the item exists.
-                 * Use `toHaveLocalStorageItem(key, expect.anything(), options)` to check it with options.
-                 */
-                (key: string): Promise<void>
-                (
-                    key: string,
-                    expectedValue: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
-                    options?: ExpectWebdriverIO.StringOptions
-                ): Promise<void>
-            },
-
-            /**
-            * `WebdriverIO.MultiRemoteBrowser` -> `getLocalStorageItem`
-            */
-            {
-                /**
-                 * Only check that the item exists.
-                 * Use `toHaveLocalStorageItem(key, expect.anything(), options)` to check it with options.
-                 */
-                (key: string): Promise<void>
-                (
-                    key: string,
-                    expectedValue: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
-                    options?: ExpectWebdriverIO.StringOptions
-                ): Promise<void>
-            }
-        >
-
-        /**
-         * `WebdriverIO.Browser` -> `execute`: the item of `sessionStorage`, compared as a string value
-         */
-        toHaveSessionStorageItem: FnWhenBrowserOrMultiRemote<ActualT,
-            /**
-            * `WebdriverIO.Browser` or `WebdriverIO.BrowsingContext` -> `execute`
-            */
-            {
-                /**
-                 * Only check that the item exists.
-                 * Use `toHaveSessionStorageItem(key, expect.anything(), options)` to check it with options.
-                 */
-                (key: string): Promise<void>
-                (
-                    key: string,
-                    expectedValue: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
-                    options?: ExpectWebdriverIO.StringOptions
-                ): Promise<void>
-            },
-
-            /**
-            * `WebdriverIO.MultiRemoteBrowser` -> `execute` on each instance
-            */
-            {
-                /**
-                 * Only check that the item exists.
-                 * Use `toHaveSessionStorageItem(key, expect.anything(), options)` to check it with options.
-                 */
-                (key: string): Promise<void>
-                (
-                    key: string,
-                    expectedValue: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
-                    options?: ExpectWebdriverIO.StringOptions
-                ): Promise<void>
-            }
-        >
-
-        /**
-         * `WebdriverIO.Browser` -> `getCookies({ name })`: the value of the cookie, compared as a string value
-         */
-        toHaveCookie: FnWhenBrowserOrMultiRemote<ActualT,
-            /**
-            * `WebdriverIO.Browser` or `WebdriverIO.BrowsingContext` -> `getCookies({ name })`
-            */
-            {
-                /**
-                 * Only check that the cookie exists.
-                 * Use `toHaveCookie(name, expect.anything(), options)` to check it with options.
-                 */
-                (name: string): Promise<void>
-                (
-                    name: string,
-                    expectedValue: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
-                    options?: ExpectWebdriverIO.StringOptions
-                ): Promise<void>
-            },
-
-            /**
-            * `WebdriverIO.MultiRemoteBrowser` -> `getCookies({ name })` of each instance
-            */
-            {
-                /**
-                 * Only check that the cookie exists.
-                 * Use `toHaveCookie(name, expect.anything(), options)` to check it with options.
-                 */
-                (name: string): Promise<void>
-                (
-                    name: string,
-                    expectedValue: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
-                    options?: ExpectWebdriverIO.StringOptions
-                ): Promise<void>
-            }
-        >
-
-        /**
-         * `WebdriverIO.Browser` -> `getWindowHandles()`: the number of the windows and tabs of the session, e.g. `2` after a
-         * link opens a new tab. On a browsing context, the count of its session.
-         */
-        toHaveWindowCount: FnWhenBrowserOrMultiRemote<ActualT,
-            (
-                count: NumberValue,
-                options?: ExpectWebdriverIO.CommandOptions
-            ) => Promise<void>,
-            /**
-            * `WebdriverIO.MultiRemoteBrowser` -> `getWindowHandles()` of each instance
-            */
-            (
-                count: SingleOrMultiRemoteMatcher<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ) => Promise<void>
-        >
-    }
+        * `WebdriverIO.MultiRemoteBrowser` -> `getClipboard`
+        */
+        (
+            clipboardText: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) => Promise<void>
+    >
 
     /**
-     * Matchers dedicated to Network Mocking.
-     * When asserting we wait for the result with `await waitUntil()`, therefore the return type needs to be a Promise.
-     * When actual is not a WebdriverIO.Mock, the return type is never, so the function cannot be used.
+     * `WebdriverIO.Browser` -> `execute`
      */
-    interface WdioNetworkMatchers<_R, ActualT> {
+    toHaveLocalStorageItem: FnWhenBrowserOrMultiRemote<ActualT,
         /**
-         * Check that `WebdriverIO.Mock` was called.
-         * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must be called.
-         */
-        toBeRequested: FnWhenMock<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * Check that `WebdriverIO.Mock` was called N times.
-         * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must be called N times,
-         * or its own number of times with `expect.multiRemote({ chrome: 1, firefox: 2 })`.
-         */
-        toBeRequestedTimes: FnWhenMock<ActualT, (
-            times: NumberValue,
-            options?: ExpectWebdriverIO.CommandOptions
-        ) => Promise<void>, (
-            times: SingleOrMultiRemoteMatcher<NumberValue>,
-            options?: ExpectWebdriverIO.CommandOptions
-        ) => Promise<void>>
-
-        /**
-         * Check that `WebdriverIO.Mock` was called with the specific parameters.
-         * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must have such a call,
-         * or a call with its own parameters with `expect.multiRemote({ chrome: { ... }, firefox: { ... } })`.
-         */
-        toBeRequestedWith: FnWhenMock<ActualT,
-            (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>,
-            (requestedWith: SingleOrMultiRemoteMatcher<ExpectWebdriverIO.RequestedWith>, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>
-        >
-    }
-
-    /**
-     * Matchers dedicated to WebdriverIO Element or ElementArray (or chainable) on Browser
-     * For Multi-Remote Browser, MultiRemoteElement or MultiRemoteElementArray
-     * When asserting on an element or element array's properties requiring to be awaited, the return type is a Promise.
-     * When actual is neither of WebdriverIO.Element, WebdriverIO.ElementArray, ChainableElement, ChainableElementArray, the return type is never, so the function cannot be used.
-     */
-    interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
-        // ===== $ or $$ with Browser or Multi-Remote Browser=====
-        /**
-         * `WebdriverIO.Element` -> `isDisplayed`
-         */
-        toBeDisplayed: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.ToBeDisplayedOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `isExisting`
-         */
-        toExist: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `isExisting`
-         */
-        toBePresent: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `isExisting`
-         */
-        toBeExisting: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `isClickable`
-         */
-        toBeClickable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `!isEnabled`
-         */
-        toBeDisabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `isDisplayedInViewport`
-         */
-        toBeDisplayedInViewport: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `isEnabled`
-         */
-        toBeEnabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `isFocused`
-         */
-        toBeFocused: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `isStable`
-         * The element is not moving, e.g. at the end of an animation
-         */
-        toBeStable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `getProperty('required')`
-         * The form field (`<input>`, `<select>`, `<textarea>`) is required. For an ARIA widget, use `toHaveAttribute('aria-required', 'true')`
-         */
-        toBeRequired: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `getProperty('readOnly')`
-         * The form field (`<input>`, `<textarea>`) is read only. For an ARIA widget, use `toHaveAttribute('aria-readonly', 'true')`
-         */
-        toBeReadOnly: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `isSelected`
-         */
-        toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        /**
-         * `WebdriverIO.Element` -> `isSelected`
-         */
-        toBeChecked: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
-
-        toHaveAttribute: FnWhenElementOrArrayLike<ActualT, {
-            /** Element $() API */
-            /** Check ONLY for the presence of the attribute. For options, use `toHaveAttribute(attribute, expect.anything(), options)` */
+        * `WebdriverIO.Browser` -> `getLocalStorageItem`
+        */
+        {
+            /**
+             * Only check that the item exists.
+             * Use `toHaveLocalStorageItem(key, expect.anything(), options)` to check it with options.
+             */
+            (key: string): Promise<void>
             (
-                attribute: string,
-            ): Promise<void>;
-
-            /** Assert both attribute name AND a specific expected value */
-            (
-                attribute: string,
-                value: MaybeOneOf<StringValue> | ExpectWebdriverIO.PartialMatcherAnything,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>;
-        }, {
-            /** Elements $$() API */
-            /** Check ONLY for the presence of the attribute. For options, use `toHaveAttribute(attribute, expect.anything(), options)` */
-            (
-                attribute: string,
-            ): Promise<void>;
-
-            /** Assert both attribute name AND a specific expected value */
-            (
-                attribute: string,
-                value: MaybeArrayOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>;
-        }, {
-            /** Element MultiRemoteBrowser.$() API */
-            (
-                attribute: string
-            ): Promise<void>
-            (
-                attribute: string,
-                value: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+                key: string,
+                expectedValue: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
-        }, {
-            /** Elements MultiRemoteBrowser.$$() API */
+        },
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getLocalStorageItem`
+        */
+        {
+            /**
+             * Only check that the item exists.
+             * Use `toHaveLocalStorageItem(key, expect.anything(), options)` to check it with options.
+             */
+            (key: string): Promise<void>
             (
-                attribute: string
-            ): Promise<void>
-            (
-                attribute: string,
-                value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+                key: string,
+                expectedValue: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
                 options?: ExpectWebdriverIO.StringOptions
             ): Promise<void>
         }
-        >
-
-        /**
-         * `WebdriverIO.Element` -> `getAttribute` class
-         *
-         * Checks if one of the classes of an element matches the expected value. Each class is compared, also with an
-         * asymmetric matcher: for the full attribute, use `toHaveAttribute('class', ...)`.
-         * @param className - The class name, pattern or asymmetric matcher to match against.
-         * @param options - Optional settings that can be passed to the function.
-         *
-         * **Usage**
-         * ```js
-         * // Check if an element has the class 'btn'
-         * await expect(element).toHaveElementClass('btn');
-         *
-         * // Check if an element has any of the specified classes
-         * await expect(element).toHaveElementClass(expect.oneOf('btn', 'btn-large'));
-         *
-         * // Check if an element has all the specified classes: 1 assertion for each class
-         * await expect(element).toHaveElementClass('btn');
-         * await expect(element).toHaveElementClass('btn-large');
-         * ```
-         */
-        toHaveElementClass: FnWhenElementOrArrayLike<ActualT, {
-            /** Element $() API */
-            (
-                className: StringValue,
-                options?: ExpectWebdriverIO.StringOptions
-            ) :Promise<void>
-        }, {
-            /** Elements $$() API */
-            (
-                className: MaybeArray<StringValue>,
-                options?: ExpectWebdriverIO.StringOptions
-            ) :Promise<void>
-        }, {
-            /** Element MultiRemoteBrowser.$() API */
-            (
-                className: MultiRemoteValuesOrOneOf<StringValue>,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>
-        }, {
-            /** Elements MultiRemoteBrowser.$$() API */
-            (
-                className: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<StringValue>,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>
-        }>
-
-        toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, {
-            /** Element $() API */
-            /**
-             * Allow to check ONLY for the presence of the property
-             * Use `toHaveElementProperty(property, expect.anything(), options)` to check for the presence of the property with options.
-             */
-            (
-                property: string,
-            ): Promise<void>;
-
-            /** Assert both property name AND a specific expected value */
-            (
-                property: string,
-                value: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>;
-        }, {
-            /** Elements $$() API */
-            /**
-             * Allow to check ONLY for the presence of the property
-             * Use `toHaveElementProperty(property, expect.anything(), options)` to check for the presence of the property with options.
-             */
-            (
-                property: string,
-            ): Promise<void>;
-
-            /** Assert both property name AND a specific expected value */
-            (
-                property: string,
-                value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher | null>, null>,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>;
-        }, {
-            /** Element MultiRemoteBrowser.$() API */
-            (
-                property: string
-            ): Promise<void>
-            (
-                property: string,
-                value: SingleOrMultiRemoteMatcher<MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number>,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>
-        }, {
-            /** Elements MultiRemoteBrowser.$$() API */
-            (
-                property: string
-            ): Promise<void>
-            (
-                property: string,
-                value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher | null>, null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher | null>>,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>
-        }>
-
-        /**
-         * `WebdriverIO.Element` -> `getProperty` value
-         */
-        toHaveValue: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
-
-        /**
-         * `WebdriverIO.Element` -> `$$('./*').length`
-         * Supports less / greater then or equals to be passed in value as a NumberMatcher.
-         */
-        toHaveChildren: FnWhenElementOrArrayLike<ActualT, {
-            /** Element $() API */
-            /**
-             * Verifies that the element has children.
-             * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
-             */
-            (): Promise<void>;
-
-            /**
-             * When called with an expected child count or number matcher.
-             */
-            (
-                expectedValue: NumberValue,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>;
-        }, {
-            /** Element $$() API */
-            /**
-             * Verifies that the element has children.
-             * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
-             */
-            (): Promise<void>;
-
-            /**
-             * When called with an expected child count or number matcher.
-             */
-            (
-                expectedValue: MaybeArray<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>;
-        }, {
-            /** Element MultiRemoteBrowser.$() API */
-            (): Promise<void>
-            (
-                expectedValue: SingleOrMultiRemoteMatcher<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>
-        }, {
-            /** Elements MultiRemoteBrowser.$$() API */
-            (): Promise<void>
-            (
-                expectedValue: MaybeArrayOrMultiRemoteMatcher<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>
-        }>
-
-        /**
-         * `WebdriverIO.Element` -> `getAttribute` href
-         */
-        toHaveHref: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
-
-        /**
-         * `WebdriverIO.Element` -> `getAttribute` href
-         */
-        toHaveLink: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
-
-        /**
-         * `WebdriverIO.Element` -> `getProperty` value
-         */
-        toHaveId: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
-
-        /**
-         * `WebdriverIO.Element` -> `getText`
-         * Element's text equals the text provided
-         *
-         * @param text - The expected text to match.
-         * @param options - Optional settings that can be passed to the function.
-         *
-         * **Usage**
-         *
-         * ```js
-         * // Check if an element has the text
-         * const elem = await $('.container')
-         * await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
-         *
-         * // Check if an element array contains the specified text
-         * const elem = await $$('ul > li')
-         * await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
-         * await expect(elem).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
-         * ```
-         */
-        toHaveText: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
-
-        /**
-         * `WebdriverIO.Element` -> `getHTML`
-         * Element's html equals the html provided
-         */
-        toHaveHTML: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.HTMLOptions>
-
-        /**
-         * `WebdriverIO.Element` -> `getComputedLabel`
-         * Element's computed label equals the computed label provided
-         */
-        toHaveComputedLabel: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
-
-        /**
-         * `WebdriverIO.Element` -> `getComputedRole`
-         * Element's computed role equals the computed role provided
-         */
-        toHaveComputedRole: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
-
-        /**
-         * `WebdriverIO.Element` -> `getTagName`
-         * Element's tag name equals the tag name provided, e.g. `button`
-         */
-        toHaveTagName: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
-
-        /**
-         * `WebdriverIO.Element` -> `getSize('width')`
-         * Element's width equals the width provided
-         */
-        toHaveWidth: FnWhenElementOrArrayLike<ActualT, {
-            /** Element $() API */
-            (
-                width: NumberValue,
-                options?: ExpectWebdriverIO.CommandOptions
-            ) : Promise<void>
-        }, {
-            /** Elements $$() API */
-            (
-                width: MaybeArray<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ) : Promise<void>
-        }, {
-            /** Element MultiRemoteBrowser.$() API */
-            (
-                width: SingleOrMultiRemoteMatcher<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>
-        }, {
-            /** Elements MultiRemoteBrowser.$$() API */
-            (
-                width: MaybeArrayOrMultiRemoteMatcher<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>
-        }>
-
-        /**
-         * `WebdriverIO.Element` -> `getSize('height')`
-         * Checks if the element's height equals the given number.
-         *
-         * @param height - The expected height of the element.
-         * @param options - Optional command options.
-         *
-         * **Usage Example:**
-         * ```js
-         * await expect(element).toHaveHeight(42)
-         * ```
-         */
-        toHaveHeight: FnWhenElementOrArrayLike<ActualT, {
-            /** Element $() API */
-            (
-                height: NumberValue,
-                options?: ExpectWebdriverIO.CommandOptions
-            ) : Promise<void>
-        }, {
-            /** Elements $$() API */
-            (
-                height: MaybeArray<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ) : Promise<void>
-        }, {
-            /** Element MultiRemoteBrowser.$() API */
-            (
-                height: SingleOrMultiRemoteMatcher<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>
-        }, {
-            /** Elements MultiRemoteBrowser.$$() API */
-            (
-                height: MaybeArrayOrMultiRemoteMatcher<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>
-        }>
-
-        /**
-         * `WebdriverIO.Element` -> `getSize` value
-         * Element's size equals the size provided
-         */
-        toHaveSize: FnWhenElementOrArrayLike<ActualT, {
-            /** Element $() API */
-            (
-                size: SizeValue,
-                options?: ExpectWebdriverIO.CommandOptions
-            ) : Promise<void>
-        }, {
-            /** Elements $$() API */
-            (
-                size: MaybeArray<SizeValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ) : Promise<void>
-        }, {
-            /** Element MultiRemoteBrowser.$() API */
-            (
-                size: SingleOrMultiRemoteMatcher<SizeValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>
-        }, {
-            /** Elements MultiRemoteBrowser.$$() API */
-            (
-                size: MaybeArrayOrMultiRemoteMatcher<SizeValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>
-        }>
-
-        /**
-         * `WebdriverIO.Element` -> `getAttribute("style")`
-         */
-        toHaveStyle: FnWhenElementOrArrayLike<ActualT, {
-            /** Element $() API */
-            (
-                style: { [key: string]: StyleValue },
-                options?: ExpectWebdriverIO.StringOptions
-            ) : Promise<void>
-        }, {
-            /** Elements $$() API */
-            (
-                style: MaybeArray<{ [key: string]: StyleValue }>,
-                options?: ExpectWebdriverIO.StringOptions
-            ) : Promise<void>
-        }, {
-            /** Element MultiRemoteBrowser.$() API */
-            (
-                style: SingleOrMultiRemoteMatcher<{ [key: string]: StyleValue }>,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>
-        }, {
-            /** Elements MultiRemoteBrowser.$$() API */
-            (
-                style: MaybeArrayOrMultiRemoteMatcher<{ [key: string]: StyleValue }>,
-                options?: ExpectWebdriverIO.StringOptions
-            ): Promise<void>
-        }>
-    }
+    >
 
     /**
-     * Matchers dedicated to WebdriverIO ElementArray (or its chainable).
-     * When asserting on each element's properties requiring awaiting, then return type is a Promise.
-     * When actual is not of WebdriverIO.ElementArray nor ChainableElementArray, the return type is never, so the function cannot be used.
+     * `WebdriverIO.Browser` -> `execute`: the item of `sessionStorage`, compared as a string value
      */
-    interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
-        // ===== Elements $$() only =====
+    toHaveSessionStorageItem: FnWhenBrowserOrMultiRemote<ActualT,
         /**
-         * `WebdriverIO.ElementArray` -> `$$('...').length`
-         * The element arrays is refreshed/mutated until the size equals the size provided or matches the number matcher.
-         *
-         */
-        toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, {
-            (
-                size: NumberValue,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>,
-        }, {
+        * `WebdriverIO.Browser` or `WebdriverIO.BrowsingContext` -> `execute`
+        */
+        {
             /**
-             * Elements MultiRemoteBrowser.$$() API: the size is checked per browser instance.
-             * A single size applies to every instance, or pass one size per instance, e.g. `expect.multiRemote({ chrome: 2, firefox: { gte: 1 } })`.
+             * Only check that the item exists.
+             * Use `toHaveSessionStorageItem(key, expect.anything(), options)` to check it with options.
              */
+            (key: string): Promise<void>
             (
-                size: SingleOrMultiRemoteMatcher<NumberValue>,
-                options?: ExpectWebdriverIO.CommandOptions
-            ): Promise<void>,
-        }>
-    }
+                key: string,
+                expectedValue: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+                options?: ExpectWebdriverIO.StringOptions
+            ): Promise<void>
+        },
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `execute` on each instance
+        */
+        {
+            /**
+             * Only check that the item exists.
+             * Use `toHaveSessionStorageItem(key, expect.anything(), options)` to check it with options.
+             */
+            (key: string): Promise<void>
+            (
+                key: string,
+                expectedValue: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+                options?: ExpectWebdriverIO.StringOptions
+            ): Promise<void>
+        }
+    >
 
     /**
-     * Matchers supporting basic snapshot tests as well as DOM snapshot testing.
-     * When the actual is a WebdriverIO.Element, we need to await the `outerHTML` therefore the return type is a Promise.
+     * `WebdriverIO.Browser` -> `getCookies({ name })`: the value of the cookie, compared as a string value
+     */
+    toHaveCookie: FnWhenBrowserOrMultiRemote<ActualT,
+        /**
+        * `WebdriverIO.Browser` or `WebdriverIO.BrowsingContext` -> `getCookies({ name })`
+        */
+        {
+            /**
+             * Only check that the cookie exists.
+             * Use `toHaveCookie(name, expect.anything(), options)` to check it with options.
+             */
+            (name: string): Promise<void>
+            (
+                name: string,
+                expectedValue: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+                options?: ExpectWebdriverIO.StringOptions
+            ): Promise<void>
+        },
+
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getCookies({ name })` of each instance
+        */
+        {
+            /**
+             * Only check that the cookie exists.
+             * Use `toHaveCookie(name, expect.anything(), options)` to check it with options.
+             */
+            (name: string): Promise<void>
+            (
+                name: string,
+                expectedValue: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+                options?: ExpectWebdriverIO.StringOptions
+            ): Promise<void>
+        }
+    >
+
+    /**
+     * `WebdriverIO.Browser` -> `getWindowHandles()`: the number of the windows and tabs of the session, e.g. `2` after a
+     * link opens a new tab. On a browsing context, the count of its session.
+     */
+    toHaveWindowCount: FnWhenBrowserOrMultiRemote<ActualT,
+        (
+            count: NumberValue,
+            options?: ExpectWebdriverIO.CommandOptions
+        ) => Promise<void>,
+        /**
+        * `WebdriverIO.MultiRemoteBrowser` -> `getWindowHandles()` of each instance
+        */
+        (
+            count: SingleOrMultiRemoteMatcher<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ) => Promise<void>
+    >
+}
+
+/**
+ * Matchers dedicated to Network Mocking.
+ * When asserting we wait for the result with `await waitUntil()`, therefore the return type needs to be a Promise.
+ * When actual is not a WebdriverIO.Mock, the return type is never, so the function cannot be used.
+ */
+export interface WdioNetworkMatchers<_R, ActualT> {
+    /**
+     * Check that `WebdriverIO.Mock` was called.
+     * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must be called.
+     */
+    toBeRequested: FnWhenMock<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * Check that `WebdriverIO.Mock` was called N times.
+     * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must be called N times,
+     * or its own number of times with `expect.multiRemote({ chrome: 1, firefox: 2 })`.
+     */
+    toBeRequestedTimes: FnWhenMock<ActualT, (
+        times: NumberValue,
+        options?: ExpectWebdriverIO.CommandOptions
+    ) => Promise<void>, (
+        times: SingleOrMultiRemoteMatcher<NumberValue>,
+        options?: ExpectWebdriverIO.CommandOptions
+    ) => Promise<void>>
+
+    /**
+     * Check that `WebdriverIO.Mock` was called with the specific parameters.
+     * With multi-remote mocks (`multiRemoteBrowser.mock()`), every instance's mock must have such a call,
+     * or a call with its own parameters with `expect.multiRemote({ chrome: { ... }, firefox: { ... } })`.
+     */
+    toBeRequestedWith: FnWhenMock<ActualT,
+        (requestedWith: ExpectWebdriverIO.RequestedWith, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>,
+        (requestedWith: SingleOrMultiRemoteMatcher<ExpectWebdriverIO.RequestedWith>, options?: ExpectWebdriverIO.CommandOptions) => Promise<void>
+    >
+}
+
+/**
+ * Matchers dedicated to WebdriverIO Element or ElementArray (or chainable) on Browser
+ * For Multi-Remote Browser, MultiRemoteElement or MultiRemoteElementArray
+ * When asserting on an element or element array's properties requiring to be awaited, the return type is a Promise.
+ * When actual is neither of WebdriverIO.Element, WebdriverIO.ElementArray, ChainableElement, ChainableElementArray, the return type is never, so the function cannot be used.
+ */
+export interface WdioElementOrArrayMatchers<_R, ActualT = unknown> {
+    // ===== $ or $$ with Browser or Multi-Remote Browser=====
+    /**
+     * `WebdriverIO.Element` -> `isDisplayed`
+     */
+    toBeDisplayed: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.ToBeDisplayedOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isExisting`
+     */
+    toExist: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isExisting`
+     */
+    toBePresent: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isExisting`
+     */
+    toBeExisting: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isClickable`
+     */
+    toBeClickable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `!isEnabled`
+     */
+    toBeDisabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isDisplayedInViewport`
+     */
+    toBeDisplayedInViewport: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isEnabled`
+     */
+    toBeEnabled: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isFocused`
+     */
+    toBeFocused: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isStable`
+     * The element is not moving, e.g. at the end of an animation
+     */
+    toBeStable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `getProperty('required')`
+     * The form field (`<input>`, `<select>`, `<textarea>`) is required. For an ARIA widget, use `toHaveAttribute('aria-required', 'true')`
+     */
+    toBeRequired: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `getProperty('readOnly')`
+     * The form field (`<input>`, `<textarea>`) is read only. For an ARIA widget, use `toHaveAttribute('aria-readonly', 'true')`
+     */
+    toBeReadOnly: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isSelected`
+     */
+    toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    /**
+     * `WebdriverIO.Element` -> `isSelected`
+     */
+    toBeChecked: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+    toHaveAttribute: FnWhenElementOrArrayLike<ActualT, {
+        /** Element $() API */
+        /** Check ONLY for the presence of the attribute. For options, use `toHaveAttribute(attribute, expect.anything(), options)` */
+        (
+            attribute: string,
+        ): Promise<void>;
+
+        /** Assert both attribute name AND a specific expected value */
+        (
+            attribute: string,
+            value: MaybeOneOf<StringValue> | ExpectWebdriverIO.PartialMatcherAnything,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+    }, {
+        /** Elements $$() API */
+        /** Check ONLY for the presence of the attribute. For options, use `toHaveAttribute(attribute, expect.anything(), options)` */
+        (
+            attribute: string,
+        ): Promise<void>;
+
+        /** Assert both attribute name AND a specific expected value */
+        (
+            attribute: string,
+            value: MaybeArrayOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            attribute: string
+        ): Promise<void>
+        (
+            attribute: string,
+            value: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            attribute: string
+        ): Promise<void>
+        (
+            attribute: string,
+            value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }
+    >
+
+    /**
+     * `WebdriverIO.Element` -> `getAttribute` class
      *
-     * ⚠️ these matchers overload the similar matchers from jest-expect library.
-     * Therefore, they also need to be redefined in the jest.d.ts file so correctly overload the matchers from the Jest namespace.
-     * @see jest.d.ts
+     * Checks if one of the classes of an element matches the expected value. Each class is compared, also with an
+     * asymmetric matcher: for the full attribute, use `toHaveAttribute('class', ...)`.
+     * @param className - The class name, pattern or asymmetric matcher to match against.
+     * @param options - Optional settings that can be passed to the function.
+     *
+     * **Usage**
+     * ```js
+     * // Check if an element has the class 'btn'
+     * await expect(element).toHaveElementClass('btn');
+     *
+     * // Check if an element has any of the specified classes
+     * await expect(element).toHaveElementClass(expect.oneOf('btn', 'btn-large'));
+     *
+     * // Check if an element has all the specified classes: 1 assertion for each class
+     * await expect(element).toHaveElementClass('btn');
+     * await expect(element).toHaveElementClass('btn-large');
+     * ```
      */
-    interface WdioJestOverloadedMatchers<R, ActualT> {
+    toHaveElementClass: FnWhenElementOrArrayLike<ActualT, {
+        /** Element $() API */
+        (
+            className: StringValue,
+            options?: ExpectWebdriverIO.StringOptions
+        ) :Promise<void>
+    }, {
+        /** Elements $$() API */
+        (
+            className: MaybeArray<StringValue>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) :Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            className: MultiRemoteValuesOrOneOf<StringValue>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            className: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<StringValue>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }>
+
+    toHaveElementProperty: FnWhenElementOrArrayLike<ActualT, {
+        /** Element $() API */
         /**
-         * snapshot matcher
-         * A plain `Element[]` or `MultiRemoteElement[]` is only recognized from its elements, so an empty one is snapshotted synchronously
-         * @param label optional snapshot label
+         * Allow to check ONLY for the presence of the property
+         * Use `toHaveElementProperty(property, expect.anything(), options)` to check for the presence of the property with options.
          */
-        toMatchSnapshot(label?: string): ActualT extends WdioElementOrPromiseLike | WebdriverIO.MultiRemoteElement | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElementArray ? Promise<void> : ActualT extends WebdriverIO.Element[] | WebdriverIO.MultiRemoteElement[] ? Promise<void> | R : R
+        (
+            property: string,
+        ): Promise<void>;
+
+        /** Assert both property name AND a specific expected value */
+        (
+            property: string,
+            value: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+    }, {
+        /** Elements $$() API */
         /**
-         * inline snapshot matcher
-         * A plain `Element[]` or `MultiRemoteElement[]` is only recognized from its elements, so an empty one is snapshotted synchronously
-         * @param snapshot snapshot string (autogenerated if not specified)
-         * @param label optional snapshot label
+         * Allow to check ONLY for the presence of the property
+         * Use `toHaveElementProperty(property, expect.anything(), options)` to check for the presence of the property with options.
          */
-        toMatchInlineSnapshot(snapshot?: string, label?: string): ActualT extends WdioElementOrPromiseLike | WebdriverIO.MultiRemoteElement | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElementArray ? Promise<void> : ActualT extends WebdriverIO.Element[] | WebdriverIO.MultiRemoteElement[] ? Promise<void> | R : R
-    }
+        (
+            property: string,
+        ): Promise<void>;
+
+        /** Assert both property name AND a specific expected value */
+        (
+            property: string,
+            value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher | null>, null>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>;
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            property: string
+        ): Promise<void>
+        (
+            property: string,
+            value: SingleOrMultiRemoteMatcher<MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher> | number>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            property: string
+        ): Promise<void>
+        (
+            property: string,
+            value: Exclude<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher | null>, null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | ExpectWebdriverIO.PartialMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | boolean | PropertyObject | ExpectWebdriverIO.OneOfNumbersPartialMatcher | null>>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }>
 
     /**
-     * All the specific WebDriverIO only matchers, excluding the generic matchers from the expect library.
+     * `WebdriverIO.Element` -> `getProperty` value
      */
-    type WdioCustomMatchers<R, ActualT> = WdioJestOverloadedMatchers<R, ActualT> & WdioBrowserMatchers<R, ActualT> & WdioElementOrArrayMatchers<R, ActualT> & WdioElementArrayOnlyMatchers<R, ActualT> & WdioNetworkMatchers<R, ActualT>
+    toHaveValue: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
 
     /**
-     * All the matchers that WebdriverIO Library supports including the generic matchers from the expect library.
+     * `WebdriverIO.Element` -> `$$('./*').length`
+     * Supports less / greater then or equals to be passed in value as a NumberMatcher.
      */
-    type WdioMatchers<R extends void | Promise<void>, ActualT> = WdioCustomMatchers<R, ActualT> & ExpectLibMatchers<R, ActualT>
-
-    /**
-     * Expects specific to WebdriverIO, excluding the generic expect matchers.
-     */
-    interface WdioCustomExpect {
+    toHaveChildren: FnWhenElementOrArrayLike<ActualT, {
+        /** Element $() API */
         /**
-         * Creates a soft assertion wrapper around standard expect
-         * Soft assertions record failures but don't throw errors immediately
-         * All failures are collected and reported at the end of the test
-         * Note: Until fixed, soft only support wdio custom matchers, and not the `expect` library matchers. Moreover, it always returns a Promise.
-         * A chainable `$()` or `$$()` is thenable since WebdriverIO v10, but it keeps the matchers of an element.
+         * Verifies that the element has children.
+         * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
          */
-        soft<T = unknown>(actual: T): T extends ChainablePromiseElement | ChainablePromiseArray ? ExpectWebdriverIO.MatchersAndInverse<void, T> : T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<Promise<void>, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
+        (): Promise<void>;
 
         /**
-         * Get all current soft assertion failures
+         * When called with an expected child count or number matcher.
          */
-        getSoftFailures(testId?: string): ExpectWebdriverIO.SoftFailure[]
+        (
+            expectedValue: NumberValue,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>;
+    }, {
+        /** Element $$() API */
+        /**
+         * Verifies that the element has children.
+         * Same as `expect(el).toHaveChildren({ gte: 1 })` or `expect(el).toHaveChildren({ gte: 1 }, options)`.
+         */
+        (): Promise<void>;
 
         /**
-         * Manually assert all soft failures (throws an error if any failures exist)
+         * When called with an expected child count or number matcher.
          */
-        assertSoftFailures(testId?: string): void
+        (
+            expectedValue: MaybeArray<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>;
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (): Promise<void>
+        (
+            expectedValue: SingleOrMultiRemoteMatcher<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (): Promise<void>
+        (
+            expectedValue: MaybeArrayOrMultiRemoteMatcher<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }>
 
+    /**
+     * `WebdriverIO.Element` -> `getAttribute` href
+     */
+    toHaveHref: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
+
+    /**
+     * `WebdriverIO.Element` -> `getAttribute` href
+     */
+    toHaveLink: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
+
+    /**
+     * `WebdriverIO.Element` -> `getProperty` value
+     */
+    toHaveId: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
+
+    /**
+     * `WebdriverIO.Element` -> `getText`
+     * Element's text equals the text provided
+     *
+     * @param text - The expected text to match.
+     * @param options - Optional settings that can be passed to the function.
+     *
+     * **Usage**
+     *
+     * ```js
+     * // Check if an element has the text
+     * const elem = await $('.container')
+     * await expect(elem).toHaveText('Next-gen browser and mobile automation test framework for Node.js')
+     *
+     * // Check if an element array contains the specified text
+     * const elem = await $$('ul > li')
+     * await expect(elem).toHaveText(['Coffee', 'Tea', 'Milk'])
+     * await expect(elem).toHaveText(expect.arrayContaining(['Tea', 'Coffee']))
+     * ```
+     */
+    toHaveText: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
+
+    /**
+     * `WebdriverIO.Element` -> `getHTML`
+     * Element's html equals the html provided
+     */
+    toHaveHTML: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.HTMLOptions>
+
+    /**
+     * `WebdriverIO.Element` -> `getComputedLabel`
+     * Element's computed label equals the computed label provided
+     */
+    toHaveComputedLabel: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
+
+    /**
+     * `WebdriverIO.Element` -> `getComputedRole`
+     * Element's computed role equals the computed role provided
+     */
+    toHaveComputedRole: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
+
+    /**
+     * `WebdriverIO.Element` -> `getTagName`
+     * Element's tag name equals the tag name provided, e.g. `button`
+     */
+    toHaveTagName: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
+
+    /**
+     * `WebdriverIO.Element` -> `getSize('width')`
+     * Element's width equals the width provided
+     */
+    toHaveWidth: FnWhenElementOrArrayLike<ActualT, {
+        /** Element $() API */
+        (
+            width: NumberValue,
+            options?: ExpectWebdriverIO.CommandOptions
+        ) : Promise<void>
+    }, {
+        /** Elements $$() API */
+        (
+            width: MaybeArray<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            width: SingleOrMultiRemoteMatcher<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            width: MaybeArrayOrMultiRemoteMatcher<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }>
+
+    /**
+     * `WebdriverIO.Element` -> `getSize('height')`
+     * Checks if the element's height equals the given number.
+     *
+     * @param height - The expected height of the element.
+     * @param options - Optional command options.
+     *
+     * **Usage Example:**
+     * ```js
+     * await expect(element).toHaveHeight(42)
+     * ```
+     */
+    toHaveHeight: FnWhenElementOrArrayLike<ActualT, {
+        /** Element $() API */
+        (
+            height: NumberValue,
+            options?: ExpectWebdriverIO.CommandOptions
+        ) : Promise<void>
+    }, {
+        /** Elements $$() API */
+        (
+            height: MaybeArray<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            height: SingleOrMultiRemoteMatcher<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            height: MaybeArrayOrMultiRemoteMatcher<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }>
+
+    /**
+     * `WebdriverIO.Element` -> `getSize` value
+     * Element's size equals the size provided
+     */
+    toHaveSize: FnWhenElementOrArrayLike<ActualT, {
+        /** Element $() API */
+        (
+            size: SizeValue,
+            options?: ExpectWebdriverIO.CommandOptions
+        ) : Promise<void>
+    }, {
+        /** Elements $$() API */
+        (
+            size: MaybeArray<SizeValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            size: SingleOrMultiRemoteMatcher<SizeValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            size: MaybeArrayOrMultiRemoteMatcher<SizeValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>
+    }>
+
+    /**
+     * `WebdriverIO.Element` -> `getAttribute("style")`
+     */
+    toHaveStyle: FnWhenElementOrArrayLike<ActualT, {
+        /** Element $() API */
+        (
+            style: { [key: string]: StyleValue },
+            options?: ExpectWebdriverIO.StringOptions
+        ) : Promise<void>
+    }, {
+        /** Elements $$() API */
+        (
+            style: MaybeArray<{ [key: string]: StyleValue }>,
+            options?: ExpectWebdriverIO.StringOptions
+        ) : Promise<void>
+    }, {
+        /** Element MultiRemoteBrowser.$() API */
+        (
+            style: SingleOrMultiRemoteMatcher<{ [key: string]: StyleValue }>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }, {
+        /** Elements MultiRemoteBrowser.$$() API */
+        (
+            style: MaybeArrayOrMultiRemoteMatcher<{ [key: string]: StyleValue }>,
+            options?: ExpectWebdriverIO.StringOptions
+        ): Promise<void>
+    }>
+}
+
+/**
+ * Matchers dedicated to WebdriverIO ElementArray (or its chainable).
+ * When asserting on each element's properties requiring awaiting, then return type is a Promise.
+ * When actual is not of WebdriverIO.ElementArray nor ChainableElementArray, the return type is never, so the function cannot be used.
+ */
+export interface WdioElementArrayOnlyMatchers<_R, ActualT = unknown> {
+    // ===== Elements $$() only =====
+    /**
+     * `WebdriverIO.ElementArray` -> `$$('...').length`
+     * The element arrays is refreshed/mutated until the size equals the size provided or matches the number matcher.
+     *
+     */
+    toBeElementsArrayOfSize: FnWhenElementArrayLike<ActualT, {
+        (
+            size: NumberValue,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>,
+    }, {
         /**
-         * Clear all current soft assertion failures
+         * Elements MultiRemoteBrowser.$$() API: the size is checked per browser instance.
+         * A single size applies to every instance, or pass one size per instance, e.g. `expect.multiRemote({ chrome: 2, firefox: { gte: 1 } })`.
          */
-        clearSoftFailures(testId?: string): void
-    }
+        (
+            size: SingleOrMultiRemoteMatcher<NumberValue>,
+            options?: ExpectWebdriverIO.CommandOptions
+        ): Promise<void>,
+    }>
+}
+
+/**
+ * Matchers supporting basic snapshot tests as well as DOM snapshot testing.
+ * When the actual is a WebdriverIO.Element, we need to await the `outerHTML` therefore the return type is a Promise.
+ *
+ * ⚠️ these matchers overload the similar matchers from jest-expect library.
+ * Therefore, they also need to be redefined in the jest.d.ts file so correctly overload the matchers from the Jest namespace.
+ * @see jest.d.ts
+ */
+export interface WdioJestOverloadedMatchers<R, ActualT> {
+    /**
+     * snapshot matcher
+     * A plain `Element[]` or `MultiRemoteElement[]` is only recognized from its elements, so an empty one is snapshotted synchronously
+     * @param label optional snapshot label
+     */
+    toMatchSnapshot(label?: string): ActualT extends WdioElementOrPromiseLike | WebdriverIO.MultiRemoteElement | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElementArray ? Promise<void> : ActualT extends WebdriverIO.Element[] | WebdriverIO.MultiRemoteElement[] ? Promise<void> | R : R
+    /**
+     * inline snapshot matcher
+     * A plain `Element[]` or `MultiRemoteElement[]` is only recognized from its elements, so an empty one is snapshotted synchronously
+     * @param snapshot snapshot string (autogenerated if not specified)
+     * @param label optional snapshot label
+     */
+    toMatchInlineSnapshot(snapshot?: string, label?: string): ActualT extends WdioElementOrPromiseLike | WebdriverIO.MultiRemoteElement | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElementArray ? Promise<void> : ActualT extends WebdriverIO.Element[] | WebdriverIO.MultiRemoteElement[] ? Promise<void> | R : R
+}
+
+/**
+ * All the specific WebDriverIO only matchers, excluding the generic matchers from the expect library.
+ */
+export type WdioCustomMatchers<R, ActualT> = WdioJestOverloadedMatchers<R, ActualT> & WdioBrowserMatchers<R, ActualT> & WdioElementOrArrayMatchers<R, ActualT> & WdioElementArrayOnlyMatchers<R, ActualT> & WdioNetworkMatchers<R, ActualT>
+
+/**
+ * All the matchers that WebdriverIO Library supports including the generic matchers from the expect library.
+ */
+export type WdioMatchers<R extends void | Promise<void>, ActualT> = WdioCustomMatchers<R, ActualT> & ExpectLibMatchers<R, ActualT>
+
+/**
+ * Expects specific to WebdriverIO, excluding the generic expect matchers.
+ */
+export interface WdioCustomExpect {
+    /**
+     * Creates a soft assertion wrapper around standard expect
+     * Soft assertions record failures but don't throw errors immediately
+     * All failures are collected and reported at the end of the test
+     * Note: Until fixed, soft only support wdio custom matchers, and not the `expect` library matchers. Moreover, it always returns a Promise.
+     * A chainable `$()` or `$$()` is thenable since WebdriverIO v10, but it keeps the matchers of an element.
+     */
+    soft<T = unknown>(actual: T): T extends ChainablePromiseElement | ChainablePromiseArray ? ExpectWebdriverIO.MatchersAndInverse<void, T> : T extends PromiseLike<unknown> ? ExpectWebdriverIO.MatchersAndInverse<Promise<void>, T> & ExpectWebdriverIO.PromiseMatchers<T> : ExpectWebdriverIO.MatchersAndInverse<void, T>;
 
     /**
-     * Expects supported by the expect-webdriverio library, including the generic expect matchers.
+     * Get all current soft assertion failures
      */
-    type WdioExpect = WdioCustomExpect & ExpectLibExpect
+    getSoftFailures(testId?: string): ExpectWebdriverIO.SoftFailure[]
 
     /**
-     * Asymmetric matchers supported by the expect-webdriverio library.
-     * The type is the same as the one from the expect library, but we need to redefine it to have it available in the `ExpectWebdriverIO` namespace.
+     * Manually assert all soft failures (throws an error if any failures exist)
      */
-    type WdioAsymmetricMatchers = ExpectLibAsymmetricMatchers
+    assertSoftFailures(testId?: string): void
 
     /**
-     * Implementation of the asymmetric matcher. Equivalent as the PartialMatcher but with sample used by implementations.
-     * For the runtime but not the typing.
+     * Clear all current soft assertion failures
      */
-    type WdioAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
-        // Overwrite protected properties of expect.AsymmetricMatcher to access them
-        sample: R;
-        inverse?: boolean;
-    }
+    clearSoftFailures(testId?: string): void
+}
 
-    type WdioOneOfAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
-        sample: [R];
-    }
+/**
+ * Expects supported by the expect-webdriverio library, including the generic expect matchers.
+ */
+export type WdioExpect = WdioCustomExpect & ExpectLibExpect
 
-    type JasmineBaseAsymmetricMatcher = {
-        jasmineToString(pp?: (value: unknown) => string): string;
-        asymmetricMatch(other: unknown): boolean;
-    }
+/**
+ * Asymmetric matchers supported by the expect-webdriverio library.
+ * The type is the same as the one from the expect library, but we need to redefine it to have it available in the `ExpectWebdriverIO` namespace.
+ */
+export type WdioAsymmetricMatchers = ExpectLibAsymmetricMatchers
 
-    /**
-     * Jasmine asymetric matcher does not always use sample, some use expected. `any` uses even `expectedObject`
-     * @see https://github.com/jasmine/jasmine/tree/v5.13.0/src/core/asymmetric_equality
-     */
-    type JasmineAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & ({
-        expected: R;
-    } | {
-        sample: R;
-    } | {
-        regexp: string | RegExp;
-    } | {
-        expectedObject: R;
-    } | {} // jasmine.anything()
-    )
+/**
+ * Implementation of the asymmetric matcher. Equivalent as the PartialMatcher but with sample used by implementations.
+ * For the runtime but not the typing.
+ */
+export type WdioAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
+    // Overwrite protected properties of expect.AsymmetricMatcher to access them
+    sample: R;
+    inverse?: boolean;
+}
 
-    type JasmineStringContainingAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & {
-        expected: R;
-    }
+export type WdioOneOfAsymmetricMatcher<R> = ExpectWebdriverIO.PartialMatcher<R> & {
+    sample: [R];
+}
 
-    type JasmineStringMatchingAsymmetricMatcher<R extends string | RegExp> = JasmineBaseAsymmetricMatcher & {
-        regexp: R;
-    }
+export type JasmineBaseAsymmetricMatcher = {
+    jasmineToString(pp?: (value: unknown) => string): string;
+    asymmetricMatch(other: unknown): boolean;
+}
 
-    type JasmineStringAsymmetricMatcher<R extends string | RegExp> = JasmineStringContainingAsymmetricMatcher<R> | JasmineStringMatchingAsymmetricMatcher<R>
+/**
+ * Jasmine asymetric matcher does not always use sample, some use expected. `any` uses even `expectedObject`
+ * @see https://github.com/jasmine/jasmine/tree/v5.13.0/src/core/asymmetric_equality
+ */
+export type JasmineAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & ({
+    expected: R;
+} | {
+    sample: R;
+} | {
+    regexp: string | RegExp;
+} | {
+    expectedObject: R;
+} | {} // jasmine.anything()
+)
 
-    type JasmineAnythingAsymmetricMatcher = JasmineBaseAsymmetricMatcher & {}
+export type JasmineStringContainingAsymmetricMatcher<R> = JasmineBaseAsymmetricMatcher & {
+    expected: R;
+}
 
-    type AsymmetricMatcher<R> = WdioAsymmetricMatcher<R> | JasmineStringContainingAsymmetricMatcher<R> | (R extends string | RegExp ? JasmineStringMatchingAsymmetricMatcher<R> : never) | JasmineAsymmetricMatcher<R>
+export type JasmineStringMatchingAsymmetricMatcher<R extends string | RegExp> = JasmineBaseAsymmetricMatcher & {
+    regexp: R;
+}
 
-    type WdioAnythingAsymmetricMatcher = ExpectLibAnything | JasmineAnythingAsymmetricMatcher
+export type JasmineStringAsymmetricMatcher<R extends string | RegExp> = JasmineStringContainingAsymmetricMatcher<R> | JasmineStringMatchingAsymmetricMatcher<R>
+
+export type JasmineAnythingAsymmetricMatcher = JasmineBaseAsymmetricMatcher & {}
+
+export type AsymmetricMatcher<R> = WdioAsymmetricMatcher<R> | JasmineStringContainingAsymmetricMatcher<R> | (R extends string | RegExp ? JasmineStringMatchingAsymmetricMatcher<R> : never) | JasmineAsymmetricMatcher<R>
+
+export type WdioAnythingAsymmetricMatcher = ExpectLibAnything | JasmineAnythingAsymmetricMatcher
+
+declare global {
+    /* eslint-disable @typescript-eslint/consistent-type-imports*/
+    // The WebdriverIO types of a not-awaited `$()` and `$$()`: global, because custom matcher types use them
+    type ChainablePromiseElement = import('webdriverio').ChainablePromiseElement
+    type ChainablePromiseArray = import('webdriverio').ChainablePromiseArray
 
     namespace ExpectWebdriverIO {
         /**

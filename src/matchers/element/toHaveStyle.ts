@@ -14,6 +14,7 @@ import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 import { isListMatcher } from '../../util/asymmetricMatcherUtil.js'
 import { isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
 import { MatcherUsageError } from '../../util/matcherUsageError.js'
+import type { AsymmetricMatcher, MaybeOneOf } from '../../publicTypes/expectWebdriverIO.js'
 
 /** Each CSS value is a string value, as in `toHaveText` */
 type StyleRecord = { [key: string]: MaybeOneOf<string | RegExp | AsymmetricMatcher<string>> }

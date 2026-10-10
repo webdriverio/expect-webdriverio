@@ -7,6 +7,7 @@ import { validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { awaitElementArray, isMultiRemoteElementArray, isStrictlyElementArray } from '../../util/elementsUtil.js'
 import { getElementsPerInstance, hasSameInstanceNames, isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
 import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
+import type { MultiRemoteValues } from '../../publicTypes/expectWebdriverIO.js'
 
 export async function toBeElementsArrayOfSize(
     received: WdioElementsMaybePromise,

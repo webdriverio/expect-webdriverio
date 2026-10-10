@@ -7,6 +7,7 @@ import {
     isStringContainingMatcherLike, isStringMatchingMatcherLike,
 } from './asymmetricMatcherUtil.js'
 import type { StringOptions } from '../publicTypes/options.js'
+import type { JasmineAsymmetricMatcher, JasmineStringAsymmetricMatcher, WdioAsymmetricMatcher } from '../publicTypes/expectWebdriverIO.js'
 
 /**
  * One position option only: `containing`, `atStart`, `atEnd` or `atIndex`. Before, `containing` won over the others with

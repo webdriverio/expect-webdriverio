@@ -10,6 +10,7 @@ import { isTrimmedByOptions, stringOptionsName } from './stringOptionsName.js'
 import { isBrowser, isBrowsingContext, isMultiRemoteBrowser } from './multiRemoteUtils.js'
 import { comparedAs, isComparedValueShown, withComparedValues } from './comparedAs.js'
 import type { CommandOptions, StringOptions } from '../publicTypes/options.js'
+import type { MultiRemoteValues } from '../publicTypes/expectWebdriverIO.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 

@@ -10,6 +10,7 @@ import {
 } from '../../utils.js'
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
+import type { MaybeArray } from '../../publicTypes/expectWebdriverIO.js'
 
 async function condition(el: WebdriverIO.Element, expectedValue: NumberMatcher | undefined): Promise<CompareResult<number | null>> {
     const children = await el.$$('./*').getElements()

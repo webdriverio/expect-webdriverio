@@ -1,5 +1,6 @@
 import type { CompareResult, MultiRemoteCompareResult, StrategyResult } from './executeCommand.js'
 import { getPerInstanceValues, hasSameInstanceNames, isMultiRemoteBrowser } from './multiRemoteUtils.js'
+import type { ArrayOrMultiRemoteValues, MaybeArrayOrMultiRemoteValues, MultiRemoteValues } from '../publicTypes/expectWebdriverIO.js'
 
 export async function executeBrowserCommand<Actual, Expected>( {
     browser,

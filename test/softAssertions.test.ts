@@ -3,6 +3,7 @@ import { $, $$ } from '@wdio/globals'
 import expectLib from 'expect'
 import { expect as expectWdio, SoftAssertionService, SoftAssertService } from '../src/index.js'
 import stripAnsi from 'strip-ansi'
+import type { TestResult } from '../src/publicTypes/expectWebdriverIO.js'
 
 vi.mock('@wdio/globals')
 

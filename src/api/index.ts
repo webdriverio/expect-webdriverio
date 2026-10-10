@@ -2,6 +2,7 @@
 import '../publicTypes/expectWebdriverIO.js'
 import { some as wdioSome } from '../matchers/modifiers/some.js'
 import { multiRemote as wdioMultiRemote } from '../matchers/asymmetrics/multiRemote.js'
+import type { ElementArrayLike, MultiRemoteValues, WdioSome } from '../publicTypes/expectWebdriverIO.js'
 
 /**
  * API allowing to export some feature without the burden of all the initilizations

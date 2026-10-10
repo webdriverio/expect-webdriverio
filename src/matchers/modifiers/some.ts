@@ -1,3 +1,4 @@
+import type { WdioSome } from '../../publicTypes/expectWebdriverIO.js'
 const SOME_TAG = 'expect-webdriverio.some'
 const SOME_SYMBOL = Symbol.for(SOME_TAG)
 

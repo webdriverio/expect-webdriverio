@@ -27,3 +27,7 @@ It's required to create [`jsconfig.json`](https://code.visualstudio.com/docs/lan
 - With Jasmine alone: add `"expect-webdriverio/jasmine"`. It types the WebdriverIO matchers on `expectAsync`, which you register yourself.
 
 See [Framework.md](Framework.md#jasmine) for the details.
+
+### Custom matchers
+
+See [TypeScript](CustomMatchers.md#typescript) in Custom Matchers to type your own matchers.

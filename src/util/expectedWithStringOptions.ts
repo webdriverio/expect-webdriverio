@@ -5,6 +5,7 @@ import { isAsymmetricMatcher, isListMatcher } from './asymmetricMatcherUtil.js'
 import { isMultiRemoteMatcher } from './multiRemoteUtils.js'
 import { isTrimmedByOptions, stringOptionsName } from './stringOptionsName.js'
 import type { StringOptions } from '../publicTypes/options.js'
+import type { AsymmetricMatcher, JasmineAsymmetricMatcher } from '../publicTypes/expectWebdriverIO.js'
 
 type ExpectedLeaf = string | RegExp | AsymmetricMatcher<unknown> | JasmineAsymmetricMatcher<unknown>
 
