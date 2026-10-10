@@ -453,6 +453,18 @@ declare global {
         toBeStable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
         /**
+         * `WebdriverIO.Element` -> `getProperty('required')`
+         * The form field (`<input>`, `<select>`, `<textarea>`) is required. For an ARIA widget, use `toHaveAttribute('aria-required', 'true')`
+         */
+        toBeRequired: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+        /**
+         * `WebdriverIO.Element` -> `getProperty('readOnly')`
+         * The form field (`<input>`, `<textarea>`) is read only. For an ARIA widget, use `toHaveAttribute('aria-readonly', 'true')`
+         */
+        toBeReadOnly: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+        /**
          * `WebdriverIO.Element` -> `isSelected`
          */
         toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>

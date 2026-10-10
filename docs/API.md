@@ -466,6 +466,28 @@ await expect(menu).toBeStable()
 await menu.$('a').click()
 ```
 
+### toBeRequired
+
+Checks if a form field (`<input>`, `<select>`, `<textarea>`) is required: the matcher reads its `required` property with [`getProperty('required')`](https://webdriver.io/docs/api/element/getProperty). Another element has no such property, so it is not required. For an ARIA widget, use `toHaveAttribute('aria-required', 'true')`.
+
+##### Usage
+
+```js
+await expect($('#email')).toBeRequired()
+await expect($('#nickname')).not.toBeRequired()
+```
+
+### toBeReadOnly
+
+Checks if a form field (`<input>`, `<textarea>`) is read only: the matcher reads its `readOnly` property with [`getProperty('readOnly')`](https://webdriver.io/docs/api/element/getProperty). Another element has no such property, so it is not read only. For an ARIA widget, use `toHaveAttribute('aria-readonly', 'true')`.
+
+##### Usage
+
+```js
+await expect($('#order-id')).toBeReadOnly()
+await expect($('#comment')).not.toBeReadOnly()
+```
+
 ### toHaveAttribute
 
 Checks if an element has a certain attribute with a specific value. A missing attribute never matches, also not a matcher that accepts no value; the failure message shows `Received: no attribute`. With no value, it checks that the attribute exists.

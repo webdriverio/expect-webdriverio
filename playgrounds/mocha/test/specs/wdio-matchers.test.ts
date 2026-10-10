@@ -74,6 +74,26 @@ describe('WebdriverIO Custom Matchers', () => {
         })
     })
 
+    describe('Form field matchers', () => {
+        beforeEach(async () => {
+            await browser.execute(() => {
+                document.body.insertAdjacentHTML('beforeend', '<form id="fields"><input id="email" required><input id="order" readonly><textarea id="comment"></textarea></form>')
+            })
+        })
+
+        it('should verify a required field', async () => {
+            await expect($('#email')).toBeRequired()
+            await expect($('#comment')).not.toBeRequired()
+            await expect($('#fields')).not.toBeRequired()
+        })
+
+        it('should verify a read only field', async () => {
+            await expect($('#order')).toBeReadOnly()
+            await expect($('#email')).not.toBeReadOnly()
+            await expect(expect($('#email')).toBeReadOnly({ wait: 0 })).rejects.toThrow(/to be read only[\s\S]*Received: "not read only"/)
+        })
+    })
+
     describe('Element existence matchers', () => {
         it('should verify element exists', async () => {
             const githubLink = $('#githubRepo')

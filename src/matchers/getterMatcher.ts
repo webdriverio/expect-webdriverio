@@ -352,9 +352,10 @@ export const elementBooleanGetterMatcher = <Options extends CommandOptions>(name
         const argument = displayOptions ? { withinViewport, contentVisibilityAuto, opacityProperty, visibilityProperty } : getterArgument
 
         const result = await executeCommandBe.call(this, received, async (element) => {
-            const read = element?.[getter] as ((this: WebdriverIO.Element, argument?: object) => Promise<boolean>) | undefined
+            const read = element?.[getter] as ((this: WebdriverIO.Element, argument?: object | string) => Promise<unknown>) | undefined
             const state = argument === undefined ? read?.call(element) : read?.call(element, argument)
-            return inverse ? !await state : state as Promise<boolean>
+            // A property, e.g. `required`, is `null` on an element that has no such property: only `true` is the state
+            return inverse ? !await state : await state === true
         }, displayOptions ? commandOptions : options)
 
         await options.afterAssertion?.({

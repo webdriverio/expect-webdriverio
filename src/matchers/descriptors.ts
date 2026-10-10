@@ -20,7 +20,10 @@ type GettersGive<Table extends Record<string, { getter: keyof Target, argument?:
                 // A cookie getter takes a filter with the name, and gives the cookies
                 ? (filter: { name: string }) => Promise<Array<{ name: string, value: string }>>
                 : (argument: string) => Promise<(Table[Name] extends { value: 'property' } ? unknown : Value) | null>
-            : () => Promise<Value>)
+            // A boolean property, e.g. `getProperty('required')`: `true` passes, any other value fails
+            : Table[Name] extends { getterArgument: string }
+                ? (argument: string) => Promise<unknown>
+                : () => Promise<Value>)
         ? Table[Name]
         : `${Name & string}: ${Table[Name]['getter'] & string} does not give the value type`
 }
@@ -119,8 +122,11 @@ export type ElementBooleanGetterDescriptor = {
     verb?: string
     /** The matcher checks the opposite of the getter, e.g. `toBeDisabled` with `isEnabled` */
     inverse?: true
-    /** The argument of the getter, e.g. `isDisplayed({ withinViewport: true })` */
-    getterArgument?: object
+    /**
+     * The argument of the getter, e.g. `isDisplayed({ withinViewport: true })`, or the name of a boolean property,
+     * e.g. `getProperty('required')`: only `true` passes, also not `null` on an element that has no such property
+     */
+    getterArgument?: object | string
     /** The getter gets the display options of the matcher and their defaults, the command options get the rest */
     displayOptions?: true
     /** An empty `$$()` passes with `.not`: no element means it does not exist */
@@ -140,6 +146,8 @@ export const elementBooleanGetters = {
     toBeSelected: { getter: 'isSelected', expectation: 'selected' },
     toBeChecked: { getter: 'isSelected', expectation: 'checked', aliasOf: 'toBeSelected' },
     toBeStable: { getter: 'isStable', expectation: 'stable' },
+    toBeRequired: { getter: 'getProperty', expectation: 'required', getterArgument: 'required' },
+    toBeReadOnly: { getter: 'getProperty', expectation: 'read only', getterArgument: 'readOnly' },
     toExist: { getter: 'isExisting', expectation: 'exist', verb: '', allowEmptyElements: true },
     toBeExisting: { getter: 'isExisting', expectation: 'existing', verb: 'be', allowEmptyElements: true, aliasOf: 'toExist' },
     toBePresent: { getter: 'isExisting', expectation: 'present', verb: 'be', allowEmptyElements: true, aliasOf: 'toExist' },

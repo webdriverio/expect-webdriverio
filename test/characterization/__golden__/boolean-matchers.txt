@@ -5272,6 +5272,1178 @@ message:
       ],
     }
 
+### toBeRequired | $() | values true, true | positive | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x1
+
+### toBeRequired | $() | values true, true | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x1
+message:
+  Expect $(`sel`) not to be required
+  
+  Expected: "not required"
+  Received: "required"
+
+### toBeRequired | $() | values false, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x1
+message:
+  Expect $(`sel`) to be required
+  
+  Expected: "required"
+  Received: "not required"
+
+### toBeRequired | $() | values false, false | .not | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x1
+
+### toBeRequired | $() | values true, false | positive | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x1
+
+### toBeRequired | $() | values true, false | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x1
+message:
+  Expect $(`sel`) not to be required
+  
+  Expected: "not required"
+  Received: "required"
+
+### toBeRequired | not awaited $() | values true, true | positive | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x1
+
+### toBeRequired | not awaited $() | values true, true | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x1
+message:
+  Expect $(`sel`) not to be required
+  
+  Expected: "not required"
+  Received: "required"
+
+### toBeRequired | not awaited $() | values false, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x1
+message:
+  Expect $(`sel`) to be required
+  
+  Expected: "required"
+  Received: "not required"
+
+### toBeRequired | not awaited $() | values false, false | .not | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x1
+
+### toBeRequired | not awaited $() | values true, false | positive | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x1
+
+### toBeRequired | not awaited $() | values true, false | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x1
+message:
+  Expect $(`sel`) not to be required
+  
+  Expected: "not required"
+  Received: "required"
+
+### toBeRequired | $$() | values true, true | positive | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+
+### toBeRequired | $$() | values true, true | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+message:
+  Expect $$(`sel`) not to be required
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not required",
+  -   "not required",
+  +   "required",
+  +   "required",
+    ]
+
+### toBeRequired | $$() | values false, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+message:
+  Expect $$(`sel`) to be required
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "required",
+  -   "required",
+  +   "not required",
+  +   "not required",
+    ]
+
+### toBeRequired | $$() | values false, false | .not | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+
+### toBeRequired | $$() | values true, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+message:
+  Expect $$(`sel`) to be required
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      "required",
+  -   "required",
+  +   "not required",
+    ]
+
+### toBeRequired | $$() | values true, false | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+message:
+  Expect $$(`sel`) not to be required
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+  -   "not required",
+  +   "required",
+      "not required",
+    ]
+
+### toBeRequired | empty $$() | values true, true | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to be required
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeRequired | empty $$() | values true, true | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to be required
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeRequired | empty $$() | values false, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to be required
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeRequired | empty $$() | values false, false | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to be required
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeRequired | empty $$() | values true, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to be required
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeRequired | empty $$() | values true, false | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to be required
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeRequired | some($$()) | values true, true | positive | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+
+### toBeRequired | some($$()) | values true, true | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+message:
+  Expect some of $$(`sel`) not to be required
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not required",
+  -   "not required",
+  +   "required",
+  +   "required",
+    ]
+
+### toBeRequired | some($$()) | values false, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+message:
+  Expect some of $$(`sel`) to be required
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "required",
+  -   "required",
+  +   "not required",
+  +   "not required",
+    ]
+
+### toBeRequired | some($$()) | values false, false | .not | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+
+### toBeRequired | some($$()) | values true, false | positive | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+
+### toBeRequired | some($$()) | values true, false | .not | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+
+### toBeRequired | not awaited $$() | values true, true | positive | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+
+### toBeRequired | not awaited $$() | values true, true | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+message:
+  Expect $$(`sel`) not to be required
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not required",
+  -   "not required",
+  +   "required",
+  +   "required",
+    ]
+
+### toBeRequired | not awaited $$() | values false, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+message:
+  Expect $$(`sel`) to be required
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "required",
+  -   "required",
+  +   "not required",
+  +   "not required",
+    ]
+
+### toBeRequired | not awaited $$() | values false, false | .not | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+
+### toBeRequired | not awaited $$() | values true, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+message:
+  Expect $$(`sel`) to be required
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      "required",
+  -   "required",
+  +   "not required",
+    ]
+
+### toBeRequired | not awaited $$() | values true, false | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+message:
+  Expect $$(`sel`) not to be required
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+  -   "not required",
+  +   "required",
+      "not required",
+    ]
+
+### toBeRequired | multi-remote $() | values true, true | positive | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+
+### toBeRequired | multi-remote $() | values true, true | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to be required
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "not required",
+  -   "firefox": "not required",
+  +   "chrome": "required",
+  +   "firefox": "required",
+    }
+
+### toBeRequired | multi-remote $() | values false, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to be required
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "required",
+  -   "firefox": "required",
+  +   "chrome": "not required",
+  +   "firefox": "not required",
+    }
+
+### toBeRequired | multi-remote $() | values false, false | .not | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+
+### toBeRequired | multi-remote $() | values true, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to be required
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": "required",
+  -   "firefox": "required",
+  +   "firefox": "not required",
+    }
+
+### toBeRequired | multi-remote $() | values true, false | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to be required
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+  -   "chrome": "not required",
+  +   "chrome": "required",
+      "firefox": "not required",
+    }
+
+### toBeRequired | multi-remote $$() | values true, true | positive | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x4
+
+### toBeRequired | multi-remote $$() | values true, true | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to be required
+  
+  - Expected  - 4
+  + Received  + 4
+  
+    Multi-remote values {
+      "chrome": Array [
+  -     "not required",
+  -     "not required",
+  +     "required",
+  +     "required",
+      ],
+      "firefox": Array [
+  -     "not required",
+  -     "not required",
+  +     "required",
+  +     "required",
+      ],
+    }
+
+### toBeRequired | multi-remote $$() | values false, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to be required
+  
+  - Expected  - 4
+  + Received  + 4
+  
+    Multi-remote values {
+      "chrome": Array [
+  -     "required",
+  -     "required",
+  +     "not required",
+  +     "not required",
+      ],
+      "firefox": Array [
+  -     "required",
+  -     "required",
+  +     "not required",
+  +     "not required",
+      ],
+    }
+
+### toBeRequired | multi-remote $$() | values false, false | .not | no option
+result: passes
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x4
+
+### toBeRequired | multi-remote $$() | values true, false | positive | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["required"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to be required
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        "required",
+  -     "required",
+  +     "not required",
+      ],
+      "firefox": Array [
+  -     "required",
+        "required",
+  +     "not required",
+      ],
+    }
+
+### toBeRequired | multi-remote $$() | values true, false | .not | no option
+result: fails
+before: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeRequired expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["required"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to be required
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+  -     "not required",
+  +     "required",
+        "not required",
+      ],
+      "firefox": Array [
+  -     "not required",
+  +     "required",
+        "not required",
+      ],
+    }
+
+### toBeReadOnly | $() | values true, true | positive | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x1
+
+### toBeReadOnly | $() | values true, true | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x1
+message:
+  Expect $(`sel`) not to be read only
+  
+  Expected: "not read only"
+  Received: "read only"
+
+### toBeReadOnly | $() | values false, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x1
+message:
+  Expect $(`sel`) to be read only
+  
+  Expected: "read only"
+  Received: "not read only"
+
+### toBeReadOnly | $() | values false, false | .not | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x1
+
+### toBeReadOnly | $() | values true, false | positive | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x1
+
+### toBeReadOnly | $() | values true, false | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x1
+message:
+  Expect $(`sel`) not to be read only
+  
+  Expected: "not read only"
+  Received: "read only"
+
+### toBeReadOnly | not awaited $() | values true, true | positive | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x1
+
+### toBeReadOnly | not awaited $() | values true, true | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x1
+message:
+  Expect $(`sel`) not to be read only
+  
+  Expected: "not read only"
+  Received: "read only"
+
+### toBeReadOnly | not awaited $() | values false, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x1
+message:
+  Expect $(`sel`) to be read only
+  
+  Expected: "read only"
+  Received: "not read only"
+
+### toBeReadOnly | not awaited $() | values false, false | .not | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x1
+
+### toBeReadOnly | not awaited $() | values true, false | positive | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x1
+
+### toBeReadOnly | not awaited $() | values true, false | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x1
+message:
+  Expect $(`sel`) not to be read only
+  
+  Expected: "not read only"
+  Received: "read only"
+
+### toBeReadOnly | $$() | values true, true | positive | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+
+### toBeReadOnly | $$() | values true, true | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+message:
+  Expect $$(`sel`) not to be read only
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not read only",
+  -   "not read only",
+  +   "read only",
+  +   "read only",
+    ]
+
+### toBeReadOnly | $$() | values false, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+message:
+  Expect $$(`sel`) to be read only
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "read only",
+  -   "read only",
+  +   "not read only",
+  +   "not read only",
+    ]
+
+### toBeReadOnly | $$() | values false, false | .not | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+
+### toBeReadOnly | $$() | values true, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+message:
+  Expect $$(`sel`) to be read only
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      "read only",
+  -   "read only",
+  +   "not read only",
+    ]
+
+### toBeReadOnly | $$() | values true, false | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+message:
+  Expect $$(`sel`) not to be read only
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+  -   "not read only",
+  +   "read only",
+      "not read only",
+    ]
+
+### toBeReadOnly | empty $$() | values true, true | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to be read only
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeReadOnly | empty $$() | values true, true | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to be read only
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeReadOnly | empty $$() | values false, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to be read only
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeReadOnly | empty $$() | values false, false | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to be read only
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeReadOnly | empty $$() | values true, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to be read only
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeReadOnly | empty $$() | values true, false | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to be read only
+  
+  Expected: "at least one result"
+  Received: []
+
+### toBeReadOnly | some($$()) | values true, true | positive | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+
+### toBeReadOnly | some($$()) | values true, true | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+message:
+  Expect some of $$(`sel`) not to be read only
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not read only",
+  -   "not read only",
+  +   "read only",
+  +   "read only",
+    ]
+
+### toBeReadOnly | some($$()) | values false, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+message:
+  Expect some of $$(`sel`) to be read only
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "read only",
+  -   "read only",
+  +   "not read only",
+  +   "not read only",
+    ]
+
+### toBeReadOnly | some($$()) | values false, false | .not | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+
+### toBeReadOnly | some($$()) | values true, false | positive | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+
+### toBeReadOnly | some($$()) | values true, false | .not | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+
+### toBeReadOnly | not awaited $$() | values true, true | positive | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+
+### toBeReadOnly | not awaited $$() | values true, true | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+message:
+  Expect $$(`sel`) not to be read only
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not read only",
+  -   "not read only",
+  +   "read only",
+  +   "read only",
+    ]
+
+### toBeReadOnly | not awaited $$() | values false, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+message:
+  Expect $$(`sel`) to be read only
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "read only",
+  -   "read only",
+  +   "not read only",
+  +   "not read only",
+    ]
+
+### toBeReadOnly | not awaited $$() | values false, false | .not | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+
+### toBeReadOnly | not awaited $$() | values true, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+message:
+  Expect $$(`sel`) to be read only
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      "read only",
+  -   "read only",
+  +   "not read only",
+    ]
+
+### toBeReadOnly | not awaited $$() | values true, false | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+message:
+  Expect $$(`sel`) not to be read only
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+  -   "not read only",
+  +   "read only",
+      "not read only",
+    ]
+
+### toBeReadOnly | multi-remote $() | values true, true | positive | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+
+### toBeReadOnly | multi-remote $() | values true, true | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to be read only
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "not read only",
+  -   "firefox": "not read only",
+  +   "chrome": "read only",
+  +   "firefox": "read only",
+    }
+
+### toBeReadOnly | multi-remote $() | values false, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to be read only
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "read only",
+  -   "firefox": "read only",
+  +   "chrome": "not read only",
+  +   "firefox": "not read only",
+    }
+
+### toBeReadOnly | multi-remote $() | values false, false | .not | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+
+### toBeReadOnly | multi-remote $() | values true, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to be read only
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": "read only",
+  -   "firefox": "read only",
+  +   "firefox": "not read only",
+    }
+
+### toBeReadOnly | multi-remote $() | values true, false | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to be read only
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+  -   "chrome": "not read only",
+  +   "chrome": "read only",
+      "firefox": "not read only",
+    }
+
+### toBeReadOnly | multi-remote $$() | values true, true | positive | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x4
+
+### toBeReadOnly | multi-remote $$() | values true, true | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to be read only
+  
+  - Expected  - 4
+  + Received  + 4
+  
+    Multi-remote values {
+      "chrome": Array [
+  -     "not read only",
+  -     "not read only",
+  +     "read only",
+  +     "read only",
+      ],
+      "firefox": Array [
+  -     "not read only",
+  -     "not read only",
+  +     "read only",
+  +     "read only",
+      ],
+    }
+
+### toBeReadOnly | multi-remote $$() | values false, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to be read only
+  
+  - Expected  - 4
+  + Received  + 4
+  
+    Multi-remote values {
+      "chrome": Array [
+  -     "read only",
+  -     "read only",
+  +     "not read only",
+  +     "not read only",
+      ],
+      "firefox": Array [
+  -     "read only",
+  -     "read only",
+  +     "not read only",
+  +     "not read only",
+      ],
+    }
+
+### toBeReadOnly | multi-remote $$() | values false, false | .not | no option
+result: passes
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x4
+
+### toBeReadOnly | multi-remote $$() | values true, false | positive | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["readOnly"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to be read only
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        "read only",
+  -     "read only",
+  +     "not read only",
+      ],
+      "firefox": Array [
+  -     "read only",
+        "read only",
+  +     "not read only",
+      ],
+    }
+
+### toBeReadOnly | multi-remote $$() | values true, false | .not | no option
+result: fails
+before: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait]
+after: toBeReadOnly expected=undefined options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["readOnly"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to be read only
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+  -     "not read only",
+  +     "read only",
+        "not read only",
+      ],
+      "firefox": Array [
+  -     "not read only",
+  +     "read only",
+        "not read only",
+      ],
+    }
+
 ### toBeSelected | $() | values true, true | positive | no option
 result: passes
 before: toBeSelected expected=undefined options=[afterAssertion,beforeAssertion,wait]

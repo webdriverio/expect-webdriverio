@@ -89,6 +89,8 @@ describe('golden master of the getter matchers', () => {
             { name: 'toBeDisabled', getter: 'isEnabled' },
             { name: 'toBeFocused', getter: 'isFocused' },
             { name: 'toBeStable', getter: 'isStable' },
+            { name: 'toBeRequired', getter: 'getProperty' },
+            { name: 'toBeReadOnly', getter: 'getProperty' },
             { name: 'toBeSelected', getter: 'isSelected' },
             { name: 'toBeChecked', getter: 'isSelected' },
             { name: 'toBeExisting', getter: 'isExisting' },

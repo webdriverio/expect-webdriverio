@@ -26,6 +26,8 @@ const ALL_MATCHERS = [
     'toBeSelected',
     'toBeChecked',
     'toBeStable',
+    'toBeRequired',
+    'toBeReadOnly',
     'toHaveAttribute',
     'toHaveChildren',
     'toHaveComputedLabel',

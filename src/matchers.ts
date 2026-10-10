@@ -18,6 +18,8 @@ export { toExist, toBeExisting, toBePresent } from './matchers/element/toBeExist
 export { toBeFocused } from './matchers/element/toBeFocused.js'
 export { toBeSelected, toBeChecked } from './matchers/element/toBeSelected.js'
 export { toBeStable } from './matchers/element/toBeStable.js'
+export { toBeRequired } from './matchers/element/toBeRequired.js'
+export { toBeReadOnly } from './matchers/element/toBeReadOnly.js'
 export { toHaveAttribute } from './matchers/element/toHaveAttribute.js'
 export { toHaveChildren } from './matchers/element/toHaveChildren.js'
 export { toHaveComputedLabel } from './matchers/element/toHaveComputedLabel.js'
