@@ -2,6 +2,8 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import { expect as wdioExpect } from '../../../src/index.js'
 import { jasmine } from '../../__fixtures__/jasmine.js'
+import { multiRemote } from '../../../src/api/index.js'
+import { browserFactory, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
 
@@ -119,6 +121,17 @@ describe('toHaveStyle with a list matcher', () => {
         await expect(wdioExpect(list).not.toHaveStyle(matcher() as never, { wait: 0 })).rejects.toThrow(error)
         expect(element.getCSSProperty).not.toHaveBeenCalled()
         list.forEach((item) => expect(item.getCSSProperty).not.toHaveBeenCalled())
+    })
+
+    test('throws with a list matcher in the values of expect.multiRemote(), also with .not, without reading the style', async () => {
+        const element = createMultiRemoteElementMock({ chrome: browserFactory(), firefox: browserFactory() }, 'p')
+        const perInstance = () => multiRemote({ chrome: wdioExpect.arrayContaining([{ color: 'red' }]), firefox: { color: 'red' } })
+
+        await expect(wdioExpect(element).toHaveStyle(perInstance() as never, { wait: 0 })).rejects.toThrow(error)
+        await expect(wdioExpect(element).not.toHaveStyle(perInstance() as never, { wait: 0 })).rejects.toThrow(error)
+        for (const name of ['chrome', 'firefox']) {
+            expect(element.getInstance(name).getCSSProperty).not.toHaveBeenCalled()
+        }
     })
 
     test('still compares one style for each element of $$()', async () => {
