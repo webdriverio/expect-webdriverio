@@ -170,8 +170,8 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have attribute href
         test('rejects one array per instance on $()', async () => {
             const element = createMultiRemoteElementMock(browsers(), 'sel')
 
-            // @ts-expect-error an array per instance is only supported for $$()
-            const result = await thisContext.toHaveHref(element, { chrome: ['some attribute'], firefox: ['some attribute'] }, { wait: 0 })
+            // An array per instance is only supported for $$(): the public types reject it (test-types/)
+            const result = await thisContext.toHaveHref(element, { chrome: ['some attribute'], firefox: ['some attribute'] } as never, { wait: 0 })
 
             expect(result.pass).toBe(false)
         })

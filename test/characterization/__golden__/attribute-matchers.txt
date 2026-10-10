@@ -290,6 +290,40 @@ message:
   Expected [not]: Anything
   Received      : "Hello" (compared as "hello")
 
+### toHaveAttribute("name") | $() | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | $() | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "Hello"
+
+### toHaveAttribute("name") | $() | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | $() | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "Hello" (compared as "hello")
+
 ### toHaveAttribute("name") | $() | values "  hello  ", Hello | "Hello" | no option
 result: fails
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -580,6 +614,40 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: Anything
+  Received      : "  hello  " (compared as "hello")
+
+### toHaveAttribute("name") | $() | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | $() | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "  hello  " (compared as "hello")
+
+### toHaveAttribute("name") | $() | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | $() | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
   Received      : "  hello  " (compared as "hello")
 
 ### toHaveAttribute("name") | $() | values null, Hello | "Hello" | no option
@@ -874,6 +942,40 @@ before: toHaveAttribute expected=["name", Anything] options=[afterAssertion,befo
 after: toHaveAttribute expected=["name", Anything] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
 getter calls: ["name"] x1
 
+### toHaveAttribute("name") | $() | values null, Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | $() | values null, Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : null
+
+### toHaveAttribute("name") | $() | values null, Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | $() | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : null
+
 ### toHaveAttribute("name") | not awaited $() | values Hello, World | "Hello" | no option
 result: passes
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -1164,6 +1266,40 @@ message:
   Expect $(`sel`) not to have attribute name
   
   Expected [not]: Anything
+  Received      : "Hello" (compared as "hello")
+
+### toHaveAttribute("name") | not awaited $() | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | not awaited $() | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "Hello"
+
+### toHaveAttribute("name") | not awaited $() | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | not awaited $() | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
   Received      : "Hello" (compared as "hello")
 
 ### toHaveAttribute("name") | not awaited $() | values "  hello  ", Hello | "Hello" | no option
@@ -1458,6 +1594,40 @@ message:
   Expected [not]: Anything
   Received      : "  hello  " (compared as "hello")
 
+### toHaveAttribute("name") | not awaited $() | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | not awaited $() | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "  hello  " (compared as "hello")
+
+### toHaveAttribute("name") | not awaited $() | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | not awaited $() | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "  hello  " (compared as "hello")
+
 ### toHaveAttribute("name") | not awaited $() | values null, Hello | "Hello" | no option
 result: fails
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -1749,6 +1919,40 @@ result: passes
 before: toHaveAttribute expected=["name", Anything] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
 after: toHaveAttribute expected=["name", Anything] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
 getter calls: ["name"] x1
+
+### toHaveAttribute("name") | not awaited $() | values null, Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | not awaited $() | values null, Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : null
+
+### toHaveAttribute("name") | not awaited $() | values null, Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveAttribute("name") | not awaited $() | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : null
 
 ### toHaveAttribute("name") | $$() | values Hello, World | "Hello" | no option
 result: fails
@@ -2148,6 +2352,40 @@ message:
   Expected [not]: [Anything, Anything]
   Received      : ["Hello" (compared as "hello"), "World" (compared as "world")]
 
+### toHaveAttribute("name") | $$() | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | $$() | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : ["Hello", "World"]
+
+### toHaveAttribute("name") | $$() | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | $$() | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : ["Hello" (compared as "hello"), "World" (compared as "world")]
+
 ### toHaveAttribute("name") | $$() | values "  hello  ", Hello | "Hello" | no option
 result: fails
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -2529,6 +2767,40 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [Anything, Anything]
+  Received      : ["  hello  " (compared as "hello"), "Hello" (compared as "hello")]
+
+### toHaveAttribute("name") | $$() | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | $$() | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : ["  hello  " (compared as "hello"), "Hello"]
+
+### toHaveAttribute("name") | $$() | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | $$() | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
   Received      : ["  hello  " (compared as "hello"), "Hello" (compared as "hello")]
 
 ### toHaveAttribute("name") | $$() | values null, Hello | "Hello" | no option
@@ -2964,6 +3236,40 @@ message:
   Expected [not]: [Anything, Anything]
   Received      : [null, "Hello" (compared as "hello")]
 
+### toHaveAttribute("name") | $$() | values null, Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | $$() | values null, Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : [null, "Hello"]
+
+### toHaveAttribute("name") | $$() | values null, Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | $$() | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : [null, "Hello" (compared as "hello")]
+
 ### toHaveAttribute("name") | empty $$() | values Hello, World | "Hello" | no option
 result: fails
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -3304,6 +3610,50 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [Anything]
+  Received      : undefined
+
+### toHaveAttribute("name") | empty $$() | values Hello, World | not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have attribute name
+  
+  Expected: [StringNotContaining "x"]
+  Received: undefined
+
+### toHaveAttribute("name") | empty $$() | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x"]
+  Received      : undefined
+
+### toHaveAttribute("name") | empty $$() | values Hello, World | not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have attribute name
+  
+  Expected: [StringNotContaining "x"]
+  Received: undefined
+
+### toHaveAttribute("name") | empty $$() | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x"]
   Received      : undefined
 
 ### toHaveAttribute("name") | empty $$() | values "  hello  ", Hello | "Hello" | no option
@@ -3648,6 +3998,50 @@ message:
   Expected [not]: [Anything]
   Received      : undefined
 
+### toHaveAttribute("name") | empty $$() | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have attribute name
+  
+  Expected: [StringNotContaining "x"]
+  Received: undefined
+
+### toHaveAttribute("name") | empty $$() | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x"]
+  Received      : undefined
+
+### toHaveAttribute("name") | empty $$() | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have attribute name
+  
+  Expected: [StringNotContaining "x"]
+  Received: undefined
+
+### toHaveAttribute("name") | empty $$() | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x"]
+  Received      : undefined
+
 ### toHaveAttribute("name") | empty $$() | values null, Hello | "Hello" | no option
 result: fails
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -3990,6 +4384,50 @@ message:
   Expected [not]: [Anything]
   Received      : undefined
 
+### toHaveAttribute("name") | empty $$() | values null, Hello | not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have attribute name
+  
+  Expected: [StringNotContaining "x"]
+  Received: undefined
+
+### toHaveAttribute("name") | empty $$() | values null, Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x"]
+  Received      : undefined
+
+### toHaveAttribute("name") | empty $$() | values null, Hello | not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have attribute name
+  
+  Expected: [StringNotContaining "x"]
+  Received: undefined
+
+### toHaveAttribute("name") | empty $$() | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x"]
+  Received      : undefined
+
 ### toHaveAttribute("name") | some($$()) | values Hello, World | "Hello" | no option
 result: passes
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -4290,6 +4728,40 @@ message:
   Expect some of $$(`sel`) not to have attribute name
   
   Expected [not]: [Anything, Anything]
+  Received      : ["Hello" (compared as "hello"), "World" (compared as "world")]
+
+### toHaveAttribute("name") | some($$()) | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | some($$()) | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect some of $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : ["Hello", "World"]
+
+### toHaveAttribute("name") | some($$()) | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | some($$()) | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect some of $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
   Received      : ["Hello" (compared as "hello"), "World" (compared as "world")]
 
 ### toHaveAttribute("name") | some($$()) | values "  hello  ", Hello | "Hello" | no option
@@ -4611,6 +5083,40 @@ message:
   Expected [not]: [Anything, Anything]
   Received      : ["  hello  " (compared as "hello"), "Hello" (compared as "hello")]
 
+### toHaveAttribute("name") | some($$()) | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | some($$()) | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect some of $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : ["  hello  " (compared as "hello"), "Hello"]
+
+### toHaveAttribute("name") | some($$()) | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | some($$()) | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect some of $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : ["  hello  " (compared as "hello"), "Hello" (compared as "hello")]
+
 ### toHaveAttribute("name") | some($$()) | values null, Hello | "Hello" | no option
 result: passes
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -4915,6 +5421,40 @@ result: passes
 before: toHaveAttribute expected=["name", Anything] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
 after: toHaveAttribute expected=["name", Anything] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
 getter calls: ["name"] x2
+
+### toHaveAttribute("name") | some($$()) | values null, Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | some($$()) | values null, Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect some of $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : [null, "Hello"]
+
+### toHaveAttribute("name") | some($$()) | values null, Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | some($$()) | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect some of $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : [null, "Hello" (compared as "hello")]
 
 ### toHaveAttribute("name") | not awaited $$() | values Hello, World | "Hello" | no option
 result: fails
@@ -5314,6 +5854,40 @@ message:
   Expected [not]: [Anything, Anything]
   Received      : ["Hello" (compared as "hello"), "World" (compared as "world")]
 
+### toHaveAttribute("name") | not awaited $$() | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | not awaited $$() | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : ["Hello", "World"]
+
+### toHaveAttribute("name") | not awaited $$() | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | not awaited $$() | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : ["Hello" (compared as "hello"), "World" (compared as "world")]
+
 ### toHaveAttribute("name") | not awaited $$() | values "  hello  ", Hello | "Hello" | no option
 result: fails
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -5695,6 +6269,40 @@ message:
   Expect $$(`sel`) not to have attribute name
   
   Expected [not]: [Anything, Anything]
+  Received      : ["  hello  " (compared as "hello"), "Hello" (compared as "hello")]
+
+### toHaveAttribute("name") | not awaited $$() | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | not awaited $$() | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : ["  hello  " (compared as "hello"), "Hello"]
+
+### toHaveAttribute("name") | not awaited $$() | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | not awaited $$() | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
   Received      : ["  hello  " (compared as "hello"), "Hello" (compared as "hello")]
 
 ### toHaveAttribute("name") | not awaited $$() | values null, Hello | "Hello" | no option
@@ -6130,6 +6738,40 @@ message:
   Expected [not]: [Anything, Anything]
   Received      : [null, "Hello" (compared as "hello")]
 
+### toHaveAttribute("name") | not awaited $$() | values null, Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | not awaited $$() | values null, Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : [null, "Hello"]
+
+### toHaveAttribute("name") | not awaited $$() | values null, Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | not awaited $$() | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: [StringNotContaining "x", StringNotContaining "x"]
+  Received      : [null, "Hello" (compared as "hello")]
+
 ### toHaveAttribute("name") | multi-remote $() | values Hello, World | "Hello" | no option
 result: fails
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -6556,6 +7198,40 @@ message:
   Expected [not]: {"chrome": Anything, "firefox": Anything}
   Received      : {"chrome": "Hello", "firefox": "World"}
 
+### toHaveAttribute("name") | multi-remote $() | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | multi-remote $() | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": StringNotContaining "x", "firefox": StringNotContaining "x"}
+  Received      : {"chrome": "Hello", "firefox": "World"}
+
+### toHaveAttribute("name") | multi-remote $() | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | multi-remote $() | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": StringNotContaining "x", "firefox": StringNotContaining "x"}
+  Received      : {"chrome": "Hello", "firefox": "World"}
+
 ### toHaveAttribute("name") | multi-remote $() | values "  hello  ", Hello | "Hello" | no option
 result: fails
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -6977,6 +7653,40 @@ message:
   Expect multi-remote<chrome, firefox>.$(`sel`) not to have attribute name
   
   Expected [not]: {"chrome": Anything, "firefox": Anything}
+  Received      : {"chrome": "  hello  ", "firefox": "Hello"}
+
+### toHaveAttribute("name") | multi-remote $() | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | multi-remote $() | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": StringNotContaining "x", "firefox": StringNotContaining "x"}
+  Received      : {"chrome": "  hello  ", "firefox": "Hello"}
+
+### toHaveAttribute("name") | multi-remote $() | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | multi-remote $() | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": StringNotContaining "x", "firefox": StringNotContaining "x"}
   Received      : {"chrome": "  hello  ", "firefox": "Hello"}
 
 ### toHaveAttribute("name") | multi-remote $() | values null, Hello | "Hello" | no option
@@ -7466,6 +8176,40 @@ message:
   +   "chrome": null,
       "firefox": Anything,
     }
+
+### toHaveAttribute("name") | multi-remote $() | values null, Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | multi-remote $() | values null, Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": StringNotContaining "x", "firefox": StringNotContaining "x"}
+  Received      : {"chrome": null, "firefox": "Hello"}
+
+### toHaveAttribute("name") | multi-remote $() | values null, Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+
+### toHaveAttribute("name") | multi-remote $() | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": StringNotContaining "x", "firefox": StringNotContaining "x"}
+  Received      : {"chrome": null, "firefox": "Hello"}
 
 ### toHaveAttribute("name") | multi-remote $$() | values Hello, World | "Hello" | no option
 result: fails
@@ -8049,6 +8793,40 @@ message:
   Expected [not]: {"chrome": [Anything, Anything], "firefox": [Anything, Anything]}
   Received      : {"chrome": ["Hello", "World"], "firefox": ["Hello", "World"]}
 
+### toHaveAttribute("name") | multi-remote $$() | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x4
+
+### toHaveAttribute("name") | multi-remote $$() | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": [StringNotContaining "x", StringNotContaining "x"], "firefox": [StringNotContaining "x", StringNotContaining "x"]}
+  Received      : {"chrome": ["Hello", "World"], "firefox": ["Hello", "World"]}
+
+### toHaveAttribute("name") | multi-remote $$() | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x4
+
+### toHaveAttribute("name") | multi-remote $$() | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": [StringNotContaining "x", StringNotContaining "x"], "firefox": [StringNotContaining "x", StringNotContaining "x"]}
+  Received      : {"chrome": ["Hello", "World"], "firefox": ["Hello", "World"]}
+
 ### toHaveAttribute("name") | multi-remote $$() | values "  hello  ", Hello | "Hello" | no option
 result: fails
 before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -8586,6 +9364,40 @@ message:
   Expect multi-remote<chrome, firefox>.$$(`sel`) not to have attribute name
   
   Expected [not]: {"chrome": [Anything, Anything], "firefox": [Anything, Anything]}
+  Received      : {"chrome": ["  hello  ", "Hello"], "firefox": ["  hello  ", "Hello"]}
+
+### toHaveAttribute("name") | multi-remote $$() | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x4
+
+### toHaveAttribute("name") | multi-remote $$() | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": [StringNotContaining "x", StringNotContaining "x"], "firefox": [StringNotContaining "x", StringNotContaining "x"]}
+  Received      : {"chrome": ["  hello  ", "Hello"], "firefox": ["  hello  ", "Hello"]}
+
+### toHaveAttribute("name") | multi-remote $$() | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x4
+
+### toHaveAttribute("name") | multi-remote $$() | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": [StringNotContaining "x", StringNotContaining "x"], "firefox": [StringNotContaining "x", StringNotContaining "x"]}
   Received      : {"chrome": ["  hello  ", "Hello"], "firefox": ["  hello  ", "Hello"]}
 
 ### toHaveAttribute("name") | multi-remote $$() | values null, Hello | "Hello" | no option
@@ -9267,6 +10079,40 @@ message:
         Anything,
       ],
     }
+
+### toHaveAttribute("name") | multi-remote $$() | values null, Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x4
+
+### toHaveAttribute("name") | multi-remote $$() | values null, Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": [StringNotContaining "x", StringNotContaining "x"], "firefox": [StringNotContaining "x", StringNotContaining "x"]}
+  Received      : {"chrome": [null, "Hello"], "firefox": [null, "Hello"]}
+
+### toHaveAttribute("name") | multi-remote $$() | values null, Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x4
+
+### toHaveAttribute("name") | multi-remote $$() | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveAttribute expected=["name", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: ["name"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": [StringNotContaining "x", StringNotContaining "x"], "firefox": [StringNotContaining "x", StringNotContaining "x"]}
+  Received      : {"chrome": [null, "Hello"], "firefox": [null, "Hello"]}
 
 ### toHaveAttribute("name") | $() | values Hello, World | no value | no option
 result: passes
