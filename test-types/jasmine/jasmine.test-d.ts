@@ -103,6 +103,15 @@ describe('Jasmine type agumentations', () => {
                 })
             })
 
+            describe('toHaveSessionStorageItem', () => {
+                it('should return Promise<void>', async () => {
+                    expectTypeOf(expectAsync(browser).toHaveSessionStorageItem('theme')).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(browser).toHaveSessionStorageItem('theme', 'dark')).toEqualTypeOf<Promise<void>>()
+                    // @ts-expect-error omit the value to check that the item exists
+                    expectTypeOf(expectAsync(browser).toHaveSessionStorageItem).toBeCallableWith('theme', undefined)
+                })
+            })
+
             describe('toHaveLocalStorageItem', () => {
                 it('should reject an explicit undefined value', async () => {
                     expectTypeOf(expectAsync(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()

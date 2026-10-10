@@ -12,7 +12,7 @@ type GettersGive<Table extends Record<string, { getter: keyof Target, argument?:
     // `() =>`: the getter has no required argument, e.g. not `isEqual(element)`. An optional one is fine: `getHTML(options?)`.
     // With an `argument`, the getter takes one string and can give `null`, e.g. `getAttribute(name)` for a missing attribute.
     // A `property` can be any value
-    [Name in keyof Table]: Target[Table[Name]['getter']] extends (Table[Name] extends { value: 'localStorageItem' | 'clipboardText' }
+    [Name in keyof Table]: Target[Table[Name]['getter']] extends (Table[Name] extends { value: 'localStorageItem' | 'sessionStorageItem' | 'clipboardText' }
         // A page script: `execute(script, ...args)`
         ? (script: never, ...args: never[]) => Promise<unknown>
         : Table[Name] extends { argument: unknown }
@@ -71,9 +71,10 @@ export type BrowserStringGetterDescriptor = {
      * How the value is read, when it is not the result of the getter:
      * - `cookie`: the getter gives the cookies with the name of the argument, and the value is the one of the cookie;
      * - `localStorageItem`: `execute()` reads the item of `localStorage` with the name of the argument;
+     * - `sessionStorageItem`: `execute()` reads the item of `sessionStorage` with the name of the argument;
      * - `clipboardText`: `execute()` reads the clipboard of the page, after the permission `clipboard-read` of the session.
      */
-    value?: 'cookie' | 'localStorageItem' | 'clipboardText'
+    value?: 'cookie' | 'localStorageItem' | 'sessionStorageItem' | 'clipboardText'
     /** The text of a value that does not exist, in the failure message, e.g. `Received: no cookie` */
     missing?: string
     /** `browser`: the message names the browser, not its window, e.g. `Expect browser to have cookie lang` */
@@ -103,6 +104,7 @@ export const browserStringGetters = {
     toHaveUrl: { getter: 'getUrl', expectation: 'url', showContextUrl: false },
     toHaveCookie: { getter: 'getCookies', expectation: 'cookie', argument: 'fromCall', argumentInMessage: true, value: 'cookie', missing: 'no cookie', target: 'browser' },
     toHaveLocalStorageItem: { getter: 'execute', expectation: 'localStorage item', argument: 'fromCall', argumentInMessage: true, value: 'localStorageItem', missing: 'no item', target: 'browser' },
+    toHaveSessionStorageItem: { getter: 'execute', expectation: 'sessionStorage item', argument: 'fromCall', argumentInMessage: true, value: 'sessionStorageItem', missing: 'no item', target: 'browser' },
     toHaveClipboardText: { getter: 'execute', expectation: 'clipboard text', value: 'clipboardText', target: 'browser' },
 } as const satisfies Record<string, BrowserStringGetterDescriptor>
 browserStringGetters satisfies GettersGive<typeof browserStringGetters, WebdriverIO.Browser, string>

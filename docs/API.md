@@ -357,6 +357,22 @@ await expect(browser).toHaveLocalStorageItem('key', 'long', { containing: true }
 await expect(browser).toHaveLocalStorageItem('userId', /^user_\d+$/)
 ```
 
+### toHaveSessionStorageItem
+
+Checks if browser has a specific item in sessionStorage with an optional value, as [`toHaveLocalStorageItem`](#tohavelocalstorageitem). With no value, it checks that the item exists; with `.not`, that it does not exist. A missing item never matches, also not a matcher that accepts no value, and the failure message shows `Received: no item`. The session storage is of the page of the browser or of the browsing context, and of its origin.
+
+##### Usage
+
+```js
+await browser.url('https://webdriver.io/')
+// Check if sessionStorage item exists
+await expect(browser).toHaveSessionStorageItem('cartId')
+
+// Check sessionStorage item with a value and string options
+await expect(browser).toHaveSessionStorageItem('theme', 'dark', { ignoreCase: true })
+await expect(browser).not.toHaveSessionStorageItem('token')
+```
+
 ## Element Matchers
 
 ### Matching a subset of element values

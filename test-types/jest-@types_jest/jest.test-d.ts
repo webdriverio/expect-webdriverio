@@ -78,6 +78,18 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
             })
         })
 
+        describe('toHaveSessionStorageItem', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(browser).toHaveSessionStorageItem('theme')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveSessionStorageItem('theme', 'dark')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveSessionStorageItem('theme', expect.stringContaining('da'))).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should have ts errors when actual is not a Browser element', async () => {
+                expectTypeOf(expect(element).toHaveSessionStorageItem).toBeNever()
+            })
+        })
+
         describe('toHaveLocalStorageItem', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()

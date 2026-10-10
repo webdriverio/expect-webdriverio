@@ -129,6 +129,22 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
         })
 
+        describe('toHaveSessionStorageItem', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(browser).toHaveSessionStorageItem('theme')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveSessionStorageItem('theme', 'dark')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveSessionStorageItem('theme', 'dark')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveSessionStorageItem('theme', expect.oneOf('dark', 'light'), { ignoreCase: true })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveSessionStorageItem('theme', expect.multiRemote({ chrome: 'dark', firefox: 'light' }))).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should reject an explicit undefined value, and an element', async () => {
+                // @ts-expect-error omit the value to check that the item exists
+                expectTypeOf(expect(browser).toHaveSessionStorageItem).toBeCallableWith('theme', undefined)
+                expectTypeOf(expect(element).toHaveSessionStorageItem).toBeNever()
+            })
+        })
+
         describe('toHaveLocalStorageItem', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()

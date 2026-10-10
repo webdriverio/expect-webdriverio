@@ -53,6 +53,27 @@ describe('WebdriverIO Custom Matchers', () => {
         })
     })
 
+    describe('Session storage matcher', () => {
+        afterEach(async () => {
+            await browser.execute(() => sessionStorage.clear())
+        })
+
+        it('should verify a session storage item and its value', async () => {
+            await browser.execute(() => sessionStorage.setItem('theme', 'dark'))
+
+            await expect(browser).toHaveSessionStorageItem('theme')
+            await expect(browser).toHaveSessionStorageItem('theme', 'dark')
+            await expect(browser).toHaveSessionStorageItem('theme', 'DARK', { ignoreCase: true })
+            await expect(browser).not.toHaveSessionStorageItem('theme', 'light')
+            // The item is in the session storage only
+            await expect(browser).not.toHaveLocalStorageItem('theme')
+        })
+
+        it('should show a missing item in the error message', async () => {
+            await expect(expect(browser).toHaveSessionStorageItem('cartId', 'abc', { wait: 0 })).rejects.toThrow(/to have sessionStorage item cartId[\s\S]*Received: no item/)
+        })
+    })
+
     describe('Element existence matchers', () => {
         it('should verify element exists', async () => {
             const githubLink = $('#githubRepo')
