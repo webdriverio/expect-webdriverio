@@ -79,11 +79,30 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     const isSome = isSomeWrapper(unresolvedElements)
     const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
 
+    // `some()` checks each element alone, and the value of one element is not a list (a string, a size): a list matcher, also
+    // in an array or in per-instance values, can never match it, and with `.not` it would always pass. A property can be a
+    // list, so it is compared per element
+    if (isSome && supportsArrayContaining === 'arrayOnly' && hasListMatcher(expectedValues, strictConfiguration.allowObjectExpectedValue)) {
+        throw new MatcherUsageError(`${matcherName} with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements`)
+    }
+
     if (supportsArrayContaining && !isSome && isListMatcher(expectedValues)) {
         return arrayContainingStrategy(unresolvedElements, expectedValues, singleElementCompare, { isNot, iteration, matcherName }, supportsArrayContaining)
     }
 
     return multipleElementResultsStrategy(actualReceived, expectedValues as MaybeArrayOrMultiRemoteValues<Expected> | undefined, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)
+}
+
+/** A list matcher in the expected values: the value itself, an item of an array, or the value of an instance */
+const hasListMatcher = (expected: unknown, allowObjectExpectedValue = false): boolean => {
+    if (isListMatcher(expected)) {
+        return true
+    }
+    if (Array.isArray(expected)) {
+        return expected.some((value) => hasListMatcher(value, allowObjectExpectedValue))
+    }
+    const perInstanceValues = getPerInstanceValues(expected, { allowObjectExpectedValue })
+    return perInstanceValues !== undefined && Object.values(perInstanceValues).some((value) => hasListMatcher(value, allowObjectExpectedValue))
 }
 
 type SingleElementCompare<Actual, Expected> = (awaitedElement: WebdriverIO.Element, expectedValues: MaybeArray<Expected> | undefined, index?: number, wholeList?: boolean) => Promise<CompareResult<Actual>>

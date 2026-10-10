@@ -183,7 +183,7 @@ On `$$()`, the expected value decides how the texts (or other values) of the ele
 | `expect.arrayOf(expect.stringMatching(/^(Tea\|Coffee)$/))` | every element matches the matcher; also passes with no element | any | no | not applied |
 | `some($$('li'))` with `'Tea'` | at least one element has the text | any | allowed | applied |
 
-A list matcher (`arrayContaining`, `arrayOf`) compares the raw values of all the elements at once. The string options do not change these values: use a nested matcher, e.g. `expect.stringMatching(/tea/i)`.
+A list matcher (`arrayContaining`, `arrayOf`) compares the raw values of all the elements at once. The string options do not change these values: use a nested matcher, e.g. `expect.stringMatching(/tea/i)`. A list matcher throws an error with `some()`, which checks each element alone.
 
 ```ts
 // <li>Coffee</li> <li>Tea</li>
