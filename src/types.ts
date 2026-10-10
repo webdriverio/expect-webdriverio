@@ -1,5 +1,6 @@
 import type { ExpectationResult, MatcherContext } from 'expect'
 import type { ChainablePromiseElement, ChainablePromiseArray } from 'webdriverio'
+import type { WdioSome } from './publicTypes/expectWebdriverIO.js'
 
 export type WdioElementMaybePromise =
     WebdriverIO.Element |

@@ -20,6 +20,7 @@ import type { AsyncAssertionResult, CommandOptions, StringOptions } from './publ
 import type { ExpectedOf } from './publicTypes/expectWebdriverIO.js'
 export { compareText } from './util/compareText.js'
 export { toArray } from './util/arrayUtil.js'
+import type { MaybeArrayOrOneOf } from './publicTypes/expectWebdriverIO.js'
 
 async function executeCommandBe(
     this: WdioMatcherContext,

@@ -5,6 +5,7 @@ import { awaitMocks, getPerInstanceValues, hasSameInstanceNames, isInstanceMocks
 import { formatMultiRemoteInstanceNames, labelMultiRemoteValues } from '../../util/formatMessage.js'
 import type { WdioMatcherContext, WdioMultiRemoteMockMaybePromise } from '../../types.js'
 import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
+import type { MultiRemoteValues } from '../../publicTypes/expectWebdriverIO.js'
 
 export async function toBeRequestedTimes(
     received: WebdriverIO.Mock,

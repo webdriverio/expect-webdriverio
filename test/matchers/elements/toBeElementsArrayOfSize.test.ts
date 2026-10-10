@@ -7,6 +7,7 @@ import { refetchElements } from '../../../src/util/refetchElements.js'
 import stripAnsi from 'strip-ansi'
 import { multiRemote } from '../../../src/api/index.js'
 import { waitUntil } from '../../../src/util/waitUntil.js'
+import type { MultiRemoteValues } from '../../../src/publicTypes/expectWebdriverIO.js'
 
 vi.mock('@wdio/globals')
 

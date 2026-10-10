@@ -7,6 +7,7 @@ import { stringify } from 'jest-matcher-utils'
 import type { NumberMatcher as PublicNumberMatcher } from '../publicTypes/options.js'
 import type { ExpectedOf } from '../publicTypes/expectWebdriverIO.js'
 import { equals } from '../jasmineUtils.js'
+import type { MaybeArray, MultiRemoteValues } from '../publicTypes/expectWebdriverIO.js'
 
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value)
 export const isDefinedNotNumber = (value: unknown) => value !== undefined && !isNumber(value)

@@ -335,6 +335,30 @@ The types of the `ExpectWebdriverIO` namespace are also named exports of the pac
 + const options: StringOptions = { ignoreCase: true }
 ```
 
+## The helper types are not global
+
+The types file of v7 was a global script, so all its helper types were global names: `Test`, `TestResult`, `Scenario`, `MaybeArray`, `MultiRemoteValues`, `AsymmetricMatcher`, `WdioCustomMatchers`… In v8, only the `ExpectWebdriverIO` namespace and 2 aliases of WebdriverIO types, `ChainablePromiseElement` and `ChainablePromiseArray`, are global. So a project can have its own global types with these names. Before, TypeScript failed with `Duplicate identifier 'Test'`.
+
+The helper types were not documented. A file that used one of them fails with `Cannot find name`: use the public type, or write it:
+
+```diff
++ import type { Frameworks } from '@wdio/types'
++ type MaybeArray<T> = T | T[]
+
+- export function afterTest(test: Test, context: unknown, result: TestResult) { … }
++ export function afterTest(test: Frameworks.Test, context: unknown, result: Frameworks.TestResult) { … }
+  const states: MaybeArray<string> = ['open', 'closed']
+```
+
+| Global name in v7 | v8 |
+| --- | --- |
+| `Test`, `TestResult`, `Scenario`, `PickleStep`, `ServiceInstance` | `Frameworks.Test`, `Frameworks.TestResult`, `Frameworks.Scenario`, `Frameworks.PickleStep`, `Services.ServiceInstance` from `@wdio/types` |
+| `ExpectLibMatchers`, `ExpectLibInverse`… | the types of the `expect` package, e.g. `import type { Matchers, Inverse } from 'expect'` |
+| `WdioCustomMatchers`, `WdioMatchers`, `WdioExpect`… | `ExpectWebdriverIO.Matchers`, `ExpectWebdriverIO.Expect` |
+| `ChainablePromiseElement`, `ChainablePromiseArray` | no change, still global |
+
+The types of a custom matcher do not change: see [TypeScript](CustomMatchers.md#typescript) in Custom Matchers.
+
 ## Removed deprecated APIs
 
 v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#migration-guide-v5-to-v6) below.

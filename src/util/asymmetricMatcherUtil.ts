@@ -1,3 +1,4 @@
+import type { AsymmetricMatcher, JasmineAsymmetricMatcher, JasmineStringAsymmetricMatcher, JasmineStringMatchingAsymmetricMatcher, WdioAsymmetricMatcher } from '../publicTypes/expectWebdriverIO.js'
 // Leaf module: it must not import other modules of `src/`, so that every module can import it without a cycle
 
 export function isJasmineStringAsymmetricMatcher<T>(expected: unknown): expected is JasmineAsymmetricMatcher<T> {

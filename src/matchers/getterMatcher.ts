@@ -17,6 +17,7 @@ import { MissingValue } from '../util/missingValue.js'
 import { isBrowsingContext } from '../util/multiRemoteUtils.js'
 import type { AssertionResult, CommandOptions, StringOptions, ToBeDisplayedOptions } from '../publicTypes/options.js'
 import type { ExpectedOf } from '../publicTypes/expectWebdriverIO.js'
+import type { AsymmetricMatcher, MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf, MaybeArrayOrOneOf, MultiRemoteValuesOrOneOf } from '../publicTypes/expectWebdriverIO.js'
 
 type StringExpected = MaybeArrayOrOneOf<ExpectedOf<'string'>>
 type ReadValue = (this: unknown, argument?: unknown) => Promise<unknown>

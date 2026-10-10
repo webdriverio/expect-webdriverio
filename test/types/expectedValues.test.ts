@@ -3,6 +3,7 @@ import { expect as wdioExpect } from '../../src/index.js'
 import type { ExpectedOf } from '../../src/publicTypes/expectWebdriverIO.js'
 import type { compareStyle, compareTextOrOneOf } from '../../src/utils.js'
 import type { validateNumberMatcher } from '../../src/util/numberOptionsUtil.js'
+import type { MaybeArrayOrOneOf, MaybeOneOf } from '../../src/publicTypes/expectWebdriverIO.js'
 
 /**
  * A matcher accepts what its compare function compares: the public type of the matcher and the parameter of the compare

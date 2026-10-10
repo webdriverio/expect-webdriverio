@@ -13,6 +13,7 @@ import { toHaveClipboardText } from '../../src/matchers/browser/toHaveClipboardT
 import { toHaveLocalStorageItem } from '../../src/matchers/browser/toHaveLocalStorageItem.js'
 import { browserFactory, elementArrayFactory, multiRemoteBrowserFactory } from '../__mocks__/@wdio/globals.js'
 import { jasmine } from '../__fixtures__/jasmine.js'
+import type { AsymmetricMatcher } from '../../src/publicTypes/expectWebdriverIO.js'
 
 vi.mock('@wdio/globals')
 

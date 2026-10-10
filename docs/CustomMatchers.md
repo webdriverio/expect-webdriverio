@@ -37,3 +37,38 @@ export function addCustomMatchers () {
     })
 }
 ```
+
+### TypeScript
+
+Add the types of your matchers to the `ExpectWebdriverIO` namespace. It works with every framework: the types of `expect-webdriverio/jest` and of `expect-webdriverio/jasmine` (and `@wdio/jasmine-framework`) extend it, also for `expect.soft()`.
+
+```ts
+// my-matchers.d.ts, or any .ts file of your project
+declare global {
+    namespace ExpectWebdriverIO {
+        interface Matchers<R, T> {
+            // A matcher for any value
+            toBeWithinRange(floor: number, ceiling: number): R
+            // An async matcher for elements only: `never` blocks it on other values
+            toHaveDataState: T extends ChainablePromiseElement | WebdriverIO.Element
+                ? (state: string | ExpectWebdriverIO.PartialMatcher<string>, options?: ExpectWebdriverIO.CommandOptions) => Promise<R>
+                : never
+        }
+
+        interface AsymmetricMatchers {
+            // The asymmetric form: `expect.toBeWithinRange(1, 10)`
+            toBeWithinRange(floor: number, ceiling: number): ExpectWebdriverIO.PartialMatcher<number>
+        }
+    }
+}
+
+export {}
+```
+
+- `Matchers` takes both type parameters, `<R, T>`, as in `expect-webdriverio`: `R` is the return type of the assertion, and `T` is the type of the value given to `expect()`. With `Matchers<R>` only, TypeScript fails: `All declarations of 'Matchers' must have identical type parameters`.
+- An async matcher, which waits for the element, returns `Promise<R>`. A matcher that compares a value at once returns `R`.
+- `ExpectWebdriverIO.PartialMatcher` takes the type of the value, e.g. `PartialMatcher<string>`.
+- In a file with an `import` or an `export` (a module), put the namespace in `declare global { … }`, and end with `export {}` when the file has no other export. In a `.d.ts` file with no `import` and no `export`, write `declare namespace ExpectWebdriverIO { … }` directly.
+- Use the public types: `ExpectWebdriverIO.*` (also as named exports of `expect-webdriverio`), `WebdriverIO.Element`, and the 2 global names `ChainablePromiseElement` and `ChainablePromiseArray` (the types of a not-awaited `$()` and `$$()`, from `webdriverio`). The other helper types of `expect-webdriverio` are not global.
+- With Jest, you can also add the types to the `expect` module (`declare module 'expect' { interface Matchers<R, T> { … } }`), or to the `jest` namespace. The `jest` namespace does not type `expect.soft()`.
+

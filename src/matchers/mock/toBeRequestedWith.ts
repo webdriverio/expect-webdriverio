@@ -7,6 +7,7 @@ import { awaitMocks, getPerInstanceValues, hasSameInstanceNames, isInstanceMocks
 import { formatMultiRemoteInstanceNames, labelMultiRemoteValues } from '../../util/formatMessage.js'
 import type { WdioMatcherContext, WdioMultiRemoteMockMaybePromise } from '../../types.js'
 import type { AssertionResult, CommandOptions } from '../../publicTypes/options.js'
+import type { MultiRemoteValues } from '../../publicTypes/expectWebdriverIO.js'
 
 const STR_LIMIT = 80
 const KEY_LIMIT = 12

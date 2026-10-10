@@ -8,6 +8,7 @@ import { SoftAssertService } from './softAssert.js'
 import { oneOf } from './matchers/asymmetrics/oneOf.js'
 import { multiRemote } from './matchers/asymmetrics/multiRemote.js'
 import { getGlobalSingleton } from './util/globalSingleton.js'
+import type { MatchersObject } from './publicTypes/expectWebdriverIO.js'
 
 interface SharedExpectSetup {
     wdioExpect: ExpectWebdriverIO.Expect

@@ -3,6 +3,7 @@ import { expect as wdioExpect } from '../../../src/index.js'
 import { multiRemote as apiMultiRemote } from '../../../src/api/index.js'
 import { multiRemote, MultiRemoteMatcher } from '../../../src/matchers/asymmetrics/multiRemote.js'
 import { isMultiRemoteMatcher } from '../../../src/util/multiRemoteUtils.js'
+import type { MultiRemoteValues } from '../../../src/publicTypes/expectWebdriverIO.js'
 
 describe('MultiRemoteMatcher', () => {
     it('is registered as expect.multiRemote() and exported by the api', () => {

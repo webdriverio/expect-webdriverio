@@ -6,6 +6,7 @@ import { awaitElementOrArray, isElement, isMultiRemoteElement, isMultiRemoteElem
 import { getElementsPerInstance, getPerInstanceValues, hasSameInstanceNames } from './multiRemoteUtils.js'
 import { refreshElementArray } from './refetchElements.js'
 import { MatcherUsageError } from './matcherUsageError.js'
+import type { MaybeArrayOrMultiRemoteValues, MultiRemoteValues } from '../publicTypes/expectWebdriverIO.js'
 
 export type CompareResult<Actual> = {
     success: boolean
