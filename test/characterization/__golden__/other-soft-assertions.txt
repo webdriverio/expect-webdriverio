@@ -1,0 +1,73 @@
+### toHaveAttribute | soft
+toHaveAttribute:
+  Expect $(`sel`) to have attribute name
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toHaveId | soft
+toHaveId:
+  Expect $(`sel`) to have attribute id
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toHaveLink | soft
+toHaveLink:
+  Expect $(`sel`) to have attribute href
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toHaveElementClass | soft
+toHaveElementClass:
+  Expect $(`sel`) to have class
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toHaveElementProperty | soft
+toHaveElementProperty:
+  Expect $(`sel`) to have property name
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toHaveValue | soft
+toHaveValue:
+  Expect $(`sel`) to have property value
+  
+  Expected: "Other"
+  Received: "Hello"
+
+### toHaveWidth | soft
+toHaveWidth:
+  Expect $(`sel`) to have width
+  
+  Expected: 99
+  Received: 100
+
+### toHaveSize | soft
+toHaveSize:
+  Expect $(`sel`) to have size
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Object {
+      "height": 50,
+  -   "width": 99,
+  +   "width": 100,
+    }
+
+### toHaveStyle | soft
+toHaveStyle:
+  Expect $(`sel`) to have style
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Object {
+  -   "color": "blue",
+  +   "color": "red",
+    }

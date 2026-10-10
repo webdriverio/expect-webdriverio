@@ -1,0 +1,1054 @@
+### toHaveAttribute | $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x3
+time: 200 ms
+
+### toHaveAttribute | $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x4
+message:
+  Expect $(`sel`) to have attribute name
+  
+  Expected: "Hello"
+  Received: "Other"
+time: 400 ms
+
+### toHaveAttribute | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x3
+time: 200 ms
+
+### toHaveAttribute | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x4
+message:
+  Expect $(`sel`) not to have attribute name
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
+### toHaveAttribute | $$() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x6
+time: 200 ms
+
+### toHaveAttribute | $$() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x8
+message:
+  Expect $$(`sel`) to have attribute name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "Hello",
+  -   "Hello",
+  +   "Other",
+  +   "Other",
+    ]
+time: 400 ms
+
+### toHaveAttribute | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x6
+time: 200 ms
+
+### toHaveAttribute | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x8
+message:
+  Expect $$(`sel`) not to have attribute name
+  
+  Expected [not]: ["Hello", "Hello"]
+  Received      : ["Hello", "Hello"]
+time: 400 ms
+
+### toHaveAttribute | multi-remote $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x6
+time: 200 ms
+
+### toHaveAttribute | multi-remote $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have attribute name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "Hello",
+  -   "firefox": "Hello",
+  +   "chrome": "Other",
+  +   "firefox": "Other",
+    }
+time: 400 ms
+
+### toHaveAttribute | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x6
+time: 200 ms
+
+### toHaveAttribute | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveAttribute expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have attribute name
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
+### toHaveId | $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["id"] x3
+time: 200 ms
+
+### toHaveId | $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["id"] x4
+message:
+  Expect $(`sel`) to have attribute id
+  
+  Expected: "Hello"
+  Received: "Other"
+time: 400 ms
+
+### toHaveId | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["id"] x3
+time: 200 ms
+
+### toHaveId | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["id"] x4
+message:
+  Expect $(`sel`) not to have attribute id
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
+### toHaveId | $$() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["id"] x6
+time: 200 ms
+
+### toHaveId | $$() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["id"] x8
+message:
+  Expect $$(`sel`) to have attribute id
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "Hello",
+  -   "Hello",
+  +   "Other",
+  +   "Other",
+    ]
+time: 400 ms
+
+### toHaveId | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["id"] x6
+time: 200 ms
+
+### toHaveId | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["id"] x8
+message:
+  Expect $$(`sel`) not to have attribute id
+  
+  Expected [not]: ["Hello", "Hello"]
+  Received      : ["Hello", "Hello"]
+time: 400 ms
+
+### toHaveId | multi-remote $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["id"] x6
+time: 200 ms
+
+### toHaveId | multi-remote $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["id"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have attribute id
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "Hello",
+  -   "firefox": "Hello",
+  +   "chrome": "Other",
+  +   "firefox": "Other",
+    }
+time: 400 ms
+
+### toHaveId | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["id"] x6
+time: 200 ms
+
+### toHaveId | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveId expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["id"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have attribute id
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
+### toHaveElementClass | $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["class"] x3
+time: 200 ms
+
+### toHaveElementClass | $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["class"] x4
+message:
+  Expect $(`sel`) to have class
+  
+  Expected: "Hello"
+  Received: "Other"
+time: 400 ms
+
+### toHaveElementClass | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["class"] x3
+time: 200 ms
+
+### toHaveElementClass | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["class"] x4
+message:
+  Expect $(`sel`) not to have class
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
+### toHaveElementClass | $$() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["class"] x6
+time: 200 ms
+
+### toHaveElementClass | $$() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["class"] x8
+message:
+  Expect $$(`sel`) to have class
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "Hello",
+  -   "Hello",
+  +   "Other",
+  +   "Other",
+    ]
+time: 400 ms
+
+### toHaveElementClass | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["class"] x6
+time: 200 ms
+
+### toHaveElementClass | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["class"] x8
+message:
+  Expect $$(`sel`) not to have class
+  
+  Expected [not]: ["Hello", "Hello"]
+  Received      : ["Hello", "Hello"]
+time: 400 ms
+
+### toHaveElementClass | multi-remote $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["class"] x6
+time: 200 ms
+
+### toHaveElementClass | multi-remote $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["class"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have class
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "Hello",
+  -   "firefox": "Hello",
+  +   "chrome": "Other",
+  +   "firefox": "Other",
+    }
+time: 400 ms
+
+### toHaveElementClass | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["class"] x6
+time: 200 ms
+
+### toHaveElementClass | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementClass expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["class"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have class
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
+### toHaveElementProperty | $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x3
+time: 200 ms
+
+### toHaveElementProperty | $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x4
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: "Hello"
+  Received: "Other"
+time: 400 ms
+
+### toHaveElementProperty | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x3
+time: 200 ms
+
+### toHaveElementProperty | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x4
+message:
+  Expect $(`sel`) not to have property name
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
+### toHaveElementProperty | $$() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x6
+time: 200 ms
+
+### toHaveElementProperty | $$() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x8
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "Hello",
+  -   "Hello",
+  +   "Other",
+  +   "Other",
+    ]
+time: 400 ms
+
+### toHaveElementProperty | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x6
+time: 200 ms
+
+### toHaveElementProperty | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x8
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "Hello"]
+  Received      : ["Hello", "Hello"]
+time: 400 ms
+
+### toHaveElementProperty | multi-remote $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x6
+time: 200 ms
+
+### toHaveElementProperty | multi-remote $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "Hello",
+  -   "firefox": "Hello",
+  +   "chrome": "Other",
+  +   "firefox": "Other",
+    }
+time: 400 ms
+
+### toHaveElementProperty | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["name"] x6
+time: 200 ms
+
+### toHaveElementProperty | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveElementProperty expected=["name", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["name"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
+### toHaveValue | $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["value"] x3
+time: 200 ms
+
+### toHaveValue | $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["value"] x4
+message:
+  Expect $(`sel`) to have property value
+  
+  Expected: "Hello"
+  Received: "Other"
+time: 400 ms
+
+### toHaveValue | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["value"] x3
+time: 200 ms
+
+### toHaveValue | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["value"] x4
+message:
+  Expect $(`sel`) not to have property value
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
+### toHaveValue | $$() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["value"] x6
+time: 200 ms
+
+### toHaveValue | $$() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["value"] x8
+message:
+  Expect $$(`sel`) to have property value
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "Hello",
+  -   "Hello",
+  +   "Other",
+  +   "Other",
+    ]
+time: 400 ms
+
+### toHaveValue | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["value"] x6
+time: 200 ms
+
+### toHaveValue | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["value"] x8
+message:
+  Expect $$(`sel`) not to have property value
+  
+  Expected [not]: ["Hello", "Hello"]
+  Received      : ["Hello", "Hello"]
+time: 400 ms
+
+### toHaveValue | multi-remote $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["value"] x6
+time: 200 ms
+
+### toHaveValue | multi-remote $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["value"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property value
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "Hello",
+  -   "firefox": "Hello",
+  +   "chrome": "Other",
+  +   "firefox": "Other",
+    }
+time: 400 ms
+
+### toHaveValue | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["value"] x6
+time: 200 ms
+
+### toHaveValue | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveValue expected=["value", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["value"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property value
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
+### toHaveWidth | $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["width"] x3
+time: 200 ms
+
+### toHaveWidth | $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["width"] x4
+message:
+  Expect $(`sel`) to have width
+  
+  Expected: 100
+  Received: 99
+time: 400 ms
+
+### toHaveWidth | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["width"] x3
+time: 200 ms
+
+### toHaveWidth | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["width"] x4
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: 100
+  Received      : 100
+time: 400 ms
+
+### toHaveWidth | $$() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["width"] x6
+time: 200 ms
+
+### toHaveWidth | $$() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["width"] x8
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   100,
+  -   100,
+  +   99,
+  +   99,
+    ]
+time: 400 ms
+
+### toHaveWidth | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["width"] x6
+time: 200 ms
+
+### toHaveWidth | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["width"] x8
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [100, 100]
+  Received      : [100, 100]
+time: 400 ms
+
+### toHaveWidth | multi-remote $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["width"] x6
+time: 200 ms
+
+### toHaveWidth | multi-remote $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["width"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have width
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": 100,
+  -   "firefox": 100,
+  +   "chrome": 99,
+  +   "firefox": 99,
+    }
+time: 400 ms
+
+### toHaveWidth | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["width"] x6
+time: 200 ms
+
+### toHaveWidth | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["width"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have width
+  
+  Expected [not]: {"chrome": 100, "firefox": 100}
+  Received      : {"chrome": 100, "firefox": 100}
+time: 400 ms
+
+### toHaveSize | $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x3
+time: 200 ms
+
+### toHaveSize | $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x4
+message:
+  Expect $(`sel`) to have size
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Object {
+      "height": 50,
+  -   "width": 100,
+  +   "width": 99,
+    }
+time: 400 ms
+
+### toHaveSize | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toHaveSize | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: {"height": 50, "width": 100}
+  Received      : {"height": 50, "width": 100}
+time: 400 ms
+
+### toHaveSize | $$() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x6
+time: 200 ms
+
+### toHaveSize | $$() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x8
+message:
+  Expect $$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+      Object {
+        "height": 50,
+  -     "width": 100,
+  +     "width": 99,
+      },
+      Object {
+        "height": 50,
+  -     "width": 100,
+  +     "width": 99,
+      },
+    ]
+time: 400 ms
+
+### toHaveSize | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toHaveSize | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": 100}, {"height": 50, "width": 100}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 100}]
+time: 400 ms
+
+### toHaveSize | multi-remote $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x6
+time: 200 ms
+
+### toHaveSize | multi-remote $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Object {
+        "height": 50,
+  -     "width": 100,
+  +     "width": 99,
+      },
+      "firefox": Object {
+        "height": 50,
+  -     "width": 100,
+  +     "width": 99,
+      },
+    }
+time: 400 ms
+
+### toHaveSize | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toHaveSize | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have size
+  
+  Expected [not]: {"chrome": {"height": 50, "width": 100}, "firefox": {"height": 50, "width": 100}}
+  Received      : {"chrome": {"height": 50, "width": 100}, "firefox": {"height": 50, "width": 100}}
+time: 400 ms
+
+### toHaveStyle | $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["color"] x3
+time: 200 ms
+
+### toHaveStyle | $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["color"] x4
+message:
+  Expect $(`sel`) to have style
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Object {
+  -   "color": "red",
+  +   "color": "blue",
+    }
+time: 400 ms
+
+### toHaveStyle | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["color"] x3
+time: 200 ms
+
+### toHaveStyle | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["color"] x4
+message:
+  Expect $(`sel`) not to have style
+  
+  Expected [not]: {"color": "red"}
+  Received      : {"color": "red"}
+time: 400 ms
+
+### toHaveStyle | $$() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["color"] x6
+time: 200 ms
+
+### toHaveStyle | $$() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["color"] x8
+message:
+  Expect $$(`sel`) to have style
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+      Object {
+  -     "color": "red",
+  +     "color": "blue",
+      },
+      Object {
+  -     "color": "red",
+  +     "color": "blue",
+      },
+    ]
+time: 400 ms
+
+### toHaveStyle | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["color"] x6
+time: 200 ms
+
+### toHaveStyle | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["color"] x8
+message:
+  Expect $$(`sel`) not to have style
+  
+  Expected [not]: [{"color": "red"}, {"color": "red"}]
+  Received      : [{"color": "red"}, {"color": "red"}]
+time: 400 ms
+
+### toHaveStyle | multi-remote $() | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["color"] x6
+time: 200 ms
+
+### toHaveStyle | multi-remote $() | always wrong | wait 300, interval 100
+result: fails
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["color"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have style
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Object {
+  -     "color": "red",
+  +     "color": "blue",
+      },
+      "firefox": Object {
+  -     "color": "red",
+  +     "color": "blue",
+      },
+    }
+time: 400 ms
+
+### toHaveStyle | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: ["color"] x6
+time: 200 ms
+
+### toHaveStyle | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveStyle expected={"color": "red"} options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: ["color"] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have style
+  
+  Expected [not]: {"chrome": {"color": "red"}, "firefox": {"color": "red"}}
+  Received      : {"chrome": {"color": "red"}, "firefox": {"color": "red"}}
+time: 400 ms
