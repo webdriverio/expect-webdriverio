@@ -1017,13 +1017,19 @@ import { expect, SnapshotService } from 'expect-webdriverio'
 const snapshotService = SnapshotService.initiate()
 const browser = await remote({ capabilities: { browserName: 'chrome' } })
 
-// The snapshots go to `__snapshots__/<file name>.snap`, next to the file, under the name `My page > has a button 1`
-await snapshotService.beforeTest({ file: fileURLToPath(import.meta.url), parent: 'My page', title: 'has a button' })
-await browser.url('https://example.com')
-await expect(browser.$('h1')).toMatchSnapshot()
-
-await snapshotService.after()
-await browser.deleteSession()
+try {
+    // The snapshots go to `__snapshots__/<file name>.snap`, next to the file, under the name `My page > has a button 1`
+    await snapshotService.beforeTest({ file: fileURLToPath(import.meta.url), parent: 'My page', title: 'has a button' })
+    await browser.url('https://example.com')
+    await expect(browser.$('h1')).toMatchSnapshot()
+} finally {
+    // Also when an assertion fails: write the snapshot file, then close the browser
+    try {
+        await snapshotService.after()
+    } finally {
+        await browser.deleteSession()
+    }
+}
 ```
 
 `SnapshotService.initiate()` takes the options of the service, e.g. `{ updateState: 'all' }` to update the snapshots, or `resolveSnapshotPath`. With Jest or Mocha, call `beforeTest()` in `beforeEach`, and `after()` in `afterAll` (or `after`).
