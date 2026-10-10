@@ -104,6 +104,15 @@ describe('golden master of the other getter matchers', () => {
         await expect(output).toMatchFileSnapshot('./__golden__/cookie-matcher.txt')
     }, 300_000)
 
+    test('local storage matcher', async () => {
+        const output = await matrix([
+            { name: 'toHaveLocalStorageItem', getter: 'execute', args: ['key'], browser: true, values: stringValues, expected: { ...mediumStringExpected, 'anything()': () => wdioExpect.anything(), 'not.stringContaining("x")': () => wdioExpect.not.stringContaining('x') }, options: { 'no option': {}, 'ignoreCase': { ignoreCase: true } } },
+            { name: 'toHaveLocalStorageItem', getter: 'execute', args: ['key'], browser: true, values: stringValues, expected: { 'no value': () => undefined }, options: { 'no option': {} } },
+        ])
+
+        await expect(output).toMatchFileSnapshot('./__golden__/local-storage-matcher.txt')
+    }, 300_000)
+
     test('property matchers', async () => {
         const output = await matrix([
             // A string property: compared as `toHaveText`. `true`: a list matcher on `$()` compares an array property
