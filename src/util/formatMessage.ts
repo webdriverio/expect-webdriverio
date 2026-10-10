@@ -13,13 +13,17 @@ import type { CommandOptions, StringOptions } from '../publicTypes/options.js'
 
 export const isDefined = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
-export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray) => {
-    let result = typeof el.selector === 'string' ? el.selector : '<fn>'
-    if (Array.isArray(el) && (el as WebdriverIO.ElementArray).props.length > 0) {
-        // TODO handle custom$ selector
-        result += ', <props>'
-    }
-    return result
+export const getSelector = (el: WebdriverIO.Element | WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray) =>
+    typeof el.selector === 'string' ? el.selector : '<fn>'
+
+/**
+ * The query of a list, with the arguments after the selector, e.g. `custom$$(\`byTestId\`, "menu-item")` or
+ * `react$$(\`MyComponent\`, {"props": {"id": 1}})`. WebdriverIO keeps these arguments in `props`
+ */
+const formatListQuery = (el: WebdriverIO.ElementArray | WebdriverIO.MultiRemoteElementArray) => {
+    const { props } = el as { props?: unknown[] }
+    const queryArguments = Array.isArray(props) ? props.map((value) => `, ${stringify(value)}`).join('') : ''
+    return `${el.foundWith ?? '$$'}(\`${getSelector(el)}\`${queryArguments})`
 }
 
 const isAwaitedElementOrList = (value: unknown): value is WebdriverIO.Element | WebdriverIO.ElementArray => {
@@ -40,13 +44,12 @@ export const getSelectors = (el: WebdriverIO.Element | WdioElements | WdioMultiR
 
         return `${subject}.$(\`${getSelector(el)}\`)`
     } else if (isMultiRemoteElementArray(el)) {
-        const selector = getSelector(el)
         const subject = formatMultiRemoteInstanceNames(el.parent.instances)
 
-        return `${subject}.${el.foundWith ?? '$$'}(\`${selector}\`)`
+        return `${subject}.${formatListQuery(el)}`
     } else if (isStrictlyElementArray(el)) {
         // Type ElementArray
-        selectors.push(`${(el).foundWith}(\`${getSelector(el)}\`)`)
+        selectors.push(formatListQuery(el))
         parent = el.parent
     } else if (isArrayOfElement(el)) {
         // Type Element[]

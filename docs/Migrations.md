@@ -245,6 +245,7 @@ When the item does not exist, the failure message of `toHaveLocalStorageItem` sh
 
 - `toBeRequestedWith` shows the status code of each call, and the request and response headers by name, as the matcher compares them: `{ "Content-Type": "application/json" }`. Before, it did not show the status code, and it showed the headers as the browser gives them: `[{ name: "Content-Type", value: { type: "string", value: "application/json" } }]`.
 - A multi-remote element list names the query that found it, e.g. ``Expect multi-remote<chrome, firefox>.custom$$(`button`) to have text``. Before, it was always `$$()`.
+- A list found with `custom$$()` or `react$$()` shows the arguments of the query, e.g. ``Expect custom$$(`byTestId`, "menu-item") to have text``. Before, it showed ``custom$$(`byTestId, <props>`)``.
 
 If a test checks the exact failure message, update it.
 

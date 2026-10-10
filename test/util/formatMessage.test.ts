@@ -264,6 +264,25 @@ Expected [not]: "webdriverio"
 Received      : undefined`)
         })
 
+        describe('given a list found with arguments', () => {
+            const firstLine = (subject: WebdriverIO.ElementArray) =>
+                stripAnsi(enhanceError(subject, 'Expected', 'Actual', { isNot: false, isSome: false }, 'have', 'text')).split('\n')[0]
+
+            test.each([
+                { foundWith: 'custom$$', selector: 'byTestId', props: ['menu-item'], subject: 'custom$$(`byTestId`, "menu-item")' },
+                { foundWith: 'custom$$', selector: 'byRole', props: ['button', 2], subject: 'custom$$(`byRole`, "button", 2)' },
+                { foundWith: 'react$$', selector: 'MyComponent', props: [{ props: { id: 1 }, state: undefined }], subject: 'react$$(`MyComponent`, {"props": {"id": 1}, "state": undefined})' },
+            ])('shows the arguments of a $foundWith query: $subject', ({ foundWith, selector, props, subject }) => {
+                const elements = Object.assign(elementArrayFactory(selector, 2), { foundWith, props })
+
+                expect(firstLine(elements)).toEqual(`Expect ${subject} to have text`)
+            })
+
+            test('shows no argument when the query has none', () => {
+                expect(firstLine(elementArrayFactory('li', 2))).toEqual('Expect $$(`li`) to have text')
+            })
+        })
+
         describe('given multiple elements', () => {
             const elements = elementArrayFactory('elements', 2)
             const elementName = '$$(`elements`)'
@@ -585,6 +604,14 @@ Expect multi-remote<chrome, firefox>.$$(\`button\`) to have text
                 const result = stripAnsi(enhanceError(subject, 'Expected', 'Actual', { isNot: false, isSome: false }, 'have', 'text'))
 
                 expect(result.split('\n')[0]).toEqual(`Expect multi-remote<chrome, firefox>.${foundWith}(\`button\`) to have text`)
+            })
+
+            test('shows the arguments of a custom$$ query on a multi-remote list', () => {
+                const subject = Object.assign(createMultiRemoteElementArrayMock(multiRemoteBrowsers(), 'byTestId', 1), { foundWith: 'custom$$', props: ['menu-item'] })
+
+                const result = stripAnsi(enhanceError(subject, 'Expected', 'Actual', { isNot: false, isSome: false }, 'have', 'text'))
+
+                expect(result.split('\n')[0]).toEqual('Expect multi-remote<chrome, firefox>.custom$$(`byTestId`, "menu-item") to have text')
             })
 
             test('names the $$ query when foundWith is missing', () => {
