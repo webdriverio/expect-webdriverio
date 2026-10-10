@@ -395,6 +395,16 @@ describe('WebdriverIO Custom Matchers', () => {
         })
     })
 
+    describe('Element tag name matcher', () => {
+        it('should verify the tag name of an element', async () => {
+            await expect($('header h1')).toHaveTagName('h1')
+            await expect($('header h1')).toHaveTagName('H1', { ignoreCase: true })
+            await expect($('header h1')).not.toHaveTagName('div')
+            await expect($$('header h1')).toHaveTagName(expect.arrayContaining(['h1']))
+            await expect(expect($('header h1')).toHaveTagName('div', { wait: 0 })).rejects.toThrow('to have tag name')
+        })
+    })
+
     describe('Element size matchers', () => {
         it('should verify the size, the width and the height of an element', async () => {
             const h1 = $('header h1')

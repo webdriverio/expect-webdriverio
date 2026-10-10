@@ -27,6 +27,7 @@ const getElementMethods = () => ({
     getHTML: vi.spyOn({ getHTML: async () => { return '<Html/>' } }, 'getHTML'),
     getComputedLabel: vi.spyOn({ getComputedLabel: async () => 'Computed Label' }, 'getComputedLabel'),
     getComputedRole: vi.spyOn({ getComputedRole: async () => 'Computed Role' }, 'getComputedRole'),
+    getTagName: vi.spyOn({ getTagName: async () => 'div' }, 'getTagName'),
     getAttribute: vi.spyOn({ getAttribute: async (_attr: string) => 'some attribute' }, 'getAttribute'),
     getCSSProperty: vi.spyOn({ getCSSProperty: async (_prop: string, _pseudo?: string) =>
         ({ value: 'colorValue', parsed: {} } satisfies ParsedCSSValue) }, 'getCSSProperty'),

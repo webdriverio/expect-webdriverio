@@ -10,6 +10,7 @@ import { toHaveElementProperty } from '../../src/matchers/element/toHaveElementP
 import { toHaveValue } from '../../src/matchers/element/toHaveValue.js'
 import { toHaveComputedLabel } from '../../src/matchers/element/toHaveComputedLabel.js'
 import { toHaveComputedRole } from '../../src/matchers/element/toHaveComputedRole.js'
+import { toHaveTagName } from '../../src/matchers/element/toHaveTagName.js'
 import { toHaveStyle } from '../../src/matchers/element/toHaveStyle.js'
 import { toHaveElementClass } from '../../src/matchers/element/toHaveElementClass.js'
 import { toHaveTitle } from '../../src/matchers/browser/toHaveTitle.js'
@@ -59,6 +60,7 @@ describe('the string matchers compare each value the same way', () => {
         { name: 'toHaveValue', run: (actual, expected, options, isNot) => { const el = element(); vi.mocked(el.getProperty).mockResolvedValue(actual as never); return toHaveValue.call({ isNot }, el as never, expected as never, options) } },
         { name: 'toHaveComputedLabel', run: (actual, expected, options, isNot) => { const el = element(); vi.mocked(el.getComputedLabel).mockResolvedValue(actual); return toHaveComputedLabel.call({ isNot }, el as never, expected as never, options) } },
         { name: 'toHaveComputedRole', run: (actual, expected, options, isNot) => { const el = element(); vi.mocked(el.getComputedRole).mockResolvedValue(actual); return toHaveComputedRole.call({ isNot }, el as never, expected as never, options) } },
+        { name: 'toHaveTagName', run: (actual, expected, options, isNot) => { const el = element(); vi.mocked(el.getTagName).mockResolvedValue(actual); return toHaveTagName.call({ isNot }, el as never, expected as never, options) } },
         { name: 'toHaveStyle', run: (actual, expected, options, isNot) => { const el = element(); vi.mocked(el.getCSSProperty).mockResolvedValue({ property: 'display', value: actual, parsed: {} } as never); return toHaveStyle.call({ isNot }, el as never, { display: expected } as never, options) } },
         { name: 'toHaveTitle', run: (actual, expected, options, isNot) => { const browser = browserFactory(); vi.mocked(browser.getTitle).mockResolvedValue(actual); return toHaveTitle.call({ isNot }, browser as never, expected as never, options) } },
         { name: 'toHaveUrl', run: (actual, expected, options, isNot) => { const browser = browserFactory(); vi.mocked(browser.getUrl).mockResolvedValue(actual); return toHaveUrl.call({ isNot }, browser as never, expected as never, options) } },

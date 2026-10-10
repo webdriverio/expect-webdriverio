@@ -29,6 +29,7 @@ describe('a list matcher on one element', () => {
         { matcherName: 'toHaveElementClass', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveElementClass(m as never, o) },
         { matcherName: 'toHaveComputedLabel', getter: 'getComputedLabel', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveComputedLabel(m as never, o) },
         { matcherName: 'toHaveComputedRole', getter: 'getComputedRole', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveComputedRole(m as never, o) },
+        { matcherName: 'toHaveTagName', getter: 'getTagName', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveTagName(m as never, o) },
         { matcherName: 'toHaveValue', getter: 'getProperty', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveValue(m as never, o) },
         { matcherName: 'toHaveSize', getter: 'getSize', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveSize(m as never, o) },
     ] as const

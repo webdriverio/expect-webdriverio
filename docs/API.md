@@ -634,6 +634,19 @@ await expect(elem).toHaveComputedRole(expect.oneOf('region', 'section'))
 await expect(elem).toHaveComputedRole(expect.oneOf(expect.stringContaining('reg'), expect.stringContaining('sec')))
 ```
 
+### toHaveTagName
+
+Checks if element has a specific tag name, the value of [`getTagName()`](https://webdriver.io/docs/api/element/getTagName). The value is compared as in `toHaveText`, with the [string options](#string-options). In an HTML page, the browser gives the tag name in lowercase, e.g. `button`; use `ignoreCase` for another case.
+
+##### Usage
+
+```js
+const elem = await $('#submit')
+await expect(elem).toHaveTagName('button')
+await expect(elem).toHaveTagName(expect.oneOf('button', 'input'))
+await expect($$('nav > *')).toHaveTagName(expect.arrayContaining(['a']))
+```
+
 ### toHaveHref
 
 Checks if link element has a specific link target.

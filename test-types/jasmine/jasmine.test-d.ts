@@ -18,6 +18,7 @@ describe('Jasmine type agumentations', () => {
         expectTypeOf(expectAsync(elementArray).toHaveElementClass(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
         expectTypeOf(expectAsync(elementArray).toHaveComputedLabel(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
         expectTypeOf(expectAsync(elementArray).toHaveComputedRole(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
+        expectTypeOf(expectAsync(elementArray).toHaveTagName(jasmine.arrayContaining(['button']))).toEqualTypeOf<Promise<void>>()
         expectTypeOf(expectAsync(elementArray).toHaveValue(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
         expectTypeOf(expectAsync(elementArray).toHaveId(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()
         expectTypeOf(expectAsync(elementArray).toHaveHref(jasmine.arrayContaining(['value']))).toEqualTypeOf<Promise<void>>()

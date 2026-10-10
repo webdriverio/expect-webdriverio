@@ -4,6 +4,7 @@ import { toHaveText } from '../../src/matchers/element/toHaveText.js'
 import { toHaveHTML } from '../../src/matchers/element/toHaveHTML.js'
 import { toHaveComputedLabel } from '../../src/matchers/element/toHaveComputedLabel.js'
 import { toHaveComputedRole } from '../../src/matchers/element/toHaveComputedRole.js'
+import { toHaveTagName } from '../../src/matchers/element/toHaveTagName.js'
 import { toHaveAttribute } from '../../src/matchers/element/toHaveAttribute.js'
 import { toHaveElementClass } from '../../src/matchers/element/toHaveElementClass.js'
 import { toHaveElementProperty } from '../../src/matchers/element/toHaveElementProperty.js'
@@ -28,6 +29,7 @@ describe('the failure message of an empty $$()', () => {
         ['toHaveHTML', (context, elements) => toHaveHTML.call(context, elements as never, 'Hello', { wait: 0 }), '["Hello"]'],
         ['toHaveComputedLabel', (context, elements) => toHaveComputedLabel.call(context, elements as never, 'Hello', { wait: 0 }), '["Hello"]'],
         ['toHaveComputedRole', (context, elements) => toHaveComputedRole.call(context, elements as never, 'Hello', { wait: 0 }), '["Hello"]'],
+        ['toHaveTagName', (context, elements) => toHaveTagName.call(context, elements as never, 'Hello', { wait: 0 }), '["Hello"]'],
         ['toHaveAttribute', (context, elements) => toHaveAttribute.call(context, elements as never, 'name', 'Hello', { wait: 0 }), '["Hello"]'],
         ['toHaveElementClass', (context, elements) => toHaveElementClass.call(context, elements as never, 'Hello', { wait: 0 }), '["Hello"]'],
         ['toHaveElementProperty', (context, elements) => toHaveElementProperty.call(context, elements as never, 'name', 'Hello', { wait: 0 }), '["Hello"]'],
@@ -57,6 +59,7 @@ describe('the string options in the failure message of an empty $$()', () => {
         ['toHaveHTML', (context, elements) => toHaveHTML.call(context, elements as never, 'Hello', options)],
         ['toHaveComputedLabel', (context, elements) => toHaveComputedLabel.call(context, elements as never, 'Hello', options)],
         ['toHaveComputedRole', (context, elements) => toHaveComputedRole.call(context, elements as never, 'Hello', options)],
+        ['toHaveTagName', (context, elements) => toHaveTagName.call(context, elements as never, 'Hello', options)],
         ['toHaveAttribute', (context, elements) => toHaveAttribute.call(context, elements as never, 'name', 'Hello', options)],
         ['toHaveElementClass', (context, elements) => toHaveElementClass.call(context, elements as never, 'Hello', options)],
         ['toHaveElementProperty', (context, elements) => toHaveElementProperty.call(context, elements as never, 'name', 'Hello', options)],

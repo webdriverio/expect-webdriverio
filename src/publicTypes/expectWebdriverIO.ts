@@ -649,6 +649,12 @@ declare global {
         toHaveComputedRole: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
 
         /**
+         * `WebdriverIO.Element` -> `getTagName`
+         * Element's tag name equals the tag name provided, e.g. `button`
+         */
+        toHaveTagName: ElementValueMatcher<ActualT, StringValue, ExpectWebdriverIO.StringOptions>
+
+        /**
          * `WebdriverIO.Element` -> `getSize('width')`
          * Element's width equals the width provided
          */
