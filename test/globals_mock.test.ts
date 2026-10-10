@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { afterEach, describe, it, expect, vi } from 'vitest'
 import { $, $$, browser } from '@wdio/globals'
 import { $Factory, browserFactory, chainableElementArrayFactory, elementFactory, notFoundElementFactory } from './__mocks__/@wdio/globals.js'
 
@@ -341,36 +341,49 @@ describe('globals mock', () => {
     })
 
     describe('$Factory', () => {
+        // Fake timers: a real 1000 ms timer can fire 1 or 2 ms early on the clock of `performance.now()`
+        afterEach(() => {
+            vi.useRealTimers()
+        })
+
+        /** `true` when the promise is settled after `ms` of fake time */
+        const settledAfter = async (promise: PromiseLike<unknown>, ms: number) => {
+            let settled = false
+            promise.then(() => { settled = true }, () => { settled = true })
+            await vi.advanceTimersByTimeAsync(ms)
+            return settled
+        }
+
         it('should take time to await the element', async () => {
+            vi.useFakeTimers()
             const el = $Factory(elementFactory('foo'), 1000)
 
             expect(el).toBeInstanceOf(Promise)
             expect('getElement' in el).toBe(false)
             expect('getText' in el).toBe(false)
 
-            const start = performance.now()
+            expect(await settledAfter(el, 999)).toBe(false)
+            expect(await settledAfter(el, 1)).toBe(true)
             const awaitedEl = await el
-            const end = performance.now()
 
-            expect(Math.ceil(end - start)).toBeGreaterThanOrEqual(1000)
             expect('getElement' in awaitedEl).toBe(true)
             expect('getText' in awaitedEl).toBe(true)
             expect(await awaitedEl.getText()).toBe(' Valid Text ')
         })
 
         it("should take time to await the element's text", async () => {
+            vi.useFakeTimers()
             const el = $Factory(elementFactory('foo'), 1000)
 
             expect(el).toBeInstanceOf(Promise)
             expect('getElement' in el).toBe(false)
             expect('getText' in el).toBe(false)
 
-            const start = performance.now()
-            const text = await el.getText()
-            const end = performance.now()
+            const text = el.getText()
+            expect(await settledAfter(text, 999)).toBe(false)
+            expect(await settledAfter(text, 1)).toBe(true)
 
-            expect(Math.ceil(end - start)).toBeGreaterThanOrEqual(1000)
-            expect(text).toBe(' Valid Text ')
+            expect(await text).toBe(' Valid Text ')
         })
     })
 })
