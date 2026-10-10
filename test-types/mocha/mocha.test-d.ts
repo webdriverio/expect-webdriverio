@@ -145,6 +145,25 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
             })
         })
 
+        describe('toHaveWindowCount', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(browser).toHaveWindowCount(2)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveWindowCount(1, { wait: 0 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveWindowCount({ gte: 2, lte: 3 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveWindowCount(expect.oneOf(2, 3))).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveWindowCount(2)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(multiRemoteBrowser).toHaveWindowCount(expect.multiRemote({ chrome: 1, firefox: 2 }))).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should reject a value that is not a number, an array, and an element', async () => {
+                // @ts-expect-error a number of windows
+                expectTypeOf(expect(browser).toHaveWindowCount).toBeCallableWith('2')
+                // @ts-expect-error one count for the session, not a list
+                expectTypeOf(expect(browser).toHaveWindowCount).toBeCallableWith([1, 2])
+                expectTypeOf(expect(element).toHaveWindowCount).toBeNever()
+            })
+        })
+
         describe('toHaveLocalStorageItem', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()

@@ -94,6 +94,28 @@ describe('WebdriverIO Custom Matchers', () => {
         })
     })
 
+    describe('Window count matcher', () => {
+        it('should verify the number of windows of the session', async () => {
+            const firstWindow = await browser.getWindowHandle()
+            await expect(browser).toHaveWindowCount(1)
+
+            await browser.newWindow('https://guinea-pig.webdriver.io/')
+            await expect(browser).toHaveWindowCount(2)
+            await expect(browser).toHaveWindowCount({ gte: 2 })
+            await expect(browser).not.toHaveWindowCount(1)
+
+            const newWindow = (await browser.getWindowHandles()).find((handle) => handle !== firstWindow)
+            await browser.switchToWindow(newWindow!)
+            await browser.closeWindow()
+            await browser.switchToWindow(firstWindow)
+            await expect(browser).toHaveWindowCount(1)
+        })
+
+        it('should show the number of windows in the error message', async () => {
+            await expect(expect(browser).toHaveWindowCount(3, { wait: 0 })).rejects.toThrow(/to have window count[\s\S]*Expected: 3[\s\S]*Received: 1/)
+        })
+    })
+
     describe('Element existence matchers', () => {
         it('should verify element exists', async () => {
             const githubLink = $('#githubRepo')

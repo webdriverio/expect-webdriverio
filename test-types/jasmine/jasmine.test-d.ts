@@ -112,6 +112,15 @@ describe('Jasmine type agumentations', () => {
                 })
             })
 
+            describe('toHaveWindowCount', () => {
+                it('should return Promise<void>', async () => {
+                    expectTypeOf(expectAsync(browser).toHaveWindowCount(2)).toEqualTypeOf<Promise<void>>()
+                    expectTypeOf(expectAsync(browser).toHaveWindowCount({ gte: 2 }, { wait: 1000 })).toEqualTypeOf<Promise<void>>()
+                    // @ts-expect-error a number of windows
+                    expectTypeOf(expectAsync(browser).toHaveWindowCount).toBeCallableWith('2')
+                })
+            })
+
             describe('toHaveLocalStorageItem', () => {
                 it('should reject an explicit undefined value', async () => {
                     expectTypeOf(expectAsync(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()

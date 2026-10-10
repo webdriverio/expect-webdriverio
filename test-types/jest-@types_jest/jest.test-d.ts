@@ -90,6 +90,18 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
             })
         })
 
+        describe('toHaveWindowCount', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(browser).toHaveWindowCount(2)).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveWindowCount({ gte: 2 })).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveWindowCount(expect.any(Number))).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should have ts errors when actual is not a Browser element', async () => {
+                expectTypeOf(expect(element).toHaveWindowCount).toBeNever()
+            })
+        })
+
         describe('toHaveLocalStorageItem', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()

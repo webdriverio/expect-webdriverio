@@ -95,6 +95,12 @@ await expect(multiRemoteBrowser).toHaveLocalStorageItem('token', expect.multiRem
 
 An array expected value is not supported: use `expect.oneOf()` instead.
 
+`toHaveWindowCount` counts the windows of each instance. Per-instance counts require `expect.multiRemote()`, because a plain object is a number range, e.g. `{ gte: 2 }`:
+
+```ts
+await expect(multiRemoteBrowser).toHaveWindowCount(expect.multiRemote({ chrome: 2, firefox: 1 }))
+```
+
 ## Element Matchers
 
 ### Single Element `$()`
