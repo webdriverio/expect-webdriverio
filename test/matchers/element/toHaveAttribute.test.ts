@@ -202,7 +202,7 @@ Received      : "Correct Value"`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect [] to have attribute attribute_name
 
-Expected: "some value"
+Expected: ["some value"]
 Received: undefined`)
         })
     })
@@ -487,7 +487,7 @@ Expect $$(\`sel\`) to have attribute attribute_name
             expect(stripAnsi(result.message())).toEqual(`\
 Expect [] to have attribute attribute_name
 
-Expected: "some value"
+Expected: ["some value"]
 Received: undefined`)
         })
     })

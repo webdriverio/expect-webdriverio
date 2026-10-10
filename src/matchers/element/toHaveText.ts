@@ -33,13 +33,13 @@ export async function toHaveText(
         options,
     })
 
-    expectedValue = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
+    const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
 
     const { success: pass, actual: actualText, subject, context: { isSome, matchingIndexes } = {}, expected, verdict, compared } = await waitUntil(
         async (iteration) => {
             return await executeCommandWithStrategy( {
                 unresolvedElements: received,
-                expectedValues: expectedValue,
+                expectedValues: expectedWithOptions,
                 supportsArrayContaining: 'arrayOnly',
                 matcherName,
                 singleElementCompare: (element, values: MaybeArray<string | RegExp | AsymmetricMatcher<string>> | ExpectWebdriverIO.OneOfPartialMatcher<string> | undefined) => {
@@ -52,7 +52,7 @@ export async function toHaveText(
         { wait: options.wait, interval: options.interval }
     )
 
-    const finalExpected = expected ?? fillSingleExpectedForElementArray(subject, expectedValue)
+    const finalExpected = expected ?? fillSingleExpectedForElementArray(subject, expectedWithOptions)
     const message = enhanceError(subject, withStringOptions(finalExpected, verdict, options, actualText), actualText, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, '', options)
     const result: AssertionResult = {
         pass,

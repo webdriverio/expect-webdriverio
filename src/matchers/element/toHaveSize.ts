@@ -7,8 +7,8 @@ import {
     compareObject,
     enhanceError,
     waitUntil,
-    wrapExpectedWithArray,
 } from '../../utils.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import type { AssertionResult, CommandOptions, NumberMatcher as PublicNumberMatcher } from '../../publicTypes/options.js'
 import { isNumber, validateNumberMatcher } from '../../util/numberOptionsUtil.js'
 import { isMultiRemoteMatcher } from '../../util/multiRemoteUtils.js'
@@ -116,7 +116,7 @@ export async function toHaveSize(
 
     const message = enhanceError(
         el,
-        expected ?? wrapExpectedWithArray(el, actualSize, expectedSize),
+        expected ?? fillSingleExpectedForElementArray(el, expectedSize),
         actualSize,
         { isNot, isSome, matchingIndexes },
         verb,

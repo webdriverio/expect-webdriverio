@@ -3,8 +3,8 @@ import {
     compareTextOrOneOf,
     enhanceError,
     waitUntil,
-    wrapExpectedWithArray
 } from '../../utils.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext } from '../../types.js'
@@ -49,7 +49,7 @@ export async function toHaveHTML(
         { wait: options.wait, interval: options.interval }
     )
 
-    const expectedValues = expected ?? wrapExpectedWithArray(elements, actualHTML, expectedWithOptions)
+    const expectedValues = expected ?? fillSingleExpectedForElementArray(elements, expectedWithOptions)
     const message = enhanceError(elements, withStringOptions(expectedValues, verdict, options, actualHTML), actualHTML, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, '', options)
 
     const result: AssertionResult = {

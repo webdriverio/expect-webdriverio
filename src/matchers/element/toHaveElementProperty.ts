@@ -8,8 +8,8 @@ import {
     compareText,
     enhanceError,
     waitUntil,
-    wrapExpectedWithArray
 } from '../../utils.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
@@ -127,7 +127,7 @@ export async function toHaveElementProperty(
         options,
     })
 
-    value = buildWdioAsymmetricMatchersWithOptions(value, options)
+    const valueWithOptions = buildWdioAsymmetricMatchersWithOptions(value, options)
 
     const { success: pass, actual: actualProppertyValue, subject: elements, context: { isSome, matchingIndexes } = {}, expected: expectedValues, verdict, compared } = await waitUntil(
         async (iteration) => {
@@ -136,7 +136,7 @@ export async function toHaveElementProperty(
                 // A property value can be an array, but the value of `toHaveValue` is a string
                 supportsArrayContaining: allowObjectExpectedValue ? true : 'arrayOnly',
                 matcherName,
-                expectedValues: value,
+                expectedValues: valueWithOptions,
                 singleElementCompare: (element, expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined) => {
                     return condition(element, property, expectedValue, options)
                 },
@@ -148,7 +148,7 @@ export async function toHaveElementProperty(
         { wait: options.wait, interval: options.interval }
     )
 
-    const expected = expectedValues ?? wrapExpectedWithArray(elements, actualProppertyValue, value)
+    const expected = expectedValues ?? fillSingleExpectedForElementArray(elements, valueWithOptions)
     const message = enhanceError(elements, withStringOptions(expected, verdict, options, actualProppertyValue), actualProppertyValue, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, property, options)
 
     const result: AssertionResult = {

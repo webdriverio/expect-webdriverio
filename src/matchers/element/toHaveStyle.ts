@@ -6,8 +6,8 @@ import {
     compareStyle,
     enhanceError,
     waitUntil,
-    wrapExpectedWithArray
 } from '../../utils.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
@@ -83,7 +83,7 @@ export async function toHaveStyle(
         { wait: options.wait, interval: options.interval }
     )
 
-    const expected = expectedValues ?? wrapExpectedWithArray(el, actualStyle, expectedWithOptions)
+    const expected = expectedValues ?? fillSingleExpectedForElementArray(el, expectedWithOptions)
     const message = enhanceError(el, withStringOptions(expected, verdict, options, actualStyle), actualStyle, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, '', options)
 
     const result: AssertionResult = {

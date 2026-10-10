@@ -7,8 +7,8 @@ import {
     enhanceError,
     isAsymmetricMatcher,
     waitUntil,
-    wrapExpectedWithArray
 } from '../../utils.js'
+import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import { expect } from 'expect'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
@@ -55,7 +55,7 @@ export async function toHaveAttributeAndValue(this: WdioMatcherContext, received
         { wait: options.wait, interval: options.interval }
     )
 
-    const expected = expectedValues ?? wrapExpectedWithArray(el, attr, expectedValue)
+    const expected = expectedValues ?? fillSingleExpectedForElementArray(el, expectedValue)
     const message = enhanceError(el, withStringOptions(expected, verdict, options, attr), attr, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, attribute, options)
 
     return {
