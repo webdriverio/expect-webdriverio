@@ -14,7 +14,7 @@ const ONE_OF_SYMBOL = Symbol.for(ONE_OF_TAG)
  */
 export class OneOfMatcher extends WdioAsymmetricMatchers<Array<string | number | RegExp | AsymmetricMatcher<string> | null>> {
     readonly [ONE_OF_SYMBOL] = true
-    // TODO support HTML options
+    // The string options of the matcher; the HTML options (`includeSelectorTag`) are for `getHTML()`, not for the compare
     public options: StringOptions | HTMLOptions = {}
 
     constructor(...sample: Array<string | number | RegExp | AsymmetricMatcher<string> | null>) {

@@ -3,7 +3,7 @@ import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOr
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeCommandWithStrategy } from '../../util/executeCommand.js'
 import {
-    compareText,
+    compareTextOrOneOf,
     enhanceError,
     isAsymmetricMatcher,
     waitUntil,
@@ -11,7 +11,6 @@ import {
 import { fillSingleExpectedForElementArray } from '../../util/elementsUtil.js'
 import { expect } from 'expect'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
-import { isOneOfMatcher } from '../asymmetrics/oneOf.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
 import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
 
@@ -23,14 +22,10 @@ async function conditionAttributeValueMatchWithExpected(el: WebdriverIO.Element,
             return { success: expectedValue.asymmetricMatch(attributeValue), actual: attributeValue }
         }
         return { success: attributeValue === expectedValue, actual: attributeValue }
-    } else if (isOneOfMatcher(expectedValue)) {
-        return { success: expectedValue.asymmetricMatch(attributeValue), actual: attributeValue }
     }
 
-    // TODO fix OneOfMatcher typing to not require casting here!
-    const { success, actual: compared } = compareText(attributeValue, expectedValue as string | RegExp | AsymmetricMatcher<string> | undefined, options)
-    // Failure messages show the actual value as is, not trimmed, lowercased or replaced by the string options, and the compared value apart
-    return { success, actual: attributeValue, compared }
+    // As the other string matchers: `expect.oneOf()` applies its own options, and the message shows the actual value as is
+    return compareTextOrOneOf(attributeValue, expectedValue, options)
 }
 
 export async function toHaveAttributeAndValue(this: WdioMatcherContext, received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements, attribute: string, expectedValue: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher>, options: StringOptions = DEFAULT_OPTIONS) {

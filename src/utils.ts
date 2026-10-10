@@ -48,7 +48,7 @@ async function executeCommandBe(
         { wait: options.wait, interval: options.interval }
     )
 
-    // TODO dprevost fix typing?
+    // The strategy gives the states of `command` in the shape of the subject: one, one for each element, or per instance
     const message = enhanceErrorBe(subject, actual as boolean[] | boolean | MultiRemoteValuesWithArray<boolean> | undefined, { ...this, verb, expectation, isSome }, options)
 
     return {

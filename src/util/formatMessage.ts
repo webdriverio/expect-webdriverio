@@ -270,8 +270,8 @@ export const enhanceErrorBe = (
         }
     } else if (isElementArrayLike(subject)) {
         expected = subject.length === 0 ? 'at least one result' : Array(subject.length).fill(expectedValue)
-        // @ts-expect-error TODO dprevost fix typing
-        actual = toArray(actuals).map(actual => isSuccess(isNot, actual) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
+        // One state for each element of `$$()`
+        actual = toArray(actuals as boolean[] | boolean | undefined).map(actual => isSuccess(isNot, actual) ? `${not(isNot)}${expectation}` : `${not(!isNot)}${expectation}`)
     } else {
         expected = expectedValue
         actual = actualValue
