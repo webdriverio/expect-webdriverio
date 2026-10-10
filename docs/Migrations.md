@@ -196,6 +196,26 @@ With a string option, each value names it, as for a `$$()` with elements. Before
 + Received: undefined
 ```
 
+## A missing attribute or property
+
+When the attribute or the property does not exist, it never matches, also not a matcher that accepts no value, as a missing cookie or localStorage item: the assertion fails, and waits for the value. Before, a matcher that accepts no value matched it:
+
+```js
+// <a> with no `title` attribute
+await expect($('a')).toHaveAttribute('title', expect.not.stringContaining('x'))  // passed before, fails now
+await expect($('a')).not.toHaveAttribute('title', expect.stringContaining('x'))  // passes: no attribute, or a value without `x`
+```
+
+An expected `null` for one element still matches a missing value, e.g. `toHaveElementProperty('p', ['iphone', null])` on `$$()`. The failure message shows `no attribute` or `no property`, not `null`, also in `toHaveId`, `toHaveHref`, `toHaveLink`, `toHaveElementClass` and `toHaveValue`:
+
+```diff
+  Expect $(`a`) to have attribute title
+
+  Expected: "Home"
+- Received: null
++ Received: no attribute
+```
+
 ## A missing localStorage item
 
 When the item does not exist, the failure message of `toHaveLocalStorageItem` shows `Received: no item`, not `Received: null`. The result does not change: a missing item never matches, also not a matcher that accepts no value such as `expect.not.stringContaining()`.

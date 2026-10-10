@@ -452,7 +452,7 @@ await menu.$('a').click()
 
 ### toHaveAttribute
 
-Checks if an element has a certain attribute with a specific value.
+Checks if an element has a certain attribute with a specific value. A missing attribute never matches, also not a matcher that accepts no value; the failure message shows `Received: no attribute`. With no value, it checks that the attribute exists.
 
 ##### Usage
 
@@ -507,7 +507,7 @@ An array of expected values works only with `$$()`: one expected value for each 
 
 ### toHaveElementProperty
 
-Checks if an element has a certain property and value. A string property is compared with the [string options](#string-options). Another property (a number, a boolean, an object) is compared with [deep equality](#deep-equality), also with an asymmetric matcher in it, or with `expect.oneOf()` with numbers.
+Checks if an element has a certain property and value. A string property is compared with the [string options](#string-options). Another property (a number, a boolean, an object) is compared with [deep equality](#deep-equality), also with an asymmetric matcher in it, or with `expect.oneOf()` with numbers. A missing property (`null` or `undefined`) never matches, also not a matcher that accepts no value, except an expected `null` for one element of `$$()`; the failure message shows `Received: no property`.
 
 ##### Usage
 

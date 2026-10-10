@@ -49,6 +49,11 @@ export type ElementStringGetterDescriptor = {
     value?: 'class' | 'property'
     /** A `property` that is a string (`value`): a plain object is per-instance values, and a list matcher needs `$$()` */
     expectsString?: true
+    /**
+     * The text of a value that does not exist (`null`, or `undefined` for a property): it never matches, also not a matcher
+     * that accepts no value, and the failure message shows this text, e.g. `Received: no attribute`
+     */
+    missing?: string
 }
 
 export type BrowserStringGetterDescriptor = {
@@ -82,13 +87,13 @@ export const elementStringGetters = {
     toHaveComputedLabel: { getter: 'getComputedLabel', expectation: 'computed label' },
     toHaveComputedRole: { getter: 'getComputedRole', expectation: 'computed role' },
     toHaveTagName: { getter: 'getTagName', expectation: 'tag name' },
-    toHaveAttribute: { getter: 'getAttribute', expectation: 'attribute', argument: 'fromCall', argumentInMessage: true },
-    toHaveId: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'id' }, argumentInMessage: true },
-    toHaveHref: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'href' }, argumentInMessage: true },
-    toHaveLink: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'href' }, argumentInMessage: true },
-    toHaveElementClass: { getter: 'getAttribute', expectation: 'class', argument: { fixed: 'class' }, value: 'class' },
-    toHaveElementProperty: { getter: 'getProperty', expectation: 'property', argument: 'fromCall', argumentInMessage: true, value: 'property' },
-    toHaveValue: { getter: 'getProperty', expectation: 'property', argument: { fixed: 'value' }, argumentInMessage: true, value: 'property', expectsString: true },
+    toHaveAttribute: { getter: 'getAttribute', expectation: 'attribute', argument: 'fromCall', argumentInMessage: true, missing: 'no attribute' },
+    toHaveId: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'id' }, argumentInMessage: true, missing: 'no attribute' },
+    toHaveHref: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'href' }, argumentInMessage: true, missing: 'no attribute' },
+    toHaveLink: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'href' }, argumentInMessage: true, missing: 'no attribute' },
+    toHaveElementClass: { getter: 'getAttribute', expectation: 'class', argument: { fixed: 'class' }, value: 'class', missing: 'no attribute' },
+    toHaveElementProperty: { getter: 'getProperty', expectation: 'property', argument: 'fromCall', argumentInMessage: true, value: 'property', missing: 'no property' },
+    toHaveValue: { getter: 'getProperty', expectation: 'property', argument: { fixed: 'value' }, argumentInMessage: true, value: 'property', expectsString: true, missing: 'no property' },
 } as const satisfies Record<string, ElementStringGetterDescriptor>
 elementStringGetters satisfies GettersGive<typeof elementStringGetters, WebdriverIO.Element, string>
 
