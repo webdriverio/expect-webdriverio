@@ -119,10 +119,19 @@ Both matchers now use the deep equality of the other matchers, the one of Jest's
 
 - `toHaveSize`: an asymmetric matcher works, e.g. `toHaveSize(expect.objectContaining({ width: 32 }))`. Before, `toHaveSize` used the `deep-eql` package, which does not know asymmetric matchers: the assertion always failed, and always passed with `.not`. `deep-eql` also counted a property that is `undefined`, which is now ignored, as in `toEqual`.
 - `toHaveElementProperty` compares a property that is not a string with deep equality, e.g. `toHaveElementProperty('dataset', { id: '1' })`. Before, it used `===`, so an object never matched: the assertion always failed, and always passed with `.not`. As in `toEqual`, `NaN` now equals `NaN`, and `0` does not equal `-0` (with `===`, it did).
-- `toHaveSize`: an invalid field value (`{ width: {} }`, `gte` greater than `lte`, a string, `NaN`) throws, as in `toHaveWidth`. Before, the assertion failed, and passed with `.not`.
+- `toHaveSize`: each field takes the values of `toHaveWidth`: a number, a `NumberMatcher` (`{ width: { gte: 30 }, height: 50 }`), `expect.oneOf()` with numbers, or an asymmetric matcher. Before, a field with a range never matched. An invalid field value (`{ width: {} }`, `gte` greater than `lte`, a string, `NaN`, a list matcher) throws, as in `toHaveWidth`. Before, the assertion failed, and passed with `.not`.
 - `utils.compareObject()` uses the same deep equality.
 
 `expect-webdriverio` does not depend on `deep-eql` anymore.
+
+## Asymmetric matchers and `expect.oneOf()` in the number matchers
+
+`toHaveWidth`, `toHaveHeight`, `toHaveChildren`, `toBeElementsArrayOfSize`, `toBeRequestedTimes` and each field of `toHaveSize` accept 2 more expected values. Before, the number matchers threw `Invalid NumberMatcher`, except `toHaveChildren`, which took them as no value (at least 1 child) with a deprecation warning. In a field of `toHaveSize`, these values failed the assertion, and passed with `.not`:
+
+- `expect.oneOf()` with numbers, e.g. `toHaveWidth(expect.oneOf(100, 200))`;
+- an asymmetric matcher, compared as in `toEqual`, e.g. `toHaveWidth(expect.closeTo(150.4, 0))` for a size that the browser rounds, `expect.not.closeTo()` or `expect.any(Number)`.
+
+A list matcher (`expect.arrayContaining()`…) throws, also with `.not`, and `expect.multiRemote()` is only for the multi-remote elements and mocks. See [Number Matcher](API.md#number-matcher).
 
 ## List matchers on multiple elements
 
@@ -173,6 +182,13 @@ With a string option, each value names it, as for a `$$()` with elements. Before
 + Expected: [ignoringCase<"Coffee">]
 + Received: undefined
 ```
+
+## Other failure messages
+
+- `toBeRequestedWith` shows the status code of each call, and the request and response headers by name, as the matcher compares them: `{ "Content-Type": "application/json" }`. Before, it did not show the status code, and it showed the headers as the browser gives them: `[{ name: "Content-Type", value: { type: "string", value: "application/json" } }]`.
+- A multi-remote element list names the query that found it, e.g. ``Expect multi-remote<chrome, firefox>.custom$$(`button`) to have text``. Before, it was always `$$()`.
+
+If a test checks the exact failure message, update it.
 
 ## Multi-remote `$$()` and `select()`
 
