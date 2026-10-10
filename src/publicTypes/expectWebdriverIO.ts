@@ -373,6 +373,12 @@ declare global {
         toBeFocused: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
 
         /**
+         * `WebdriverIO.Element` -> `isStable`
+         * The element is not moving, e.g. at the end of an animation
+         */
+        toBeStable: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>
+
+        /**
          * `WebdriverIO.Element` -> `isSelected`
          */
         toBeSelected: FnWhenElementOrArrayLike<ActualT, (options?: ExpectWebdriverIO.CommandOptions) => Promise<void>>

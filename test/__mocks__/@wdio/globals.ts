@@ -20,6 +20,7 @@ const getElementMethods = () => ({
     isSelected: vi.spyOn({ isSelected: async () => true }, 'isSelected'),
     isClickable: vi.spyOn({ isClickable: async () => true }, 'isClickable'),
     isFocused: vi.spyOn({ isFocused: async () => true }, 'isFocused'),
+    isStable: vi.spyOn({ isStable: async () => true }, 'isStable'),
     isEnabled: vi.spyOn({ isEnabled: async () => true }, 'isEnabled'),
     getProperty: vi.spyOn({ getProperty: async (_prop: string) => '1' }, 'getProperty'),
     getText: vi.spyOn({ getText: async () => ' Valid Text ' }, 'getText'),

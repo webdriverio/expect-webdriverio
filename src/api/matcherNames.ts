@@ -23,6 +23,7 @@ export const wdioCustomMatcherNames = [
     'toBeRequestedTimes',
     'toBeRequestedWith',
     'toBeSelected',
+    'toBeStable',
     'toExist',
     'toHaveAttribute',
     'toHaveChildren',

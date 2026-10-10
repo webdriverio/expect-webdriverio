@@ -1318,6 +1318,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 expectTypeOf(expect(element).toBeDisplayedInViewport()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toBeEnabled()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toBeFocused()).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(element).toBeStable()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toBeSelected()).toEqualTypeOf<Promise<void>>()
                 expectTypeOf(expect(element).toBeChecked()).toEqualTypeOf<Promise<void>>()
             })

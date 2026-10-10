@@ -107,6 +107,7 @@ export const elementBooleanGetters = {
     toBeFocused: { getter: 'isFocused', expectation: 'focused' },
     toBeSelected: { getter: 'isSelected', expectation: 'selected' },
     toBeChecked: { getter: 'isSelected', expectation: 'checked', aliasOf: 'toBeSelected' },
+    toBeStable: { getter: 'isStable', expectation: 'stable' },
     toExist: { getter: 'isExisting', expectation: 'exist', verb: '', allowEmptyElements: true },
     toBeExisting: { getter: 'isExisting', expectation: 'existing', verb: 'be', allowEmptyElements: true, aliasOf: 'toExist' },
     toBePresent: { getter: 'isExisting', expectation: 'present', verb: 'be', allowEmptyElements: true, aliasOf: 'toExist' },

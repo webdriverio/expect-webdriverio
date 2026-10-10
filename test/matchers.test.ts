@@ -23,6 +23,7 @@ const ALL_MATCHERS = [
     'toBeFocused',
     'toBeSelected',
     'toBeChecked',
+    'toBeStable',
     'toHaveAttribute',
     'toHaveChildren',
     'toHaveComputedLabel',
@@ -83,6 +84,7 @@ describe('Custom Wdio Matchers Integration Tests', async () => {
             await expectLib(el).toBeClickable()
             await expectLib(el).toBeFocused()
             await expectLib(el).toBeSelected()
+            await expectLib(el).toBeStable()
         })
 
         test('toHave matchers', async () => {
@@ -146,6 +148,13 @@ Expect $(\`selector\`) not to be focused
 
 Expected: "not focused"
 Received: "focused"`
+            )
+
+            await expect(() => expectLib(el).not.toBeStable()).rejects.toThrow(`\
+Expect $(\`selector\`) not to be stable
+
+Expected: "not stable"
+Received: "stable"`
             )
 
             await expect(() => expectLib(el).not.toBeSelected()).rejects.toThrow(`\
@@ -240,6 +249,7 @@ Received      : "1"`
         vi.mocked(el.isEnabled).mockResolvedValue(false)
         vi.mocked(el.isClickable).mockResolvedValue(false)
         vi.mocked(el.isFocused).mockResolvedValue(false)
+        vi.mocked(el.isStable).mockResolvedValue(false)
         vi.mocked(el.isSelected).mockResolvedValue(false)
 
         test('Ensure toBe matchers throws and show proper failing message', async () => {
@@ -278,6 +288,12 @@ Expect $(\`selector\`) to be focused
 
 Expected: "focused"
 Received: "not focused"`)
+
+            await expect(() => expectLib(el).toBeStable()).rejects.toThrow(`\
+Expect $(\`selector\`) to be stable
+
+Expected: "stable"
+Received: "not stable"`)
 
             await expect(() => expectLib(el).toBeSelected()).rejects.toThrow(`\
 Expect $(\`selector\`) to be selected
@@ -370,6 +386,7 @@ Received: 100`)
         vi.mocked(el.isEnabled).mockResolvedValue(false)
         vi.mocked(el.isClickable).mockResolvedValue(false)
         vi.mocked(el.isFocused).mockResolvedValue(false)
+        vi.mocked(el.isStable).mockResolvedValue(false)
         vi.mocked(el.isSelected).mockResolvedValue(false)
 
         test('toBe matchers', async () => {
@@ -379,6 +396,7 @@ Received: 100`)
             await expectLib(el).not.toBeClickable()
             await expectLib(el).not.toBeFocused()
             await expectLib(el).not.toBeSelected()
+            await expectLib(el).not.toBeStable()
         })
 
         test('toHave matchers', async () => {
@@ -431,6 +449,7 @@ Received: 100`)
             await expectLib(elements).toBeClickable()
             await expectLib(elements).toBeFocused()
             await expectLib(elements).toBeSelected()
+            await expectLib(elements).toBeStable()
         })
 
         test('toHave matchers', async () => {

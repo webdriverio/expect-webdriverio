@@ -5,7 +5,7 @@ import * as Matchers from '../../src/matchers.js'
 import { executeCommandBe, waitUntil } from '../../src/utils.js'
 import { DEFAULT_OPTIONS } from '../../src/constants.js'
 import stripAnsi from 'strip-ansi'
-import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeExisting, toBeFocused, toBePresent, toBeSelected, toExist } from '../../src/matchers.js'
+import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeExisting, toBeFocused, toBePresent, toBeSelected, toBeStable, toExist } from '../../src/matchers.js'
 import { setDefaultOptions } from '../../src/index.js'
 import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
 
@@ -24,6 +24,7 @@ const matcherPairs = [
     [toBeFocused, 'isFocused'],
     [toBePresent, 'isExisting'],
     [toBeSelected, 'isSelected'],
+    [toBeStable, 'isStable'],
     [toExist, 'isExisting']
 ] as const
 
