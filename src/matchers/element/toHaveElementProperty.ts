@@ -43,6 +43,52 @@ async function condition(
 }
 
 /**
+ * The compare of `toHaveElementProperty` and `toHaveValue`, without the hooks: each matcher calls the hooks with the value
+ * of the user, not with its internal arguments (the `'value'` property of `toHaveValue`, `expect.anything()` for no value)
+ */
+export async function toHaveElementPropertyAndValue(
+    this: WdioMatcherContext,
+    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
+    property: string,
+    value: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null>> | undefined,
+    options: StringOptions = DEFAULT_OPTIONS
+): Promise<AssertionResult> {
+    // A property value can itself be an object, so a plain object is a literal unless the caller knows better (e.g. `toHaveValue`)
+    const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty', allowObjectExpectedValue = true } = this
+
+    // No value: the property exists
+    const expectedValue = value === undefined || value === null ? expect.anything() : value
+    const valueWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
+
+    const { success: pass, actual: actualProppertyValue, subject: elements, context: { isSome, matchingIndexes } = {}, expected: expectedValues, verdict, compared } = await waitUntil(
+        async (iteration) => {
+            return await executeCommandWithStrategy( {
+                unresolvedElements: received,
+                // A property value can be an array, but the value of `toHaveValue` is a string
+                supportsArrayContaining: allowObjectExpectedValue ? true : 'arrayOnly',
+                matcherName,
+                expectedValues: valueWithOptions,
+                singleElementCompare: (element, expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined) => {
+                    return condition(element, property, expectedValue, options)
+                },
+                context: { isNot, iteration },
+                strictConfiguration: { allowObjectExpectedValue }
+            })
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
+
+    const expected = expectedValues ?? fillSingleExpectedForElementArray(elements, valueWithOptions)
+    const message = enhanceError(elements, withStringOptions(expected, verdict, options, actualProppertyValue), actualProppertyValue, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, property, options)
+
+    return {
+        pass,
+        message: (): string => message
+    }
+}
+
+/**
  * Elements $() or elements $$()
  * When called with an expected property name to verify if the property exists on a collection of elements.
  * Same as `toHaveElementProperty(el, property, expect.anything())`.
@@ -114,12 +160,7 @@ export async function toHaveElementProperty(
     value?: MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null> | ExpectWebdriverIO.MultiRemotePartialMatcher<MaybeArrayOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | WdioAnythingAsymmetricMatcher | boolean | PropertyObject | null>> | undefined,
     options: StringOptions = DEFAULT_OPTIONS
 ): Promise<AssertionResult> {
-    // A property value can itself be an object, so a plain object is a literal unless the caller knows better (e.g. `toHaveValue`)
-    const { expectation = 'property', verb = 'have', isNot, matcherName = 'toHaveElementProperty', allowObjectExpectedValue = true } = this
-
-    if (value === undefined || value === null) {
-        value = expect.anything()
-    }
+    const { matcherName = 'toHaveElementProperty' } = this
 
     await options.beforeAssertion?.({
         matcherName,
@@ -127,34 +168,7 @@ export async function toHaveElementProperty(
         options,
     })
 
-    const valueWithOptions = buildWdioAsymmetricMatchersWithOptions(value, options)
-
-    const { success: pass, actual: actualProppertyValue, subject: elements, context: { isSome, matchingIndexes } = {}, expected: expectedValues, verdict, compared } = await waitUntil(
-        async (iteration) => {
-            return await executeCommandWithStrategy( {
-                unresolvedElements: received,
-                // A property value can be an array, but the value of `toHaveValue` is a string
-                supportsArrayContaining: allowObjectExpectedValue ? true : 'arrayOnly',
-                matcherName,
-                expectedValues: valueWithOptions,
-                singleElementCompare: (element, expectedValue: MaybeOneOf<string | number | RegExp | AsymmetricMatcher<string>> | null | undefined) => {
-                    return condition(element, property, expectedValue, options)
-                },
-                context: { isNot, iteration },
-                strictConfiguration: { allowObjectExpectedValue }
-            })
-        },
-        isNot,
-        { wait: options.wait, interval: options.interval }
-    )
-
-    const expected = expectedValues ?? fillSingleExpectedForElementArray(elements, valueWithOptions)
-    const message = enhanceError(elements, withStringOptions(expected, verdict, options, actualProppertyValue), actualProppertyValue, { isNot, isSome, matchingIndexes, stringOptions: options, compared }, verb, expectation, property, options)
-
-    const result: AssertionResult = {
-        pass,
-        message: (): string => message
-    }
+    const result = await toHaveElementPropertyAndValue.call({ ...this, matcherName }, received, property, value, options)
 
     await options.afterAssertion?.({
         matcherName,

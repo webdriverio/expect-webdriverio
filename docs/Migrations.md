@@ -37,6 +37,13 @@ The `matcherName` given to the `beforeAssertion` and `afterAssertion` hooks is n
 
 The `expectedValue` given to `afterAssertion` is now the value that you gave, the same as for `beforeAssertion`. Before, `toHaveText`, `toHaveComputedLabel`, `toHaveComputedRole` and `toHaveElementProperty` gave it after the string options changed it, e.g. `ignoringCaseOneOf<"a", "b">` for `expect.oneOf('a', 'b')` with `ignoreCase`.
 
+The hooks also get no internal argument of the matcher anymore:
+
+| Assertion | `expectedValue` before | Now |
+| --------- | ---------------------- | --- |
+| `toHaveValue('Hello')` | `['value', 'Hello']` | `'Hello'`, as `toHaveId('main')` gives `'main'` |
+| `toHaveElementProperty('checked')` | `['checked', Anything]` | `['checked', undefined]`, as `toHaveAttribute('checked')` |
+
 ## `toHaveText` on multiple elements
 
 The strict strategy of the `useToHaveTextStrictMultiElementsCompareStrategy` feature flag is now the only one. The flag, `setFeatureFlags()`, the `featureFlags` option and the `ExpectWebdriverIO.FeatureFlags` type are removed. The internal `utils.compareTextWithArray()` and `utils.getFeatureFlagValue()` are also removed.

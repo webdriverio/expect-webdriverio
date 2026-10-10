@@ -8,6 +8,8 @@ import { toHaveAttribute } from '../../src/matchers/element/toHaveAttribute.js'
 import { toHaveElementClass } from '../../src/matchers/element/toHaveElementClass.js'
 import { toHaveElementProperty } from '../../src/matchers/element/toHaveElementProperty.js'
 import { toHaveStyle } from '../../src/matchers/element/toHaveStyle.js'
+import { toHaveId } from '../../src/matchers/element/toHaveId.js'
+import { toHaveValue } from '../../src/matchers/element/toHaveValue.js'
 import { toHaveTitle } from '../../src/matchers/browser/toHaveTitle.js'
 import { toHaveUrl } from '../../src/matchers/browser/toHaveUrl.js'
 import { toHaveClipboardText } from '../../src/matchers/browser/toHaveClipboardText.js'
@@ -55,5 +57,28 @@ describe('the expected value given to the assertion hooks', () => {
         const parts = (value: unknown) => [value].flat().flatMap((part) => typeof part === 'object' && part !== null && 'color' in part ? [part, part.color] : [part])
         parts(after.expectedValue).forEach((part, index) => expect(part).toBe(parts(before.expectedValue)[index]))
         expect(parts(after.expectedValue)).toContain(expected)
+    })
+})
+
+/**
+ * The hooks get the value of the user, not the internal arguments: a fixed argument of the getter (the `'value'` property of
+ * `toHaveValue`, as the `'id'` attribute of `toHaveId`), or the `expect.anything()` of a matcher called with no value.
+ */
+describe('the hooks get no internal argument', () => {
+    const element = elementFactory('sel')
+
+    test.each([
+        { name: 'toHaveId', run: (options: StringOptions) => toHaveId.call({}, element as never, 'Hello', options), expectedValue: 'Hello' },
+        { name: 'toHaveValue', run: (options: StringOptions) => toHaveValue.call({}, element as never, 'Hello', options), expectedValue: 'Hello' },
+        { name: 'toHaveAttribute with no value', run: (options: StringOptions) => toHaveAttribute.call({}, element as never, 'name', undefined as never, options), expectedValue: ['name', undefined] },
+        { name: 'toHaveElementProperty with no value', run: (options: StringOptions) => toHaveElementProperty.call({}, element as never, 'name', undefined as never, options), expectedValue: ['name', undefined] },
+    ])('$name', async ({ run, expectedValue }) => {
+        const beforeAssertion = vi.fn()
+        const afterAssertion = vi.fn()
+
+        await run({ wait: 0, beforeAssertion, afterAssertion })
+
+        expect(beforeAssertion.mock.calls[0][0].expectedValue).toEqual(expectedValue)
+        expect(afterAssertion.mock.calls[0][0].expectedValue).toEqual(expectedValue)
     })
 })

@@ -1,4 +1,4 @@
-import { toHaveElementProperty } from './toHaveElementProperty.js'
+import { toHaveElementPropertyAndValue } from './toHaveElementProperty.js'
 import type { WdioElementMaybePromise, MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioElementsMaybePromise, WdioMultiRemoteElements, WdioMatcherContext } from '../../types.js'
 import { DEFAULT_OPTIONS } from '../../constants.js'
 import type { AssertionResult, StringOptions } from '../../publicTypes/options.js'
@@ -30,20 +30,30 @@ export function toHaveValue(
     options?: StringOptions
 ): Promise<AssertionResult>
 
-export function toHaveValue(
+export async function toHaveValue(
     this: WdioMatcherContext,
     el: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
     value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | RegExp | AsymmetricMatcher<string>>,
     options: StringOptions = DEFAULT_OPTIONS
-): Promise<AssertionResult>{
-    // The value is a string, so a plain object is the multi-remote per-instance shorthand, not a literal value
-    return (toHaveElementProperty as ToHaveElementPropertyFn).call({ matcherName: 'toHaveValue', ...this, allowObjectExpectedValue: false }, el, 'value', value, options)
-}
+): Promise<AssertionResult> {
+    const { matcherName = 'toHaveValue' } = this
 
-// toHaveElementProperty.call does not respect well the tsc so using the below workaround to make it work with the correct typing.
-type ToHaveElementPropertyFn = (
-    received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
-    property: string,
-    value: MaybeArrayOrMultiRemoteWithArrayValuesOrOneOf<string | number | RegExp | AsymmetricMatcher<string> | null> | StringOptions | undefined,
-    options?: StringOptions
-) => Promise<AssertionResult>
+    // The value alone, as `toHaveId`: `'value'` is an internal argument of the getter
+    await options.beforeAssertion?.({
+        matcherName,
+        expectedValue: value,
+        options,
+    })
+
+    // The value is a string, so a plain object is the multi-remote per-instance shorthand, not a literal value
+    const result = await toHaveElementPropertyAndValue.call({ ...this, matcherName, allowObjectExpectedValue: false }, el, 'value', value, options)
+
+    await options.afterAssertion?.({
+        matcherName,
+        expectedValue: value,
+        options,
+        result
+    })
+
+    return result
+}
