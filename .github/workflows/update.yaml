@@ -23,20 +23,28 @@ jobs:
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Check that the base branch has required checks
+            - name: Check that the base branch requires the tests
               # Without required checks (e.g. the ruleset `main` is disabled), `gh pr merge --auto` merges at once,
-              # before the checks of the PR: stop, and leave the PR to a person
+              # before the checks of the PR: stop, and leave the PR to a person. Update the list when a job is renamed
               if: contains(steps.metadata.outputs.package-ecosystem, 'npm')
               env:
                   BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  MUST_BE_REQUIRED: |-
+                      linux (24.x)
+                      playgrounds-tsc-and-lint
               run: |
-                  required=$(gh api "repos/${GITHUB_REPOSITORY}/rules/branches/${BASE_BRANCH}" --jq '[.[] | select(.type == "required_status_checks") | .parameters.required_status_checks[].context] | length')
-                  echo "Required checks on ${BASE_BRANCH}: ${required}"
-                  if [ "${required}" -eq 0 ]; then
-                      echo "::error::${BASE_BRANCH} has no required checks (is the ruleset disabled?): the PR is not merged automatically"
-                      exit 1
-                  fi
+                  required=$(gh api "repos/${GITHUB_REPOSITORY}/rules/branches/${BASE_BRANCH}" --jq '[.[] | select(.type == "required_status_checks") | .parameters.required_status_checks[].context] | unique | .[]')
+                  list=$(paste -sd, - <<< "${required}")
+                  echo "Required checks on ${BASE_BRANCH}: ${list:-none}"
+                  missing=0
+                  while IFS= read -r check; do
+                      if ! grep -qxF -- "${check}" <<< "${required}"; then
+                          echo "::error::${BASE_BRANCH} does not require the check '${check}' (is the ruleset disabled?): the PR is not merged automatically"
+                          missing=1
+                      fi
+                  done <<< "${MUST_BE_REQUIRED}"
+                  exit "${missing}"
 
             - name: Auto-merge dependabot PRs
               # Don't merge updates to GitHub Actions versions automatically.
