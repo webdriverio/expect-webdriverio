@@ -304,6 +304,7 @@ export class Browser {
     getUrl = vi.spyOn({ getUrl: async () => '  Valid text  ' }, 'getUrl')
     getTitle = vi.spyOn({ getTitle: async () => 'Example Domain' }, 'getTitle')
     getCookies = vi.spyOn({ getCookies: async (_filter?: { name?: string }): Promise<Array<{ name: string, value: string }>> => [] }, 'getCookies')
+    getWindowHandles = vi.spyOn({ getWindowHandles: async (): Promise<string[]> => ['window-1'] }, 'getWindowHandles')
 
     constructor(elementArrayLength = 2) {
         vi.mocked(this.$$).mockImplementation((selector: string) => {

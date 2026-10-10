@@ -373,6 +373,21 @@ await expect(browser).toHaveSessionStorageItem('theme', 'dark', { ignoreCase: tr
 await expect(browser).not.toHaveSessionStorageItem('token')
 ```
 
+### toHaveWindowCount
+
+Checks the number of the windows and tabs of the session ([`getWindowHandles`](https://webdriver.io/docs/api/webdriver/#getwindowhandles)), e.g. after a link opens a new tab. The expected value is a number, a number range (`{ gte, lte }`), `expect.oneOf()` with numbers, or an asymmetric matcher. The assertion waits until the count matches, as the other matchers. On a browsing context, it counts the windows of its session.
+
+##### Usage
+
+```js
+await $('a[target=_blank]').click()
+await expect(browser).toHaveWindowCount(2)
+await expect(browser).toHaveWindowCount({ gte: 2 })
+
+await browser.closeWindow()
+await expect(browser).toHaveWindowCount(1)
+```
+
 ## Element Matchers
 
 ### Matching a subset of element values

@@ -7,6 +7,7 @@ export { toHaveLocalStorageItem } from './matchers/browser/toHaveLocalStorageIte
 export { toHaveSessionStorageItem } from './matchers/browser/toHaveSessionStorageItem.js'
 export { toHaveTitle } from './matchers/browser/toHaveTitle.js'
 export { toHaveUrl } from './matchers/browser/toHaveUrl.js'
+export { toHaveWindowCount } from './matchers/browser/toHaveWindowCount.js'
 
 // Element matchers
 export { toBeClickable } from './matchers/element/toBeClickable.js'

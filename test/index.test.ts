@@ -5,7 +5,7 @@ test('index', () => {
     expect(expectExport).toBeDefined()
     expect(utils.compareText).toBeDefined()
 
-    expect(Object.keys(wdioCustomMatchers).length).toEqual(43)
+    expect(Object.keys(wdioCustomMatchers).length).toEqual(44)
 })
 
 test('the public utils keep their members, also when a helper moves to another module', () => {

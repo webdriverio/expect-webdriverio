@@ -355,6 +355,24 @@ declare global {
                 ): Promise<void>
             }
         >
+
+        /**
+         * `WebdriverIO.Browser` -> `getWindowHandles()`: the number of the windows and tabs of the session, e.g. `2` after a
+         * link opens a new tab. On a browsing context, the count of its session.
+         */
+        toHaveWindowCount: FnWhenBrowserOrMultiRemote<ActualT,
+            (
+                count: NumberValue,
+                options?: ExpectWebdriverIO.CommandOptions
+            ) => Promise<void>,
+            /**
+            * `WebdriverIO.MultiRemoteBrowser` -> `getWindowHandles()` of each instance
+            */
+            (
+                count: SingleOrMultiRemoteMatcher<NumberValue>,
+                options?: ExpectWebdriverIO.CommandOptions
+            ) => Promise<void>
+        >
     }
 
     /**

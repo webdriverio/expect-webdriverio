@@ -12,6 +12,7 @@ const ALL_MATCHERS = [
     'toHaveSessionStorageItem',
     'toHaveTitle',
     'toHaveUrl',
+    'toHaveWindowCount',
 
     // element
     'toBeClickable',

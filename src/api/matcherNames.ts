@@ -50,6 +50,7 @@ export const wdioCustomMatcherNames = [
     'toHaveUrl',
     'toHaveValue',
     'toHaveWidth',
+    'toHaveWindowCount',
     'toMatchInlineSnapshot',
     'toMatchSnapshot',
 ] as const
