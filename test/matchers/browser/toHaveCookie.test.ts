@@ -52,8 +52,11 @@ Expect browser to have cookie lang
 
 Expected: "en"
 Received: no cookie`)
-        // An asymmetric matcher never matches a missing cookie, even `expect.anything()`
+        // A missing cookie never matches: also not `expect.anything()`, nor a matcher that accepts no value
         expect((await toHaveCookie.call({}, browser, 'lang', wdioExpect.anything(), { wait: 0 })).pass).toBe(false)
+        expect((await toHaveCookie.call({}, browser, 'lang', wdioExpect.not.stringContaining('fr'), { wait: 0 })).pass).toBe(false)
+        // `.not`: no cookie, or a cookie with another value
+        expect((await toHaveCookie.call({ isNot: true }, browser, 'lang', wdioExpect.stringContaining('fr'), { wait: 0 })).pass).toBe(false)
     })
 
     it('shows the actual value when the cookie has another value', async () => {

@@ -300,6 +300,40 @@ message:
   Expected [not]: Anything
   Received      : "Hello" (compared as "hello")
 
+### toHaveCookie("lang") | browser | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | browser | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "Hello"
+
+### toHaveCookie("lang") | browser | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | browser | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "Hello" (compared as "hello")
+
 ### toHaveCookie("lang") | browser | values "  hello  ", Hello | "Hello" | no option
 result: fails
 before: toHaveCookie expected=["lang", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -600,6 +634,40 @@ message:
   Expect browser not to have cookie lang
   
   Expected [not]: Anything
+  Received      : "  hello  " (compared as "hello")
+
+### toHaveCookie("lang") | browser | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | browser | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "  hello  " (compared as "hello")
+
+### toHaveCookie("lang") | browser | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | browser | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
   Received      : "  hello  " (compared as "hello")
 
 ### toHaveCookie("lang") | browser | values null, Hello | "Hello" | no option
@@ -904,6 +972,40 @@ before: toHaveCookie expected=["lang", Anything] options=[afterAssertion,beforeA
 after: toHaveCookie expected=["lang", Anything] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
 getter calls: [{"name": "lang"}] x1
 
+### toHaveCookie("lang") | browser | values null, Hello | not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser to have cookie lang
+  
+  Expected: StringNotContaining "x"
+  Received: no cookie
+
+### toHaveCookie("lang") | browser | values null, Hello | .not not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | browser | values null, Hello | not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser to have cookie lang
+  
+  Expected: StringNotContaining "x"
+  Received: no cookie
+
+### toHaveCookie("lang") | browser | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+
 ### toHaveCookie("lang") | window | values Hello, World | "Hello" | no option
 result: passes
 before: toHaveCookie expected=["lang", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -1204,6 +1306,40 @@ message:
   Expect browser's window (https://example.com/) not to have cookie lang
   
   Expected [not]: Anything
+  Received      : "Hello" (compared as "hello")
+
+### toHaveCookie("lang") | window | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | window | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's window (https://example.com/) not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "Hello"
+
+### toHaveCookie("lang") | window | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | window | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's window (https://example.com/) not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
   Received      : "Hello" (compared as "hello")
 
 ### toHaveCookie("lang") | window | values "  hello  ", Hello | "Hello" | no option
@@ -1508,6 +1644,40 @@ message:
   Expected [not]: Anything
   Received      : "  hello  " (compared as "hello")
 
+### toHaveCookie("lang") | window | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | window | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's window (https://example.com/) not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "  hello  " (compared as "hello")
+
+### toHaveCookie("lang") | window | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | window | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's window (https://example.com/) not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "  hello  " (compared as "hello")
+
 ### toHaveCookie("lang") | window | values null, Hello | "Hello" | no option
 result: fails
 before: toHaveCookie expected=["lang", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -1808,6 +1978,40 @@ message:
 result: passes
 before: toHaveCookie expected=["lang", Anything] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
 after: toHaveCookie expected=["lang", Anything] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | window | values null, Hello | not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's window (https://example.com/) to have cookie lang
+  
+  Expected: StringNotContaining "x"
+  Received: no cookie
+
+### toHaveCookie("lang") | window | values null, Hello | .not not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | window | values null, Hello | not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's window (https://example.com/) to have cookie lang
+  
+  Expected: StringNotContaining "x"
+  Received: no cookie
+
+### toHaveCookie("lang") | window | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
 getter calls: [{"name": "lang"}] x1
 
 ### toHaveCookie("lang") | frame | values Hello, World | "Hello" | no option
@@ -2112,6 +2316,40 @@ message:
   Expected [not]: Anything
   Received      : "Hello" (compared as "hello")
 
+### toHaveCookie("lang") | frame | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | frame | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's frame (https://example.com/) not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "Hello"
+
+### toHaveCookie("lang") | frame | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | frame | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's frame (https://example.com/) not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "Hello" (compared as "hello")
+
 ### toHaveCookie("lang") | frame | values "  hello  ", Hello | "Hello" | no option
 result: fails
 before: toHaveCookie expected=["lang", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -2414,6 +2652,40 @@ message:
   Expected [not]: Anything
   Received      : "  hello  " (compared as "hello")
 
+### toHaveCookie("lang") | frame | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | frame | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's frame (https://example.com/) not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "  hello  " (compared as "hello")
+
+### toHaveCookie("lang") | frame | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | frame | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's frame (https://example.com/) not to have cookie lang
+  
+  Expected [not]: StringNotContaining "x"
+  Received      : "  hello  " (compared as "hello")
+
 ### toHaveCookie("lang") | frame | values null, Hello | "Hello" | no option
 result: fails
 before: toHaveCookie expected=["lang", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -2714,6 +2986,40 @@ message:
 result: passes
 before: toHaveCookie expected=["lang", Anything] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
 after: toHaveCookie expected=["lang", Anything] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | frame | values null, Hello | not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's frame (https://example.com/) to have cookie lang
+  
+  Expected: StringNotContaining "x"
+  Received: no cookie
+
+### toHaveCookie("lang") | frame | values null, Hello | .not not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+
+### toHaveCookie("lang") | frame | values null, Hello | not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+getter calls: [{"name": "lang"}] x1
+message:
+  Expect browser's frame (https://example.com/) to have cookie lang
+  
+  Expected: StringNotContaining "x"
+  Received: no cookie
+
+### toHaveCookie("lang") | frame | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
 getter calls: [{"name": "lang"}] x1
 
 ### toHaveCookie("lang") | multi-remote browser | values Hello, World | "Hello" | no option
@@ -3174,6 +3480,40 @@ message:
   Expected [not]: {"chrome": Anything, "firefox": Anything}
   Received      : {"chrome": "Hello", "firefox": "World"}
 
+### toHaveCookie("lang") | multi-remote browser | values Hello, World | not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x2
+
+### toHaveCookie("lang") | multi-remote browser | values Hello, World | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x2
+message:
+  Expect multi-remote<chrome, firefox> not to have cookie lang
+  
+  Expected [not]: {"chrome": StringNotContaining "x", "firefox": StringNotContaining "x"}
+  Received      : {"chrome": "Hello", "firefox": "World"}
+
+### toHaveCookie("lang") | multi-remote browser | values Hello, World | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x2
+
+### toHaveCookie("lang") | multi-remote browser | values Hello, World | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x2
+message:
+  Expect multi-remote<chrome, firefox> not to have cookie lang
+  
+  Expected [not]: {"chrome": StringNotContaining "x", "firefox": StringNotContaining "x"}
+  Received      : {"chrome": "Hello", "firefox": "World"}
+
 ### toHaveCookie("lang") | multi-remote browser | values "  hello  ", Hello | "Hello" | no option
 result: fails
 before: toHaveCookie expected=["lang", "Hello"] options=[afterAssertion,beforeAssertion,wait]
@@ -3627,6 +3967,40 @@ message:
   Expect multi-remote<chrome, firefox> not to have cookie lang
   
   Expected [not]: {"chrome": Anything, "firefox": Anything}
+  Received      : {"chrome": "  hello  ", "firefox": "Hello"}
+
+### toHaveCookie("lang") | multi-remote browser | values "  hello  ", Hello | not.stringContaining("x") | no option
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x2
+
+### toHaveCookie("lang") | multi-remote browser | values "  hello  ", Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x2
+message:
+  Expect multi-remote<chrome, firefox> not to have cookie lang
+  
+  Expected [not]: {"chrome": StringNotContaining "x", "firefox": StringNotContaining "x"}
+  Received      : {"chrome": "  hello  ", "firefox": "Hello"}
+
+### toHaveCookie("lang") | multi-remote browser | values "  hello  ", Hello | not.stringContaining("x") | ignoreCase
+result: passes
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x2
+
+### toHaveCookie("lang") | multi-remote browser | values "  hello  ", Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x2
+message:
+  Expect multi-remote<chrome, firefox> not to have cookie lang
+  
+  Expected [not]: {"chrome": StringNotContaining "x", "firefox": StringNotContaining "x"}
   Received      : {"chrome": "  hello  ", "firefox": "Hello"}
 
 ### toHaveCookie("lang") | multi-remote browser | values null, Hello | "Hello" | no option
@@ -4147,6 +4521,74 @@ message:
   -   "chrome": Anything,
   +   "chrome": no cookie,
       "firefox": Anything,
+    }
+
+### toHaveCookie("lang") | multi-remote browser | values null, Hello | not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [{"name": "lang"}] x2
+message:
+  Expect multi-remote<chrome, firefox> to have cookie lang
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+  -   "chrome": StringNotContaining "x",
+  +   "chrome": no cookie,
+      "firefox": StringNotContaining "x",
+    }
+
+### toHaveCookie("lang") | multi-remote browser | values null, Hello | .not not.stringContaining("x") | no option
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [{"name": "lang"}] x2
+message:
+  Expect multi-remote<chrome, firefox> not to have cookie lang
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+  -   "chrome": StringNotContaining "x",
+  +   "chrome": no cookie,
+      "firefox": StringNotContaining "x",
+    }
+
+### toHaveCookie("lang") | multi-remote browser | values null, Hello | not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
+getter calls: [{"name": "lang"}] x2
+message:
+  Expect multi-remote<chrome, firefox> to have cookie lang
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+  -   "chrome": StringNotContaining "x",
+  +   "chrome": no cookie,
+      "firefox": StringNotContaining "x",
+    }
+
+### toHaveCookie("lang") | multi-remote browser | values null, Hello | .not not.stringContaining("x") | ignoreCase
+result: fails
+before: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
+after: toHaveCookie expected=["lang", StringNotContaining "x"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=true
+getter calls: [{"name": "lang"}] x2
+message:
+  Expect multi-remote<chrome, firefox> not to have cookie lang
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+  -   "chrome": StringNotContaining "x",
+  +   "chrome": no cookie,
+      "firefox": StringNotContaining "x",
     }
 
 ### toHaveCookie("lang") | browser | values Hello, World | no value | no option

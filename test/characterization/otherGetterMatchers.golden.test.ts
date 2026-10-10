@@ -97,7 +97,7 @@ describe('golden master of the other getter matchers', () => {
 
     test('cookie matcher', async () => {
         const output = await matrix([
-            { name: 'toHaveCookie', getter: 'getCookies', args: ['lang'], browser: true, values: stringValues, expected: { ...mediumStringExpected, 'anything()': () => wdioExpect.anything() }, options: { 'no option': {}, 'ignoreCase': { ignoreCase: true } } },
+            { name: 'toHaveCookie', getter: 'getCookies', args: ['lang'], browser: true, values: stringValues, expected: { ...mediumStringExpected, 'anything()': () => wdioExpect.anything(), 'not.stringContaining("x")': () => wdioExpect.not.stringContaining('x') }, options: { 'no option': {}, 'ignoreCase': { ignoreCase: true } } },
             { name: 'toHaveCookie', getter: 'getCookies', args: ['lang'], browser: true, values: stringValues, expected: { 'no value': () => undefined }, options: { 'no option': {} } },
         ])
 

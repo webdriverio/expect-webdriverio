@@ -224,9 +224,10 @@ async function matchBrowserStringGetter(
                 expectedValue: expectedWithOptions,
                 compare: async (browserTarget, value: ExpectedOf<'string'> | undefined): Promise<CompareResult<string | MissingValue>> => {
                     const actualValue = await readBrowserValue(browserTarget, descriptor, argument)
-                    // A missing value is compared as no value, and the message shows its text
+                    // A value that does not exist never matches, also not a matcher that accepts no value: the assertion
+                    // waits for the value. The message shows its text
                     if (actualValue instanceof MissingValue) {
-                        return { success: compareString(null, value, options).success, actual: actualValue }
+                        return { success: false, actual: actualValue }
                     }
                     return compareString(actualValue, value, options) as CompareResult<string>
                 },

@@ -1,7 +1,7 @@
 /**
- * A value that does not exist, e.g. no cookie with this name. The matcher compares it as no value (so an asymmetric matcher
- * such as `expect.anything()` does not match it), and the failure message prints its text, `Received: no cookie`, not
- * `null`. It has the brand of the asymmetric matchers of Jest only for the printing: `pretty-format` prints the text of
+ * A value that does not exist, e.g. no cookie with this name. It never matches an expected value, also not an asymmetric
+ * matcher that accepts no value (`expect.not.stringContaining()`), and the failure message prints its text,
+ * `Received: no cookie`, not `null`. It has the brand of the asymmetric matchers of Jest only for the printing: `pretty-format` prints the text of
  * `toAsymmetricMatcher()` without quotes.
  */
 export class MissingValue {
