@@ -79,8 +79,15 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
     const isSome = isSomeWrapper(unresolvedElements)
     const actualReceived = isSome ? unresolvedElements.elements : unresolvedElements
 
-    if (supportsArrayContaining && !isSome && isListMatcher(expectedValues)) {
-        return arrayContainingStrategy(unresolvedElements, expectedValues, singleElementCompare, { isNot, iteration, matcherName }, supportsArrayContaining)
+    if (supportsArrayContaining && isListMatcher(expectedValues)) {
+        if (!isSome) {
+            return arrayContainingStrategy(unresolvedElements, expectedValues, singleElementCompare, { isNot, iteration, matcherName }, supportsArrayContaining)
+        }
+        // `some()` checks each element alone, and the value of one element is not a list (a string, a size): a list matcher
+        // can never match it, and with `.not` it would always pass. A property can be a list, so it is compared per element
+        if (supportsArrayContaining === 'arrayOnly') {
+            throw new MatcherUsageError(`${matcherName} with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements`)
+        }
     }
 
     return multipleElementResultsStrategy(actualReceived, expectedValues as MaybeArrayOrMultiRemoteValues<Expected> | undefined, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)

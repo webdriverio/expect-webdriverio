@@ -162,6 +162,14 @@ await expect($('li')).not.toHaveHTML(expect.arrayContaining(['<li>Home</li>']))
 
 `toHaveStyle` throws an error with a list matcher, also on `$$()` and with `.not`: it reads only the CSS properties that the expected value names, and a list matcher names none. Before, it read the keys of the list matcher as CSS properties (`$$typeof`, `sample`…), and the assertion always failed, and with `.not`, it always passed. Give one style, or an array with one style for each element of `$$()`.
 
+With `some()`, a list matcher now throws an error, also with `.not`, in the same matchers and in `toHaveText` and `toHaveTagName`: `some()` checks each element alone, and the value of one element is not a list. Before, the assertion always failed, and with `.not`, it always passed. `toHaveElementProperty` still compares it with the property of each element. Remove `some()`: on `$$()`, `expect.arrayContaining()` already passes when one element has the value.
+
+```ts
+await expect(some($$('li'))).not.toHaveText(expect.arrayContaining(['Home']))
+// Error: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): …
+await expect($$('li')).not.toHaveText(expect.arrayContaining(['Home']))
+```
+
 ## Failure messages with string options
 
 The failure messages of the string matchers changed, see [String Options](API.md#string-options):

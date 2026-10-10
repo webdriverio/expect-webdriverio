@@ -2508,38 +2508,28 @@ after: toHaveTagName expected=["Hello", "World"] options=[afterAssertion,beforeA
 getter calls: [] x2
 
 ### toHaveTagName | some($$()) | values button, a | arrayContaining(["Hello"]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveTagName with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have tag name
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["button", "a"]
+after: -
+getter calls: -
 
 ### toHaveTagName | some($$()) | values button, a | .not arrayContaining(["Hello"]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveTagName with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveTagName | some($$()) | values button, a | arrayContaining(["Hello"]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveTagName with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have tag name
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["button", "a"]
+after: -
+getter calls: -
 
 ### toHaveTagName | some($$()) | values button, a | .not arrayContaining(["Hello"]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveTagName with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveTagName | some($$()) | values button, a | multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -2843,38 +2833,28 @@ after: toHaveTagName expected=["Hello", "World"] options=[afterAssertion,beforeA
 getter calls: [] x2
 
 ### toHaveTagName | some($$()) | values "  BUTTON  ", button | arrayContaining(["Hello"]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveTagName with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have tag name
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  BUTTON  ", "button"]
+after: -
+getter calls: -
 
 ### toHaveTagName | some($$()) | values "  BUTTON  ", button | .not arrayContaining(["Hello"]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveTagName with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveTagName | some($$()) | values "  BUTTON  ", button | arrayContaining(["Hello"]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveTagName with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have tag name
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  BUTTON  ", "button"]
+after: -
+getter calls: -
 
 ### toHaveTagName | some($$()) | values "  BUTTON  ", button | .not arrayContaining(["Hello"]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveTagName with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveTagName expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveTagName | some($$()) | values "  BUTTON  ", button | multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails

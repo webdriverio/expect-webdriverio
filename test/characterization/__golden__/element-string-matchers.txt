@@ -4736,55 +4736,40 @@ message:
   Received      : ["Hello", "World"]
 
 ### toHaveText | some($$()) | values Hello, World | arrayContaining(["Hello"]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have text
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values Hello, World | arrayContaining(["Hello"]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have text
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values Hello, World | arrayContaining(["Hello"]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have text containing
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | containing
-result: passes
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values Hello, World | multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -5254,55 +5239,40 @@ after: toHaveText expected=["Hello", "World"] options=[afterAssertion,beforeAsse
 getter calls: [] x2
 
 ### toHaveText | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have text
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have text
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have text containing
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | containing
-result: passes
+result: throws MatcherUsageError: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveText expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveText | some($$()) | values "  hello  ", Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -16744,72 +16714,52 @@ message:
   Received      : ["Hello", "World"]
 
 ### toHaveHTML | some($$()) | values Hello, World | arrayContaining(["Hello"]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "wait": 0}] x2
-message:
-  Expect some of $$(`sel`) to have HTML
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "wait": 0}] x2
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values Hello, World | arrayContaining(["Hello"]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "ignoreCase": true, "wait": 0}] x2
-message:
-  Expect some of $$(`sel`) to have HTML
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "ignoreCase": true, "wait": 0}] x2
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values Hello, World | arrayContaining(["Hello"]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "containing": true, "wait": 0}] x2
-message:
-  Expect some of $$(`sel`) to have HTML containing
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | containing
-result: passes
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "containing": true, "wait": 0}] x2
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values Hello, World | arrayContaining(["Hello"]) | includeSelectorTag: false
-result: fails
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,includeSelectorTag,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,includeSelectorTag,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "includeSelectorTag": false, "wait": 0}] x2
-message:
-  Expect some of $$(`sel`) to have HTML
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | includeSelectorTag: false
-result: passes
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,includeSelectorTag,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,includeSelectorTag,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "includeSelectorTag": false, "wait": 0}] x2
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values Hello, World | multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -17432,72 +17382,52 @@ after: toHaveHTML expected=["Hello", "World"] options=[afterAssertion,beforeAsse
 getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "includeSelectorTag": false, "wait": 0}] x2
 
 ### toHaveHTML | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "wait": 0}] x2
-message:
-  Expect some of $$(`sel`) to have HTML
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "wait": 0}] x2
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "ignoreCase": true, "wait": 0}] x2
-message:
-  Expect some of $$(`sel`) to have HTML
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "ignoreCase": true, "wait": 0}] x2
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "containing": true, "wait": 0}] x2
-message:
-  Expect some of $$(`sel`) to have HTML containing
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | containing
-result: passes
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "containing": true, "wait": 0}] x2
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | includeSelectorTag: false
-result: fails
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,includeSelectorTag,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,includeSelectorTag,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "includeSelectorTag": false, "wait": 0}] x2
-message:
-  Expect some of $$(`sel`) to have HTML
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | includeSelectorTag: false
-result: passes
+result: throws MatcherUsageError: toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,includeSelectorTag,wait]
-after: toHaveHTML expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,includeSelectorTag,wait] pass=false
-getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "includeSelectorTag": false, "wait": 0}] x2
+after: -
+getter calls: -
 
 ### toHaveHTML | some($$()) | values "  hello  ", Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -29103,55 +29033,40 @@ message:
   Received      : ["Hello", "World"]
 
 ### toHaveComputedLabel | some($$()) | values Hello, World | arrayContaining(["Hello"]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed label
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values Hello, World | arrayContaining(["Hello"]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed label
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values Hello, World | arrayContaining(["Hello"]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed label containing
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | containing
-result: passes
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values Hello, World | multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -29621,55 +29536,40 @@ after: toHaveComputedLabel expected=["Hello", "World"] options=[afterAssertion,b
 getter calls: [] x2
 
 ### toHaveComputedLabel | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed label
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed label
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed label containing
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | containing
-result: passes
+result: throws MatcherUsageError: toHaveComputedLabel with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveComputedLabel expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedLabel | some($$()) | values "  hello  ", Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -39516,55 +39416,40 @@ message:
   Received      : ["Hello", "World"]
 
 ### toHaveComputedRole | some($$()) | values Hello, World | arrayContaining(["Hello"]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed role
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values Hello, World | arrayContaining(["Hello"]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed role
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values Hello, World | arrayContaining(["Hello"]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed role containing
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["Hello", "World"]
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values Hello, World | .not arrayContaining(["Hello"]) | containing
-result: passes
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values Hello, World | multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -40034,55 +39919,40 @@ after: toHaveComputedRole expected=["Hello", "World"] options=[afterAssertion,be
 getter calls: [] x2
 
 ### toHaveComputedRole | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed role
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | ignoreCase
-result: fails
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed role
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | ignoreCase
-result: passes
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,ignoreCase,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values "  hello  ", Hello | arrayContaining(["Hello"]) | containing
-result: fails
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have computed role containing
-  
-  Expected: ArrayContaining ["Hello"]
-  Received: ["  hello  ", "Hello"]
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values "  hello  ", Hello | .not arrayContaining(["Hello"]) | containing
-result: passes
+result: throws MatcherUsageError: toHaveComputedRole with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait]
-after: toHaveComputedRole expected=ArrayContaining ["Hello"] options=[afterAssertion,beforeAssertion,containing,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveComputedRole | some($$()) | values "  hello  ", Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails

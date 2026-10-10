@@ -2,38 +2,38 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import { expect as wdioExpect } from '../../../src/index.js'
 import { jasmine } from '../../__fixtures__/jasmine.js'
-import { multiRemote } from '../../../src/api/index.js'
-import { browserFactory, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { multiRemote, some } from '../../../src/api/index.js'
+import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
 
 vi.mock('@wdio/globals')
+
+const listMatchers = [
+    { name: 'expect.arrayContaining()', matcher: () => wdioExpect.arrayContaining(['Home']) },
+    { name: 'expect.arrayOf()', matcher: () => wdioExpect.arrayOf(wdioExpect.any(String)) },
+    { name: 'jasmine.arrayWithExactContents()', matcher: () => jasmine.arrayWithExactContents(['Home']) },
+]
+
+type Expectation = ExpectWebdriverIO.Matchers<Promise<void>, WebdriverIO.Element>
+const matchers = [
+    { matcherName: 'toHaveText', getter: 'getText', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveText(m as never, o) },
+    { matcherName: 'toHaveHTML', getter: 'getHTML', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveHTML(m as never, o) },
+    { matcherName: 'toHaveAttribute', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveAttribute('data-x', m as never, o) },
+    { matcherName: 'toHaveId', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveId(m as never, o) },
+    { matcherName: 'toHaveHref', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveHref(m as never, o) },
+    { matcherName: 'toHaveLink', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveLink(m as never, o) },
+    { matcherName: 'toHaveElementClass', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveElementClass(m as never, o) },
+    { matcherName: 'toHaveComputedLabel', getter: 'getComputedLabel', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveComputedLabel(m as never, o) },
+    { matcherName: 'toHaveComputedRole', getter: 'getComputedRole', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveComputedRole(m as never, o) },
+    { matcherName: 'toHaveTagName', getter: 'getTagName', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveTagName(m as never, o) },
+    { matcherName: 'toHaveValue', getter: 'getProperty', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveValue(m as never, o) },
+    { matcherName: 'toHaveSize', getter: 'getSize', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveSize(m as never, o) },
+] as const
 
 /**
  * A list matcher compares the values of the elements of `$$()`. The value of one element is not a list (a string, a size),
  * so a list matcher can never match it: the matcher throws, also with `.not`, which would else always pass.
  */
 describe('a list matcher on one element', () => {
-    const listMatchers = [
-        { name: 'expect.arrayContaining()', matcher: () => wdioExpect.arrayContaining(['Home']) },
-        { name: 'expect.arrayOf()', matcher: () => wdioExpect.arrayOf(wdioExpect.any(String)) },
-        { name: 'jasmine.arrayWithExactContents()', matcher: () => jasmine.arrayWithExactContents(['Home']) },
-    ]
-
-    type Expectation = ExpectWebdriverIO.Matchers<Promise<void>, WebdriverIO.Element>
-    const matchers = [
-        { matcherName: 'toHaveText', getter: 'getText', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveText(m as never, o) },
-        { matcherName: 'toHaveHTML', getter: 'getHTML', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveHTML(m as never, o) },
-        { matcherName: 'toHaveAttribute', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveAttribute('data-x', m as never, o) },
-        { matcherName: 'toHaveId', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveId(m as never, o) },
-        { matcherName: 'toHaveHref', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveHref(m as never, o) },
-        { matcherName: 'toHaveLink', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveLink(m as never, o) },
-        { matcherName: 'toHaveElementClass', getter: 'getAttribute', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveElementClass(m as never, o) },
-        { matcherName: 'toHaveComputedLabel', getter: 'getComputedLabel', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveComputedLabel(m as never, o) },
-        { matcherName: 'toHaveComputedRole', getter: 'getComputedRole', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveComputedRole(m as never, o) },
-        { matcherName: 'toHaveTagName', getter: 'getTagName', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveTagName(m as never, o) },
-        { matcherName: 'toHaveValue', getter: 'getProperty', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveValue(m as never, o) },
-        { matcherName: 'toHaveSize', getter: 'getSize', run: (e: Expectation, m: unknown, o: ExpectWebdriverIO.CommandOptions = { wait: 0 }) => e.toHaveSize(m as never, o) },
-    ] as const
-
     describe.each(matchers)('$matcherName', ({ matcherName, getter, run }) => {
         test.each(listMatchers)('throws with $name, also with .not, without reading the value', async ({ matcher }) => {
             const element = await $('#menu')
@@ -75,6 +75,42 @@ describe('a list matcher on one element', () => {
 
         await wdioExpect(element).not.toHaveElementProperty('labels', wdioExpect.arrayContaining(['Home']), { wait: 0 })
         await expect(wdioExpect(element).toHaveElementProperty('labels', wdioExpect.arrayContaining(['Home']), { wait: 0 })).rejects.toThrow('Expect $(`#menu`) to have property labels')
+    })
+})
+
+/**
+ * `some()` compares each element alone, and the value of one element is not a list: a list matcher can never match it. The
+ * matcher throws, also with `.not`, which would else always pass. Without `some()`, the list matcher compares the values of
+ * all the elements, e.g. `arrayContaining(['Home'])` passes when one element has the text `Home`.
+ */
+describe('a list matcher with some()', () => {
+    const error = (matcherName: string) => `${matcherName} with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements`
+
+    describe.each(matchers)('$matcherName', ({ matcherName, getter, run }) => {
+        test.each(listMatchers)('throws with $name, also with .not, without reading the values', async ({ matcher }) => {
+            const elements = await $$('#menu li')
+
+            await expect(run(wdioExpect(some(elements)) as unknown as Expectation, matcher())).rejects.toThrow(error(matcherName))
+            await expect(run(wdioExpect(some(elements)).not as unknown as Expectation, matcher())).rejects.toThrow(error(matcherName))
+            elements.forEach((element) => expect(element[getter]).not.toHaveBeenCalled())
+        })
+    })
+
+    test('throws on a multi-remote $$()', async () => {
+        const elements = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, '#menu li')
+
+        await expect(wdioExpect(some(elements)).toHaveText(wdioExpect.arrayContaining(['Home']) as never, { wait: 0 })).rejects.toThrow(error('toHaveText'))
+    })
+
+    test('toHaveElementProperty still compares a list matcher with the property of each element, as on $()', async () => {
+        const elements = await $$('#menu li')
+        vi.mocked(elements[0].getProperty).mockResolvedValue(['Home', 'About'] as never)
+        vi.mocked(elements[1].getProperty).mockResolvedValue(['Contact'] as never)
+
+        await wdioExpect(some(elements)).toHaveElementProperty('labels', wdioExpect.arrayContaining(['Home']), { wait: 0 })
+        await wdioExpect(some(elements)).not.toHaveElementProperty('labels', wdioExpect.arrayContaining(['Missing']), { wait: 0 })
+        await expect(wdioExpect(some(elements)).toHaveElementProperty('labels', wdioExpect.arrayContaining(['Missing']), { wait: 0 }))
+            .rejects.toThrow('Expect some of $$(`#menu li`) to have property labels')
     })
 })
 

@@ -3557,21 +3557,16 @@ message:
   Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
 
 ### toHaveSize | some($$()) | values 100x50, 150x50 | arrayContaining([100x50]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveSize with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect some of $$(`sel`) to have size
-  
-  Expected: ArrayContaining [{"height": 50, "width": 100}]
-  Received: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+after: -
+getter calls: -
 
 ### toHaveSize | some($$()) | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveSize with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveSize | some($$()) | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
 result: fails

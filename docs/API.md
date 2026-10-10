@@ -397,7 +397,7 @@ Each attempt reads one value per element concurrently and applies the asymmetric
 
 String comparison options such as `trim`, `ignoreCase`, and `containing` do not transform the collected values or nested matchers. Getter options still apply, such as `includeSelectorTag` for HTML and `asString` for properties. Class matching collects each element's complete class attribute, not individual class tokens.
 
-This collection comparison does not change boolean assertions, style or size assertions, or `some()`'s per-element matching.
+This collection comparison does not change boolean assertions or style assertions. With `some()`, a list matcher throws an error, also with `.not` (see [some()](#some)).
 
 On a single element `$()`, a list matcher throws an error, also with `.not`: `toHaveHTML with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements`. The value of one element is a string, so a list matcher can never match it. Only `toHaveElementProperty` compares a list matcher with the property of a single element, because a property value can be an array.
 
@@ -1372,6 +1372,8 @@ await expect(some($$('elements'))).not.toHaveText(/forbiddenTextA|forbiddenTextB
 // Succeeds if the first element matches 'valueForIndex0' OR the second matches 'valueForIndex1'
 await expect(some($$('elements'))).toHaveText(['valueForIndex0', 'valueForIndex1']);
 ```
+
+A list matcher (`expect.arrayContaining()`, `expect.arrayOf()`, `jasmine.arrayWithExactContents()`) throws an error with `some()`, also with `.not`: `some()` checks each element alone, and the value of one element is not a list. Use the list matcher without `some()`: on `$$()`, it compares the values of all the elements, so `expect.arrayContaining(['Home'])` passes when one element has the value `Home`. Only `toHaveElementProperty` compares a list matcher with the property of each element, because a property value can be an array.
 
 **Note**: With [multi-remote](MultiRemote.md), `some()` requires at least one matching element in **every** browser instance.
 
