@@ -101,8 +101,8 @@ Received: 5`
         test('failure and unsupported type when property value is an array', async () => {
             vi.mocked(el.getProperty).mockResolvedValue( { foo: 'bar' } )
 
-            // @ts-expect-error -- object not working for now, to support later
-            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', [{ foo: 'bar' }])
+            // An array on $() is rejected by the public types (test-types/)
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', [{ foo: 'bar' }] as never)
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property myPropertyName
@@ -318,8 +318,8 @@ Received: "iphone"`)
         test('should return false if value is an array of strings - tsc failure, not supported', async () => {
             vi.mocked(el.getProperty).mockResolvedValue('Test Value')
 
-            /// @ts-expect-error -- array of strings not supported for single element, to support later
-            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'])
+            // An array on $() is rejected by the public types (test-types/)
+            const result = await thisContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'] as never)
             expect(result.pass).toBe(false)
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) to have property myPropertyName
@@ -331,8 +331,8 @@ Received: "Test Value"`)
         test('not - should fails (pass=true) if value is an array of strings - tsc failure, not supported', async () => {
             vi.mocked(el.getProperty).mockResolvedValue('Test Value')
 
-            /// @ts-expect-error -- array of strings not supported for single element, to support later
-            const result = await thisIsNotContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'])
+            // An array on $() is rejected by the public types (test-types/)
+            const result = await thisIsNotContext.toHaveElementProperty(el, 'myPropertyName', ['Test Value'] as never)
             expect(result.pass).toBe(true) // failure, boolean is inverted later because of `.not`
             expect(stripAnsi(result.message())).toEqual(`\
 Expect $(\`sel\`) not to have property myPropertyName

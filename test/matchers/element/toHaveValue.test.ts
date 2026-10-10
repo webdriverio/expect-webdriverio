@@ -80,8 +80,8 @@ Received: "This is an example value"`
             })
 
             test('should not pass with array of strings', async () => {
-                // @ts-expect-error testing invalid input
-                const result = await thisContext.toHaveValue(el, ['webdriver', 'example'])
+                // An array on $() is rejected by the public types (test-types/)
+                const result = await thisContext.toHaveValue(el, ['webdriver', 'example'] as never)
                 expect(result.pass).toBe(false)
             })
         })

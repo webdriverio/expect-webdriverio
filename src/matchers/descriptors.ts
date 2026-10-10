@@ -8,10 +8,13 @@
  * error. A type over all the keys of `WebdriverIO.Element` gives `any`, with no error: TypeScript stops on the size of the
  * type. So the descriptor types the name only (`keyof`), and this type checks the getters of the table, one by one.
  */
-type GettersGive<Table extends Record<string, { getter: keyof Target, argument?: unknown }>, Target, Value> = {
+type GettersGive<Table extends Record<string, { getter: keyof Target, argument?: unknown, value?: unknown }>, Target, Value> = {
     // `() =>`: the getter has no required argument, e.g. not `isEqual(element)`. An optional one is fine: `getHTML(options?)`.
-    // With an `argument`, the getter takes one string and can give `null`, e.g. `getAttribute(name)` for a missing attribute
-    [Name in keyof Table]: Target[Table[Name]['getter']] extends (Table[Name] extends { argument: unknown } ? (argument: string) => Promise<Value | null> : () => Promise<Value>)
+    // With an `argument`, the getter takes one string and can give `null`, e.g. `getAttribute(name)` for a missing attribute.
+    // A `property` can be any value
+    [Name in keyof Table]: Target[Table[Name]['getter']] extends (Table[Name] extends { argument: unknown }
+        ? (argument: string) => Promise<(Table[Name] extends { value: 'property' } ? unknown : Value) | null>
+        : () => Promise<Value>)
         ? Table[Name]
         : `${Name & string}: ${Table[Name]['getter'] & string} does not give the value type`
 }
@@ -30,8 +33,16 @@ export type ElementStringGetterDescriptor = {
     argument?: 'fromCall' | { fixed: string }
     /** The failure message names the argument, e.g. `id` in `Expect $(`sel`) to have attribute id` */
     argumentInMessage?: true
-    /** A class value: the attribute has classes separated by ASCII whitespace, and the matcher compares each class */
-    value?: 'class'
+    /**
+     * The value type, when it is not a string:
+     * - `class`: the attribute has classes separated by ASCII whitespace, and the matcher compares each class;
+     * - `property`: a string property is compared as a string, another value (a number, an object, an array) with
+     *   `equals()`, or as its text with the `asString` option. A property can be an object or an array, so a plain object
+     *   is a value, not per-instance values, and a list matcher on `$()` compares the property.
+     */
+    value?: 'class' | 'property'
+    /** A `property` that is a string (`value`): a plain object is per-instance values, and a list matcher needs `$$()` */
+    expectsString?: true
 }
 
 export type BrowserStringGetterDescriptor = {
@@ -54,6 +65,8 @@ export const elementStringGetters = {
     toHaveHref: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'href' }, argumentInMessage: true },
     toHaveLink: { getter: 'getAttribute', expectation: 'attribute', argument: { fixed: 'href' }, argumentInMessage: true },
     toHaveElementClass: { getter: 'getAttribute', expectation: 'class', argument: { fixed: 'class' }, value: 'class' },
+    toHaveElementProperty: { getter: 'getProperty', expectation: 'property', argument: 'fromCall', argumentInMessage: true, value: 'property' },
+    toHaveValue: { getter: 'getProperty', expectation: 'property', argument: { fixed: 'value' }, argumentInMessage: true, value: 'property', expectsString: true },
 } as const satisfies Record<string, ElementStringGetterDescriptor>
 elementStringGetters satisfies GettersGive<typeof elementStringGetters, WebdriverIO.Element, string>
 

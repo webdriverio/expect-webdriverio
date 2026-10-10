@@ -103,7 +103,7 @@ Received: null`
             })
 
             test('failure with non-string attribute value as expected', async () => {
-                // @ts-expect-error invalid type
+                // A number is rejected by the public types (test-types/)
                 const result = await thisContext.toHaveAttribute(el, 'attribute_name', 123, { ignoreCase: true, wait: 1 })
 
                 expect(result.pass).toBe(false)

@@ -878,6 +878,8 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
                 await expect(element).toHaveValue(['a'])
                 // @ts-expect-error
                 await expect(element).toHaveElementProperty('p', ['a'])
+                // @ts-expect-error an attribute is a string
+                await expect(element).toHaveAttribute('data-x', 123)
                 // @ts-expect-error
                 await expect(element).toHaveSize([{ width: 1, height: 1 }])
                 // @ts-expect-error
