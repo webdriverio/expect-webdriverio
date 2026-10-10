@@ -5,7 +5,7 @@ import * as Matchers from '../../src/matchers.js'
 import { executeCommandBe, waitUntil } from '../../src/utils.js'
 import { DEFAULT_OPTIONS } from '../../src/constants.js'
 import stripAnsi from 'strip-ansi'
-import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeExisting, toBeFocused, toBePresent, toBeSelected, toBeStable, toExist } from '../../src/matchers.js'
+import { toBeChecked, toBeClickable, toBeDisplayedInViewport, toBeEnabled, toBeExisting, toBeFocused, toBePresent, toBeReadOnly, toBeRequired, toBeSelected, toBeStable, toExist } from '../../src/matchers.js'
 import { setDefaultOptions } from '../../src/index.js'
 import { browserFactory, chainableElementArrayFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock, elementArrayFactory, notFoundElementFactory } from '../__mocks__/@wdio/globals.js'
 
@@ -25,6 +25,8 @@ const matcherPairs = [
     [toBePresent, 'isExisting'],
     [toBeSelected, 'isSelected'],
     [toBeStable, 'isStable'],
+    [toBeRequired, 'getProperty'],
+    [toBeReadOnly, 'getProperty'],
     [toExist, 'isExisting']
 ] as const
 
@@ -677,6 +679,9 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) not ${verb} ${words}
   }` },
                 ])('passes when every instance is, and fails with the value of each instance when one is not, on $name', async ({ subject, message, notMessage }) => {
                     const element = subject()
+                    // A property getter (`getProperty('required')`) gives `'1'` by default in the mocks, not `true`
+                    mockMultiRemoteInstanceCommand(element, 'chrome', elementFnName, true)
+                    mockMultiRemoteInstanceCommand(element, 'firefox', elementFnName, true)
 
                     const pass = await thisContext.matcherFn(element, { wait: 0 })
                     mockMultiRemoteInstanceCommand(element, 'firefox', elementFnName, false)
