@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import stripAnsi from 'strip-ansi'
 import { expect as wdioExpect, SoftAssertService } from '../../src/index.js'
 import { multiRemote } from '../../src/api/index.js'
-import { elementSubjects, matcherOf, record, type Options, type Subject } from './goldenMaster.js'
+import { browserSubjects, elementSubjects, matcherOf, record, type Options, type Subject } from './goldenMaster.js'
 
 vi.mock('@wdio/globals')
 
@@ -25,13 +25,15 @@ type Matcher = {
     options: Record<string, Options>
     /** Only these subjects, for an alias or a fixed argument that shares its code with another matcher */
     subjects?: string[]
+    /** The subjects of the browser matchers (browser, window, frame, multi-remote browser) */
+    browser?: true
 }
 
 /** Every combination of a matcher: subject, values, expected value, options, and `.not` */
 const matrix = async (matchers: Matcher[]) => {
     const output: string[] = []
-    for (const { name, getter, args = [], values, expected, options, subjects } of matchers) {
-        for (const { name: subjectName, build } of elementSubjects.filter((subject) => !subjects || subjects.includes(subject.name))) {
+    for (const { name, getter, args = [], values, expected, options, subjects, browser } of matchers) {
+        for (const { name: subjectName, build } of (browser ? browserSubjects : elementSubjects).filter((subject) => !subjects || subjects.includes(subject.name))) {
             for (const [valuesName, value] of Object.entries(values)) {
                 for (const [expectedName, expectedValue] of Object.entries(expected)) {
                     for (const [optionsName, option] of Object.entries(options)) {
@@ -91,6 +93,15 @@ describe('golden master of the other getter matchers', () => {
         ])
 
         await expect(output).toMatchFileSnapshot('./__golden__/tag-name-matcher.txt')
+    }, 300_000)
+
+    test('cookie matcher', async () => {
+        const output = await matrix([
+            { name: 'toHaveCookie', getter: 'getCookies', args: ['lang'], browser: true, values: stringValues, expected: { ...mediumStringExpected, 'anything()': () => wdioExpect.anything() }, options: { 'no option': {}, 'ignoreCase': { ignoreCase: true } } },
+            { name: 'toHaveCookie', getter: 'getCookies', args: ['lang'], browser: true, values: stringValues, expected: { 'no value': () => undefined }, options: { 'no option': {} } },
+        ])
+
+        await expect(output).toMatchFileSnapshot('./__golden__/cookie-matcher.txt')
     }, 300_000)
 
     test('property matchers', async () => {

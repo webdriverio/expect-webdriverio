@@ -66,6 +66,18 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
             })
         })
 
+        describe('toHaveCookie', () => {
+            it('should return Promise<void>', async () => {
+                expectTypeOf(expect(browser).toHaveCookie('lang')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).toHaveCookie('lang', 'en')).toEqualTypeOf<Promise<void>>()
+                expectTypeOf(expect(browser).not.toHaveCookie('tracking')).toEqualTypeOf<Promise<void>>()
+            })
+
+            it('should have ts errors when actual is not a Browser element', async () => {
+                expectTypeOf(expect(element).toHaveCookie).toBeNever()
+            })
+        })
+
         describe('toHaveLocalStorageItem', () => {
             it('should return Promise<void>', async () => {
                 expectTypeOf(expect(browser).toHaveLocalStorageItem('key')).toEqualTypeOf<Promise<void>>()

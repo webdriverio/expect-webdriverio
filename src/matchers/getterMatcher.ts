@@ -12,7 +12,8 @@ import { fillSingleExpectedForElementArray } from '../util/elementsUtil.js'
 import { withStringOptions } from '../util/expectedWithStringOptions.js'
 import { buildWdioAsymmetricMatchersWithOptions } from './asymmetrics/asymmetricsUtils.js'
 import { browserStringGetters, elementBooleanGetters, elementNumberGetters, elementStringGetters } from './descriptors.js'
-import type { ElementBooleanGetterDescriptor, ElementNumberGetterDescriptor, ElementStringGetterDescriptor } from './descriptors.js'
+import type { BrowserStringGetterDescriptor, ElementBooleanGetterDescriptor, ElementNumberGetterDescriptor, ElementStringGetterDescriptor } from './descriptors.js'
+import { MissingValue } from '../util/missingValue.js'
 import type { AssertionResult, CommandOptions, StringOptions, ToBeDisplayedOptions } from '../publicTypes/options.js'
 import type { ExpectedOf } from '../publicTypes/expectWebdriverIO.js'
 
@@ -174,63 +175,111 @@ export const elementArgumentGetterMatcher = (name: ArgumentFromCall) => named(na
     return matchStringGetter.call(this, name, received, argument, [argument, value], value ?? expect.anything(), options)
 })
 
-/**
- * A string matcher of the browser, a browsing context and the multi-remote browser, made from its descriptor in
- * `browserStringGetters`.
- */
-export const browserStringGetterMatcher = (name: keyof typeof browserStringGetters) => {
-    const { getter, expectation: defaultExpectation, ...descriptor } = browserStringGetters[name]
-    const showContextUrl = 'showContextUrl' in descriptor ? descriptor.showContextUrl : undefined
+type BrowserTarget = WebdriverIO.Browser | WebdriverIO.BrowsingContext
+type BrowserStringGetter = keyof typeof browserStringGetters
+/** The browser matchers whose getter argument is given in the call, e.g. `toHaveCookie(name, value)` */
+type BrowserArgumentFromCall = { [Name in BrowserStringGetter]: (typeof browserStringGetters)[Name] extends { argument: 'fromCall' } ? Name : never }[BrowserStringGetter]
 
-    return named(name, async function (
-        this: ExpectWebdriverIO.MatcherContext,
-        browser: WebdriverIO.Browser | WebdriverIO.BrowsingContext | WebdriverIO.MultiRemoteBrowser,
-        expectedValue: MultiRemoteValuesOrOneOf<ExpectedOf<'string'>>,
-        options: StringOptions = DEFAULT_OPTIONS
-    ): Promise<AssertionResult> {
-        const { expectation = defaultExpectation, verb = 'have', isNot, matcherName = name } = this
-
-        await options.beforeAssertion?.({
-            matcherName,
-            expectedValue,
-            options,
-        })
-
-        // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
-        const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
-
-        const { success: pass, actual, subject, expected, verdict, compared } = await waitUntil(
-            async () => {
-                return await executeBrowserCommand({
-                    browser,
-                    isNot,
-                    expectedValue: expectedWithOptions,
-                    compare: async (target, value: ExpectedOf<'string'> | undefined): Promise<CompareResult<string>> => {
-                        const actualValue = await (target[getter] as (this: unknown) => Promise<string>).call(target)
-                        return compareTextOrOneOf(actualValue, value, options)
-                    },
-                })
-            },
-            isNot,
-            { wait: options.wait, interval: options.interval }
-        )
-
-        const message = enhanceError(subject, withStringOptions(expected, verdict, options, actual), actual, { isNot, browserTargetType: 'window', showContextUrl, stringOptions: options, compared }, verb, expectation, '', options)
-        const result: AssertionResult = {
-            pass,
-            message: () => message
-        }
-
-        await options.afterAssertion?.({
-            matcherName,
-            expectedValue,
-            options,
-            result
-        })
-
-        return result
-    })
+/** The value of the browser or the browsing context, or a `MissingValue` for a value that does not exist */
+const readBrowserValue = async (target: BrowserTarget, { getter, value, missing }: BrowserStringGetterDescriptor, argument: string | undefined): Promise<string | MissingValue> => {
+    if (value === 'cookie') {
+        const cookies = await (target[getter] as (this: unknown, filter: { name?: string }) => Promise<Array<{ name: string, value: string }>>).call(target, { name: argument })
+        const cookie = cookies.find((item) => item.name === argument)
+        return cookie ? cookie.value : new MissingValue(missing ?? 'no value')
+    }
+    return (target[getter] as (this: unknown) => Promise<string>).call(target)
 }
+
+/**
+ * The body of the string matchers of the browser, a browsing context and the multi-remote browser, made from their
+ * descriptor in `browserStringGetters`. `hookValue` is the expected value that the user gave, for the hooks.
+ */
+async function matchBrowserStringGetter(
+    this: WdioMatcherContext,
+    name: BrowserStringGetter,
+    browser: BrowserTarget | WebdriverIO.MultiRemoteBrowser,
+    argument: string | undefined,
+    hookValue: unknown,
+    expectedValue: unknown,
+    options: StringOptions
+): Promise<AssertionResult> {
+    const descriptor: BrowserStringGetterDescriptor = browserStringGetters[name]
+    const { showContextUrl, argumentInMessage, target } = descriptor
+    const { expectation = descriptor.expectation, verb = 'have', isNot, matcherName = name } = this
+
+    await options.beforeAssertion?.({
+        matcherName,
+        expectedValue: hookValue,
+        options,
+    })
+
+    // Apply the string options to `expect.oneOf()`, also when nested in per-instance values
+    const expectedWithOptions = buildWdioAsymmetricMatchersWithOptions(expectedValue, options)
+
+    const { success: pass, actual, subject, expected, verdict, compared } = await waitUntil(
+        async () => {
+            return await executeBrowserCommand({
+                browser,
+                isNot,
+                expectedValue: expectedWithOptions,
+                compare: async (browserTarget, value: ExpectedOf<'string'> | undefined): Promise<CompareResult<string | MissingValue>> => {
+                    const actualValue = await readBrowserValue(browserTarget, descriptor, argument)
+                    // A missing value is compared as no value, and the message shows its text
+                    if (actualValue instanceof MissingValue) {
+                        return { success: compareString(null, value, options).success, actual: actualValue }
+                    }
+                    return compareString(actualValue, value, options) as CompareResult<string>
+                },
+            })
+        },
+        isNot,
+        { wait: options.wait, interval: options.interval }
+    )
+
+    const context = { isNot, ...(target !== 'browser' && { browserTargetType: 'window' as const }), showContextUrl, stringOptions: options, compared }
+    const message = enhanceError(subject, withStringOptions(expected, verdict, options, actual), actual, context, verb, expectation, argumentInMessage ? argument ?? '' : '', options)
+    const result: AssertionResult = {
+        pass,
+        message: () => message
+    }
+
+    await options.afterAssertion?.({
+        matcherName,
+        expectedValue: hookValue,
+        options,
+        result
+    })
+
+    return result
+}
+
+/**
+ * A string matcher of the browser, a browsing context and the multi-remote browser, with no getter argument:
+ * `toHaveTitle(expectedValue, options)`. The hooks get the expected value alone.
+ */
+export const browserStringGetterMatcher = (name: Exclude<BrowserStringGetter, BrowserArgumentFromCall>) => named(name, async function (
+    this: ExpectWebdriverIO.MatcherContext,
+    browser: BrowserTarget | WebdriverIO.MultiRemoteBrowser,
+    expectedValue: MultiRemoteValuesOrOneOf<ExpectedOf<'string'>>,
+    options: StringOptions = DEFAULT_OPTIONS
+): Promise<AssertionResult> {
+    return matchBrowserStringGetter.call(this as WdioMatcherContext, name, browser, undefined, expectedValue, expectedValue, options)
+})
+
+/**
+ * A string matcher of the browser whose getter argument is given in the call: `toHaveCookie(name, expectedValue, options)`.
+ * With no expected value, the value exists (`expect.anything()`). The hooks get `[name, expectedValue]`.
+ */
+export const browserArgumentGetterMatcher = (name: BrowserArgumentFromCall) => named(name, async function (
+    this: ExpectWebdriverIO.MatcherContext,
+    browser: BrowserTarget | WebdriverIO.MultiRemoteBrowser,
+    argument: string,
+    // Internal: the public types (src/publicTypes/) type the value of each matcher
+    value?: unknown,
+    options: StringOptions = DEFAULT_OPTIONS
+): Promise<AssertionResult> {
+    return matchBrowserStringGetter.call(this as WdioMatcherContext, name, browser, argument, [argument, value], value ?? expect.anything(), options)
+})
 
 /**
  * A boolean matcher of `$()`, `$$()` and multi-remote elements, made from its descriptor in `elementBooleanGetters`: the

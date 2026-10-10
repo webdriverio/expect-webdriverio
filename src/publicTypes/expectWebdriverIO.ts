@@ -281,6 +281,43 @@ declare global {
                 ): Promise<void>
             }
         >
+
+        /**
+         * `WebdriverIO.Browser` -> `getCookies({ name })`: the value of the cookie, compared as a string value
+         */
+        toHaveCookie: FnWhenBrowserOrMultiRemote<ActualT,
+            /**
+            * `WebdriverIO.Browser` or `WebdriverIO.BrowsingContext` -> `getCookies({ name })`
+            */
+            {
+                /**
+                 * Only check that the cookie exists.
+                 * Use `toHaveCookie(name, expect.anything(), options)` to check it with options.
+                 */
+                (name: string): Promise<void>
+                (
+                    name: string,
+                    expectedValue: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+                    options?: ExpectWebdriverIO.StringOptions
+                ): Promise<void>
+            },
+
+            /**
+            * `WebdriverIO.MultiRemoteBrowser` -> `getCookies({ name })` of each instance
+            */
+            {
+                /**
+                 * Only check that the cookie exists.
+                 * Use `toHaveCookie(name, expect.anything(), options)` to check it with options.
+                 */
+                (name: string): Promise<void>
+                (
+                    name: string,
+                    expectedValue: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+                    options?: ExpectWebdriverIO.StringOptions
+                ): Promise<void>
+            }
+        >
     }
 
     /**

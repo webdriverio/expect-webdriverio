@@ -24,6 +24,11 @@ export const mockGetter = (target: Record<string, unknown>, getter: string, valu
         if (getter === 'execute') {
             return runInFakePage(args, actual)
         }
+        // The cookies with the name of the filter (`getCookies({ name })`): none for `null`
+        if (getter === 'getCookies') {
+            const [{ name }] = args as [{ name: string }]
+            return actual === null ? [] : [{ name, value: actual }]
+        }
         // A style: the value of each CSS property, as WebdriverIO gives it (`getCSSProperty('color')`)
         if (getter === 'getCSSProperty') {
             const [property] = args as [string]

@@ -13,7 +13,10 @@ type GettersGive<Table extends Record<string, { getter: keyof Target, argument?:
     // With an `argument`, the getter takes one string and can give `null`, e.g. `getAttribute(name)` for a missing attribute.
     // A `property` can be any value
     [Name in keyof Table]: Target[Table[Name]['getter']] extends (Table[Name] extends { argument: unknown }
-        ? (argument: string) => Promise<(Table[Name] extends { value: 'property' } ? unknown : Value) | null>
+        ? Table[Name] extends { value: 'cookie' }
+            // A cookie getter takes a filter with the name, and gives the cookies
+            ? (filter: { name: string }) => Promise<Array<{ name: string, value: string }>>
+            : (argument: string) => Promise<(Table[Name] extends { value: 'property' } ? unknown : Value) | null>
         : () => Promise<Value>)
         ? Table[Name]
         : `${Name & string}: ${Table[Name]['getter'] & string} does not give the value type`
@@ -52,6 +55,16 @@ export type BrowserStringGetterDescriptor = {
     expectation: string
     /** `false`: the failure message does not show the URL of the browsing context, e.g. when the URL is the value */
     showContextUrl?: false
+    /** The argument of the getter, given in the call before the expected value: `toHaveCookie(name, value)`; no value: it exists */
+    argument?: 'fromCall'
+    /** The failure message names the argument, e.g. `lang` in `Expect browser to have cookie lang` */
+    argumentInMessage?: true
+    /** `cookie`: the getter gives the cookies with the name of the argument, and the value is the one of the cookie */
+    value?: 'cookie'
+    /** The text of a value that does not exist, in the failure message, e.g. `Received: no cookie` */
+    missing?: string
+    /** `browser`: the message names the browser, not its window, e.g. `Expect browser to have cookie lang` */
+    target?: 'browser'
 }
 
 /** The string matchers of `$()`, `$$()` and multi-remote elements */
@@ -75,6 +88,7 @@ elementStringGetters satisfies GettersGive<typeof elementStringGetters, Webdrive
 export const browserStringGetters = {
     toHaveTitle: { getter: 'getTitle', expectation: 'title' },
     toHaveUrl: { getter: 'getUrl', expectation: 'url', showContextUrl: false },
+    toHaveCookie: { getter: 'getCookies', expectation: 'cookie', argument: 'fromCall', argumentInMessage: true, value: 'cookie', missing: 'no cookie', target: 'browser' },
 } as const satisfies Record<string, BrowserStringGetterDescriptor>
 browserStringGetters satisfies GettersGive<typeof browserStringGetters, WebdriverIO.Browser, string>
 browserStringGetters satisfies GettersGive<typeof browserStringGetters, WebdriverIO.BrowsingContext, string>

@@ -317,6 +317,19 @@ await expect(browser).toHaveClipboardText('some clipboard text')
 await expect(browser).toHaveClipboardText(expect.stringContaining('clipboard text'))
 ```
 
+### toHaveCookie
+
+Checks if the browser has a cookie with this name, and with an optional value. The matcher reads [`getCookies({ name })`](https://webdriver.io/docs/api/browser/getCookies) and compares the value of the cookie as in `toHaveText`, with the [string options](#string-options). With no value, it checks that the cookie exists; with `.not`, that it does not exist. When the cookie does not exist, the failure message shows `Received: no cookie`. It works on a browser, a [browsing context](#browsing-contexts-tab-window-frame) and a multi-remote browser (one value for all the instances, or one per instance with `expect.multiRemote()`).
+
+##### Usage
+
+```js
+await expect(browser).toHaveCookie('session')
+await expect(browser).toHaveCookie('lang', 'en')
+await expect(browser).toHaveCookie('lang', expect.oneOf('en', 'fr'), { ignoreCase: true })
+await expect(browser).not.toHaveCookie('tracking')
+```
+
 ### toHaveLocalStorageItem
 
 Checks if browser has a specific item in localStorage with an optional value.

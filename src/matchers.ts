@@ -2,6 +2,7 @@
 
 // Browser matchers
 export { toHaveClipboardText } from './matchers/browser/toHaveClipboardText.js'
+export { toHaveCookie } from './matchers/browser/toHaveCookie.js'
 export { toHaveLocalStorageItem } from './matchers/browser/toHaveLocalStorageItem.js'
 export { toHaveTitle } from './matchers/browser/toHaveTitle.js'
 export { toHaveUrl } from './matchers/browser/toHaveUrl.js'
