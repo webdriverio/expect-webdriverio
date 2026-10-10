@@ -171,6 +171,11 @@ Every matcher can take several options that allows you to modify the assertion:
 | <code><var>afterAssertion</var></code> | function | function to be called after assertion is made containing assertion results, with the same expected value as `beforeAssertion` |
 | <code><var>message</var></code> | string | user message to prepend before assertion error |
 
+The hooks get `{ matcherName, expectedValue, options }`, and `afterAssertion` also gets `result` (`{ pass, message }`):
+
+- `matcherName` is the matcher that you called, also for an alias, e.g. `toBeChecked`, not `toBeSelected`.
+- `expectedValue` is the value that you gave, before the string options change it. The matchers with a name give the name and the value: `[name, value]` for `toHaveAttribute`, `toHaveElementProperty`, `toHaveCookie`, `toHaveLocalStorageItem` and `toHaveSessionStorageItem`, e.g. `['title', undefined]` for `toHaveAttribute('title')`. The boolean matchers (`toBeDisplayed`, `toExist`…) give no `expectedValue`.
+
 ##### String Options
 
 This option can be applied in addition to the command options when strings are being asserted.

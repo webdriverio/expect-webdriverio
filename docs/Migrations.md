@@ -10,7 +10,7 @@ v8.0.0 requires WebdriverIO v10: `webdriverio` `10.0.0` or higher. For Webdriver
 
 The types need TypeScript `6.0.3` or higher, the same as WebdriverIO v10.
 
-`@wdio/globals` and `@wdio/logger` are no longer peer dependencies: only `webdriverio` and `@wdio/types` are. You can remove them from your `package.json` if you do not use them yourself. `webdriverio` installs `@wdio/types`, so our types use the same copy as WebdriverIO. With Yarn Plug'n'Play, also add `@wdio/types` to your `package.json` (Yarn warns with `YN0002`). If you do not, the types of `SnapshotService` and `SoftAssertionService` become `any`. When `toHaveClipboardText` cannot set the clipboard permissions, its warning now goes to `console.warn`, not to the WebdriverIO logger.
+`@wdio/globals` and `@wdio/logger` are no longer peer dependencies: only `webdriverio` and `@wdio/types` are. You can remove them from your `package.json` if you do not use them yourself. `webdriverio` installs `@wdio/types`, so our types use the same copy as WebdriverIO. With Yarn Plug'n'Play, also add `@wdio/types` to your `package.json` (Yarn warns with `YN0002`). If you do not, the types of `SnapshotService` and `SoftAssertionService` become `any`. When `toHaveClipboardText` cannot set the clipboard permissions, its warning now goes to `console.warn`, with the prefix `expect-webdriverio:`, once per worker. Before, it went to the WebdriverIO logger at each try, also at each retry of the wait.
 
 ## Strict `$()`
 
@@ -363,6 +363,18 @@ v8.0.0 removes the APIs deprecated in v5.6.9 to v6.0.0, listed in [v5 to v6](#mi
 `ExpectWebdriverIO.NumberMatcher` is now a type, not an interface: `eq` alone, or a range with `gte`, `lte` or both. The types reject `{}` (the runtime throws `Invalid NumberMatcher`) and `eq` with `gte` or `lte` (the runtime used `eq` and ignored the range). To extend it, write `type MyMatcher = ExpectWebdriverIO.NumberMatcher & { ... }`, not `interface MyMatcher extends ExpectWebdriverIO.NumberMatcher`.
 
 The deprecation warnings are removed.
+
+## New in v8
+
+These changes need no migration:
+
+- New matchers: [`toBeStable`](API.md#tobestable), [`toHaveTagName`](API.md#tohavetagname), [`toBeRequired`](API.md#toberequired), [`toBeReadOnly`](API.md#tobereadonly), [`toHaveCookie`](API.md#tohavecookie), [`toHaveSessionStorageItem`](API.md#tohavesessionstorageitem) and [`toHaveWindowCount`](API.md#tohavewindowcount).
+- The browser matchers accept a WebdriverIO v10 browsing context: a tab, a window or a frame, see [Browsing contexts](API.md#browsing-contexts-tab-window-frame).
+- The number matchers accept an asymmetric matcher and `expect.oneOf()` with numbers, see [Number Matcher](API.md#number-matcher).
+- On `$$()`, `expect.arrayOf()` and `jasmine.arrayWithExactContents()` compare the list of the values, and on a multi-remote `$$()`, `expect.multiRemote()` takes a list matcher for each instance.
+- The network matchers take one expected value for each instance of a multi-remote `mock()`, see [Network Matchers](MultiRemote.md#network-matchers).
+- The names of the matchers are exported from `expect-webdriverio/api`, see [Matcher names for adapters and tools](Framework.md#matcher-names-for-adapters-and-tools).
+- The failure messages name the string options, and show the value that the matcher compared, see [String Options](API.md#string-options).
 
 ---
 

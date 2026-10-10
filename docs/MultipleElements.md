@@ -4,7 +4,7 @@ Matchers support an element array returned from `$$()`:
 
 - **Strict Index-based Matching**: If an array of expected values is provided, it must match the elements' count; each value is checked at its index.
 - If a single value is provided, every element is compared to it.
-- Asymmetric matchers (e.g., `expect.stringContaining`) work within expected value arrays.
+- Asymmetric matchers (e.g., `expect.stringContaining`) work within expected value arrays. A list matcher (`expect.arrayContaining()`, `expect.arrayOf()`, `jasmine.arrayWithExactContents()`) is not for one element: alone, it compares the values of all the elements; in an array of expected values, or with `some()`, it throws (except in `toHaveElementProperty`, because a property can be a list). See [Matching a subset of element values](API.md#matching-a-subset-of-element-values).
 - Assertion fails if no elements are found, except with `toBeElementsArrayOfSize` and existing matchers `toExist`, `toBeExisting` and `toBePresent`.
 - Options like `StringOptions` or `HTMLOptions` apply to the whole array; `NumberMatcher` behaves like any expected provided value.
 - The assertion passes only if **all** elements match.
@@ -48,17 +48,18 @@ Results of `toHaveText` on `$$('li')` for three lists:
 For more granular or explicit per-element validation, use a parameterized test of your framework.
 Example in Mocha:
 ```ts
-    describe('Element at index of `$$`', function () {
-        [ { expectedText: 'one', index: 0 },
-            { expectedText: 'two', index: 2 },
-            { expectedText: 'four', index: 4 },
-        ].forEach(function ( { expectedText, index } ) {
-            it(`Element at ${index} of `$$('label')` have text "${expectedText}"`, function () {
-                await expect($$('label')[index]).toHaveText(expectedText);
-            });
-        });
-    });
-```    
+describe('Element at index of $$()', () => {
+    [
+        { expectedText: 'one', index: 0 },
+        { expectedText: 'two', index: 2 },
+        { expectedText: 'four', index: 4 },
+    ].forEach(({ expectedText, index }) => {
+        it(`element ${index} of $$('label') has the text "${expectedText}"`, async () => {
+            await expect($$('label')[index]).toHaveText(expectedText)
+        })
+    })
+})
+```
 
 
 ## Example

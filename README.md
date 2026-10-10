@@ -8,7 +8,7 @@
 | v8 | v10 | ≥ 22.19.0 | In development | This README |
 | v7 | v9 (≥ 9.31.5) | ≥ 20 | Latest release, fixes only | [v7 README](https://github.com/webdriverio/expect-webdriverio/blob/v7/README.md) |
 
-###### [API](docs/API.md) | [Multiple Elements](docs/MultipleElements.md) | [Multi-remote](docs/MultiRemote.md) | [TypeScript / JS Autocomplete](docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](docs/CustomMatchers.md)
+###### [API](docs/API.md) | [Multiple Elements](docs/MultipleElements.md) | [Multi-remote](docs/MultiRemote.md) | [Frameworks](docs/Framework.md) | [TypeScript / JS Autocomplete](docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](docs/CustomMatchers.md) | [Migration from v7](docs/Migrations.md)
 
 > [WebdriverIO](https://webdriver.io/) assertion library inspired by [expect](https://www.npmjs.com/package/expect)
 
@@ -100,7 +100,3 @@ Error messages are informative out of the box and contain:
 ## What's Next?
 
 First of all, **feel free to raise an issue with your suggestions or help with PRs!**
-
-### Planned
-
-- Cookie matchers
