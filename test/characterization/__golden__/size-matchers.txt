@@ -2944,21 +2944,16 @@ message:
   Received      : {"height": 50, "width": 100}
 
 ### toHaveSize | $() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveSize with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x1
-message:
-  Expect $(`sel`) to have size
-  
-  Expected: ArrayContaining [{"height": 50, "width": 100}]
-  Received: {"height": 50, "width": 100}
+after: -
+getter calls: -
 
 ### toHaveSize | $() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveSize with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x1
+after: -
+getter calls: -
 
 ### toHaveSize | $() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
 result: fails
@@ -3085,21 +3080,16 @@ message:
   Received      : {"height": 50, "width": 100}
 
 ### toHaveSize | not awaited $() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveSize with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x1
-message:
-  Expect $(`sel`) to have size
-  
-  Expected: ArrayContaining [{"height": 50, "width": 100}]
-  Received: {"height": 50, "width": 100}
+after: -
+getter calls: -
 
 ### toHaveSize | not awaited $() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveSize with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x1
+after: -
+getter calls: -
 
 ### toHaveSize | not awaited $() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
 result: fails
@@ -3272,21 +3262,21 @@ message:
   Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
 
 ### toHaveSize | $$() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
-result: fails
-before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect $$(`sel`) to have size
-  
-  Expected: ArrayContaining [{"height": 50, "width": 100}]
-  Received: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
-
-### toHaveSize | $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
 result: passes
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [] x2
+
+### toHaveSize | $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: ArrayContaining [{"height": 50, "width": 100}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
 
 ### toHaveSize | $$() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
 result: fails
@@ -3454,18 +3444,13 @@ message:
   Expect $$(`sel`) to have size
   
   Expected: ArrayContaining [{"height": 50, "width": 100}]
-  Received: undefined
+  Received: []
 
 ### toHaveSize | empty $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
-result: fails
+result: passes
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=true
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
 getter calls: -
-message:
-  Expect $$(`sel`) not to have size
-  
-  Expected [not]: ArrayContaining [{"height": 50, "width": 100}]
-  Received      : undefined
 
 ### toHaveSize | empty $$() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
 result: fails
@@ -3772,21 +3757,21 @@ message:
   Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
 
 ### toHaveSize | not awaited $$() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
-result: fails
-before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect $$(`sel`) to have size
-  
-  Expected: ArrayContaining [{"height": 50, "width": 100}]
-  Received: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
-
-### toHaveSize | not awaited $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
 result: passes
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [] x2
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: ArrayContaining [{"height": 50, "width": 100}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
 
 ### toHaveSize | not awaited $$() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
 result: fails
@@ -4063,39 +4048,16 @@ message:
     }
 
 ### toHaveSize | multi-remote $() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
-result: fails
+result: throws MatcherUsageError: toHaveSize with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
-message:
-  Expect multi-remote<chrome, firefox>.$(`sel`) to have size
-  
-  - Expected  - 7
-  + Received  + 3
-  
-    Multi-remote values {
-  -   "chrome": ArrayContaining [
-  -     Object {
-  +   "chrome": Object {
-        "height": 50,
-        "width": 100,
-      },
-  -   ],
-  -   "firefox": ArrayContaining [
-  -     Object {
-  +   "firefox": Object {
-        "height": 50,
-  -       "width": 100,
-  +     "width": 150,
-      },
-  -   ],
-    }
+after: -
+getter calls: -
 
 ### toHaveSize | multi-remote $() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
-result: passes
+result: throws MatcherUsageError: toHaveSize with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x2
+after: -
+getter calls: -
 
 ### toHaveSize | multi-remote $() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
 result: passes
@@ -4377,21 +4339,21 @@ message:
   Received      : {"chrome": [{"height": 50, "width": 100}, {"height": 50, "width": 150}], "firefox": [{"height": 50, "width": 100}, {"height": 50, "width": 150}]}
 
 ### toHaveSize | multi-remote $$() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
-result: fails
-before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
-getter calls: [] x4
-message:
-  Expect multi-remote<chrome, firefox>.$$(`sel`) to have size
-  
-  Expected: {"chrome": ArrayContaining [{"height": 50, "width": 100}], "firefox": ArrayContaining [{"height": 50, "width": 100}]}
-  Received: {"chrome": [{"height": 50, "width": 100}, {"height": 50, "width": 150}], "firefox": [{"height": 50, "width": 100}, {"height": 50, "width": 150}]}
-
-### toHaveSize | multi-remote $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
 result: passes
 before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
-after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [] x4
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have size
+  
+  Expected [not]: {"chrome": ArrayContaining [{"height": 50, "width": 100}], "firefox": ArrayContaining [{"height": 50, "width": 100}]}
+  Received      : {"chrome": [{"height": 50, "width": 100}, {"height": 50, "width": 150}], "firefox": [{"height": 50, "width": 100}, {"height": 50, "width": 150}]}
 
 ### toHaveSize | multi-remote $$() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
 result: fails

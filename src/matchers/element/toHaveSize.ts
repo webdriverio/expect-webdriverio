@@ -106,6 +106,9 @@ export async function toHaveSize(
                 unresolvedElements: received,
                 expectedValues: expectedSize,
                 singleElementCompare: (element, size: Size | undefined) => condition(element, size),
+                // A list matcher compares the list of the sizes of `$$()`, and throws on one element
+                supportsArrayContaining: 'arrayOnly',
+                matcherName,
                 context: { isNot, iteration },
                 strictConfiguration: { allowObjectExpectedValue: true }
             })

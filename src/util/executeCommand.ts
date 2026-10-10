@@ -113,7 +113,7 @@ const arrayContainingStrategy = async <Actual, Expected>(
             abort: elements.length === 0 && !isStrictlyElementArray(elements),
         }
     }
-    // The value of one element is a string: a list matcher can never match it, and with `.not` it would always pass
+    // The value of one element is not a list (a string, a size): a list matcher can never match it, and with `.not` it would always pass
     if (supportsArrayContaining === 'arrayOnly') {
         throw new MatcherUsageError(`${matcherName} with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) requires an array of elements`)
     }

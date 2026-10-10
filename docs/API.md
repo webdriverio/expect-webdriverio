@@ -661,6 +661,8 @@ Checks if an element has specific `CSS` properties. By default, values must matc
 
 The actual value is the one of [`getCSSProperty()`](https://webdriver.io/docs/api/element/getCSSProperty), which WebdriverIO normalizes: lowercase and trimmed, a color as `rgba(r,g,b,a)` with no spaces (not `white`, `#fff` or `rgb(255, 255, 255)`), and only the first font of `font-family`. A value without unit is a number, compared as its text: `font-weight: '700'`, `opacity: '0'`. Write the expected value in this form, or use `ignoreCase` for the case. As in `toHaveText`, `replace` applies first, then `ignoreCase` and the position option.
 
+On `$$()`, give one style for all the elements, or an array with one style for each element. A list matcher (`expect.arrayContaining()`, `expect.arrayOf()`, `jasmine.arrayWithExactContents()`) throws an error, also with `.not`: the matcher reads only the CSS properties that the expected value names, and a list matcher names none.
+
 ##### Usage
 
 ```js
@@ -826,7 +828,7 @@ await expect(logo).toHaveHeight({ gte: 32, lte: 34 })
 
 ### toHaveSize
 
-Checks if element has a specific size, with [deep equality](#deep-equality). Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), `expect.oneOf()` with numbers, or an asymmetric matcher (`expect.closeTo(150.4, 0)`). The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only. An invalid field value throws, as in `toHaveWidth`, e.g. `{}`, `gte` greater than `lte`, a string, `NaN` or a list matcher. A range is converted only in the fields of the size, not inside an asymmetric matcher: for one field with a range, write `{ width: { gte: 30 }, height: expect.any(Number) }`.
+Checks if element has a specific size, with [deep equality](#deep-equality). Each field is a [number matcher](#number-matcher) value: a number, a `NumberMatcher` (`{ gte: 30 }`), `expect.oneOf()` with numbers, or an asymmetric matcher (`expect.closeTo(150.4, 0)`). The size can also be an asymmetric matcher, e.g. `expect.objectContaining()` to check one field only. An invalid field value throws, as in `toHaveWidth`, e.g. `{}`, `gte` greater than `lte`, a string, `NaN` or a list matcher. On `$$()`, a list matcher compares the list of the sizes, e.g. `expect.arrayContaining([{ width: 100, height: 50 }])`, as `toHaveText` compares the list of the texts; on one element, it throws. A range is converted only in the fields of the size, not inside an asymmetric matcher: for one field with a range, write `{ width: { gte: 30 }, height: expect.any(Number) }`.
 
 ##### Usage
 
