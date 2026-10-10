@@ -3,6 +3,7 @@ import { DEFAULT_OPTIONS } from '../../constants.js'
 import { expect } from 'expect'
 import type { CompareResult } from '../../util/executeCommand.js'
 import { executeBrowserCommand } from '../../util/executeBrowserCommand.js'
+import { MissingValue } from '../../util/missingValue.js'
 import { buildWdioAsymmetricMatchersWithOptions } from '../asymmetrics/asymmetricsUtils.js'
 import type { WdioMatcherContext } from '../../types.js'
 import { withStringOptions } from '../../util/expectedWithStringOptions.js'
@@ -47,7 +48,7 @@ export async function toHaveLocalStorageItem(
 
     await options.beforeAssertion?.({
         matcherName,
-        expectedValue: expectedValue ? [key, expectedValue] : key,
+        expectedValue: [key, expectedValue],
         options,
     })
 
@@ -87,7 +88,7 @@ export async function toHaveLocalStorageItem(
     }
     await options.afterAssertion?.({
         matcherName,
-        expectedValue: expectedValue ? [key, expectedValue] : key,
+        expectedValue: [key, expectedValue],
         options,
         result
     })
@@ -99,15 +100,15 @@ const compareStorageItem = async (
     key: string,
     expected: string | RegExp | AsymmetricMatcher<string> | ExpectWebdriverIO.PartialMatcherAnything | undefined,
     options: StringOptions
-): Promise<CompareResult<string | null>> => {
+): Promise<CompareResult<string | MissingValue>> => {
     const actual = await browser.execute(
         (storageKey) => {
             return localStorage.getItem(storageKey)
         }, key)
 
-    // no localStorage item found
+    // No item never matches, as a missing cookie, and is shown as `no item` in the message
     if (actual === null) {
-        return { actual, success: false }
+        return { actual: new MissingValue('no item'), success: false }
     }
 
     return compareTextOrOneOf(actual, expected, options)

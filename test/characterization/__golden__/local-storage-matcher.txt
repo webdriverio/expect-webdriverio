@@ -679,7 +679,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: "Hello"
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not "Hello" | no option
 result: passes
@@ -696,7 +696,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected (ignoringCase): "Hello"
-  Received:                null
+  Received:                no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not "Hello" | ignoreCase
 result: passes
@@ -713,7 +713,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: /^Hel/
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not /^Hel/ | no option
 result: passes
@@ -730,7 +730,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: /^Hel/i
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not /^Hel/ | ignoreCase
 result: passes
@@ -747,7 +747,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: oneOf<"x", "Hello">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not oneOf("x", "Hello") | no option
 result: passes
@@ -764,7 +764,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: ignoringCaseOneOf<"x", "Hello">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not oneOf("x", "Hello") | ignoreCase
 result: passes
@@ -781,7 +781,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not ["Hello", "World"] | no option
 result: fails
@@ -792,7 +792,7 @@ message:
   Expect browser not to have localStorage item key
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | ["Hello", "World"] | ignoreCase
 result: fails
@@ -803,7 +803,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not ["Hello", "World"] | ignoreCase
 result: fails
@@ -814,7 +814,7 @@ message:
   Expect browser not to have localStorage item key
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | arrayContaining(["Hello"]) | no option
 result: fails
@@ -825,7 +825,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: ArrayContaining ["Hello"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not arrayContaining(["Hello"]) | no option
 result: passes
@@ -842,7 +842,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: ArrayContaining ["Hello"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not arrayContaining(["Hello"]) | ignoreCase
 result: passes
@@ -859,7 +859,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -870,7 +870,7 @@ message:
   Expect browser not to have localStorage item key
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -881,7 +881,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -892,7 +892,7 @@ message:
   Expect browser not to have localStorage item key
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -903,7 +903,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -914,7 +914,7 @@ message:
   Expect browser not to have localStorage item key
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -925,7 +925,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -936,7 +936,7 @@ message:
   Expect browser not to have localStorage item key
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | anything() | no option
 result: fails
@@ -947,7 +947,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: Anything
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not anything() | no option
 result: passes
@@ -964,7 +964,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: Anything
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not anything() | ignoreCase
 result: passes
@@ -981,7 +981,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: StringNotContaining "x"
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not not.stringContaining("x") | no option
 result: passes
@@ -998,7 +998,7 @@ message:
   Expect browser to have localStorage item key
   
   Expected: StringNotContaining "x"
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not not.stringContaining("x") | ignoreCase
 result: passes
@@ -1687,7 +1687,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: "Hello"
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not "Hello" | no option
 result: passes
@@ -1704,7 +1704,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected (ignoringCase): "Hello"
-  Received:                null
+  Received:                no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not "Hello" | ignoreCase
 result: passes
@@ -1721,7 +1721,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: /^Hel/
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not /^Hel/ | no option
 result: passes
@@ -1738,7 +1738,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: /^Hel/i
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not /^Hel/ | ignoreCase
 result: passes
@@ -1755,7 +1755,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: oneOf<"x", "Hello">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not oneOf("x", "Hello") | no option
 result: passes
@@ -1772,7 +1772,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: ignoringCaseOneOf<"x", "Hello">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not oneOf("x", "Hello") | ignoreCase
 result: passes
@@ -1789,7 +1789,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not ["Hello", "World"] | no option
 result: fails
@@ -1800,7 +1800,7 @@ message:
   Expect browser's window (https://example.com/) not to have localStorage item key
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | ["Hello", "World"] | ignoreCase
 result: fails
@@ -1811,7 +1811,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not ["Hello", "World"] | ignoreCase
 result: fails
@@ -1822,7 +1822,7 @@ message:
   Expect browser's window (https://example.com/) not to have localStorage item key
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | arrayContaining(["Hello"]) | no option
 result: fails
@@ -1833,7 +1833,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: ArrayContaining ["Hello"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not arrayContaining(["Hello"]) | no option
 result: passes
@@ -1850,7 +1850,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: ArrayContaining ["Hello"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not arrayContaining(["Hello"]) | ignoreCase
 result: passes
@@ -1867,7 +1867,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -1878,7 +1878,7 @@ message:
   Expect browser's window (https://example.com/) not to have localStorage item key
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -1889,7 +1889,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -1900,7 +1900,7 @@ message:
   Expect browser's window (https://example.com/) not to have localStorage item key
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -1911,7 +1911,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -1922,7 +1922,7 @@ message:
   Expect browser's window (https://example.com/) not to have localStorage item key
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -1933,7 +1933,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -1944,7 +1944,7 @@ message:
   Expect browser's window (https://example.com/) not to have localStorage item key
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | anything() | no option
 result: fails
@@ -1955,7 +1955,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: Anything
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not anything() | no option
 result: passes
@@ -1972,7 +1972,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: Anything
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not anything() | ignoreCase
 result: passes
@@ -1989,7 +1989,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: StringNotContaining "x"
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not not.stringContaining("x") | no option
 result: passes
@@ -2006,7 +2006,7 @@ message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: StringNotContaining "x"
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not not.stringContaining("x") | ignoreCase
 result: passes
@@ -2695,7 +2695,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: "Hello"
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not "Hello" | no option
 result: passes
@@ -2712,7 +2712,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected (ignoringCase): "Hello"
-  Received:                null
+  Received:                no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not "Hello" | ignoreCase
 result: passes
@@ -2729,7 +2729,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: /^Hel/
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not /^Hel/ | no option
 result: passes
@@ -2746,7 +2746,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: /^Hel/i
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not /^Hel/ | ignoreCase
 result: passes
@@ -2763,7 +2763,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: oneOf<"x", "Hello">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not oneOf("x", "Hello") | no option
 result: passes
@@ -2780,7 +2780,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: ignoringCaseOneOf<"x", "Hello">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not oneOf("x", "Hello") | ignoreCase
 result: passes
@@ -2797,7 +2797,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not ["Hello", "World"] | no option
 result: fails
@@ -2808,7 +2808,7 @@ message:
   Expect browser's frame (https://example.com/) not to have localStorage item key
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | ["Hello", "World"] | ignoreCase
 result: fails
@@ -2819,7 +2819,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: ["Hello", "World"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not ["Hello", "World"] | ignoreCase
 result: fails
@@ -2830,7 +2830,7 @@ message:
   Expect browser's frame (https://example.com/) not to have localStorage item key
   
   Expected [not]: ["Hello", "World"]
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | arrayContaining(["Hello"]) | no option
 result: fails
@@ -2841,7 +2841,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: ArrayContaining ["Hello"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not arrayContaining(["Hello"]) | no option
 result: passes
@@ -2858,7 +2858,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: ArrayContaining ["Hello"]
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not arrayContaining(["Hello"]) | ignoreCase
 result: passes
@@ -2875,7 +2875,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | no option
 result: fails
@@ -2886,7 +2886,7 @@ message:
   Expect browser's frame (https://example.com/) not to have localStorage item key
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -2897,7 +2897,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: multiRemote<chrome: "Hello", firefox: "World">
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not multiRemote({ chrome: "Hello", firefox: "World" }) | ignoreCase
 result: fails
@@ -2908,7 +2908,7 @@ message:
   Expect browser's frame (https://example.com/) not to have localStorage item key
   
   Expected [not]: multiRemote<chrome: "Hello", firefox: "World">
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -2919,7 +2919,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not { chrome: "Hello", firefox: "World" } | no option
 result: fails
@@ -2930,7 +2930,7 @@ message:
   Expect browser's frame (https://example.com/) not to have localStorage item key
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -2941,7 +2941,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: {"chrome": "Hello", "firefox": "World"}
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not { chrome: "Hello", firefox: "World" } | ignoreCase
 result: fails
@@ -2952,7 +2952,7 @@ message:
   Expect browser's frame (https://example.com/) not to have localStorage item key
   
   Expected [not]: {"chrome": "Hello", "firefox": "World"}
-  Received      : null
+  Received      : no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | anything() | no option
 result: fails
@@ -2963,7 +2963,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: Anything
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not anything() | no option
 result: passes
@@ -2980,7 +2980,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: Anything
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not anything() | ignoreCase
 result: passes
@@ -2997,7 +2997,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: StringNotContaining "x"
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not not.stringContaining("x") | no option
 result: passes
@@ -3014,7 +3014,7 @@ message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: StringNotContaining "x"
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not not.stringContaining("x") | ignoreCase
 result: passes
@@ -4016,7 +4016,7 @@ message:
   
     Multi-remote values {
   -   "chrome": "Hello",
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": "Hello",
     }
 
@@ -4033,7 +4033,7 @@ message:
   
     Multi-remote values {
   -   "chrome": "Hello",
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": "Hello",
     }
 
@@ -4050,7 +4050,7 @@ message:
   
     Multi-remote values {
   -   "chrome": ignoringCase<"Hello">,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": ignoringCase<"Hello">,
     }
 
@@ -4067,7 +4067,7 @@ message:
   
     Multi-remote values {
   -   "chrome": ignoringCase<"Hello">,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": ignoringCase<"Hello">,
     }
 
@@ -4084,7 +4084,7 @@ message:
   
     Multi-remote values {
   -   "chrome": /^Hel/,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": /^Hel/,
     }
 
@@ -4101,7 +4101,7 @@ message:
   
     Multi-remote values {
   -   "chrome": /^Hel/,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": /^Hel/,
     }
 
@@ -4118,7 +4118,7 @@ message:
   
     Multi-remote values {
   -   "chrome": /^Hel/i,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": /^Hel/i,
     }
 
@@ -4135,7 +4135,7 @@ message:
   
     Multi-remote values {
   -   "chrome": /^Hel/i,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": /^Hel/i,
     }
 
@@ -4152,7 +4152,7 @@ message:
   
     Multi-remote values {
   -   "chrome": oneOf<"x", "Hello">,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": oneOf<"x", "Hello">,
     }
 
@@ -4169,7 +4169,7 @@ message:
   
     Multi-remote values {
   -   "chrome": oneOf<"x", "Hello">,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": oneOf<"x", "Hello">,
     }
 
@@ -4186,7 +4186,7 @@ message:
   
     Multi-remote values {
   -   "chrome": ignoringCaseOneOf<"x", "Hello">,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": ignoringCaseOneOf<"x", "Hello">,
     }
 
@@ -4203,7 +4203,7 @@ message:
   
     Multi-remote values {
   -   "chrome": ignoringCaseOneOf<"x", "Hello">,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": ignoringCaseOneOf<"x", "Hello">,
     }
 
@@ -4227,7 +4227,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no item,
   +   "firefox": "Hello",
     }
 
@@ -4251,7 +4251,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no item,
   +   "firefox": "Hello",
     }
 
@@ -4275,7 +4275,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no item,
   +   "firefox": "Hello",
     }
 
@@ -4299,7 +4299,7 @@ message:
   -     "Hello",
   -     "World",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no item,
   +   "firefox": "Hello",
     }
 
@@ -4321,7 +4321,7 @@ message:
   -   "firefox": ArrayContaining [
   -     "Hello",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no item,
   +   "firefox": "Hello",
     }
 
@@ -4349,7 +4349,7 @@ message:
   -   "firefox": ArrayContaining [
   -     "Hello",
   -   ],
-  +   "chrome": null,
+  +   "chrome": no item,
   +   "firefox": "Hello", (compared as "hello")
     }
 
@@ -4373,7 +4373,7 @@ message:
     Multi-remote values {
   -   "chrome": "Hello",
   -   "firefox": "World",
-  +   "chrome": null,
+  +   "chrome": no item,
   +   "firefox": "Hello",
     }
 
@@ -4397,7 +4397,7 @@ message:
     Multi-remote values {
   -   "chrome": ignoringCase<"Hello">,
   -   "firefox": ignoringCase<"World">,
-  +   "chrome": null,
+  +   "chrome": no item,
   +   "firefox": "Hello", (compared as "hello")
     }
 
@@ -4421,7 +4421,7 @@ message:
     Multi-remote values {
   -   "chrome": "Hello",
   -   "firefox": "World",
-  +   "chrome": null,
+  +   "chrome": no item,
   +   "firefox": "Hello",
     }
 
@@ -4445,7 +4445,7 @@ message:
     Multi-remote values {
   -   "chrome": ignoringCase<"Hello">,
   -   "firefox": ignoringCase<"World">,
-  +   "chrome": null,
+  +   "chrome": no item,
   +   "firefox": "Hello", (compared as "hello")
     }
 
@@ -4468,7 +4468,7 @@ message:
   
     Multi-remote values {
   -   "chrome": Anything,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": Anything,
     }
 
@@ -4485,7 +4485,7 @@ message:
   
     Multi-remote values {
   -   "chrome": Anything,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": Anything,
     }
 
@@ -4502,7 +4502,7 @@ message:
   
     Multi-remote values {
   -   "chrome": Anything,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": Anything,
     }
 
@@ -4519,7 +4519,7 @@ message:
   
     Multi-remote values {
   -   "chrome": Anything,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": Anything,
     }
 
@@ -4536,7 +4536,7 @@ message:
   
     Multi-remote values {
   -   "chrome": StringNotContaining "x",
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": StringNotContaining "x",
     }
 
@@ -4553,7 +4553,7 @@ message:
   
     Multi-remote values {
   -   "chrome": StringNotContaining "x",
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": StringNotContaining "x",
     }
 
@@ -4570,7 +4570,7 @@ message:
   
     Multi-remote values {
   -   "chrome": StringNotContaining "x",
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": StringNotContaining "x",
     }
 
@@ -4587,20 +4587,20 @@ message:
   
     Multi-remote values {
   -   "chrome": StringNotContaining "x",
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": StringNotContaining "x",
     }
 
 ### toHaveLocalStorageItem("key") | browser | values Hello, World | no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 
 ### toHaveLocalStorageItem("key") | browser | values Hello, World | .not no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 message:
   Expect browser not to have localStorage item key
@@ -4610,14 +4610,14 @@ message:
 
 ### toHaveLocalStorageItem("key") | browser | values "  hello  ", Hello | no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 
 ### toHaveLocalStorageItem("key") | browser | values "  hello  ", Hello | .not no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 message:
   Expect browser not to have localStorage item key
@@ -4627,31 +4627,31 @@ message:
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=false
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=false
 getter calls: [[Function anonymous], "key"] x1
 message:
   Expect browser to have localStorage item key
   
   Expected: Anything
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | browser | values null, Hello | .not no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=false
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=false
 getter calls: [[Function anonymous], "key"] x1
 
 ### toHaveLocalStorageItem("key") | window | values Hello, World | no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 
 ### toHaveLocalStorageItem("key") | window | values Hello, World | .not no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 message:
   Expect browser's window (https://example.com/) not to have localStorage item key
@@ -4661,14 +4661,14 @@ message:
 
 ### toHaveLocalStorageItem("key") | window | values "  hello  ", Hello | no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 
 ### toHaveLocalStorageItem("key") | window | values "  hello  ", Hello | .not no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 message:
   Expect browser's window (https://example.com/) not to have localStorage item key
@@ -4678,31 +4678,31 @@ message:
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=false
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=false
 getter calls: [[Function anonymous], "key"] x1
 message:
   Expect browser's window (https://example.com/) to have localStorage item key
   
   Expected: Anything
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | window | values null, Hello | .not no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=false
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=false
 getter calls: [[Function anonymous], "key"] x1
 
 ### toHaveLocalStorageItem("key") | frame | values Hello, World | no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 
 ### toHaveLocalStorageItem("key") | frame | values Hello, World | .not no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 message:
   Expect browser's frame (https://example.com/) not to have localStorage item key
@@ -4712,14 +4712,14 @@ message:
 
 ### toHaveLocalStorageItem("key") | frame | values "  hello  ", Hello | no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 
 ### toHaveLocalStorageItem("key") | frame | values "  hello  ", Hello | .not no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x1
 message:
   Expect browser's frame (https://example.com/) not to have localStorage item key
@@ -4729,31 +4729,31 @@ message:
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=false
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=false
 getter calls: [[Function anonymous], "key"] x1
 message:
   Expect browser's frame (https://example.com/) to have localStorage item key
   
   Expected: Anything
-  Received: null
+  Received: no item
 
 ### toHaveLocalStorageItem("key") | frame | values null, Hello | .not no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=false
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=false
 getter calls: [[Function anonymous], "key"] x1
 
 ### toHaveLocalStorageItem("key") | multi-remote browser | values Hello, World | no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x2
 
 ### toHaveLocalStorageItem("key") | multi-remote browser | values Hello, World | .not no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x2
 message:
   Expect multi-remote<chrome, firefox> not to have localStorage item key
@@ -4763,14 +4763,14 @@ message:
 
 ### toHaveLocalStorageItem("key") | multi-remote browser | values "  hello  ", Hello | no value | no option
 result: passes
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x2
 
 ### toHaveLocalStorageItem("key") | multi-remote browser | values "  hello  ", Hello | .not no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x2
 message:
   Expect multi-remote<chrome, firefox> not to have localStorage item key
@@ -4780,8 +4780,8 @@ message:
 
 ### toHaveLocalStorageItem("key") | multi-remote browser | values null, Hello | no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=false
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=false
 getter calls: [[Function anonymous], "key"] x2
 message:
   Expect multi-remote<chrome, firefox> to have localStorage item key
@@ -4791,14 +4791,14 @@ message:
   
     Multi-remote values {
   -   "chrome": Anything,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": Anything,
     }
 
 ### toHaveLocalStorageItem("key") | multi-remote browser | values null, Hello | .not no value | no option
 result: fails
-before: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait]
-after: toHaveLocalStorageItem expected="key" options=[afterAssertion,beforeAssertion,wait] pass=true
+before: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveLocalStorageItem expected=["key", undefined] options=[afterAssertion,beforeAssertion,wait] pass=true
 getter calls: [[Function anonymous], "key"] x2
 message:
   Expect multi-remote<chrome, firefox> not to have localStorage item key
@@ -4808,6 +4808,6 @@ message:
   
     Multi-remote values {
   -   "chrome": Anything,
-  +   "chrome": null,
+  +   "chrome": no item,
       "firefox": Anything,
     }

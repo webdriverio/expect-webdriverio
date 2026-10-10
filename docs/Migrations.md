@@ -43,6 +43,7 @@ The hooks also get no internal argument of the matcher anymore:
 | --------- | ---------------------- | --- |
 | `toHaveValue('Hello')` | `['value', 'Hello']` | `'Hello'`, as `toHaveId('main')` gives `'main'` |
 | `toHaveElementProperty('checked')` | `['checked', Anything]` | `['checked', undefined]`, as `toHaveAttribute('checked')` |
+| `toHaveLocalStorageItem('key')` | `'key'` | `['key', undefined]`, as `toHaveAttribute('key')` |
 
 ## `toHaveText` on multiple elements
 
@@ -193,6 +194,10 @@ With a string option, each value names it, as for a `$$()` with elements. Before
 + Expected: [ignoringCase<"Coffee">]
 + Received: undefined
 ```
+
+## A missing localStorage item
+
+When the item does not exist, the failure message of `toHaveLocalStorageItem` shows `Received: no item`, not `Received: null`. The result does not change: a missing item never matches, also not a matcher that accepts no value such as `expect.not.stringContaining()`.
 
 ## Other failure messages
 

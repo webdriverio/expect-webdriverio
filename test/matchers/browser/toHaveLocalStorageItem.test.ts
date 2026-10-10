@@ -101,7 +101,7 @@ Received      : "someLocalStorageValue"`
 Expect browser to have localStorage item nonExistentKey
 
 Expected: "someValue"
-Received: null`
+Received: no item`
             )
         })
 
@@ -127,8 +127,27 @@ Received: null`
 Expect browser to have localStorage item existingKey
 
 Expected: Anything
-Received: null`
+Received: no item`
             )
+        })
+
+        it('gives the hooks the key and no value, as the user wrote it', async () => {
+            vi.mocked(browser.execute).mockResolvedValue('anyValue')
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+
+            await thisContext.toHaveLocalStorageItem(browser, 'existingKey', undefined as never, { beforeAssertion, afterAssertion })
+
+            expect(beforeAssertion).toHaveBeenCalledWith(expect.objectContaining({ expectedValue: ['existingKey', undefined] }))
+            expect(afterAssertion).toHaveBeenCalledWith(expect.objectContaining({ expectedValue: ['existingKey', undefined] }))
+        })
+
+        it('never matches a missing item, as a missing cookie', async () => {
+            vi.mocked(browser.execute).mockResolvedValue(null)
+
+            // Also not a matcher that accepts no value
+            expect((await thisContext.toHaveLocalStorageItem(browser, 'missingKey', wdioExpect.not.stringContaining('x'), { wait: 0 })).pass).toBe(false)
+            expect((await thisContext.toHaveLocalStorageItem(browser, 'missingKey', wdioExpect.anything(), { wait: 0 })).pass).toBe(false)
         })
 
         it('passes when only checking key existence with anything() and options', async () => {

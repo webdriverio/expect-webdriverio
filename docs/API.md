@@ -332,7 +332,7 @@ await expect(browser).not.toHaveCookie('tracking')
 
 ### toHaveLocalStorageItem
 
-Checks if browser has a specific item in localStorage with an optional value.
+Checks if browser has a specific item in localStorage with an optional value. With no value, it checks that the item exists; with `.not`, that it does not exist. A missing item never matches, also not a matcher that accepts no value, and the failure message shows `Received: no item`.
 
 ##### Usage
 
