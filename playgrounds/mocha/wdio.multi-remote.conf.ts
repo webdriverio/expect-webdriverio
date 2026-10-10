@@ -2,6 +2,8 @@ import { join } from 'node:path'
 import type { VisualServiceOptions } from '@wdio/visual-service'
 import { setDefaultOptions } from 'expect-webdriverio'
 
+const MAX_INSTANCES = 10
+
 export const config: WebdriverIO.MultiRemoteConfig = {
     //
     // ====================
@@ -24,7 +26,9 @@ export const config: WebdriverIO.MultiRemoteConfig = {
         //'./test/multi-remote-specs/**/wdio-matchers.test.ts'
     ],
 
-    maxInstances: 10,
+    // Each worker starts 2 browsers and their drivers: on the Windows runner of CI (4 cores), half the workers, else the
+    // browsers can fail to start (`ECONNREFUSED` on `POST /session`, Firefox without BiDi)
+    maxInstances: process.env.CI && process.platform === 'win32' ? MAX_INSTANCES / 2 : MAX_INSTANCES,
 
     //
     // ============
