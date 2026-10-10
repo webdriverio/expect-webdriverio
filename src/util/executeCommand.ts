@@ -86,11 +86,28 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
         throw new MatcherUsageError(`${matcherName} with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) cannot be used with some(): some() checks each element alone, and the value of one element is not a list. Without some(), the list matcher compares the values of all the elements`)
     }
 
+    // In an array, each expected value is for one element, and its value is not a list: a list matcher there can never match
+    if (supportsArrayContaining === 'arrayOnly' && hasListMatcherInArray(expectedValues, strictConfiguration.allowObjectExpectedValue)) {
+        throw new MatcherUsageError(listMatcherForOneElementError(matcherName))
+    }
+
     if (supportsArrayContaining && !isSome && isListMatcher(expectedValues)) {
         return arrayContainingStrategy(unresolvedElements, expectedValues, singleElementCompare, { isNot, iteration, matcherName }, supportsArrayContaining)
     }
 
-    return multipleElementResultsStrategy(actualReceived, expectedValues as MaybeArrayOrMultiRemoteValues<Expected> | undefined, singleElementCompare, { isNot, isSome, iteration }, strictConfiguration)
+    return multipleElementResultsStrategy(actualReceived, expectedValues as MaybeArrayOrMultiRemoteValues<Expected> | undefined, singleElementCompare, { isNot, isSome, iteration, matcherName }, { ...strictConfiguration, listMatcherNeedsArray: supportsArrayContaining === 'arrayOnly' })
+}
+
+const listMatcherForOneElementError = (matcherName: string) =>
+    `${matcherName} with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) as the expected value of one element: the value of one element is not a list. Give the list matcher alone to compare the values of all the elements`
+
+/** A list matcher in an array of expected values, also in the array of an instance (`expect.multiRemote()`) */
+const hasListMatcherInArray = (expected: unknown, allowObjectExpectedValue = false): boolean => {
+    if (Array.isArray(expected)) {
+        return expected.some(isListMatcher)
+    }
+    const perInstanceValues = getPerInstanceValues(expected, { allowObjectExpectedValue })
+    return perInstanceValues !== undefined && Object.values(perInstanceValues).some((value) => Array.isArray(value) && value.some(isListMatcher))
 }
 
 /** A list matcher in the expected values: the value itself, an item of an array, or the value of an instance */
@@ -220,8 +237,9 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     unresolvedElements: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements | WdioMultiRemoteElements | unknown,
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
     singleElementCompare: SingleElementCompare<Actual, Expected>,
-    { isNot, isSome, iteration }: { isNot: boolean; isSome: boolean; iteration: number },
-    { allowEmptyElements = false, allowObjectExpectedValue = false } = {}
+    { isNot, isSome, iteration, matcherName = 'This matcher' }: { isNot: boolean; isSome: boolean; iteration: number; matcherName?: string },
+    /** listMatcherNeedsArray: the value of one element is not a list, e.g. a text, so a list matcher for one element throws */
+    { allowEmptyElements = false, allowObjectExpectedValue = false, listMatcherNeedsArray = false } = {}
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const { selector, other, multiRemoteSelector } = await awaitElementOrArray(unresolvedElements)
 
@@ -271,8 +289,8 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             multiRemoteSelector ?? selector as WebdriverIO.MultiRemoteElementArray,
             expectedValues,
             singleElementCompare,
-            { isNot, isSome },
-            { allowObjectExpectedValue }
+            { isNot, isSome, matcherName },
+            { allowObjectExpectedValue, listMatcherNeedsArray }
         )
     }
 
@@ -344,14 +362,18 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     multiRemoteSelector: WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray,
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
     singleElementCompare: SingleElementCompare<Actual, Expected>,
-    { isNot, isSome }: { isNot: boolean; isSome: boolean },
-    { allowObjectExpectedValue }: { allowObjectExpectedValue: boolean }
+    { isNot, isSome, matcherName }: { isNot: boolean; isSome: boolean; matcherName: string },
+    { allowObjectExpectedValue, listMatcherNeedsArray }: { allowObjectExpectedValue: boolean, listMatcherNeedsArray: boolean }
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const isSingleElement = isMultiRemoteElement(multiRemoteSelector)
     const instances = isSingleElement ? multiRemoteSelector.instances : multiRemoteSelector.parent.instances
-    const elementsPerInstance = getElementsPerInstance(isSingleElement ? [multiRemoteSelector] : multiRemoteSelector, instances)
 
     const perInstanceValues = getPerInstanceValues(expectedValues, { allowObjectExpectedValue })
+    // On `$()`, the value of an instance is for one element, and the value of one element is not a list
+    if (isSingleElement && listMatcherNeedsArray && perInstanceValues && Object.values(perInstanceValues).some(isListMatcher)) {
+        throw new MatcherUsageError(listMatcherForOneElementError(matcherName))
+    }
+    const elementsPerInstance = getElementsPerInstance(isSingleElement ? [multiRemoteSelector] : multiRemoteSelector, instances)
     // A single expected value is shared by every instance
     const expectedPerInstance: MultiRemoteValues<unknown> = perInstanceValues ?? Object.fromEntries(instances.map((name) => [name, expectedValues]))
     const instanceNamesMismatch = !!perInstanceValues && !hasSameInstanceNames(perInstanceValues, instances)
