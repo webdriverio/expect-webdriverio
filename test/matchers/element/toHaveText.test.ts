@@ -1326,7 +1326,6 @@ Received      : ["webdriverio", "webdriverio", undefined]`
                 vi.mocked((elements)[0].getText).mockResolvedValue('WebdriverIO')
                 vi.mocked((elements)[1].getText).mockResolvedValue('Get Started')
 
-                // @ts-expect-error -- TODO fix typing soon!
                 const result = await thisContext.toHaveText(elements, [wdioExpect.oneOf('WebdriverIO', 'Get Started'), wdioExpect.oneOf('WebdriverIO', 'Get Started')], { wait: 0 })
 
                 expect(result.pass).toBe(true)
