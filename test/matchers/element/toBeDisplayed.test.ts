@@ -682,25 +682,36 @@ Received: "not displayed"`)
         })
     })
 
-    test('refresh elements from empty to 2', async () => {
-        const browser = browserFactory()
-        const emptyElements = await chainableElementArrayFactory('sel0', 0, browser)
-
-        const elements2 = await chainableElementArrayFactory('sel0', 2, browser)
-        elements2.forEach((element) => {
-            vi.mocked(element.isDisplayed).mockResolvedValue(true)
+    describe('when refreshing the elements', () => {
+        afterEach(() => {
+            vi.useRealTimers()
         })
 
-        vi.mocked(browser.$$)
-            .mockResolvedValueOnce(emptyElements)
-            .mockResolvedValueOnce(emptyElements)
-            .mockResolvedValueOnce(elements2)
+        test('refresh elements from empty to 2', async () => {
+            const browser = browserFactory()
+            const emptyElements = await chainableElementArrayFactory('sel0', 0, browser)
 
-        const result = await thisContext.toBeDisplayed(emptyElements)
-        expect(browser.$$).toHaveBeenCalledWith('sel0')
-        expect(refreshElementArray).toHaveBeenCalled()
+            const elements2 = await chainableElementArrayFactory('sel0', 2, browser)
+            elements2.forEach((element) => {
+                vi.mocked(element.isDisplayed).mockResolvedValue(true)
+            })
 
-        expect(result.pass).toBe(true)
+            vi.mocked(browser.$$)
+                .mockResolvedValueOnce(emptyElements)
+                .mockResolvedValueOnce(emptyElements)
+                .mockResolvedValueOnce(elements2)
+
+            // Fake timers: the default wait does not end early on a slow runner. The mock lists resolve with a timer: start
+            // the fake timers once they are awaited
+            vi.useFakeTimers()
+            const assertion = thisContext.toBeDisplayed(emptyElements)
+            await vi.runAllTimersAsync()
+            const result = await assertion
+            expect(browser.$$).toHaveBeenCalledWith('sel0')
+            expect(refreshElementArray).toHaveBeenCalled()
+
+            expect(result.pass).toBe(true)
+        })
     })
 
     describe('given multi-remote elements', () => {
