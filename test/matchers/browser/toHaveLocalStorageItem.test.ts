@@ -142,6 +142,17 @@ Received: no item`
             expect(afterAssertion).toHaveBeenCalledWith(expect.objectContaining({ expectedValue: ['existingKey', undefined] }))
         })
 
+        it('gives the hooks an empty string value, as the user wrote it', async () => {
+            vi.mocked(browser.execute).mockResolvedValue('')
+            const beforeAssertion = vi.fn()
+            const afterAssertion = vi.fn()
+
+            await thisContext.toHaveLocalStorageItem(browser, 'emptyKey', '', { beforeAssertion, afterAssertion })
+
+            expect(beforeAssertion).toHaveBeenCalledWith(expect.objectContaining({ expectedValue: ['emptyKey', ''] }))
+            expect(afterAssertion).toHaveBeenCalledWith(expect.objectContaining({ expectedValue: ['emptyKey', ''] }))
+        })
+
         it('never matches a missing item, as a missing cookie', async () => {
             vi.mocked(browser.execute).mockResolvedValue(null)
 

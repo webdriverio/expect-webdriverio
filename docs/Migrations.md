@@ -44,6 +44,7 @@ The hooks also get no internal argument of the matcher anymore:
 | `toHaveValue('Hello')` | `['value', 'Hello']` | `'Hello'`, as `toHaveId('main')` gives `'main'` |
 | `toHaveElementProperty('checked')` | `['checked', Anything]` | `['checked', undefined]`, as `toHaveAttribute('checked')` |
 | `toHaveLocalStorageItem('key')` | `'key'` | `['key', undefined]`, as `toHaveAttribute('key')` |
+| `toHaveLocalStorageItem('key', '')` | `'key'` | `['key', '']` |
 
 ## `toHaveText` on multiple elements
 
