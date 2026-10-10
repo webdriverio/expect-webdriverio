@@ -1,6 +1,7 @@
 import { DEFAULT_OPTIONS, DEFAULT_OPTIONS_TO_BE_DISPLAYED } from '../constants.js'
 import { expect } from 'expect'
-import { compareText, compareTextOrOneOf, enhanceError, executeCommandBe, isAsymmetricMatcher, waitUntil } from '../utils.js'
+import { compareObject, compareText, compareTextOrOneOf, enhanceError, executeCommandBe, isAsymmetricMatcher, waitUntil } from '../utils.js'
+import { validateNumberMatcherArray, withNumberMatcherFields, type NumberMatcher } from '../util/numberOptionsUtil.js'
 import { equals } from '../jasmineUtils.js'
 import { isOneOfMatcher } from './asymmetrics/oneOf.js'
 import type { MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements, WdioMatcherContext, WdioMultiRemoteElements } from '../types.js'
@@ -10,8 +11,8 @@ import { executeBrowserCommand } from '../util/executeBrowserCommand.js'
 import { fillSingleExpectedForElementArray } from '../util/elementsUtil.js'
 import { withStringOptions } from '../util/expectedWithStringOptions.js'
 import { buildWdioAsymmetricMatchersWithOptions } from './asymmetrics/asymmetricsUtils.js'
-import { browserStringGetters, elementBooleanGetters, elementStringGetters } from './descriptors.js'
-import type { ElementBooleanGetterDescriptor, ElementStringGetterDescriptor } from './descriptors.js'
+import { browserStringGetters, elementBooleanGetters, elementNumberGetters, elementStringGetters } from './descriptors.js'
+import type { ElementBooleanGetterDescriptor, ElementNumberGetterDescriptor, ElementStringGetterDescriptor } from './descriptors.js'
 import type { AssertionResult, CommandOptions, StringOptions, ToBeDisplayedOptions } from '../publicTypes/options.js'
 import type { ExpectedOf } from '../publicTypes/expectWebdriverIO.js'
 
@@ -274,6 +275,72 @@ export const elementBooleanGetterMatcher = <Options extends CommandOptions>(name
 
         await options.afterAssertion?.({
             matcherName,
+            options,
+            result
+        })
+
+        return result
+    })
+}
+
+/**
+ * A number matcher of `$()`, `$$()` and multi-remote elements, made from its descriptor in `elementNumberGetters`: a number
+ * (`toHaveWidth` is `getSize('width')`), compared with a `NumberMatcher`, or a size (`getSize()`), with a `NumberMatcher`
+ * in each field and deep equality. The expected value is checked first: a wrong one throws, also with `.not`.
+ */
+export const elementNumberGetterMatcher = (name: keyof typeof elementNumberGetters) => {
+    const descriptor: ElementNumberGetterDescriptor = elementNumberGetters[name]
+    const { getter, argument } = descriptor
+    const isSize = descriptor.value === 'size'
+
+    return named(name, async function (
+        this: WdioMatcherContext,
+        received: MaybeSomeWdioElementOrArrayMaybePromiseOrMultiRemoteElements,
+        // Internal: the public types (src/publicTypes/) type the value of each matcher
+        expectedValue: unknown,
+        options: CommandOptions = DEFAULT_OPTIONS
+    ): Promise<AssertionResult> {
+        const { expectation = descriptor.expectation, verb = 'have', isNot, matcherName = name } = this
+
+        await options.beforeAssertion?.({
+            matcherName,
+            expectedValue,
+            options,
+        })
+
+        const expectedValues = isSize ? withNumberMatcherFields(expectedValue) : validateNumberMatcherArray(expectedValue as Parameters<typeof validateNumberMatcherArray>[0])
+
+        const { success: pass, actual, subject, context: { isSome, matchingIndexes } = {}, expected } = await waitUntil(
+            async (iteration) => {
+                return await executeCommandWithStrategy({
+                    unresolvedElements: received,
+                    expectedValues,
+                    singleElementCompare: async (element, value: unknown): Promise<CompareResult<unknown>> => {
+                        const read = element[getter] as ReadValue
+                        const actualValue = await (argument ? read.call(element, argument.fixed) : read.call(element))
+                        return isSize
+                            ? compareObject(actualValue, value)
+                            : { success: (value as NumberMatcher | undefined)?.asymmetricMatch(actualValue as number) ?? false, actual: actualValue }
+                    },
+                    // A size: a list matcher compares the list of the sizes of `$$()` and throws on one element, and a plain
+                    // object is a size, not per-instance values
+                    ...(isSize && { supportsArrayContaining: 'arrayOnly' as const, matcherName, strictConfiguration: { allowObjectExpectedValue: true } }),
+                    context: { isNot, iteration },
+                })
+            },
+            isNot,
+            { wait: options.wait, interval: options.interval }
+        )
+
+        const message = enhanceError(subject, expected ?? fillSingleExpectedForElementArray(subject, expectedValues), actual, { isNot, isSome, matchingIndexes }, verb, expectation, '', options)
+        const result: AssertionResult = {
+            pass,
+            message: (): string => message
+        }
+
+        await options.afterAssertion?.({
+            matcherName,
+            expectedValue,
             options,
             result
         })

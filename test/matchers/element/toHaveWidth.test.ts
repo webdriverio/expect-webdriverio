@@ -292,7 +292,7 @@ Expect $$(\`sel\`) to have width
             { name: '$()', subject: () => createMultiRemoteElementMock(browsers(), 'sel') },
             { name: '$$()', subject: () => createMultiRemoteElementArrayMock(browsers(), 'sel', 2) },
         ])('rejects a plain object, per-instance values require expect.multiRemote(), on $name', async ({ subject }) => {
-            // @ts-expect-error a plain object is a NumberMatcher, not per-instance values
+            // A plain object is a NumberMatcher, not per-instance values: the public types reject it (test-types/)
             await expect(thisContext.toHaveWidth(subject(), { chrome: { gte: 1 }, firefox: { gte: 1 } }, { wait: 0 })).rejects.toThrow('Invalid NumberMatcher')
         })
 
@@ -339,7 +339,8 @@ Expect multi-remote<chrome, firefox>.$$(\`sel\`) to have width
         })
 
         test('fails expect.multiRemote() on a non multi-remote element', async () => {
-            // @ts-expect-error per-instance values are only typed for multi-remote elements
+            // Per-instance values are only for multi-remote elements. The public types accept it (any asymmetric matcher fits
+            // `PartialMatcher`), so this runtime check is the guard
             const result = await thisContext.toHaveWidth(await $('sel'), multiRemote({ chrome: { gte: 1 }, firefox: { gte: 1 } }), { wait: 0 })
 
             expect(result.pass).toBe(false)

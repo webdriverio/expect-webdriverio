@@ -112,3 +112,31 @@ export const elementBooleanGetters = {
     toBePresent: { getter: 'isExisting', expectation: 'present', verb: 'be', allowEmptyElements: true, aliasOf: 'toExist' },
 } as const satisfies Record<string, ElementBooleanGetterDescriptor>
 elementBooleanGetters satisfies GettersGive<typeof elementBooleanGetters, WebdriverIO.Element, boolean>
+
+export type ElementNumberGetterDescriptor = {
+    /** The command of the element that gives the actual value */
+    getter: keyof WebdriverIO.Element
+    /** The value in the failure message, e.g. `width` in `Expect $(`sel`) to have width` */
+    expectation: string
+    /** A fixed argument of the getter, e.g. `toHaveWidth` is `getSize('width')` */
+    argument?: { fixed: string }
+    /** A size: an object with a number value type in each field (`width`, `height`), compared with deep equality */
+    value?: 'size'
+}
+
+/** The number matchers of `$()`, `$$()` and multi-remote elements, made from a getter */
+export const elementNumberGetters = {
+    toHaveWidth: { getter: 'getSize', expectation: 'width', argument: { fixed: 'width' } },
+    toHaveHeight: { getter: 'getSize', expectation: 'height', argument: { fixed: 'height' } },
+    toHaveSize: { getter: 'getSize', expectation: 'size', value: 'size' },
+} as const satisfies Record<string, ElementNumberGetterDescriptor>
+
+/** Each getter gives a number with its fixed argument (`getSize('width')`), or a size with no argument (`getSize()`) */
+type NumberGettersGive<Table extends Record<string, { getter: keyof WebdriverIO.Element, argument?: { fixed: string } }>> = {
+    [Name in keyof Table]: WebdriverIO.Element[Table[Name]['getter']] extends (Table[Name] extends { argument: { fixed: infer Argument } }
+        ? (argument: Argument) => Promise<number>
+        : () => Promise<{ width: number, height: number }>)
+        ? Table[Name]
+        : `${Name & string}: ${Table[Name]['getter'] & string} does not give the value type`
+}
+elementNumberGetters satisfies NumberGettersGive<typeof elementNumberGetters>

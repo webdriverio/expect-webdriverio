@@ -367,6 +367,36 @@ describe('WebdriverIO Custom Matchers', () => {
         })
     })
 
+    describe('Element size matchers', () => {
+        it('should verify the size, the width and the height of an element', async () => {
+            const h1 = $('header h1')
+            const { width, height } = await h1.getSize()
+
+            await expect(h1).toHaveSize({ width, height })
+            await expect(h1).toHaveSize({ width: { gte: width - 1 }, height })
+            await expect(h1).toHaveSize(expect.objectContaining({ height }))
+            await expect(h1).toHaveWidth(width)
+            await expect(h1).toHaveWidth(expect.closeTo(width + 0.4, 0))
+            await expect(h1).toHaveHeight({ gte: 1 })
+            await expect(h1).not.toHaveSize({ width: width + 1, height })
+        })
+
+        it('should fail with the size in the error message', async () => {
+            const h1 = $('header h1')
+            const { width, height } = await h1.getSize()
+
+            await expect(expect(h1).toHaveSize({ width: width + 1, height }, { wait: 0 })).rejects.toThrow('to have size')
+            await expect(expect(h1).toHaveWidth(width + 1, { wait: 0 })).rejects.toThrow('to have width')
+        })
+
+        it('should compare the list of the sizes of $$() with a list matcher', async () => {
+            const { width, height } = await $('header h1').getSize()
+
+            await expect($$('header h1')).toHaveSize(expect.arrayContaining([{ width, height }]))
+            await expect($$('header h1')).not.toHaveSize(expect.arrayContaining([{ width: width + 1, height }]))
+        })
+    })
+
     describe('Elements array matchers', () => {
         it('should verify elements array size', async () => {
             const links = await $$('a')
