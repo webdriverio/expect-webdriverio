@@ -92,8 +92,12 @@ describe('golden master of the other getter matchers', () => {
             // Another value: `equals()`, or its text with `asString`
             {
                 name: 'toHaveElementProperty', getter: 'getProperty', args: ['name'], subjects: fewSubjects,
-                values: { '2, "2"': [2, '2'], '{ a: 1 }, ["Hello"]': [{ a: 1 }, ['Hello']] },
-                expected: { '2': () => 2, '"2"': () => '2', '/^2/': () => /^2/, '{ a: 1 }': () => ({ a: 1 }), 'objectContaining({ a: 1 })': () => wdioExpect.objectContaining({ a: 1 }), 'arrayContaining(["Hello"])': () => wdioExpect.arrayContaining(['Hello']) },
+                // `$()` reads the first value: an array property first, so that a list matcher can match it
+                values: { '2, "2"': [2, '2'], '{ a: 1 }, ["Hello"]': [{ a: 1 }, ['Hello']], '["Hello", "World"], { a: 1 }': [['Hello', 'World'], { a: 1 }] },
+                expected: {
+                    '2': () => 2, '"2"': () => '2', '/^2/': () => /^2/, '{ a: 1 }': () => ({ a: 1 }), 'objectContaining({ a: 1 })': () => wdioExpect.objectContaining({ a: 1 }),
+                    'arrayContaining(["Hello"])': () => wdioExpect.arrayContaining(['Hello']), 'arrayContaining(["x"])': () => wdioExpect.arrayContaining(['x']), '["Hello", "World"]': () => ['Hello', 'World'],
+                },
                 options: { 'no option': {}, 'asString': { asString: true } },
             },
             { name: 'toHaveElementProperty', getter: 'getProperty', args: ['name'], values: stringValues, expected: { 'no value': () => undefined }, options: { 'no option': {} }, subjects: fewSubjects },

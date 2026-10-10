@@ -8472,6 +8472,84 @@ before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] optio
 after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
 getter calls: ["name"] x1
 
+### toHaveElementProperty("name") | $() | values 2, "2" | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: 2
+
+### toHaveElementProperty("name") | $() | values 2, "2" | .not arrayContaining(["x"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values 2, "2" | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: "2"
+
+### toHaveElementProperty("name") | $() | values 2, "2" | .not arrayContaining(["x"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values 2, "2" | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: 2
+
+### toHaveElementProperty("name") | $() | values 2, "2" | .not ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : 2
+
+### toHaveElementProperty("name") | $() | values 2, "2" | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: "2"
+
+### toHaveElementProperty("name") | $() | values 2, "2" | .not ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : "2"
+
 ### toHaveElementProperty("name") | $() | values { a: 1 }, ["Hello"] | 2 | no option
 result: fails
 before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
@@ -8675,6 +8753,366 @@ result: passes
 before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
 after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
 getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values { a: 1 }, ["Hello"] | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: {"a": 1}
+
+### toHaveElementProperty("name") | $() | values { a: 1 }, ["Hello"] | .not arrayContaining(["x"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values { a: 1 }, ["Hello"] | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: "[object Object]"
+
+### toHaveElementProperty("name") | $() | values { a: 1 }, ["Hello"] | .not arrayContaining(["x"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values { a: 1 }, ["Hello"] | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: {"a": 1}
+
+### toHaveElementProperty("name") | $() | values { a: 1 }, ["Hello"] | .not ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : {"a": 1}
+
+### toHaveElementProperty("name") | $() | values { a: 1 }, ["Hello"] | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: "[object Object]"
+
+### toHaveElementProperty("name") | $() | values { a: 1 }, ["Hello"] | .not ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : "[object Object]"
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | 2 | no option
+result: fails
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: 2
+  Received: ["Hello", "World"]
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not 2 | no option
+result: passes
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | 2 | asString
+result: fails
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: 2
+  Received: "Hello,World"
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not 2 | asString
+result: passes
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | "2" | no option
+result: fails
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: "2"
+  Received: ["Hello", "World"]
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not "2" | no option
+result: passes
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | "2" | asString
+result: fails
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: "2"
+  Received: "Hello,World"
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not "2" | asString
+result: passes
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | /^2/ | no option
+result: fails
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: /^2/
+  Received: "Hello,World"
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not /^2/ | no option
+result: passes
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | /^2/ | asString
+result: fails
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: /^2/
+  Received: "Hello,World"
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not /^2/ | asString
+result: passes
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | { a: 1 } | no option
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: {"a": 1}
+  Received: ["Hello", "World"]
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not { a: 1 } | no option
+result: passes
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | { a: 1 } | asString
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: {"a": 1}
+  Received: "Hello,World"
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not { a: 1 } | asString
+result: passes
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | objectContaining({ a: 1 }) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ObjectContaining {"a": 1}
+  Received: ["Hello", "World"]
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not objectContaining({ a: 1 }) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | objectContaining({ a: 1 }) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ObjectContaining {"a": 1}
+  Received: "Hello,World"
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not objectContaining({ a: 1 }) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | arrayContaining(["Hello"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["Hello"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have property name
+  
+  Expected [not]: ArrayContaining ["Hello"]
+  Received      : ["Hello", "World"]
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | arrayContaining(["Hello"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ArrayContaining ["Hello"]
+  Received: "Hello,World"
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["Hello"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: ["Hello", "World"]
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["x"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: "Hello,World"
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["x"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: ["Hello", "World"]
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : ["Hello", "World"]
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: "Hello,World"
+
+### toHaveElementProperty("name") | $() | values ["Hello", "World"], { a: 1 } | .not ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: ["name"] x1
+message:
+  Expect $(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : "Hello,World"
 
 ### toHaveElementProperty("name") | $$() | values 2, "2" | 2 | no option
 result: fails
@@ -8943,6 +9381,88 @@ message:
 result: passes
 before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
 after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values 2, "2" | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: [2, "2"]
+
+### toHaveElementProperty("name") | $$() | values 2, "2" | .not arrayContaining(["x"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values 2, "2" | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: ["2", "2"]
+
+### toHaveElementProperty("name") | $$() | values 2, "2" | .not arrayContaining(["x"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values 2, "2" | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "Hello",
+  -   "World",
+  +   2,
+  +   "2",
+    ]
+
+### toHaveElementProperty("name") | $$() | values 2, "2" | .not ["Hello", "World"] | no option
+result: passes
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values 2, "2" | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "Hello",
+  -   "World",
+  +   "2",
+  +   "2",
+    ]
+
+### toHaveElementProperty("name") | $$() | values 2, "2" | .not ["Hello", "World"] | asString
+result: passes
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
 getter calls: ["name"] x2
 
 ### toHaveElementProperty("name") | $$() | values { a: 1 }, ["Hello"] | 2 | no option
@@ -9247,6 +9767,481 @@ message:
   Expected [not]: ArrayContaining ["Hello"]
   Received      : ["[object Object]", "Hello"]
 
+### toHaveElementProperty("name") | $$() | values { a: 1 }, ["Hello"] | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: [{"a": 1}, ["Hello"]]
+
+### toHaveElementProperty("name") | $$() | values { a: 1 }, ["Hello"] | .not arrayContaining(["x"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values { a: 1 }, ["Hello"] | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: ["[object Object]", "Hello"]
+
+### toHaveElementProperty("name") | $$() | values { a: 1 }, ["Hello"] | .not arrayContaining(["x"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values { a: 1 }, ["Hello"] | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 1
+  + Received  + 5
+  
+    Array [
+  +   Object {
+  +     "a": 1,
+  +   },
+  +   Array [
+        "Hello",
+  -   "World",
+  +   ],
+    ]
+
+### toHaveElementProperty("name") | $$() | values { a: 1 }, ["Hello"] | .not ["Hello", "World"] | no option
+result: passes
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values { a: 1 }, ["Hello"] | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+  +   "[object Object]",
+      "Hello",
+  -   "World",
+    ]
+
+### toHaveElementProperty("name") | $$() | values { a: 1 }, ["Hello"] | .not ["Hello", "World"] | asString
+result: passes
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | 2 | no option
+result: fails
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 7
+  
+    Array [
+  -   2,
+  -   2,
+  +   Array [
+  +     "Hello",
+  +     "World",
+  +   ],
+  +   Object {
+  +     "a": 1,
+  +   },
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not 2 | no option
+result: passes
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | 2 | asString
+result: fails
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   2,
+  -   2,
+  +   "Hello,World",
+  +   "[object Object]",
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not 2 | asString
+result: passes
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | "2" | no option
+result: fails
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 7
+  
+    Array [
+  -   "2",
+  -   "2",
+  +   Array [
+  +     "Hello",
+  +     "World",
+  +   ],
+  +   Object {
+  +     "a": 1,
+  +   },
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not "2" | no option
+result: passes
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | "2" | asString
+result: fails
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "2",
+  -   "2",
+  +   "Hello,World",
+  +   "[object Object]",
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not "2" | asString
+result: passes
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | /^2/ | no option
+result: fails
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   /^2/,
+  -   /^2/,
+  +   "Hello,World",
+  +   "[object Object]",
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not /^2/ | no option
+result: passes
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | /^2/ | asString
+result: fails
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   /^2/,
+  -   /^2/,
+  +   "Hello,World",
+  +   "[object Object]",
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not /^2/ | asString
+result: passes
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | { a: 1 } | no option
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 3
+  + Received  + 4
+  
+    Array [
+  -   Object {
+  -     "a": 1,
+  -   },
+  +   Array [
+  +     "Hello",
+  +     "World",
+  +   ],
+      Object {
+        "a": 1,
+      },
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not { a: 1 } | no option
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: [{"a": 1}, {"a": 1}]
+  Received      : [["Hello", "World"], {"a": 1}]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | { a: 1 } | asString
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 6
+  + Received  + 2
+  
+    Array [
+  -   Object {
+  -     "a": 1,
+  -   },
+  -   Object {
+  -     "a": 1,
+  -   },
+  +   "Hello,World",
+  +   "[object Object]",
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not { a: 1 } | asString
+result: passes
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | objectContaining({ a: 1 }) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 1
+  + Received  + 4
+  
+    Array [
+  -   ObjectContaining {"a": 1},
+  +   Array [
+  +     "Hello",
+  +     "World",
+  +   ],
+      ObjectContaining {"a": 1},
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not objectContaining({ a: 1 }) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: [ObjectContaining {"a": 1}, ObjectContaining {"a": 1}]
+  Received      : [["Hello", "World"], {"a": 1}]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | objectContaining({ a: 1 }) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   ObjectContaining {"a": 1},
+  -   ObjectContaining {"a": 1},
+  +   "Hello,World",
+  +   "[object Object]",
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not objectContaining({ a: 1 }) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | arrayContaining(["Hello"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["Hello"]
+  Received: [["Hello", "World"], {"a": 1}]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["Hello"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | arrayContaining(["Hello"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["Hello"]
+  Received: ["Hello,World", "[object Object]"]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["Hello"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: [["Hello", "World"], {"a": 1}]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["x"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: ["Hello,World", "[object Object]"]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["x"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 0
+  + Received  + 5
+  
+    Array [
+  +   Array [
+        "Hello",
+        "World",
+  +   ],
+  +   Object {
+  +     "a": 1,
+  +   },
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not ["Hello", "World"] | no option
+result: passes
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect $$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "Hello",
+  -   "World",
+  +   "Hello,World",
+  +   "[object Object]",
+    ]
+
+### toHaveElementProperty("name") | $$() | values ["Hello", "World"], { a: 1 } | .not ["Hello", "World"] | asString
+result: passes
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
 ### toHaveElementProperty("name") | empty $$() | values 2, "2" | 2 | no option
 result: fails
 before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
@@ -9501,6 +10496,84 @@ before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] optio
 after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
 getter calls: -
 
+### toHaveElementProperty("name") | empty $$() | values 2, "2" | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: []
+
+### toHaveElementProperty("name") | empty $$() | values 2, "2" | .not arrayContaining(["x"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+
+### toHaveElementProperty("name") | empty $$() | values 2, "2" | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: []
+
+### toHaveElementProperty("name") | empty $$() | values 2, "2" | .not arrayContaining(["x"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+
+### toHaveElementProperty("name") | empty $$() | values 2, "2" | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values 2, "2" | .not ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values 2, "2" | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values 2, "2" | .not ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : undefined
+
 ### toHaveElementProperty("name") | empty $$() | values { a: 1 }, ["Hello"] | 2 | no option
 result: fails
 before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
@@ -9754,6 +10827,416 @@ result: passes
 before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
 after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
 getter calls: -
+
+### toHaveElementProperty("name") | empty $$() | values { a: 1 }, ["Hello"] | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: []
+
+### toHaveElementProperty("name") | empty $$() | values { a: 1 }, ["Hello"] | .not arrayContaining(["x"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+
+### toHaveElementProperty("name") | empty $$() | values { a: 1 }, ["Hello"] | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: []
+
+### toHaveElementProperty("name") | empty $$() | values { a: 1 }, ["Hello"] | .not arrayContaining(["x"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+
+### toHaveElementProperty("name") | empty $$() | values { a: 1 }, ["Hello"] | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values { a: 1 }, ["Hello"] | .not ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values { a: 1 }, ["Hello"] | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values { a: 1 }, ["Hello"] | .not ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | 2 | no option
+result: fails
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: [2]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not 2 | no option
+result: fails
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: [2]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | 2 | asString
+result: fails
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: [2]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not 2 | asString
+result: fails
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: [2]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | "2" | no option
+result: fails
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ["2"]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not "2" | no option
+result: fails
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: ["2"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | "2" | asString
+result: fails
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ["2"]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not "2" | asString
+result: fails
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: ["2"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | /^2/ | no option
+result: fails
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: [/^2/]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not /^2/ | no option
+result: fails
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: [/^2/]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | /^2/ | asString
+result: fails
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: [/^2/]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not /^2/ | asString
+result: fails
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: [/^2/]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | { a: 1 } | no option
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: [{"a": 1}]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not { a: 1 } | no option
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: [{"a": 1}]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | { a: 1 } | asString
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: [{"a": 1}]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not { a: 1 } | asString
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: [{"a": 1}]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | objectContaining({ a: 1 }) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: [ObjectContaining {"a": 1}]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not objectContaining({ a: 1 }) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: [ObjectContaining {"a": 1}]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | objectContaining({ a: 1 }) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: [ObjectContaining {"a": 1}]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not objectContaining({ a: 1 }) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: [ObjectContaining {"a": 1}]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | arrayContaining(["Hello"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["Hello"]
+  Received: []
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["Hello"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | arrayContaining(["Hello"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["Hello"]
+  Received: []
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["Hello"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: []
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["x"]) | no option
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: []
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["x"]) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have property name
+  
+  Expected: ["Hello", "World"]
+  Received: undefined
+
+### toHaveElementProperty("name") | empty $$() | values ["Hello", "World"], { a: 1 } | .not ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have property name
+  
+  Expected [not]: ["Hello", "World"]
+  Received      : undefined
 
 ### toHaveElementProperty("name") | multi-remote $() | values 2, "2" | 2 | no option
 result: fails
@@ -10045,6 +11528,146 @@ message:
   
   Expected [not]: ArrayContaining ["Hello"]
   Received      : undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values 2, "2" | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values 2, "2" | .not arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  Expected [not]: ArrayContaining ["x"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values 2, "2" | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values 2, "2" | .not arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  Expected [not]: ArrayContaining ["x"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values 2, "2" | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 8
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  -   "firefox": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "chrome": 2,
+  +   "firefox": "2",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values 2, "2" | .not ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  - Expected [not]  - 8
+  + Received        + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  -   "firefox": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "chrome": 2,
+  +   "firefox": "2",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values 2, "2" | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 8
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  -   "firefox": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "chrome": "2",
+  +   "firefox": "2",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values 2, "2" | .not ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  - Expected [not]  - 8
+  + Received        + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  -   "firefox": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "chrome": "2",
+  +   "firefox": "2",
+    }
 
 ### toHaveElementProperty("name") | multi-remote $() | values { a: 1 }, ["Hello"] | 2 | no option
 result: fails
@@ -10377,6 +12000,628 @@ message:
   
   Expected [not]: ArrayContaining ["Hello"]
   Received      : undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values { a: 1 }, ["Hello"] | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values { a: 1 }, ["Hello"] | .not arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  Expected [not]: ArrayContaining ["x"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values { a: 1 }, ["Hello"] | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values { a: 1 }, ["Hello"] | .not arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  Expected [not]: ArrayContaining ["x"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values { a: 1 }, ["Hello"] | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 5
+  + Received  + 3
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "chrome": Object {
+  +     "a": 1,
+  +   },
+      "firefox": Array [
+        "Hello",
+  -     "World",
+      ],
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values { a: 1 }, ["Hello"] | .not ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  - Expected [not]  - 5
+  + Received        + 3
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "chrome": Object {
+  +     "a": 1,
+  +   },
+      "firefox": Array [
+        "Hello",
+  -     "World",
+      ],
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values { a: 1 }, ["Hello"] | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 8
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  -   "firefox": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "chrome": "[object Object]",
+  +   "firefox": "Hello",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values { a: 1 }, ["Hello"] | .not ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  - Expected [not]  - 8
+  + Received        + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  -   "firefox": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "chrome": "[object Object]",
+  +   "firefox": "Hello",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | 2 | no option
+result: fails
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 7
+  
+    Multi-remote values {
+  -   "chrome": 2,
+  -   "firefox": 2,
+  +   "chrome": Array [
+  +     "Hello",
+  +     "World",
+  +   ],
+  +   "firefox": Object {
+  +     "a": 1,
+  +   },
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not 2 | no option
+result: passes
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | 2 | asString
+result: fails
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": 2,
+  -   "firefox": 2,
+  +   "chrome": "Hello,World",
+  +   "firefox": "[object Object]",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not 2 | asString
+result: passes
+before: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", 2] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | "2" | no option
+result: fails
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 7
+  
+    Multi-remote values {
+  -   "chrome": "2",
+  -   "firefox": "2",
+  +   "chrome": Array [
+  +     "Hello",
+  +     "World",
+  +   ],
+  +   "firefox": Object {
+  +     "a": 1,
+  +   },
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not "2" | no option
+result: passes
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | "2" | asString
+result: fails
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "2",
+  -   "firefox": "2",
+  +   "chrome": "Hello,World",
+  +   "firefox": "[object Object]",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not "2" | asString
+result: passes
+before: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", "2"] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | /^2/ | no option
+result: fails
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": /^2/,
+  -   "firefox": /^2/,
+  +   "chrome": "Hello,World",
+  +   "firefox": "[object Object]",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not /^2/ | no option
+result: passes
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | /^2/ | asString
+result: fails
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": /^2/,
+  -   "firefox": /^2/,
+  +   "chrome": "Hello,World",
+  +   "firefox": "[object Object]",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not /^2/ | asString
+result: passes
+before: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", /^2/] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | { a: 1 } | no option
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 3
+  + Received  + 4
+  
+    Multi-remote values {
+  -   "chrome": Object {
+  -     "a": 1,
+  -   },
+  +   "chrome": Array [
+  +     "Hello",
+  +     "World",
+  +   ],
+      "firefox": Object {
+        "a": 1,
+      },
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not { a: 1 } | no option
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  - Expected [not]  - 3
+  + Received        + 4
+  
+    Multi-remote values {
+  -   "chrome": Object {
+  -     "a": 1,
+  -   },
+  +   "chrome": Array [
+  +     "Hello",
+  +     "World",
+  +   ],
+      "firefox": Object {
+        "a": 1,
+      },
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | { a: 1 } | asString
+result: fails
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 6
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": Object {
+  -     "a": 1,
+  -   },
+  -   "firefox": Object {
+  -     "a": 1,
+  -   },
+  +   "chrome": "Hello,World",
+  +   "firefox": "[object Object]",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not { a: 1 } | asString
+result: passes
+before: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | objectContaining({ a: 1 }) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 1
+  + Received  + 4
+  
+    Multi-remote values {
+  -   "chrome": ObjectContaining {"a": 1},
+  +   "chrome": Array [
+  +     "Hello",
+  +     "World",
+  +   ],
+      "firefox": ObjectContaining {"a": 1},
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not objectContaining({ a: 1 }) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  - Expected [not]  - 1
+  + Received        + 4
+  
+    Multi-remote values {
+  -   "chrome": ObjectContaining {"a": 1},
+  +   "chrome": Array [
+  +     "Hello",
+  +     "World",
+  +   ],
+      "firefox": ObjectContaining {"a": 1},
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | objectContaining({ a: 1 }) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": ObjectContaining {"a": 1},
+  -   "firefox": ObjectContaining {"a": 1},
+  +   "chrome": "Hello,World",
+  +   "firefox": "[object Object]",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not objectContaining({ a: 1 }) | asString
+result: passes
+before: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ObjectContaining {"a": 1}] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | arrayContaining(["Hello"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["Hello"]
+  Received: undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["Hello"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  Expected [not]: ArrayContaining ["Hello"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | arrayContaining(["Hello"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["Hello"]
+  Received: undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["Hello"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["Hello"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  Expected [not]: ArrayContaining ["Hello"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["x"]) | no option
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  Expected [not]: ArrayContaining ["x"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  Expected: ArrayContaining ["x"]
+  Received: undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not arrayContaining(["x"]) | asString
+result: fails
+before: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ArrayContaining ["x"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  Expected [not]: ArrayContaining ["x"]
+  Received      : undefined
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 4
+  + Received  + 3
+  
+    Multi-remote values {
+      "chrome": Array [
+        "Hello",
+        "World",
+      ],
+  -   "firefox": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "firefox": Object {
+  +     "a": 1,
+  +   },
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not ["Hello", "World"] | no option
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  - Expected [not]  - 4
+  + Received        + 3
+  
+    Multi-remote values {
+      "chrome": Array [
+        "Hello",
+        "World",
+      ],
+  -   "firefox": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "firefox": Object {
+  +     "a": 1,
+  +   },
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=false
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have property name
+  
+  - Expected  - 8
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  -   "firefox": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "chrome": "Hello,World",
+  +   "firefox": "[object Object]",
+    }
+
+### toHaveElementProperty("name") | multi-remote $() | values ["Hello", "World"], { a: 1 } | .not ["Hello", "World"] | asString
+result: fails
+before: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait]
+after: toHaveElementProperty expected=["name", ["Hello", "World"]] options=[afterAssertion,asString,beforeAssertion,wait] pass=true
+getter calls: ["name"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have property name
+  
+  - Expected [not]  - 8
+  + Received        + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  -   "firefox": Array [
+  -     "Hello",
+  -     "World",
+  -   ],
+  +   "chrome": "Hello,World",
+  +   "firefox": "[object Object]",
+    }
 
 ### toHaveElementProperty("name") | $() | values Hello, World | no value | no option
 result: passes
