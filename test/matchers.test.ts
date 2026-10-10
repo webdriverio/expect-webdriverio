@@ -9,6 +9,7 @@ const ALL_MATCHERS = [
     'toHaveClipboardText',
     'toHaveCookie',
     'toHaveLocalStorageItem',
+    'toHaveSessionStorageItem',
     'toHaveTitle',
     'toHaveUrl',
 

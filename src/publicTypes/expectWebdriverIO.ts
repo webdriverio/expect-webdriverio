@@ -283,6 +283,43 @@ declare global {
         >
 
         /**
+         * `WebdriverIO.Browser` -> `execute`: the item of `sessionStorage`, compared as a string value
+         */
+        toHaveSessionStorageItem: FnWhenBrowserOrMultiRemote<ActualT,
+            /**
+            * `WebdriverIO.Browser` or `WebdriverIO.BrowsingContext` -> `execute`
+            */
+            {
+                /**
+                 * Only check that the item exists.
+                 * Use `toHaveSessionStorageItem(key, expect.anything(), options)` to check it with options.
+                 */
+                (key: string): Promise<void>
+                (
+                    key: string,
+                    expectedValue: MaybeOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+                    options?: ExpectWebdriverIO.StringOptions
+                ): Promise<void>
+            },
+
+            /**
+            * `WebdriverIO.MultiRemoteBrowser` -> `execute` on each instance
+            */
+            {
+                /**
+                 * Only check that the item exists.
+                 * Use `toHaveSessionStorageItem(key, expect.anything(), options)` to check it with options.
+                 */
+                (key: string): Promise<void>
+                (
+                    key: string,
+                    expectedValue: MultiRemoteValuesOrOneOf<StringValue | ExpectWebdriverIO.PartialMatcherAnything>,
+                    options?: ExpectWebdriverIO.StringOptions
+                ): Promise<void>
+            }
+        >
+
+        /**
          * `WebdriverIO.Browser` -> `getCookies({ name })`: the value of the cookie, compared as a string value
          */
         toHaveCookie: FnWhenBrowserOrMultiRemote<ActualT,

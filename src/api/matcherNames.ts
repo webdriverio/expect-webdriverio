@@ -39,6 +39,7 @@ export const wdioCustomMatcherNames = [
     'toHaveId',
     'toHaveLink',
     'toHaveLocalStorageItem',
+    'toHaveSessionStorageItem',
     'toHaveSize',
     'toHaveStyle',
     'toHaveTagName',

@@ -40,12 +40,13 @@ export const mockGetter = (target: Record<string, unknown>, getter: string, valu
 }
 
 /**
- * `execute()` runs the script of the matcher in a fake page, where the clipboard and the local storage item `key` give
- * the value: a script that reads something else, or another item, gives another result.
+ * `execute()` runs the script of the matcher in a fake page, where the clipboard and the item `key` of the local storage
+ * and of the session storage give the value: a script that reads something else, or another item, gives another result.
  */
 const runInFakePage = ([script, ...args]: unknown[], value: unknown) => {
     vi.stubGlobal('window', { navigator: { clipboard: { readText: async () => value } } })
     vi.stubGlobal('localStorage', { getItem: (key: string) => key === 'key' ? value : null })
+    vi.stubGlobal('sessionStorage', { getItem: (key: string) => key === 'key' ? value : null })
     try {
         // The script reads the fakes before it returns: a multi-remote browser runs it on each instance at the same time
         return (script as (...args: unknown[]) => unknown)(...args)

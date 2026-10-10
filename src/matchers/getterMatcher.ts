@@ -195,8 +195,10 @@ let clipboardPermissionWarningLogged = false
 
 /** The value of the browser or the browsing context, or a `MissingValue` for a value that does not exist */
 const readBrowserValue = async (target: BrowserTarget, { getter, value, missing }: BrowserStringGetterDescriptor, argument: string | undefined): Promise<string | MissingValue> => {
-    if (value === 'localStorageItem') {
-        const item = await target.execute((storageKey) => localStorage.getItem(storageKey), argument as string)
+    if (value === 'localStorageItem' || value === 'sessionStorageItem') {
+        const item = value === 'localStorageItem'
+            ? await target.execute((storageKey) => localStorage.getItem(storageKey), argument as string)
+            : await target.execute((storageKey) => sessionStorage.getItem(storageKey), argument as string)
         return item === null ? new MissingValue(missing ?? 'no value') : item
     }
     if (value === 'clipboardText') {

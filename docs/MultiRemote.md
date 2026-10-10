@@ -85,7 +85,7 @@ Per-instance values are only allowed on multi-remote subjects: on a regular elem
 
 ## Browser Matchers
 
-`toHaveUrl`, `toHaveTitle`, `toHaveClipboardText` and `toHaveLocalStorageItem` support the multi-remote browser, including a `select()` subset.
+`toHaveUrl`, `toHaveTitle`, `toHaveClipboardText`, `toHaveCookie`, `toHaveLocalStorageItem` and `toHaveSessionStorageItem` support the multi-remote browser, including a `select()` subset.
 
 ```ts
 await expect(multiRemoteBrowser).toHaveUrl('https://webdriver.io/')
