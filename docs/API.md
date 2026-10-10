@@ -1007,6 +1007,27 @@ await expect(mock).toBeRequestedWith({
 
 WebdriverIO supports basic snapshot tests as well as DOM snapshot testing.
 
+The snapshot matchers need the snapshot service: it knows the current test, and it writes the snapshot files. The WebdriverIO testrunner runs it by itself. Without the testrunner, for example in a Node.js script with `remote()`, the matchers throw `Snapshot service is not initialized`. Then call the hooks of the service yourself: `beforeTest()` before each test, with the file of the snapshots and the name of the test, and `after()` after the tests of the file, to write the snapshot file.
+
+```js
+import { fileURLToPath } from 'node:url'
+import { remote } from 'webdriverio'
+import { expect, SnapshotService } from 'expect-webdriverio'
+
+const snapshotService = SnapshotService.initiate()
+const browser = await remote({ capabilities: { browserName: 'chrome' } })
+
+// The snapshots go to `__snapshots__/<file name>.snap`, next to the file, under the name `My page > has a button 1`
+await snapshotService.beforeTest({ file: fileURLToPath(import.meta.url), parent: 'My page', title: 'has a button' })
+await browser.url('https://example.com')
+await expect(browser.$('h1')).toMatchSnapshot()
+
+await snapshotService.after()
+await browser.deleteSession()
+```
+
+`SnapshotService.initiate()` takes the options of the service, e.g. `{ updateState: 'all' }` to update the snapshots, or `resolveSnapshotPath`. With Jest or Mocha, call `beforeTest()` in `beforeEach`, and `after()` in `afterAll` (or `after`).
+
 ### toMatchSnapshot
 
 Checks if any arbitrary object matches a certain value. If you pass in an [`WebdriverIO.Element`](https://webdriver.io/docs/api/element) it will automatically snapshot the [`outerHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/outerHTML) state of it.
