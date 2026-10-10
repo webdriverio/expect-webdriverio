@@ -95,8 +95,24 @@ describe('WebdriverIO Custom Matchers', () => {
     })
 
     describe('Window count matcher', () => {
+        let firstWindow: string
+
+        beforeEach(async () => {
+            firstWindow = await browser.getWindowHandle()
+        })
+
+        // Also after a failed assertion: a window left open would make the next tests fail
+        afterEach(async () => {
+            for (const handle of await browser.getWindowHandles()) {
+                if (handle !== firstWindow) {
+                    await browser.switchToWindow(handle)
+                    await browser.closeWindow()
+                }
+            }
+            await browser.switchToWindow(firstWindow)
+        })
+
         it('should verify the number of windows of the session', async () => {
-            const firstWindow = await browser.getWindowHandle()
             await expect(browser).toHaveWindowCount(1)
 
             await browser.newWindow('https://guinea-pig.webdriver.io/')
