@@ -1,0 +1,4478 @@
+### toHaveWidth | $() | values 100, 150 | 100 | no option
+result: passes
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | $() | values 100, 150 | .not 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: 100
+  Received      : 100
+
+### toHaveWidth | $() | values 100, 150 | { gte: 90 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | $() | values 100, 150 | .not { gte: 90 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: >= 90
+  Received      : 100
+
+### toHaveWidth | $() | values 100, 150 | { gte: 90, lte: 110 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | $() | values 100, 150 | .not { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: >= 90 && <= 110
+  Received      : 100
+
+### toHaveWidth | $() | values 100, 150 | oneOf(100, 200) | no option
+result: passes
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | $() | values 100, 150 | .not oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: oneOf<100, 200>
+  Received      : 100
+
+### toHaveWidth | $() | values 100, 150 | closeTo(100.4, 0) | no option
+result: passes
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | $() | values 100, 150 | .not closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: NumberCloseTo 100.4 (0 digits)
+  Received      : 100
+
+### toHaveWidth | $() | values 100, 150 | any(Number) | no option
+result: passes
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | $() | values 100, 150 | .not any(Number) | no option
+result: fails
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: Any<Number>
+  Received      : 100
+
+### toHaveWidth | $() | values 100, 150 | [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) to have width
+  
+  Expected: [100, 150]
+  Received: 100
+
+### toHaveWidth | $() | values 100, 150 | .not [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: [100, 150]
+  Received      : 100
+
+### toHaveWidth | $() | values 100, 150 | arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $() | values 100, 150 | .not arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $() | values 100, 150 | multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) to have width
+  
+  Expected: {"chrome": 100, "firefox": 150}
+  Received: 100
+
+### toHaveWidth | $() | values 100, 150 | .not multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: {"chrome": 100, "firefox": 150}
+  Received      : 100
+
+### toHaveWidth | $() | values 100, 150 | { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $() | values 100, 150 | .not { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $() | values 100, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $() | values 100, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $() | values 100, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $() | values 100, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $() | values 100, 150 | 100 | no option
+result: passes
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: 100
+  Received      : 100
+
+### toHaveWidth | not awaited $() | values 100, 150 | { gte: 90 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not { gte: 90 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: >= 90
+  Received      : 100
+
+### toHaveWidth | not awaited $() | values 100, 150 | { gte: 90, lte: 110 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: >= 90 && <= 110
+  Received      : 100
+
+### toHaveWidth | not awaited $() | values 100, 150 | oneOf(100, 200) | no option
+result: passes
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: oneOf<100, 200>
+  Received      : 100
+
+### toHaveWidth | not awaited $() | values 100, 150 | closeTo(100.4, 0) | no option
+result: passes
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: NumberCloseTo 100.4 (0 digits)
+  Received      : 100
+
+### toHaveWidth | not awaited $() | values 100, 150 | any(Number) | no option
+result: passes
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not any(Number) | no option
+result: fails
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: Any<Number>
+  Received      : 100
+
+### toHaveWidth | not awaited $() | values 100, 150 | [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) to have width
+  
+  Expected: [100, 150]
+  Received: 100
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: [100, 150]
+  Received      : 100
+
+### toHaveWidth | not awaited $() | values 100, 150 | arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $() | values 100, 150 | multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) to have width
+  
+  Expected: {"chrome": 100, "firefox": 150}
+  Received: 100
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x1
+message:
+  Expect $(`sel`) not to have width
+  
+  Expected [not]: {"chrome": 100, "firefox": 150}
+  Received      : 100
+
+### toHaveWidth | not awaited $() | values 100, 150 | { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $() | values 100, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $() | values 100, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $() | values 100, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $$() | values 100, 150 | 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      100,
+  -   100,
+  +   150,
+    ]
+
+### toHaveWidth | $$() | values 100, 150 | .not 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [100, 100]
+  Received      : [100, 150]
+
+### toHaveWidth | $$() | values 100, 150 | { gte: 90 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | $$() | values 100, 150 | .not { gte: 90 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [>= 90, >= 90]
+  Received      : [100, 150]
+
+### toHaveWidth | $$() | values 100, 150 | { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      >= 90 && <= 110,
+  -   >= 90 && <= 110,
+  +   150,
+    ]
+
+### toHaveWidth | $$() | values 100, 150 | .not { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [>= 90 && <= 110, >= 90 && <= 110]
+  Received      : [100, 150]
+
+### toHaveWidth | $$() | values 100, 150 | oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      oneOf<100, 200>,
+  -   oneOf<100, 200>,
+  +   150,
+    ]
+
+### toHaveWidth | $$() | values 100, 150 | .not oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [oneOf<100, 200>, oneOf<100, 200>]
+  Received      : [100, 150]
+
+### toHaveWidth | $$() | values 100, 150 | closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      NumberCloseTo 100.4 (0 digits),
+  -   NumberCloseTo 100.4 (0 digits),
+  +   150,
+    ]
+
+### toHaveWidth | $$() | values 100, 150 | .not closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [NumberCloseTo 100.4 (0 digits), NumberCloseTo 100.4 (0 digits)]
+  Received      : [100, 150]
+
+### toHaveWidth | $$() | values 100, 150 | any(Number) | no option
+result: passes
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | $$() | values 100, 150 | .not any(Number) | no option
+result: fails
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [Any<Number>, Any<Number>]
+  Received      : [100, 150]
+
+### toHaveWidth | $$() | values 100, 150 | [100, 150] | no option
+result: passes
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | $$() | values 100, 150 | .not [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [100, 150]
+  Received      : [100, 150]
+
+### toHaveWidth | $$() | values 100, 150 | arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $$() | values 100, 150 | .not arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $$() | values 100, 150 | multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 8
+  + Received  + 2
+  
+    Array [
+  -   Object {
+  -     "chrome": 100,
+  -     "firefox": 150,
+  -   },
+  -   Object {
+  -     "chrome": 100,
+  -     "firefox": 150,
+  -   },
+  +   100,
+  +   150,
+    ]
+
+### toHaveWidth | $$() | values 100, 150 | .not multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [{"chrome": 100, "firefox": 150}, {"chrome": 100, "firefox": 150}]
+  Received      : [100, 150]
+
+### toHaveWidth | $$() | values 100, 150 | { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $$() | values 100, 150 | .not { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $$() | values 100, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $$() | values 100, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $$() | values 100, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | $$() | values 100, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | empty $$() | values 100, 150 | 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have width
+  
+  Expected: [100]
+  Received: undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | .not 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [100]
+  Received      : undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | { gte: 90 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have width
+  
+  Expected: [>= 90]
+  Received: undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | .not { gte: 90 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [>= 90]
+  Received      : undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have width
+  
+  Expected: [>= 90 && <= 110]
+  Received: undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | .not { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [>= 90 && <= 110]
+  Received      : undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have width
+  
+  Expected: [oneOf<100, 200>]
+  Received: undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | .not oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [oneOf<100, 200>]
+  Received      : undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have width
+  
+  Expected: [NumberCloseTo 100.4 (0 digits)]
+  Received: undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | .not closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [NumberCloseTo 100.4 (0 digits)]
+  Received      : undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | any(Number) | no option
+result: fails
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have width
+  
+  Expected: [Any<Number>]
+  Received: undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | .not any(Number) | no option
+result: fails
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [Any<Number>]
+  Received      : undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have width
+  
+  Expected: [100, 150]
+  Received: undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | .not [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [100, 150]
+  Received      : undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | empty $$() | values 100, 150 | .not arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | empty $$() | values 100, 150 | multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have width
+  
+  Expected: [{"chrome": 100, "firefox": 150}]
+  Received: undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | .not multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [{"chrome": 100, "firefox": 150}]
+  Received      : undefined
+
+### toHaveWidth | empty $$() | values 100, 150 | { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | empty $$() | values 100, 150 | .not { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | empty $$() | values 100, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | empty $$() | values 100, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | empty $$() | values 100, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | empty $$() | values 100, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | some($$()) | values 100, 150 | 100 | no option
+result: passes
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | .not 100 | no option
+result: passes
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | { gte: 90 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | .not { gte: 90 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect some of $$(`sel`) not to have width
+  
+  Expected [not]: [>= 90, >= 90]
+  Received      : [100, 150]
+
+### toHaveWidth | some($$()) | values 100, 150 | { gte: 90, lte: 110 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | .not { gte: 90, lte: 110 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | oneOf(100, 200) | no option
+result: passes
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | .not oneOf(100, 200) | no option
+result: passes
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | closeTo(100.4, 0) | no option
+result: passes
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | .not closeTo(100.4, 0) | no option
+result: passes
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | any(Number) | no option
+result: passes
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | .not any(Number) | no option
+result: fails
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect some of $$(`sel`) not to have width
+  
+  Expected [not]: [Any<Number>, Any<Number>]
+  Received      : [100, 150]
+
+### toHaveWidth | some($$()) | values 100, 150 | [100, 150] | no option
+result: passes
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | some($$()) | values 100, 150 | .not [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect some of $$(`sel`) not to have width
+  
+  Expected [not]: [100, 150]
+  Received      : [100, 150]
+
+### toHaveWidth | some($$()) | values 100, 150 | arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | some($$()) | values 100, 150 | .not arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | some($$()) | values 100, 150 | multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect some of $$(`sel`) to have width
+  
+  - Expected  - 8
+  + Received  + 2
+  
+    Array [
+  -   Object {
+  -     "chrome": 100,
+  -     "firefox": 150,
+  -   },
+  -   Object {
+  -     "chrome": 100,
+  -     "firefox": 150,
+  -   },
+  +   100,
+  +   150,
+    ]
+
+### toHaveWidth | some($$()) | values 100, 150 | .not multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect some of $$(`sel`) not to have width
+  
+  Expected [not]: [{"chrome": 100, "firefox": 150}, {"chrome": 100, "firefox": 150}]
+  Received      : [100, 150]
+
+### toHaveWidth | some($$()) | values 100, 150 | { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | some($$()) | values 100, 150 | .not { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | some($$()) | values 100, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | some($$()) | values 100, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | some($$()) | values 100, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | some($$()) | values 100, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $$() | values 100, 150 | 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      100,
+  -   100,
+  +   150,
+    ]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [100, 100]
+  Received      : [100, 150]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | { gte: 90 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not { gte: 90 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [>= 90, >= 90]
+  Received      : [100, 150]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      >= 90 && <= 110,
+  -   >= 90 && <= 110,
+  +   150,
+    ]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [>= 90 && <= 110, >= 90 && <= 110]
+  Received      : [100, 150]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      oneOf<100, 200>,
+  -   oneOf<100, 200>,
+  +   150,
+    ]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [oneOf<100, 200>, oneOf<100, 200>]
+  Received      : [100, 150]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      NumberCloseTo 100.4 (0 digits),
+  -   NumberCloseTo 100.4 (0 digits),
+  +   150,
+    ]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [NumberCloseTo 100.4 (0 digits), NumberCloseTo 100.4 (0 digits)]
+  Received      : [100, 150]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | any(Number) | no option
+result: passes
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not any(Number) | no option
+result: fails
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [Any<Number>, Any<Number>]
+  Received      : [100, 150]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | [100, 150] | no option
+result: passes
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [100, 150]
+  Received      : [100, 150]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $$() | values 100, 150 | multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) to have width
+  
+  - Expected  - 8
+  + Received  + 2
+  
+    Array [
+  -   Object {
+  -     "chrome": 100,
+  -     "firefox": 150,
+  -   },
+  -   Object {
+  -     "chrome": 100,
+  -     "firefox": 150,
+  -   },
+  +   100,
+  +   150,
+    ]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect $$(`sel`) not to have width
+  
+  Expected [not]: [{"chrome": 100, "firefox": 150}, {"chrome": 100, "firefox": 150}]
+  Received      : [100, 150]
+
+### toHaveWidth | not awaited $$() | values 100, 150 | { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $$() | values 100, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $$() | values 100, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | not awaited $$() | values 100, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $() | values 100, 150 | 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": 100,
+  -   "firefox": 100,
+  +   "firefox": 150,
+    }
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have width
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+      "chrome": 100,
+  -   "firefox": 100,
+  +   "firefox": 150,
+    }
+
+### toHaveWidth | multi-remote $() | values 100, 150 | { gte: 90 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not { gte: 90 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have width
+  
+  Expected [not]: {"chrome": >= 90, "firefox": >= 90}
+  Received      : {"chrome": 100, "firefox": 150}
+
+### toHaveWidth | multi-remote $() | values 100, 150 | { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": >= 90 && <= 110,
+  -   "firefox": >= 90 && <= 110,
+  +   "firefox": 150,
+    }
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have width
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+      "chrome": >= 90 && <= 110,
+  -   "firefox": >= 90 && <= 110,
+  +   "firefox": 150,
+    }
+
+### toHaveWidth | multi-remote $() | values 100, 150 | oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": oneOf<100, 200>,
+  -   "firefox": oneOf<100, 200>,
+  +   "firefox": 150,
+    }
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have width
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+      "chrome": oneOf<100, 200>,
+  -   "firefox": oneOf<100, 200>,
+  +   "firefox": 150,
+    }
+
+### toHaveWidth | multi-remote $() | values 100, 150 | closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have width
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": NumberCloseTo 100.4 (0 digits),
+  -   "firefox": NumberCloseTo 100.4 (0 digits),
+  +   "firefox": 150,
+    }
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have width
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+      "chrome": NumberCloseTo 100.4 (0 digits),
+  -   "firefox": NumberCloseTo 100.4 (0 digits),
+  +   "firefox": 150,
+    }
+
+### toHaveWidth | multi-remote $() | values 100, 150 | any(Number) | no option
+result: passes
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not any(Number) | no option
+result: fails
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have width
+  
+  Expected [not]: {"chrome": Any<Number>, "firefox": Any<Number>}
+  Received      : {"chrome": 100, "firefox": 150}
+
+### toHaveWidth | multi-remote $() | values 100, 150 | [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have width
+  
+  - Expected  - 8
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     100,
+  -     150,
+  -   ],
+  -   "firefox": Array [
+  -     100,
+  -     150,
+  -   ],
+  +   "chrome": 100,
+  +   "firefox": 150,
+    }
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have width
+  
+  - Expected [not]  - 8
+  + Received        + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     100,
+  -     150,
+  -   ],
+  -   "firefox": Array [
+  -     100,
+  -     150,
+  -   ],
+  +   "chrome": 100,
+  +   "firefox": 150,
+    }
+
+### toHaveWidth | multi-remote $() | values 100, 150 | arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $() | values 100, 150 | multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: passes
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have width
+  
+  Expected [not]: {"chrome": 100, "firefox": 150}
+  Received      : {"chrome": 100, "firefox": 150}
+
+### toHaveWidth | multi-remote $() | values 100, 150 | { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $() | values 100, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $() | values 100, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $() | values 100, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to have width
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        100,
+  -     100,
+  +     150,
+      ],
+      "firefox": Array [
+  -     100,
+        100,
+  +     150,
+      ],
+    }
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not 100 | no option
+result: fails
+before: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=100 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have width
+  
+  - Expected [not]  - 2
+  + Received        + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        100,
+  -     100,
+  +     150,
+      ],
+      "firefox": Array [
+  -     100,
+        100,
+  +     150,
+      ],
+    }
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | { gte: 90 } | no option
+result: passes
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not { gte: 90 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have width
+  
+  Expected [not]: {"chrome": [>= 90, >= 90], "firefox": [>= 90, >= 90]}
+  Received      : {"chrome": [100, 150], "firefox": [100, 150]}
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to have width
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        >= 90 && <= 110,
+  -     >= 90 && <= 110,
+  +     150,
+      ],
+      "firefox": Array [
+  -     >= 90 && <= 110,
+        >= 90 && <= 110,
+  +     150,
+      ],
+    }
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not { gte: 90, lte: 110 } | no option
+result: fails
+before: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected={"gte": 90, "lte": 110} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have width
+  
+  - Expected [not]  - 2
+  + Received        + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        >= 90 && <= 110,
+  -     >= 90 && <= 110,
+  +     150,
+      ],
+      "firefox": Array [
+  -     >= 90 && <= 110,
+        >= 90 && <= 110,
+  +     150,
+      ],
+    }
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to have width
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        oneOf<100, 200>,
+  -     oneOf<100, 200>,
+  +     150,
+      ],
+      "firefox": Array [
+  -     oneOf<100, 200>,
+        oneOf<100, 200>,
+  +     150,
+      ],
+    }
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not oneOf(100, 200) | no option
+result: fails
+before: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=oneOf<100, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have width
+  
+  - Expected [not]  - 2
+  + Received        + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        oneOf<100, 200>,
+  -     oneOf<100, 200>,
+  +     150,
+      ],
+      "firefox": Array [
+  -     oneOf<100, 200>,
+        oneOf<100, 200>,
+  +     150,
+      ],
+    }
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to have width
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        NumberCloseTo 100.4 (0 digits),
+  -     NumberCloseTo 100.4 (0 digits),
+  +     150,
+      ],
+      "firefox": Array [
+  -     NumberCloseTo 100.4 (0 digits),
+        NumberCloseTo 100.4 (0 digits),
+  +     150,
+      ],
+    }
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not closeTo(100.4, 0) | no option
+result: fails
+before: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=NumberCloseTo 100.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have width
+  
+  - Expected [not]  - 2
+  + Received        + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        NumberCloseTo 100.4 (0 digits),
+  -     NumberCloseTo 100.4 (0 digits),
+  +     150,
+      ],
+      "firefox": Array [
+  -     NumberCloseTo 100.4 (0 digits),
+        NumberCloseTo 100.4 (0 digits),
+  +     150,
+      ],
+    }
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | any(Number) | no option
+result: passes
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not any(Number) | no option
+result: fails
+before: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have width
+  
+  Expected [not]: {"chrome": [Any<Number>, Any<Number>], "firefox": [Any<Number>, Any<Number>]}
+  Received      : {"chrome": [100, 150], "firefox": [100, 150]}
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | [100, 150] | no option
+result: passes
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not [100, 150] | no option
+result: fails
+before: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=[100, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have width
+  
+  Expected [not]: {"chrome": [100, 150], "firefox": [100, 150]}
+  Received      : {"chrome": [100, 150], "firefox": [100, 150]}
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not arrayContaining([100]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[100],"inverse":false}
+before: toHaveWidth expected=ArrayContaining [100] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to have width
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        100,
+  -     100,
+  +     150,
+      ],
+      "firefox": Array [
+  -     150,
+  +     100,
+        150,
+      ],
+    }
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not multiRemote({ chrome: 100, firefox: 150 }) | no option
+result: fails
+before: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveWidth expected=multiRemote<chrome: 100, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["width"] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have width
+  
+  - Expected [not]  - 2
+  + Received        + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        100,
+  -     100,
+  +     150,
+      ],
+      "firefox": Array [
+  -     150,
+  +     100,
+        150,
+      ],
+    }
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not { chrome: 100, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":100,"firefox":150}
+before: toHaveWidth expected={"chrome": 100, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveWidth expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveWidth | multi-remote $$() | values 100, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveWidth expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $() | values 50, 150 | 50 | no option
+result: passes
+before: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+
+### toHaveHeight | $() | values 50, 150 | .not 50 | no option
+result: fails
+before: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+message:
+  Expect $(`sel`) not to have height
+  
+  Expected [not]: 50
+  Received      : 50
+
+### toHaveHeight | $() | values 50, 150 | { gte: 40 } | no option
+result: passes
+before: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+
+### toHaveHeight | $() | values 50, 150 | .not { gte: 40 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+message:
+  Expect $(`sel`) not to have height
+  
+  Expected [not]: >= 40
+  Received      : 50
+
+### toHaveHeight | $() | values 50, 150 | { gte: 40, lte: 60 } | no option
+result: passes
+before: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+
+### toHaveHeight | $() | values 50, 150 | .not { gte: 40, lte: 60 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+message:
+  Expect $(`sel`) not to have height
+  
+  Expected [not]: >= 40 && <= 60
+  Received      : 50
+
+### toHaveHeight | $() | values 50, 150 | oneOf(50, 200) | no option
+result: passes
+before: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+
+### toHaveHeight | $() | values 50, 150 | .not oneOf(50, 200) | no option
+result: fails
+before: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+message:
+  Expect $(`sel`) not to have height
+  
+  Expected [not]: oneOf<50, 200>
+  Received      : 50
+
+### toHaveHeight | $() | values 50, 150 | closeTo(50.4, 0) | no option
+result: passes
+before: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+
+### toHaveHeight | $() | values 50, 150 | .not closeTo(50.4, 0) | no option
+result: fails
+before: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+message:
+  Expect $(`sel`) not to have height
+  
+  Expected [not]: NumberCloseTo 50.4 (0 digits)
+  Received      : 50
+
+### toHaveHeight | $() | values 50, 150 | any(Number) | no option
+result: passes
+before: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+
+### toHaveHeight | $() | values 50, 150 | .not any(Number) | no option
+result: fails
+before: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+message:
+  Expect $(`sel`) not to have height
+  
+  Expected [not]: Any<Number>
+  Received      : 50
+
+### toHaveHeight | $() | values 50, 150 | [50, 150] | no option
+result: fails
+before: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x1
+message:
+  Expect $(`sel`) to have height
+  
+  Expected: [50, 150]
+  Received: 50
+
+### toHaveHeight | $() | values 50, 150 | .not [50, 150] | no option
+result: fails
+before: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+message:
+  Expect $(`sel`) not to have height
+  
+  Expected [not]: [50, 150]
+  Received      : 50
+
+### toHaveHeight | $() | values 50, 150 | arrayContaining([50]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[50],"inverse":false}
+before: toHaveHeight expected=ArrayContaining [50] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $() | values 50, 150 | .not arrayContaining([50]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[50],"inverse":false}
+before: toHaveHeight expected=ArrayContaining [50] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $() | values 50, 150 | multiRemote({ chrome: 50, firefox: 150 }) | no option
+result: fails
+before: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x1
+message:
+  Expect $(`sel`) to have height
+  
+  Expected: {"chrome": 50, "firefox": 150}
+  Received: 50
+
+### toHaveHeight | $() | values 50, 150 | .not multiRemote({ chrome: 50, firefox: 150 }) | no option
+result: fails
+before: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x1
+message:
+  Expect $(`sel`) not to have height
+  
+  Expected [not]: {"chrome": 50, "firefox": 150}
+  Received      : 50
+
+### toHaveHeight | $() | values 50, 150 | { chrome: 50, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":50,"firefox":150}
+before: toHaveHeight expected={"chrome": 50, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $() | values 50, 150 | .not { chrome: 50, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":50,"firefox":150}
+before: toHaveHeight expected={"chrome": 50, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $() | values 50, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveHeight expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $() | values 50, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveHeight expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $() | values 50, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveHeight expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $() | values 50, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveHeight expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $$() | values 50, 150 | 50 | no option
+result: fails
+before: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) to have height
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      50,
+  -   50,
+  +   150,
+    ]
+
+### toHaveHeight | $$() | values 50, 150 | .not 50 | no option
+result: fails
+before: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [50, 50]
+  Received      : [50, 150]
+
+### toHaveHeight | $$() | values 50, 150 | { gte: 40 } | no option
+result: passes
+before: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+
+### toHaveHeight | $$() | values 50, 150 | .not { gte: 40 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [>= 40, >= 40]
+  Received      : [50, 150]
+
+### toHaveHeight | $$() | values 50, 150 | { gte: 40, lte: 60 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) to have height
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      >= 40 && <= 60,
+  -   >= 40 && <= 60,
+  +   150,
+    ]
+
+### toHaveHeight | $$() | values 50, 150 | .not { gte: 40, lte: 60 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [>= 40 && <= 60, >= 40 && <= 60]
+  Received      : [50, 150]
+
+### toHaveHeight | $$() | values 50, 150 | oneOf(50, 200) | no option
+result: fails
+before: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) to have height
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      oneOf<50, 200>,
+  -   oneOf<50, 200>,
+  +   150,
+    ]
+
+### toHaveHeight | $$() | values 50, 150 | .not oneOf(50, 200) | no option
+result: fails
+before: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [oneOf<50, 200>, oneOf<50, 200>]
+  Received      : [50, 150]
+
+### toHaveHeight | $$() | values 50, 150 | closeTo(50.4, 0) | no option
+result: fails
+before: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) to have height
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      NumberCloseTo 50.4 (0 digits),
+  -   NumberCloseTo 50.4 (0 digits),
+  +   150,
+    ]
+
+### toHaveHeight | $$() | values 50, 150 | .not closeTo(50.4, 0) | no option
+result: fails
+before: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [NumberCloseTo 50.4 (0 digits), NumberCloseTo 50.4 (0 digits)]
+  Received      : [50, 150]
+
+### toHaveHeight | $$() | values 50, 150 | any(Number) | no option
+result: passes
+before: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+
+### toHaveHeight | $$() | values 50, 150 | .not any(Number) | no option
+result: fails
+before: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [Any<Number>, Any<Number>]
+  Received      : [50, 150]
+
+### toHaveHeight | $$() | values 50, 150 | [50, 150] | no option
+result: passes
+before: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+
+### toHaveHeight | $$() | values 50, 150 | .not [50, 150] | no option
+result: fails
+before: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [50, 150]
+  Received      : [50, 150]
+
+### toHaveHeight | $$() | values 50, 150 | arrayContaining([50]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[50],"inverse":false}
+before: toHaveHeight expected=ArrayContaining [50] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $$() | values 50, 150 | .not arrayContaining([50]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[50],"inverse":false}
+before: toHaveHeight expected=ArrayContaining [50] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $$() | values 50, 150 | multiRemote({ chrome: 50, firefox: 150 }) | no option
+result: fails
+before: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) to have height
+  
+  - Expected  - 8
+  + Received  + 2
+  
+    Array [
+  -   Object {
+  -     "chrome": 50,
+  -     "firefox": 150,
+  -   },
+  -   Object {
+  -     "chrome": 50,
+  -     "firefox": 150,
+  -   },
+  +   50,
+  +   150,
+    ]
+
+### toHaveHeight | $$() | values 50, 150 | .not multiRemote({ chrome: 50, firefox: 150 }) | no option
+result: fails
+before: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [{"chrome": 50, "firefox": 150}, {"chrome": 50, "firefox": 150}]
+  Received      : [50, 150]
+
+### toHaveHeight | $$() | values 50, 150 | { chrome: 50, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":50,"firefox":150}
+before: toHaveHeight expected={"chrome": 50, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $$() | values 50, 150 | .not { chrome: 50, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":50,"firefox":150}
+before: toHaveHeight expected={"chrome": 50, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $$() | values 50, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveHeight expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $$() | values 50, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveHeight expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $$() | values 50, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveHeight expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | $$() | values 50, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveHeight expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | empty $$() | values 50, 150 | 50 | no option
+result: fails
+before: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have height
+  
+  Expected: [50]
+  Received: undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | .not 50 | no option
+result: fails
+before: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [50]
+  Received      : undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | { gte: 40 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have height
+  
+  Expected: [>= 40]
+  Received: undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | .not { gte: 40 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [>= 40]
+  Received      : undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | { gte: 40, lte: 60 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have height
+  
+  Expected: [>= 40 && <= 60]
+  Received: undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | .not { gte: 40, lte: 60 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [>= 40 && <= 60]
+  Received      : undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | oneOf(50, 200) | no option
+result: fails
+before: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have height
+  
+  Expected: [oneOf<50, 200>]
+  Received: undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | .not oneOf(50, 200) | no option
+result: fails
+before: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [oneOf<50, 200>]
+  Received      : undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | closeTo(50.4, 0) | no option
+result: fails
+before: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have height
+  
+  Expected: [NumberCloseTo 50.4 (0 digits)]
+  Received: undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | .not closeTo(50.4, 0) | no option
+result: fails
+before: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [NumberCloseTo 50.4 (0 digits)]
+  Received      : undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | any(Number) | no option
+result: fails
+before: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have height
+  
+  Expected: [Any<Number>]
+  Received: undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | .not any(Number) | no option
+result: fails
+before: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [Any<Number>]
+  Received      : undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | [50, 150] | no option
+result: fails
+before: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have height
+  
+  Expected: [50, 150]
+  Received: undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | .not [50, 150] | no option
+result: fails
+before: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [50, 150]
+  Received      : undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | arrayContaining([50]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[50],"inverse":false}
+before: toHaveHeight expected=ArrayContaining [50] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | empty $$() | values 50, 150 | .not arrayContaining([50]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[50],"inverse":false}
+before: toHaveHeight expected=ArrayContaining [50] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | empty $$() | values 50, 150 | multiRemote({ chrome: 50, firefox: 150 }) | no option
+result: fails
+before: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have height
+  
+  Expected: [{"chrome": 50, "firefox": 150}]
+  Received: undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | .not multiRemote({ chrome: 50, firefox: 150 }) | no option
+result: fails
+before: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have height
+  
+  Expected [not]: [{"chrome": 50, "firefox": 150}]
+  Received      : undefined
+
+### toHaveHeight | empty $$() | values 50, 150 | { chrome: 50, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":50,"firefox":150}
+before: toHaveHeight expected={"chrome": 50, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | empty $$() | values 50, 150 | .not { chrome: 50, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":50,"firefox":150}
+before: toHaveHeight expected={"chrome": 50, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | empty $$() | values 50, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveHeight expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | empty $$() | values 50, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveHeight expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | empty $$() | values 50, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveHeight expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | empty $$() | values 50, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveHeight expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | multi-remote $() | values 50, 150 | 50 | no option
+result: fails
+before: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have height
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": 50,
+  -   "firefox": 50,
+  +   "firefox": 150,
+    }
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not 50 | no option
+result: fails
+before: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=50 options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have height
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+      "chrome": 50,
+  -   "firefox": 50,
+  +   "firefox": 150,
+    }
+
+### toHaveHeight | multi-remote $() | values 50, 150 | { gte: 40 } | no option
+result: passes
+before: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not { gte: 40 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have height
+  
+  Expected [not]: {"chrome": >= 40, "firefox": >= 40}
+  Received      : {"chrome": 50, "firefox": 150}
+
+### toHaveHeight | multi-remote $() | values 50, 150 | { gte: 40, lte: 60 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have height
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": >= 40 && <= 60,
+  -   "firefox": >= 40 && <= 60,
+  +   "firefox": 150,
+    }
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not { gte: 40, lte: 60 } | no option
+result: fails
+before: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected={"gte": 40, "lte": 60} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have height
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+      "chrome": >= 40 && <= 60,
+  -   "firefox": >= 40 && <= 60,
+  +   "firefox": 150,
+    }
+
+### toHaveHeight | multi-remote $() | values 50, 150 | oneOf(50, 200) | no option
+result: fails
+before: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have height
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": oneOf<50, 200>,
+  -   "firefox": oneOf<50, 200>,
+  +   "firefox": 150,
+    }
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not oneOf(50, 200) | no option
+result: fails
+before: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=oneOf<50, 200> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have height
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+      "chrome": oneOf<50, 200>,
+  -   "firefox": oneOf<50, 200>,
+  +   "firefox": 150,
+    }
+
+### toHaveHeight | multi-remote $() | values 50, 150 | closeTo(50.4, 0) | no option
+result: fails
+before: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have height
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": NumberCloseTo 50.4 (0 digits),
+  -   "firefox": NumberCloseTo 50.4 (0 digits),
+  +   "firefox": 150,
+    }
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not closeTo(50.4, 0) | no option
+result: fails
+before: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=NumberCloseTo 50.4 (0 digits) options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have height
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+      "chrome": NumberCloseTo 50.4 (0 digits),
+  -   "firefox": NumberCloseTo 50.4 (0 digits),
+  +   "firefox": 150,
+    }
+
+### toHaveHeight | multi-remote $() | values 50, 150 | any(Number) | no option
+result: passes
+before: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not any(Number) | no option
+result: fails
+before: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=Any<Number> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have height
+  
+  Expected [not]: {"chrome": Any<Number>, "firefox": Any<Number>}
+  Received      : {"chrome": 50, "firefox": 150}
+
+### toHaveHeight | multi-remote $() | values 50, 150 | [50, 150] | no option
+result: fails
+before: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have height
+  
+  - Expected  - 8
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     50,
+  -     150,
+  -   ],
+  -   "firefox": Array [
+  -     50,
+  -     150,
+  -   ],
+  +   "chrome": 50,
+  +   "firefox": 150,
+    }
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not [50, 150] | no option
+result: fails
+before: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=[50, 150] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have height
+  
+  - Expected [not]  - 8
+  + Received        + 2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     50,
+  -     150,
+  -   ],
+  -   "firefox": Array [
+  -     50,
+  -     150,
+  -   ],
+  +   "chrome": 50,
+  +   "firefox": 150,
+    }
+
+### toHaveHeight | multi-remote $() | values 50, 150 | arrayContaining([50]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[50],"inverse":false}
+before: toHaveHeight expected=ArrayContaining [50] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not arrayContaining([50]) | no option
+result: throws Error: Invalid NumberMatcher. Received: {"sample":[50],"inverse":false}
+before: toHaveHeight expected=ArrayContaining [50] options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | multi-remote $() | values 50, 150 | multiRemote({ chrome: 50, firefox: 150 }) | no option
+result: passes
+before: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not multiRemote({ chrome: 50, firefox: 150 }) | no option
+result: fails
+before: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveHeight expected=multiRemote<chrome: 50, firefox: 150> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: ["height"] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have height
+  
+  Expected [not]: {"chrome": 50, "firefox": 150}
+  Received      : {"chrome": 50, "firefox": 150}
+
+### toHaveHeight | multi-remote $() | values 50, 150 | { chrome: 50, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":50,"firefox":150}
+before: toHaveHeight expected={"chrome": 50, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not { chrome: 50, firefox: 150 } | no option
+result: throws Error: Invalid NumberMatcher. Received: {"chrome":50,"firefox":150}
+before: toHaveHeight expected={"chrome": 50, "firefox": 150} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | multi-remote $() | values 50, 150 | {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveHeight expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not {} | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveHeight expected={} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | multi-remote $() | values 50, 150 | "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveHeight expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveHeight | multi-remote $() | values 50, 150 | .not "100" | no option
+result: throws Error: Invalid NumberMatcher. Received: "100"
+before: toHaveHeight expected="100" options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | $() | values 100x50, 150x50 | { width: 100, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toHaveSize | $() | values 100x50, 150x50 | .not { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: {"height": 50, "width": 100}
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | $() | values 100x50, 150x50 | { width: { gte: 90 }, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toHaveSize | $() | values 100x50, 150x50 | .not { width: { gte: 90 }, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: {"height": 50, "width": >= 90}
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | $() | values 100x50, 150x50 | { width: closeTo(100.4, 0), height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toHaveSize | $() | values 100x50, 150x50 | .not { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: {"height": 50, "width": NumberCloseTo 100.4 (0 digits)}
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | $() | values 100x50, 150x50 | objectContaining({ width: 100 }) | no option
+result: passes
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toHaveSize | $() | values 100x50, 150x50 | .not objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: ObjectContaining {"width": 100}
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | $() | values 100x50, 150x50 | [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+message:
+  Expect $(`sel`) to have size
+  
+  Expected: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+  Received: {"height": 50, "width": 100}
+
+### toHaveSize | $() | values 100x50, 150x50 | .not [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | $() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+message:
+  Expect $(`sel`) to have size
+  
+  Expected: ArrayContaining [{"height": 50, "width": 100}]
+  Received: {"height": 50, "width": 100}
+
+### toHaveSize | $() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: passes
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+
+### toHaveSize | $() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+message:
+  Expect $(`sel`) to have size
+  
+  Expected: multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>
+  Received: {"height": 50, "width": 100}
+
+### toHaveSize | $() | values 100x50, 150x50 | .not multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | $() | values 100x50, 150x50 | { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | $() | values 100x50, 150x50 | .not { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | { width: 100, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | .not { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: {"height": 50, "width": 100}
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | { width: { gte: 90 }, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | .not { width: { gte: 90 }, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: {"height": 50, "width": >= 90}
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | { width: closeTo(100.4, 0), height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | .not { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: {"height": 50, "width": NumberCloseTo 100.4 (0 digits)}
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | objectContaining({ width: 100 }) | no option
+result: passes
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | .not objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: ObjectContaining {"width": 100}
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+message:
+  Expect $(`sel`) to have size
+  
+  Expected: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+  Received: {"height": 50, "width": 100}
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | .not [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+message:
+  Expect $(`sel`) to have size
+  
+  Expected: ArrayContaining [{"height": 50, "width": 100}]
+  Received: {"height": 50, "width": 100}
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: passes
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x1
+message:
+  Expect $(`sel`) to have size
+  
+  Expected: multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>
+  Received: {"height": 50, "width": 100}
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | .not multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x1
+message:
+  Expect $(`sel`) not to have size
+  
+  Expected [not]: multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>
+  Received      : {"height": 50, "width": 100}
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | not awaited $() | values 100x50, 150x50 | .not { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | $$() | values 100x50, 150x50 | { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to have size
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      Object {
+        "height": 50,
+        "width": 100,
+      },
+      Object {
+        "height": 50,
+  -     "width": 100,
+  +     "width": 150,
+      },
+    ]
+
+### toHaveSize | $$() | values 100x50, 150x50 | .not { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": 100}, {"height": 50, "width": 100}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | $$() | values 100x50, 150x50 | { width: { gte: 90 }, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | $$() | values 100x50, 150x50 | .not { width: { gte: 90 }, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": >= 90}, {"height": 50, "width": >= 90}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | $$() | values 100x50, 150x50 | { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to have size
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      Object {
+        "height": 50,
+        "width": NumberCloseTo 100.4 (0 digits),
+      },
+      Object {
+        "height": 50,
+  -     "width": NumberCloseTo 100.4 (0 digits),
+  +     "width": 150,
+      },
+    ]
+
+### toHaveSize | $$() | values 100x50, 150x50 | .not { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": NumberCloseTo 100.4 (0 digits)}, {"height": 50, "width": NumberCloseTo 100.4 (0 digits)}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | $$() | values 100x50, 150x50 | objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 3
+  
+    Array [
+      ObjectContaining {
+        "width": 100,
+      },
+  -   ObjectContaining {
+  -     "width": 100,
+  +   Object {
+  +     "height": 50,
+  +     "width": 150,
+      },
+    ]
+
+### toHaveSize | $$() | values 100x50, 150x50 | .not objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [ObjectContaining {"width": 100}, ObjectContaining {"width": 100}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | $$() | values 100x50, 150x50 | [100x50, 150x50] | no option
+result: passes
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | $$() | values 100x50, 150x50 | .not [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | $$() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to have size
+  
+  Expected: ArrayContaining [{"height": 50, "width": 100}]
+  Received: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: passes
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toHaveSize | $$() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 8
+  
+    Array [
+  -   multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>,
+  -   multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>,
+  +   Object {
+  +     "height": 50,
+  +     "width": 100,
+  +   },
+  +   Object {
+  +     "height": 50,
+  +     "width": 150,
+  +   },
+    ]
+
+### toHaveSize | $$() | values 100x50, 150x50 | .not multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>, multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | $$() | values 100x50, 150x50 | { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | $$() | values 100x50, 150x50 | .not { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have size
+  
+  Expected: [{"height": 50, "width": 100}]
+  Received: undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | .not { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": 100}]
+  Received      : undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | { width: { gte: 90 }, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have size
+  
+  Expected: [{"height": 50, "width": >= 90}]
+  Received: undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | .not { width: { gte: 90 }, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": >= 90}]
+  Received      : undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have size
+  
+  Expected: [{"height": 50, "width": NumberCloseTo 100.4 (0 digits)}]
+  Received: undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | .not { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": NumberCloseTo 100.4 (0 digits)}]
+  Received      : undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have size
+  
+  Expected: [ObjectContaining {"width": 100}]
+  Received: undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | .not objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [ObjectContaining {"width": 100}]
+  Received      : undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have size
+  
+  Expected: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+  Received: undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | .not [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+  Received      : undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have size
+  
+  Expected: ArrayContaining [{"height": 50, "width": 100}]
+  Received: undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: ArrayContaining [{"height": 50, "width": 100}]
+  Received      : undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: -
+message:
+  Expect $$(`sel`) to have size
+  
+  Expected: [multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>]
+  Received: undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | .not multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: -
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>]
+  Received      : undefined
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | empty $$() | values 100x50, 150x50 | .not { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | { width: 100, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | .not { width: 100, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | { width: { gte: 90 }, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | .not { width: { gte: 90 }, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect some of $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": >= 90}, {"height": 50, "width": >= 90}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | { width: closeTo(100.4, 0), height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | .not { width: closeTo(100.4, 0), height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | objectContaining({ width: 100 }) | no option
+result: passes
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | .not objectContaining({ width: 100 }) | no option
+result: passes
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | [100x50, 150x50] | no option
+result: passes
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | .not [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect some of $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect some of $$(`sel`) to have size
+  
+  Expected: ArrayContaining [{"height": 50, "width": 100}]
+  Received: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: passes
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect some of $$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 8
+  
+    Array [
+  -   multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>,
+  -   multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>,
+  +   Object {
+  +     "height": 50,
+  +     "width": 100,
+  +   },
+  +   Object {
+  +     "height": 50,
+  +     "width": 150,
+  +   },
+    ]
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | .not multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect some of $$(`sel`) not to have size
+  
+  Expected [not]: [multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>, multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | some($$()) | values 100x50, 150x50 | .not { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to have size
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      Object {
+        "height": 50,
+        "width": 100,
+      },
+      Object {
+        "height": 50,
+  -     "width": 100,
+  +     "width": 150,
+      },
+    ]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | .not { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": 100}, {"height": 50, "width": 100}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | { width: { gte: 90 }, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | .not { width: { gte: 90 }, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": >= 90}, {"height": 50, "width": >= 90}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to have size
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Array [
+      Object {
+        "height": 50,
+        "width": NumberCloseTo 100.4 (0 digits),
+      },
+      Object {
+        "height": 50,
+  -     "width": NumberCloseTo 100.4 (0 digits),
+  +     "width": 150,
+      },
+    ]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | .not { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": NumberCloseTo 100.4 (0 digits)}, {"height": 50, "width": NumberCloseTo 100.4 (0 digits)}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 3
+  
+    Array [
+      ObjectContaining {
+        "width": 100,
+      },
+  -   ObjectContaining {
+  -     "width": 100,
+  +   Object {
+  +     "height": 50,
+  +     "width": 150,
+      },
+    ]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | .not objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [ObjectContaining {"width": 100}, ObjectContaining {"width": 100}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | [100x50, 150x50] | no option
+result: passes
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | .not [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to have size
+  
+  Expected: ArrayContaining [{"height": 50, "width": 100}]
+  Received: [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: passes
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect $$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 8
+  
+    Array [
+  -   multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>,
+  -   multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>,
+  +   Object {
+  +     "height": 50,
+  +     "width": 100,
+  +   },
+  +   Object {
+  +     "height": 50,
+  +     "width": 150,
+  +   },
+    ]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | .not multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect $$(`sel`) not to have size
+  
+  Expected [not]: [multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>, multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}>]
+  Received      : [{"height": 50, "width": 100}, {"height": 50, "width": 150}]
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | not awaited $$() | values 100x50, 150x50 | .not { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have size
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": Object {
+        "height": 50,
+        "width": 100,
+      },
+      "firefox": Object {
+        "height": 50,
+  -     "width": 100,
+  +     "width": 150,
+      },
+    }
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | .not { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have size
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+      "chrome": Object {
+        "height": 50,
+        "width": 100,
+      },
+      "firefox": Object {
+        "height": 50,
+  -     "width": 100,
+  +     "width": 150,
+      },
+    }
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | { width: { gte: 90 }, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | .not { width: { gte: 90 }, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have size
+  
+  Expected [not]: {"chrome": {"height": 50, "width": >= 90}, "firefox": {"height": 50, "width": >= 90}}
+  Received      : {"chrome": {"height": 50, "width": 100}, "firefox": {"height": 50, "width": 150}}
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have size
+  
+  - Expected  - 1
+  + Received  + 1
+  
+    Multi-remote values {
+      "chrome": Object {
+        "height": 50,
+        "width": NumberCloseTo 100.4 (0 digits),
+      },
+      "firefox": Object {
+        "height": 50,
+  -     "width": NumberCloseTo 100.4 (0 digits),
+  +     "width": 150,
+      },
+    }
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | .not { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have size
+  
+  - Expected [not]  - 1
+  + Received        + 1
+  
+    Multi-remote values {
+      "chrome": Object {
+        "height": 50,
+        "width": NumberCloseTo 100.4 (0 digits),
+      },
+      "firefox": Object {
+        "height": 50,
+  -     "width": NumberCloseTo 100.4 (0 digits),
+  +     "width": 150,
+      },
+    }
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 3
+  
+    Multi-remote values {
+      "chrome": ObjectContaining {
+        "width": 100,
+      },
+  -   "firefox": ObjectContaining {
+  -     "width": 100,
+  +   "firefox": Object {
+  +     "height": 50,
+  +     "width": 150,
+      },
+    }
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | .not objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have size
+  
+  - Expected [not]  - 2
+  + Received        + 3
+  
+    Multi-remote values {
+      "chrome": ObjectContaining {
+        "width": 100,
+      },
+  -   "firefox": ObjectContaining {
+  -     "width": 100,
+  +   "firefox": Object {
+  +     "height": 50,
+  +     "width": 150,
+      },
+    }
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have size
+  
+  - Expected  - 14
+  + Received  +  2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     Object {
+  +   "chrome": Object {
+        "height": 50,
+        "width": 100,
+      },
+  -     Object {
+  -       "height": 50,
+  -       "width": 150,
+  -     },
+  -   ],
+  -   "firefox": Array [
+  -     Object {
+  +   "firefox": Object {
+        "height": 50,
+  -       "width": 100,
+  -     },
+  -     Object {
+  -       "height": 50,
+        "width": 150,
+      },
+  -   ],
+    }
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | .not [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have size
+  
+  - Expected [not]  - 14
+  + Received        +  2
+  
+    Multi-remote values {
+  -   "chrome": Array [
+  -     Object {
+  +   "chrome": Object {
+        "height": 50,
+        "width": 100,
+      },
+  -     Object {
+  -       "height": 50,
+  -       "width": 150,
+  -     },
+  -   ],
+  -   "firefox": Array [
+  -     Object {
+  +   "firefox": Object {
+        "height": 50,
+  -       "width": 100,
+  -     },
+  -     Object {
+  -       "height": 50,
+        "width": 150,
+      },
+  -   ],
+    }
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) to have size
+  
+  - Expected  - 7
+  + Received  + 3
+  
+    Multi-remote values {
+  -   "chrome": ArrayContaining [
+  -     Object {
+  +   "chrome": Object {
+        "height": 50,
+        "width": 100,
+      },
+  -   ],
+  -   "firefox": ArrayContaining [
+  -     Object {
+  +   "firefox": Object {
+        "height": 50,
+  -       "width": 100,
+  +     "width": 150,
+      },
+  -   ],
+    }
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: passes
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x2
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: passes
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | .not multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x2
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have size
+  
+  Expected [not]: {"chrome": {"height": 50, "width": 100}, "firefox": {"height": 50, "width": 150}}
+  Received      : {"chrome": {"height": 50, "width": 100}, "firefox": {"height": 50, "width": 150}}
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | multi-remote $() | values 100x50, 150x50 | .not { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        Object {
+          "height": 50,
+          "width": 100,
+        },
+        Object {
+          "height": 50,
+  -       "width": 100,
+  +       "width": 150,
+        },
+      ],
+      "firefox": Array [
+        Object {
+          "height": 50,
+          "width": 100,
+        },
+        Object {
+          "height": 50,
+  -       "width": 100,
+  +       "width": 150,
+        },
+      ],
+    }
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | .not { width: 100, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have size
+  
+  - Expected [not]  - 2
+  + Received        + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        Object {
+          "height": 50,
+          "width": 100,
+        },
+        Object {
+          "height": 50,
+  -       "width": 100,
+  +       "width": 150,
+        },
+      ],
+      "firefox": Array [
+        Object {
+          "height": 50,
+          "width": 100,
+        },
+        Object {
+          "height": 50,
+  -       "width": 100,
+  +       "width": 150,
+        },
+      ],
+    }
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | { width: { gte: 90 }, height: 50 } | no option
+result: passes
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | .not { width: { gte: 90 }, height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": {"gte": 90}} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have size
+  
+  Expected [not]: {"chrome": [{"height": 50, "width": >= 90}, {"height": 50, "width": >= 90}], "firefox": [{"height": 50, "width": >= 90}, {"height": 50, "width": >= 90}]}
+  Received      : {"chrome": [{"height": 50, "width": 100}, {"height": 50, "width": 150}], "firefox": [{"height": 50, "width": 100}, {"height": 50, "width": 150}]}
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        Object {
+          "height": 50,
+          "width": NumberCloseTo 100.4 (0 digits),
+        },
+        Object {
+          "height": 50,
+  -       "width": NumberCloseTo 100.4 (0 digits),
+  +       "width": 150,
+        },
+      ],
+      "firefox": Array [
+        Object {
+          "height": 50,
+          "width": NumberCloseTo 100.4 (0 digits),
+        },
+        Object {
+          "height": 50,
+  -       "width": NumberCloseTo 100.4 (0 digits),
+  +       "width": 150,
+        },
+      ],
+    }
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | .not { width: closeTo(100.4, 0), height: 50 } | no option
+result: fails
+before: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected={"height": 50, "width": NumberCloseTo 100.4 (0 digits)} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have size
+  
+  - Expected [not]  - 2
+  + Received        + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        Object {
+          "height": 50,
+          "width": NumberCloseTo 100.4 (0 digits),
+        },
+        Object {
+          "height": 50,
+  -       "width": NumberCloseTo 100.4 (0 digits),
+  +       "width": 150,
+        },
+      ],
+      "firefox": Array [
+        Object {
+          "height": 50,
+          "width": NumberCloseTo 100.4 (0 digits),
+        },
+        Object {
+          "height": 50,
+  -       "width": NumberCloseTo 100.4 (0 digits),
+  +       "width": 150,
+        },
+      ],
+    }
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to have size
+  
+  - Expected  - 4
+  + Received  + 6
+  
+    Multi-remote values {
+      "chrome": Array [
+        ObjectContaining {
+          "width": 100,
+        },
+  -     ObjectContaining {
+  -       "width": 100,
+  +     Object {
+  +       "height": 50,
+  +       "width": 150,
+        },
+      ],
+      "firefox": Array [
+        ObjectContaining {
+          "width": 100,
+        },
+  -     ObjectContaining {
+  -       "width": 100,
+  +     Object {
+  +       "height": 50,
+  +       "width": 150,
+        },
+      ],
+    }
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | .not objectContaining({ width: 100 }) | no option
+result: fails
+before: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ObjectContaining {"width": 100} options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have size
+  
+  - Expected [not]  - 4
+  + Received        + 6
+  
+    Multi-remote values {
+      "chrome": Array [
+        ObjectContaining {
+          "width": 100,
+        },
+  -     ObjectContaining {
+  -       "width": 100,
+  +     Object {
+  +       "height": 50,
+  +       "width": 150,
+        },
+      ],
+      "firefox": Array [
+        ObjectContaining {
+          "width": 100,
+        },
+  -     ObjectContaining {
+  -       "width": 100,
+  +     Object {
+  +       "height": 50,
+  +       "width": 150,
+        },
+      ],
+    }
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | [100x50, 150x50] | no option
+result: passes
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | .not [100x50, 150x50] | no option
+result: fails
+before: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=[{"height": 50, "width": 100}, {"height": 50, "width": 150}] options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have size
+  
+  Expected [not]: {"chrome": [{"height": 50, "width": 100}, {"height": 50, "width": 150}], "firefox": [{"height": 50, "width": 100}, {"height": 50, "width": 150}]}
+  Received      : {"chrome": [{"height": 50, "width": 100}, {"height": 50, "width": 150}], "firefox": [{"height": 50, "width": 100}, {"height": 50, "width": 150}]}
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | arrayContaining([100x50]) | no option
+result: fails
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to have size
+  
+  Expected: {"chrome": ArrayContaining [{"height": 50, "width": 100}], "firefox": ArrayContaining [{"height": 50, "width": 100}]}
+  Received: {"chrome": [{"height": 50, "width": 100}, {"height": 50, "width": 150}], "firefox": [{"height": 50, "width": 100}, {"height": 50, "width": 150}]}
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | .not arrayContaining([100x50]) | no option
+result: passes
+before: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=ArrayContaining [{"height": 50, "width": 100}] options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x4
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=false
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) to have size
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        Object {
+          "height": 50,
+          "width": 100,
+        },
+        Object {
+          "height": 50,
+  -       "width": 100,
+  +       "width": 150,
+        },
+      ],
+      "firefox": Array [
+        Object {
+          "height": 50,
+  -       "width": 150,
+  +       "width": 100,
+        },
+        Object {
+          "height": 50,
+          "width": 150,
+        },
+      ],
+    }
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | .not multiRemote({ chrome: 100x50, firefox: 150x50 }) | no option
+result: fails
+before: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait]
+after: toHaveSize expected=multiRemote<chrome: {"width":100,"height":50}, firefox: {"width":150,"height":50}> options=[afterAssertion,beforeAssertion,wait] pass=true
+getter calls: [] x4
+message:
+  Expect multi-remote<chrome, firefox>.$$(`sel`) not to have size
+  
+  - Expected [not]  - 2
+  + Received        + 2
+  
+    Multi-remote values {
+      "chrome": Array [
+        Object {
+          "height": 50,
+          "width": 100,
+        },
+        Object {
+          "height": 50,
+  -       "width": 100,
+  +       "width": 150,
+        },
+      ],
+      "firefox": Array [
+        Object {
+          "height": 50,
+  -       "width": 150,
+  +       "width": 100,
+        },
+        Object {
+          "height": 50,
+          "width": 150,
+        },
+      ],
+    }
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
+
+### toHaveSize | multi-remote $$() | values 100x50, 150x50 | .not { width: {} } | no option
+result: throws Error: Invalid NumberMatcher. Received: {}
+before: toHaveSize expected={"height": 50, "width": {}} options=[afterAssertion,beforeAssertion,wait]
+after: -
+getter calls: -
