@@ -17,6 +17,25 @@ message:
   Received: "Other"
 time: 400 ms
 
+### toHaveText | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toHaveText | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect $(`sel`) not to have text
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
 ### toHaveText | $$() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -41,6 +60,25 @@ message:
   +   "Other",
   +   "Other",
     ]
+time: 400 ms
+
+### toHaveText | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toHaveText | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect $$(`sel`) not to have text
+  
+  Expected [not]: ["Hello", "Hello"]
+  Received      : ["Hello", "Hello"]
 time: 400 ms
 
 ### toHaveText | multi-remote $() | right on the 3rd try | wait 1000, interval 100
@@ -69,6 +107,25 @@ message:
     }
 time: 400 ms
 
+### toHaveText | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toHaveText | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have text
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
 ### toHaveHTML | $() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -86,6 +143,25 @@ message:
   
   Expected: "Hello"
   Received: "Other"
+time: 400 ms
+
+### toHaveHTML | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "interval": 100, "wait": 1000}] x3
+time: 200 ms
+
+### toHaveHTML | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "interval": 100, "wait": 300}] x4
+message:
+  Expect $(`sel`) not to have HTML
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
 time: 400 ms
 
 ### toHaveHTML | $$() | right on the 3rd try | wait 1000, interval 100
@@ -114,6 +190,25 @@ message:
     ]
 time: 400 ms
 
+### toHaveHTML | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "interval": 100, "wait": 1000}] x6
+time: 200 ms
+
+### toHaveHTML | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "interval": 100, "wait": 300}] x8
+message:
+  Expect $$(`sel`) not to have HTML
+  
+  Expected [not]: ["Hello", "Hello"]
+  Received      : ["Hello", "Hello"]
+time: 400 ms
+
 ### toHaveHTML | multi-remote $() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -140,6 +235,25 @@ message:
     }
 time: 400 ms
 
+### toHaveHTML | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "interval": 100, "wait": 1000}] x6
+time: 200 ms
+
+### toHaveHTML | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveHTML expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [{"afterAssertion": [Function Mock], "beforeAssertion": [Function Mock], "interval": 100, "wait": 300}] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have HTML
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
 ### toHaveComputedLabel | $() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -157,6 +271,25 @@ message:
   
   Expected: "Hello"
   Received: "Other"
+time: 400 ms
+
+### toHaveComputedLabel | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toHaveComputedLabel | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect $(`sel`) not to have computed label
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
 time: 400 ms
 
 ### toHaveComputedLabel | $$() | right on the 3rd try | wait 1000, interval 100
@@ -185,6 +318,25 @@ message:
     ]
 time: 400 ms
 
+### toHaveComputedLabel | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toHaveComputedLabel | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect $$(`sel`) not to have computed label
+  
+  Expected [not]: ["Hello", "Hello"]
+  Received      : ["Hello", "Hello"]
+time: 400 ms
+
 ### toHaveComputedLabel | multi-remote $() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -211,6 +363,25 @@ message:
     }
 time: 400 ms
 
+### toHaveComputedLabel | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toHaveComputedLabel | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedLabel expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have computed label
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
 ### toHaveComputedRole | $() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -228,6 +399,25 @@ message:
   
   Expected: "Hello"
   Received: "Other"
+time: 400 ms
+
+### toHaveComputedRole | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toHaveComputedRole | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect $(`sel`) not to have computed role
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
 time: 400 ms
 
 ### toHaveComputedRole | $$() | right on the 3rd try | wait 1000, interval 100
@@ -256,6 +446,25 @@ message:
     ]
 time: 400 ms
 
+### toHaveComputedRole | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toHaveComputedRole | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect $$(`sel`) not to have computed role
+  
+  Expected [not]: ["Hello", "Hello"]
+  Received      : ["Hello", "Hello"]
+time: 400 ms
+
 ### toHaveComputedRole | multi-remote $() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -282,6 +491,25 @@ message:
     }
 time: 400 ms
 
+### toHaveComputedRole | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toHaveComputedRole | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveComputedRole expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to have computed role
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
 ### toBeDisplayed | $() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
@@ -299,6 +527,25 @@ message:
   
   Expected: "displayed"
   Received: "not displayed"
+time: 400 ms
+
+### toBeDisplayed | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [{"contentVisibilityAuto": true, "opacityProperty": true, "visibilityProperty": true, "withinViewport": false}] x3
+time: 200 ms
+
+### toBeDisplayed | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [{"contentVisibilityAuto": true, "opacityProperty": true, "visibilityProperty": true, "withinViewport": false}] x4
+message:
+  Expect $(`sel`) not to be displayed
+  
+  Expected: "not displayed"
+  Received: "displayed"
 time: 400 ms
 
 ### toBeDisplayed | $$() | right on the 3rd try | wait 1000, interval 100
@@ -324,6 +571,32 @@ message:
   -   "displayed",
   +   "not displayed",
   +   "not displayed",
+    ]
+time: 400 ms
+
+### toBeDisplayed | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [{"contentVisibilityAuto": true, "opacityProperty": true, "visibilityProperty": true, "withinViewport": false}] x6
+time: 200 ms
+
+### toBeDisplayed | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [{"contentVisibilityAuto": true, "opacityProperty": true, "visibilityProperty": true, "withinViewport": false}] x8
+message:
+  Expect $$(`sel`) not to be displayed
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not displayed",
+  -   "not displayed",
+  +   "displayed",
+  +   "displayed",
     ]
 time: 400 ms
 
@@ -353,6 +626,32 @@ message:
     }
 time: 400 ms
 
+### toBeDisplayed | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [{"contentVisibilityAuto": true, "opacityProperty": true, "visibilityProperty": true, "withinViewport": false}] x6
+time: 200 ms
+
+### toBeDisplayed | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisplayed expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [{"contentVisibilityAuto": true, "opacityProperty": true, "visibilityProperty": true, "withinViewport": false}] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to be displayed
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "not displayed",
+  -   "firefox": "not displayed",
+  +   "chrome": "displayed",
+  +   "firefox": "displayed",
+    }
+time: 400 ms
+
 ### toBeClickable | $() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
@@ -370,6 +669,25 @@ message:
   
   Expected: "clickable"
   Received: "not clickable"
+time: 400 ms
+
+### toBeClickable | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toBeClickable | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect $(`sel`) not to be clickable
+  
+  Expected: "not clickable"
+  Received: "clickable"
 time: 400 ms
 
 ### toBeClickable | $$() | right on the 3rd try | wait 1000, interval 100
@@ -395,6 +713,32 @@ message:
   -   "clickable",
   +   "not clickable",
   +   "not clickable",
+    ]
+time: 400 ms
+
+### toBeClickable | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toBeClickable | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect $$(`sel`) not to be clickable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not clickable",
+  -   "not clickable",
+  +   "clickable",
+  +   "clickable",
     ]
 time: 400 ms
 
@@ -424,6 +768,32 @@ message:
     }
 time: 400 ms
 
+### toBeClickable | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toBeClickable | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeClickable expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to be clickable
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "not clickable",
+  -   "firefox": "not clickable",
+  +   "chrome": "clickable",
+  +   "firefox": "clickable",
+    }
+time: 400 ms
+
 ### toBeDisabled | $() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
@@ -441,6 +811,25 @@ message:
   
   Expected: "disabled"
   Received: "not disabled"
+time: 400 ms
+
+### toBeDisabled | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toBeDisabled | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect $(`sel`) not to be disabled
+  
+  Expected: "not disabled"
+  Received: "disabled"
 time: 400 ms
 
 ### toBeDisabled | $$() | right on the 3rd try | wait 1000, interval 100
@@ -466,6 +855,32 @@ message:
   -   "disabled",
   +   "not disabled",
   +   "not disabled",
+    ]
+time: 400 ms
+
+### toBeDisabled | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toBeDisabled | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect $$(`sel`) not to be disabled
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not disabled",
+  -   "not disabled",
+  +   "disabled",
+  +   "disabled",
     ]
 time: 400 ms
 
@@ -495,6 +910,32 @@ message:
     }
 time: 400 ms
 
+### toBeDisabled | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toBeDisabled | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toBeDisabled expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to be disabled
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "not disabled",
+  -   "firefox": "not disabled",
+  +   "chrome": "disabled",
+  +   "firefox": "disabled",
+    }
+time: 400 ms
+
 ### toExist | $() | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
@@ -512,6 +953,25 @@ message:
   
   Expected: "exist"
   Received: "not exist"
+time: 400 ms
+
+### toExist | $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toExist | $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect $(`sel`) not to exist
+  
+  Expected: "not exist"
+  Received: "exist"
 time: 400 ms
 
 ### toExist | $$() | right on the 3rd try | wait 1000, interval 100
@@ -537,6 +997,32 @@ message:
   -   "exist",
   +   "not exist",
   +   "not exist",
+    ]
+time: 400 ms
+
+### toExist | $$() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toExist | $$() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect $$(`sel`) not to exist
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Array [
+  -   "not exist",
+  -   "not exist",
+  +   "exist",
+  +   "exist",
     ]
 time: 400 ms
 
@@ -566,6 +1052,32 @@ message:
     }
 time: 400 ms
 
+### toExist | multi-remote $() | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toExist | multi-remote $() | .not, always wrong | wait 300, interval 100
+result: fails
+before: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait]
+after: toExist expected=undefined options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect multi-remote<chrome, firefox>.$(`sel`) not to exist
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "not exist",
+  -   "firefox": "not exist",
+  +   "chrome": "exist",
+  +   "firefox": "exist",
+    }
+time: 400 ms
+
 ### toHaveTitle | browser | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -585,6 +1097,25 @@ message:
   Received: "Other"
 time: 400 ms
 
+### toHaveTitle | browser | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toHaveTitle | browser | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect browser's window not to have title
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
 ### toHaveTitle | window | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -602,6 +1133,25 @@ message:
   
   Expected: "Hello"
   Received: "Other"
+time: 400 ms
+
+### toHaveTitle | window | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toHaveTitle | window | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect browser's window (https://example.com/) not to have title
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
 time: 400 ms
 
 ### toHaveTitle | multi-remote browser | right on the 3rd try | wait 1000, interval 100
@@ -630,6 +1180,25 @@ message:
     }
 time: 400 ms
 
+### toHaveTitle | multi-remote browser | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toHaveTitle | multi-remote browser | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveTitle expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect multi-remote<chrome, firefox> not to have title
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
 ### toHaveUrl | browser | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -649,6 +1218,25 @@ message:
   Received: "Other"
 time: 400 ms
 
+### toHaveUrl | browser | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toHaveUrl | browser | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect browser's window not to have url
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
 ### toHaveUrl | window | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -666,6 +1254,25 @@ message:
   
   Expected: "Hello"
   Received: "Other"
+time: 400 ms
+
+### toHaveUrl | window | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x3
+time: 200 ms
+
+### toHaveUrl | window | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x4
+message:
+  Expect browser's window not to have url
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
 time: 400 ms
 
 ### toHaveUrl | multi-remote browser | right on the 3rd try | wait 1000, interval 100
@@ -694,6 +1301,25 @@ message:
     }
 time: 400 ms
 
+### toHaveUrl | multi-remote browser | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [] x6
+time: 200 ms
+
+### toHaveUrl | multi-remote browser | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveUrl expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [] x8
+message:
+  Expect multi-remote<chrome, firefox> not to have url
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
 ### toHaveClipboardText | browser | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -713,6 +1339,25 @@ message:
   Received: "Other"
 time: 400 ms
 
+### toHaveClipboardText | browser | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [[Function anonymous]] x3
+time: 200 ms
+
+### toHaveClipboardText | browser | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [[Function anonymous]] x4
+message:
+  Expect browser not to have clipboard text
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
 ### toHaveClipboardText | window | right on the 3rd try | wait 1000, interval 100
 result: passes
 before: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
@@ -730,6 +1375,25 @@ message:
   
   Expected: "Hello"
   Received: "Other"
+time: 400 ms
+
+### toHaveClipboardText | window | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [[Function anonymous]] x3
+time: 200 ms
+
+### toHaveClipboardText | window | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [[Function anonymous]] x4
+message:
+  Expect browser's window (https://example.com/) not to have clipboard text
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
 time: 400 ms
 
 ### toHaveClipboardText | multi-remote browser | right on the 3rd try | wait 1000, interval 100
@@ -756,4 +1420,144 @@ message:
   +   "chrome": "Other",
   +   "firefox": "Other",
     }
+time: 400 ms
+
+### toHaveClipboardText | multi-remote browser | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [[Function anonymous]] x6
+time: 200 ms
+
+### toHaveClipboardText | multi-remote browser | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveClipboardText expected="Hello" options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [[Function anonymous]] x8
+message:
+  Expect multi-remote<chrome, firefox> not to have clipboard text
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
+time: 400 ms
+
+### toHaveLocalStorageItem | browser | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [[Function anonymous], "key"] x3
+time: 200 ms
+
+### toHaveLocalStorageItem | browser | always wrong | wait 300, interval 100
+result: fails
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [[Function anonymous], "key"] x4
+message:
+  Expect browser to have localStorage item key
+  
+  Expected: "Hello"
+  Received: "Other"
+time: 400 ms
+
+### toHaveLocalStorageItem | browser | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [[Function anonymous], "key"] x3
+time: 200 ms
+
+### toHaveLocalStorageItem | browser | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [[Function anonymous], "key"] x4
+message:
+  Expect browser not to have localStorage item key
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
+### toHaveLocalStorageItem | window | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [[Function anonymous], "key"] x3
+time: 200 ms
+
+### toHaveLocalStorageItem | window | always wrong | wait 300, interval 100
+result: fails
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [[Function anonymous], "key"] x4
+message:
+  Expect browser's window (https://example.com/) to have localStorage item key
+  
+  Expected: "Hello"
+  Received: "Other"
+time: 400 ms
+
+### toHaveLocalStorageItem | window | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [[Function anonymous], "key"] x3
+time: 200 ms
+
+### toHaveLocalStorageItem | window | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [[Function anonymous], "key"] x4
+message:
+  Expect browser's window (https://example.com/) not to have localStorage item key
+  
+  Expected [not]: "Hello"
+  Received      : "Hello"
+time: 400 ms
+
+### toHaveLocalStorageItem | multi-remote browser | right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [[Function anonymous], "key"] x6
+time: 200 ms
+
+### toHaveLocalStorageItem | multi-remote browser | always wrong | wait 300, interval 100
+result: fails
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [[Function anonymous], "key"] x8
+message:
+  Expect multi-remote<chrome, firefox> to have localStorage item key
+  
+  - Expected  - 2
+  + Received  + 2
+  
+    Multi-remote values {
+  -   "chrome": "Hello",
+  -   "firefox": "Hello",
+  +   "chrome": "Other",
+  +   "firefox": "Other",
+    }
+time: 400 ms
+
+### toHaveLocalStorageItem | multi-remote browser | .not, right on the 3rd try | wait 1000, interval 100
+result: passes
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=false
+getter calls: [[Function anonymous], "key"] x6
+time: 200 ms
+
+### toHaveLocalStorageItem | multi-remote browser | .not, always wrong | wait 300, interval 100
+result: fails
+before: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait]
+after: toHaveLocalStorageItem expected=["key", "Hello"] options=[afterAssertion,beforeAssertion,interval,wait] pass=true
+getter calls: [[Function anonymous], "key"] x8
+message:
+  Expect multi-remote<chrome, firefox> not to have localStorage item key
+  
+  Expected [not]: {"chrome": "Hello", "firefox": "Hello"}
+  Received      : {"chrome": "Hello", "firefox": "Hello"}
 time: 400 ms

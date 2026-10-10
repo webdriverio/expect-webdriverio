@@ -24,8 +24,26 @@ type Options = Record<string, unknown>
 /** Mock the getter of a target, which gives `value`, and keep the mock to read its calls */
 const mockGetter = (target: Record<string, unknown>, getter: string, value: unknown | (() => unknown), mocks: Mock[]) => {
     const mock = vi.mocked(target[getter] as (...args: unknown[]) => unknown)
-    mock.mockImplementation(async () => typeof value === 'function' ? (value as () => unknown)() : value)
+    mock.mockImplementation(async (...args: unknown[]) => {
+        const actual = typeof value === 'function' ? (value as () => unknown)() : value
+        return getter === 'execute' ? runInFakePage(args, actual) : actual
+    })
     mocks.push(mock as unknown as Mock)
+}
+
+/**
+ * `execute()` runs the script of the matcher in a fake page, where the clipboard and the local storage item `key` give
+ * the value: a script that reads something else, or another item, gives another result.
+ */
+const runInFakePage = ([script, ...args]: unknown[], value: unknown) => {
+    vi.stubGlobal('window', { navigator: { clipboard: { readText: async () => value } } })
+    vi.stubGlobal('localStorage', { getItem: (key: string) => key === 'key' ? value : null })
+    try {
+        // The script reads the fakes before it returns: a multi-remote browser runs it on each instance at the same time
+        return (script as (...args: unknown[]) => unknown)(...args)
+    } finally {
+        vi.unstubAllGlobals()
+    }
 }
 
 const browsers = () => ({ chrome: browserFactory(), firefox: browserFactory() })
@@ -197,19 +215,25 @@ describe('golden master of the getter matchers', () => {
             ['toBeDisplayed', 'isDisplayed', [], false, true], ['toBeClickable', 'isClickable', [], false, true], ['toBeDisabled', 'isEnabled', [], true, false],
             ['toExist', 'isExisting', [], false, true],
             ['toHaveTitle', 'getTitle', ['Hello'], 'Other', 'Hello'], ['toHaveUrl', 'getUrl', ['Hello'], 'Other', 'Hello'], ['toHaveClipboardText', 'execute', ['Hello'], 'Other', 'Hello'],
+            ['toHaveLocalStorageItem', 'execute', ['key', 'Hello'], 'Other', 'Hello'],
         ]
         const output: string[] = []
         for (const [name, getter, args, wrong, right] of matchers) {
-            const subjects = name.startsWith('toHaveTitle') || name.startsWith('toHaveUrl') || name.startsWith('toHaveClipboard') ? browserSubjects.filter((s) => s.name !== 'frame') : elementSubjects.filter((s) => ['$()', '$$()', 'multi-remote $()'].includes(s.name))
+            const subjects = name.startsWith('toHaveTitle') || name.startsWith('toHaveUrl') || name.startsWith('toHaveClipboard') || name.startsWith('toHaveLocalStorage') ? browserSubjects.filter((s) => s.name !== 'frame') : elementSubjects.filter((s) => ['$()', '$$()', 'multi-remote $()'].includes(s.name))
             for (const { name: subjectName, build } of subjects) {
-                for (const [scenario, wait, wrongTries] of [['right on the 3rd try', 1000, 2], ['always wrong', 300, Infinity]] as const) {
+                // With `.not`, the value that the matcher must not find is the expected value
+                for (const [scenario, wait, wrongTries, isNot] of [
+                    ['right on the 3rd try', 1000, 2, false], ['always wrong', 300, Infinity, false],
+                    ['.not, right on the 3rd try', 1000, 2, true], ['.not, always wrong', 300, Infinity, true],
+                ] as const) {
                     vi.useFakeTimers()
+                    const [wrongValue, rightValue] = isNot ? [right, wrong] : [wrong, right]
                     // Each element or instance counts its own tries
-                    const valueOf = () => { let tries = 0; return () => ++tries <= wrongTries ? wrong : right }
+                    const valueOf = () => { let tries = 0; return () => ++tries <= wrongTries ? wrongValue : rightValue }
                     const { subject, mocks } = build(getter, [valueOf(), valueOf()])
                     const start = Date.now()
                     const [line] = await Promise.all([
-                        record(`${name} | ${subjectName} | ${scenario} | wait ${wait}, interval 100`, mocks, (o) => matcherOf(subject, false)[name](...args, o), { wait, interval: 100 }),
+                        record(`${name} | ${subjectName} | ${scenario} | wait ${wait}, interval 100`, mocks, (o) => matcherOf(subject, isNot)[name](...args, o), { wait, interval: 100 }),
                         vi.runAllTimersAsync(),
                     ])
                     output.push(`${line.trimEnd()}\ntime: ${Date.now() - start} ms\n`)
