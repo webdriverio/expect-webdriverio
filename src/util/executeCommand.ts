@@ -95,7 +95,7 @@ export async function executeCommandWithStrategy<Actual, Expected>( {
         return arrayContainingStrategy(unresolvedElements, expectedValues, singleElementCompare, { isNot, iteration, matcherName }, supportsArrayContaining)
     }
 
-    return multipleElementResultsStrategy(actualReceived, expectedValues as MaybeArrayOrMultiRemoteValues<Expected> | undefined, singleElementCompare, { isNot, isSome, iteration, matcherName }, { ...strictConfiguration, listMatcherNeedsArray: supportsArrayContaining === 'arrayOnly' })
+    return multipleElementResultsStrategy(actualReceived, expectedValues as MaybeArrayOrMultiRemoteValues<Expected> | undefined, singleElementCompare, { isNot, isSome, iteration, matcherName }, { ...strictConfiguration, listMatcherNeedsArray: supportsArrayContaining === 'arrayOnly', listMatcherComparesList: !!supportsArrayContaining })
 }
 
 const listMatcherForOneElementError = (matcherName: string) =>
@@ -238,8 +238,11 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
     singleElementCompare: SingleElementCompare<Actual, Expected>,
     { isNot, isSome, iteration, matcherName = 'This matcher' }: { isNot: boolean; isSome: boolean; iteration: number; matcherName?: string },
-    /** listMatcherNeedsArray: the value of one element is not a list, e.g. a text, so a list matcher for one element throws */
-    { allowEmptyElements = false, allowObjectExpectedValue = false, listMatcherNeedsArray = false } = {}
+    /**
+     * - listMatcherNeedsArray: the value of one element is not a list, e.g. a text, so a list matcher for one element throws;
+     * - listMatcherComparesList: a list matcher for an instance of a multi-remote `$$()` compares the list of that instance
+     */
+    { allowEmptyElements = false, allowObjectExpectedValue = false, listMatcherNeedsArray = false, listMatcherComparesList = false } = {}
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const { selector, other, multiRemoteSelector } = await awaitElementOrArray(unresolvedElements)
 
@@ -290,7 +293,7 @@ export const multipleElementResultsStrategy = async <Actual, Expected>(
             expectedValues,
             singleElementCompare,
             { isNot, isSome, matcherName },
-            { allowObjectExpectedValue, listMatcherNeedsArray }
+            { allowObjectExpectedValue, listMatcherNeedsArray, listMatcherComparesList }
         )
     }
 
@@ -363,7 +366,7 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
     expectedValues: MaybeArrayOrMultiRemoteValues<Expected> | undefined,
     singleElementCompare: SingleElementCompare<Actual, Expected>,
     { isNot, isSome, matcherName }: { isNot: boolean; isSome: boolean; matcherName: string },
-    { allowObjectExpectedValue, listMatcherNeedsArray }: { allowObjectExpectedValue: boolean, listMatcherNeedsArray: boolean }
+    { allowObjectExpectedValue, listMatcherNeedsArray, listMatcherComparesList }: { allowObjectExpectedValue: boolean, listMatcherNeedsArray: boolean, listMatcherComparesList: boolean }
 ): Promise<StrategyResult<MaybeArrayOrMultiRemoteValues<Actual>>> => {
     const isSingleElement = isMultiRemoteElement(multiRemoteSelector)
     const instances = isSingleElement ? multiRemoteSelector.instances : multiRemoteSelector.parent.instances
@@ -393,6 +396,15 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
         const isExpected = instance in expectedPerInstance
         const instanceValue = expectedPerInstance[instance]
         const elements = elementsPerInstance[instance]
+
+        // A list matcher for this instance of `$$()` compares the list of its values, as one list matcher for all the instances
+        if (!isSingleElement && listMatcherComparesList && isListMatcher(instanceValue)) {
+            const actuals = await compareWithoutExpected(elements, singleElementCompare)
+            const success = equals(actuals, instanceValue)
+            actualPerInstance[instance] = actuals
+            verdictPerInstance[instance] = success
+            return [{ success, actual: actuals }]
+        }
 
         const results = await Promise.all(elements.map(async (element, index) => {
             const indexedExpected = isSingleElement || !Array.isArray(instanceValue) ? instanceValue : instanceValue[index]

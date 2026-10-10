@@ -177,6 +177,12 @@ await expect($$('li')).not.toHaveText([expect.arrayContaining(['Home']), 'About'
 // Error: toHaveText with a list matcher (arrayContaining, arrayWithExactContents or arrayOf) as the expected value of one element: …
 ```
 
+On a multi-remote `$$()`, a list matcher in the values of `expect.multiRemote()` now compares the values of all the elements of that instance, as one list matcher for all the instances does. Before, it was compared with the value of each element, so the assertion always failed, and with `.not`, it always passed.
+
+```ts
+await expect(multiRemoteBrowser.$$('li')).toHaveText(expect.multiRemote({ chrome: expect.arrayContaining(['Home']), firefox: expect.arrayContaining(['Accueil']) }))
+```
+
 ## Failure messages with string options
 
 The failure messages of the string matchers changed, see [String Options](API.md#string-options):

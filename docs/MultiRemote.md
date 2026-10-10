@@ -124,7 +124,7 @@ Every instance is compared on **its own** elements: browsers may find a differen
 
 - A single expected value: every element of every instance must match it.
 - An array of expected values: index-based, per instance. Its length must equal the element count of each instance.
-- Per-instance values, each being a single value or an index-based array.
+- Per-instance values, each being a single value, an index-based array, or a list matcher for the collection of that instance.
 - `.not`: every element of every instance must **not** match.
 - `some()`: at least one element must match in **every** instance.
 - `expect.arrayContaining()`, `expect.arrayOf()` and `jasmine.arrayWithExactContents()`: each instance's collection of values must satisfy it.
@@ -140,6 +140,7 @@ await expect(items).toHaveText(['Coffee', 'Tea']) // index-based, on every brows
 await expect(items).toHaveText(expect.multiRemote({ chrome: ['Coffee', 'Tea'], firefox: ['Coffee', 'Tea', 'Milk'] }))
 await expect(some(items)).toHaveText('Tea') // at least one match in every browser
 await expect(items).toHaveText(expect.arrayContaining(['Tea'])) // in every browser's collection
+await expect(items).toHaveText(expect.multiRemote({ chrome: expect.arrayContaining(['Tea']), firefox: expect.arrayContaining(['Thé']) })) // one list matcher per browser
 ```
 
 `toBeElementsArrayOfSize` counts the elements per instance, against a single size shared by every instance or one size per instance:

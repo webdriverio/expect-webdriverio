@@ -4,6 +4,7 @@ import { expect as wdioExpect } from '../../../src/index.js'
 import { jasmine } from '../../__fixtures__/jasmine.js'
 import { multiRemote, some } from '../../../src/api/index.js'
 import { browserFactory, createMultiRemoteElementArrayMock, createMultiRemoteElementMock } from '../../__mocks__/@wdio/globals.js'
+import { mockMultiRemoteElementsCommand } from '../../__fixtures__/utils.js'
 
 vi.mock('@wdio/globals')
 
@@ -206,6 +207,64 @@ describe('a list matcher as the expected value of one element', () => {
         vi.mocked(elements[1].getText).mockResolvedValue('About')
 
         await wdioExpect(elements).toHaveText(['Home', wdioExpect.stringContaining('Ab')], { wait: 0 })
+    })
+})
+
+/**
+ * On a multi-remote `$$()`, each instance has a list of values: a list matcher in the values of `expect.multiRemote()`
+ * compares the list of that instance, as one list matcher compares the list of each instance
+ */
+describe('a list matcher for each instance of a multi-remote $$()', () => {
+    const elements = () => {
+        const list = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, '#menu li')
+        mockMultiRemoteElementsCommand(list, 'getText', { chrome: ['Home', 'About'], firefox: ['Accueil', 'À propos'] })
+        return list
+    }
+
+    test('passes when the list of each instance matches its list matcher', async () => {
+        await wdioExpect(elements()).toHaveText(multiRemote({ chrome: wdioExpect.arrayContaining(['Home']), firefox: wdioExpect.arrayContaining(['Accueil']) }), { wait: 0 })
+        await wdioExpect(elements()).toHaveText(multiRemote({ chrome: wdioExpect.arrayOf(wdioExpect.any(String)), firefox: jasmine.arrayWithExactContents(['À propos', 'Accueil']) }) as never, { wait: 0 })
+    })
+
+    test('fails when the list of one instance does not match, with the list of each instance in the message', async () => {
+        const result = wdioExpect(elements()).toHaveText(multiRemote({ chrome: wdioExpect.arrayContaining(['Home']), firefox: wdioExpect.arrayContaining(['Home']) }), { wait: 0 })
+
+        await expect(result).rejects.toThrow(`\
+Expect multi-remote<chrome, firefox>.$$(\`#menu li\`) to have text
+
+- Expected  - 2
++ Received  + 3
+
+  Multi-remote values {
+    "chrome": ArrayContaining [
+      "Home",
+    ],
+-   "firefox": ArrayContaining [
+-     "Home",
++   "firefox": Array [
++     "Accueil",
++     "À propos",
+    ],
+  }`)
+    })
+
+    test('with .not, passes only when no instance matches', async () => {
+        await wdioExpect(elements()).not.toHaveText(multiRemote({ chrome: wdioExpect.arrayContaining(['Missing']), firefox: wdioExpect.arrayContaining(['Missing']) }), { wait: 0 })
+        await expect(wdioExpect(elements()).not.toHaveText(multiRemote({ chrome: wdioExpect.arrayContaining(['Home']), firefox: wdioExpect.arrayContaining(['Missing']) }), { wait: 0 }))
+            .rejects.toThrow('not to have text')
+    })
+
+    test('compares a list matcher for one instance and an array of values for the other', async () => {
+        await wdioExpect(elements()).toHaveText(multiRemote({ chrome: wdioExpect.arrayContaining(['About']), firefox: ['Accueil', 'À propos'] }), { wait: 0 })
+        await expect(wdioExpect(elements()).toHaveText(multiRemote({ chrome: wdioExpect.arrayContaining(['About']), firefox: ['Accueil', 'Other'] }), { wait: 0 }))
+            .rejects.toThrow('to have text')
+    })
+
+    test('compares the list of the sizes of each instance', async () => {
+        const list = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, '.box')
+        mockMultiRemoteElementsCommand(list, 'getSize', { chrome: [{ width: 1, height: 1 }, { width: 2, height: 2 }], firefox: [{ width: 3, height: 3 }, { width: 4, height: 4 }] })
+
+        await wdioExpect(list).toHaveSize(multiRemote({ chrome: wdioExpect.arrayContaining([{ width: 2, height: 2 }]), firefox: wdioExpect.arrayContaining([{ width: 3, height: 3 }]) }) as never, { wait: 0 })
     })
 })
 
