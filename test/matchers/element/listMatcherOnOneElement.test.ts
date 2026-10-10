@@ -260,6 +260,15 @@ Expect multi-remote<chrome, firefox>.$$(\`#menu li\`) to have text
             .rejects.toThrow('to have text')
     })
 
+    test('with some(), toHaveElementProperty still compares the property of each element', async () => {
+        const list = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, '#menu li')
+        mockMultiRemoteElementsCommand(list, 'getProperty', { chrome: [['Home'], ['Home', 'About']], firefox: [['Home'], ['Home']] })
+        const expected = () => multiRemote({ chrome: wdioExpect.arrayContaining(['Home']), firefox: wdioExpect.arrayContaining(['Home']) })
+
+        await wdioExpect(some(list)).toHaveElementProperty('labels', expected(), { wait: 0 })
+        await expect(wdioExpect(some(list)).not.toHaveElementProperty('labels', expected(), { wait: 0 })).rejects.toThrow('not to have property labels')
+    })
+
     test('compares the list of the sizes of each instance', async () => {
         const list = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, '.box')
         mockMultiRemoteElementsCommand(list, 'getSize', { chrome: [{ width: 1, height: 1 }, { width: 2, height: 2 }], firefox: [{ width: 3, height: 3 }, { width: 4, height: 4 }] })

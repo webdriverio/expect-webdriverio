@@ -397,8 +397,9 @@ const multiRemoteElementsResultsStrategy = async <Actual, Expected>(
         const instanceValue = expectedPerInstance[instance]
         const elements = elementsPerInstance[instance]
 
-        // A list matcher for this instance of `$$()` compares the list of its values, as one list matcher for all the instances
-        if (!isSingleElement && listMatcherComparesList && isListMatcher(instanceValue)) {
+        // A list matcher for this instance of `$$()` compares the list of its values, as one list matcher for all the instances.
+        // `some()` compares each element: a property can be a list
+        if (!isSingleElement && !isSome && listMatcherComparesList && isListMatcher(instanceValue)) {
             const actuals = await compareWithoutExpected(elements, singleElementCompare)
             const success = equals(actuals, instanceValue)
             actualPerInstance[instance] = actuals
