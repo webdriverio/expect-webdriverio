@@ -90,6 +90,51 @@ test('snapshots the outerHTML shared by every instance of a multi-remote element
     await service.after()
 })
 
+// Like `links[2]` when browserB found 2 links only: the wrapper holds no element for browserB
+const multiRemoteElementMissingOnBrowserB = () => {
+    const element = createMultiRemoteElementMock({ browserA: browserFactory(), browserB: browserFactory(), browserC: browserFactory() }, 'header a')
+    vi.mocked(element.getInstance('browserA').getHTML).mockResolvedValue('<a>Blog</a>')
+    vi.mocked(element.getInstance('browserC').getHTML).mockResolvedValue('<a>Blog</a>')
+    const getInstance = element.getInstance.bind(element)
+    vi.spyOn(element, 'getInstance').mockImplementation((instance) => {
+        if (instance === 'browserB') {
+            throw new Error('Multi-remote object has no instance named "browserB"')
+        }
+        return getInstance(instance)
+    })
+    return element
+}
+
+test('snapshots a multi-remote element found on some instances only, with undefined for the other instances', async () => {
+    await service.beforeTest({
+        title: 'multi-remote element missing on an instance',
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+
+    await expectExport(multiRemoteElementMissingOnBrowserB()).toMatchSnapshot()
+    await service.after()
+})
+
+test('inline snapshots a multi-remote element found on some instances only, with undefined for the other instances', async () => {
+    await service.beforeTest({
+        title: 'multi-remote element missing on an instance, inline',
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+
+    await expectExport(multiRemoteElementMissingOnBrowserB()).toMatchInlineSnapshot(`
+      {
+        "browserA": "<a>Blog</a>",
+        "browserB": undefined,
+        "browserC": "<a>Blog</a>",
+      }
+    `)
+    await service.after()
+})
+
 test('gives each different inline snapshot of a test its own location', async () => {
     await service.beforeTest({
         title: 'two different inline snapshots',
