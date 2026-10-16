@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import os from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { test, expect, vi, afterEach } from 'vitest'
 import type { Frameworks } from '@wdio/types'
@@ -11,6 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const __filename = path.basename(fileURLToPath(import.meta.url))
 
 const service = SnapshotService.initiate({
+    updateState: 'new',
     resolveSnapshotPath: (path, extension) => path + extension
 })
 
@@ -313,4 +315,94 @@ test('SnapshotService.initiate() returns the same instance across separately re-
     const secondInstance = second.SnapshotService.initiate()
 
     expect(secondInstance).toBe(firstInstance)
+})
+
+async function withRetrySnapshot(testRun: (test: Frameworks.Test, snapshotPath: string) => Promise<void>) {
+    const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'wdio-snapshot-retry-'))
+    const test = { file: path.join(directory, 'retry.ts'), parent: 'snapshot retries', title: 'stored values' } as Frameworks.Test
+    process.env.WDIO_INTERNAL_TEST = 'true'
+    try {
+        await testRun(test, test.file + '.snap')
+    } finally {
+        await fs.rm(directory, { recursive: true, force: true })
+    }
+}
+
+test.each([undefined, 'custom message'])('keeps a snapshot mismatch failing on retries with message %s', async (message) => {
+    await withRetrySnapshot(async (test, snapshotPath) => {
+        await service.beforeTest(test)
+        expectExport('expected').toMatchSnapshot(message)
+        await service.after()
+        const original = await fs.readFile(snapshotPath, 'utf8')
+
+        await service.beforeTest(test)
+        expect(() => expectExport('different').toMatchSnapshot(message)).toThrow()
+        await service.beforeTest({ ...test, _currentRetry: 1 })
+        expect(() => expectExport('different').toMatchSnapshot(message)).toThrow()
+        await service.beforeTest({ ...test, _currentRetry: 2 })
+        expect(() => expectExport('different').toMatchSnapshot(message)).toThrow()
+        await service.after()
+
+        expect(await fs.readFile(snapshotPath, 'utf8')).toBe(original)
+        expect(service.results.at(-1)).toMatchObject({ added: 0, unmatched: 1 })
+    })
+})
+
+test('allows a later matching retry without retaining the failed attempt in snapshot results', async () => {
+    await withRetrySnapshot(async (test, snapshotPath) => {
+        await service.beforeTest(test)
+        expectExport('expected').toMatchSnapshot()
+        await service.after()
+        const original = await fs.readFile(snapshotPath, 'utf8')
+
+        await service.beforeTest(test)
+        expect(() => expectExport('different').toMatchSnapshot()).toThrow()
+        await service.beforeTest({ ...test, _currentRetry: 1 })
+        expectExport('expected').toMatchSnapshot()
+        await service.after()
+
+        expect(await fs.readFile(snapshotPath, 'utf8')).toBe(original)
+        expect(service.results.at(-1)).toMatchObject({ added: 0, matched: 1, unmatched: 0 })
+    })
+})
+
+test('reuses each assertion key on retry without clearing other tests in the file', async () => {
+    await withRetrySnapshot(async (test, snapshotPath) => {
+        const otherTest = { ...test, title: 'another test' }
+        await service.beforeTest(otherTest)
+        expectExport('other').toMatchSnapshot()
+        await service.beforeTest(test)
+        expectExport('first').toMatchSnapshot()
+        expectExport('second').toMatchSnapshot('named')
+        await service.after()
+        const original = await fs.readFile(snapshotPath, 'utf8')
+
+        await service.beforeTest(otherTest)
+        expectExport('other').toMatchSnapshot()
+        await service.beforeTest(test)
+        expectExport('first').toMatchSnapshot()
+        expect(() => expectExport('different').toMatchSnapshot('named')).toThrow()
+        await service.beforeTest({ ...test, _currentRetry: 1 })
+        expectExport('first').toMatchSnapshot()
+        expectExport('second').toMatchSnapshot('named')
+        await service.after()
+
+        expect(await fs.readFile(snapshotPath, 'utf8')).toBe(original)
+        expect(service.results.at(-1)).toMatchObject({ added: 0, matched: 3, unmatched: 0, unchecked: 0 })
+    })
+})
+
+test('supports a retry whose previous attempt did not reach a snapshot assertion', async () => {
+    await withRetrySnapshot(async (test) => {
+        await service.beforeTest(test)
+        expectExport('expected').toMatchSnapshot()
+        await service.after()
+
+        await service.beforeTest(test)
+        await service.beforeTest({ ...test, _currentRetry: 1 })
+        expectExport('expected').toMatchSnapshot()
+        await service.after()
+
+        expect(service.results.at(-1)).toMatchObject({ added: 0, matched: 1, unmatched: 0 })
+    })
 })
