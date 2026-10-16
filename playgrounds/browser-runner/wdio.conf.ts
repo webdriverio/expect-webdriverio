@@ -14,6 +14,7 @@ export const config: WebdriverIO.Config = {
     //
     specs: [
         './test/specs/vue.test.ts',
+        './test/specs/inline-callsite.test.ts',
     ],
 
     //
