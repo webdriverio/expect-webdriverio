@@ -328,6 +328,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should be able to query isDisplayed on element no longer existing', async () => {
                     const h1 = multiRemoteBrowser.$$('h1')
+                    await expect(h1).toBeDisplayed()
 
                     await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
                     await multiRemoteBrowser.getInstance('chrome')!.url('about:blank')
