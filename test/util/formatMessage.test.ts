@@ -878,6 +878,21 @@ Expect multi-remote<chrome, firefox>.$$(\`button\`) to be displayed
 
                 expect(message).toContain('Expected: "at least one result"')
             })
+
+            test.each([
+                { isNot: false, verbPart: 'to be' },
+                { isNot: true, verbPart: 'not to be' },
+            ])('receives no element state when the array is empty (isNot: $isNot), like one browser', ({ isNot, verbPart }) => {
+                const subject = createMultiRemoteElementArrayMock(multiRemoteBrowsers(), 'button', 0)
+
+                const message = stripAnsi(enhanceErrorBe(subject, undefined, { isNot, verb, expectation, isSome: false }, options))
+
+                expect(message).toEqual(`\
+Expect multi-remote<chrome, firefox>.$$(\`button\`) ${verbPart} displayed
+
+Expected: "at least one result"
+Received: []`)
+            })
         })
     })
 })

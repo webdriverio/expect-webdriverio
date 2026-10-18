@@ -257,9 +257,9 @@ export const enhanceErrorBe = (
                 return acc
             }, {} as MultiRemoteValues<string>)
         } else if (subject.length === 0) {
-            // Empty `MultiRemoteElementArray`: no instance names to report per browser
+            // Empty `MultiRemoteElementArray`: no instance names to report per browser, and no element state
             expected = 'at least one result'
-            actual = actualValue
+            actual = []
         } else {
             const { instances } = subject.parent
             const typedActuals = actuals as MultiRemoteValues<boolean[]>
