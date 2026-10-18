@@ -3,7 +3,6 @@ import { browser } from '@wdio/globals'
 // Since `@wdio/jasmine-framework` 10.0.2, `expect.extend()` adds custom matchers to the global `expect`. The framework
 // reads them before the first `beforeAll()` of the specs, so the call is at the top level of the file.
 // The types of the matchers are in `test/customMatchers.d.ts`.
-// @ts-expect-error `@wdio/jasmine-framework` 10.0.2 has `expect.extend()` at runtime, but not in the types of the global `expect`
 expect.extend({
     toBeEven(actual: number) {
         return { pass: actual % 2 === 0, message: () => `expected ${actual} to be even` }
