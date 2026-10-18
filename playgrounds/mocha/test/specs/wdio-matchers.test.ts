@@ -202,8 +202,7 @@ describe('WebdriverIO Custom Matchers', () => {
             await expect(expect(h1).toBeDisplayed()).rejects.toThrow(/at least one result/)
         })
 
-        // TODO waiting fix, see https://github.com/webdriverio/webdriverio/issues/15550
-        it.skip('should be able to query isDisplayed on element no longer existing', async () => {
+        it('should be able to query isDisplayed on element no longer existing', async () => {
             await browser.url('https://guinea-pig.webdriver.io/')
             const h1 = $$('h1')
             await expect(h1).toBeDisplayed()

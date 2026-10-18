@@ -282,8 +282,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(multiRemoteBrowser.select('chrome').$$('h1')).toBeDisplayed()
                 })
 
-                // TODO waiting fix, see https://github.com/webdriverio/webdriverio/issues/15550
-                it.skip('should show error message when querying isDisplayed on an element that no longer exist on a specific browser', async () => {
+                it('should show error message when querying isDisplayed on an element that no longer exist on a specific browser', async () => {
                     const h1Firefox = multiRemoteBrowser.select('firefox').$$('h1')
 
                     await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
@@ -327,8 +326,7 @@ describe('WebdriverIO Custom Matchers', () => {
                     await expect(expect(h1MultiRemote).not.toExist()).rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\$\(`h1`\) not to exist/)
                 })
 
-                // TODO waiting fix, see https://github.com/webdriverio/webdriverio/issues/15550
-                it.skip('should be able to query isDisplayed on element no longer existing', async () => {
+                it('should be able to query isDisplayed on element no longer existing', async () => {
                     const h1 = multiRemoteBrowser.$$('h1')
 
                     await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
