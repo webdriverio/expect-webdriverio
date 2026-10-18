@@ -284,6 +284,7 @@ describe('WebdriverIO Custom Matchers', () => {
 
                 it('should show error message when querying isDisplayed on an element that no longer exist on a specific browser', async () => {
                     const h1Firefox = multiRemoteBrowser.select('firefox').$$('h1')
+                    await expect(h1Firefox).toBeDisplayed()
 
                     await multiRemoteBrowser.getInstance('firefox')!.url('about:blank')
 
