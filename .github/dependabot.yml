@@ -7,6 +7,16 @@ updates:
     time: "11:00"
   open-pull-requests-limit: 10
   versioning-strategy: increase-if-necessary
+  ignore:
+    # The tests use `jasmineRequire.core()`, which Jasmine 7 removed, and
+    # @wdio/jasmine-framework is on Jasmine 6. Update with the framework.
+    - dependency-name: "jasmine-core"
+      update-types: ["version-update:semver-major"]
+    - dependency-name: "@types/jasmine"
+      update-types: ["version-update:semver-major"]
+    # Keep the Node.js types at 24, not the newest major.
+    - dependency-name: "@types/node"
+      update-types: ["version-update:semver-major"]
   groups:
     patch-deps-updates:
       update-types:
