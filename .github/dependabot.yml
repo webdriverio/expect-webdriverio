@@ -17,16 +17,24 @@ updates:
     # Keep the Node.js types at 24, not the newest major.
     - dependency-name: "@types/node"
       update-types: ["version-update:semver-major"]
+  # A dependency goes in the first group that matches. Packages released
+  # together update in one PR, and each other major update gets its own PR, so
+  # one breaking major does not hold back the others.
   groups:
+    webdriverio:
+      patterns: ["@wdio/*", "webdriver", "webdriverio"]
+    jest:
+      patterns: ["expect", "jest-matcher-utils", "@jest/*", "@types/jest"]
+    vitest:
+      patterns: ["vitest", "@vitest/*"]
+    jasmine:
+      patterns: ["jasmine-core", "@types/jasmine"]
     patch-deps-updates:
       update-types:
         - "patch"
     minor-deps-updates:
       update-types:
         - "minor"
-    major-deps-updates:
-      update-types:
-        - "major"
 # v7 maintenance branch: patch updates only
 - package-ecosystem: npm
   directory: "/"
