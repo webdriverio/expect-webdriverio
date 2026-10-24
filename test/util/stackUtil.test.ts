@@ -37,6 +37,28 @@ describe('stackUtil', () => {
         })
 
         test.each([
+            ['a checkout', '/home/me/source/lib/matchers/snapshot.js'],
+            ['a Windows checkout', 'D:\\project\\source\\lib\\matchers\\snapshot.js'],
+            ['a file URL with spaces', 'file:///home/me/a%20b/source/lib/matchers/snapshot.js'],
+            ['a Windows file URL with spaces', 'file:///D:/a%20b/source/lib/matchers/snapshot.js'],
+            ['a literal percent sign', '/home/me/a%/source/lib/matchers/snapshot.js']
+        ])('locates renamed matcher frames in %s', (_, snapshotFile) => {
+            const stack = [
+                'Error: inline snapshot',
+                `    at inlineSnapshot (${snapshotFile}:99:23)`,
+                `    at Object.inlineSnapshot (${snapshotFile}:123:12)`,
+                '    at __EXTERNAL_MATCHER_TRAP__ (/project/node_modules/expect/build/index.js:1:1)',
+                '    at Object.throwingMatcher (/project/node_modules/expect/build/index.js:2:2)',
+                '    at Context.<anonymous> (/project/test/example.e2e.ts:208:61)'
+            ].join('\n')
+            const trace = filterInlineSnapshotStack(stack, snapshotFile.startsWith('file:') ? new URL(snapshotFile).pathname : snapshotFile)
+
+            expect(trace).toHaveLength(4)
+            expect(trace[1]).toContain('__INLINE_SNAPSHOT__')
+            expect(snapshotLocation(trace)).toContain('example.e2e.ts:208:61')
+        })
+
+        test.each([
             ['a POSIX path', '/home/me/project/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:8100:34'],
             ['a Windows path', 'D:\\a\\project\\node_modules\\jasmine-core\\lib\\jasmine-core\\jasmine.js:8100:34']
         ])('should remove the jasmine-core frames with %s', (_, location) => {

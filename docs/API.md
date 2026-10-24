@@ -1161,7 +1161,7 @@ Similarly, you can use the `toMatchInlineSnapshot()` to store the snapshot inlin
 await expect($('#secondPageLink')).toMatchInlineSnapshot()
 ```
 
-Instead of creating a snapshot file, WebdriverIO will modify the test file directly to update the snapshot as a string:
+With [`updateSnapshots`](https://webdriver.io/docs/configuration#updatesnapshots) set to `'new'` or `'all'`, WebdriverIO writes the snapshot at that assertion's callsite in the test file. Set it to `'none'` to verify existing inline snapshots without changing the source. Missing snapshots then fail. For example:
 
 ```js
 await expect($('#secondPageLink')).toMatchInlineSnapshot(`"<a href="./two.html" id="secondPageLink">two</a>"`)
