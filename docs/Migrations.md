@@ -1,8 +1,8 @@
 # Migration Guide: v7 to v8
 
-## Node.js 22.19
+## Node.js 22.23.4, 24.22.1 or 26.12.1
 
-v8.0.0 requires Node.js `22.19.0` or higher, the same as WebdriverIO v10. Node.js 20 is no longer supported.
+v8 requires Node.js `22.23.4`, `24.22.1` or `26.12.1`, or a later release of these lines, the same as WebdriverIO v10. These are the first releases with the [updated CA store](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases) for the eMudhra intermediate CA compromise. Node.js 20, 23 and 25 are not supported.
 
 ## Peer dependencies
 

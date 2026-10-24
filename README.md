@@ -5,7 +5,7 @@
 
 | expect-webdriverio | WebdriverIO | Node.js | Status | Docs |
 | --- | --- | --- | --- | --- |
-| v8 | v10 | ≥ 22.19.0 | In development | This README |
+| v8 | v10 | ≥ 22.23.4, 24.22.1 or 26.12.1 | In development | This README |
 | v7 | v9 (≥ 9.31.5) | ≥ 20 | Latest release, fixes only | [v7 README](https://github.com/webdriverio/expect-webdriverio/blob/v7/README.md) |
 
 ###### [API](docs/API.md) | [Multiple Elements](docs/MultipleElements.md) | [Multi-remote](docs/MultiRemote.md) | [Frameworks](docs/Framework.md) | [TypeScript / JS Autocomplete](docs/Types.md) | [Examples](docs/Examples.md) | [Extending Matchers](docs/CustomMatchers.md) | [Migration from v7](docs/Migrations.md)
