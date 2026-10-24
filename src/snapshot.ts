@@ -86,6 +86,9 @@ export class SnapshotService implements Services.ServiceInstance {
         this.#currentFilePath = test.file
         this.#currentTestName = `${test.parent} > ${test.title}`
         await this.#snapshotClient.setup(test.file, this.#options)
+        if (test._currentRetry && test._currentRetry > 0) {
+            this.#snapshotClient.clearTest(test.file, this.#currentTestName)
+        }
     }
 
     async beforeStep(step: Frameworks.PickleStep, scenario: Frameworks.Scenario) {
