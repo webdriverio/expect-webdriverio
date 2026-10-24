@@ -23,17 +23,28 @@ jobs:
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Wait for PR CI
-              # Don't merge updates to GitHub Actions versions automatically.
-              # (Some repos may wish to limit by version range (major/minor/patch), or scope (dep vs dev-dep), too.)
+            - name: Check that the base branch requires the tests
+              # Without required checks (e.g. the ruleset `main` is disabled), `gh pr merge --auto` merges at once,
+              # before the checks of the PR: stop, and leave the PR to a person. Update the list when a job is renamed
               if: contains(steps.metadata.outputs.package-ecosystem, 'npm')
-              uses: lewagon/wait-on-check-action@369769072fe522a3a8a85c03c96af1e5242a1994 # v1.9.1
-              with:
-                  ref: ${{ github.event.pull_request.head.sha }}
-                  repo-token: ${{ secrets.GITHUB_TOKEN }}
-                  wait-interval: 30 # seconds
-                  running-workflow-name: dependencies # wait for all checks except this one
-                  allowed-conclusions: success # all other checks must pass, being skipped or cancelled is not sufficient
+              env:
+                  BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  MUST_BE_REQUIRED: |-
+                      linux (24.x)
+                      playgrounds-tsc-and-lint
+              run: |
+                  required=$(gh api "repos/${GITHUB_REPOSITORY}/rules/branches/${BASE_BRANCH}" --jq '[.[] | select(.type == "required_status_checks") | .parameters.required_status_checks[].context] | unique | .[]')
+                  list=$(paste -sd, - <<< "${required}")
+                  echo "Required checks on ${BASE_BRANCH}: ${list:-none}"
+                  missing=0
+                  while IFS= read -r check; do
+                      if ! grep -qxF -- "${check}" <<< "${required}"; then
+                          echo "::error::${BASE_BRANCH} does not require the check '${check}' (is the ruleset disabled?): the PR is not merged automatically"
+                          missing=1
+                      fi
+                  done <<< "${MUST_BE_REQUIRED}"
+                  exit "${missing}"
 
             - name: Auto-merge dependabot PRs
               # Don't merge updates to GitHub Actions versions automatically.
@@ -42,6 +53,6 @@ jobs:
               env:
                   PR_URL: ${{ github.event.pull_request.html_url }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              # The "auto" flag will only merge once all of the target branch's required checks
-              # are met. Configure those in the "branch protection" settings for each repo.
+              # The "auto" flag merges only when the required checks of `main` pass (the ruleset `main`), and GitHub waits
+              # for them without a runner. Without an active ruleset with required checks, it merges at once
               run: gh pr merge --auto --squash "$PR_URL"
