@@ -43,7 +43,19 @@ describe(refetchElements, () => {
             expect(elements.parent.$$).toHaveBeenCalledTimes(1)
         })
 
-        test('should call $$ with all props', async () => {
+        test('uses public refetch without expanding a derived selection', async () => {
+            const selected = await chainableElementArrayFactory('elements', 1).getElements()
+            const replay = vi.fn().mockResolvedValue(selected)
+            const list = elements as WebdriverIO.ElementArray & { refetch: typeof replay }
+            list.refetch = replay
+
+            expect((await refetchElements(list)).length).toBe(1)
+            expect(list.length).toBe(2)
+            expect(replay).toHaveBeenCalledOnce()
+            expect(list.parent.$).not.toHaveBeenCalled()
+        })
+
+        test('should call $ with all props', async () => {
             elements.props = ['prop1', 'prop2']
 
             await refetchElements(elements)
