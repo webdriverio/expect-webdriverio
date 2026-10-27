@@ -3,8 +3,9 @@ import type { AssertionError } from 'node:assert'
 import { expect } from 'expect'
 import { stripSnapshotIndentation } from '@vitest/snapshot'
 import { SnapshotService } from '../snapshot.js'
-import { awaitElementOrArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElement, isMultiRemoteElementArray, isStrictlyElementArray } from '../util/elementsUtil.js'
-import { getElementsPerInstance } from '../util/multiRemoteUtils.js'
+import { awaitElementOrArray, isElementOrArrayOrMultiRemoteElementLike, isMultiRemoteElementArray, isStrictlyElementArray } from '../util/elementsUtil.js'
+import { enhanceErrorBe } from '../util/formatMessage.js'
+import { getElementsPerInstance, getInstanceOrUndefined } from '../util/multiRemoteUtils.js'
 import { filterInlineSnapshotStack } from '../util/stackUtil.js'
 import type { WdioMatcherContext } from '../types.js'
 
@@ -89,19 +90,19 @@ const getOuterHTML = (element: WebdriverIO.Element) => element.getHTML({ include
  * The outerHTML shared by every instance, like without multi-remote, else one outerHTML per instance, keyed by instance
  * name (sorted, whatever the instances order or the snapshotFormat).
  */
-const getMultiRemoteOuterHTML = async (multiRemoteElements: WebdriverIO.MultiRemoteElement | WebdriverIO.MultiRemoteElementArray) => {
-    const isSingleElement = isMultiRemoteElement(multiRemoteElements)
-    if (!isSingleElement && multiRemoteElements.length === 0) {
+const getMultiRemoteOuterHTML = async (multiRemoteElements: WebdriverIO.MultiRemoteElementArray | Record<string, WebdriverIO.Element>) => {
+    const isElementArray = isMultiRemoteElementArray(multiRemoteElements)
+    if (isElementArray && multiRemoteElements.length === 0) {
         // An empty `MultiRemoteElementArray`, found on no instance
         return []
     }
-    const instances = [...(isSingleElement ? multiRemoteElements.instances : multiRemoteElements.parent.instances)].sort()
-    const elementsPerInstance = isSingleElement ? undefined : getElementsPerInstance(multiRemoteElements, instances)
+    const instances = [...(isElementArray ? multiRemoteElements.parent.instances : Object.keys(multiRemoteElements))].sort()
+    const elementsPerInstance = isElementArray ? getElementsPerInstance(multiRemoteElements, instances) : undefined
     const htmlPerInstance: Record<string, unknown> = Object.fromEntries(await Promise.all(instances.map(async (instance) => [
         instance,
         elementsPerInstance
             ? await Promise.all(elementsPerInstance[instance].map(getOuterHTML))
-            : await getOuterHTML((multiRemoteElements as WebdriverIO.MultiRemoteElement).getInstance(instance))
+            : await getOuterHTML((multiRemoteElements as Record<string, WebdriverIO.Element>)[instance])
     ])))
     const htmls = Object.values(htmlPerInstance)
     return htmls.every((html) => JSON.stringify(html) === JSON.stringify(htmls[0])) ? htmls[0] : htmlPerInstance
@@ -119,7 +120,21 @@ async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, in
 
     let received: unknown = other
     if (multiRemoteSelector) {
-        received = await getMultiRemoteOuterHTML(multiRemoteSelector)
+        const elementPerInstance = Object.fromEntries(multiRemoteSelector.instances.map((instance) => [
+            instance,
+            getInstanceOrUndefined(multiRemoteSelector, instance)
+        ]))
+        if (Object.values(elementPerInstance).some((instanceElement) => !instanceElement)) {
+            const existingPerInstance = Object.fromEntries(multiRemoteSelector.instances.map((instance) => [
+                instance,
+                elementPerInstance[instance] !== undefined
+            ]))
+            return {
+                pass: false,
+                message: () => enhanceErrorBe(multiRemoteSelector, existingPerInstance, { isNot: false, isSome: false, verb: '', expectation: 'exist' }, { message })
+            }
+        }
+        received = await getMultiRemoteOuterHTML(elementPerInstance as Record<string, WebdriverIO.Element>)
     } else if (elements && isMultiRemoteElementArray(elements)) {
         received = await getMultiRemoteOuterHTML(elements)
     } else if (elements) {
