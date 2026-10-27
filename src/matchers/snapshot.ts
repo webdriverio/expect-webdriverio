@@ -114,7 +114,7 @@ const getMultiRemoteOuterHTML = async (multiRemoteElements: WebdriverIO.MultiRem
  * @param message optional message on failure
  * @returns matcher results
  */
-async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, inlineOptions?: InlineSnapshotOptions) {
+async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, inlineOptions?: InlineSnapshotOptions, isNot = false) {
     // Awaited first to also support any other thenable, e.g. an element command result
     const { element, elements, multiRemoteSelector, other } = await awaitElementOrArray(await asyncReceived)
 
@@ -130,7 +130,7 @@ async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, in
                 elementPerInstance[instance] !== undefined
             ]))
             return {
-                pass: false,
+                pass: isNot,
                 message: () => enhanceErrorBe(multiRemoteSelector, existingPerInstance, { isNot: false, isSome: false, verb: '', expectation: 'exist' }, { message })
             }
         }
@@ -153,7 +153,7 @@ async function toMatchSnapshotAsync (asyncReceived: unknown, message: string, in
  * @param message  optional message on failure
  * @returns matcher results
  */
-function toMatchSnapshotHelper(received: unknown, message: string, inlineOptions?: InlineSnapshotOptions) {
+function toMatchSnapshotHelper(received: unknown, message: string, inlineOptions?: InlineSnapshotOptions, isNot = false) {
     const snapshotService = SnapshotService.initiate()
     if (!snapshotService.currentFilePath || !snapshotService.currentTestName) {
         throw new Error('Snapshot service is not initialized')
@@ -169,14 +169,14 @@ function toMatchSnapshotHelper(received: unknown, message: string, inlineOptions
             isElementsToSnapshot(received)
         )
     ) {
-        return toMatchSnapshotAsync(received, message, inlineOptions)
+        return toMatchSnapshotAsync(received, message, inlineOptions, isNot)
     }
 
     return toMatchSnapshotAssert(received, message, inlineOptions)
 }
 
-export function toMatchSnapshot(received: unknown, message: string) {
-    return toMatchSnapshotHelper(received, message)
+export function toMatchSnapshot(this: WdioMatcherContext | void, received: unknown, message: string) {
+    return toMatchSnapshotHelper(received, message, undefined, Boolean(this?.isNot))
 }
 
 export function toMatchInlineSnapshot(this: WdioMatcherContext, received: unknown, inlineSnapshot: string, message: string) {
@@ -185,6 +185,7 @@ export function toMatchInlineSnapshot(this: WdioMatcherContext, received: unknow
      * through the `this` scope.
      */
     const browserErrorLine = this.errorStack
+    const isNot = Boolean(this.isNot)
 
     function __INLINE_SNAPSHOT__(inlineSnapshot: string, message: string) {
         /**
@@ -223,7 +224,7 @@ export function toMatchInlineSnapshot(this: WdioMatcherContext, received: unknow
         return toMatchSnapshotHelper(received, message, {
             inlineSnapshot,
             error
-        })
+        }, isNot)
     }
     return __INLINE_SNAPSHOT__(inlineSnapshot, message)
 }

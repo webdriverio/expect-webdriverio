@@ -129,6 +129,14 @@ Expect multi-remote<chrome, firefox>.$(\`header a\`) to exist
     expect(inlineSnapshotError).toBeInstanceOf(Error)
     expect(stripAnsi((inlineSnapshotError as Error).message)).toBe(expectedMessage)
 
+    const negatedSnapshotError = await expectExport(elements[1]).not.toMatchSnapshot().catch((err: Error) => err)
+    expect(negatedSnapshotError).toBeInstanceOf(Error)
+    expect(stripAnsi((negatedSnapshotError as Error).message)).toBe(expectedMessage)
+
+    const negatedInlineSnapshotError = await expectExport(elements[1]).not.toMatchInlineSnapshot('"<a>Link</a>"').catch((err: Error) => err)
+    expect(negatedInlineSnapshotError).toBeInstanceOf(Error)
+    expect(stripAnsi((negatedInlineSnapshotError as Error).message)).toBe(expectedMessage)
+
     expect(assertSpy).not.toHaveBeenCalled()
     assertSpy.mockRestore()
     await service.after()
