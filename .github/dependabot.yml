@@ -47,6 +47,9 @@ updates:
   ignore:
     - dependency-name: "*"
       update-types: ["version-update:semver-major", "version-update:semver-minor"]
+    # 1.6.28 needs TypeScript 6; v7 stays on TypeScript 5.9 (typescript-eslint supports < 6.1)
+    - dependency-name: "@vitest/eslint-plugin"
+      versions: [">=1.6.28"]
   groups:
     patch-deps-updates:
       update-types:
