@@ -7,6 +7,14 @@ exports[`parent > element array 1`] = `
 ]
 `;
 
+exports[`parent > multi-remote element missing on an instance 1`] = `
+{
+  "browserA": "<a>Blog</a>",
+  "browserB": undefined,
+  "browserC": "<a>Blog</a>",
+}
+`;
+
 exports[`parent > test 1`] = `
 {
   "a": "a",
