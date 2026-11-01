@@ -7,6 +7,7 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch: # the Auto-merge workflow starts it after a Dependabot merge
 
 concurrency:
   # Cancel superseded PR runs only; push runs never cancel each other, even when queued

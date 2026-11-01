@@ -8,6 +8,7 @@ on: pull_request_target
 
 # Dependabot PRs' tokens have read permissions by default and thus we must enable write permissions.
 permissions:
+    actions: write # start the main CI after a merge
     contents: write
     pull-requests: write
 
@@ -39,6 +40,7 @@ jobs:
                   allowed-conclusions: success,neutral
 
             - name: Auto-merge dependabot PRs
+              id: merge
               # npm minor and patch only; update-type is the highest update of a group, and empty when unknown
               if: >-
                   contains(steps.metadata.outputs.package-ecosystem, 'npm') &&
@@ -49,3 +51,23 @@ jobs:
               # The "auto" flag will only merge once all of the target branch's required checks
               # are met. Configure those in the "branch protection" settings for each repo.
               run: gh pr merge --auto --squash "$PR_URL"
+
+            - name: Run the main CI
+              # A merge with GITHUB_TOKEN starts no push workflow, so the full Node matrix would not run on main.
+              # Without branch protection the merge is immediate; a merge that is only queued gets no run.
+              if: steps.merge.outcome == 'success'
+              env:
+                  PR_URL: ${{ github.event.pull_request.html_url }}
+                  GH_REPO: ${{ github.repository }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  for attempt in 1 2 3 4 5 6; do
+                      [ "$(gh pr view "$PR_URL" --json state --jq .state)" = MERGED ] && break
+                      if [ "$attempt" = 6 ]; then
+                          echo "::notice::The PR is not merged yet, so the main CI is not started"
+                          exit 0
+                      fi
+                      sleep 5
+                  done
+                  gh workflow run test.yml --ref main
+                  gh workflow run e2e.yml --ref main
