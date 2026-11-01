@@ -34,7 +34,8 @@ jobs:
   # 2. Run e2e tests for each workspace in parallel
   playgrounds-e2e-tests:
     needs: playgrounds-tsc-and-lint
-    runs-on: ubuntu-latest
+    # 26.04 xvfb-run closes the worker IPC fd of @wdio/xvfb 9.32.0 (write EINVAL); drop after a v9 release with webdriverio#16180
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         workspace: [jasmine, jest, multi-remote-mocha, browser-runner]
@@ -54,7 +55,8 @@ jobs:
   # 3. Run e2e tests hacving snapshots differently!
   playgrounds-e2e-tests-with-snapshots:
     needs: playgrounds-tsc-and-lint
-    runs-on: ubuntu-latest
+    # 26.04 xvfb-run closes the worker IPC fd of @wdio/xvfb 9.32.0 (write EINVAL); drop after a v9 release with webdriverio#16180
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         workspace: [mocha]
