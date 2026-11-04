@@ -1433,6 +1433,8 @@ or
 await expect(browser).toHaveTitle(expect.not.stringContaining('some title'))
 ```
 
+Your own synchronous matchers also have an asymmetric form, see [Custom Matchers](CustomMatchers.md#asymmetric-form). The WebdriverIO matchers are async, so `expect.toHaveText()` and the others throw a `MatcherUsageError`.
+
 ### expect.multiRemote()
 
 With [multi-remote](MultiRemote.md), passes one expected value per browser instance, keyed by instance name. Every instance must be listed.
