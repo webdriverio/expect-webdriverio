@@ -81,10 +81,11 @@ export class SoftAssertService {
         const stackLines = error.stack?.split('\n') || []
         let location = ''
 
-        // Find the first non-expect-webdriverio line in the stack
+        // Find the first non-expect-webdriverio frame in the stack: the lines before the frames are the error message
         for (const line of stackLines) {
-            if (line && !line.includes('expect-webdriverio') && !line.includes('node_modules')) {
-                location = line.trim()
+            const frame = line.trim()
+            if (frame.startsWith('at ') && !frame.includes('expect-webdriverio') && !frame.includes('node_modules')) {
+                location = frame.slice('at '.length)
                 break
             }
         }

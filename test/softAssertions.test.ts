@@ -464,6 +464,26 @@ Expect $$(\`sel\`) to have text
             }
         })
 
+        it('should take the location from the first frame of the test, not from the error message', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('frame-location-test', 'frame location test', 'test file')
+
+            const error = new Error('Expect $(`sel`) to have text')
+            error.stack = [
+                'Error: Expect $(`sel`) to have text',
+                '',
+                'Expected: "Expected Text"',
+                'Received: "Actual Text"',
+                '    at Proxy.<anonymous> (/project/node_modules/expect/build/index.js:1:1)',
+                '    at createSoftMatcher (/project/node_modules/expect-webdriverio/lib/softExpect.js:2:2)',
+                '    at Context.<anonymous> (/project/test/specs/login.e2e.ts:10:5)',
+            ].join('\n')
+            softService.addFailure(error, 'toHaveText')
+
+            expect(softService.getFailures()[0].location).toBe('Context.<anonymous> (/project/test/specs/login.e2e.ts:10:5)')
+            expect(() => softService.assertNoFailures()).toThrow('   at Context.<anonymous> (/project/test/specs/login.e2e.ts:10:5)\n')
+        })
+
         it('should handle maximum failure limits', async () => {
             const softService = SoftAssertService.getInstance()
             softService.setCurrentTest('limit-test', 'limit test', 'test file')
