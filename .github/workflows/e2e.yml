@@ -59,6 +59,11 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile && pnpm --dir playgrounds install --frozen-lockfile
 
+      - name: Load Chrome from disk
+        # The first read of Chrome from the runner disk can take up to 30 s, the limit of the Jest
+        # hook that starts the first session. Do this read before the tests, not in a test.
+        run: google-chrome --headless --disable-gpu --dump-dom about:blank > /dev/null
+
       - name: Run ${{ matrix.name }} E2e Tests
         run: pnpm --filter ./${{ matrix.workspace }} run ${{ matrix.script }}
         working-directory: playgrounds
@@ -92,6 +97,11 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile && pnpm --dir playgrounds install --frozen-lockfile
+
+      - name: Load Chrome from disk
+        # The first read of Chrome from the runner disk can take up to 30 s, the limit of the Jest
+        # hook that starts the first session. Do this read before the tests, not in a test.
+        run: google-chrome --headless --disable-gpu --dump-dom about:blank > /dev/null
 
       - name: Update & Run Snapshots Tests
         run: pnpm run playgrounds:snapshots:update
