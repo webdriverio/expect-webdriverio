@@ -1133,6 +1133,8 @@ try {
 
 `SnapshotService.initiate()` takes the options of the service, e.g. `{ updateState: 'all' }` to update the snapshots, or `resolveSnapshotPath`. With Jest or Mocha, call `beforeTest()` in `beforeEach`, and `after()` in `afterAll` (or `after`).
 
+Mocha test retries reuse the snapshot keys from the original attempt. An unchanged mismatch still fails on the last retry; a later attempt that matches the stored values can pass. If you call the service hooks yourself, pass Mocha's `_currentRetry` value to `beforeTest()` when retrying a test.
+
 ### toMatchSnapshot
 
 Checks if any arbitrary object matches a certain value. If you pass in an [`WebdriverIO.Element`](https://webdriver.io/docs/api/element) it will automatically snapshot the [`outerHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/outerHTML) state of it.
