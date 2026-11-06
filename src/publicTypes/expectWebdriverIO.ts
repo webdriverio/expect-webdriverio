@@ -1164,6 +1164,7 @@ declare global {
 
         interface SoftAssertionServiceOptions {
             autoAssertOnTestEnd?: boolean
+            cleanStack?: boolean
         }
 
         class SoftAssertionService implements ServiceInstance {

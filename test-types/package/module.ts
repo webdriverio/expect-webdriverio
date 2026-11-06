@@ -22,6 +22,7 @@ export async function check() {
     // @ts-expect-error `beforeTest` takes a `@wdio/types` test: fails when `@wdio/types` does not resolve
     new SoftAssertionService().beforeTest(1)
     new SoftAssertionService({ autoAssertOnTestEnd: false })
+    new SoftAssertionService({ cleanStack: false })
     // @ts-expect-error the service takes only its options, not the capabilities and the config
     new SoftAssertionService({}, {}, {})
     // @ts-expect-error the global namespace type is the same as the export
