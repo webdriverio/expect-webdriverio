@@ -119,9 +119,6 @@ export class SoftAssertService {
         this.failureMap.get(testId)!.push({ error, matcherName, location: failureFrames[0] ?? '', frames: failureFrames })
     }
 
-    /**
-     * The direct caller of the assertion always stays in the report.
-     */
     public setCleanStack(cleanStack: boolean): void {
         this.cleanStack = cleanStack
     }

@@ -604,11 +604,17 @@ Expect $$(\`sel\`) to have text
                 expect(reportedFrames('clean-stack-true')).toEqual(userFrames)
             })
 
-            it('should use the default again when a service has no option', () => {
-                new SoftAssertionService({ cleanStack: false })
-                new SoftAssertionService()
+            it('should keep the value when a service has no option', () => {
+                SoftAssertService.getInstance().setCleanStack(false)
+                new SoftAssertionService({ autoAssertOnTestEnd: true })
 
-                expect(reportedFrames('clean-stack-reset')).toEqual(userFrames)
+                expect(reportedFrames('clean-stack-kept')).toEqual(frames)
+            })
+
+            it('should not keep a second value in the options of the service', () => {
+                const service = new SoftAssertionService({ cleanStack: false })
+
+                expect(service.options).toEqual({ autoAssertOnTestEnd: true })
             })
 
             it('should keep all the frames with cleanStack: false', () => {

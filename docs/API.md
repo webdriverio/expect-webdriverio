@@ -152,7 +152,9 @@ This is useful if you want full control over when soft assertions are verified o
 
 When set to `true` (default), the report and `frames` have the direct caller of the assertion and the frames of your code. The `node_modules`, Node.js and engine frames are removed. When set to `false`, they have the direct caller and all the frames below it, for example when you must examine the path through a shared library.
 
-This is the same name and default as `cleanStack` of the Jasmine framework, which removes only the `node_modules` lines from the stack traces of failures. Without this service, for example with `remote()` in a Jest test, set the value on `SoftAssertService`:
+The WebdriverIO testrunner also creates its own `SoftAssertionService` in each worker. This service does not change the value that you set.
+
+To set the value without the `services` entry, for example with `remote()` in a Jest test, call `setCleanStack`:
 
 ```js
 import { SoftAssertService } from 'expect-webdriverio'
@@ -160,7 +162,7 @@ import { SoftAssertService } from 'expect-webdriverio'
 SoftAssertService.getInstance().setCleanStack(false)
 ```
 
-The value applies to the whole process, and the last service created or the last call sets it.
+The last `cleanStack` option or `setCleanStack` call sets the value. Each process has one value. In Jest, each test file has its own value, so make this call in a file of `setupFilesAfterEnv`.
 
 ### Known limitations
 

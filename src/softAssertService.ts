@@ -17,11 +17,15 @@ export class SoftAssertionService implements Services.ServiceInstance {
         serviceOptions?: SoftAssertionServiceOptions,
     ) {
         this.softAssertService = SoftAssertService.getInstance()
+        const { cleanStack, ...options } = serviceOptions ?? {}
         this.options = {
             autoAssertOnTestEnd: true,
-            ...serviceOptions
+            ...options
         }
-        this.softAssertService.setCleanStack(serviceOptions?.cleanStack ?? true)
+        // The testrunner creates a service with no `cleanStack` in each worker: this must not reset the value
+        if (cleanStack !== undefined) {
+            this.softAssertService.setCleanStack(cleanStack)
+        }
     }
 
     /**
