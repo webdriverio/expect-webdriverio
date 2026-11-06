@@ -57,6 +57,24 @@ const failures = expect.getSoftFailures();
 console.log(`There are ${failures.length} soft assertion failures`);
 ```
 
+Each failure has these fields:
+
+- `error`: the original error of the matcher.
+- `matcherName`: the name of the matcher, for example `toHaveText` or `not.toHaveText`.
+- `location`: the first item of `frames`.
+- `frames`: the stack frames that lead to the assertion, without `at `. The first frame is the direct caller of the assertion. The next frames are from your code: `node_modules`, Node.js and engine frames are removed. Node.js keeps 10 stack frames by default, so a deep call path can lose its outer frames. To keep more, set `Error.stackTraceLimit`.
+
+The aggregated error prints the frames of each failure, so a soft assertion in a helper shows the path from the test:
+
+```text
+1 soft assertion failure:
+
+1) toHaveText: Expect $(`h1`) to have text
+...
+   at checkTitle (/project/test/pages/login.page.ts:4:32)
+   at Context.<anonymous> (/project/test/specs/login.e2e.ts:9:15)
+```
+
 #### expect.assertSoftFailures()
 
 Manually assert all collected soft failures. This will throw an aggregated error if any soft assertions have failed.

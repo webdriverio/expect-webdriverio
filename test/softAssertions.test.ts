@@ -1,5 +1,5 @@
 import vm from 'node:vm'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import expectLib from 'expect'
 import { expect as expectWdio, SoftAssertionService, SoftAssertService } from '../src/index.js'
@@ -469,11 +469,11 @@ Expect $$(\`sel\`) to have text
             softInHelper()
 
             const [failure] = expectWdio.getSoftFailures()
-            expect(failure.frames?.[0]).toContain('softInHelper')
-            expect(failure.frames?.[1]).toContain('softAssertions.test.ts')
-            expect(failure.location).toBe(failure.frames?.[0])
-            expect(failure.frames?.filter((frame) => frame.includes('node_modules') || frame.includes('node:'))).toEqual([])
-            expect(() => softService.assertNoFailures()).toThrow(`   at ${failure.frames?.[0]}\n   at ${failure.frames?.[1]}\n`)
+            expect(failure.frames[0]).toContain('softInHelper')
+            expect(failure.frames[1]).toContain('softAssertions.test.ts')
+            expect(failure.location).toBe(failure.frames[0])
+            expect(failure.frames.filter((frame) => frame.includes('node_modules') || frame.includes('node:'))).toEqual([])
+            expect(() => softService.assertNoFailures()).toThrow(`   at ${failure.frames[0]}\n   at ${failure.frames[1]}\n`)
         })
 
         it('should keep the frames of the callers after an await', async () => {
@@ -490,9 +490,56 @@ Expect $$(\`sel\`) to have text
             await outerHelper()
 
             const { frames } = expectWdio.getSoftFailures()[0]
-            expect(frames?.[0]).toContain('softAfterAwait')
-            expect(frames?.[1]).toContain('outerHelper')
-            expect(frames?.[2]).toContain('softAssertions.test.ts')
+            expect(frames[0]).toContain('softAfterAwait')
+            expect(frames[1]).toContain('outerHelper')
+            expect(frames[2]).toContain('softAssertions.test.ts')
+        })
+
+        it('should remove engine frames', async () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('engine-frames-test', 'engine frames test', 'test file')
+            const softAfterAwait = async () => {
+                await Promise.resolve()
+                expectWdio.soft(1).toBe(2)
+            }
+
+            ;[1].forEach(() => expectWdio.soft(1).toBe(2))
+            await Promise.all([softAfterAwait(), softAfterAwait()])
+
+            const frames = expectWdio.getSoftFailures().flatMap((failure) => failure.frames)
+            expect(frames.filter((frame) => frame.includes('(<anonymous>)') || frame.includes('(index '))).toEqual([])
+        })
+
+        describe('with an Error.prepareStackTrace that does not return a string', () => {
+            const prepareStackTrace = Error.prepareStackTrace
+
+            afterEach(() => {
+                Error.prepareStackTrace = prepareStackTrace
+            })
+
+            it('should not format the stack of a passing assertion', () => {
+                const softService = SoftAssertService.getInstance()
+                softService.setCurrentTest('lazy-stack-test', 'lazy stack test', 'test file')
+                const prepare = vi.fn((_error: Error, callSites: NodeJS.CallSite[]) => callSites)
+                Error.prepareStackTrace = prepare
+
+                expectWdio.soft(1).toBe(1)
+
+                expect(prepare).not.toHaveBeenCalled()
+            })
+
+            it('should record a failure with no frames', () => {
+                const softService = SoftAssertService.getInstance()
+                softService.setCurrentTest('array-stack-test', 'array stack test', 'test file')
+                Error.prepareStackTrace = (_error, callSites) => callSites
+
+                expectWdio.soft(1).toBe(2)
+
+                const [failure] = expectWdio.getSoftFailures()
+                expect(failure.matcherName).toBe('toBe')
+                expect(failure.frames).toEqual([])
+                expect(failure.location).toBe('')
+            })
         })
 
         it('should keep the direct caller when it is in node_modules', () => {

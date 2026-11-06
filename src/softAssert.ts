@@ -14,20 +14,28 @@ interface TestIdentifier {
     file?: string;
 }
 
-const framesOf = (stack = ''): string[] => stack.split('\n')
+const framesOf = (stack: unknown): string[] => typeof stack !== 'string' ? [] : stack.split('\n')
     .map((line) => line.trim())
     .filter((line) => line.startsWith('at '))
     .map((line) => line.slice('at '.length))
 
-const isUserFrame = (frame: string) => !frame.includes('node_modules') && !/\bnode:/.test(frame)
+// Not a frame of the user code: `node_modules`, Node.js, and engine frames such as `Array.forEach (<anonymous>)`
+const isUserFrame = (frame: string) => !frame.includes('node_modules') && !/\bnode:/.test(frame) && !/\((<anonymous>|index \d+)\)$/.test(frame)
 
 /**
- * The frames that lead to the call of `fn`: its direct caller, then the frames of the user code
+ * Captures the stack at the call of `fn`. V8 formats a stack when it is read, so a passing assertion does not format it.
  */
-export const callerFrames = (fn: (...args: never[]) => unknown): string[] | undefined => {
-    const holder: { stack?: string } = {}
-    Error.captureStackTrace?.(holder, fn)
-    const [caller, ...callers] = framesOf(holder.stack)
+export const captureCaller = (fn: (...args: never[]) => unknown): { stack?: unknown } => {
+    const caller: { stack?: unknown } = {}
+    Error.captureStackTrace?.(caller, fn)
+    return caller
+}
+
+/**
+ * The frames that lead to the captured call: its direct caller, then the frames of the user code
+ */
+export const callerFrames = (capturedCaller: { stack?: unknown }): string[] | undefined => {
+    const [caller, ...callers] = framesOf(capturedCaller.stack)
     return caller ? [caller, ...callers.filter(isUserFrame)] : undefined
 }
 

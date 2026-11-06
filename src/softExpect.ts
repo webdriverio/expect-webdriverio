@@ -1,4 +1,4 @@
-import { callerFrames, SoftAssertService } from './softAssert.js'
+import { captureCaller, callerFrames, SoftAssertService } from './softAssert.js'
 import type { SyncExpectationResult } from 'expect'
 import type { AsyncAssertionResult } from './publicTypes/options.js'
 
@@ -74,7 +74,7 @@ const createSoftMatcher = <T>(
 ) => {
     return function softMatcher(...args: unknown[]): AsyncAssertionResult | SyncExpectationResult {
         // After an await the caller is no longer on the stack, so read it before the matcher runs
-        const frames = callerFrames(softMatcher)
+        const caller = captureCaller(softMatcher)
 
         try {
             // Build the expectation chain
@@ -94,20 +94,20 @@ const createSoftMatcher = <T>(
 
             // Handle async matchers, and allow to not be a promise for basic non-async matchers
             if ( assertionResult instanceof Promise) {
-                return assertionResult.catch((error: Error) => handlingMatcherFailure(prefix, matcherName, softService, error, frames))
+                return assertionResult.catch((error: Error) => handlingMatcherFailure(prefix, matcherName, softService, error, caller))
             }
             return assertionResult
 
         } catch (error) {
-            return handlingMatcherFailure(prefix, matcherName, softService, error as Error, frames)
+            return handlingMatcherFailure(prefix, matcherName, softService, error as Error, caller)
         }
     }
 }
 
-function handlingMatcherFailure(prefix: string | undefined, matcherName: string, softService: SoftAssertService, error: unknown, frames?: string[]) {
+function handlingMatcherFailure(prefix: string | undefined, matcherName: string, softService: SoftAssertService, error: unknown, caller: { stack?: unknown }) {
     // Record the failure
     const fullMatcherName = prefix ? `${prefix}.${matcherName}` : matcherName
-    softService.addFailure(error as Error, fullMatcherName, frames)
+    softService.addFailure(error as Error, fullMatcherName, callerFrames(caller))
 
     // Return a passing result to continue execution
     return {

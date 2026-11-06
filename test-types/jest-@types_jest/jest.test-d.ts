@@ -706,6 +706,11 @@ describe('Jest augmentation typing assertions tests paired with `@types/jest`', 
                 it('should return `SoftFailure[]`', async () => {
                     expectTypeOf(expect.getSoftFailures()).toEqualTypeOf<ExpectWebdriverIO.SoftFailure[]>()
                 })
+
+                it('should have the location and the frames of each failure', async () => {
+                    expectTypeOf(expect.getSoftFailures()[0].location).toEqualTypeOf<string | undefined>()
+                    expectTypeOf(expect.getSoftFailures()[0].frames).toEqualTypeOf<string[]>()
+                })
             })
 
             describe('expect.assertSoftFailures', () => {
