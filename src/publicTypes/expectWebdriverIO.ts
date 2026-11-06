@@ -1148,6 +1148,7 @@ declare global {
             error: Error
             matcherName: string
             location?: string
+            frames?: string[]
         }
 
         class SoftAssertService {
@@ -1155,7 +1156,7 @@ declare global {
             setCurrentTest(testId: string, testName?: string, testFile?: string): void
             clearCurrentTest(): void
             getCurrentTestId(): string | null
-            addFailure(error: Error, matcherName: string): void
+            addFailure(error: Error, matcherName: string, frames?: string[]): void
             getFailures(testId?: string): SoftFailure[]
             clearFailures(testId?: string): void
             assertNoFailures(testId?: string): void

@@ -1,7 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import vm from 'node:vm'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import expectLib from 'expect'
 import { expect as expectWdio, SoftAssertionService, SoftAssertService } from '../src/index.js'
+import { callerFrames } from '../src/softAssert.js'
 import stripAnsi from 'strip-ansi'
 import type { TestResult } from '../src/publicTypes/expectWebdriverIO.js'
 
@@ -457,11 +459,192 @@ Expect $$(\`sel\`) to have text
             const failures = expectWdio.getSoftFailures()
             expect(failures.length).toBe(1)
 
-            // Should have location info (if implemented)
-            if (failures[0].location) {
-                expect(failures[0].location).toBeTruthy()
-                expect(typeof failures[0].location).toBe('string')
+            expect(failures[0].location).toContain('softAssertions.test.ts')
+        })
+
+        it('should keep the frames that lead to a soft assertion in a helper', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('helper-frames-test', 'helper frames test', 'test file')
+            const softInHelper = () => expectWdio.soft(1).toBe(2)
+
+            softInHelper()
+
+            const [failure] = expectWdio.getSoftFailures()
+            expect(failure.frames?.[0]).toContain('softInHelper')
+            expect(failure.frames?.[1]).toContain('softAssertions.test.ts')
+            expect(failure.location).toBe(failure.frames?.[0])
+            expect(failure.frames?.filter((frame) => frame.includes('node_modules') || frame.includes('node:'))).toEqual([])
+            expect(() => softService.assertNoFailures()).toThrow(`   > at ${failure.frames?.[0]}\n   > at ${failure.frames?.[1]}\n`)
+        })
+
+        it('should keep the frames of the callers after an await', async () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('async-frames-test', 'async frames test', 'test file')
+            const softAfterAwait = async () => {
+                await Promise.resolve()
+                expectWdio.soft(1).toBe(2)
             }
+            const outerHelper = async () => {
+                await softAfterAwait()
+            }
+
+            await outerHelper()
+
+            const { frames } = expectWdio.getSoftFailures()[0]
+            expect(frames?.[0]).toContain('softAfterAwait')
+            expect(frames?.[1]).toContain('outerHelper')
+            expect(frames?.[2]).toContain('softAssertions.test.ts')
+        })
+
+        it('should remove engine frames', async () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('engine-frames-test', 'engine frames test', 'test file')
+            const softAfterAwait = async () => {
+                await Promise.resolve()
+                expectWdio.soft(1).toBe(2)
+            }
+
+            ;[1].forEach(() => expectWdio.soft(1).toBe(2))
+            await Promise.all([softAfterAwait(), softAfterAwait()])
+
+            const frames = expectWdio.getSoftFailures().flatMap((failure) => failure.frames ?? [])
+            expect(frames.filter((frame) => frame.includes('(<anonymous>)') || frame.includes('(index '))).toEqual([])
+        })
+
+        describe('with an Error.prepareStackTrace that does not return a string', () => {
+            const prepareStackTrace = Error.prepareStackTrace
+
+            afterEach(() => {
+                Error.prepareStackTrace = prepareStackTrace
+            })
+
+            it('should not format the stack of a passing assertion', () => {
+                const softService = SoftAssertService.getInstance()
+                softService.setCurrentTest('lazy-stack-test', 'lazy stack test', 'test file')
+                const prepare = vi.fn((_error: Error, callSites: NodeJS.CallSite[]) => callSites)
+                Error.prepareStackTrace = prepare
+
+                expectWdio.soft(1).toBe(1)
+
+                expect(prepare).not.toHaveBeenCalled()
+            })
+
+            it('should record a failure with no frames', () => {
+                const softService = SoftAssertService.getInstance()
+                softService.setCurrentTest('array-stack-test', 'array stack test', 'test file')
+                Error.prepareStackTrace = (_error, callSites) => callSites
+
+                expectWdio.soft(1).toBe(2)
+
+                const [failure] = expectWdio.getSoftFailures()
+                expect(failure.matcherName).toBe('toBe')
+                expect(failure.frames).toEqual([])
+                expect(failure.location).toBe('')
+            })
+        })
+
+        it('should keep all the failures in the message that Jest reads', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('jest-message-test', 'jest message test', 'test file')
+
+            expectWdio.soft(1).toBe(2)
+            expectWdio.soft('a').toBe('b')
+
+            let message = ''
+            try {
+                softService.assertNoFailures()
+            } catch (error) {
+                message = (error as Error).message
+            }
+            // The pattern of `separateMessageFromStack` in jest-message-util: the stack starts at the first match
+            expect(message).toContain('2) toBe')
+            expect(message).not.toMatch(/\n\s*at\s.*:\d*:\d*/)
+        })
+
+        it('should remove only the frames that are not from the user code', () => {
+            const stack = [
+                'Error',
+                '    at helper (/project/node_modules/page-objects/login.js:1:1)',
+                '    at caller (/project/test/login.js:1:1)',
+                '    at a (/project/node_modules/webdriverio/build/index.js:1:1)',
+                '    at b (C:\\project\\node_modules\\webdriverio\\build\\index.js:1:1)',
+                '    at c (node:internal/process/task_queues:1:1)',
+                '    at node:internal/main/run_main_module:1:1',
+                '    at async node:internal/modules/esm/loader:1:1',
+                '    at Array.forEach (<anonymous>)',
+                '    at async Promise.all (index 0)',
+                '    at <anonymous>',
+                '    at d (/tmp/selenium-node:1/spec.js:1:1)',
+                '    at e (/app/node_modules_backup/spec.js:1:1)',
+            ].join('\n')
+
+            expect(callerFrames({ stack })).toEqual([
+                'helper (/project/node_modules/page-objects/login.js:1:1)',
+                'caller (/project/test/login.js:1:1)',
+                'd (/tmp/selenium-node:1/spec.js:1:1)',
+                'e (/app/node_modules_backup/spec.js:1:1)',
+            ])
+        })
+
+        it('should keep the direct caller when it is in node_modules', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('package-frames-test', 'package frames test', 'test file')
+            const filename = '/project/node_modules/page-objects/login.js'
+
+            vm.runInThisContext('(function login(expect) { expect.soft(1).toBe(2) })', { filename })(expectWdio)
+
+            expect(expectWdio.getSoftFailures()[0].location).toContain(filename)
+        })
+
+        it('should take the location from the caller when a message line starts with "at"', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('message-location-test', 'message location test', 'test file')
+
+            expectWdio.soft('line1\nat home\nA').toBe('line1\nat home\nB')
+
+            expect(expectWdio.getSoftFailures()[0].location).toContain('softAssertions.test.ts')
+        })
+
+        it('should take the location from the caller when a timer rejects', async () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('timer-location-test', 'timer location test', 'test file')
+            vi.mocked(el.getHTML).mockImplementation(() => new Promise((_resolve, reject) => {
+                setTimeout(() => reject(new Error('WebDriver failed')), 1)
+            }))
+
+            await expectWdio.soft(el).toHaveHTML('<div />', { wait: 0 })
+
+            expect(expectWdio.getSoftFailures()[0].location).toContain('softAssertions.test.ts')
+        })
+
+        it('should take the location from the caller when its directory name has "expect-webdriverio"', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('directory-location-test', 'directory location test', 'test file')
+            const filename = '/home/me/expect-webdriverio-demo/login.e2e.js'
+
+            vm.runInThisContext('(function spec(expect) { expect.soft(1).toBe(2) })', { filename })(expectWdio)
+
+            expect(expectWdio.getSoftFailures()[0].location).toContain(filename)
+        })
+
+        it('should take the location from the first frame of the test, not from the error message', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('frame-location-test', 'frame location test', 'test file')
+
+            const error = new Error('Expect $(`sel`) to have text')
+            error.stack = [
+                'Error: Expect $(`sel`) to have text',
+                '',
+                'Expected: "Expected Text"',
+                'Received: "Actual Text"',
+                '    at Proxy.<anonymous> (/project/node_modules/expect/build/index.js:1:1)',
+                '    at createSoftMatcher (/project/node_modules/expect-webdriverio/lib/softExpect.js:2:2)',
+                '    at Context.<anonymous> (/project/test/specs/login.e2e.ts:10:5)',
+            ].join('\n')
+            softService.addFailure(error, 'toHaveText')
+
+            expect(softService.getFailures()[0].location).toBe('Context.<anonymous> (/project/test/specs/login.e2e.ts:10:5)')
+            expect(() => softService.assertNoFailures()).toThrow('   > at Context.<anonymous> (/project/test/specs/login.e2e.ts:10:5)\n')
         })
 
         it('should handle maximum failure limits', async () => {

@@ -5,12 +5,46 @@ interface SoftFailure {
     error: AssertionError | Error;
     matcherName: string;
     location?: string;
+    frames: string[];
 }
 
 interface TestIdentifier {
     id: string;
     name?: string;
     file?: string;
+}
+
+const framesOf = (stack: unknown): string[] => typeof stack !== 'string' ? [] : stack.split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith('at '))
+    .map((line) => line.slice('at '.length))
+
+const NON_USER_FRAME = [
+    /[\\/]node_modules[\\/]/,
+    // Node.js: `fn (node:internal/...)`, `node:internal/...` and `async node:internal/...`
+    /(^|\(|async )node:/,
+    // The engine: `Array.forEach (<anonymous>)`, `async Promise.all (index 0)` and `<anonymous>`
+    /\((<anonymous>|index \d+)\)$/,
+    /^(async )?<anonymous>$/,
+]
+
+const isUserFrame = (frame: string) => !NON_USER_FRAME.some((pattern) => pattern.test(frame))
+
+/**
+ * Captures the stack at the call of `fn`. V8 formats a stack when it is read, so a passing assertion does not format it.
+ */
+export const captureCaller = (fn: (...args: never[]) => unknown): { stack?: unknown } => {
+    const caller: { stack?: unknown } = {}
+    Error.captureStackTrace?.(caller, fn)
+    return caller
+}
+
+/**
+ * The frames that lead to the captured call: its direct caller, then the frames of the user code
+ */
+export const callerFrames = (capturedCaller: { stack?: unknown }): string[] | undefined => {
+    const [caller, ...callers] = framesOf(capturedCaller.stack)
+    return caller ? [caller, ...callers.filter(isUserFrame)] : undefined
 }
 
 /**
@@ -67,7 +101,7 @@ export class SoftAssertService {
      * If no test context is set, failures are stored under a global fallback ID
      * to ensure soft assertions work even when hooks haven't set the context
      */
-    public addFailure(error: Error, matcherName: string): void {
+    public addFailure(error: Error, matcherName: string, frames?: string[]): void {
         // Use current test ID or fallback to global ID for frameworks where
         // the test context might not be set (e.g., Cucumber without proper hook integration)
         const testId = this.getCurrentTestId() || SoftAssertService.GLOBAL_TEST_ID
@@ -77,20 +111,11 @@ export class SoftAssertService {
             this.failureMap.set(testId, [])
         }
 
-        // Extract stack information to get file and line number
-        const stackLines = error.stack?.split('\n') || []
-        let location = ''
-
-        // Find the first non-expect-webdriverio line in the stack
-        for (const line of stackLines) {
-            if (line && !line.includes('expect-webdriverio') && !line.includes('node_modules')) {
-                location = line.trim()
-                break
-            }
-        }
+        // Without the frames of the caller, use the first lines of the error stack that are not from this library
+        const failureFrames = frames ?? framesOf(error.stack).filter((frame) => isUserFrame(frame) && !frame.includes('expect-webdriverio'))
 
         // We know the entry exists from the check above
-        this.failureMap.get(testId)!.push({ error, matcherName, location })
+        this.failureMap.get(testId)!.push({ error, matcherName, location: failureFrames[0] ?? '', frames: failureFrames })
     }
 
     /**
@@ -128,9 +153,11 @@ export class SoftAssertService {
 
         failures.forEach((failure, index) => {
             message += `${index + 1}) ${failure.matcherName}: ${failure.error.message}\n`
-            if (failure.location) {
-                message += `   at ${failure.location}\n`
-            }
+            // The `>` is necessary: Jest reads all the text after a line `at file:line:col` as the stack, so it does not
+            // show the next failures as the message, and `--noStackTrace` removes them
+            failure.frames.forEach((frame) => {
+                message += `   > at ${frame}\n`
+            })
             message += '\n'
         })
 

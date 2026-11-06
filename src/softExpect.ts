@@ -1,4 +1,4 @@
-import { SoftAssertService } from './softAssert.js'
+import { captureCaller, callerFrames, SoftAssertService } from './softAssert.js'
 import type { SyncExpectationResult } from 'expect'
 import type { AsyncAssertionResult } from './publicTypes/options.js'
 
@@ -72,7 +72,10 @@ const createSoftMatcher = <T>(
     softService: SoftAssertService,
     prefix?: string
 ) => {
-    return (...args: unknown[]): AsyncAssertionResult | SyncExpectationResult  => {
+    return function softMatcher(...args: unknown[]): AsyncAssertionResult | SyncExpectationResult {
+        // After an await the caller is no longer on the stack, so read it before the matcher runs
+        const caller = captureCaller(softMatcher)
+
         try {
             // Build the expectation chain
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,20 +94,20 @@ const createSoftMatcher = <T>(
 
             // Handle async matchers, and allow to not be a promise for basic non-async matchers
             if ( assertionResult instanceof Promise) {
-                return assertionResult.catch((error: Error) => handlingMatcherFailure(prefix, matcherName, softService, error))
+                return assertionResult.catch((error: Error) => handlingMatcherFailure(prefix, matcherName, softService, error, caller))
             }
             return assertionResult
 
         } catch (error) {
-            return handlingMatcherFailure(prefix, matcherName, softService, error as Error)
+            return handlingMatcherFailure(prefix, matcherName, softService, error as Error, caller)
         }
     }
 }
 
-function handlingMatcherFailure(prefix: string | undefined, matcherName: string, softService: SoftAssertService, error: unknown) {
+function handlingMatcherFailure(prefix: string | undefined, matcherName: string, softService: SoftAssertService, error: unknown, caller: { stack?: unknown }) {
     // Record the failure
     const fullMatcherName = prefix ? `${prefix}.${matcherName}` : matcherName
-    softService.addFailure(error as Error, fullMatcherName)
+    softService.addFailure(error as Error, fullMatcherName, callerFrames(caller))
 
     // Return a passing result to continue execution
     return {
