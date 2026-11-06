@@ -1,9 +1,10 @@
-import { expect, wdioCustomMatchers, setDefaultOptions, SoftAssertionService } from 'expect-webdriverio'
+import { expect, wdioCustomMatchers, setDefaultOptions, SoftAssertionService, SoftAssertService } from 'expect-webdriverio'
 import { some, multiRemote, wdioCustomMatcherNames } from 'expect-webdriverio/api'
 
 declare const el: WebdriverIO.Element
 declare const els: WebdriverIO.ElementArray
 declare const NsSoftAssertionService: typeof ExpectWebdriverIO.SoftAssertionService
+declare const nsSoftAssertService: ExpectWebdriverIO.SoftAssertService
 
 export async function check() {
     await expect(el).toHaveText('text')
@@ -23,6 +24,13 @@ export async function check() {
     new SoftAssertionService().beforeTest(1)
     new SoftAssertionService({ autoAssertOnTestEnd: false })
     new SoftAssertionService({ cleanStack: false })
+    new NsSoftAssertionService({ cleanStack: false })
+    // @ts-expect-error `cleanStack` is a boolean
+    new SoftAssertionService({ cleanStack: 'all' })
+    // @ts-expect-error `cleanStack` is a boolean
+    new NsSoftAssertionService({ cleanStack: 'all' })
+    SoftAssertService.getInstance().setCleanStack(false)
+    nsSoftAssertService.setCleanStack(false)
     // @ts-expect-error the service takes only its options, not the capabilities and the config
     new SoftAssertionService({}, {}, {})
     // @ts-expect-error the global namespace type is the same as the export

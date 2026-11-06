@@ -3,10 +3,6 @@ import { SoftAssertService } from './softAssert.js'
 
 export interface SoftAssertionServiceOptions {
     autoAssertOnTestEnd?: boolean;
-    /**
-     * Remove the `node_modules`, Node.js and engine frames from the report of the failures
-     * @default true
-     */
     cleanStack?: boolean;
 }
 
@@ -23,10 +19,9 @@ export class SoftAssertionService implements Services.ServiceInstance {
         this.softAssertService = SoftAssertService.getInstance()
         this.options = {
             autoAssertOnTestEnd: true,
-            cleanStack: true,
             ...serviceOptions
         }
-        this.softAssertService.setCleanStack(this.options.cleanStack !== false)
+        this.softAssertService.setCleanStack(serviceOptions?.cleanStack ?? true)
     }
 
     /**

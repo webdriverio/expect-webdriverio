@@ -120,7 +120,7 @@ export class SoftAssertService {
     }
 
     /**
-     * Keep or remove the frames that are not from the user code. The direct caller of the assertion always stays.
+     * The direct caller of the assertion always stays in the report.
      */
     public setCleanStack(cleanStack: boolean): void {
         this.cleanStack = cleanStack

@@ -128,7 +128,7 @@ export const config = {
     [SoftAssertionService, {
       // Disable automatic assertion at the end of tests (default: true)
       autoAssertOnTestEnd: false,
-      // Keep all the stack frames in the report (default: true)
+      // Remove the node_modules, Node.js and engine frames from the report (default: true)
       cleanStack: false
     }]
   ],
@@ -152,7 +152,15 @@ This is useful if you want full control over when soft assertions are verified o
 
 When set to `true` (default), the report and `frames` have the direct caller of the assertion and the frames of your code. The `node_modules`, Node.js and engine frames are removed. When set to `false`, they have the direct caller and all the frames below it, for example when you must examine the path through a shared library.
 
-This is the same name and default as `cleanStack` of the Jasmine framework, which removes only the `node_modules` lines from the stack traces of failures. Without this service, for example with `remote()` in a Jest test, the default applies.
+This is the same name and default as `cleanStack` of the Jasmine framework, which removes only the `node_modules` lines from the stack traces of failures. Without this service, for example with `remote()` in a Jest test, set the value on `SoftAssertService`:
+
+```js
+import { SoftAssertService } from 'expect-webdriverio'
+
+SoftAssertService.getInstance().setCleanStack(false)
+```
+
+The value applies to the whole process, and the last service created or the last call sets it.
 
 ### Known limitations
 
