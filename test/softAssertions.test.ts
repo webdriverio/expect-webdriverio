@@ -1,3 +1,4 @@
+import vm from 'node:vm'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import expectLib from 'expect'
@@ -457,11 +458,82 @@ Expect $$(\`sel\`) to have text
             const failures = expectWdio.getSoftFailures()
             expect(failures.length).toBe(1)
 
-            // Should have location info (if implemented)
-            if (failures[0].location) {
-                expect(failures[0].location).toBeTruthy()
-                expect(typeof failures[0].location).toBe('string')
+            expect(failures[0].location).toContain('softAssertions.test.ts')
+        })
+
+        it('should keep the frames that lead to a soft assertion in a helper', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('helper-frames-test', 'helper frames test', 'test file')
+            const softInHelper = () => expectWdio.soft(1).toBe(2)
+
+            softInHelper()
+
+            const [failure] = expectWdio.getSoftFailures()
+            expect(failure.frames?.[0]).toContain('softInHelper')
+            expect(failure.frames?.[1]).toContain('softAssertions.test.ts')
+            expect(failure.location).toBe(failure.frames?.[0])
+            expect(failure.frames?.filter((frame) => frame.includes('node_modules') || frame.includes('node:'))).toEqual([])
+            expect(() => softService.assertNoFailures()).toThrow(`   at ${failure.frames?.[0]}\n   at ${failure.frames?.[1]}\n`)
+        })
+
+        it('should keep the frames of the callers after an await', async () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('async-frames-test', 'async frames test', 'test file')
+            const softAfterAwait = async () => {
+                await Promise.resolve()
+                expectWdio.soft(1).toBe(2)
             }
+            const outerHelper = async () => {
+                await softAfterAwait()
+            }
+
+            await outerHelper()
+
+            const { frames } = expectWdio.getSoftFailures()[0]
+            expect(frames?.[0]).toContain('softAfterAwait')
+            expect(frames?.[1]).toContain('outerHelper')
+            expect(frames?.[2]).toContain('softAssertions.test.ts')
+        })
+
+        it('should keep the direct caller when it is in node_modules', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('package-frames-test', 'package frames test', 'test file')
+            const filename = '/project/node_modules/page-objects/login.js'
+
+            vm.runInThisContext('(function login(expect) { expect.soft(1).toBe(2) })', { filename })(expectWdio)
+
+            expect(expectWdio.getSoftFailures()[0].location).toContain(filename)
+        })
+
+        it('should take the location from the caller when a message line starts with "at"', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('message-location-test', 'message location test', 'test file')
+
+            expectWdio.soft('line1\nat home\nA').toBe('line1\nat home\nB')
+
+            expect(expectWdio.getSoftFailures()[0].location).toContain('softAssertions.test.ts')
+        })
+
+        it('should take the location from the caller when a timer rejects', async () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('timer-location-test', 'timer location test', 'test file')
+            vi.mocked(el.getHTML).mockImplementation(() => new Promise((_resolve, reject) => {
+                setTimeout(() => reject(new Error('WebDriver failed')), 1)
+            }))
+
+            await expectWdio.soft(el).toHaveHTML('<div />', { wait: 0 })
+
+            expect(expectWdio.getSoftFailures()[0].location).toContain('softAssertions.test.ts')
+        })
+
+        it('should take the location from the caller when its directory name has "expect-webdriverio"', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('directory-location-test', 'directory location test', 'test file')
+            const filename = '/home/me/expect-webdriverio-demo/login.e2e.js'
+
+            vm.runInThisContext('(function spec(expect) { expect.soft(1).toBe(2) })', { filename })(expectWdio)
+
+            expect(expectWdio.getSoftFailures()[0].location).toContain(filename)
         })
 
         it('should take the location from the first frame of the test, not from the error message', () => {

@@ -5,12 +5,30 @@ interface SoftFailure {
     error: AssertionError | Error;
     matcherName: string;
     location?: string;
+    frames: string[];
 }
 
 interface TestIdentifier {
     id: string;
     name?: string;
     file?: string;
+}
+
+const framesOf = (stack = ''): string[] => stack.split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith('at '))
+    .map((line) => line.slice('at '.length))
+
+const isUserFrame = (frame: string) => !frame.includes('node_modules') && !/\bnode:/.test(frame)
+
+/**
+ * The frames that lead to the call of `fn`: its direct caller, then the frames of the user code
+ */
+export const callerFrames = (fn: (...args: never[]) => unknown): string[] | undefined => {
+    const holder: { stack?: string } = {}
+    Error.captureStackTrace?.(holder, fn)
+    const [caller, ...callers] = framesOf(holder.stack)
+    return caller ? [caller, ...callers.filter(isUserFrame)] : undefined
 }
 
 /**
@@ -67,7 +85,7 @@ export class SoftAssertService {
      * If no test context is set, failures are stored under a global fallback ID
      * to ensure soft assertions work even when hooks haven't set the context
      */
-    public addFailure(error: Error, matcherName: string): void {
+    public addFailure(error: Error, matcherName: string, frames?: string[]): void {
         // Use current test ID or fallback to global ID for frameworks where
         // the test context might not be set (e.g., Cucumber without proper hook integration)
         const testId = this.getCurrentTestId() || SoftAssertService.GLOBAL_TEST_ID
@@ -77,21 +95,11 @@ export class SoftAssertService {
             this.failureMap.set(testId, [])
         }
 
-        // Extract stack information to get file and line number
-        const stackLines = error.stack?.split('\n') || []
-        let location = ''
-
-        // Find the first non-expect-webdriverio frame in the stack: the lines before the frames are the error message
-        for (const line of stackLines) {
-            const frame = line.trim()
-            if (frame.startsWith('at ') && !frame.includes('expect-webdriverio') && !frame.includes('node_modules')) {
-                location = frame.slice('at '.length)
-                break
-            }
-        }
+        // Without the frames of the caller, use the first lines of the error stack that are not from this library
+        const failureFrames = frames ?? framesOf(error.stack).filter((frame) => isUserFrame(frame) && !frame.includes('expect-webdriverio'))
 
         // We know the entry exists from the check above
-        this.failureMap.get(testId)!.push({ error, matcherName, location })
+        this.failureMap.get(testId)!.push({ error, matcherName, location: failureFrames[0] ?? '', frames: failureFrames })
     }
 
     /**
@@ -129,9 +137,9 @@ export class SoftAssertService {
 
         failures.forEach((failure, index) => {
             message += `${index + 1}) ${failure.matcherName}: ${failure.error.message}\n`
-            if (failure.location) {
-                message += `   at ${failure.location}\n`
-            }
+            failure.frames.forEach((frame) => {
+                message += `   at ${frame}\n`
+            })
             message += '\n'
         })
 
