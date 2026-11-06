@@ -1550,7 +1550,7 @@ describe('WebDriverIO Expect Type Assertions under Mocha', () => {
 
                 it('should have the location and the frames of each failure', async () => {
                     expectTypeOf(expect.getSoftFailures()[0].location).toEqualTypeOf<string | undefined>()
-                    expectTypeOf(expect.getSoftFailures()[0].frames).toEqualTypeOf<string[]>()
+                    expectTypeOf(expect.getSoftFailures()[0].frames).toEqualTypeOf<string[] | undefined>()
                 })
             })
 

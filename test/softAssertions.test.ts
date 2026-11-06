@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import expectLib from 'expect'
 import { expect as expectWdio, SoftAssertionService, SoftAssertService } from '../src/index.js'
+import { callerFrames } from '../src/softAssert.js'
 import stripAnsi from 'strip-ansi'
 import type { TestResult } from '../src/publicTypes/expectWebdriverIO.js'
 
@@ -469,11 +470,11 @@ Expect $$(\`sel\`) to have text
             softInHelper()
 
             const [failure] = expectWdio.getSoftFailures()
-            expect(failure.frames[0]).toContain('softInHelper')
-            expect(failure.frames[1]).toContain('softAssertions.test.ts')
-            expect(failure.location).toBe(failure.frames[0])
-            expect(failure.frames.filter((frame) => frame.includes('node_modules') || frame.includes('node:'))).toEqual([])
-            expect(() => softService.assertNoFailures()).toThrow(`   at ${failure.frames[0]}\n   at ${failure.frames[1]}\n`)
+            expect(failure.frames?.[0]).toContain('softInHelper')
+            expect(failure.frames?.[1]).toContain('softAssertions.test.ts')
+            expect(failure.location).toBe(failure.frames?.[0])
+            expect(failure.frames?.filter((frame) => frame.includes('node_modules') || frame.includes('node:'))).toEqual([])
+            expect(() => softService.assertNoFailures()).toThrow(`   > at ${failure.frames?.[0]}\n   > at ${failure.frames?.[1]}\n`)
         })
 
         it('should keep the frames of the callers after an await', async () => {
@@ -490,9 +491,9 @@ Expect $$(\`sel\`) to have text
             await outerHelper()
 
             const { frames } = expectWdio.getSoftFailures()[0]
-            expect(frames[0]).toContain('softAfterAwait')
-            expect(frames[1]).toContain('outerHelper')
-            expect(frames[2]).toContain('softAssertions.test.ts')
+            expect(frames?.[0]).toContain('softAfterAwait')
+            expect(frames?.[1]).toContain('outerHelper')
+            expect(frames?.[2]).toContain('softAssertions.test.ts')
         })
 
         it('should remove engine frames', async () => {
@@ -506,7 +507,7 @@ Expect $$(\`sel\`) to have text
             ;[1].forEach(() => expectWdio.soft(1).toBe(2))
             await Promise.all([softAfterAwait(), softAfterAwait()])
 
-            const frames = expectWdio.getSoftFailures().flatMap((failure) => failure.frames)
+            const frames = expectWdio.getSoftFailures().flatMap((failure) => failure.frames ?? [])
             expect(frames.filter((frame) => frame.includes('(<anonymous>)') || frame.includes('(index '))).toEqual([])
         })
 
@@ -540,6 +541,49 @@ Expect $$(\`sel\`) to have text
                 expect(failure.frames).toEqual([])
                 expect(failure.location).toBe('')
             })
+        })
+
+        it('should keep all the failures in the message that Jest reads', () => {
+            const softService = SoftAssertService.getInstance()
+            softService.setCurrentTest('jest-message-test', 'jest message test', 'test file')
+
+            expectWdio.soft(1).toBe(2)
+            expectWdio.soft('a').toBe('b')
+
+            let message = ''
+            try {
+                softService.assertNoFailures()
+            } catch (error) {
+                message = (error as Error).message
+            }
+            // The pattern of `separateMessageFromStack` in jest-message-util: the stack starts at the first match
+            expect(message).toContain('2) toBe')
+            expect(message).not.toMatch(/\n\s*at\s.*:\d*:\d*/)
+        })
+
+        it('should remove only the frames that are not from the user code', () => {
+            const stack = [
+                'Error',
+                '    at helper (/project/node_modules/page-objects/login.js:1:1)',
+                '    at caller (/project/test/login.js:1:1)',
+                '    at a (/project/node_modules/webdriverio/build/index.js:1:1)',
+                '    at b (C:\\project\\node_modules\\webdriverio\\build\\index.js:1:1)',
+                '    at c (node:internal/process/task_queues:1:1)',
+                '    at node:internal/main/run_main_module:1:1',
+                '    at async node:internal/modules/esm/loader:1:1',
+                '    at Array.forEach (<anonymous>)',
+                '    at async Promise.all (index 0)',
+                '    at <anonymous>',
+                '    at d (/tmp/selenium-node:1/spec.js:1:1)',
+                '    at e (/app/node_modules_backup/spec.js:1:1)',
+            ].join('\n')
+
+            expect(callerFrames({ stack })).toEqual([
+                'helper (/project/node_modules/page-objects/login.js:1:1)',
+                'caller (/project/test/login.js:1:1)',
+                'd (/tmp/selenium-node:1/spec.js:1:1)',
+                'e (/app/node_modules_backup/spec.js:1:1)',
+            ])
         })
 
         it('should keep the direct caller when it is in node_modules', () => {
@@ -600,7 +644,7 @@ Expect $$(\`sel\`) to have text
             softService.addFailure(error, 'toHaveText')
 
             expect(softService.getFailures()[0].location).toBe('Context.<anonymous> (/project/test/specs/login.e2e.ts:10:5)')
-            expect(() => softService.assertNoFailures()).toThrow('   at Context.<anonymous> (/project/test/specs/login.e2e.ts:10:5)\n')
+            expect(() => softService.assertNoFailures()).toThrow('   > at Context.<anonymous> (/project/test/specs/login.e2e.ts:10:5)\n')
         })
 
         it('should handle maximum failure limits', async () => {

@@ -19,8 +19,16 @@ const framesOf = (stack: unknown): string[] => typeof stack !== 'string' ? [] : 
     .filter((line) => line.startsWith('at '))
     .map((line) => line.slice('at '.length))
 
-// Not a frame of the user code: `node_modules`, Node.js, and engine frames such as `Array.forEach (<anonymous>)`
-const isUserFrame = (frame: string) => !frame.includes('node_modules') && !/\bnode:/.test(frame) && !/\((<anonymous>|index \d+)\)$/.test(frame)
+const NON_USER_FRAME = [
+    /[\\/]node_modules[\\/]/,
+    // Node.js: `fn (node:internal/...)`, `node:internal/...` and `async node:internal/...`
+    /(^|\(|async )node:/,
+    // The engine: `Array.forEach (<anonymous>)`, `async Promise.all (index 0)` and `<anonymous>`
+    /\((<anonymous>|index \d+)\)$/,
+    /^(async )?<anonymous>$/,
+]
+
+const isUserFrame = (frame: string) => !NON_USER_FRAME.some((pattern) => pattern.test(frame))
 
 /**
  * Captures the stack at the call of `fn`. V8 formats a stack when it is read, so a passing assertion does not format it.
@@ -145,8 +153,10 @@ export class SoftAssertService {
 
         failures.forEach((failure, index) => {
             message += `${index + 1}) ${failure.matcherName}: ${failure.error.message}\n`
+            // The `>` is necessary: Jest reads all the text after a line `at file:line:col` as the stack, so it does not
+            // show the next failures as the message, and `--noStackTrace` removes them
             failure.frames.forEach((frame) => {
-                message += `   at ${frame}\n`
+                message += `   > at ${frame}\n`
             })
             message += '\n'
         })

@@ -1148,7 +1148,7 @@ declare global {
             error: Error
             matcherName: string
             location?: string
-            frames: string[]
+            frames?: string[]
         }
 
         class SoftAssertService {
