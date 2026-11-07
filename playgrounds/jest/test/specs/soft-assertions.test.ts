@@ -1,3 +1,5 @@
+import { SoftAssertService } from 'expect-webdriverio'
+
 describe('Soft assertions on the Jest expect', () => {
     beforeEach(async () => {
         await standalone.url('https://guinea-pig.webdriver.io/')
@@ -6,6 +8,7 @@ describe('Soft assertions on the Jest expect', () => {
 
     afterEach(() => {
         expect.clearSoftFailures()
+        SoftAssertService.getInstance().setCleanStack(true)
     })
 
     it('should record a failure and continue the test', async () => {
@@ -22,5 +25,23 @@ describe('Soft assertions on the Jest expect', () => {
 
         expect(() => expect.assertSoftFailures()).toThrow(/1 soft assertion failure:[\s\S]*toHaveTitle/)
         expect(expect.getSoftFailures()).toHaveLength(0)
+    })
+
+    it('should show the test line as location and remove the node_modules frames by default', async () => {
+        await expect.soft(standalone).toHaveTitle('Wrong title', { wait: 0 })
+
+        const [failure] = expect.getSoftFailures()
+        expect(failure.location).toContain('soft-assertions.test.ts')
+        expect(failure.frames).not.toContainEqual(expect.stringContaining('node_modules'))
+    })
+
+    it('should keep the node_modules frames with setCleanStack(false)', async () => {
+        SoftAssertService.getInstance().setCleanStack(false)
+
+        await expect.soft(standalone).toHaveTitle('Wrong title', { wait: 0 })
+
+        const [failure] = expect.getSoftFailures()
+        expect(failure.location).toContain('soft-assertions.test.ts')
+        expect(failure.frames).toContainEqual(expect.stringContaining('node_modules'))
     })
 })
