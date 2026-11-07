@@ -3,6 +3,7 @@ import { SoftAssertService } from './softAssert.js'
 
 export interface SoftAssertionServiceOptions {
     autoAssertOnTestEnd?: boolean;
+    cleanStack?: boolean;
 }
 
 /**
@@ -10,15 +11,20 @@ export interface SoftAssertionServiceOptions {
  */
 export class SoftAssertionService implements Services.ServiceInstance {
     private softAssertService: SoftAssertService
-    public options: SoftAssertionServiceOptions
+    public options: Omit<SoftAssertionServiceOptions, 'cleanStack'>
 
     constructor(
         serviceOptions?: SoftAssertionServiceOptions,
     ) {
         this.softAssertService = SoftAssertService.getInstance()
+        const { cleanStack, ...options } = serviceOptions ?? {}
         this.options = {
             autoAssertOnTestEnd: true,
-            ...serviceOptions
+            ...options
+        }
+        // The testrunner creates a service with no `cleanStack` in each worker: this must not reset the value
+        if (cleanStack !== undefined) {
+            this.softAssertService.setCleanStack(cleanStack)
         }
     }
 

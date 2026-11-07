@@ -40,11 +40,11 @@ export const captureCaller = (fn: (...args: never[]) => unknown): { stack?: unkn
 }
 
 /**
- * The frames that lead to the captured call: its direct caller, then the frames of the user code
+ * The frames that lead to the captured call, starting at its direct caller
  */
 export const callerFrames = (capturedCaller: { stack?: unknown }): string[] | undefined => {
-    const [caller, ...callers] = framesOf(capturedCaller.stack)
-    return caller ? [caller, ...callers.filter(isUserFrame)] : undefined
+    const frames = framesOf(capturedCaller.stack)
+    return frames.length > 0 ? frames : undefined
 }
 
 /**
@@ -59,6 +59,8 @@ export class SoftAssertService {
      * Ensure proper test context is set in hooks whenever possible.
      */
     public static readonly GLOBAL_TEST_ID = '__global_soft_assert_context__'
+
+    private cleanStack = true
     private failureMap: Map<string, SoftFailure[]> = new Map()
     private currentTest: TestIdentifier | null = null
 
@@ -111,11 +113,25 @@ export class SoftAssertService {
             this.failureMap.set(testId, [])
         }
 
-        // Without the frames of the caller, use the first lines of the error stack that are not from this library
-        const failureFrames = frames ?? framesOf(error.stack).filter((frame) => isUserFrame(frame) && !frame.includes('expect-webdriverio'))
+        const failureFrames = this.framesToReport(error, frames)
 
         // We know the entry exists from the check above
         this.failureMap.get(testId)!.push({ error, matcherName, location: failureFrames[0] ?? '', frames: failureFrames })
+    }
+
+    public setCleanStack(cleanStack: boolean): void {
+        this.cleanStack = cleanStack
+    }
+
+    private framesToReport(error: Error, frames?: string[]): string[] {
+        if (!this.cleanStack) {
+            return frames ?? framesOf(error.stack)
+        }
+        if (frames) {
+            return frames.filter((frame, index) => index === 0 || isUserFrame(frame))
+        }
+        // Without the frames of the caller, use the lines of the error stack that are not from this library
+        return framesOf(error.stack).filter((frame) => isUserFrame(frame) && !frame.includes('expect-webdriverio'))
     }
 
     /**

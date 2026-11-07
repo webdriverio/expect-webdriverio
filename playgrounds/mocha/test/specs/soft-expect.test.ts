@@ -135,4 +135,15 @@ describe('Soft Assertions with expect.soft', () => {
             // All assertions evaluated at end
         })
     })
+
+    describe('Failure location', () => {
+        it('should show the test line as location and remove the node_modules frames', async () => {
+            await expect.soft(browser).toHaveTitle('Wrong title', { wait: 0 })
+
+            const [failure] = expect.getSoftFailures()
+            expect(failure.location).toContain('soft-expect.test.ts')
+            expect(failure.frames).not.toContainEqual(expect.stringContaining('node_modules'))
+            expect.clearSoftFailures()
+        })
+    })
 })

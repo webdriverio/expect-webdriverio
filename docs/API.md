@@ -62,7 +62,7 @@ Each failure has these fields:
 - `error`: the original error of the matcher.
 - `matcherName`: the name of the matcher, for example `toHaveText` or `not.toHaveText`.
 - `location`: the first item of `frames`, or an empty string when there are no frames.
-- `frames`: the stack frames that lead to the assertion, without `at `. The first frame is the direct caller of the assertion. The next frames are from your code: `node_modules`, Node.js and engine frames are removed. Node.js keeps 10 stack frames by default, so a deep call path can lose its outer frames. To keep more, set `Error.stackTraceLimit`.
+- `frames`: the stack frames that lead to the assertion, without `at `. The first frame is the direct caller of the assertion. The next frames are from your code: `node_modules`, Node.js and engine frames are removed, unless the [`cleanStack`](#cleanstack) option of the service is `false`. Node.js keeps 10 stack frames by default, so a deep call path can lose its outer frames. To keep more, set `Error.stackTraceLimit`.
 
 The aggregated error prints the frames of each failure, so a soft assertion in a helper shows the path from the test:
 
@@ -126,8 +126,11 @@ export const config = {
   services: [
     // ...other services
     [SoftAssertionService, {
-      // Disable automatic assertion at the end of tests (default: true)
-      autoAssertOnTestEnd: false
+      // Assert the soft failures at the end of each test (default: true)
+      autoAssertOnTestEnd: false,
+      // Remove the node_modules, Node.js and engine frames from the report (default: true).
+      // false keeps all the frames.
+      cleanStack: false
     }]
   ],
   // ...
@@ -142,6 +145,25 @@ export const config = {
 When set to `true` (default), the service will automatically assert all soft assertions at the end of each test and throw an aggregated error if any failures are found. When set to `false`, you must manually call `expect.assertSoftFailures()` to verify soft assertions.
 
 This is useful if you want full control over when soft assertions are verified or if you want to handle soft assertion failures in a custom way.
+
+##### cleanStack
+
+- **Type**: `boolean`
+- **Default**: `true`
+
+When set to `true` (default), the report and `frames` have the direct caller of the assertion and the frames of your code. The `node_modules`, Node.js and engine frames are removed. When set to `false`, they have the direct caller and all the frames below it, for example when you must examine the path through a shared library.
+
+The WebdriverIO testrunner also creates its own `SoftAssertionService` in each worker. This service does not change the value that you set.
+
+To set the value without the `services` entry, for example with `remote()` in a Jest test, call `setCleanStack`:
+
+```js
+import { SoftAssertService } from 'expect-webdriverio'
+
+SoftAssertService.getInstance().setCleanStack(false)
+```
+
+The last `cleanStack` option or `setCleanStack` call sets the value. It applies to the failures that occur after it. Each process has one value. In Jest, each test file has its own value, so make this call in a file of `setupFilesAfterEnv`.
 
 ### Known limitations
 

@@ -1157,6 +1157,7 @@ declare global {
             clearCurrentTest(): void
             getCurrentTestId(): string | null
             addFailure(error: Error, matcherName: string, frames?: string[]): void
+            setCleanStack(cleanStack: boolean): void
             getFailures(testId?: string): SoftFailure[]
             clearFailures(testId?: string): void
             assertNoFailures(testId?: string): void
@@ -1164,6 +1165,7 @@ declare global {
 
         interface SoftAssertionServiceOptions {
             autoAssertOnTestEnd?: boolean
+            cleanStack?: boolean
         }
 
         class SoftAssertionService implements ServiceInstance {

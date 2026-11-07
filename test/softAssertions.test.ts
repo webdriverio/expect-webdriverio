@@ -3,7 +3,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { $, $$ } from '@wdio/globals'
 import expectLib from 'expect'
 import { expect as expectWdio, SoftAssertionService, SoftAssertService } from '../src/index.js'
-import { callerFrames } from '../src/softAssert.js'
 import stripAnsi from 'strip-ansi'
 import type { TestResult } from '../src/publicTypes/expectWebdriverIO.js'
 
@@ -561,29 +560,104 @@ Expect $$(\`sel\`) to have text
             expect(message).not.toMatch(/\n\s*at\s.*:\d*:\d*/)
         })
 
-        it('should remove only the frames that are not from the user code', () => {
-            const stack = [
-                'Error',
-                '    at helper (/project/node_modules/page-objects/login.js:1:1)',
-                '    at caller (/project/test/login.js:1:1)',
-                '    at a (/project/node_modules/webdriverio/build/index.js:1:1)',
-                '    at b (C:\\project\\node_modules\\webdriverio\\build\\index.js:1:1)',
-                '    at c (node:internal/process/task_queues:1:1)',
-                '    at node:internal/main/run_main_module:1:1',
-                '    at async node:internal/modules/esm/loader:1:1',
-                '    at Array.forEach (<anonymous>)',
-                '    at async Promise.all (index 0)',
-                '    at <anonymous>',
-                '    at d (/tmp/selenium-node:1/spec.js:1:1)',
-                '    at e (/app/node_modules_backup/spec.js:1:1)',
-            ].join('\n')
-
-            expect(callerFrames({ stack })).toEqual([
+        describe('cleanStack', () => {
+            const frames = [
+                'helper (/project/node_modules/page-objects/login.js:1:1)',
+                'caller (/project/test/login.js:1:1)',
+                'a (/project/node_modules/webdriverio/build/index.js:1:1)',
+                'b (C:\\project\\node_modules\\webdriverio\\build\\index.js:1:1)',
+                'c (node:internal/process/task_queues:1:1)',
+                'node:internal/main/run_main_module:1:1',
+                'async node:internal/modules/esm/loader:1:1',
+                'Array.forEach (<anonymous>)',
+                'async Promise.all (index 0)',
+                '<anonymous>',
+                'd (/tmp/selenium-node:1/spec.js:1:1)',
+                'e (/app/node_modules_backup/spec.js:1:1)',
+            ]
+            const userFrames = [
                 'helper (/project/node_modules/page-objects/login.js:1:1)',
                 'caller (/project/test/login.js:1:1)',
                 'd (/tmp/selenium-node:1/spec.js:1:1)',
                 'e (/app/node_modules_backup/spec.js:1:1)',
-            ])
+            ]
+
+            afterEach(() => {
+                SoftAssertService.getInstance().setCleanStack(true)
+            })
+
+            const reportedFrames = (testId: string) => {
+                const softService = SoftAssertService.getInstance()
+                softService.setCurrentTest(testId, testId, 'test file')
+                softService.addFailure(new Error('failure'), 'toBe', frames)
+                return softService.getFailures()[0].frames
+            }
+
+            it('should remove only the frames that are not from the user code by default', () => {
+                expect(reportedFrames('clean-stack-default')).toEqual(userFrames)
+            })
+
+            it('should remove them with cleanStack: true', () => {
+                new SoftAssertionService({ cleanStack: false })
+                new SoftAssertionService({ cleanStack: true })
+
+                expect(reportedFrames('clean-stack-true')).toEqual(userFrames)
+            })
+
+            it('should keep the value when a service has no option', () => {
+                SoftAssertService.getInstance().setCleanStack(false)
+                new SoftAssertionService({ autoAssertOnTestEnd: true })
+
+                expect(reportedFrames('clean-stack-kept')).toEqual(frames)
+            })
+
+            it('should not keep a second value in the options of the service', () => {
+                const service = new SoftAssertionService({ cleanStack: false })
+
+                expect(service.options).toEqual({ autoAssertOnTestEnd: true })
+            })
+
+            it('should keep all the frames with cleanStack: false', () => {
+                new SoftAssertionService({ cleanStack: false })
+
+                expect(reportedFrames('clean-stack-false')).toEqual(frames)
+            })
+
+            it('should report all the frames of a soft matcher with cleanStack: false', () => {
+                const softService = SoftAssertService.getInstance()
+                softService.setCurrentTest('clean-stack-matcher', 'clean stack matcher', 'test file')
+                new SoftAssertionService({ cleanStack: false })
+                const softInHelper = () => expectWdio.soft(1).toBe(2)
+
+                softInHelper()
+
+                const [failure] = expectWdio.getSoftFailures()
+                expect(failure.location).toContain('softInHelper')
+                expect(failure.frames?.some((frame) => frame.includes('node_modules'))).toBe(true)
+                expect(() => softService.assertNoFailures()).toThrow(/> at .*node_modules/)
+            })
+
+            it('should use the stack of the error for a direct addFailure call', () => {
+                const softService = SoftAssertService.getInstance()
+                const error = new Error('failure')
+                error.stack = [
+                    'Error: failure',
+                    '    at matcher (/project/node_modules/expect-webdriverio/lib/index.js:1:1)',
+                    '    at Context.<anonymous> (/project/test/login.js:1:1)',
+                ].join('\n')
+
+                softService.setCurrentTest('clean-stack-direct', 'direct', 'test file')
+                softService.addFailure(error, 'toBe')
+                expect(softService.getFailures()[0].frames).toEqual(['Context.<anonymous> (/project/test/login.js:1:1)'])
+
+                softService.setCleanStack(false)
+                softService.setCurrentTest('clean-stack-direct-all', 'direct', 'test file')
+                softService.addFailure(error, 'toBe')
+                expect(softService.getFailures()[0].frames).toEqual([
+                    'matcher (/project/node_modules/expect-webdriverio/lib/index.js:1:1)',
+                    'Context.<anonymous> (/project/test/login.js:1:1)',
+                ])
+            })
         })
 
         it('should keep the direct caller when it is in node_modules', () => {
