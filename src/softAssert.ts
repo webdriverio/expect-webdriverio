@@ -128,7 +128,7 @@ export class SoftAssertService {
             return frames ?? framesOf(error.stack)
         }
         if (frames) {
-            return [...frames.slice(0, 1), ...frames.slice(1).filter(isUserFrame)]
+            return frames.filter((frame, index) => index === 0 || isUserFrame(frame))
         }
         // Without the frames of the caller, use the lines of the error stack that are not from this library
         return framesOf(error.stack).filter((frame) => isUserFrame(frame) && !frame.includes('expect-webdriverio'))

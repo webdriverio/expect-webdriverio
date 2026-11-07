@@ -128,7 +128,7 @@ export const config = {
     [SoftAssertionService, {
       // Disable automatic assertion at the end of tests (default: true)
       autoAssertOnTestEnd: false,
-      // Remove the node_modules, Node.js and engine frames from the report (default: true)
+      // Keep the node_modules, Node.js and engine frames in the report (default: true)
       cleanStack: false
     }]
   ],
@@ -162,7 +162,7 @@ import { SoftAssertService } from 'expect-webdriverio'
 SoftAssertService.getInstance().setCleanStack(false)
 ```
 
-The last `cleanStack` option or `setCleanStack` call sets the value. Each process has one value. In Jest, each test file has its own value, so make this call in a file of `setupFilesAfterEnv`.
+The last `cleanStack` option or `setCleanStack` call sets the value. It applies to the failures that occur after it. Each process has one value. In Jest, each test file has its own value, so make this call in a file of `setupFilesAfterEnv`.
 
 ### Known limitations
 

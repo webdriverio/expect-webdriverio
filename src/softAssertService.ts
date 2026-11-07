@@ -11,7 +11,7 @@ export interface SoftAssertionServiceOptions {
  */
 export class SoftAssertionService implements Services.ServiceInstance {
     private softAssertService: SoftAssertService
-    public options: SoftAssertionServiceOptions
+    public options: Omit<SoftAssertionServiceOptions, 'cleanStack'>
 
     constructor(
         serviceOptions?: SoftAssertionServiceOptions,
