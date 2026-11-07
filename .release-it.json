@@ -1,0 +1,25 @@
+{
+    "plugins": {
+        "@release-it/conventional-changelog": {
+            "infile": false,
+            "ignoreRecommendedBump": true,
+            "context": { "issue": "pull" },
+            "preset": {
+                "name": "conventionalcommits",
+                "types": [
+                    { "type": "feat", "section": ":rocket: New Features" },
+                    { "type": "fix", "section": ":bug: Bug Fixes" },
+                    { "type": "perf", "section": ":zap: Performance" },
+                    { "type": "revert", "section": ":rewind: Reverts" },
+                    { "type": "docs", "section": ":memo: Documentation" },
+                    { "type": "ci", "section": ":house: Internal" },
+                    { "type": "build", "effect": "hidden" },
+                    { "type": "test", "effect": "hidden" },
+                    { "type": "refactor", "effect": "hidden" },
+                    { "type": "chore", "effect": "hidden" },
+                    { "type": "style", "effect": "hidden" }
+                ]
+            }
+        }
+    }
+}
