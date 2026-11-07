@@ -62,7 +62,7 @@ export const getElementsPerInstance = (elements: WebdriverIO.MultiRemoteElementA
     }))
 }
 
-const getInstanceOrUndefined = (element: WebdriverIO.MultiRemoteElement, name: string): WebdriverIO.Element | undefined => {
+export const getInstanceOrUndefined = (element: WebdriverIO.MultiRemoteElement, name: string): WebdriverIO.Element | undefined => {
     try {
         return element.getInstance(name)
     } catch {
