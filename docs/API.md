@@ -126,9 +126,10 @@ export const config = {
   services: [
     // ...other services
     [SoftAssertionService, {
-      // Disable automatic assertion at the end of tests (default: true)
+      // Assert the soft failures at the end of each test (default: true)
       autoAssertOnTestEnd: false,
-      // Keep the node_modules, Node.js and engine frames in the report (default: true)
+      // Remove the node_modules, Node.js and engine frames from the report (default: true).
+      // false keeps all the frames.
       cleanStack: false
     }]
   ],
