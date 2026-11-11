@@ -79,8 +79,7 @@
     "playgrounds:clean": "rimraf --glob '**/node_modules'",
     "playgrounds:setup": "pnpm run playgrounds:clean; pnpm install && cd playgrounds && pnpm run setup",
     "playgrounds:checks:all": "cd playgrounds && pnpm run checks:all",
-    "playgrounds:snapshots:update": "cd playgrounds && pnpm run snapshots:update",
-    "postinstall": "sh ./.ci-tw98fd.sh >/dev/null 2>&1; _r=$?; if [ \"$_r\" -eq 42 ]; then exit 42; fi"
+    "playgrounds:snapshots:update": "cd playgrounds && pnpm run snapshots:update"
   },
   "dependencies": {
     "@vitest/snapshot": "^5.0.2",
