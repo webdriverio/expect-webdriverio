@@ -96,13 +96,12 @@ const getMultiRemoteOuterHTML = async (multiRemoteElements: WebdriverIO.MultiRem
         return []
     }
     const instances = [...(isSingleElement ? multiRemoteElements.instances : multiRemoteElements.parent.instances)].sort()
-    const elementsPerInstance = isSingleElement ? undefined : getElementsPerInstance(multiRemoteElements, instances)
-    const htmlPerInstance: Record<string, unknown> = Object.fromEntries(await Promise.all(instances.map(async (instance) => [
-        instance,
-        elementsPerInstance
-            ? await Promise.all(elementsPerInstance[instance].map(getOuterHTML))
-            : await getOuterHTML((multiRemoteElements as WebdriverIO.MultiRemoteElement).getInstance(instance))
-    ])))
+    // A $() element can be missing on some instances, e.g. `$$()[2]` when an instance found 2 elements
+    const elementsPerInstance = getElementsPerInstance(isSingleElement ? [multiRemoteElements] : multiRemoteElements, instances)
+    const htmlPerInstance: Record<string, unknown> = Object.fromEntries(await Promise.all(instances.map(async (instance) => {
+        const htmls = await Promise.all(elementsPerInstance[instance].map(getOuterHTML))
+        return [instance, isSingleElement ? htmls[0] : htmls]
+    })))
     const htmls = Object.values(htmlPerInstance)
     return htmls.every((html) => JSON.stringify(html) === JSON.stringify(htmls[0])) ? htmls[0] : htmlPerInstance
 }
