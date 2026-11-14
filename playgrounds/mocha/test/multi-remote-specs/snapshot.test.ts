@@ -89,4 +89,16 @@ describe('Multi-remote Snapshot Matchers', () => {
         await expect(multiRemoteBrowser.$('#githubRepo')).toMatchSnapshot()
         await expect(multiRemoteBrowser.$$('h1')).toMatchSnapshot()
     })
+
+    it('should fail with the toExist() message when a single element has no element on one browser', async () => {
+        await multiRemoteBrowser.getInstance('firefox')!.execute(() => {
+            document.querySelector('h1.findme')!.remove()
+        })
+        const headings = await multiRemoteBrowser.$$('h1')
+
+        await expect(expect(headings[1]).toMatchInlineSnapshot('"<h1 class=\\"findme\\">Test CSS Attributes</h1>"'))
+            .rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`h1`\) to exist/)
+        await expect(expect(headings[1]).toMatchSnapshot())
+            .rejects.toThrow(/Expect multi-remote<(?:chrome, firefox|firefox, chrome)>\.\$\(`h1`\) to exist/)
+    })
 })

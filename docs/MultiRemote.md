@@ -183,6 +183,7 @@ As for the other matchers, the values must name exactly the instances of the `Mu
 
 - When every instance has the same outerHTML, the snapshot is that outerHTML, as for a single element (an array of outerHTML for `$$()`, as for regular elements).
 - Otherwise, the snapshot holds the outerHTML of each instance, keyed by instance name (sorted, whatever their order in the configuration).
+- For a single multi-remote element (`$()`, or `$$()[index]`), an instance without an element fails the assertion with the `toExist()` message, without writing a snapshot.
 
 ```ts
 // The same on every browser

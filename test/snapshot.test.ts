@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import stripAnsi from 'strip-ansi'
 import { test, expect, vi, afterEach } from 'vitest'
 import type { Frameworks } from '@wdio/types'
 
@@ -87,6 +88,57 @@ test('snapshots the outerHTML shared by every instance of a multi-remote element
     vi.mocked(element.getInstance('firefox').getHTML).mockResolvedValue('<h1>Welcome</h1>')
 
     await expectExport(element).toMatchInlineSnapshot('"<h1>Welcome</h1>"')
+    await service.after()
+})
+
+test('fails with the toExist() message and writes no snapshot when a multi-remote element has no element on one instance', async () => {
+    await service.beforeTest({
+        title: 'multi-remote element missing on one instance',
+        parent: 'parent',
+        file: path.join(__dirname, __filename),
+    } as Frameworks.Test)
+    process.env.WDIO_INTERNAL_TEST = 'true'
+
+    const elements = createMultiRemoteElementArrayMock({ chrome: browserFactory(), firefox: browserFactory() }, 'header a', 2) as unknown as WebdriverIO.MultiRemoteElement[]
+    const secondChromeElement = elements[1].getInstance('chrome')
+    vi.spyOn(elements[1], 'getInstance').mockImplementation((instance) => {
+        if (instance === 'firefox') {
+            throw new Error('Multi-remote object has no instance named "firefox"')
+        }
+        return secondChromeElement
+    })
+    const assertSpy = vi.spyOn(service.client, 'assert')
+
+    const expectedMessage = `\
+Expect multi-remote<chrome, firefox>.$(\`header a\`) to exist
+
+- Expected  - 1
++ Received  + 1
+
+  Multi-remote values {
+    "chrome": "exist",
+-   "firefox": "exist",
++   "firefox": "not exist",
+  }`
+
+    const snapshotError = await expectExport(elements[1]).toMatchSnapshot().catch((err: Error) => err)
+    expect(snapshotError).toBeInstanceOf(Error)
+    expect(stripAnsi((snapshotError as Error).message)).toBe(expectedMessage)
+
+    const inlineSnapshotError = await expectExport(elements[1]).toMatchInlineSnapshot('"<a>Link</a>"').catch((err: Error) => err)
+    expect(inlineSnapshotError).toBeInstanceOf(Error)
+    expect(stripAnsi((inlineSnapshotError as Error).message)).toBe(expectedMessage)
+
+    const negatedSnapshotError = await expectExport(elements[1]).not.toMatchSnapshot().catch((err: Error) => err)
+    expect(negatedSnapshotError).toBeInstanceOf(Error)
+    expect(stripAnsi((negatedSnapshotError as Error).message)).toBe(expectedMessage)
+
+    const negatedInlineSnapshotError = await expectExport(elements[1]).not.toMatchInlineSnapshot('"<a>Link</a>"').catch((err: Error) => err)
+    expect(negatedInlineSnapshotError).toBeInstanceOf(Error)
+    expect(stripAnsi((negatedInlineSnapshotError as Error).message)).toBe(expectedMessage)
+
+    expect(assertSpy).not.toHaveBeenCalled()
+    assertSpy.mockRestore()
     await service.after()
 })
 
