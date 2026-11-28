@@ -22,6 +22,7 @@ Example playgrounds are available, though their `tsconfig.json` files may use mo
 When pairing with [Mocha](https://mochajs.org/), you can use `expect-webdriverio` directly or combine it with [`chai`](https://www.chaijs.com/) (or any other assertion library).
 - It is strongly recommended to leverage `@wdio/mocha-framework` for automatic configuration and a plug-and-play experience.
 - See [Mocha playground example here](https://github.com/webdriverio/expect-webdriverio/tree/main/playgrounds/mocha)
+- Snapshot mismatches still fail when Mocha retries a test; see [Snapshot Matcher](API.md#snapshot-matcher).
 
 ##### Standalone
 No import is required; everything is set globally.

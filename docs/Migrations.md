@@ -281,6 +281,10 @@ A copy of the element list of one browser, such as `[...elements]`, is still an 
 
 The browser matchers (`toHaveUrl`, `toHaveTitle`, `toHaveLocalStorageItem`, `toHaveClipboardText`) accept a WebdriverIO v10 browsing context: a tab, a window or a frame, see [Browsing contexts](API.md#browsing-contexts-tab-window-frame). Their failure message names the window or the frame and its URL, e.g. `Expect chrome's frame (https://example.com/frame.html) to have title`, not `browser's window`.
 
+## Snapshots with Mocha retries
+
+A retried test reuses its original snapshot keys. Previously, a mismatch could pass on retry by adding a new numbered snapshot. Tests that depended on that false pass now fail unless the received values match the stored snapshots (or you explicitly update snapshots).
+
 ## Jasmine types with `@wdio/jasmine-framework`
 
 The `expect-webdriverio/jasmine-wdio-expect-async` entry point is removed. In WebdriverIO v10, `@wdio/jasmine-framework` keeps the Jasmine synchronous matchers synchronous, and has the types of its global `expect`. Use them in `tsconfig.json`:

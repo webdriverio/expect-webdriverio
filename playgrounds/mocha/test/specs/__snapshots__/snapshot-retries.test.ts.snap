@@ -1,0 +1,7 @@
+// Snapshot v1
+
+exports[`Snapshot retries > matches synthetic DOM in Chrome 1`] = `"<h1>local snapshot fixture</h1>"`;
+
+exports[`Snapshot retries > preserves retries after an ordinary failure before any snapshot 1`] = `"after ordinary failure"`;
+
+exports[`Snapshot retries > reuses the original key when a later attempt matches 1`] = `"expected"`;
