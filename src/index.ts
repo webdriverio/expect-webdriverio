@@ -8,6 +8,7 @@ import { SoftAssertService } from './softAssert.js'
 import { oneOf } from './matchers/asymmetrics/oneOf.js'
 import { multiRemote } from './matchers/asymmetrics/multiRemote.js'
 import { getGlobalSingleton } from './util/globalSingleton.js'
+import { enhanceCustomAsymmetricMatcher } from './util/customAsymmetricMatcher.js'
 import type { MatchersObject } from './publicTypes/expectWebdriverIO.js'
 
 interface SharedExpectSetup {
@@ -30,10 +31,11 @@ function createSharedExpectSetup(): SharedExpectSetup {
             return
         }
 
+        extend(extendedMatchers)
         Object.entries(extendedMatchers).forEach(([name, matcher]) => {
             wdioCustomMatchers[name] = matcher
+            enhanceCustomAsymmetricMatcher(expectLib, name, matcher)
         })
-        return extend(extendedMatchers)
     }
 
     const filteredWdioMatchers: MatchersObject = {}

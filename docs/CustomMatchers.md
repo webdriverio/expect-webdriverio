@@ -38,6 +38,18 @@ export function addCustomMatchers () {
 }
 ```
 
+### Asymmetric form
+
+`expect.extend()` also adds each matcher as an asymmetric matcher, to use in a value: `expect.myMatcher()` and `expect.not.myMatcher()`. When it fails, the diff shows its message on one line:
+
+```ts
+expect({ count: 15 }).toMatchObject({ count: expect.toBeWithinRange(1, 10) })
+// -   "count": toBeWithinRange<1, 10> (expected 15 to be within range 1 - 10),
+// +   "count": 15,
+```
+
+Only a synchronous matcher has an asymmetric form. An async matcher, e.g. `expect.toHaveText()`, throws a `MatcherUsageError`: an asymmetric matcher cannot wait for a promise.
+
 ### TypeScript
 
 Add the types of your matchers to the `ExpectWebdriverIO` namespace. It works with every framework: the types of `expect-webdriverio/jest` and of `expect-webdriverio/jasmine` (and `@wdio/jasmine-framework`) extend it, also for `expect.soft()`.
